@@ -1,6 +1,7 @@
 import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { SEO } from "@/components/seo";
+import { breadcrumbSchema } from "@/lib/structured-data";
 import { Link } from "wouter";
 import heroImg from "@/assets/services-hero.png";
 import { 
@@ -14,6 +15,10 @@ export default function ServicesIndex() {
       <SEO 
         title="Services | P1 Land & Property Management | Upstate SC & Charlotte NC"
         description="Comprehensive land and property management services for large-acreage properties. Commercial maintenance, land clearing, grading, drainage, turf, and more."
+        jsonLd={breadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "Services", path: "/services" },
+        ])}
       />
 
       {/* PAGE HERO */}

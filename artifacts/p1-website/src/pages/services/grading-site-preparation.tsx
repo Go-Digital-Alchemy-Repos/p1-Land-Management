@@ -1,6 +1,7 @@
 import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { SEO } from "@/components/seo";
+import { serviceSchema, breadcrumbSchema } from "@/lib/structured-data";
 import { CheckCircle2 } from "lucide-react";
 import heroImg from "@/assets/service-grading.png";
 
@@ -10,6 +11,14 @@ export default function GradingSitePreparation() {
       <SEO 
         title="Fine Grading & Site Preparation Upstate SC & Charlotte NC | P1 Land & Property Management"
         description="Precision grading and site preparation for commercial, agricultural, and large residential properties. Serving Greenville, Spartanburg, and Charlotte NC. Call (704) 221-8928."
+        jsonLd={[
+          serviceSchema({ name: "Fine Grading & Site Preparation", description: "Precision grading and site preparation for commercial, agricultural, and large residential properties. Serving Greenville, Spartanburg, and Charlotte NC. Call (704) 221-8928.", path: "/services/grading-site-preparation" }),
+          breadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Services", path: "/services" },
+            { name: "Fine Grading & Site Preparation", path: "/services/grading-site-preparation" },
+          ]),
+        ]}
       />
 
       {/* PAGE HERO */}

@@ -1,6 +1,7 @@
 import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { SEO } from "@/components/seo";
+import { serviceSchema, breadcrumbSchema } from "@/lib/structured-data";
 import { CheckCircle2 } from "lucide-react";
 import heroImg from "@/assets/service-clearing.png";
 
@@ -10,6 +11,14 @@ export default function LandClearing() {
       <SEO 
         title="Land Clearing Upstate SC & Charlotte NC | P1 Land & Property Management"
         description="Professional land clearing for commercial, agricultural, and large residential properties. Trees, brush, stumps, and vegetation removed efficiently. Serving Upstate SC and Charlotte NC. Call (704) 221-8928."
+        jsonLd={[
+          serviceSchema({ name: "Land Clearing", description: "Professional land clearing for commercial, agricultural, and large residential properties. Trees, brush, stumps, and vegetation removed efficiently. Serving Upstate SC and Charlotte NC. Call (704) 221-8928.", path: "/services/land-clearing" }),
+          breadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Services", path: "/services" },
+            { name: "Land Clearing", path: "/services/land-clearing" },
+          ]),
+        ]}
       />
 
       {/* PAGE HERO */}

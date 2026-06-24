@@ -1,6 +1,7 @@
 import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { SEO } from "@/components/seo";
+import { breadcrumbSchema } from "@/lib/structured-data";
 import { Link } from "wouter";
 import heroImg from "@/assets/hero-service-areas.png";
 import { MapPin, Map } from "lucide-react";
@@ -11,6 +12,10 @@ export default function ServiceAreasIndex() {
       <SEO 
         title="Service Areas | P1 Land & Property Management"
         description="P1 Land & Property Management serves commercial, agricultural, and large residential properties across Upstate South Carolina and the Charlotte, NC region."
+        jsonLd={breadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "Service Areas", path: "/service-areas" },
+        ])}
       />
       
       {/* PAGE HERO */}

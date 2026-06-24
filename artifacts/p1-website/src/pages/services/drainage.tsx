@@ -1,6 +1,7 @@
 import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { SEO } from "@/components/seo";
+import { serviceSchema, breadcrumbSchema } from "@/lib/structured-data";
 import { CheckCircle2 } from "lucide-react";
 import heroImg from "@/assets/service-drainage.png";
 
@@ -10,6 +11,14 @@ export default function Drainage() {
       <SEO 
         title="Drainage Solutions for Large Properties | P1 Land & Property Management | Upstate SC & Charlotte NC"
         description="Custom drainage solutions for commercial, agricultural, and large residential properties. French drains, retention systems, swales, and more. Serving Upstate SC and Charlotte NC. Call (704) 221-8928."
+        jsonLd={[
+          serviceSchema({ name: "Drainage Solutions", description: "Custom drainage solutions for commercial, agricultural, and large residential properties. French drains, retention systems, swales, and more. Serving Upstate SC and Charlotte NC. Call (704) 221-8928.", path: "/services/drainage" }),
+          breadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Services", path: "/services" },
+            { name: "Drainage Solutions", path: "/services/drainage" },
+          ]),
+        ]}
       />
 
       {/* PAGE HERO */}

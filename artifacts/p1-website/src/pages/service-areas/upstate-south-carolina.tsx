@@ -1,6 +1,7 @@
 import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { SEO } from "@/components/seo";
+import { serviceAreaSchema, breadcrumbSchema } from "@/lib/structured-data";
 import { Link } from "wouter";
 import heroImg from "@/assets/hero-upstate-sc.png";
 import { CheckCircle2 } from "lucide-react";
@@ -11,6 +12,14 @@ export default function UpstateSC() {
       <SEO 
         title="Land & Property Management Upstate South Carolina | P1 | Greenville, Spartanburg & Surrounding Areas"
         description="P1 Land & Property Management serves commercial, agricultural, and large residential properties throughout Upstate South Carolina. Land clearing, grading, drainage, turf, ponds, and more. Call (704) 221-8928."
+        jsonLd={[
+          serviceAreaSchema({ areaName: "Upstate South Carolina", areaType: "AdministrativeArea", description: "P1 Land & Property Management serves commercial, agricultural, and large residential properties throughout Upstate South Carolina. Land clearing, grading, drainage, turf, ponds, and more. Call (704) 221-8928.", path: "/service-areas/upstate-south-carolina" }),
+          breadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Service Areas", path: "/service-areas" },
+            { name: "Upstate South Carolina", path: "/service-areas/upstate-south-carolina" },
+          ]),
+        ]}
       />
 
       <section className="relative py-32 px-4 bg-secondary text-white text-center overflow-hidden">

@@ -1,6 +1,7 @@
 import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { SEO } from "@/components/seo";
+import { serviceSchema, breadcrumbSchema } from "@/lib/structured-data";
 import { CheckCircle2 } from "lucide-react";
 import heroImg from "@/assets/service-pond.png";
 
@@ -10,6 +11,14 @@ export default function PondWaterwayManagement() {
       <SEO 
         title="Pond & Waterway Management | P1 Land & Property Management | Upstate SC & Charlotte NC"
         description="Professional pond management, waterway clearing, shoreline restoration, and water quality maintenance for large properties. Serving Upstate SC and Charlotte NC. Call (704) 221-8928."
+        jsonLd={[
+          serviceSchema({ name: "Pond & Waterway Management", description: "Professional pond management, waterway clearing, shoreline restoration, and water quality maintenance for large properties. Serving Upstate SC and Charlotte NC. Call (704) 221-8928.", path: "/services/pond-waterway-management" }),
+          breadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Services", path: "/services" },
+            { name: "Pond & Waterway Management", path: "/services/pond-waterway-management" },
+          ]),
+        ]}
       />
 
       {/* PAGE HERO */}

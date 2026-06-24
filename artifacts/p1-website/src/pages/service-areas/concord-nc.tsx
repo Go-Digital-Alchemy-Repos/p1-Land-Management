@@ -1,6 +1,7 @@
 import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { SEO } from "@/components/seo";
+import { serviceAreaSchema, breadcrumbSchema } from "@/lib/structured-data";
 import { Link } from "wouter";
 import heroImg from "@/assets/hero-charlotte-metro.png";
 import { CheckCircle2 } from "lucide-react";
@@ -11,6 +12,14 @@ export default function ConcordNC() {
       <SEO 
         title="Land Clearing & Property Management Concord NC | P1 Land & Property Management"
         description="Professional land clearing, grading, drainage, and property management in Concord, NC. Properties 1 acre and larger. Call (704) 221-8928."
+        jsonLd={[
+          serviceAreaSchema({ areaName: "Concord, North Carolina", areaType: "City", description: "Professional land clearing, grading, drainage, and property management in Concord, NC. Properties 1 acre and larger. Call (704) 221-8928.", path: "/service-areas/concord-nc" }),
+          breadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Service Areas", path: "/service-areas" },
+            { name: "Concord, NC", path: "/service-areas/concord-nc" },
+          ]),
+        ]}
       />
 
       <section className="relative py-32 px-4 bg-secondary text-white text-center overflow-hidden">

@@ -1,6 +1,7 @@
 import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { SEO } from "@/components/seo";
+import { serviceSchema, breadcrumbSchema } from "@/lib/structured-data";
 import { CheckCircle2 } from "lucide-react";
 import heroImg from "@/assets/service-reconstruction.png";
 
@@ -10,6 +11,14 @@ export default function PropertyReconstruction() {
       <SEO 
         title="Property Reconstruction & Large-Scale Land Restoration | P1 Land & Property Management"
         description="Full-scope property reconstruction including land clearing, regrading, drainage overhaul, and turf establishment. Serving commercial and agricultural landowners in Upstate SC and Charlotte NC. Call (704) 221-8928."
+        jsonLd={[
+          serviceSchema({ name: "Property Reconstruction", description: "Full-scope property reconstruction including land clearing, regrading, drainage overhaul, and turf establishment. Serving commercial and agricultural landowners in Upstate SC and Charlotte NC. Call (704) 221-8928.", path: "/services/property-reconstruction" }),
+          breadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Services", path: "/services" },
+            { name: "Property Reconstruction", path: "/services/property-reconstruction" },
+          ]),
+        ]}
       />
 
       {/* PAGE HERO */}

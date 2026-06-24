@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { SEO } from "@/components/seo";
+import { localBusinessSchema, breadcrumbSchema } from "@/lib/structured-data";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -49,6 +50,13 @@ export default function Contact() {
       <SEO 
         title="Get a Free Estimate | P1 Land & Property Management"
         description="Request a free on-site estimate for land clearing, grading, drainage, turf, pond management, or property maintenance. Serving Upstate SC and Charlotte NC. Call (704) 221-8928."
+        jsonLd={[
+          localBusinessSchema(),
+          breadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Contact", path: "/contact" },
+          ]),
+        ]}
       />
 
       {/* PAGE HEADLINE */}

@@ -1,6 +1,7 @@
 import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { SEO } from "@/components/seo";
+import { serviceAreaSchema, breadcrumbSchema } from "@/lib/structured-data";
 import { Link } from "wouter";
 import heroImg from "@/assets/hero-upstate-cities.png";
 import { CheckCircle2 } from "lucide-react";
@@ -11,6 +12,14 @@ export default function AndersonSC() {
       <SEO 
         title="Land Clearing & Property Management Anderson SC | P1 Land & Property Management"
         description="Professional land clearing, grading, drainage, and agricultural property management in Anderson, SC. Properties 1 acre and larger. Call (704) 221-8928."
+        jsonLd={[
+          serviceAreaSchema({ areaName: "Anderson, South Carolina", areaType: "City", description: "Professional land clearing, grading, drainage, and agricultural property management in Anderson, SC. Properties 1 acre and larger. Call (704) 221-8928.", path: "/service-areas/anderson-sc" }),
+          breadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Service Areas", path: "/service-areas" },
+            { name: "Anderson, SC", path: "/service-areas/anderson-sc" },
+          ]),
+        ]}
       />
 
       <section className="relative py-32 px-4 bg-secondary text-white text-center overflow-hidden">

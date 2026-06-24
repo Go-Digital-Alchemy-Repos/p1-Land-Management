@@ -1,6 +1,7 @@
 import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { SEO } from "@/components/seo";
+import { serviceAreaSchema, breadcrumbSchema } from "@/lib/structured-data";
 import { Link } from "wouter";
 import heroImg from "@/assets/hero-charlotte-metro.png";
 import { CheckCircle2 } from "lucide-react";
@@ -11,6 +12,14 @@ export default function CharlotteNC() {
       <SEO 
         title="Land Clearing & Commercial Property Management Charlotte NC | P1 Land & Property Management"
         description="Professional land clearing, grading, drainage, and commercial property management in Charlotte, NC. Properties 1 acre and larger. Call (704) 221-8928."
+        jsonLd={[
+          serviceAreaSchema({ areaName: "Charlotte, North Carolina", areaType: "City", description: "Professional land clearing, grading, drainage, and commercial property management in Charlotte, NC. Properties 1 acre and larger. Call (704) 221-8928.", path: "/service-areas/charlotte-nc" }),
+          breadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Service Areas", path: "/service-areas" },
+            { name: "Charlotte, NC", path: "/service-areas/charlotte-nc" },
+          ]),
+        ]}
       />
 
       <section className="relative py-32 px-4 bg-secondary text-white text-center overflow-hidden">

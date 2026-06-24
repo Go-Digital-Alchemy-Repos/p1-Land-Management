@@ -1,6 +1,7 @@
 import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { SEO } from "@/components/seo";
+import { serviceAreaSchema, breadcrumbSchema } from "@/lib/structured-data";
 import { Link } from "wouter";
 import heroImg from "@/assets/hero-upstate-cities.png";
 import { CheckCircle2 } from "lucide-react";
@@ -11,6 +12,14 @@ export default function GreenvilleSC() {
       <SEO 
         title="Land Clearing & Property Management Greenville SC | P1 Land & Property Management"
         description="Professional land clearing, grading, drainage, turf, and property management in Greenville, SC. Serving commercial, agricultural, and large residential properties 1 acre+. Call (704) 221-8928."
+        jsonLd={[
+          serviceAreaSchema({ areaName: "Greenville, South Carolina", areaType: "City", description: "Professional land clearing, grading, drainage, turf, and property management in Greenville, SC. Serving commercial, agricultural, and large residential properties 1 acre+. Call (704) 221-8928.", path: "/service-areas/greenville-sc" }),
+          breadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Service Areas", path: "/service-areas" },
+            { name: "Greenville, SC", path: "/service-areas/greenville-sc" },
+          ]),
+        ]}
       />
 
       <section className="relative py-32 px-4 bg-secondary text-white text-center overflow-hidden">

@@ -1,6 +1,7 @@
 import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { SEO } from "@/components/seo";
+import { serviceAreaSchema, breadcrumbSchema } from "@/lib/structured-data";
 import { Link } from "wouter";
 import heroImg from "@/assets/hero-charlotte-region.png";
 import { CheckCircle2 } from "lucide-react";
@@ -11,6 +12,14 @@ export default function CharlotteRegionNC() {
       <SEO 
         title="Land & Property Management Charlotte NC | P1 | Concord, Mooresville, Lake Norman & Surrounding Areas"
         description="P1 Land & Property Management serves commercial, agricultural, and large residential properties in the Charlotte, NC region. Land clearing, grading, drainage, turf, and pond management. Call (704) 221-8928."
+        jsonLd={[
+          serviceAreaSchema({ areaName: "Charlotte Region, North Carolina", areaType: "AdministrativeArea", description: "P1 Land & Property Management serves commercial, agricultural, and large residential properties in the Charlotte, NC region. Land clearing, grading, drainage, turf, and pond management. Call (704) 221-8928.", path: "/service-areas/charlotte-north-carolina" }),
+          breadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Service Areas", path: "/service-areas" },
+            { name: "Charlotte, NC Region", path: "/service-areas/charlotte-north-carolina" },
+          ]),
+        ]}
       />
 
       <section className="relative py-32 px-4 bg-secondary text-white text-center overflow-hidden">

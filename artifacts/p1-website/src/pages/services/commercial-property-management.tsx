@@ -1,6 +1,7 @@
 import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { SEO } from "@/components/seo";
+import { serviceSchema, breadcrumbSchema } from "@/lib/structured-data";
 import { CheckCircle2 } from "lucide-react";
 import heroImg from "@/assets/service-commercial.png";
 
@@ -10,6 +11,14 @@ export default function CommercialPropertyManagement() {
       <SEO 
         title="Commercial Property Management | P1 Land & Property Management | Upstate SC & Charlotte NC"
         description="Professional commercial property maintenance for 1-acre-plus properties across Upstate SC and Charlotte NC. Turf, drainage, land clearing, ponds, and more. Call (704) 221-8928."
+        jsonLd={[
+          serviceSchema({ name: "Commercial Property Management", description: "Professional commercial property maintenance for 1-acre-plus properties across Upstate SC and Charlotte NC. Turf, drainage, land clearing, ponds, and more. Call (704) 221-8928.", path: "/services/commercial-property-management" }),
+          breadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Services", path: "/services" },
+            { name: "Commercial Property Management", path: "/services/commercial-property-management" },
+          ]),
+        ]}
       />
 
       {/* PAGE HERO */}

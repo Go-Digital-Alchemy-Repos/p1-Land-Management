@@ -1,6 +1,7 @@
 import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { SEO } from "@/components/seo";
+import { localBusinessSchema } from "@/lib/structured-data";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import heroImg from "@/assets/hero-bg.png";
@@ -18,6 +19,7 @@ export default function Home() {
       <SEO 
         title="P1 Land & Property Management | Upstate SC & Charlotte NC"
         description="Full-service land and property management for commercial, agricultural, and large residential properties 1 acre and larger. Serving Upstate South Carolina and the Charlotte, NC region. Call (704) 221-8928."
+        jsonLd={localBusinessSchema()}
       />
       
       {/* HERO SECTION */}

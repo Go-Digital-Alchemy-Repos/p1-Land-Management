@@ -1,6 +1,7 @@
 import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { SEO } from "@/components/seo";
+import { serviceAreaSchema, breadcrumbSchema } from "@/lib/structured-data";
 import { Link } from "wouter";
 import heroImg from "@/assets/hero-lake-norman.png";
 import { CheckCircle2 } from "lucide-react";
@@ -11,6 +12,14 @@ export default function MooresvilleLakeNormanNC() {
       <SEO 
         title="Land & Property Management Mooresville & Lake Norman NC | P1 Land & Property Management"
         description="Full-service land clearing, drainage, pond management, and property maintenance for large properties near Mooresville and Lake Norman, NC. Call (704) 221-8928."
+        jsonLd={[
+          serviceAreaSchema({ areaName: "Mooresville & Lake Norman, North Carolina", areaType: "City", description: "Full-service land clearing, drainage, pond management, and property maintenance for large properties near Mooresville and Lake Norman, NC. Call (704) 221-8928.", path: "/service-areas/mooresville-lake-norman-nc" }),
+          breadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Service Areas", path: "/service-areas" },
+            { name: "Mooresville & Lake Norman, NC", path: "/service-areas/mooresville-lake-norman-nc" },
+          ]),
+        ]}
       />
 
       <section className="relative py-32 px-4 bg-secondary text-white text-center overflow-hidden">
