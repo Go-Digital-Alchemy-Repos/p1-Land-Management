@@ -1,9 +1,15 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertCircle } from "lucide-react";
+import { SEO } from "@/components/seo";
 
 export default function NotFound() {
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-gray-50">
+      <SEO
+        title="Page Not Found | P1 Land & Property Management"
+        description="The page you're looking for couldn't be found. Explore P1 Land & Property Management's land clearing, grading, drainage, and property management services across Upstate SC and Charlotte NC."
+        noindex
+      />
       <Card className="w-full max-w-md mx-4">
         <CardContent className="pt-6">
           <div className="flex mb-4 gap-2">

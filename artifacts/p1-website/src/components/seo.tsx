@@ -6,6 +6,7 @@ interface SEOProps {
   description: string;
   image?: string;
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  noindex?: boolean;
 }
 
 function upsertMeta(attr: "name" | "property", key: string, content: string) {
@@ -18,9 +19,15 @@ function upsertMeta(attr: "name" | "property", key: string, content: string) {
   el.setAttribute("content", content);
 }
 
-export function SEO({ title, description, image, jsonLd }: SEOProps) {
+export function SEO({ title, description, image, jsonLd, noindex }: SEOProps) {
   useEffect(() => {
     document.title = title;
+
+    upsertMeta(
+      "name",
+      "robots",
+      noindex ? "noindex, follow" : "index, follow"
+    );
 
     const url = SITE_URL + window.location.pathname;
     const img = image
@@ -67,7 +74,7 @@ export function SEO({ title, description, image, jsonLd }: SEOProps) {
         document.head.appendChild(script);
       });
     }
-  }, [title, description, image, JSON.stringify(jsonLd)]);
+  }, [title, description, image, noindex, JSON.stringify(jsonLd)]);
 
   return null;
 }
