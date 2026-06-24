@@ -81,6 +81,8 @@ export function SiteHeader() {
             </DropdownMenuContent>
           </DropdownMenu>
 
+          <Link href="/gallery" className="hover:text-primary transition-colors">Gallery</Link>
+          <Link href="/testimonials" className="hover:text-primary transition-colors">Testimonials</Link>
           <Link href="/blog" className="hover:text-primary transition-colors">Blog</Link>
           <Link href="/about" className="hover:text-primary transition-colors">About</Link>
           <Link href="/contact" className="hover:text-primary transition-colors">Contact</Link>
@@ -134,6 +136,8 @@ export function SiteHeader() {
                     </div>
                   </div>
 
+                  <Link href="/gallery" onClick={() => setIsOpen(false)} className="text-lg font-medium text-secondary">Gallery</Link>
+                  <Link href="/testimonials" onClick={() => setIsOpen(false)} className="text-lg font-medium text-secondary">Testimonials</Link>
                   <Link href="/blog" onClick={() => setIsOpen(false)} className="text-lg font-medium text-secondary">Blog</Link>
                   <Link href="/about" onClick={() => setIsOpen(false)} className="text-lg font-medium text-secondary">About</Link>
                   <Link href="/contact" onClick={() => setIsOpen(false)} className="text-lg font-medium text-secondary">Contact</Link>
