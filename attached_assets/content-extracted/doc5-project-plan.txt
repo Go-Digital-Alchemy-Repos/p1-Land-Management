@@ -1,0 +1,389 @@
+
+
+
+
+
+P1 LAND & PROPERTY MANAGEMENT
+Website Project Plan
+
+Competitive Analysis  |  Site Structure  |  SEO Strategy  |  Project Timeline
+Serving Upstate South Carolina & Charlotte Region, North Carolina
+
+
+Prepared by Digital Alchemy  •  June 2026
+
+
+Executive Summary
+P1 Land & Property Management provides comprehensive land and property care for commercial, industrial, agricultural, and large residential properties (1 acre and larger) across two high-growth markets: Upstate South Carolina (Greenville/Spartanburg corridor) and the greater Charlotte, North Carolina region.
+
+This document provides a complete website project plan including:
+Competitive landscape analysis for both markets
+Recommended website structure and sitemap
+SEO and keyword strategy targeting high-intent commercial buyers
+Phased development timeline with milestones
+
+The objective is a professional, lead-generating website that positions P1 as the go-to contractor for large-acreage property work — from weekly maintenance contracts to full property reconstruction projects. The website must clearly differentiate P1 from small residential lawn services and attract commercial, agricultural, and industrial clients.
+
+Competitive Analysis
+The following analysis covers the primary competitors in each target market. Understanding their positioning, service breadth, and digital gaps informs P1’s website strategy and key messaging.
+Upstate South Carolina — Greenville / Spartanburg Corridor
+
+Company
+Location
+Core Services
+Strengths
+Website / Digital Gap
+Rock Solid Earthworks
+Greenville / Spartanburg area
+Land clearing, grading, excavation, drainage, sod, pond clearing
+Strong local coverage, full-service earthworks, broad service area
+Generic residential focus; no clear commercial/industrial positioning
+Martin & Son Contracting
+Spartanburg, SC
+Land clearing, grading, excavation, forestry mulching
+30+ years experience, commercial focus, heavy equipment
+Dated website; minimal SEO; weak online lead capture
+Carolina Grading & Land Clearing
+Rutherfordton, NC (serves Greenville/Spartanburg)
+Grading, clearing, pond construction, horse arenas, driveways
+30+ years experience, agricultural & equestrian niche
+Serves both markets; competes directly on agricultural properties
+Briggs Dirt Works
+Greenville / Spartanburg area
+Grading, pond construction, commercial clearing
+Low cost positioning; serves Pickens, Greenville, Anderson counties
+Very basic web presence; no content marketing or SEO strategy
+Bailey Grading & Hauling
+Upstate SC
+Excavating, grading, drainage, land clearing, demolition
+Serving region since 2005; multi-county presence
+Service-page only site; no blog, no differentiators for large acreage
+Nat Greene Landscape
+Upstate SC
+Commercial landscaping, irrigation, drainage, sod, hardscapes
+Strong commercial focus; full-service landscape management
+Landscaping-first brand; not positioned for heavy earthworks or reconstruction
+Heritage Landcare
+Greenville / Spartanburg
+Commercial landscaping, stormwater, pond management, erosion control
+Regional brand with broad commercial client base
+Landscaping company, not land clearing/reconstruction; different buyer segment
+Dragonfly Pond Works
+Southeast region
+Pond & stormwater management, retention pond maintenance
+Category leader for pond/waterway management in the Southeast
+Specialist only — no land clearing, grading, or turf services
+Platinum Ponds & Lake Management
+Greenville / Charlotte / Asheville
+Routine pond management, water quality, aeration
+Multi-market presence; strong niche positioning
+Pond management only; no earthworks, clearing, or turf
+
+Upstate SC Market Opportunity
+No single competitor in Upstate SC clearly owns the full-service large-acreage positioning. Most companies are either earthworks specialists (clearing/grading) or landscaping/maintenance companies. P1’s combination of weekly maintenance through full property reconstruction — including drainage, pond management, turf, and trees on properties 1 acre and larger — is a genuine differentiator with no direct competition currently marketing it cohesively online.
+
+Charlotte Region, North Carolina
+
+Company
+Location
+Core Services
+Strengths
+Website / Digital Gap
+Carolina Grading & Land Clearing
+Serves Charlotte metro
+Grading, clearing, pond construction, arena development
+Covers both Upstate SC and Charlotte; experienced, family-owned
+Competes in both markets; established brand P1 must outperform digitally
+SSD Civil Contractors
+Charlotte, NC
+Grading, storm drainage, excavating, clearing, forestry mulching
+45+ years experience; commercial/government contracts
+Civil contractor positioning; less focus on agricultural/residential acreage
+Peterson Grading & Excavation
+Concord / Charlotte, NC
+Site development, land clearing, demolition, drainage, erosion control
+Commercial and residential grading specialist
+No maintenance contracts; project-only focus — not full-service
+Tucker Land Development
+Concord, NC
+Clearing and grading for commercial and residential
+Multi-city coverage: Charlotte, Mooresville, Matthews
+Limited service breadth; no turf, trees, ponds, or maintenance
+Lake Norman Excavating
+Lake Norman area
+Excavating, leveling, grading, drainage
+Specialized for Lake Norman waterfront properties
+Narrow geographic focus; no maintenance or turf services
+Smith Grounds Management
+Charlotte, NC
+Commercial landscaping, grounds management, turf
+Strong commercial grounds maintenance positioning
+Primarily landscaping/maintenance; no land clearing, grading, or reconstruction
+MetroGreenscape
+Charlotte, NC
+Landscaping, commercial lawn care, hardscapes
+Strong Charlotte brand; professional website and marketing
+Landscaping only; residential-to-commercial but not large acreage earthworks
+Carolina Iron Clad
+Concord, NC
+Excavation, land clearing, grading
+Family-run; serves central NC
+Very limited digital presence; small operation
+Blythe Farms Construction
+Charlotte, NC
+Land grading, clearing, site development
+Established name in Charlotte construction market
+Construction-first brand; limited online content for property maintenance
+
+Charlotte Market Opportunity
+The Charlotte market is larger and more competitive than Upstate SC, but the same gap exists: no company is marketing a cohesive “full property lifecycle” service — from regular maintenance to large-scale reconstruction — for commercial and agricultural landowners with 1+ acre properties. The Lake Norman and greater Mecklenburg County area have strong demand from high-value rural and semi-rural property owners who need exactly what P1 offers.
+
+Competitive Summary & P1 Positioning
+Based on the analysis above, P1’s competitive position should center on three core differentiators:
+
+Full-service, single-vendor property management — from weekly turf maintenance to complete property reconstruction, drainage, land clearing, grading, pond and waterway management. No competitor currently markets this end-to-end offering.
+Large-acreage commercial, industrial, and agricultural focus — P1 deliberately targets properties 1 acre and larger, which signals expertise and deters the low-margin small-residential competition that clogs most competitors’ pipelines.
+Dual-market coverage — Serving both Upstate SC and the Charlotte, NC region gives P1 scale and credibility that most local operators cannot claim.
+
+The website must lead with these differentiators on every page. The homepage, service pages, and contact forms should all reinforce that P1 is not a lawn service — it is a full-scope land and property management contractor for serious landowners.
+
+Website Structure & Sitemap
+The recommended site architecture is built for both usability and SEO. Each service has its own dedicated page to capture targeted search traffic. The structure supports future expansion without requiring a rebuild.
+Navigation Structure
+Home
+About Us
+Services
+Commercial Property Management
+Industrial & Agricultural Land Maintenance
+Land Clearing
+Fine Grading & Site Preparation
+Drainage Solutions
+Turf Installation & Seed Planting
+Tree Services
+Pond & Waterway Management
+Property Reconstruction
+Service Areas
+Upstate South Carolina (Greenville / Spartanburg)
+Charlotte Region, North Carolina
+Project Gallery
+Testimonials
+Blog / Resources
+Contact / Free Estimate
+
+Page-by-Page Sitemap
+
+Page
+Purpose
+Key Content Elements
+Home
+First impression; convert visitors to leads
+Hero with clear value proposition, services overview, before/after gallery, dual-market service area map, primary CTA (Free Estimate)
+About Us
+Build trust and credibility
+Company story, team, years of experience, licensure/insurance, service area, brand values
+Commercial Property Mgmt
+Target commercial clients
+Services for commercial properties, contract maintenance options, site photos, commercial client case studies
+Industrial & Agricultural
+Target industrial/farm landowners
+Services for farm, industrial, and rural acreage; equipment overview; before/after photos; acreage capability
+Land Clearing
+Capture clearing search traffic
+Service description, forestry mulching, equipment, process, FAQs, CTA
+Fine Grading & Site Prep
+Capture grading/site prep searches
+Grading process, drainage prep, before/after photos, commercial and residential acreage use cases
+Drainage Solutions
+Capture drainage problem searches
+Types of drainage installed, French drains, retention/detention, before/after, FAQs
+Turf Installation & Seeding
+Capture turf/seed search traffic
+Sod vs. seed options, species for SC/NC climate, large-acreage capability, process, FAQs
+Tree Services
+Capture tree care search traffic
+Tree management for large properties, clearing vs. preservation, trimming, removal, stump grinding
+Pond & Waterway Mgmt
+Capture pond/waterway searches
+Pond maintenance, water quality, shoreline restoration, waterway clearing, before/after photos
+Property Reconstruction
+Capture full-scope project searches
+Full property transformation services, erosion repair, complete regrading, drainage overhaul, testimonials
+Upstate SC Service Area
+Local SEO for Greenville/Spartanburg
+Coverage map, city list, local credentials, regional project photos, local phone/address
+Charlotte Region Service Area
+Local SEO for Charlotte/Lake Norman
+Coverage map, city list, regional project photos, local CTA
+Project Gallery
+Visual proof of work quality
+Before/after photos organized by service type; filter by service and market
+Testimonials
+Social proof for conversion
+Client reviews by service type, Google review widget, video testimonials if available
+Blog / Resources
+SEO content and thought leadership
+How-to articles, seasonal tips, regional content, FAQ posts targeting long-tail keywords
+Contact / Free Estimate
+Lead capture
+Form with project type, acreage, service needed, location; phone number prominent; response time promise
+
+SEO & Keyword Strategy
+The keyword strategy focuses on high-intent, service-specific searches combined with geographic modifiers for both markets. These are buyers actively looking to hire — not casual browsers. P1’s content must intercept these searches at every stage of the buyer journey.
+Primary Target Keywords
+These keywords should anchor homepage copy, service page titles, meta descriptions, and H1 headings:
+
+Keyword / Search Term
+Search Intent
+Priority
+land clearing Greenville SC
+High-intent commercial/residential hire
+Tier 1
+land clearing Spartanburg SC
+High-intent commercial/residential hire
+Tier 1
+land clearing Charlotte NC
+High-intent commercial hire
+Tier 1
+land grading Greenville SC
+High-intent site prep hire
+Tier 1
+commercial property maintenance Upstate SC
+Commercial contract buyer
+Tier 1
+agricultural land maintenance South Carolina
+Farm/rural land owner
+Tier 1
+drainage solutions Greenville SC
+Problem-aware buyer
+Tier 1
+pond management Greenville SC
+Pond owner seeking contractor
+Tier 1
+pond management Charlotte NC
+Pond owner seeking contractor
+Tier 1
+turf installation Spartanburg SC
+Property improvement buyer
+Tier 1
+sod installation Charlotte NC
+Property improvement buyer
+Tier 1
+fine grading Upstate South Carolina
+Developer / landowner
+Tier 1
+property reconstruction contractor SC
+High-value project buyer
+Tier 1
+large acreage property maintenance SC
+Commercial/agricultural owner
+Tier 1
+excavation contractor Greenville SC
+Site prep / development buyer
+Tier 2
+land clearing near me Greenville
+Local high-intent hire
+Tier 2
+tree clearing and grubbing SC
+Land prep buyer
+Tier 2
+commercial landscape contractor Charlotte
+Commercial buyer
+Tier 2
+erosion control contractor Upstate SC
+Problem-solving buyer
+Tier 2
+waterway clearing and management NC
+Agricultural / rural land owner
+Tier 2
+how to manage a retention pond SC
+Research-stage buyer
+Tier 3 / Blog
+best grass for large acreage Carolinas
+Research-stage buyer
+Tier 3 / Blog
+land clearing cost per acre South Carolina
+Price-researching buyer
+Tier 3 / Blog
+drainage problems on large property SC
+Problem-aware research
+Tier 3 / Blog
+preparing land for agricultural use Carolinas
+Agricultural land owner
+Tier 3 / Blog
+
+On-Page SEO Priorities
+Each service page must have a unique H1 containing the primary keyword + geographic modifier
+Meta titles: under 60 characters; format: [Service] [City/Region] | P1 Land & Property Management
+Meta descriptions: under 155 characters; include the primary keyword and a call to action
+Image alt text: descriptive and keyword-rich (e.g., “land clearing Greenville SC commercial property”)
+Schema markup: LocalBusiness, Service, and Review schema on all key pages
+Google Business Profile: separate profiles for Upstate SC and Charlotte NC markets
+
+Local SEO Strategy
+Create two Google Business Profile listings — one for each market
+Build service-area pages for sub-markets: Greenville, Spartanburg, Anderson, Gaffney (SC); Charlotte, Concord, Mooresville, Lake Norman, Gastonia (NC)
+Acquire citations in Angi, HomeAdvisor, Houzz, and regional agricultural/commercial directories
+Pursue reviews from commercial and agricultural clients on Google; embed on Testimonials page
+Target local backlinks: SC Farm Bureau, Greater Greenville Chamber, Lake Norman Chamber, Charlotte Regional Business Alliance
+
+Content Marketing (Blog)
+A consistent publishing cadence of 2–4 articles per month targeting Tier 3 keywords builds long-term organic authority and positions P1 as a trusted expert in the region. Recommended topic clusters:
+Land Management (clearing, grading, drainage how-tos for large acreage)
+Turf & Planting (seed selection, sodding, seasonal care for Carolinas climate)
+Pond & Waterway (maintenance guides, water quality, shoreline management)
+Project Spotlights (before/after case studies on commercial/agricultural projects)
+Regional Guides (Upstate SC land management tips; Charlotte area seasonal property care)
+
+Project Timeline & Phases
+The recommended build is structured in four phases over approximately 16–20 weeks. Each phase has defined deliverables and sign-off checkpoints to keep the project on track and budget.
+
+Phase
+Duration
+Deliverables & Tasks
+Phase 1 — Discovery & Strategy
+Weeks 1–2
+Kick-off meeting; finalize service list and target markets; define brand voice and visual identity; compile competitor URLs and messaging audit; finalize keyword targets; agree on sitemap and page structure; set up project management and communication tools
+Phase 2 — Design & Content
+Weeks 3–7
+Logo / brand refinement; homepage wireframe and design mockup for client approval; design all service page templates; write all page copy (homepage, 9 service pages, 2 service area pages, About, Contact); source and organize project photography; write 3 launch blog posts targeting Tier 3 keywords; develop meta titles and descriptions for all pages
+Phase 3 — Development & SEO Setup
+Weeks 8–13
+Build site on WordPress or Webflow (TBD); implement all page designs; integrate contact / estimate form with email notifications; connect Google Analytics 4 and Google Search Console; implement schema markup (LocalBusiness, Service, Review); create and optimize two Google Business Profile listings; submit sitemap to Google; set up call tracking; mobile and speed optimization; cross-browser testing
+Phase 4 — Launch & Post-Launch
+Weeks 14–16
+Final QA and client review; client sign-off; site launch; 301 redirects if replacing existing site; submit Google Business Profile posts for each market; begin citation building in top 20 directories; publish 3 launch blog posts; set up monthly SEO reporting dashboard; train client on content updates and photo uploads
+Ongoing — Monthly Retainer
+Monthly
+2–4 blog posts per month; Google Business Profile management and posts; monthly SEO performance report (rankings, traffic, leads); quarterly keyword and competitor audit; review management and response; ongoing citation cleanup; conversion rate optimization as data accumulates
+
+Key Milestones
+Week 2: Strategy and sitemap approved
+Week 5: Homepage design approved
+Week 7: All copy and content delivered for review
+Week 10: Development staging site ready for client review
+Week 13: Final client approval of complete site
+Week 14–16: Site live; Google Business Profiles active; citations submitted
+Month 3: First SEO performance report with ranking baseline
+
+Technology Recommendations
+CMS: WordPress (with GeneratePress or Kadence theme) or Webflow — both support strong SEO foundations
+Forms: Gravity Forms or Typeform for the estimate request form with conditional logic by service type
+Analytics: Google Analytics 4 + Google Search Console; Hotjar for heatmaps post-launch
+Call Tracking: CallRail to attribute phone leads to specific pages and marketing channels
+SEO Plugin: Rank Math or Yoast SEO for on-page optimization workflows
+Speed: WP Rocket or Perfmatters for caching; WebP images; CDN via Cloudflare
+Hosting: WPEngine, Kinsta, or Cloudways for managed WordPress; Webflow hosting if Webflow is chosen
+
+Appendix: Competitor Website References
+The following competitor websites were reviewed for this analysis. These are recommended references for benchmarking design quality and content depth:
+
+Rock Solid Earthworks — rocksolidearthworks.net
+Martin & Son Contracting — martinandsoncontracting.com
+Carolina Grading & Land Clearing — carolinagradinglandclearing.com
+Nat Greene Landscape — natgreenelandscape.com
+SSD Civil Contractors (Charlotte) — ssdcivilcontractors.com
+Dragonfly Pond Works — dragonflypondworks.com
+Platinum Ponds & Lake Management — platinumlakemanagement.com
+
+
+Document prepared by Digital Alchemy for P1 Land & Property Management  •  June 2026

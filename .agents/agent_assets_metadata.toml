@@ -1,0 +1,152 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "UxLKn5OfUCprZZUfiHcUE"
+uri = "file://artifacts/p1-website/src/assets/hero-bg.png"
+type = "image"
+title = "heavy equipment clearing land"
+
+[[generated]]
+id = "oQNgBhZFCd7F4l8TgLNCf"
+uri = "file://artifacts/p1-website/src/assets/commercial-property.png"
+type = "image"
+title = "large managed commercial property"
+
+[[generated]]
+id = "RKdE8jopzArhOyZSEnXfd"
+uri = "file://artifacts/p1-website/src/assets/pond-management.png"
+type = "image"
+title = "retention pond management"
+
+[[generated]]
+id = "zTRYWDaE1CUcIGeXLej56"
+uri = "file://artifacts/p1-website/src/assets/fine-grading.png"
+type = "image"
+title = "fine grading site prep"
+
+[[generated]]
+id = "Rv2qvcxIY0neVH1kMtPaZ"
+uri = "file://artifacts/p1-website/src/assets/hero-service-areas.png"
+type = "image"
+title = "Service Areas Overview Hero"
+
+[[generated]]
+id = "4DwehgltU7ceqLQoV53Hb"
+uri = "file://artifacts/p1-website/src/assets/hero-upstate-sc.png"
+type = "image"
+title = "Upstate SC Region Hero"
+
+[[generated]]
+id = "yuBt3kOq1iJO9cqyDb8HI"
+uri = "file://artifacts/p1-website/src/assets/hero-charlotte-region.png"
+type = "image"
+title = "Charlotte NC Region Hero"
+
+[[generated]]
+id = "Q_MMSBjnSyWXbocmI9Zw0"
+uri = "file://artifacts/p1-website/src/assets/hero-upstate-cities.png"
+type = "image"
+title = "Upstate Cities Hero"
+
+[[generated]]
+id = "_O-o6no1dQ_84ryUY0E87"
+uri = "file://artifacts/p1-website/src/assets/hero-charlotte-metro.png"
+type = "image"
+title = "Charlotte Metro Hero"
+
+[[generated]]
+id = "SFQrgPfpb8QAez5sUHAq0"
+uri = "file://artifacts/p1-website/src/assets/hero-lake-norman.png"
+type = "image"
+title = "Lake Norman Hero"
+
+[[generated]]
+id = "Om9qe3P4ID76WREU38-Tr"
+uri = "file://artifacts/p1-website/src/assets/services-hero.png"
+type = "image"
+title = "Heavy equipment on grassy field"
+
+[[generated]]
+id = "lZNIl7dOwgADp_hjJsFOj"
+uri = "file://artifacts/p1-website/src/assets/service-commercial.png"
+type = "image"
+title = "Manicured commercial property landscape"
+
+[[generated]]
+id = "ihDLRwriy6I6Ec2sn6kvw"
+uri = "file://artifacts/p1-website/src/assets/service-industrial.png"
+type = "image"
+title = "Tractor on agricultural farm land"
+
+[[generated]]
+id = "RvyMB1AnulTT3HwtHZZlF"
+uri = "file://artifacts/p1-website/src/assets/service-clearing.png"
+type = "image"
+title = "Excavator clearing brush in woods"
+
+[[generated]]
+id = "nB0tWvC8ZxhMApO9FX7FZ"
+uri = "file://artifacts/p1-website/src/assets/service-grading.png"
+type = "image"
+title = "Bulldozer grading a dirt site"
+
+[[generated]]
+id = "KxLKcsla3SoR6TNQnlTTF"
+uri = "file://artifacts/p1-website/src/assets/service-drainage.png"
+type = "image"
+title = "Drainage swale in grassy field"
+
+[[generated]]
+id = "cO02VOMX6CrwSnSs9sIUr"
+uri = "file://artifacts/p1-website/src/assets/service-turf.png"
+type = "image"
+title = "Lush new sod and grass"
+
+[[generated]]
+id = "8aQWjfZlBy5mn93jSEH1Z"
+uri = "file://artifacts/p1-website/src/assets/service-tree.png"
+type = "image"
+title = "Heavy machinery tree limb removal"
+
+[[generated]]
+id = "NGLgyLN5AnVA6kRXOQnwh"
+uri = "file://artifacts/p1-website/src/assets/service-pond.png"
+type = "image"
+title = "Pristine retention pond with banks"
+
+[[generated]]
+id = "Zm8_ppxGs9ESUvuDkQRtF"
+uri = "file://artifacts/p1-website/src/assets/service-reconstruction.png"
+type = "image"
+title = "Massive land reconstruction with equipment"
+
+[[generated]]
+id = "JAfz0C8WLYbiZ9tZYjvp3"
+uri = "file://artifacts/p1-website/src/assets/blog-land-clearing.png"
+type = "image"
+title = "Heavy equipment clearing land"
+
+[[generated]]
+id = "p4i6nDuxMJYyGFm05yU4g"
+uri = "file://artifacts/p1-website/src/assets/blog-retention-pond.png"
+type = "image"
+title = "Well maintained retention pond"
+
+[[generated]]
+id = "mxmlULcSzruOL9wHPkFRb"
+uri = "file://artifacts/p1-website/src/assets/blog-grass-acreage.png"
+type = "image"
+title = "Lush green pasture land"
+
+[[generated]]
+id = "ZpKuotEj22y9zJIZ_nFD4"
+uri = "file://artifacts/p1-website/src/assets/blog-drainage.png"
+type = "image"
+title = "Heavy equipment drainage trench"
+
+[[generated]]
+id = "htB50Z3W45Oeo72C1fl04"
+uri = "file://artifacts/p1-website/src/assets/blog-ag-land.png"
+type = "image"
+title = "Tractor grading agricultural land"
