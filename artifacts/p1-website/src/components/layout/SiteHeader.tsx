@@ -9,7 +9,7 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
-import logo from "@assets/p1-logo-transparent.png";
+import logo from "@assets/Asset_1_1782329698014.svg";
 
 export function SiteHeader() {
   const [isOpen, setIsOpen] = useState(false);

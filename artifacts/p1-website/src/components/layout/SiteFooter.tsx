@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import logo from "@assets/p1-logo-transparent.png";
+import logo from "@assets/Asset_1_1782329698014.svg";
 import { Button } from "@/components/ui/button";
 import { Phone, Mail } from "lucide-react";
 
