@@ -27,8 +27,8 @@ export default function BlogPost() {
       <article className="pb-24">
         {/* POST HERO */}
         <section className="relative w-full h-[50vh] min-h-[400px] overflow-hidden bg-secondary">
-          <img src={heroImg} alt="Heavy equipment clearing land" className="absolute inset-0 w-full h-full object-cover opacity-50 mix-blend-overlay" />
-          <div className="absolute inset-0 bg-gradient-to-t from-secondary via-secondary/60 to-transparent" />
+          <img src={heroImg} alt="Heavy equipment clearing land" className="absolute inset-0 w-full h-full object-cover opacity-90" />
+          <div className="absolute inset-0 bg-gradient-to-t from-secondary via-secondary/40 to-transparent" />
           <div className="container relative z-10 mx-auto px-4 h-full flex flex-col justify-end pb-16 max-w-4xl text-center md:text-left">
             <div className="mb-4 text-primary font-bold tracking-wider uppercase text-sm">Land Clearing</div>
             <h1 className="text-4xl md:text-6xl font-serif font-bold text-white leading-tight drop-shadow-md">
