@@ -154,10 +154,10 @@ export default function Home() {
       </section>
 
       {/* TRUST STRIP */}
-      <section className="relative z-10 bg-background">
+      <section className="relative z-10 bg-background py-12">
         <div className="mx-auto max-w-[1240px] px-6">
           <div
-            className="-mt-10 grid grid-cols-2 overflow-hidden rounded-[4px] border bg-white md:grid-cols-4"
+            className="grid grid-cols-2 overflow-hidden rounded-[4px] border bg-white md:grid-cols-4"
             style={{ borderColor: "hsl(215 30% 15% / 0.08)", boxShadow: "0 30px 60px -32px hsl(215 45% 15%), 0 8px 18px -12px hsl(215 40% 20% / 0.3)" }}
           >
             {trust.map((t, i) => (
