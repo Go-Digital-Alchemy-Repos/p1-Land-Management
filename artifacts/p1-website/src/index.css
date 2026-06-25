@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@600;700;800&family=Manrope:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @plugin "@tailwindcss/typography";
@@ -82,7 +82,7 @@
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 210 40% 98%;
 
-  --app-font-sans: 'Manrope', sans-serif;
+  --app-font-sans: 'Inter', sans-serif;
   --app-font-serif: 'Barlow', sans-serif; /* Using Barlow as the display/heading font */
   --app-font-mono: Menlo, monospace;
   
