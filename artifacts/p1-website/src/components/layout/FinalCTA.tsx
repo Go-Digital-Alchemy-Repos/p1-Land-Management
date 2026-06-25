@@ -1,23 +1,43 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
+import { ContourField } from "@/components/layout/ContourField";
+import { Phone, ArrowUpRight } from "lucide-react";
+import ctaImg from "@/assets/fine-grading.png";
+
+const TAN = "hsl(32 42% 62%)";
 
 export function FinalCTA() {
   return (
-    <section className="py-24 bg-muted text-center px-4 border-y border-border">
-      <div className="container mx-auto max-w-3xl space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-        <h2 className="text-4xl font-serif font-bold text-secondary">
-          Ready to Put Your Property in the Right Hands?
+    <section className="relative overflow-hidden bg-navy-deep">
+      <div className="absolute inset-0">
+        <img src={ctaImg} alt="" aria-hidden className="h-full w-full object-cover" style={{ opacity: 0.22 }} />
+      </div>
+      <div className="absolute inset-0" style={{ background: "linear-gradient(100deg, hsl(215 50% 11%) 30%, hsl(208 64% 40% / 0.4))" }} />
+      <div className="absolute inset-0" style={{ mixBlendMode: "soft-light" }}>
+        <ContourField stroke={TAN} opacity={0.45} />
+      </div>
+      <div className="relative mx-auto flex max-w-[1240px] flex-col items-center gap-8 px-6 py-20 text-center">
+        <span className="inline-flex items-center gap-2 font-serif text-[11px] font-bold uppercase text-clay" style={{ letterSpacing: "0.28em" }}>
+          <span className="inline-block h-px w-7 bg-clay" />
+          Start the Conversation
+        </span>
+        <h2 className="max-w-3xl font-display text-[clamp(2.2rem,4.6vw,3.8rem)] font-light leading-[1.02] tracking-[-0.02em] text-white">
+          Have acreage that needs shaping? Let's walk it together.
         </h2>
-        <p className="text-lg text-secondary/80 leading-relaxed max-w-2xl mx-auto">
-          Whether you need a one-time project or an ongoing maintenance partner, P1 Land & Property Management is ready to walk your property and give you a straight answer on what it needs.
+        <p className="max-w-xl text-lg" style={{ color: "hsl(40 20% 92% / 0.78)" }}>
+          Free, no-pressure quotes across Upstate SC and the Charlotte metro.
         </p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-          <Button asChild size="lg" className="text-base px-8 h-14 w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground font-bold">
-            <Link href="/contact">Request a Free Estimate</Link>
+        <div className="flex flex-wrap items-center justify-center gap-4">
+          <Button asChild size="lg" className="group h-12 rounded-[3px] border-0 bg-white px-8 font-serif text-[15px] font-bold text-secondary hover:bg-white/90" style={{ boxShadow: "0 18px 40px -16px hsl(0 0% 0% / 0.5)" }}>
+            <Link href="/contact">
+              Get a Free Quote
+              <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </Link>
           </Button>
-          <Button asChild variant="outline" size="lg" className="text-base px-8 h-14 w-full sm:w-auto border-secondary/20 text-secondary hover:bg-secondary/5 font-bold">
-            <a href="tel:7042218928">Call (704) 221-8928</a>
-          </Button>
+          <a href="tel:7042218928" className="inline-flex items-center gap-2 rounded-[3px] border px-8 py-2.5 font-serif text-[15px] font-bold text-white transition-colors hover:bg-white/10" style={{ borderColor: "hsl(40 30% 90% / 0.4)" }}>
+            <Phone className="h-4 w-4" />
+            Call (704) 221-8928
+          </a>
         </div>
       </div>
     </section>

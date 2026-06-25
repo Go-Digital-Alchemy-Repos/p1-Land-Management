@@ -29,7 +29,7 @@ export function SiteFooter() {
 
         {/* Services */}
         <div>
-          <h4 className="font-serif font-bold text-lg mb-6">Services</h4>
+          <h4 className="font-serif text-[11px] font-bold uppercase tracking-[0.2em] text-tan mb-6">Services</h4>
           <ul className="space-y-3 text-sm text-secondary-foreground/70">
             <li><Link href="/services/commercial-property-management" className="hover:text-primary transition-colors">Commercial Management</Link></li>
             <li><Link href="/services/industrial-agricultural" className="hover:text-primary transition-colors">Industrial & Agricultural</Link></li>
@@ -46,7 +46,7 @@ export function SiteFooter() {
 
         {/* Service Areas */}
         <div>
-          <h4 className="font-serif font-bold text-lg mb-6">Service Areas</h4>
+          <h4 className="font-serif text-[11px] font-bold uppercase tracking-[0.2em] text-tan mb-6">Service Areas</h4>
           <ul className="space-y-3 text-sm text-secondary-foreground/70">
             <li className="font-bold text-secondary-foreground/90">Upstate South Carolina</li>
             <li><Link href="/service-areas/greenville-sc" className="hover:text-primary transition-colors">Greenville</Link></li>
@@ -63,7 +63,7 @@ export function SiteFooter() {
 
         {/* Company */}
         <div>
-          <h4 className="font-serif font-bold text-lg mb-6">Company</h4>
+          <h4 className="font-serif text-[11px] font-bold uppercase tracking-[0.2em] text-tan mb-6">Company</h4>
           <ul className="space-y-3 text-sm text-secondary-foreground/70">
             <li><Link href="/about" className="hover:text-primary transition-colors">About Us</Link></li>
             <li><Link href="/gallery" className="hover:text-primary transition-colors">Project Gallery</Link></li>
@@ -75,7 +75,7 @@ export function SiteFooter() {
 
         {/* Hours */}
         <div>
-          <h4 className="font-serif font-bold text-lg mb-6">Hours</h4>
+          <h4 className="font-serif text-[11px] font-bold uppercase tracking-[0.2em] text-tan mb-6">Hours</h4>
           <ul className="space-y-3 text-sm text-secondary-foreground/70">
             <li>Mon – Fri: 7 AM – 6 PM</li>
             <li>Saturday: By Appointment</li>

@@ -36,11 +36,15 @@ export function SiteHeader() {
         
         {/* Desktop Nav */}
         <nav className="hidden lg:flex items-center gap-8 font-medium text-sm text-foreground/80">
-          <Link href="/" className="hover:text-primary transition-colors">Home</Link>
+          <Link href="/" className="group relative hover:text-primary transition-colors">
+            Home
+            <span className="absolute -bottom-1.5 left-0 h-[2px] w-0 bg-clay transition-all duration-300 group-hover:w-full" />
+          </Link>
           
           <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-1 hover:text-primary transition-colors outline-none">
+            <DropdownMenuTrigger className="group relative flex items-center gap-1 hover:text-primary transition-colors outline-none">
               Services <ChevronDown className="h-4 w-4" />
+              <span className="absolute -bottom-1.5 left-0 h-[2px] w-0 bg-clay transition-all duration-300 group-hover:w-full" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-[280px]">
               {services.map((s) => (
@@ -54,10 +58,22 @@ export function SiteHeader() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Link href="/gallery" className="hover:text-primary transition-colors">Gallery</Link>
-          <Link href="/blog" className="hover:text-primary transition-colors">Blog</Link>
-          <Link href="/about" className="hover:text-primary transition-colors">About</Link>
-          <Link href="/contact" className="hover:text-primary transition-colors">Contact</Link>
+          <Link href="/gallery" className="group relative hover:text-primary transition-colors">
+            Gallery
+            <span className="absolute -bottom-1.5 left-0 h-[2px] w-0 bg-clay transition-all duration-300 group-hover:w-full" />
+          </Link>
+          <Link href="/blog" className="group relative hover:text-primary transition-colors">
+            Blog
+            <span className="absolute -bottom-1.5 left-0 h-[2px] w-0 bg-clay transition-all duration-300 group-hover:w-full" />
+          </Link>
+          <Link href="/about" className="group relative hover:text-primary transition-colors">
+            About
+            <span className="absolute -bottom-1.5 left-0 h-[2px] w-0 bg-clay transition-all duration-300 group-hover:w-full" />
+          </Link>
+          <Link href="/contact" className="group relative hover:text-primary transition-colors">
+            Contact
+            <span className="absolute -bottom-1.5 left-0 h-[2px] w-0 bg-clay transition-all duration-300 group-hover:w-full" />
+          </Link>
         </nav>
 
         <div className="flex items-center gap-4">

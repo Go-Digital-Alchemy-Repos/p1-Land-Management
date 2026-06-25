@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800;900&family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..700&family=Inter:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @plugin "@tailwindcss/typography";
@@ -35,8 +35,16 @@
   --color-destructive: hsl(var(--destructive));
   --color-destructive-foreground: hsl(var(--destructive-foreground));
 
+  --color-clay: hsl(var(--clay));
+  --color-clay-ink: hsl(var(--clay-ink));
+  --color-tan: hsl(var(--tan));
+  --color-supporting: hsl(var(--supporting));
+  --color-navy: hsl(var(--navy));
+  --color-navy-deep: hsl(var(--navy-deep));
+
   --font-sans: var(--app-font-sans);
   --font-serif: var(--app-font-serif);
+  --font-display: var(--app-font-display);
   --font-mono: var(--app-font-mono);
 
   --radius-sm: calc(var(--radius) - 4px);
@@ -53,7 +61,7 @@
   
   --border: 40 10% 93%;
   --input: 40 10% 90%;
-  --ring: 145 40% 35%; /* Brand Green */
+  --ring: 208 64% 42%; /* Logo Blue */
 
   /* White/Bone cards */
   --card: 0 0% 100%;
@@ -64,13 +72,21 @@
   --popover-foreground: 215 35% 15%;
   --popover-border: 40 10% 93%;
 
-  /* Brand Green for primary buttons */
-  --primary: 145 40% 35%;
+  /* Logo Blue for primary buttons / primary accent */
+  --primary: 208 64% 40%;
   --primary-foreground: 0 0% 100%;
 
-  /* Deep Blue for secondary/accents */
-  --secondary: 215 35% 15%;
+  /* Deep Navy for secondary/dark grounds */
+  --secondary: 215 45% 15%;
   --secondary-foreground: 0 0% 100%;
+
+  /* Warm clay/terracotta earth accent + supporting tones */
+  --clay: 20 52% 50%;
+  --clay-ink: 18 58% 41%; /* darker clay for small text on light grounds (AA) */
+  --tan: 32 42% 62%;
+  --supporting: 145 40% 35%; /* Brand green, now supporting */
+  --navy: 215 45% 15%;
+  --navy-deep: 215 50% 11%;
 
   /* Earthy muted elements */
   --muted: 40 15% 92%;
@@ -83,7 +99,8 @@
   --destructive-foreground: 210 40% 98%;
 
   --app-font-sans: 'Inter', sans-serif;
-  --app-font-serif: 'Barlow', sans-serif; /* Using Barlow as the display/heading font */
+  --app-font-serif: 'Barlow', sans-serif; /* Barlow for UI heads, labels, nav */
+  --app-font-display: 'Fraunces', Georgia, serif; /* Editorial display serif */
   --app-font-mono: Menlo, monospace;
   
   --radius: 0.25rem; /* Rugged, sharp-ish corners */
@@ -95,7 +112,7 @@
   
   --border: 215 30% 20%;
   --input: 215 30% 20%;
-  --ring: 145 40% 35%;
+  --ring: 208 64% 42%;
 
   --card: 215 35% 13%;
   --card-foreground: 40 20% 98%;
@@ -105,7 +122,7 @@
   --popover-foreground: 40 20% 98%;
   --popover-border: 215 30% 20%;
 
-  --primary: 145 40% 35%;
+  --primary: 208 64% 48%;
   --primary-foreground: 0 0% 100%;
 
   --secondary: 215 25% 25%;

@@ -1,206 +1,385 @@
 import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
+import { ContourField } from "@/components/layout/ContourField";
 import { SEO } from "@/components/seo";
 import { localBusinessSchema } from "@/lib/structured-data";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import heroImg from "@/assets/hero-bg.png";
-import commercialImg from "@/assets/commercial-property.png";
-import pondImg from "@/assets/pond-management.png";
-import gradingImg from "@/assets/fine-grading.png";
-import { 
-  Building2, Tractor, Trees, Map, Droplets, 
-  Leaf, Shrub, Waves, Wrench 
+import featureImg from "@/assets/features/grading-construction.png";
+import testimonialImg from "@/assets/commercial-property.png";
+import serviceCommercial from "@/assets/service-commercial.png";
+import serviceIndustrial from "@/assets/service-industrial.png";
+import serviceClearing from "@/assets/service-clearing.png";
+import serviceGrading from "@/assets/service-grading.png";
+import serviceDrainage from "@/assets/service-drainage.png";
+import serviceTurf from "@/assets/service-turf.png";
+import serviceTree from "@/assets/service-tree.png";
+import servicePond from "@/assets/service-pond.png";
+import serviceReconstruction from "@/assets/service-reconstruction.png";
+import {
+  Phone,
+  ArrowUpRight,
+  ArrowRight,
+  ShieldCheck,
+  Check,
+  MapPin,
+  Mountain,
+  Droplets,
+  Trees,
+  Waves,
+  Building2,
+  Sprout,
+  Tractor,
+  Wrench,
+  Truck,
+  Ruler,
+  CalendarCheck,
+  Quote,
 } from "lucide-react";
+
+const TAN = "hsl(32 42% 62%)";
+
+const services = [
+  { n: "01", title: "Commercial Property Management", desc: "Scheduled, self-sufficient programs that keep large sites pristine year-round.", img: serviceCommercial, icon: Building2, slug: "commercial-property-management" },
+  { n: "02", title: "Industrial & Agricultural Land", desc: "Heavy-duty care for farms, industrial sites and working rural acreage.", img: serviceIndustrial, icon: Tractor, slug: "industrial-agricultural" },
+  { n: "03", title: "Land Clearing & Mulching", desc: "Selective clearing and forestry mulching that opens up acreage responsibly.", img: serviceClearing, icon: Trees, slug: "land-clearing" },
+  { n: "04", title: "Fine Grading & Site Prep", desc: "Precision cut-and-fill that gives every project a true, build-ready foundation.", img: serviceGrading, icon: Mountain, slug: "grading-site-preparation" },
+  { n: "05", title: "Drainage Solutions", desc: "Engineered French drains, swales and retention to move water away for good.", img: serviceDrainage, icon: Droplets, slug: "drainage" },
+  { n: "06", title: "Turf Installation & Seeding", desc: "Sod and seed installation built for large-scale acreage and lasting cover.", img: serviceTurf, icon: Sprout, slug: "turf-installation-seeding" },
+  { n: "07", title: "Tree & Brush Management", desc: "Removal, trimming and stump grinding handled with the right heavy iron.", img: serviceTree, icon: Trees, slug: "tree-services" },
+  { n: "08", title: "Pond & Waterway Management", desc: "Design, excavation and long-term care of ponds and working waterways.", img: servicePond, icon: Waves, slug: "pond-waterway-management" },
+  { n: "09", title: "Property Reconstruction", desc: "Full-scale rebuilds from drainage overhaul to complete site regrading.", img: serviceReconstruction, icon: Wrench, slug: "property-reconstruction" },
+];
+
+const values = [
+  { n: "01", title: "Heavy Equipment Fleet", desc: "Owned dozers, excavators and skid steers — no waiting on rentals, no shortcuts on the hard parts.", icon: Truck },
+  { n: "02", title: "Large-Acreage Expertise", desc: "Built around properties most crews can't handle — farms, estates, HOAs and commercial sites.", icon: Ruler },
+  { n: "03", title: "Drainage Engineering", desc: "We read the land's slope and water like a survey, then solve it at the grade level.", icon: Droplets },
+  { n: "04", title: "Dependable Scheduling", desc: "Crews that show up, communicate and finish on the timeline we commit to.", icon: CalendarCheck },
+];
+
+const trust = [
+  { label: "Licensed & Insured", icon: ShieldCheck },
+  { label: "Upstate SC + Charlotte NC", icon: MapPin },
+  { label: "1-Acre Minimum", icon: Ruler },
+  { label: "Large-Acreage Specialists", icon: Mountain },
+];
+
+function Kicker({ children, onDark = false }: { children: React.ReactNode; onDark?: boolean }) {
+  const color = onDark ? "text-clay" : "text-clay-ink";
+  const bar = onDark ? "bg-clay" : "bg-clay-ink";
+  return (
+    <span
+      className={`inline-flex items-center gap-2 font-serif text-[11px] font-bold uppercase ${color}`}
+      style={{ letterSpacing: "0.28em" }}
+    >
+      <span className={`inline-block h-px w-7 ${bar}`} />
+      {children}
+    </span>
+  );
+}
 
 export default function Home() {
   return (
     <Layout>
-      <SEO 
+      <SEO
         title="P1 Land & Property Management | Upstate SC & Charlotte NC"
-        description="Full-service land and property management for commercial, agricultural, and large residential properties 1 acre and larger. Serving Upstate South Carolina and the Charlotte, NC region. Call (704) 221-8928."
+        description="Grading, drainage, clearing, ponds and full property management for large acreage across Upstate South Carolina and the Charlotte, NC region. Call (704) 221-8928."
         jsonLd={localBusinessSchema()}
       />
-      {/* HERO SECTION */}
-      <section className="relative w-full overflow-hidden bg-secondary text-secondary-foreground pt-32 pb-48 px-4 flex items-center justify-center">
-        <div className="absolute inset-0 z-0 opacity-100">
-          <img src={heroImg} alt="Commercial mowing services at a large industrial distribution center" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-secondary/80 via-secondary/40 to-transparent" />
+
+      {/* HERO */}
+      <section className="relative overflow-hidden bg-navy-deep">
+        <div className="absolute inset-0">
+          <img src={heroImg} alt="Heavy equipment shaping large acreage" className="h-full w-full object-cover" style={{ opacity: 0.5 }} />
         </div>
-        
-        <div className="container relative z-10 mx-auto max-w-5xl text-center space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-1000 fill-mode-both">
-          <h1 className="text-5xl md:text-7xl font-serif font-extrabold tracking-tight leading-tight text-white drop-shadow-md">
-            Your Property. Fully Managed.<br className="hidden md:block"/> From the Ground Up.
-          </h1>
-          <p className="text-lg md:text-2xl text-white/90 max-w-3xl mx-auto font-medium leading-relaxed drop-shadow">
-            P1 Land & Property Management handles everything your large property demands — from weekly turf care to complete land reconstruction. Commercial, industrial, agricultural, and large residential properties, 1 acre and up.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8">
-            <Button asChild size="lg" className="text-lg px-8 h-14 w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground font-bold shadow-xl">
-              <Link href="/contact">Get a Free Estimate</Link>
-            </Button>
-            <Button asChild variant="outline" size="lg" className="text-lg px-8 h-14 w-full sm:w-auto border-white/30 text-white hover:bg-white/10 font-bold backdrop-blur-sm">
-              <a href="tel:7042218928">Call (704) 221-8928</a>
-            </Button>
+        <div
+          className="absolute inset-0"
+          style={{ background: "linear-gradient(105deg, hsl(215 50% 11%) 8%, hsl(215 50% 11% / 0.86) 38%, hsl(215 50% 11% / 0.35) 72%, transparent 100%)" }}
+        />
+        <div className="absolute inset-0" style={{ mixBlendMode: "soft-light" }}>
+          <ContourField stroke={TAN} opacity={0.5} />
+        </div>
+        <div className="absolute inset-x-0 bottom-0 h-24" style={{ background: "linear-gradient(to bottom, transparent, hsl(40 20% 98%))" }} />
+
+        <div className="relative mx-auto grid max-w-[1240px] grid-cols-12 gap-8 px-6 pb-28 pt-24 lg:pt-28">
+          <div className="col-span-12 lg:col-span-8">
+            <div className="mb-7 flex items-center gap-4">
+              <Kicker onDark>The Land Specialists · Est. 2009</Kicker>
+            </div>
+            <h1 className="max-w-3xl font-display text-[clamp(2.6rem,6.4vw,5.4rem)] font-light leading-[0.98] tracking-[-0.02em] text-white">
+              We shape the land{" "}
+              <em className="font-semibold not-italic text-tan" style={{ fontStyle: "italic" }}>
+                your property
+              </em>{" "}
+              is built on.
+            </h1>
+            <p className="mt-7 max-w-xl text-lg leading-relaxed" style={{ color: "hsl(40 20% 92% / 0.82)" }}>
+              Grading, drainage, clearing and ponds for big properties across Upstate South Carolina and the Charlotte metro. Heavy-equipment professionals for farms, estates, HOAs and commercial sites.
+            </p>
+            <div className="mt-9 flex flex-wrap items-center gap-4">
+              <Button asChild size="lg" className="group h-12 rounded-[3px] border-0 bg-primary px-7 font-serif text-[15px] font-bold text-primary-foreground hover:bg-primary/90" style={{ boxShadow: "0 18px 40px -14px hsl(206 70% 48%)" }}>
+                <Link href="/contact">
+                  Get a Free Quote
+                  <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                </Link>
+              </Button>
+              <a href="tel:7042218928" className="inline-flex items-center gap-2 rounded-[3px] border px-7 py-2.5 font-serif text-[15px] font-bold text-white transition-colors hover:bg-white/10" style={{ borderColor: "hsl(40 30% 90% / 0.35)" }}>
+                <Phone className="h-4 w-4" />
+                Call (704) 221-8928
+              </a>
+            </div>
+          </div>
+
+          <div className="col-span-12 hidden lg:col-span-4 lg:flex lg:items-end lg:justify-end">
+            <div className="w-full max-w-[260px] border-l pl-6" style={{ borderColor: "hsl(40 30% 90% / 0.22)" }}>
+              <div className="mb-5 font-serif text-[10px] font-bold uppercase text-tan" style={{ letterSpacing: "0.3em" }}>
+                Index of Work
+              </div>
+              {[
+                ["01", "Grading"],
+                ["02", "Drainage"],
+                ["03", "Clearing"],
+                ["04", "Ponds"],
+              ].map(([n, t]) => (
+                <div key={n} className="flex items-baseline justify-between border-b py-2.5" style={{ borderColor: "hsl(40 30% 90% / 0.14)" }}>
+                  <span className="font-serif text-[11px] font-semibold tabular-nums text-tan">{n}</span>
+                  <span className="font-serif text-sm font-medium text-white/90">{t}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
-      {/* TRUST BAR */}
-      <div className="bg-primary text-primary-foreground py-4 border-b border-primary-foreground/10 relative z-20 shadow-md">
-        <div className="container mx-auto px-4 flex flex-wrap justify-center gap-x-8 gap-y-2 text-sm md:text-base font-bold uppercase tracking-wider">
-          <span className="flex items-center gap-2">✓ Commercial & Agricultural Specialists</span>
-          <span className="flex items-center gap-2">✓ 1-Acre Minimum</span>
-          <span className="flex items-center gap-2">✓ Upstate SC & Charlotte NC</span>
-          <span className="flex items-center gap-2">✓ Free Estimates</span>
+
+      {/* TRUST STRIP */}
+      <section className="relative z-10 bg-background">
+        <div className="mx-auto max-w-[1240px] px-6">
+          <div
+            className="-mt-10 grid grid-cols-2 overflow-hidden rounded-[4px] border bg-white md:grid-cols-4"
+            style={{ borderColor: "hsl(215 30% 15% / 0.08)", boxShadow: "0 30px 60px -32px hsl(215 45% 15%), 0 8px 18px -12px hsl(215 40% 20% / 0.3)" }}
+          >
+            {trust.map((t, i) => (
+              <div
+                key={t.label}
+                className="flex items-center gap-3 px-6 py-6"
+                style={{ borderRight: i < trust.length - 1 ? "1px solid hsl(215 30% 15% / 0.07)" : "none" }}
+              >
+                <t.icon className="h-5 w-5 shrink-0 text-primary" />
+                <span className="font-serif text-[13px] font-bold leading-tight text-secondary">{t.label}</span>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
-      {/* SERVICES OVERVIEW SECTION */}
-      <section className="py-24 px-4 bg-background">
-        <div className="container mx-auto max-w-6xl">
-          <div className="text-center max-w-3xl mx-auto space-y-6 mb-16">
-            <h2 className="text-4xl md:text-5xl font-serif font-bold text-secondary">
-              Everything Your Property Needs — One Contractor
-            </h2>
-            <p className="text-xl text-secondary/80 leading-relaxed">
-              We don't do small lawns. P1 specializes in large-acreage property work for commercial, industrial, and agricultural landowners who need a contractor they can count on — for routine maintenance and major projects alike.
+      </section>
+
+      {/* SERVICES */}
+      <section className="relative bg-background py-24">
+        <div className="mx-auto max-w-[1240px] px-6">
+          <div className="mb-14 flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
+            <div>
+              <Kicker>What We Do</Kicker>
+              <h2 className="mt-4 max-w-2xl font-display text-[clamp(2rem,4.2vw,3.4rem)] font-light leading-[1.02] tracking-[-0.02em] text-secondary">
+                A full field of capabilities,
+                <br />
+                <span className="text-primary">one accountable crew.</span>
+              </h2>
+            </div>
+            <p className="max-w-xs text-[15px] leading-relaxed" style={{ color: "hsl(215 20% 35%)" }}>
+              From the first cut to ongoing care, every service is run in-house with owned equipment and a single point of contact.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              { title: "Commercial Property Management", desc: "Scheduled maintenance programs for commercial and business properties", icon: Building2, slug: "commercial-property-management" },
-              { title: "Industrial & Agricultural Land", desc: "Heavy-duty care for farms, industrial sites, and rural acreage", icon: Tractor, slug: "industrial-agricultural" },
-              { title: "Land Clearing", desc: "Full clearing and grubbing of trees, brush, and vegetation", icon: Trees, slug: "land-clearing" },
-              { title: "Fine Grading & Site Preparation", desc: "Precision grading to prepare land for construction, drainage, or turf", icon: Map, slug: "grading-site-preparation" },
-              { title: "Drainage Solutions", desc: "French drains, retention systems, and custom drainage design", icon: Droplets, slug: "drainage" },
-              { title: "Turf Installation & Seeding", desc: "Sod and seed installation for large-scale acreage", icon: Leaf, slug: "turf-installation-seeding" },
-              { title: "Tree Services", desc: "Tree management, trimming, removal, and stump grinding", icon: Shrub, slug: "tree-services" },
-              { title: "Pond & Waterway Management", desc: "Ongoing pond care, water quality, and waterway clearing", icon: Waves, slug: "pond-waterway-management" },
-              { title: "Property Reconstruction", desc: "Full-scale property rebuilds from drainage overhaul to complete regrading", icon: Wrench, slug: "property-reconstruction" },
-            ].map((s, i) => (
-              <Link key={i} href={`/services/${s.slug}`} className="group block bg-card border border-card-border p-8 rounded-lg shadow-sm hover:shadow-lg hover:border-primary/30 transition-all duration-300 transform hover:-translate-y-1 text-[14px] font-bold">
-                <div className="h-12 w-12 bg-primary/10 text-primary rounded-md flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-white transition-colors">
-                  <s.icon className="h-6 w-6" />
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {services.map((s) => (
+              <Link
+                key={s.n}
+                href={`/services/${s.slug}`}
+                className="group relative block overflow-hidden rounded-[4px] border bg-white transition-all duration-300 hover:-translate-y-1.5"
+                style={{ borderColor: "hsl(215 30% 15% / 0.08)", boxShadow: "0 1px 0 hsl(215 30% 15% / 0.04)" }}
+                onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 34px 60px -30px hsl(215 45% 15%), 0 10px 22px -16px hsl(215 40% 22% / 0.4)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "0 1px 0 hsl(215 30% 15% / 0.04)"; }}
+              >
+                <div className="relative h-52 overflow-hidden">
+                  <img src={s.img} alt={s.title} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                  <div className="absolute inset-0" style={{ background: "linear-gradient(to top, hsl(215 50% 11% / 0.55), transparent 55%)" }} />
+                  <span className="absolute left-4 top-4 flex h-9 w-9 items-center justify-center rounded-[3px] font-serif text-xs font-bold tabular-nums text-primary backdrop-blur" style={{ background: "hsl(40 22% 97% / 0.92)" }}>
+                    {s.n}
+                  </span>
+                  <s.icon className="absolute bottom-4 right-4 h-6 w-6 text-white/90" />
                 </div>
-                <h3 className="text-xl font-serif font-bold text-secondary mb-3">{s.title}</h3>
-                <p className="text-secondary/70 leading-relaxed">{s.desc}</p>
+                <div className="p-6">
+                  <h3 className="font-serif text-xl font-bold tracking-tight text-secondary">{s.title}</h3>
+                  <p className="mt-2 text-[14px] leading-relaxed" style={{ color: "hsl(215 18% 38%)" }}>{s.desc}</p>
+                  <div className="mt-4 inline-flex items-center gap-1.5 font-serif text-[12px] font-bold uppercase text-clay-ink opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{ letterSpacing: "0.12em" }}>
+                    Learn more <ArrowRight className="h-3.5 w-3.5" />
+                  </div>
+                </div>
+                <span className="absolute inset-x-0 bottom-0 h-[3px] origin-left scale-x-0 bg-clay transition-transform duration-300 group-hover:scale-x-100" />
               </Link>
             ))}
           </div>
+        </div>
+      </section>
 
-          <div className="mt-16 text-center">
-            <p className="text-lg font-bold text-secondary mb-6">
-              Not sure which service you need? Call us and we'll assess your property for free.
+      {/* FEATURE ROW */}
+      <section className="relative overflow-hidden py-24" style={{ background: "hsl(38 24% 94%)" }}>
+        <div className="absolute inset-0 opacity-50">
+          <ContourField stroke={TAN} opacity={0.16} />
+        </div>
+        <div className="relative mx-auto grid max-w-[1240px] grid-cols-12 items-center gap-10 px-6">
+          <div className="col-span-12 lg:col-span-7">
+            <div className="relative">
+              <div className="absolute -left-4 -top-4 h-full w-full rounded-[4px] bg-primary" style={{ opacity: 0.9 }} />
+              <div className="absolute -bottom-5 -right-5 h-28 w-28 rounded-[4px] bg-clay" />
+              <div className="relative overflow-hidden rounded-[4px] border-4 border-white" style={{ boxShadow: "0 40px 70px -34px hsl(215 45% 15%)" }}>
+                <img src={featureImg} alt="Grading for new construction" className="h-[420px] w-full object-cover" />
+              </div>
+              <div className="absolute -bottom-6 left-8 z-10 rounded-[3px] bg-navy px-5 py-4 text-white" style={{ boxShadow: "0 20px 40px -18px hsl(215 45% 15%)" }}>
+                <div className="font-serif text-3xl font-black leading-none text-tan">±0.1"</div>
+                <div className="mt-1 text-[10px] font-semibold uppercase text-white" style={{ letterSpacing: "0.22em" }}>Grade tolerance</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="col-span-12 lg:col-span-5 lg:pl-6">
+            <Kicker>Feature · Site Prep</Kicker>
+            <h2 className="mt-4 font-display text-[clamp(1.9rem,3.6vw,3rem)] font-light leading-[1.05] tracking-[-0.02em] text-secondary">
+              Grading for New Construction
+            </h2>
+            <p className="mt-5 text-[15px] leading-relaxed" style={{ color: "hsl(215 20% 34%)" }}>
+              Before the first footing is poured, the pad has to be right. We deliver compacted, properly sloped building pads and site grades that pass inspection and keep water moving exactly where it should — protecting the structures that follow for decades.
             </p>
-            <Button asChild variant="link" className="text-primary hover:text-primary/80 font-bold text-xl px-0 h-auto">
-              <a href="tel:7042218928">→ (704) 221-8928</a>
-            </Button>
+            <ul className="mt-6 space-y-3">
+              {[
+                "Engineered cut-and-fill balancing",
+                "Pad compaction & sub-grade prep",
+                "Positive drainage built into every grade",
+              ].map((t) => (
+                <li key={t} className="flex items-start gap-3">
+                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full" style={{ background: "hsl(145 40% 35% / 0.14)" }}>
+                    <Check className="h-3 w-3 text-supporting" />
+                  </span>
+                  <span className="text-[14px] font-medium text-secondary">{t}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-8">
+              <Link href="/services/grading-site-preparation" className="inline-flex items-center gap-2 font-serif text-sm font-bold uppercase text-primary" style={{ letterSpacing: "0.1em" }}>
+                Explore site prep
+                <ArrowUpRight className="h-4 w-4" />
+              </Link>
+            </div>
           </div>
         </div>
       </section>
-      {/* WHY P1 SECTION */}
-      <section className="py-24 px-4 bg-muted border-y border-border">
-        <div className="container mx-auto max-w-6xl">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div className="space-y-12">
-              <h2 className="text-4xl md:text-5xl font-serif font-bold text-secondary leading-tight">
-                Why Property Owners Choose P1
+
+      {/* WHY P1 */}
+      <section className="relative overflow-hidden bg-navy py-24">
+        <div className="absolute inset-0" style={{ mixBlendMode: "soft-light" }}>
+          <ContourField stroke={TAN} opacity={0.4} />
+        </div>
+        <div className="absolute inset-x-0 top-0 h-px" style={{ background: "hsl(40 30% 90% / 0.1)" }} />
+        <div className="relative mx-auto max-w-[1240px] px-6">
+          <div className="grid grid-cols-12 gap-10">
+            <div className="col-span-12 lg:col-span-4">
+              <Kicker onDark>Why P1</Kicker>
+              <h2 className="mt-4 font-display text-[clamp(2rem,4vw,3.2rem)] font-light leading-[1.03] tracking-[-0.02em] text-white">
+                The difference is in the{" "}
+                <span className="text-tan" style={{ fontStyle: "italic" }}>groundwork.</span>
               </h2>
-              
-              <div className="space-y-8">
-                <div>
-                  <h3 className="text-xl font-bold text-secondary mb-2 flex items-center gap-3">
-                    <div className="h-2 w-2 bg-primary rounded-full"></div>
-                    Full Property Lifecycle
-                  </h3>
-                  <p className="text-secondary/80 leading-relaxed">Most contractors do one thing. We do everything. P1 manages your property from initial clearing and grading through ongoing weekly maintenance — and every major project in between. One call. One contractor. No gaps.</p>
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-secondary mb-2 flex items-center gap-3">
-                    <div className="h-2 w-2 bg-primary rounded-full"></div>
-                    Large-Acreage Specialists
-                  </h3>
-                  <p className="text-secondary/80 leading-relaxed">We built our business around properties that most lawn services can't handle. If you own 1 acre or more — commercial, farm, industrial, or residential — P1 has the equipment, crew, and experience to manage it right.</p>
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-secondary mb-2 flex items-center gap-3">
-                    <div className="h-2 w-2 bg-primary rounded-full"></div>
-                    Two Markets, One Team
-                  </h3>
-                  <p className="text-secondary/80 leading-relaxed">With deep roots in both Upstate South Carolina and the Charlotte, North Carolina region, P1 brings regional expertise to every project. We know the terrain, the climate, and what it takes to maintain property in the Carolinas.</p>
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-secondary mb-2 flex items-center gap-3">
-                    <div className="h-2 w-2 bg-primary rounded-full"></div>
-                    No Project Too Big
-                  </h3>
-                  <p className="text-secondary/80 leading-relaxed">From routine pond management to complete property reconstruction — drainage, grading, clearing, seeding, and everything after — P1 handles the full scope without subcontracting the hard parts out.</p>
+              <p className="mt-5 max-w-sm text-[15px] leading-relaxed" style={{ color: "hsl(40 20% 92% / 0.7)" }}>
+                Owners choose P1 because we bring the equipment, expertise and discipline that big properties demand — and we stand behind every grade we cut.
+              </p>
+              <div className="mt-8 inline-flex items-center gap-2 rounded-[3px] px-4 py-2 font-serif text-[12px] font-bold uppercase" style={{ background: "hsl(145 40% 35% / 0.18)", color: "hsl(145 45% 70%)", letterSpacing: "0.16em" }}>
+                <ShieldCheck className="h-4 w-4" />
+                Licensed &amp; Insured
+              </div>
+            </div>
+
+            <div className="col-span-12 lg:col-span-8">
+              <div className="grid grid-cols-1 gap-px overflow-hidden rounded-[4px] sm:grid-cols-2" style={{ background: "hsl(40 30% 90% / 0.1)" }}>
+                {values.map((v) => (
+                  <div key={v.n} className="group relative bg-navy-deep p-8">
+                    <div className="flex items-start justify-between">
+                      <span className="flex h-11 w-11 items-center justify-center rounded-[3px]" style={{ background: "hsl(208 64% 40% / 0.18)" }}>
+                        <v.icon className="h-5 w-5" style={{ color: "hsl(206 70% 48%)" }} />
+                      </span>
+                      <span className="font-serif text-2xl font-black tabular-nums" style={{ color: "hsl(40 30% 90% / 0.16)" }}>{v.n}</span>
+                    </div>
+                    <h3 className="mt-5 font-serif text-lg font-bold text-white">{v.title}</h3>
+                    <p className="mt-2 text-[14px] leading-relaxed" style={{ color: "hsl(40 20% 92% / 0.66)" }}>{v.desc}</p>
+                    <span className="absolute bottom-0 left-0 h-[3px] w-0 bg-clay transition-all duration-300 group-hover:w-full" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* TESTIMONIAL */}
+      <section className="relative bg-background py-24">
+        <div className="mx-auto max-w-[1100px] px-6">
+          <div className="grid grid-cols-12 items-center gap-10">
+            <div className="col-span-12 md:col-span-5">
+              <div className="relative">
+                <div className="absolute -left-3 -top-3 h-full w-full rounded-[4px] bg-clay" style={{ opacity: 0.9 }} />
+                <div className="relative overflow-hidden rounded-[4px] border-4 border-white" style={{ boxShadow: "0 30px 60px -28px hsl(215 45% 15%)" }}>
+                  <img src={testimonialImg} alt="Managed commercial property" className="h-[340px] w-full object-cover" />
                 </div>
               </div>
             </div>
-            
-            <div className="relative h-full min-h-[500px] rounded-xl overflow-hidden shadow-2xl">
-              <img src={gradingImg} alt="Fine grading" className="absolute inset-0 w-full h-full object-cover" />
+            <div className="col-span-12 md:col-span-7 md:pl-4">
+              <Quote className="h-10 w-10 text-tan" />
+              <blockquote className="mt-5 font-display text-[clamp(1.4rem,2.6vw,2rem)] font-light leading-[1.25] tracking-[-0.01em] text-secondary">
+                "P1 took over our 40-acre commercial park and fixed drainage issues we'd fought for years. Their crew is completely self-sufficient — and the grade work is flawless."
+              </blockquote>
+              <div className="mt-7 flex items-center gap-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary font-serif text-sm font-black text-white">MT</div>
+                <div>
+                  <div className="font-serif font-bold text-secondary">Marcus T.</div>
+                  <div className="text-[13px]" style={{ color: "hsl(215 18% 42%)" }}>Property Manager · Spartanburg, SC</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
-      {/* SERVICE AREAS SECTION */}
-      <section className="py-24 px-4 bg-background">
-        <div className="container mx-auto max-w-6xl text-center">
-          <h2 className="text-4xl md:text-5xl font-serif font-bold text-secondary mb-16">
-            Serving Two of the Carolinas' Fastest-Growing Markets
-          </h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-4xl mx-auto text-left">
-            <div className="bg-card border border-card-border p-8 rounded-xl shadow-md">
-              <h3 className="text-2xl font-serif font-bold text-primary mb-6 border-b border-border pb-4">Upstate South Carolina</h3>
-              <p className="text-secondary/80 leading-relaxed font-medium">
+
+      {/* SERVICE AREAS */}
+      <section className="bg-background pb-24">
+        <div className="mx-auto max-w-[1240px] px-6">
+          <div className="mb-12 text-center">
+            <Kicker>Where We Work</Kicker>
+            <h2 className="mt-4 font-display text-[clamp(1.9rem,4vw,3rem)] font-light leading-[1.05] tracking-[-0.02em] text-secondary">
+              Two of the Carolinas' fastest-growing markets.
+            </h2>
+          </div>
+          <div className="mx-auto grid max-w-4xl grid-cols-1 gap-6 text-left md:grid-cols-2">
+            <div className="rounded-[4px] border bg-white p-8" style={{ borderColor: "hsl(215 30% 15% / 0.08)", boxShadow: "0 14px 40px -30px hsl(215 45% 15%)" }}>
+              <h3 className="mb-5 border-b pb-4 font-serif text-2xl font-bold text-primary" style={{ borderColor: "hsl(215 30% 15% / 0.08)" }}>Upstate South Carolina</h3>
+              <p className="font-medium leading-relaxed" style={{ color: "hsl(215 20% 35%)" }}>
                 Greenville • Spartanburg • Anderson • Gaffney • Duncan • Greer • Simpsonville • Easley • Inman • Boiling Springs • Surrounding areas
               </p>
             </div>
-            <div className="bg-card border border-card-border p-8 rounded-xl shadow-md">
-              <h3 className="text-2xl font-serif font-bold text-primary mb-6 border-b border-border pb-4">Charlotte Region, NC</h3>
-              <p className="text-secondary/80 leading-relaxed font-medium">
+            <div className="rounded-[4px] border bg-white p-8" style={{ borderColor: "hsl(215 30% 15% / 0.08)", boxShadow: "0 14px 40px -30px hsl(215 45% 15%)" }}>
+              <h3 className="mb-5 border-b pb-4 font-serif text-2xl font-bold text-primary" style={{ borderColor: "hsl(215 30% 15% / 0.08)" }}>Charlotte Region, NC</h3>
+              <p className="font-medium leading-relaxed" style={{ color: "hsl(215 20% 35%)" }}>
                 Charlotte • Concord • Mooresville • Lake Norman • Gastonia • Matthews • Waxhaw • Kannapolis • Huntersville • Surrounding areas
               </p>
             </div>
           </div>
+          <div className="mt-10 text-center">
+            <Link href="/service-areas" className="inline-flex items-center gap-2 font-serif text-sm font-bold uppercase text-primary" style={{ letterSpacing: "0.1em" }}>
+              View all service areas
+              <ArrowUpRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
 
-          <div className="mt-12">
-            <Button asChild variant="link" className="text-secondary hover:text-primary font-bold text-lg">
-              <Link href="/service-areas">Serving properties 1 acre and larger across both markets. → View Service Areas</Link>
-            </Button>
-          </div>
-        </div>
-      </section>
-      {/* TESTIMONIALS */}
-      <section className="py-24 px-4 bg-secondary text-secondary-foreground text-center relative overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-10 mix-blend-overlay">
-          <img src={commercialImg} alt="Background pattern" className="w-full h-full object-cover" />
-        </div>
-        <div className="container relative z-10 mx-auto max-w-6xl">
-          <h2 className="text-4xl md:text-5xl font-serif font-bold text-white mb-16">
-            What Our Clients Say
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              { q: "P1 took over our 40-acre commercial park and immediately fixed drainage issues we'd been fighting for years. Their weekly crew is completely self-sufficient.", name: "Marcus T.", role: "Property Manager", city: "Spartanburg, SC" },
-              { q: "We had 15 acres of dense brush that needed clearing for new pasture. P1 brought in the heavy iron and had it perfectly graded and seeded ahead of schedule.", name: "David R.", role: "Farm Owner", city: "Concord, NC" },
-              { q: "Finding a contractor who can handle retention ponds, major tree work, and fine turf maintenance on a 100-acre HOA is rare. P1 is the real deal.", name: "Sarah L.", role: "HOA President", city: "Greenville, SC" }
-            ].map((t, i) => (
-              <div key={i} className="bg-white/10 backdrop-blur-sm border border-white/20 p-8 rounded-xl text-left hover:bg-white/15 transition-colors">
-                <div className="text-primary text-4xl mb-4 opacity-50 font-serif">"</div>
-                <p className="text-white/90 text-lg leading-relaxed mb-8 italic">{t.q}</p>
-                <div>
-                  <p className="font-bold text-white">{t.name}</p>
-                  <p className="text-white/60 text-sm">{t.role}, {t.city}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
       <FinalCTA />
     </Layout>
   );
