@@ -24,9 +24,9 @@ export default function Home() {
       
       {/* HERO SECTION */}
       <section className="relative w-full overflow-hidden bg-secondary text-secondary-foreground pt-32 pb-48 px-4 flex items-center justify-center">
-        <div className="absolute inset-0 z-0 opacity-40 mix-blend-overlay">
+        <div className="absolute inset-0 z-0 opacity-100">
           <img src={heroImg} alt="Heavy equipment clearing land" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-secondary via-secondary/80 to-secondary/30" />
+          <div className="absolute inset-0 bg-gradient-to-t from-secondary/80 via-secondary/40 to-transparent" />
         </div>
         
         <div className="container relative z-10 mx-auto max-w-5xl text-center space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-1000 fill-mode-both">

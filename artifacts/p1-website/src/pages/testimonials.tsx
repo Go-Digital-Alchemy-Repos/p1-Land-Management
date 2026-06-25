@@ -66,9 +66,9 @@ export default function Testimonials() {
 
       {/* PAGE HERO */}
       <section className="relative py-32 px-4 bg-secondary text-white text-center overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-20 mix-blend-overlay">
+        <div className="absolute inset-0 z-0 opacity-100">
           <img src={heroImg} alt="Completed property reconstruction project" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-secondary/80" />
+          <div className="absolute inset-0 bg-secondary/55" />
         </div>
         <div className="container relative z-10 mx-auto max-w-4xl space-y-6">
           <h1 className="text-4xl md:text-6xl font-serif font-extrabold tracking-tight text-white">

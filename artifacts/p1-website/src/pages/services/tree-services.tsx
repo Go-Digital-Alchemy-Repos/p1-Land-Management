@@ -23,9 +23,9 @@ export default function TreeServices() {
 
       {/* PAGE HERO */}
       <section className="relative py-32 px-4 bg-secondary text-white overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-30 mix-blend-overlay">
+        <div className="absolute inset-0 z-0 opacity-100">
           <img src={heroImg} alt="Heavy machinery tree limb removal" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-secondary/80" />
+          <div className="absolute inset-0 bg-secondary/55" />
         </div>
         <div className="container relative z-10 mx-auto max-w-4xl space-y-6 text-center animate-in fade-in slide-in-from-bottom-8 duration-1000">
           <h1 className="text-4xl md:text-6xl font-serif font-extrabold tracking-tight text-white">
