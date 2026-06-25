@@ -8,6 +8,7 @@ import heroImg from "@/assets/service-grading.png";
 import levelImg from "@/assets/features/grading-level.png";
 import drainageImg from "@/assets/features/grading-drainage.png";
 import turfImg from "@/assets/features/grading-turf.png";
+import constructionImg from "@/assets/features/grading-construction.png";
 
 export default function GradingSitePreparation() {
   return (
@@ -82,6 +83,12 @@ export default function GradingSitePreparation() {
           <FeatureRow heading="Grading for Turf Establishment" image={turfImg} imageAlt="Freshly graded soil transitioning into new sod">
             <p>
               Turf installation on improperly graded ground fails. Before P1 lays sod or seeds an acre, we verify the grade is correct for drainage and root establishment. When we handle both grading and turf, you get a result that lasts — and a single point of accountability if it doesn't.
+            </p>
+          </FeatureRow>
+
+          <FeatureRow heading="Grading for New Construction" image={constructionImg} imageAlt="New residential neighborhood under construction on freshly graded land" reverse>
+            <p>
+              Every building starts with the ground beneath it. Before foundations are poured, roads are paved, or utilities go in, the site has to be graded to spec — level pads, correct slopes for drainage, and a stable, compacted surface that holds up under construction traffic. P1 prepares sites for new homes, neighborhoods, and commercial developments across Upstate SC and Charlotte NC, delivering grade that meets engineered plans and keeps your project on schedule.
             </p>
           </FeatureRow>
 
