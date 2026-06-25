@@ -26,17 +26,6 @@ export function SiteHeader() {
     { name: "Property Reconstruction", href: "/services/property-reconstruction" },
   ];
 
-  const serviceAreas = [
-    { name: "Upstate South Carolina", href: "/service-areas/upstate-south-carolina" },
-    { name: "Charlotte, North Carolina", href: "/service-areas/charlotte-north-carolina" },
-    { name: "Greenville, SC", href: "/service-areas/greenville-sc" },
-    { name: "Spartanburg, SC", href: "/service-areas/spartanburg-sc" },
-    { name: "Anderson, SC", href: "/service-areas/anderson-sc" },
-    { name: "Charlotte, NC", href: "/service-areas/charlotte-nc" },
-    { name: "Concord, NC", href: "/service-areas/concord-nc" },
-    { name: "Mooresville & Lake Norman", href: "/service-areas/mooresville-lake-norman-nc" },
-    { name: "Gastonia, NC", href: "/service-areas/gastonia-nc" },
-  ];
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -61,22 +50,6 @@ export function SiteHeader() {
               ))}
               <DropdownMenuItem asChild className="font-bold text-primary mt-2 border-t">
                 <Link href="/services" className="cursor-pointer">View All Services</Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-1 hover:text-primary transition-colors outline-none">
-              Service Areas <ChevronDown className="h-4 w-4" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-[240px]">
-              {serviceAreas.map((s) => (
-                <DropdownMenuItem key={s.href} asChild>
-                  <Link href={s.href} className="cursor-pointer">{s.name}</Link>
-                </DropdownMenuItem>
-              ))}
-              <DropdownMenuItem asChild className="font-bold text-primary mt-2 border-t">
-                <Link href="/service-areas" className="cursor-pointer">View All Areas</Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -118,17 +91,6 @@ export function SiteHeader() {
                     <Link href="/services" onClick={() => setIsOpen(false)} className="text-lg font-medium text-secondary">Services</Link>
                     <div className="pl-4 flex flex-col gap-3 border-l border-border ml-2">
                       {services.map((s) => (
-                        <Link key={s.href} href={s.href} onClick={() => setIsOpen(false)} className="text-secondary/70">
-                          {s.name}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    <Link href="/service-areas" onClick={() => setIsOpen(false)} className="text-lg font-medium text-secondary">Service Areas</Link>
-                    <div className="pl-4 flex flex-col gap-3 border-l border-border ml-2">
-                      {serviceAreas.map((s) => (
                         <Link key={s.href} href={s.href} onClick={() => setIsOpen(false)} className="text-secondary/70">
                           {s.name}
                         </Link>
