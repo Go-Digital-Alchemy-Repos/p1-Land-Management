@@ -5,7 +5,7 @@ outputs = []
 id = "UxLKn5OfUCprZZUfiHcUE"
 uri = "file://artifacts/p1-website/src/assets/hero-bg.png"
 type = "image"
-title = "heavy equipment clearing land"
+title = "generated_image"
 
 [[generated]]
 id = "oQNgBhZFCd7F4l8TgLNCf"
