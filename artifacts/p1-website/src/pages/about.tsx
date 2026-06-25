@@ -1,7 +1,9 @@
 import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
+import { FeatureRow } from "@/components/layout/FeatureRow";
 import { SEO } from "@/components/seo";
 import heroImg from "@/assets/commercial-property.png";
+import whoImg from "@/assets/features/about-who.png";
 import { CheckCircle2 } from "lucide-react";
 
 export default function About() {
@@ -30,11 +32,8 @@ export default function About() {
 
       {/* OUR STORY */}
       <section className="py-24 px-4 bg-background">
-        <div className="container mx-auto max-w-4xl space-y-8">
-          <h2 className="text-3xl md:text-4xl font-serif font-bold text-secondary border-b border-border pb-4">
-            Who We Are
-          </h2>
-          <div className="prose prose-lg prose-p:text-secondary/80 max-w-none space-y-6 text-lg leading-relaxed">
+        <div className="container mx-auto max-w-6xl">
+          <FeatureRow heading="Who We Are" image={whoImg} imageAlt="Experienced P1 land management crew with heavy equipment">
             <p>
               P1 Land & Property Management was founded on a simple idea: that commercial, agricultural, and large residential landowners in the Carolinas deserve a single, capable contractor who can manage the full life of their property — from rough clearing to fine turf, from drainage repair to complete reconstruction.
             </p>
@@ -47,7 +46,7 @@ export default function About() {
             <p className="font-bold text-secondary text-xl border-l-4 border-primary pl-6 py-2 mt-8">
               We don't take small residential lawn jobs. Our minimum is 1 acre, and our specialty is the kind of work that takes real equipment, real experience, and a real commitment to getting it done right.
             </p>
-          </div>
+          </FeatureRow>
         </div>
       </section>
 

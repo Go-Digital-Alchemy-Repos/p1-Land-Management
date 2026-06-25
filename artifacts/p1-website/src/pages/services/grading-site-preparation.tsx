@@ -1,9 +1,13 @@
 import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
+import { FeatureRow } from "@/components/layout/FeatureRow";
 import { SEO } from "@/components/seo";
 import { serviceSchema, breadcrumbSchema } from "@/lib/structured-data";
 import { CheckCircle2 } from "lucide-react";
 import heroImg from "@/assets/service-grading.png";
+import levelImg from "@/assets/features/grading-level.png";
+import drainageImg from "@/assets/features/grading-drainage.png";
+import turfImg from "@/assets/features/grading-turf.png";
 
 export default function GradingSitePreparation() {
   return (
@@ -41,16 +45,11 @@ export default function GradingSitePreparation() {
       <section className="py-24 px-4 bg-background">
         <div className="container mx-auto max-w-4xl space-y-16">
           
-          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-100">
-            <h2 className="text-3xl md:text-4xl font-serif font-bold text-secondary border-b border-border pb-4">
-              Get Your Land Level — and Keep It That Way
-            </h2>
-            <div className="prose prose-lg prose-p:text-secondary/80 max-w-none space-y-6 text-lg leading-relaxed">
-              <p>
-                Poorly graded land causes problems that compound over time: standing water, erosion, foundation pressure, failed turf, and drainage failure. Whether you're preparing a site for construction, correcting existing drainage issues, or establishing grade for new turf, P1 brings the equipment and expertise to get it right the first time.
-              </p>
-            </div>
-          </div>
+          <FeatureRow heading="Get Your Land Level — and Keep It That Way" image={levelImg} imageAlt="Motor grader leveling a large dirt site">
+            <p>
+              Poorly graded land causes problems that compound over time: standing water, erosion, foundation pressure, failed turf, and drainage failure. Whether you're preparing a site for construction, correcting existing drainage issues, or establishing grade for new turf, P1 brings the equipment and expertise to get it right the first time.
+            </p>
+          </FeatureRow>
 
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
             <h2 className="text-3xl font-serif font-bold text-secondary border-b border-border pb-4">
@@ -74,27 +73,17 @@ export default function GradingSitePreparation() {
             </ul>
           </div>
 
-          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
-            <h2 className="text-3xl font-serif font-bold text-secondary border-b border-border pb-4">
-              Grading for Drainage
-            </h2>
-            <div className="prose prose-lg prose-p:text-secondary/80 max-w-none space-y-6 text-lg leading-relaxed">
-              <p>
-                More than 80% of land drainage problems have their root in improper grade. Water follows the slope of the land — when that slope is wrong, water pools where it shouldn't, runs where it causes damage, and saturates soil that should stay dry. P1 grades with drainage as the primary outcome: every slope, every swale, every transition is designed to move water where it belongs.
-              </p>
-            </div>
-          </div>
+          <FeatureRow heading="Grading for Drainage" image={drainageImg} imageAlt="Graded swale channeling water across a property" reverse>
+            <p>
+              More than 80% of land drainage problems have their root in improper grade. Water follows the slope of the land — when that slope is wrong, water pools where it shouldn't, runs where it causes damage, and saturates soil that should stay dry. P1 grades with drainage as the primary outcome: every slope, every swale, every transition is designed to move water where it belongs.
+            </p>
+          </FeatureRow>
 
-          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-400">
-            <h2 className="text-3xl font-serif font-bold text-secondary border-b border-border pb-4">
-              Grading for Turf Establishment
-            </h2>
-            <div className="prose prose-lg prose-p:text-secondary/80 max-w-none space-y-6 text-lg leading-relaxed">
-              <p>
-                Turf installation on improperly graded ground fails. Before P1 lays sod or seeds an acre, we verify the grade is correct for drainage and root establishment. When we handle both grading and turf, you get a result that lasts — and a single point of accountability if it doesn't.
-              </p>
-            </div>
-          </div>
+          <FeatureRow heading="Grading for Turf Establishment" image={turfImg} imageAlt="Freshly graded soil transitioning into new sod">
+            <p>
+              Turf installation on improperly graded ground fails. Before P1 lays sod or seeds an acre, we verify the grade is correct for drainage and root establishment. When we handle both grading and turf, you get a result that lasts — and a single point of accountability if it doesn't.
+            </p>
+          </FeatureRow>
 
           <div className="space-y-6 bg-card border border-border p-8 rounded-xl shadow-sm animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-500">
             <h2 className="text-2xl font-serif font-bold text-secondary">

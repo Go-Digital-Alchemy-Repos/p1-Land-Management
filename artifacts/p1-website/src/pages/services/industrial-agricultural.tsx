@@ -2,8 +2,10 @@ import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { SEO } from "@/components/seo";
 import { serviceSchema, breadcrumbSchema } from "@/lib/structured-data";
+import { FeatureRow } from "@/components/layout/FeatureRow";
 import { CheckCircle2 } from "lucide-react";
 import heroImg from "@/assets/service-industrial.png";
+import maintenanceImg from "@/assets/features/industrial-maintenance.png";
 
 export default function IndustrialAgricultural() {
   return (
@@ -41,19 +43,14 @@ export default function IndustrialAgricultural() {
       <section className="py-24 px-4 bg-background">
         <div className="container mx-auto max-w-4xl space-y-16">
           
-          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-100">
-            <h2 className="text-3xl md:text-4xl font-serif font-bold text-secondary border-b border-border pb-4">
-              Land That Works Needs Maintenance That Matches
-            </h2>
-            <div className="prose prose-lg prose-p:text-secondary/80 max-w-none space-y-6 text-lg leading-relaxed">
-              <p>
-                Industrial facilities, working farms, and rural landholdings have maintenance needs that go far beyond what a standard landscaping company can handle. Overgrown fence lines, failing drainage ditches, eroded slopes, silted ponds, and encroaching vegetation don't just look bad — they cost money, create liability, and reduce the productive capacity of your land.
-              </p>
-              <p>
-                P1 brings heavy equipment, experienced operators, and the full range of land services needed to keep industrial and agricultural properties in working order — from routine inspections and cleanup to major earthwork and reconstruction.
-              </p>
-            </div>
-          </div>
+          <FeatureRow heading="Land That Works Needs Maintenance That Matches" image={maintenanceImg} imageAlt="Heavy equipment maintaining an industrial and agricultural property">
+            <p>
+              Industrial facilities, working farms, and rural landholdings have maintenance needs that go far beyond what a standard landscaping company can handle. Overgrown fence lines, failing drainage ditches, eroded slopes, silted ponds, and encroaching vegetation don't just look bad — they cost money, create liability, and reduce the productive capacity of your land.
+            </p>
+            <p>
+              P1 brings heavy equipment, experienced operators, and the full range of land services needed to keep industrial and agricultural properties in working order — from routine inspections and cleanup to major earthwork and reconstruction.
+            </p>
+          </FeatureRow>
 
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
             <h2 className="text-3xl font-serif font-bold text-secondary border-b border-border pb-4">

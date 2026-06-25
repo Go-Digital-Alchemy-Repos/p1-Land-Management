@@ -2,8 +2,11 @@ import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { SEO } from "@/components/seo";
 import { serviceSchema, breadcrumbSchema } from "@/lib/structured-data";
+import { FeatureRow } from "@/components/layout/FeatureRow";
 import { CheckCircle2 } from "lucide-react";
 import heroImg from "@/assets/service-commercial.png";
+import attentionImg from "@/assets/features/commercial-attention.png";
+import scheduleImg from "@/assets/features/commercial-schedule.png";
 
 export default function CommercialPropertyManagement() {
   return (
@@ -41,19 +44,14 @@ export default function CommercialPropertyManagement() {
       <section className="py-24 px-4 bg-background">
         <div className="container mx-auto max-w-4xl space-y-16">
           
-          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-100">
-            <h2 className="text-3xl md:text-4xl font-serif font-bold text-secondary border-b border-border pb-4">
-              Your Commercial Property. Our Full Attention.
-            </h2>
-            <div className="prose prose-lg prose-p:text-secondary/80 max-w-none space-y-6 text-lg leading-relaxed">
-              <p>
-                A well-maintained commercial property doesn't just look professional — it protects your investment, meets code requirements, and signals to clients and tenants that your business takes the details seriously. P1 Land & Property Management delivers the depth of service that large commercial properties actually require.
-              </p>
-              <p>
-                We work with commercial developers, property managers, business campus owners, HOAs managing significant acreage, industrial facility managers, and private landowners who hold commercial-use land across both our markets.
-              </p>
-            </div>
-          </div>
+          <FeatureRow heading="Your Commercial Property. Our Full Attention." image={attentionImg} imageAlt="Crew maintaining a large commercial property's grounds">
+            <p>
+              A well-maintained commercial property doesn't just look professional — it protects your investment, meets code requirements, and signals to clients and tenants that your business takes the details seriously. P1 Land & Property Management delivers the depth of service that large commercial properties actually require.
+            </p>
+            <p>
+              We work with commercial developers, property managers, business campus owners, HOAs managing significant acreage, industrial facility managers, and private landowners who hold commercial-use land across both our markets.
+            </p>
+          </FeatureRow>
 
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
             <h2 className="text-3xl font-serif font-bold text-secondary border-b border-border pb-4">
@@ -82,19 +80,14 @@ export default function CommercialPropertyManagement() {
             </ul>
           </div>
 
-          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
-            <h2 className="text-3xl font-serif font-bold text-secondary border-b border-border pb-4">
-              Maintenance Schedules That Work for Your Operation
-            </h2>
-            <div className="prose prose-lg prose-p:text-secondary/80 max-w-none space-y-6 text-lg leading-relaxed">
-              <p>
-                We offer weekly, bi-weekly, and monthly commercial maintenance contracts. Every program starts with a free on-site property assessment. We walk your land, document what it needs, and build a scope of work and schedule that fits your property and your budget.
-              </p>
-              <p>
-                No cookie-cutter packages. No upsells you don't need. Just honest maintenance performed by an experienced crew with the right equipment.
-              </p>
-            </div>
-          </div>
+          <FeatureRow heading="Maintenance Schedules That Work for Your Operation" image={scheduleImg} imageAlt="Operator on a commercial maintenance schedule" reverse>
+            <p>
+              We offer weekly, bi-weekly, and monthly commercial maintenance contracts. Every program starts with a free on-site property assessment. We walk your land, document what it needs, and build a scope of work and schedule that fits your property and your budget.
+            </p>
+            <p>
+              No cookie-cutter packages. No upsells you don't need. Just honest maintenance performed by an experienced crew with the right equipment.
+            </p>
+          </FeatureRow>
 
           <div className="space-y-8 bg-card border border-border p-8 rounded-xl shadow-sm animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-400">
             <h2 className="text-2xl font-serif font-bold text-secondary">

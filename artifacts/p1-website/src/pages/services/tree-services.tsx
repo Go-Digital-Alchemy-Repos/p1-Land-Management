@@ -2,8 +2,10 @@ import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { SEO } from "@/components/seo";
 import { serviceSchema, breadcrumbSchema } from "@/lib/structured-data";
+import { FeatureRow } from "@/components/layout/FeatureRow";
 import { CheckCircle2 } from "lucide-react";
 import heroImg from "@/assets/service-tree.png";
+import treeImg from "@/assets/features/tree-management.png";
 
 export default function TreeServices() {
   return (
@@ -41,19 +43,14 @@ export default function TreeServices() {
       <section className="py-24 px-4 bg-background">
         <div className="container mx-auto max-w-4xl space-y-16">
           
-          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-100">
-            <h2 className="text-3xl md:text-4xl font-serif font-bold text-secondary border-b border-border pb-4">
-              Comprehensive Tree Management for Large Acreage
-            </h2>
-            <div className="prose prose-lg prose-p:text-secondary/80 max-w-none space-y-6 text-lg leading-relaxed">
-              <p>
-                Trees on commercial and agricultural properties serve important functions — shade, windbreaks, aesthetics, wildlife habitat — but they also require active management to remain healthy and safe. Untrimmed canopies, dead wood, crowded stands, and storm-damaged trees create hazards for structures, fences, livestock, and people.
-              </p>
-              <p>
-                P1 provides professional tree services sized for large-acreage properties. We work with commercial property managers, farm owners, rural landowners, and residential estate owners across Upstate South Carolina and the greater Charlotte, NC region.
-              </p>
-            </div>
-          </div>
+          <FeatureRow heading="Comprehensive Tree Management for Large Acreage" image={treeImg} imageAlt="Arborist trimming mature trees on a large property">
+            <p>
+              Trees on commercial and agricultural properties serve important functions — shade, windbreaks, aesthetics, wildlife habitat — but they also require active management to remain healthy and safe. Untrimmed canopies, dead wood, crowded stands, and storm-damaged trees create hazards for structures, fences, livestock, and people.
+            </p>
+            <p>
+              P1 provides professional tree services sized for large-acreage properties. We work with commercial property managers, farm owners, rural landowners, and residential estate owners across Upstate South Carolina and the greater Charlotte, NC region.
+            </p>
+          </FeatureRow>
 
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
             <h2 className="text-3xl font-serif font-bold text-secondary border-b border-border pb-4">

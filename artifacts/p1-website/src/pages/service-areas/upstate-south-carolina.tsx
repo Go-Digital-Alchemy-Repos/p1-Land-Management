@@ -3,7 +3,9 @@ import { FinalCTA } from "@/components/layout/FinalCTA";
 import { SEO } from "@/components/seo";
 import { serviceAreaSchema, breadcrumbSchema } from "@/lib/structured-data";
 import { Link } from "wouter";
+import { FeatureRow } from "@/components/layout/FeatureRow";
 import heroImg from "@/assets/hero-upstate-sc.png";
+import upstateImg from "@/assets/features/upstate-partner.png";
 import { CheckCircle2 } from "lucide-react";
 
 export default function UpstateSC() {
@@ -40,19 +42,14 @@ export default function UpstateSC() {
       <section className="py-24 px-4 bg-background">
         <div className="container mx-auto max-w-4xl space-y-16">
           
-          <div className="space-y-6">
-            <h2 className="text-3xl md:text-4xl font-serif font-bold text-secondary border-b border-border pb-4">
-              Your Upstate SC Property Partner
-            </h2>
-            <div className="prose prose-lg prose-p:text-secondary/80 max-w-none">
-              <p>
-                Upstate South Carolina is one of the fastest-growing regions in the Southeast — and with that growth comes increasing demand for professional land and property management at commercial, industrial, and agricultural scale. P1 Land & Property Management has built its operations around serving this market with the full range of services that large properties actually need.
-              </p>
-              <p>
-                Whether you manage a commercial campus in Greenville, farm acreage in Anderson County, an industrial facility near Spartanburg, or a rural estate in the foothills, P1 delivers the expertise, equipment, and reliability your property demands.
-              </p>
-            </div>
-          </div>
+          <FeatureRow heading="Your Upstate SC Property Partner" image={upstateImg} imageAlt="Rolling Upstate South Carolina countryside with large properties">
+            <p>
+              Upstate South Carolina is one of the fastest-growing regions in the Southeast — and with that growth comes increasing demand for professional land and property management at commercial, industrial, and agricultural scale. P1 Land & Property Management has built its operations around serving this market with the full range of services that large properties actually need.
+            </p>
+            <p>
+              Whether you manage a commercial campus in Greenville, farm acreage in Anderson County, an industrial facility near Spartanburg, or a rural estate in the foothills, P1 delivers the expertise, equipment, and reliability your property demands.
+            </p>
+          </FeatureRow>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             <div className="space-y-6">

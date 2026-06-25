@@ -2,8 +2,11 @@ import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { SEO } from "@/components/seo";
 import { serviceSchema, breadcrumbSchema } from "@/lib/structured-data";
+import { FeatureRow } from "@/components/layout/FeatureRow";
 import { CheckCircle2 } from "lucide-react";
 import heroImg from "@/assets/service-turf.png";
+import turfPrepImg from "@/assets/features/turf-prep.png";
+import turfSpeciesImg from "@/assets/features/turf-species.png";
 
 export default function TurfInstallationSeeding() {
   return (
@@ -41,19 +44,14 @@ export default function TurfInstallationSeeding() {
       <section className="py-24 px-4 bg-background">
         <div className="container mx-auto max-w-4xl space-y-16">
           
-          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-100">
-            <h2 className="text-3xl md:text-4xl font-serif font-bold text-secondary border-b border-border pb-4">
-              Turf Done Right Starts Before the First Seed
-            </h2>
-            <div className="prose prose-lg prose-p:text-secondary/80 max-w-none space-y-6 text-lg leading-relaxed">
-              <p>
-                A healthy stand of turf — whether it's a commercial property lawn, a farm pasture, a sports field, or a residential estate — begins with proper site preparation. Bad grade, poor soil, improper species selection, and inadequate establishment practices are the reasons most large-acreage turf jobs fail within two to three years.
-              </p>
-              <p>
-                P1 handles the full process: soil testing, site grading, soil amendment, species selection appropriate to your use and location, and professional seeding or sod installation. When we're responsible for everything, we can stand behind the result.
-              </p>
-            </div>
-          </div>
+          <FeatureRow heading="Turf Done Right Starts Before the First Seed" image={turfPrepImg} imageAlt="Site being prepared and graded before turf installation">
+            <p>
+              A healthy stand of turf — whether it's a commercial property lawn, a farm pasture, a sports field, or a residential estate — begins with proper site preparation. Bad grade, poor soil, improper species selection, and inadequate establishment practices are the reasons most large-acreage turf jobs fail within two to three years.
+            </p>
+            <p>
+              P1 handles the full process: soil testing, site grading, soil amendment, species selection appropriate to your use and location, and professional seeding or sod installation. When we're responsible for everything, we can stand behind the result.
+            </p>
+          </FeatureRow>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
             <div className="space-y-6">
@@ -98,13 +96,13 @@ export default function TurfInstallationSeeding() {
             </div>
           </div>
 
-          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
-            <h2 className="text-3xl font-serif font-bold text-secondary border-b border-border pb-4">
-              Grass Species for the Carolinas
-            </h2>
-            <p className="text-lg text-secondary/80 leading-relaxed mb-6">
+          <FeatureRow heading="Grass Species for the Carolinas" image={turfSpeciesImg} imageAlt="Close-up of lush, healthy established turf grass" reverse>
+            <p>
               Upstate South Carolina and the Charlotte NC region span the transition zone between warm- and cool-season grasses, which means species selection matters more here than almost anywhere. P1 recommends the right species for your specific use, sun exposure, soil type, and maintenance commitment:
             </p>
+          </FeatureRow>
+
+          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
             <div className="grid grid-cols-1 gap-4">
               {[
                 { title: "Bermudagrass", desc: "Best for high-traffic commercial turf, sports fields, and sunny pastures" },

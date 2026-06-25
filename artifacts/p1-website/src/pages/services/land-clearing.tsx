@@ -2,8 +2,11 @@ import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { SEO } from "@/components/seo";
 import { serviceSchema, breadcrumbSchema } from "@/lib/structured-data";
+import { FeatureRow } from "@/components/layout/FeatureRow";
 import { CheckCircle2 } from "lucide-react";
 import heroImg from "@/assets/service-clearing.png";
+import preparesImg from "@/assets/features/clearing-prepares.png";
+import mulchingImg from "@/assets/features/clearing-mulching.png";
 
 export default function LandClearing() {
   return (
@@ -41,19 +44,14 @@ export default function LandClearing() {
       <section className="py-24 px-4 bg-background">
         <div className="container mx-auto max-w-4xl space-y-16">
           
-          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-100">
-            <h2 className="text-3xl md:text-4xl font-serif font-bold text-secondary border-b border-border pb-4">
-              Professional Land Clearing That Prepares Your Property for What's Next
-            </h2>
-            <div className="prose prose-lg prose-p:text-secondary/80 max-w-none space-y-6 text-lg leading-relaxed">
-              <p>
-                Whether you're preparing land for construction, expanding agricultural acreage, eliminating invasive vegetation, or simply reclaiming overgrown land you've let go, P1 delivers professional clearing that leaves your property ready for its next use.
-              </p>
-              <p>
-                We handle the full clearing process — trees, stumps, brush, vines, briars, and debris — using the right equipment for each site and each soil type. We serve commercial developers, farmers, rural landowners, and property managers across Upstate South Carolina and the greater Charlotte, North Carolina area.
-              </p>
-            </div>
-          </div>
+          <FeatureRow heading="Professional Land Clearing That Prepares Your Property for What's Next" image={preparesImg} imageAlt="Land being cleared and prepared for its next use">
+            <p>
+              Whether you're preparing land for construction, expanding agricultural acreage, eliminating invasive vegetation, or simply reclaiming overgrown land you've let go, P1 delivers professional clearing that leaves your property ready for its next use.
+            </p>
+            <p>
+              We handle the full clearing process — trees, stumps, brush, vines, briars, and debris — using the right equipment for each site and each soil type. We serve commercial developers, farmers, rural landowners, and property managers across Upstate South Carolina and the greater Charlotte, North Carolina area.
+            </p>
+          </FeatureRow>
 
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
             <h2 className="text-3xl font-serif font-bold text-secondary border-b border-border pb-4">
@@ -78,19 +76,14 @@ export default function LandClearing() {
             </ul>
           </div>
 
-          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
-            <h2 className="text-3xl font-serif font-bold text-secondary border-b border-border pb-4">
-              Forestry Mulching: The Efficient Alternative
-            </h2>
-            <div className="prose prose-lg prose-p:text-secondary/80 max-w-none space-y-6 text-lg leading-relaxed">
-              <p>
-                For many sites, forestry mulching is the most efficient and cost-effective clearing method. A single machine grinds trees, brush, and stumps directly into mulch that stays on site — protecting the soil, reducing erosion, and eliminating the cost and mess of hauling debris. The mulch layer also decomposes naturally, improving soil health over time.
-              </p>
-              <p>
-                Forestry mulching is ideal for acreage where the goal is vegetation control rather than construction grading — pasture expansion, fence line management, and perimeter clearing all benefit from this method.
-              </p>
-            </div>
-          </div>
+          <FeatureRow heading="Forestry Mulching: The Efficient Alternative" image={mulchingImg} imageAlt="Forestry mulcher grinding vegetation into mulch on site" reverse>
+            <p>
+              For many sites, forestry mulching is the most efficient and cost-effective clearing method. A single machine grinds trees, brush, and stumps directly into mulch that stays on site — protecting the soil, reducing erosion, and eliminating the cost and mess of hauling debris. The mulch layer also decomposes naturally, improving soil health over time.
+            </p>
+            <p>
+              Forestry mulching is ideal for acreage where the goal is vegetation control rather than construction grading — pasture expansion, fence line management, and perimeter clearing all benefit from this method.
+            </p>
+          </FeatureRow>
 
           <div className="space-y-6 bg-card border border-border p-8 rounded-xl shadow-sm animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-400">
             <h2 className="text-2xl font-serif font-bold text-secondary">

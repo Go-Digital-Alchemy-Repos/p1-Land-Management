@@ -3,7 +3,9 @@ import { FinalCTA } from "@/components/layout/FinalCTA";
 import { SEO } from "@/components/seo";
 import { serviceAreaSchema, breadcrumbSchema } from "@/lib/structured-data";
 import { Link } from "wouter";
+import { FeatureRow } from "@/components/layout/FeatureRow";
 import heroImg from "@/assets/hero-charlotte-region.png";
+import charlotteImg from "@/assets/features/charlotte-region.png";
 import { CheckCircle2 } from "lucide-react";
 
 export default function CharlotteRegionNC() {
@@ -40,19 +42,14 @@ export default function CharlotteRegionNC() {
       <section className="py-24 px-4 bg-background">
         <div className="container mx-auto max-w-4xl space-y-16">
           
-          <div className="space-y-6">
-            <h2 className="text-3xl md:text-4xl font-serif font-bold text-secondary border-b border-border pb-4">
-              Serving the Charlotte Region's Growing Demand for Large-Acreage Property Management
-            </h2>
-            <div className="prose prose-lg prose-p:text-secondary/80 max-w-none">
-              <p>
-                The Charlotte, NC region is one of the most rapidly developing markets in the country — and that growth is pushing commercial, agricultural, and large residential property owners to find contractors who can manage land at the scale and standard these properties require. P1 Land & Property Management is that contractor.
-              </p>
-              <p>
-                From the Mecklenburg County commercial core to the waterfront estates of Lake Norman, the working farms of Cabarrus County, and the rural acreage of Union and Gaston Counties, P1 brings full-service land management to properties that are too large and too complex for standard landscaping companies.
-              </p>
-            </div>
-          </div>
+          <FeatureRow heading="Serving the Charlotte Region's Growing Demand for Large-Acreage Property Management" image={charlotteImg} imageAlt="Large-acreage property development in the Charlotte NC region">
+            <p>
+              The Charlotte, NC region is one of the most rapidly developing markets in the country — and that growth is pushing commercial, agricultural, and large residential property owners to find contractors who can manage land at the scale and standard these properties require. P1 Land & Property Management is that contractor.
+            </p>
+            <p>
+              From the Mecklenburg County commercial core to the waterfront estates of Lake Norman, the working farms of Cabarrus County, and the rural acreage of Union and Gaston Counties, P1 brings full-service land management to properties that are too large and too complex for standard landscaping companies.
+            </p>
+          </FeatureRow>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             <div className="space-y-6">

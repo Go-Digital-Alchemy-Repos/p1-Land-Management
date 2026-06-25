@@ -2,8 +2,10 @@ import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { SEO } from "@/components/seo";
 import { serviceSchema, breadcrumbSchema } from "@/lib/structured-data";
+import { FeatureRow } from "@/components/layout/FeatureRow";
 import { CheckCircle2 } from "lucide-react";
 import heroImg from "@/assets/service-reconstruction.png";
+import reconstructionImg from "@/assets/features/reconstruction.png";
 
 export default function PropertyReconstruction() {
   return (
@@ -41,19 +43,14 @@ export default function PropertyReconstruction() {
       <section className="py-24 px-4 bg-background">
         <div className="container mx-auto max-w-4xl space-y-16">
           
-          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-100">
-            <h2 className="text-3xl md:text-4xl font-serif font-bold text-secondary border-b border-border pb-4">
-              When Maintenance Isn't Enough
-            </h2>
-            <div className="prose prose-lg prose-p:text-secondary/80 max-w-none space-y-6 text-lg leading-relaxed">
-              <p>
-                Some properties have gone too long without the right care. Drainage has failed. Erosion has carved up slopes and fields. Invasive vegetation has taken over. Ponds have silted in. Grade has shifted. What was once a functional, productive piece of land is now costing its owner more than it's worth.
-              </p>
-              <p>
-                Property reconstruction is P1's answer for clients who need a complete reset — a full-scope project that addresses the root causes of a property's problems and rebuilds it to perform.
-              </p>
-            </div>
-          </div>
+          <FeatureRow heading="When Maintenance Isn't Enough" image={reconstructionImg} imageAlt="Heavy machinery rebuilding a neglected, eroded property">
+            <p>
+              Some properties have gone too long without the right care. Drainage has failed. Erosion has carved up slopes and fields. Invasive vegetation has taken over. Ponds have silted in. Grade has shifted. What was once a functional, productive piece of land is now costing its owner more than it's worth.
+            </p>
+            <p>
+              Property reconstruction is P1's answer for clients who need a complete reset — a full-scope project that addresses the root causes of a property's problems and rebuilds it to perform.
+            </p>
+          </FeatureRow>
 
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
             <h2 className="text-3xl font-serif font-bold text-secondary border-b border-border pb-4">
