@@ -21,7 +21,6 @@ export default function Home() {
         description="Full-service land and property management for commercial, agricultural, and large residential properties 1 acre and larger. Serving Upstate South Carolina and the Charlotte, NC region. Call (704) 221-8928."
         jsonLd={localBusinessSchema()}
       />
-      
       {/* HERO SECTION */}
       <section className="relative w-full overflow-hidden bg-secondary text-secondary-foreground pt-32 pb-48 px-4 flex items-center justify-center">
         <div className="absolute inset-0 z-0 opacity-100">
@@ -46,7 +45,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       {/* TRUST BAR */}
       <div className="bg-primary text-primary-foreground py-4 border-b border-primary-foreground/10 relative z-20 shadow-md">
         <div className="container mx-auto px-4 flex flex-wrap justify-center gap-x-8 gap-y-2 text-sm md:text-base font-bold uppercase tracking-wider">
@@ -56,7 +54,6 @@ export default function Home() {
           <span className="flex items-center gap-2">✓ Free Estimates</span>
         </div>
       </div>
-
       {/* SERVICES OVERVIEW SECTION */}
       <section className="py-24 px-4 bg-background">
         <div className="container mx-auto max-w-6xl">
@@ -81,7 +78,7 @@ export default function Home() {
               { title: "Pond & Waterway Management", desc: "Ongoing pond care, water quality, and waterway clearing", icon: Waves, slug: "pond-waterway-management" },
               { title: "Property Reconstruction", desc: "Full-scale property rebuilds from drainage overhaul to complete regrading", icon: Wrench, slug: "property-reconstruction" },
             ].map((s, i) => (
-              <Link key={i} href={`/services/${s.slug}`} className="group block bg-card border border-card-border p-8 rounded-lg shadow-sm hover:shadow-lg hover:border-primary/30 transition-all duration-300 transform hover:-translate-y-1">
+              <Link key={i} href={`/services/${s.slug}`} className="group block bg-card border border-card-border p-8 rounded-lg shadow-sm hover:shadow-lg hover:border-primary/30 transition-all duration-300 transform hover:-translate-y-1 text-[14px] font-bold">
                 <div className="h-12 w-12 bg-primary/10 text-primary rounded-md flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-white transition-colors">
                   <s.icon className="h-6 w-6" />
                 </div>
@@ -101,7 +98,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       {/* WHY P1 SECTION */}
       <section className="py-24 px-4 bg-muted border-y border-border">
         <div className="container mx-auto max-w-6xl">
@@ -149,7 +145,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       {/* SERVICE AREAS SECTION */}
       <section className="py-24 px-4 bg-background">
         <div className="container mx-auto max-w-6xl text-center">
@@ -179,7 +174,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       {/* TESTIMONIALS */}
       <section className="py-24 px-4 bg-secondary text-secondary-foreground text-center relative overflow-hidden">
         <div className="absolute inset-0 z-0 opacity-10 mix-blend-overlay">
@@ -207,7 +201,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       <FinalCTA />
     </Layout>
   );
