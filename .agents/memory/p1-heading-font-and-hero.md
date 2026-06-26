@@ -1,14 +1,14 @@
 ---
-name: P1 heading font token & editorial PageHero
-description: Why P1 headings looked like Inter (Barlow token) and how the editorial hero is shared
+name: P1 heading font token & editorial hero
+description: Why P1 headings can look like Inter, and that the editorial hero is a shared component
 ---
 
-# Heading font token
-- `--app-font-serif` in `artifacts/p1-website/src/index.css` drives ALL headings (base `h1..h6` rule uses `font-serif`). A prior sweep moved every non-heading element off `font-serif`, so that token is now **headings-only**.
-- It was set to **Barlow**, which is itself a *sans-serif* — so headings looked nearly identical to the Inter body and users read them as "Inter". Fix was to point the token at **Fraunces** (the editorial display serif), flipping every heading in one line.
-- **Why:** brand direction = Inter for all non-heading text, Fraunces display serif for headings (see `p1-brand-direction.md`).
-- **How to apply:** to change the global heading face, edit the `--app-font-serif` token, not individual pages. Don't reintroduce a sans font into that token or headings stop reading as distinct.
+# Heading font token is headings-only
+- The serif font token drives ALL headings (the base `h1..h6` rule uses it); non-heading text was deliberately moved off it. So whatever face that token holds is the heading face.
+- **Trap:** it was set to a *sans-serif* (Barlow), so headings looked indistinguishable from the Inter body and users reported "headings became Inter." Setting the token to the serif display face (Fraunces) fixes every heading at once.
+- **Why:** brand direction = Inter for all non-heading text, a display *serif* for headings (see `p1-brand-direction.md`).
+- **How to apply:** change the global heading face via that one token, not per page; never put a sans face in it or headings stop reading as distinct.
 
-# Editorial hero is a shared component
-- The "Editorial" hero treatment (low-opacity bg image + diagonal navy wash + `ContourField` topographic lines via soft-light + bottom fade + clay kicker eyebrow + left-aligned Fraunces headline w/ optional tan `<em>` accent) lives in `artifacts/p1-website/src/components/layout/PageHero.tsx` and is used by every interior page. The home page (`pages/home.tsx`) keeps its own bespoke inline version (has the "Index of Work" side panel + CTAs).
-- **How to apply:** new pages should use `<PageHero>` for visual consistency; only touch `home.tsx`'s inline hero for home-specific tweaks.
+# Editorial hero is shared
+- The "Editorial" hero (low-opacity image + diagonal navy wash + topographic contour lines + kicker eyebrow + serif headline with optional tan accent) is a single reusable component used by every interior page; the home page keeps its own bespoke variant with extra elements.
+- **How to apply:** new pages should reuse the shared hero for consistency rather than hand-rolling a hero.

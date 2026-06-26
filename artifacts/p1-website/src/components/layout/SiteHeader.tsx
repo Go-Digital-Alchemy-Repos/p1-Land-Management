@@ -35,12 +35,16 @@ export function SiteHeader() {
         </Link>
         
         {/* Desktop Nav */}
-        <nav className="hidden lg:flex items-center gap-8 font-medium text-sm text-foreground/80">
+        <nav className="hidden lg:flex items-center gap-6 font-medium text-sm text-foreground/80">
           <Link href="/" className="group relative hover:text-primary transition-colors">
             Home
             <span className="absolute -bottom-1.5 left-0 h-[2px] w-0 bg-clay transition-all duration-300 group-hover:w-full" />
           </Link>
-          
+          <Link href="/about" className="group relative hover:text-primary transition-colors">
+            About
+            <span className="absolute -bottom-1.5 left-0 h-[2px] w-0 bg-clay transition-all duration-300 group-hover:w-full" />
+          </Link>
+
           <DropdownMenu>
             <DropdownMenuTrigger className="group relative flex items-center gap-1 hover:text-primary transition-colors outline-none">
               Services <ChevronDown className="h-4 w-4" />
@@ -58,16 +62,20 @@ export function SiteHeader() {
             </DropdownMenuContent>
           </DropdownMenu>
 
+          <Link href="/service-areas" className="group relative hover:text-primary transition-colors">
+            Service Areas
+            <span className="absolute -bottom-1.5 left-0 h-[2px] w-0 bg-clay transition-all duration-300 group-hover:w-full" />
+          </Link>
           <Link href="/gallery" className="group relative hover:text-primary transition-colors">
             Gallery
             <span className="absolute -bottom-1.5 left-0 h-[2px] w-0 bg-clay transition-all duration-300 group-hover:w-full" />
           </Link>
-          <Link href="/blog" className="group relative hover:text-primary transition-colors">
-            Blog
+          <Link href="/testimonials" className="group relative hover:text-primary transition-colors">
+            Testimonials
             <span className="absolute -bottom-1.5 left-0 h-[2px] w-0 bg-clay transition-all duration-300 group-hover:w-full" />
           </Link>
-          <Link href="/about" className="group relative hover:text-primary transition-colors">
-            About
+          <Link href="/blog" className="group relative hover:text-primary transition-colors">
+            Blog
             <span className="absolute -bottom-1.5 left-0 h-[2px] w-0 bg-clay transition-all duration-300 group-hover:w-full" />
           </Link>
           <Link href="/contact" className="group relative hover:text-primary transition-colors">
@@ -77,7 +85,7 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-4">
-          <a href="tel:7042218928" className="hidden xl:flex items-center gap-2 text-sm font-bold text-secondary hover:text-primary transition-colors">
+          <a href="tel:7042218928" className="hidden lg:flex items-center gap-2 text-sm font-bold text-secondary hover:text-primary transition-colors">
             <Phone className="h-4 w-4" />
             (704) 221-8928
           </a>
@@ -101,7 +109,8 @@ export function SiteHeader() {
                 </Link>
                 <div className="flex flex-col gap-4">
                   <Link href="/" onClick={() => setIsOpen(false)} className="text-lg font-medium text-secondary">Home</Link>
-                  
+                  <Link href="/about" onClick={() => setIsOpen(false)} className="text-lg font-medium text-secondary">About</Link>
+
                   <div className="space-y-3">
                     <Link href="/services" onClick={() => setIsOpen(false)} className="text-lg font-medium text-secondary">Services</Link>
                     <div className="pl-4 flex flex-col gap-3 border-l border-border ml-2">
@@ -113,9 +122,10 @@ export function SiteHeader() {
                     </div>
                   </div>
 
+                  <Link href="/service-areas" onClick={() => setIsOpen(false)} className="text-lg font-medium text-secondary">Service Areas</Link>
                   <Link href="/gallery" onClick={() => setIsOpen(false)} className="text-lg font-medium text-secondary">Gallery</Link>
+                  <Link href="/testimonials" onClick={() => setIsOpen(false)} className="text-lg font-medium text-secondary">Testimonials</Link>
                   <Link href="/blog" onClick={() => setIsOpen(false)} className="text-lg font-medium text-secondary">Blog</Link>
-                  <Link href="/about" onClick={() => setIsOpen(false)} className="text-lg font-medium text-secondary">About</Link>
                   <Link href="/contact" onClick={() => setIsOpen(false)} className="text-lg font-medium text-secondary">Contact</Link>
                 </div>
 
