@@ -30,6 +30,7 @@ export default function Contact() {
       `Name: ${get("firstName")} ${get("lastName")}`,
       `Phone: ${get("phone")}`,
       `Email: ${get("email")}`,
+      `Company: ${get("company") || "N/A"}`,
       `Property Address / City: ${get("address")}`,
       `Approximate Acreage: ${get("acreage") || "Not specified"}`,
       `Property Type: ${get("propertyType") || "Not specified"}`,
@@ -118,6 +119,11 @@ export default function Contact() {
                     <Label htmlFor="email">Email Address *</Label>
                     <Input id="email" name="email" type="email" required className="bg-background" />
                   </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="company">Company Name</Label>
+                  <Input id="company" name="company" className="bg-background" />
                 </div>
 
                 <div className="space-y-2">
