@@ -138,15 +138,16 @@ export default function Home() {
                 Index of Work
               </div>
               {[
-                ["01", "Grading"],
-                ["02", "Drainage"],
-                ["03", "Clearing"],
-                ["04", "Ponds"],
-              ].map(([n, t]) => (
-                <div key={n} className="flex items-baseline justify-between border-b py-2.5" style={{ borderColor: "hsl(40 30% 90% / 0.14)" }}>
+                ["01", "Commercial Property Management", "/services/commercial-property-management"],
+                ["02", "Grading", "/services/grading-site-preparation"],
+                ["03", "Drainage", "/services/drainage"],
+                ["04", "Clearing", "/services/land-clearing"],
+                ["05", "Ponds", "/services/pond-waterway-management"],
+              ].map(([n, t, href]) => (
+                <Link key={n} href={href} className="group flex items-baseline justify-between gap-3 border-b py-2.5 transition-colors" style={{ borderColor: "hsl(40 30% 90% / 0.14)" }}>
                   <span className="font-sans text-[11px] font-semibold tabular-nums text-tan">{n}</span>
-                  <span className="font-sans text-sm font-medium text-white/90">{t}</span>
-                </div>
+                  <span className="font-sans text-sm font-medium text-white/90 transition-colors group-hover:text-tan">{t}</span>
+                </Link>
               ))}
             </div>
           </div>
