@@ -1,5 +1,6 @@
 import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
+import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
 import { serviceSchema, breadcrumbSchema } from "@/lib/structured-data";
 import { FeatureRow } from "@/components/layout/FeatureRow";
@@ -24,20 +25,20 @@ export default function IndustrialAgricultural() {
       />
 
       {/* PAGE HERO */}
-      <section className="relative py-32 px-4 bg-secondary text-white overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-100">
-          <img src={heroImg} alt="Tractor on agricultural farm land" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-secondary/55" />
-        </div>
-        <div className="container relative z-10 mx-auto max-w-4xl space-y-6 text-center animate-in fade-in slide-in-from-bottom-8 duration-1000">
-          <h1 className="text-4xl md:text-6xl font-serif font-extrabold tracking-tight text-white">
-            Industrial & Agricultural Land Maintenance — Built for Working Properties
-          </h1>
-          <p className="text-lg md:text-2xl text-white/80 max-w-3xl mx-auto leading-relaxed font-medium">
-            P1 Land & Property Management maintains industrial facilities, farms, rural acreage, and working land at the scale and standard these properties demand. If your land is making money — or supposed to be — we keep it in condition.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="Industrial & Agricultural"
+        title={
+          <>
+            Industrial & Agricultural Land Maintenance —{" "}
+            <em className="font-semibold not-italic text-tan" style={{ fontStyle: "italic" }}>
+              Built for Working Properties
+            </em>
+          </>
+        }
+        subtitle="P1 Land & Property Management maintains industrial facilities, farms, rural acreage, and working land at the scale and standard these properties demand. If your land is making money — or supposed to be — we keep it in condition."
+        image={heroImg}
+        imageAlt="Tractor on agricultural farm land"
+      />
 
       {/* CONTENT SECTIONS */}
       <section className="py-24 px-4 bg-background">

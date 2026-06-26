@@ -1,5 +1,6 @@
 import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
+import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
 import { serviceAreaSchema, breadcrumbSchema } from "@/lib/structured-data";
 import { Link } from "wouter";
@@ -22,20 +23,20 @@ export default function GreenvilleSC() {
         ]}
       />
 
-      <section className="relative py-32 px-4 bg-secondary text-white text-center overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-100">
-          <img src={heroImg} alt="Land Clearing & Property Management in Greenville, SC" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-secondary/55" />
-        </div>
-        <div className="container relative z-10 mx-auto max-w-5xl space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-          <h1 className="text-4xl md:text-6xl font-serif font-extrabold tracking-tight text-white drop-shadow-md">
-            Land Clearing & Property Management in Greenville, SC
-          </h1>
-          <p className="text-lg md:text-2xl text-white/90 max-w-4xl mx-auto leading-relaxed font-medium drop-shadow">
-            P1 Land & Property Management provides full-service land and property care for commercial, agricultural, and large residential properties throughout Greenville, SC and Greenville County. From one-time land clearing and grading projects to ongoing weekly maintenance programs, P1 has the equipment and experience to manage Greenville properties at any scale.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="Service Area · SC"
+        title={
+          <>
+            Land Clearing & Property Management in{" "}
+            <em className="font-semibold not-italic text-tan" style={{ fontStyle: "italic" }}>
+              Greenville, SC
+            </em>
+          </>
+        }
+        subtitle="P1 Land & Property Management provides full-service land and property care for commercial, agricultural, and large residential properties throughout Greenville, SC and Greenville County. From one-time land clearing and grading projects to ongoing weekly maintenance programs, P1 has the equipment and experience to manage Greenville properties at any scale."
+        image={heroImg}
+        imageAlt="Land Clearing & Property Management in Greenville, SC"
+      />
 
       <section className="py-24 px-4 bg-background">
         <div className="container mx-auto max-w-4xl space-y-16">

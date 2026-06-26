@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
+import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
 import { cn } from "@/lib/utils";
 import heroImg from "@/assets/services-hero.png";
@@ -68,20 +69,20 @@ export default function Gallery() {
       />
 
       {/* PAGE HERO */}
-      <section className="relative py-32 px-4 bg-secondary text-white text-center overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-100">
-          <img src={heroImg} alt="P1 land management project work" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-secondary/55" />
-        </div>
-        <div className="container relative z-10 mx-auto max-w-4xl space-y-6">
-          <h1 className="text-4xl md:text-6xl font-serif font-extrabold tracking-tight text-white">
-            Project Gallery
-          </h1>
-          <p className="text-lg md:text-2xl text-white/80 max-w-3xl mx-auto leading-relaxed font-medium">
-            Visual proof of large-acreage work across both of our markets — from rough clearing and grading to finished turf, drainage, and complete property reconstruction.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="Selected Work"
+        title={
+          <>
+            Project{" "}
+            <em className="font-semibold not-italic text-tan" style={{ fontStyle: "italic" }}>
+              Gallery
+            </em>
+          </>
+        }
+        subtitle="Visual proof of large-acreage work across both of our markets — from rough clearing and grading to finished turf, drainage, and complete property reconstruction."
+        image={heroImg}
+        imageAlt="P1 land management project work"
+      />
 
       {/* FILTERS + GRID */}
       <section className="py-20 px-4 bg-background">

@@ -1,6 +1,7 @@
 import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { FeatureRow } from "@/components/layout/FeatureRow";
+import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
 import heroImg from "@/assets/commercial-property.png";
 import whoImg from "@/assets/features/about-who.png";
@@ -15,20 +16,20 @@ export default function About() {
       />
 
       {/* PAGE HERO */}
-      <section className="relative py-32 px-4 bg-secondary text-white text-center overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-100">
-          <img src={heroImg} alt="Commercial property" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-secondary/55" />
-        </div>
-        <div className="container relative z-10 mx-auto max-w-4xl space-y-6">
-          <h1 className="text-4xl md:text-6xl font-serif font-extrabold tracking-tight text-white">
-            Built for the Property Owner Who Needs More Than a Lawn Crew
-          </h1>
-          <p className="text-lg md:text-2xl text-white/80 max-w-3xl mx-auto leading-relaxed font-medium">
-            P1 Land & Property Management was built from the ground up to serve one kind of client: the owner or manager of a large, working property who can't afford downtime, half measures, or contractors who disappear after the first job.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="About P1 · Est. 2009"
+        title={
+          <>
+            Built for the property owner who needs{" "}
+            <em className="font-semibold not-italic text-tan" style={{ fontStyle: "italic" }}>
+              more than a lawn crew
+            </em>
+          </>
+        }
+        subtitle="P1 Land & Property Management was built from the ground up to serve one kind of client: the owner or manager of a large, working property who can't afford downtime, half measures, or contractors who disappear after the first job."
+        image={heroImg}
+        imageAlt="Commercial property"
+      />
 
       {/* OUR STORY */}
       <section className="py-24 px-4 bg-background">

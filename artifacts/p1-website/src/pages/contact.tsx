@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Layout } from "@/components/layout/Layout";
+import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
 import { localBusinessSchema, breadcrumbSchema } from "@/lib/structured-data";
 import { Button } from "@/components/ui/button";
@@ -60,16 +61,18 @@ export default function Contact() {
       />
 
       {/* PAGE HEADLINE */}
-      <section className="bg-secondary text-white py-24 px-4 text-center">
-        <div className="container mx-auto max-w-4xl space-y-6">
-          <h1 className="text-4xl md:text-5xl font-serif font-extrabold tracking-tight text-white">
-            Get a Free On-Site Estimate
-          </h1>
-          <p className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto">
-            Tell us about your property and what you need. We'll schedule a time to walk the land and give you a straight, no-obligation estimate. Most assessments scheduled within 48 hours.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="Get In Touch"
+        title={
+          <>
+            Get a Free{" "}
+            <em className="font-semibold not-italic text-tan" style={{ fontStyle: "italic" }}>
+              On-Site Estimate
+            </em>
+          </>
+        }
+        subtitle="Tell us about your property and what you need. We'll schedule a time to walk the land and give you a straight, no-obligation estimate. Most assessments scheduled within 48 hours."
+      />
 
       <section className="py-24 px-4 bg-background">
         <div className="container mx-auto max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-16">

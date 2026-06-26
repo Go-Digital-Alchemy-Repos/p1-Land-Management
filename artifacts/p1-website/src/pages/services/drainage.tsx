@@ -1,5 +1,6 @@
 import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
+import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
 import { serviceSchema, breadcrumbSchema } from "@/lib/structured-data";
 import { FeatureRow } from "@/components/layout/FeatureRow";
@@ -24,20 +25,21 @@ export default function Drainage() {
       />
 
       {/* PAGE HERO */}
-      <section className="relative py-32 px-4 bg-secondary text-white overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-100">
-          <img src={heroImg} alt="Drainage swale in grassy field" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-secondary/55" />
-        </div>
-        <div className="container relative z-10 mx-auto max-w-4xl space-y-6 text-center animate-in fade-in slide-in-from-bottom-8 duration-1000">
-          <h1 className="text-4xl md:text-6xl font-serif font-extrabold tracking-tight text-white">
-            Drainage Solutions for Large Properties — Greenville, Spartanburg & Charlotte
-          </h1>
-          <p className="text-lg md:text-2xl text-white/80 max-w-3xl mx-auto leading-relaxed font-medium">
-            Standing water, soggy fields, erosion, and drainage failures cost landowners time, money, and turf. P1 designs and installs drainage systems that solve problems at the source — not just mask them.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="Drainage Solutions"
+        title={
+          <>
+            Drainage Solutions for{" "}
+            <em className="font-semibold not-italic text-tan" style={{ fontStyle: "italic" }}>
+              Large Properties
+            </em>{" "}
+            — Greenville, Spartanburg & Charlotte
+          </>
+        }
+        subtitle="Standing water, soggy fields, erosion, and drainage failures cost landowners time, money, and turf. P1 designs and installs drainage systems that solve problems at the source — not just mask them."
+        image={heroImg}
+        imageAlt="Drainage swale in grassy field"
+      />
 
       {/* CONTENT SECTIONS */}
       <section className="py-24 px-4 bg-background">

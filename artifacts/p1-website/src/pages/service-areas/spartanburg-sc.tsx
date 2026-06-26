@@ -1,5 +1,6 @@
 import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
+import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
 import { serviceAreaSchema, breadcrumbSchema } from "@/lib/structured-data";
 import { Link } from "wouter";
@@ -22,20 +23,20 @@ export default function SpartanburgSC() {
         ]}
       />
 
-      <section className="relative py-32 px-4 bg-secondary text-white text-center overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-100">
-          <img src={heroImg} alt="Land Clearing & Property Management in Spartanburg, SC" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-secondary/55" />
-        </div>
-        <div className="container relative z-10 mx-auto max-w-5xl space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-          <h1 className="text-4xl md:text-6xl font-serif font-extrabold tracking-tight text-white drop-shadow-md">
-            Land Clearing & Property Management in Spartanburg, SC
-          </h1>
-          <p className="text-lg md:text-2xl text-white/90 max-w-4xl mx-auto leading-relaxed font-medium drop-shadow">
-            P1 Land & Property Management serves commercial, industrial, and agricultural properties throughout Spartanburg, SC and Spartanburg County. Our full-service land management programs cover everything from initial land clearing and site preparation through ongoing weekly or monthly maintenance — all with the equipment and crew to handle large-acreage properties that standard contractors can't.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="Service Area · SC"
+        title={
+          <>
+            Land Clearing & Property Management in{" "}
+            <em className="font-semibold not-italic text-tan" style={{ fontStyle: "italic" }}>
+              Spartanburg, SC
+            </em>
+          </>
+        }
+        subtitle="P1 Land & Property Management serves commercial, industrial, and agricultural properties throughout Spartanburg, SC and Spartanburg County. Our full-service land management programs cover everything from initial land clearing and site preparation through ongoing weekly or monthly maintenance — all with the equipment and crew to handle large-acreage properties that standard contractors can't."
+        image={heroImg}
+        imageAlt="Land Clearing & Property Management in Spartanburg, SC"
+      />
 
       <section className="py-24 px-4 bg-background">
         <div className="container mx-auto max-w-4xl space-y-16">

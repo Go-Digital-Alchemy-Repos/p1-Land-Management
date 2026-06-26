@@ -1,5 +1,6 @@
 import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
+import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
 import { serviceAreaSchema, breadcrumbSchema } from "@/lib/structured-data";
 import { Link } from "wouter";
@@ -24,20 +25,20 @@ export default function CharlotteRegionNC() {
         ]}
       />
 
-      <section className="relative py-32 px-4 bg-secondary text-white text-center overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-100">
-          <img src={heroImg} alt="Land & Property Management in the Charlotte, NC Region" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-secondary/55" />
-        </div>
-        <div className="container relative z-10 mx-auto max-w-5xl space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-          <h1 className="text-4xl md:text-6xl font-serif font-extrabold tracking-tight text-white drop-shadow-md">
-            Land & Property Management in the Charlotte, NC Region
-          </h1>
-          <p className="text-lg md:text-2xl text-white/90 max-w-4xl mx-auto leading-relaxed font-medium drop-shadow">
-            P1 provides professional land and property management for commercial, agricultural, and large residential properties throughout the Charlotte metro and surrounding areas — from land clearing and grading to weekly maintenance and full property reconstruction.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="Service Area · NC"
+        title={
+          <>
+            Land & Property Management in the{" "}
+            <em className="font-semibold not-italic text-tan" style={{ fontStyle: "italic" }}>
+              Charlotte, NC Region
+            </em>
+          </>
+        }
+        subtitle="P1 provides professional land and property management for commercial, agricultural, and large residential properties throughout the Charlotte metro and surrounding areas — from land clearing and grading to weekly maintenance and full property reconstruction."
+        image={heroImg}
+        imageAlt="Land & Property Management in the Charlotte, NC Region"
+      />
 
       <section className="py-24 px-4 bg-background">
         <div className="container mx-auto max-w-4xl space-y-16">

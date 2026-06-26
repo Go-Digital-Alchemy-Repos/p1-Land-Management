@@ -1,5 +1,6 @@
 import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
+import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
 import heroImg from "@/assets/blog-retention-pond.png";
 
@@ -26,16 +27,20 @@ export default function BlogPost() {
 
       <article className="pb-24">
         {/* POST HERO */}
-        <section className="relative w-full h-[50vh] min-h-[400px] overflow-hidden bg-secondary">
-          <img src={heroImg} alt="Well maintained retention pond" className="absolute inset-0 w-full h-full object-cover opacity-90" />
-          <div className="absolute inset-0 bg-gradient-to-t from-secondary via-secondary/40 to-transparent" />
-          <div className="container relative z-10 mx-auto px-4 h-full flex flex-col justify-end pb-16 max-w-4xl text-center md:text-left">
-            <div className="mb-4 text-primary font-bold tracking-wider uppercase text-sm">Pond Management</div>
-            <h1 className="text-4xl md:text-6xl font-serif font-bold text-white leading-tight drop-shadow-md">
-              How to Manage a Retention Pond on Your Property in South Carolina and North Carolina
-            </h1>
-          </div>
-        </section>
+        <PageHero
+          eyebrow="Pond Management"
+          title={
+            <>
+              How to Manage a{" "}
+              <em className="font-semibold not-italic text-tan" style={{ fontStyle: "italic" }}>
+                Retention Pond
+              </em>{" "}
+              on Your Property in South Carolina and North Carolina
+            </>
+          }
+          image={heroImg}
+          imageAlt="Well maintained retention pond"
+        />
 
         {/* POST CONTENT */}
         <section className="px-4 py-16 bg-background">

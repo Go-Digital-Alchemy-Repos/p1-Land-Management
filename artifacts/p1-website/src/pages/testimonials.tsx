@@ -1,5 +1,6 @@
 import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
+import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
 import { Quote, Star } from "lucide-react";
 import heroImg from "@/assets/service-reconstruction.png";
@@ -65,20 +66,20 @@ export default function Testimonials() {
       />
 
       {/* PAGE HERO */}
-      <section className="relative py-32 px-4 bg-secondary text-white text-center overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-100">
-          <img src={heroImg} alt="Completed property reconstruction project" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-secondary/55" />
-        </div>
-        <div className="container relative z-10 mx-auto max-w-4xl space-y-6">
-          <h1 className="text-4xl md:text-6xl font-serif font-extrabold tracking-tight text-white">
-            What Our Clients Say
-          </h1>
-          <p className="text-lg md:text-2xl text-white/80 max-w-3xl mx-auto leading-relaxed font-medium">
-            Commercial, agricultural, and large residential landowners across the Carolinas trust P1 to manage the full life of their property. Here's what they have to say.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="Client Stories"
+        title={
+          <>
+            What Our{" "}
+            <em className="font-semibold not-italic text-tan" style={{ fontStyle: "italic" }}>
+              Clients Say
+            </em>
+          </>
+        }
+        subtitle="Commercial, agricultural, and large residential landowners across the Carolinas trust P1 to manage the full life of their property. Here's what they have to say."
+        image={heroImg}
+        imageAlt="Completed property reconstruction project"
+      />
 
       {/* TESTIMONIALS GRID */}
       <section className="py-24 px-4 bg-background">

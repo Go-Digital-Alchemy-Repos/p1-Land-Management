@@ -1,5 +1,6 @@
 import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
+import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
 import { breadcrumbSchema } from "@/lib/structured-data";
 import { Link } from "wouter";
@@ -22,20 +23,20 @@ export default function ServicesIndex() {
       />
 
       {/* PAGE HERO */}
-      <section className="relative py-32 px-4 bg-secondary text-white text-center overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-100">
-          <img src={heroImg} alt="Heavy equipment on a large property" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-secondary/55" />
-        </div>
-        <div className="container relative z-10 mx-auto max-w-4xl space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-          <h1 className="text-4xl md:text-6xl font-serif font-extrabold tracking-tight text-white">
-            Everything Your Property Needs
-          </h1>
-          <p className="text-lg md:text-2xl text-white/80 max-w-3xl mx-auto leading-relaxed font-medium">
-            From the first cut of land clearing to the ongoing maintenance of fine turf, P1 handles the full lifecycle of your large-acreage property in the Carolinas. One contractor. No gaps.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="What We Do"
+        title={
+          <>
+            Everything{" "}
+            <em className="font-semibold not-italic text-tan" style={{ fontStyle: "italic" }}>
+              Your Property Needs
+            </em>
+          </>
+        }
+        subtitle="From the first cut of land clearing to the ongoing maintenance of fine turf, P1 handles the full lifecycle of your large-acreage property in the Carolinas. One contractor. No gaps."
+        image={heroImg}
+        imageAlt="Heavy equipment on a large property"
+      />
 
       {/* SERVICES GRID */}
       <section className="py-24 px-4 bg-background">

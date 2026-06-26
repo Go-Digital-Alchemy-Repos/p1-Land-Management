@@ -1,5 +1,6 @@
 import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
+import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
 import { breadcrumbSchema } from "@/lib/structured-data";
 import { Link } from "wouter";
@@ -19,20 +20,20 @@ export default function ServiceAreasIndex() {
       />
       
       {/* PAGE HERO */}
-      <section className="relative py-32 px-4 bg-secondary text-white text-center overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-100">
-          <img src={heroImg} alt="Heavy equipment clearing land in the Carolinas" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-secondary/55" />
-        </div>
-        <div className="container relative z-10 mx-auto max-w-4xl space-y-6">
-          <h1 className="text-4xl md:text-6xl font-serif font-extrabold tracking-tight text-white">
-            Serving Two of the Carolinas' Fastest-Growing Markets
-          </h1>
-          <p className="text-lg md:text-2xl text-white/80 max-w-3xl mx-auto leading-relaxed font-medium">
-            From the Greenville-Spartanburg corridor to the greater Charlotte metro area, we provide full-service land and property management for properties 1 acre and larger.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="Where We Work"
+        title={
+          <>
+            Serving Two of the Carolinas'{" "}
+            <em className="font-semibold not-italic text-tan" style={{ fontStyle: "italic" }}>
+              Fastest-Growing Markets
+            </em>
+          </>
+        }
+        subtitle="From the Greenville-Spartanburg corridor to the greater Charlotte metro area, we provide full-service land and property management for properties 1 acre and larger."
+        image={heroImg}
+        imageAlt="Heavy equipment clearing land in the Carolinas"
+      />
 
       {/* MARKETS */}
       <section className="py-24 px-4 bg-background">

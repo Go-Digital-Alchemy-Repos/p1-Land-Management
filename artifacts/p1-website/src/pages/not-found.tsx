@@ -1,5 +1,6 @@
 import { Link } from "wouter";
 import { Layout } from "@/components/layout/Layout";
+import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
 import { Button } from "@/components/ui/button";
 import { Home, Hammer, MapPin, Phone, ArrowRight } from "lucide-react";
@@ -41,44 +42,39 @@ export default function NotFound() {
       />
 
       {/* PAGE HERO */}
-      <section className="relative py-28 md:py-36 px-4 bg-secondary text-white text-center overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-10">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/40 to-transparent" />
+      <PageHero
+        eyebrow="404"
+        title={
+          <>
+            Looks Like This Ground{" "}
+            <em className="font-semibold not-italic text-tan" style={{ fontStyle: "italic" }}>
+              Hasn't Been Cleared Yet
+            </em>
+          </>
+        }
+        subtitle="The page you're looking for couldn't be found — it may have been moved or never existed. But your property still needs work, and we're here to help you find your way."
+      >
+        <div className="flex flex-col sm:flex-row items-center gap-4">
+          <Button
+            asChild
+            size="lg"
+            className="text-base px-8 h-14 w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground font-bold"
+          >
+            <Link href="/">Back to Home</Link>
+          </Button>
+          <Button
+            asChild
+            variant="outline"
+            size="lg"
+            className="text-base px-8 h-14 w-full sm:w-auto border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white font-bold"
+          >
+            <a href="tel:7042218928">
+              <Phone className="h-4 w-4" />
+              Call (704) 221-8928
+            </a>
+          </Button>
         </div>
-        <div className="container relative z-10 mx-auto max-w-3xl space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-          <p className="text-7xl md:text-9xl font-sans font-extrabold tracking-tight text-primary">
-            404
-          </p>
-          <h1 className="text-3xl md:text-5xl font-serif font-extrabold tracking-tight text-white">
-            Looks Like This Ground Hasn't Been Cleared Yet
-          </h1>
-          <p className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto leading-relaxed font-medium">
-            The page you're looking for couldn't be found — it may have been
-            moved or never existed. But your property still needs work, and
-            we're here to help you find your way.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-            <Button
-              asChild
-              size="lg"
-              className="text-base px-8 h-14 w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground font-bold"
-            >
-              <Link href="/">Back to Home</Link>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              size="lg"
-              className="text-base px-8 h-14 w-full sm:w-auto border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white font-bold"
-            >
-              <a href="tel:7042218928">
-                <Phone className="h-4 w-4" />
-                Call (704) 221-8928
-              </a>
-            </Button>
-          </div>
-        </div>
-      </section>
+      </PageHero>
 
       {/* QUICK LINKS */}
       <section className="py-20 md:py-24 px-4 bg-background">

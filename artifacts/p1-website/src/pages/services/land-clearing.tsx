@@ -1,5 +1,6 @@
 import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
+import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
 import { serviceSchema, breadcrumbSchema } from "@/lib/structured-data";
 import { FeatureRow } from "@/components/layout/FeatureRow";
@@ -25,20 +26,21 @@ export default function LandClearing() {
       />
 
       {/* PAGE HERO */}
-      <section className="relative py-32 px-4 bg-secondary text-white overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-100">
-          <img src={heroImg} alt="Excavator clearing brush in woods" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-secondary/55" />
-        </div>
-        <div className="container relative z-10 mx-auto max-w-4xl space-y-6 text-center animate-in fade-in slide-in-from-bottom-8 duration-1000">
-          <h1 className="text-4xl md:text-6xl font-serif font-extrabold tracking-tight text-white">
-            Land Clearing for Large-Acreage Properties in Upstate SC and Charlotte NC
-          </h1>
-          <p className="text-lg md:text-2xl text-white/80 max-w-3xl mx-auto leading-relaxed font-medium">
-            From clearing a few overgrown acres to opening up 100+ acres for development, P1 Land & Property Management has the equipment and experience to do it efficiently, cleanly, and on schedule.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="Land Clearing"
+        title={
+          <>
+            Land Clearing for{" "}
+            <em className="font-semibold not-italic text-tan" style={{ fontStyle: "italic" }}>
+              Large-Acreage Properties
+            </em>{" "}
+            in Upstate SC and Charlotte NC
+          </>
+        }
+        subtitle="From clearing a few overgrown acres to opening up 100+ acres for development, P1 Land & Property Management has the equipment and experience to do it efficiently, cleanly, and on schedule."
+        image={heroImg}
+        imageAlt="Excavator clearing brush in woods"
+      />
 
       {/* CONTENT SECTIONS */}
       <section className="py-24 px-4 bg-background">

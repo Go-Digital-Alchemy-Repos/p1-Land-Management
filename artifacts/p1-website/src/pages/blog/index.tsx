@@ -1,5 +1,6 @@
 import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
+import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
 import { Link } from "wouter";
 
@@ -51,19 +52,18 @@ export default function BlogIndex() {
       />
       
       {/* PAGE HERO */}
-      <section className="relative py-24 px-4 bg-secondary text-white text-center overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-10 mix-blend-overlay">
-          <div className="absolute inset-0 bg-secondary" />
-        </div>
-        <div className="container relative z-10 mx-auto max-w-4xl space-y-6">
-          <h1 className="text-4xl md:text-6xl font-serif font-extrabold tracking-tight text-white">
-            Land & Property Insights
-          </h1>
-          <p className="text-lg md:text-2xl text-white/80 max-w-3xl mx-auto leading-relaxed font-medium">
-            Expertise, guides, and straight talk on managing large-acreage properties across the Carolinas.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="Insights"
+        title={
+          <>
+            Land &{" "}
+            <em className="font-semibold not-italic text-tan" style={{ fontStyle: "italic" }}>
+              Property Insights
+            </em>
+          </>
+        }
+        subtitle="Expertise, guides, and straight talk on managing large-acreage properties across the Carolinas."
+      />
 
       {/* BLOG LISTING */}
       <section className="py-24 px-4 bg-background">

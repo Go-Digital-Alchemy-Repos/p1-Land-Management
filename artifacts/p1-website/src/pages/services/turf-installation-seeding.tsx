@@ -1,5 +1,6 @@
 import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
+import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
 import { serviceSchema, breadcrumbSchema } from "@/lib/structured-data";
 import { FeatureRow } from "@/components/layout/FeatureRow";
@@ -25,20 +26,21 @@ export default function TurfInstallationSeeding() {
       />
 
       {/* PAGE HERO */}
-      <section className="relative py-32 px-4 bg-secondary text-white overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-100">
-          <img src={heroImg} alt="Lush new sod and grass" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-secondary/55" />
-        </div>
-        <div className="container relative z-10 mx-auto max-w-4xl space-y-6 text-center animate-in fade-in slide-in-from-bottom-8 duration-1000">
-          <h1 className="text-4xl md:text-6xl font-serif font-extrabold tracking-tight text-white">
-            Turf Installation & Seed Planting for Large-Acreage Properties in the Carolinas
-          </h1>
-          <p className="text-lg md:text-2xl text-white/80 max-w-3xl mx-auto leading-relaxed font-medium">
-            From commercial grounds to farm pastures to rural residential acreage, P1 installs turf that establishes strong, lasts long, and performs in the Carolinas' climate — at any scale.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="Turf Installation & Seeding"
+        title={
+          <>
+            Turf Installation & Seed Planting for{" "}
+            <em className="font-semibold not-italic text-tan" style={{ fontStyle: "italic" }}>
+              Large-Acreage Properties
+            </em>{" "}
+            in the Carolinas
+          </>
+        }
+        subtitle="From commercial grounds to farm pastures to rural residential acreage, P1 installs turf that establishes strong, lasts long, and performs in the Carolinas' climate — at any scale."
+        image={heroImg}
+        imageAlt="Lush new sod and grass"
+      />
 
       {/* CONTENT SECTIONS */}
       <section className="py-24 px-4 bg-background">
