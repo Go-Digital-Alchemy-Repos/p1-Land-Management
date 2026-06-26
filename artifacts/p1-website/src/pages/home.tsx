@@ -71,7 +71,7 @@ function Kicker({ children, onDark = false }: { children: React.ReactNode; onDar
   const bar = onDark ? "bg-clay" : "bg-clay-ink";
   return (
     <span
-      className={`inline-flex items-center gap-2 font-serif text-[11px] font-bold uppercase ${color}`}
+      className={`inline-flex items-center gap-2 font-sans text-[11px] font-bold uppercase ${color}`}
       style={{ letterSpacing: "0.28em" }}
     >
       <span className={`inline-block h-px w-7 ${bar}`} />
@@ -119,13 +119,13 @@ export default function Home() {
               Grading, drainage, clearing and ponds for big properties across Upstate South Carolina and the Charlotte metro. Heavy-equipment professionals for farms, estates, HOAs and commercial sites.
             </p>
             <div className="mt-9 flex flex-wrap items-center gap-4">
-              <Button asChild size="lg" className="group h-12 rounded-[3px] border-0 bg-primary px-7 font-serif text-[15px] font-bold text-primary-foreground hover:bg-primary/90" style={{ boxShadow: "0 18px 40px -14px hsl(206 70% 48%)" }}>
+              <Button asChild size="lg" className="group h-12 rounded-[3px] border-0 bg-primary px-7 font-sans text-[15px] font-bold text-primary-foreground hover:bg-primary/90" style={{ boxShadow: "0 18px 40px -14px hsl(206 70% 48%)" }}>
                 <Link href="/contact">
                   Get a Free Quote
                   <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </Link>
               </Button>
-              <a href="tel:7042218928" className="inline-flex items-center gap-2 rounded-[3px] border px-7 py-2.5 font-serif text-[15px] font-bold text-white transition-colors hover:bg-white/10" style={{ borderColor: "hsl(40 30% 90% / 0.35)" }}>
+              <a href="tel:7042218928" className="inline-flex items-center gap-2 rounded-[3px] border px-7 py-2.5 font-sans text-[15px] font-bold text-white transition-colors hover:bg-white/10" style={{ borderColor: "hsl(40 30% 90% / 0.35)" }}>
                 <Phone className="h-4 w-4" />
                 Call (704) 221-8928
               </a>
@@ -134,7 +134,7 @@ export default function Home() {
 
           <div className="col-span-12 hidden lg:col-span-4 lg:flex lg:items-end lg:justify-end">
             <div className="w-full max-w-[260px] border-l pl-6" style={{ borderColor: "hsl(40 30% 90% / 0.22)" }}>
-              <div className="mb-5 font-serif text-[10px] font-bold uppercase text-tan" style={{ letterSpacing: "0.3em" }}>
+              <div className="mb-5 font-sans text-[10px] font-bold uppercase text-tan" style={{ letterSpacing: "0.3em" }}>
                 Index of Work
               </div>
               {[
@@ -144,8 +144,8 @@ export default function Home() {
                 ["04", "Ponds"],
               ].map(([n, t]) => (
                 <div key={n} className="flex items-baseline justify-between border-b py-2.5" style={{ borderColor: "hsl(40 30% 90% / 0.14)" }}>
-                  <span className="font-serif text-[11px] font-semibold tabular-nums text-tan">{n}</span>
-                  <span className="font-serif text-sm font-medium text-white/90">{t}</span>
+                  <span className="font-sans text-[11px] font-semibold tabular-nums text-tan">{n}</span>
+                  <span className="font-sans text-sm font-medium text-white/90">{t}</span>
                 </div>
               ))}
             </div>
@@ -167,7 +167,7 @@ export default function Home() {
                 style={{ borderRight: i < trust.length - 1 ? "1px solid hsl(215 30% 15% / 0.07)" : "none" }}
               >
                 <t.icon className="h-5 w-5 shrink-0 text-primary" />
-                <span className="font-serif text-[13px] font-bold leading-tight text-secondary">{t.label}</span>
+                <span className="font-sans text-[13px] font-bold leading-tight text-secondary">{t.label}</span>
               </div>
             ))}
           </div>
@@ -204,7 +204,7 @@ export default function Home() {
                 <div className="relative h-52 overflow-hidden">
                   <img src={s.img} alt={s.title} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
                   <div className="absolute inset-0" style={{ background: "linear-gradient(to top, hsl(215 50% 11% / 0.55), transparent 55%)" }} />
-                  <span className="absolute left-4 top-4 flex h-9 w-9 items-center justify-center rounded-[3px] font-serif text-xs font-bold tabular-nums text-primary backdrop-blur" style={{ background: "hsl(40 22% 97% / 0.92)" }}>
+                  <span className="absolute left-4 top-4 flex h-9 w-9 items-center justify-center rounded-[3px] font-sans text-xs font-bold tabular-nums text-primary backdrop-blur" style={{ background: "hsl(40 22% 97% / 0.92)" }}>
                     {s.n}
                   </span>
                   <s.icon className="absolute bottom-4 right-4 h-6 w-6 text-white/90" />
@@ -212,7 +212,7 @@ export default function Home() {
                 <div className="p-6">
                   <h3 className="font-serif text-xl font-bold tracking-tight text-secondary">{s.title}</h3>
                   <p className="mt-2 text-[14px] leading-relaxed" style={{ color: "hsl(215 18% 38%)" }}>{s.desc}</p>
-                  <div className="mt-4 inline-flex items-center gap-1.5 font-serif text-[12px] font-bold uppercase text-clay-ink opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{ letterSpacing: "0.12em" }}>
+                  <div className="mt-4 inline-flex items-center gap-1.5 font-sans text-[12px] font-bold uppercase text-clay-ink opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{ letterSpacing: "0.12em" }}>
                     Learn more <ArrowRight className="h-3.5 w-3.5" />
                   </div>
                 </div>
@@ -237,7 +237,7 @@ export default function Home() {
                 <img src={featureImg} alt="Grading for new construction" className="h-[420px] w-full object-cover" />
               </div>
               <div className="absolute -bottom-6 left-8 z-10 rounded-[3px] bg-navy px-5 py-4 text-white" style={{ boxShadow: "0 20px 40px -18px hsl(215 45% 15%)" }}>
-                <div className="font-serif text-3xl font-black leading-none text-tan">±0.1"</div>
+                <div className="font-sans text-3xl font-black leading-none text-tan">±0.1"</div>
                 <div className="mt-1 text-[10px] font-semibold uppercase text-white" style={{ letterSpacing: "0.22em" }}>Grade tolerance</div>
               </div>
             </div>
@@ -266,7 +266,7 @@ export default function Home() {
               ))}
             </ul>
             <div className="mt-8">
-              <Link href="/services/grading-site-preparation" className="inline-flex items-center gap-2 font-serif text-sm font-bold uppercase text-primary" style={{ letterSpacing: "0.1em" }}>
+              <Link href="/services/grading-site-preparation" className="inline-flex items-center gap-2 font-sans text-sm font-bold uppercase text-primary" style={{ letterSpacing: "0.1em" }}>
                 Explore site prep
                 <ArrowUpRight className="h-4 w-4" />
               </Link>
@@ -292,7 +292,7 @@ export default function Home() {
               <p className="mt-5 max-w-sm text-[15px] leading-relaxed" style={{ color: "hsl(40 20% 92% / 0.7)" }}>
                 Owners choose P1 because we bring the equipment, expertise and discipline that big properties demand — and we stand behind every grade we cut.
               </p>
-              <div className="mt-8 inline-flex items-center gap-2 rounded-[3px] px-4 py-2 font-serif text-[12px] font-bold uppercase" style={{ background: "hsl(145 40% 35% / 0.18)", color: "hsl(145 45% 70%)", letterSpacing: "0.16em" }}>
+              <div className="mt-8 inline-flex items-center gap-2 rounded-[3px] px-4 py-2 font-sans text-[12px] font-bold uppercase" style={{ background: "hsl(145 40% 35% / 0.18)", color: "hsl(145 45% 70%)", letterSpacing: "0.16em" }}>
                 <ShieldCheck className="h-4 w-4" />
                 Licensed &amp; Insured
               </div>
@@ -306,7 +306,7 @@ export default function Home() {
                       <span className="flex h-11 w-11 items-center justify-center rounded-[3px]" style={{ background: "hsl(208 64% 40% / 0.18)" }}>
                         <v.icon className="h-5 w-5" style={{ color: "hsl(206 70% 48%)" }} />
                       </span>
-                      <span className="font-serif text-2xl font-black tabular-nums" style={{ color: "hsl(40 30% 90% / 0.16)" }}>{v.n}</span>
+                      <span className="font-sans text-2xl font-black tabular-nums" style={{ color: "hsl(40 30% 90% / 0.16)" }}>{v.n}</span>
                     </div>
                     <h3 className="mt-5 font-serif text-lg font-bold text-white">{v.title}</h3>
                     <p className="mt-2 text-[14px] leading-relaxed" style={{ color: "hsl(40 20% 92% / 0.66)" }}>{v.desc}</p>
@@ -333,13 +333,13 @@ export default function Home() {
             </div>
             <div className="col-span-12 md:col-span-7 md:pl-4">
               <Quote className="h-10 w-10 text-tan" />
-              <blockquote className="mt-5 font-display text-[clamp(1.4rem,2.6vw,2rem)] font-light leading-[1.25] tracking-[-0.01em] text-secondary">
+              <blockquote className="mt-5 font-sans text-[clamp(1.4rem,2.6vw,2rem)] font-light leading-[1.25] tracking-[-0.01em] text-secondary">
                 "P1 took over our 40-acre commercial park and fixed drainage issues we'd fought for years. Their crew is completely self-sufficient — and the grade work is flawless."
               </blockquote>
               <div className="mt-7 flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary font-serif text-sm font-black text-white">MT</div>
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary font-sans text-sm font-black text-white">MT</div>
                 <div>
-                  <div className="font-serif font-bold text-secondary">Marcus T.</div>
+                  <div className="font-sans font-bold text-secondary">Marcus T.</div>
                   <div className="text-[13px]" style={{ color: "hsl(215 18% 42%)" }}>Property Manager · Spartanburg, SC</div>
                 </div>
               </div>
@@ -372,7 +372,7 @@ export default function Home() {
             </div>
           </div>
           <div className="mt-10 text-center">
-            <Link href="/service-areas" className="inline-flex items-center gap-2 font-serif text-sm font-bold uppercase text-primary" style={{ letterSpacing: "0.1em" }}>
+            <Link href="/service-areas" className="inline-flex items-center gap-2 font-sans text-sm font-bold uppercase text-primary" style={{ letterSpacing: "0.1em" }}>
               View all service areas
               <ArrowUpRight className="h-4 w-4" />
             </Link>

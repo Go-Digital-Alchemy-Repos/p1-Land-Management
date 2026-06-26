@@ -16,7 +16,7 @@ export function SiteFooter() {
             Full-service land and property management for commercial, agricultural, and large residential properties 1 acre and larger across Upstate SC and the Charlotte, NC region.
           </p>
           <div className="space-y-2 pt-2">
-            <a href="tel:7042218928" className="flex items-center gap-2 text-xl font-serif font-bold hover:text-primary transition-colors">
+            <a href="tel:7042218928" className="flex items-center gap-2 text-xl font-sans font-bold hover:text-primary transition-colors">
               <Phone className="h-5 w-5 text-primary" />
               (704) 221-8928
             </a>

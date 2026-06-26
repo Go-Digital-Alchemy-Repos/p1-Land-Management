@@ -99,7 +99,7 @@ export default function Testimonials() {
                   ))}
                 </div>
                 <div className="border-t border-border pt-4">
-                  <p className="font-serif font-bold text-secondary">{t.name}</p>
+                  <p className="font-sans font-bold text-secondary">{t.name}</p>
                   <p className="text-sm text-secondary/60">{t.detail}</p>
                   <p className="text-xs font-semibold uppercase tracking-wide text-primary mt-2">
                     {t.category}

@@ -46,7 +46,7 @@ export default function NotFound() {
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/40 to-transparent" />
         </div>
         <div className="container relative z-10 mx-auto max-w-3xl space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-          <p className="text-7xl md:text-9xl font-serif font-extrabold tracking-tight text-primary">
+          <p className="text-7xl md:text-9xl font-sans font-extrabold tracking-tight text-primary">
             404
           </p>
           <h1 className="text-3xl md:text-5xl font-serif font-extrabold tracking-tight text-white">
