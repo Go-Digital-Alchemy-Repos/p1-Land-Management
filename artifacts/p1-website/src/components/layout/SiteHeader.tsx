@@ -56,7 +56,7 @@ export function SiteHeader() {
                   <Link href={s.href} className="cursor-pointer">{s.name}</Link>
                 </DropdownMenuItem>
               ))}
-              <DropdownMenuItem asChild className="font-bold text-primary mt-2 border-t">
+              <DropdownMenuItem asChild className="font-bold text-primary mt-2 border-t border-[#ededed]">
                 <Link href="/services" className="cursor-pointer">View All Services</Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
