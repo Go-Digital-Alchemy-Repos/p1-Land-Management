@@ -3,7 +3,7 @@ import { FinalCTA } from "@/components/layout/FinalCTA";
 import { ContourField } from "@/components/layout/ContourField";
 import { IndexOfWork } from "@/components/layout/IndexOfWork";
 import { SEO } from "@/components/seo";
-import { localBusinessSchema } from "@/lib/structured-data";
+import { localBusinessSchema, faqSchema } from "@/lib/structured-data";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import heroImg from "@/assets/hero-bg.png";
@@ -60,6 +60,29 @@ const values = [
   { n: "04", title: "Dependable Scheduling", desc: "Crews that show up, communicate and finish on the timeline we commit to.", icon: CalendarCheck },
 ];
 
+const FAQS = [
+  {
+    question: "What does P1 Land & Property Management do?",
+    answer:
+      "P1 is a full-service land and property management company. We handle land clearing and forestry mulching, fine grading and site preparation, drainage solutions, turf installation and seeding, tree and brush management, pond and waterway management, commercial property management, and complete property reconstruction — all in-house with owned heavy equipment.",
+  },
+  {
+    question: "Is there a minimum property size for P1's services?",
+    answer:
+      "Yes. P1 specializes in properties 1 acre and larger — commercial sites, industrial and agricultural land, HOAs, farms, estates, and large residential acreage. That focus lets us bring the heavy equipment and expertise that big properties demand.",
+  },
+  {
+    question: "What areas does P1 Land & Property Management serve?",
+    answer:
+      "P1 serves Upstate South Carolina — including Greenville, Spartanburg, Anderson, and Lancaster County — and the greater Charlotte, NC region, including Charlotte, Concord, Mooresville and Lake Norman, Gastonia, and Union County.",
+  },
+  {
+    question: "How do I get an estimate from P1?",
+    answer:
+      "Call (704) 221-8928 or request a free quote through our online contact form. We'll discuss your property and goals, schedule a site visit if needed, and provide a clear, written estimate — free of charge and with no obligation.",
+  },
+];
+
 const trust = [
   { label: "Licensed & Insured", icon: ShieldCheck },
   { label: "Upstate SC + Charlotte NC", icon: MapPin },
@@ -87,7 +110,7 @@ export default function Home() {
       <SEO
         title="P1 Land & Property Management | Upstate SC & Charlotte NC"
         description="Grading, drainage, clearing, ponds and full property management for large acreage across Upstate South Carolina and the Charlotte, NC region. Call (704) 221-8928."
-        jsonLd={localBusinessSchema()}
+        jsonLd={[localBusinessSchema(), faqSchema(FAQS)]}
       />
 
       {/* HERO */}
@@ -363,6 +386,34 @@ export default function Home() {
               <ArrowUpRight className="h-4 w-4" />
             </Link>
           </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="bg-background pb-24">
+        <div className="mx-auto max-w-[900px] px-6">
+          <div className="mb-12 text-center">
+            <Kicker>Common Questions</Kicker>
+            <h2 className="mt-4 font-display text-[clamp(1.9rem,4vw,3rem)] font-light leading-[1.05] tracking-[-0.02em] text-secondary">
+              Frequently asked questions.
+            </h2>
+          </div>
+          <div className="space-y-6">
+            {FAQS.map((f) => (
+              <div
+                key={f.question}
+                className="rounded-[4px] border bg-white p-8"
+                style={{ borderColor: "hsl(215 30% 15% / 0.08)", boxShadow: "0 14px 40px -30px hsl(215 45% 15%)" }}
+              >
+                <h3 className="font-serif text-xl font-bold text-secondary">{f.question}</h3>
+                <p className="mt-3 leading-relaxed" style={{ color: "hsl(215 20% 35%)" }}>{f.answer}</p>
+              </div>
+            ))}
+          </div>
+          <p className="mt-10 border-l-4 border-primary pl-4 font-bold text-secondary">
+            Still have questions? Call <a href="tel:7042218928" className="text-primary hover:underline">+1 (704) 221-8928</a> or{" "}
+            <Link href="/contact" className="text-primary hover:underline">request a free estimate online</Link>.
+          </p>
         </div>
       </section>
 

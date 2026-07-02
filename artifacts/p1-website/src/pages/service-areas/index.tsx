@@ -2,12 +2,35 @@ import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
-import { breadcrumbSchema } from "@/lib/structured-data";
+import { breadcrumbSchema, faqSchema } from "@/lib/structured-data";
 import { Link } from "wouter";
 import heroImg from "@/assets/hero-service-areas.png";
 import unionCountyImg from "@/assets/features/union-county-equestrian.png";
 import lancasterCountyImg from "@/assets/features/lancaster-sitework.png";
 import { MapPin, Map, ArrowRight } from "lucide-react";
+
+const FAQS = [
+  {
+    question: "Which regions does P1 Land & Property Management cover?",
+    answer:
+      "P1 covers two markets in the Carolinas: Upstate South Carolina — including Greenville, Spartanburg, Anderson, and Lancaster County — and the greater Charlotte, NC region, including Charlotte, Concord, Mooresville and Lake Norman, Gastonia, and Union County.",
+  },
+  {
+    question: "Will P1 travel to properties outside the cities listed on this page?",
+    answer:
+      "Yes. The cities and counties listed are our core markets, but P1 regularly works on rural and unincorporated acreage throughout Upstate South Carolina and the Charlotte metro. If your property is 1 acre or larger and in the general region, call (704) 221-8928 and we'll confirm coverage.",
+  },
+  {
+    question: "Are the same services available in every service area?",
+    answer:
+      "Yes. Every market gets P1's full service lineup — land clearing and forestry mulching, fine grading and site preparation, drainage solutions, turf installation, tree services, pond and waterway management, commercial property management, and full property reconstruction.",
+  },
+  {
+    question: "How do I find out if P1 serves my property?",
+    answer:
+      "The fastest way is to call (704) 221-8928 or request a free estimate online. Tell us where the property is located and what you need done, and we'll let you know right away whether it falls within our service area and schedule a site visit.",
+  },
+];
 
 export default function ServiceAreasIndex() {
   return (
@@ -15,10 +38,13 @@ export default function ServiceAreasIndex() {
       <SEO 
         title="Service Areas | P1 Land & Property Management"
         description="P1 Land & Property Management serves commercial, agricultural, and large residential properties across Upstate South Carolina and the Charlotte, NC region."
-        jsonLd={breadcrumbSchema([
-          { name: "Home", path: "/" },
-          { name: "Service Areas", path: "/service-areas" },
-        ])}
+        jsonLd={[
+          breadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Service Areas", path: "/service-areas" },
+          ]),
+          faqSchema(FAQS),
+        ]}
       />
       
       {/* PAGE HERO */}
@@ -164,6 +190,21 @@ export default function ServiceAreasIndex() {
                 </div>
               </Link>
             </div>
+          </div>
+
+          <div className="mx-auto max-w-4xl space-y-6">
+            <h2 className="text-2xl font-serif font-bold text-secondary border-b border-border pb-4">Service Area FAQs</h2>
+            <div className="space-y-6">
+              {FAQS.map((f) => (
+                <div key={f.question} className="bg-card border border-card-border rounded-xl p-6 shadow-sm space-y-2">
+                  <h3 className="text-lg font-serif font-bold text-secondary">{f.question}</h3>
+                  <p className="text-secondary/80 leading-relaxed">{f.answer}</p>
+                </div>
+              ))}
+            </div>
+            <p className="font-bold text-secondary mt-6 border-l-4 border-primary pl-4">
+              Call <a href="tel:7042218928" className="text-primary hover:underline">+1 (704) 221-8928</a> or <Link href="/contact" className="text-primary hover:underline">request a free estimate online</Link> to confirm coverage for your property.
+            </p>
           </div>
         </div>
       </section>
