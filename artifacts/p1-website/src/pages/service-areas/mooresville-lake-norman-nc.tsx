@@ -2,10 +2,33 @@ import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
-import { serviceAreaSchema, breadcrumbSchema } from "@/lib/structured-data";
+import { serviceAreaSchema, breadcrumbSchema, faqSchema } from "@/lib/structured-data";
 import { Link } from "wouter";
 import heroImg from "@/assets/hero-lake-norman.png";
 import { CheckCircle2 } from "lucide-react";
+
+const FAQS = [
+  {
+    question: "What areas around Lake Norman does P1 serve?",
+    answer:
+      "P1 serves the entire Lake Norman region — Mooresville, Davidson, Cornelius, Huntersville, Troutman, Sherrills Ford, and Denver — including waterfront estates, rural acreage, and commercial properties 1 acre and larger.",
+  },
+  {
+    question: "Can P1 help with shoreline erosion on Lake Norman properties?",
+    answer:
+      "Yes. P1 provides shoreline restoration, erosion control on steep lakeside slopes, drainage design for sloped terrain, and pond and waterway maintenance — the specialized work that waterfront properties around Lake Norman regularly need.",
+  },
+  {
+    question: "Does P1 maintain large estates near Mooresville year-round?",
+    answer:
+      "Yes. P1 offers ongoing estate and rural property maintenance programs covering turf, tree care, drainage, and pond management, so large Lake Norman properties stay in top condition through every season.",
+  },
+  {
+    question: "What size properties does P1 work on near Lake Norman?",
+    answer:
+      "P1 focuses on properties 1 acre and larger — waterfront estates, rural acreage, and commercial sites — bringing the equipment and expertise that sloped, lakeside land demands.",
+  },
+];
 
 export default function MooresvilleLakeNormanNC() {
   return (
@@ -20,6 +43,7 @@ export default function MooresvilleLakeNormanNC() {
             { name: "Service Areas", path: "/service-areas" },
             { name: "Mooresville & Lake Norman, NC", path: "/service-areas/mooresville-lake-norman-nc" },
           ]),
+          faqSchema(FAQS),
         ]}
       />
 
@@ -71,6 +95,18 @@ export default function MooresvilleLakeNormanNC() {
                   Call <a href="tel:7042218928" className="text-primary hover:underline">+1 (704) 221-8928</a> or <Link href="/contact" className="text-primary hover:underline">request a free estimate online</Link> to discuss your property.
                 </p>
               </div>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <h2 className="text-2xl font-serif font-bold text-secondary border-b border-border pb-4">Mooresville & Lake Norman Land & Property Management FAQs</h2>
+            <div className="space-y-6">
+              {FAQS.map((f) => (
+                <div key={f.question} className="bg-card border border-card-border rounded-xl p-6 shadow-sm space-y-2">
+                  <h3 className="text-lg font-serif font-bold text-secondary">{f.question}</h3>
+                  <p className="text-secondary/80 leading-relaxed">{f.answer}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>

@@ -2,10 +2,33 @@ import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
-import { serviceAreaSchema, breadcrumbSchema } from "@/lib/structured-data";
+import { serviceAreaSchema, breadcrumbSchema, faqSchema } from "@/lib/structured-data";
 import { Link } from "wouter";
 import heroImg from "@/assets/hero-charlotte-metro.png";
 import { CheckCircle2 } from "lucide-react";
+
+const FAQS = [
+  {
+    question: "What areas around Concord does P1 serve?",
+    answer:
+      "P1 serves Concord and all of Cabarrus County — including Kannapolis, Harrisburg, Mount Pleasant, and Midland — as well as the surrounding rural acreage, for properties 1 acre and larger.",
+  },
+  {
+    question: "Does P1 handle site preparation for commercial development in Concord?",
+    answer:
+      "Yes. P1 provides land clearing, fine grading, drainage installation, and full site preparation for Concord's growing commercial corridors, including the areas around Concord Mills and the I-85 corridor.",
+  },
+  {
+    question: "Can P1 maintain agricultural and rural land in Cabarrus County?",
+    answer:
+      "Yes. P1 works with farm and rural landowners across Cabarrus County on pasture maintenance, land clearing, access-road grading, drainage correction, and pond management — the earthwork and upkeep that keep working land productive.",
+  },
+  {
+    question: "What size properties does P1 work on in Concord?",
+    answer:
+      "P1 focuses on properties 1 acre and larger — commercial, agricultural, and large residential — bringing equipment and expertise that standard landscaping companies can't match.",
+  },
+];
 
 export default function ConcordNC() {
   return (
@@ -20,6 +43,7 @@ export default function ConcordNC() {
             { name: "Service Areas", path: "/service-areas" },
             { name: "Concord, NC", path: "/service-areas/concord-nc" },
           ]),
+          faqSchema(FAQS),
         ]}
       />
 
@@ -67,6 +91,18 @@ export default function ConcordNC() {
                   Call <a href="tel:7042218928" className="text-primary hover:underline">+1 (704) 221-8928</a> or <Link href="/contact" className="text-primary hover:underline">request a free estimate online</Link> to discuss your property.
                 </p>
               </div>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <h2 className="text-2xl font-serif font-bold text-secondary border-b border-border pb-4">Concord, NC Land & Property Management FAQs</h2>
+            <div className="space-y-6">
+              {FAQS.map((f) => (
+                <div key={f.question} className="bg-card border border-card-border rounded-xl p-6 shadow-sm space-y-2">
+                  <h3 className="text-lg font-serif font-bold text-secondary">{f.question}</h3>
+                  <p className="text-secondary/80 leading-relaxed">{f.answer}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>

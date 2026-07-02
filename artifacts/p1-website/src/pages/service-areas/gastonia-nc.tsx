@@ -2,10 +2,33 @@ import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
-import { serviceAreaSchema, breadcrumbSchema } from "@/lib/structured-data";
+import { serviceAreaSchema, breadcrumbSchema, faqSchema } from "@/lib/structured-data";
 import { Link } from "wouter";
 import heroImg from "@/assets/hero-charlotte-metro.png";
 import { CheckCircle2 } from "lucide-react";
+
+const FAQS = [
+  {
+    question: "What areas around Gastonia does P1 serve?",
+    answer:
+      "P1 serves Gastonia and all of Gaston County — including Belmont, Mount Holly, Cramerton, Dallas, Bessemer City, Stanley, and Cherryville — for properties 1 acre and larger.",
+  },
+  {
+    question: "Does P1 handle industrial site vegetation management in Gaston County?",
+    answer:
+      "Yes. P1 provides land clearing, vegetation management, and ongoing grounds maintenance for industrial facilities and manufacturing sites throughout Gaston County, keeping large properties safe, accessible, and compliant.",
+  },
+  {
+    question: "Can P1 fix drainage problems on Gastonia properties?",
+    answer:
+      "Yes. The red clay soils and rolling terrain of Gaston County create frequent drainage and erosion challenges. P1 designs and installs French drains, stormwater systems, and erosion control solutions built for the local conditions.",
+  },
+  {
+    question: "What size properties does P1 work on in Gastonia?",
+    answer:
+      "P1 focuses on properties 1 acre and larger — industrial, commercial, agricultural, and large residential — bringing heavy equipment and experienced crews that standard landscapers can't provide.",
+  },
+];
 
 export default function GastoniaNC() {
   return (
@@ -20,6 +43,7 @@ export default function GastoniaNC() {
             { name: "Service Areas", path: "/service-areas" },
             { name: "Gastonia, NC", path: "/service-areas/gastonia-nc" },
           ]),
+          faqSchema(FAQS),
         ]}
       />
 
@@ -67,6 +91,18 @@ export default function GastoniaNC() {
                   Call <a href="tel:7042218928" className="text-primary hover:underline">+1 (704) 221-8928</a> or <Link href="/contact" className="text-primary hover:underline">request a free estimate online</Link> to discuss your property.
                 </p>
               </div>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <h2 className="text-2xl font-serif font-bold text-secondary border-b border-border pb-4">Gastonia, NC Land & Property Management FAQs</h2>
+            <div className="space-y-6">
+              {FAQS.map((f) => (
+                <div key={f.question} className="bg-card border border-card-border rounded-xl p-6 shadow-sm space-y-2">
+                  <h3 className="text-lg font-serif font-bold text-secondary">{f.question}</h3>
+                  <p className="text-secondary/80 leading-relaxed">{f.answer}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>

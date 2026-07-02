@@ -2,12 +2,35 @@ import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
-import { serviceAreaSchema, breadcrumbSchema } from "@/lib/structured-data";
+import { serviceAreaSchema, breadcrumbSchema, faqSchema } from "@/lib/structured-data";
 import { Link } from "wouter";
 import { FeatureRow } from "@/components/layout/FeatureRow";
 import heroImg from "@/assets/hero-charlotte-region.png";
 import charlotteImg from "@/assets/features/charlotte-region.png";
 import { CheckCircle2 } from "lucide-react";
+
+const FAQS = [
+  {
+    question: "Which communities in the Charlotte region does P1 serve?",
+    answer:
+      "P1 serves the entire Charlotte metro — Charlotte and Mecklenburg County, Concord and Cabarrus County, Mooresville and Lake Norman, Gastonia and Gaston County, Monroe and Union County, plus Huntersville, Cornelius, Davidson, Matthews, Waxhaw, Kannapolis, and the surrounding communities.",
+  },
+  {
+    question: "Does P1 handle both one-time projects and ongoing maintenance?",
+    answer:
+      "Yes. P1 covers the full life of a property — from initial land clearing, grading, and drainage installation through weekly and seasonal maintenance contracts and complete property reconstruction.",
+  },
+  {
+    question: "Can P1 manage waterfront properties on Lake Norman?",
+    answer:
+      "Yes. P1 provides shoreline maintenance, pond and waterway care, drainage management on sloped terrain, and turf establishment for the large waterfront and rural properties concentrated around Lake Norman.",
+  },
+  {
+    question: "What size properties does P1 work on in the Charlotte region?",
+    answer:
+      "P1 focuses on properties 1 acre and larger — commercial, industrial, agricultural, and large residential — which lets us bring the right equipment and expertise to jobs that standard landscaping companies can't handle.",
+  },
+];
 
 export default function CharlotteRegionNC() {
   return (
@@ -22,6 +45,7 @@ export default function CharlotteRegionNC() {
             { name: "Service Areas", path: "/service-areas" },
             { name: "Charlotte, NC Region", path: "/service-areas/charlotte-north-carolina" },
           ]),
+          faqSchema(FAQS),
         ]}
       />
 
@@ -110,6 +134,18 @@ export default function CharlotteRegionNC() {
               <p className="font-bold text-secondary mt-6 border-l-4 border-primary pl-4">
                 Call <a href="tel:7042218928" className="text-primary hover:underline">+1 (704) 221-8928</a> or <Link href="/contact" className="text-primary hover:underline">request a free estimate online</Link> to discuss your property.
               </p>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <h2 className="text-2xl font-serif font-bold text-secondary border-b border-border pb-4">Charlotte, NC Region Land & Property Management FAQs</h2>
+            <div className="space-y-6">
+              {FAQS.map((f) => (
+                <div key={f.question} className="bg-card border border-card-border rounded-xl p-6 shadow-sm space-y-2">
+                  <h3 className="text-lg font-serif font-bold text-secondary">{f.question}</h3>
+                  <p className="text-secondary/80 leading-relaxed">{f.answer}</p>
+                </div>
+              ))}
             </div>
           </div>
 

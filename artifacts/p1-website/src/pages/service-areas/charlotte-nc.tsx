@@ -2,10 +2,33 @@ import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
-import { serviceAreaSchema, breadcrumbSchema } from "@/lib/structured-data";
+import { serviceAreaSchema, breadcrumbSchema, faqSchema } from "@/lib/structured-data";
 import { Link } from "wouter";
 import heroImg from "@/assets/hero-charlotte-metro.png";
 import { CheckCircle2 } from "lucide-react";
+
+const FAQS = [
+  {
+    question: "What parts of Charlotte does P1 serve?",
+    answer:
+      "P1 serves all of Charlotte and Mecklenburg County — from uptown commercial and industrial corridors to the large residential properties of south Charlotte, Steele Creek, and the surrounding metro — for properties 1 acre and larger.",
+  },
+  {
+    question: "Does P1 offer commercial property maintenance contracts in Charlotte?",
+    answer:
+      "Yes. P1 provides year-round commercial grounds maintenance programs for office parks, industrial facilities, HOAs, and property management companies throughout Charlotte, keeping large sites presentable and compliant long after initial site work is complete.",
+  },
+  {
+    question: "Can P1 clear and grade land for development in Charlotte?",
+    answer:
+      "Yes. P1 handles land clearing, forestry mulching, fine grading, site preparation, and stormwater drainage installation for commercial and residential development across the Charlotte metro — including large, complex sites that require heavy equipment and experienced crews.",
+  },
+  {
+    question: "What size properties does P1 work on in Charlotte?",
+    answer:
+      "P1 focuses on properties 1 acre and larger — commercial, industrial, and large residential — which lets us bring the right equipment and expertise to jobs that standard landscaping companies can't handle.",
+  },
+];
 
 export default function CharlotteNC() {
   return (
@@ -20,6 +43,7 @@ export default function CharlotteNC() {
             { name: "Service Areas", path: "/service-areas" },
             { name: "Charlotte, NC", path: "/service-areas/charlotte-nc" },
           ]),
+          faqSchema(FAQS),
         ]}
       />
 
@@ -71,6 +95,18 @@ export default function CharlotteNC() {
                   Call <a href="tel:7042218928" className="text-primary hover:underline">+1 (704) 221-8928</a> or <Link href="/contact" className="text-primary hover:underline">request a free estimate online</Link> to discuss your property.
                 </p>
               </div>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <h2 className="text-2xl font-serif font-bold text-secondary border-b border-border pb-4">Charlotte, NC Land & Property Management FAQs</h2>
+            <div className="space-y-6">
+              {FAQS.map((f) => (
+                <div key={f.question} className="bg-card border border-card-border rounded-xl p-6 shadow-sm space-y-2">
+                  <h3 className="text-lg font-serif font-bold text-secondary">{f.question}</h3>
+                  <p className="text-secondary/80 leading-relaxed">{f.answer}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>

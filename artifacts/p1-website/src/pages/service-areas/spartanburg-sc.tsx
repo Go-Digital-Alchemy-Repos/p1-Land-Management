@@ -2,10 +2,33 @@ import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
-import { serviceAreaSchema, breadcrumbSchema } from "@/lib/structured-data";
+import { serviceAreaSchema, breadcrumbSchema, faqSchema } from "@/lib/structured-data";
 import { Link } from "wouter";
 import heroImg from "@/assets/hero-upstate-cities.png";
 import { CheckCircle2 } from "lucide-react";
+
+const FAQS = [
+  {
+    question: "What areas around Spartanburg does P1 serve?",
+    answer:
+      "P1 serves Spartanburg and all of Spartanburg County — including Duncan, Inman, Boiling Springs, Landrum, and the I-85 industrial corridor — for properties 1 acre and larger.",
+  },
+  {
+    question: "Does P1 handle industrial site work along the I-85 corridor?",
+    answer:
+      "Yes. Spartanburg County's I-85 corridor is one of the most active industrial markets in the Southeast, and P1 provides land clearing, grading, drainage installation, and ongoing grounds maintenance for manufacturing and distribution facilities throughout the area.",
+  },
+  {
+    question: "Can P1 maintain farms and pasture in Spartanburg County?",
+    answer:
+      "Yes. P1 works with farm owners across Spartanburg County on pasture management, field reseeding, land clearing, access-road grading, drainage correction, and pond management.",
+  },
+  {
+    question: "What size properties does P1 work on in Spartanburg?",
+    answer:
+      "P1 focuses on properties 1 acre and larger — industrial, commercial, agricultural, and large residential — with the heavy equipment and crews that large-acreage work demands.",
+  },
+];
 
 export default function SpartanburgSC() {
   return (
@@ -20,6 +43,7 @@ export default function SpartanburgSC() {
             { name: "Service Areas", path: "/service-areas" },
             { name: "Spartanburg, SC", path: "/service-areas/spartanburg-sc" },
           ]),
+          faqSchema(FAQS),
         ]}
       />
 
@@ -71,6 +95,18 @@ export default function SpartanburgSC() {
                   Call <a href="tel:7042218928" className="text-primary hover:underline">+1 (704) 221-8928</a> or <Link href="/contact" className="text-primary hover:underline">request a free estimate online</Link> to discuss your property.
                 </p>
               </div>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <h2 className="text-2xl font-serif font-bold text-secondary border-b border-border pb-4">Spartanburg, SC Land & Property Management FAQs</h2>
+            <div className="space-y-6">
+              {FAQS.map((f) => (
+                <div key={f.question} className="bg-card border border-card-border rounded-xl p-6 shadow-sm space-y-2">
+                  <h3 className="text-lg font-serif font-bold text-secondary">{f.question}</h3>
+                  <p className="text-secondary/80 leading-relaxed">{f.answer}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
