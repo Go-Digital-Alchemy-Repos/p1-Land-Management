@@ -9,7 +9,8 @@
     "prebuild": "node scripts/generate-sitemap.mjs",
     "build": "vite build --config vite.config.ts && node scripts/prerender.mjs",
     "serve": "vite preview --config vite.config.ts --host 0.0.0.0",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "check:faq": "node scripts/validate-faq-schema.mjs"
   },
   "devDependencies": {
     "@hookform/resolvers": "^3.10.0",
