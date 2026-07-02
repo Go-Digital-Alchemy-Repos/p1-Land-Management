@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { ContourField } from "@/components/layout/ContourField";
+import { IndexOfWork } from "@/components/layout/IndexOfWork";
 
 const TAN = "hsl(32 42% 62%)";
 
@@ -15,6 +16,8 @@ interface PageHeroProps {
   imageAlt?: string;
   /** Optional extra content (badges, CTAs) rendered below the subtitle. */
   children?: ReactNode;
+  /** Show the "Index of Work" side panel (desktop only). */
+  indexOfWork?: boolean;
 }
 
 /**
@@ -22,7 +25,7 @@ interface PageHeroProps {
  * Mirrors the home hero: low-opacity image, diagonal navy wash, contour-line
  * texture, kicker eyebrow and a left-aligned Fraunces display headline.
  */
-export function PageHero({ eyebrow, title, subtitle, image, imageAlt = "", children }: PageHeroProps) {
+export function PageHero({ eyebrow, title, subtitle, image, imageAlt = "", children, indexOfWork }: PageHeroProps) {
   return (
     <section className="relative overflow-hidden bg-navy-deep">
       {image && (
@@ -45,23 +48,30 @@ export function PageHero({ eyebrow, title, subtitle, image, imageAlt = "", child
         style={{ background: "linear-gradient(to bottom, transparent, hsl(40 20% 98%))" }}
       />
 
-      <div className="relative mx-auto max-w-[1240px] px-6 pb-24 pt-24 lg:pb-28 lg:pt-28">
-        <span
-          className="inline-flex items-center gap-2 font-sans text-[11px] font-bold uppercase text-clay"
-          style={{ letterSpacing: "0.28em" }}
-        >
-          <span className="inline-block h-px w-7 bg-clay" />
-          {eyebrow}
-        </span>
-        <h1 className="mt-6 max-w-4xl font-display text-[clamp(2.3rem,5vw,4.2rem)] font-light leading-[1.02] tracking-[-0.02em] text-white">
-          {title}
-        </h1>
-        {subtitle && (
-          <p className="mt-6 max-w-2xl text-lg leading-relaxed" style={{ color: "hsl(40 20% 92% / 0.82)" }}>
-            {subtitle}
-          </p>
+      <div className="relative mx-auto grid max-w-[1240px] grid-cols-12 gap-8 px-6 pb-24 pt-24 lg:pb-28 lg:pt-28">
+        <div className={indexOfWork ? "col-span-12 lg:col-span-8" : "col-span-12"}>
+          <span
+            className="inline-flex items-center gap-2 font-sans text-[11px] font-bold uppercase text-clay"
+            style={{ letterSpacing: "0.28em" }}
+          >
+            <span className="inline-block h-px w-7 bg-clay" />
+            {eyebrow}
+          </span>
+          <h1 className="mt-6 max-w-4xl font-display text-[clamp(2.3rem,5vw,4.2rem)] font-light leading-[1.02] tracking-[-0.02em] text-white">
+            {title}
+          </h1>
+          {subtitle && (
+            <p className="mt-6 max-w-2xl text-lg leading-relaxed" style={{ color: "hsl(40 20% 92% / 0.82)" }}>
+              {subtitle}
+            </p>
+          )}
+          {children && <div className="mt-9">{children}</div>}
+        </div>
+        {indexOfWork && (
+          <div className="col-span-12 hidden lg:col-span-4 lg:flex lg:items-end lg:justify-end">
+            <IndexOfWork />
+          </div>
         )}
-        {children && <div className="mt-9">{children}</div>}
       </div>
     </section>
   );

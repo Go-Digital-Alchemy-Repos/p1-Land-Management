@@ -26,6 +26,7 @@ export default function PropertyReconstruction() {
 
       {/* PAGE HERO */}
       <PageHero
+        indexOfWork
         eyebrow="Property Reconstruction"
         title={
           <>

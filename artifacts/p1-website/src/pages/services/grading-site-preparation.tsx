@@ -29,6 +29,7 @@ export default function GradingSitePreparation() {
 
       {/* PAGE HERO */}
       <PageHero
+        indexOfWork
         eyebrow="Grading & Site Preparation"
         title={
           <>

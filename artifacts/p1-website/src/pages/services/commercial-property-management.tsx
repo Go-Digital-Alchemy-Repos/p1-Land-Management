@@ -27,6 +27,7 @@ export default function CommercialPropertyManagement() {
 
       {/* PAGE HERO */}
       <PageHero
+        indexOfWork
         eyebrow="Commercial Property Management"
         title={
           <>

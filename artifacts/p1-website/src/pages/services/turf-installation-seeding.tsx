@@ -27,6 +27,7 @@ export default function TurfInstallationSeeding() {
 
       {/* PAGE HERO */}
       <PageHero
+        indexOfWork
         eyebrow="Turf Installation & Seeding"
         title={
           <>

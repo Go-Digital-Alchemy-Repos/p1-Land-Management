@@ -26,6 +26,7 @@ export default function TreeServices() {
 
       {/* PAGE HERO */}
       <PageHero
+        indexOfWork
         eyebrow="Tree Services"
         title={
           <>

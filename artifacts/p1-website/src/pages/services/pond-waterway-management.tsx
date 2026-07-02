@@ -27,6 +27,7 @@ export default function PondWaterwayManagement() {
 
       {/* PAGE HERO */}
       <PageHero
+        indexOfWork
         eyebrow="Pond & Waterway Management"
         title={
           <>

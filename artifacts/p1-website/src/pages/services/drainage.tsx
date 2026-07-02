@@ -26,6 +26,7 @@ export default function Drainage() {
 
       {/* PAGE HERO */}
       <PageHero
+        indexOfWork
         eyebrow="Drainage Solutions"
         title={
           <>

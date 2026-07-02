@@ -26,6 +26,7 @@ export default function IndustrialAgricultural() {
 
       {/* PAGE HERO */}
       <PageHero
+        indexOfWork
         eyebrow="Industrial & Agricultural"
         title={
           <>

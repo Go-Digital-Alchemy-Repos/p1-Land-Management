@@ -27,6 +27,7 @@ export default function LandClearing() {
 
       {/* PAGE HERO */}
       <PageHero
+        indexOfWork
         eyebrow="Land Clearing"
         title={
           <>
