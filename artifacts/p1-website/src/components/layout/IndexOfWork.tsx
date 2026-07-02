@@ -31,7 +31,7 @@ export function IndexOfWork() {
             key={href}
             href={href}
             aria-current={isCurrent ? "page" : undefined}
-            className="group flex items-baseline justify-between gap-3 border-b py-2.5 transition-colors"
+            className="group flex items-baseline gap-3 border-b py-2.5 transition-colors"
             style={{ borderColor: "hsl(40 30% 90% / 0.14)" }}
           >
             <span className="font-sans text-[11px] font-semibold tabular-nums text-tan">
