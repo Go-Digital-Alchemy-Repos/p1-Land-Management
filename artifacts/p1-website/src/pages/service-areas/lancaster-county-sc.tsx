@@ -5,8 +5,8 @@ import { SEO } from "@/components/seo";
 import { serviceAreaSchema, breadcrumbSchema, faqSchema } from "@/lib/structured-data";
 import { Link } from "wouter";
 import { FeatureRow } from "@/components/layout/FeatureRow";
-import heroImg from "@/assets/hero-upstate-cities.png";
-import featureImg from "@/assets/features/upstate-partner.png";
+import heroImg from "@/assets/hero-lancaster-county.png";
+import featureImg from "@/assets/features/lancaster-sitework.png";
 import { CheckCircle2 } from "lucide-react";
 
 const FAQS = [

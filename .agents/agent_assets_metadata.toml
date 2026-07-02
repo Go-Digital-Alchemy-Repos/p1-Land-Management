@@ -264,3 +264,27 @@ id = "_QWkLjli1zFb4w5rvS9dP"
 uri = "file://artifacts/p1-website/src/assets/features/grading-construction.png"
 type = "image"
 title = "generated_image"
+
+[[generated]]
+id = "4AUMq2VPdonsllw6h-Mnp"
+uri = "file://artifacts/p1-website/src/assets/hero-union-county.png"
+type = "image"
+title = "Union County equestrian hero"
+
+[[generated]]
+id = "1b3J1PXtoGXlAPmErWzjR"
+uri = "file://artifacts/p1-website/src/assets/features/union-county-equestrian.png"
+type = "image"
+title = "Union County pasture feature"
+
+[[generated]]
+id = "LesxIpQHW1qBZfYTuwDc-"
+uri = "file://artifacts/p1-website/src/assets/hero-lancaster-county.png"
+type = "image"
+title = "Lancaster County Indian Land hero"
+
+[[generated]]
+id = "5ccsA5zrVARu9a7u6-i6x"
+uri = "file://artifacts/p1-website/src/assets/features/lancaster-sitework.png"
+type = "image"
+title = "Lancaster County sitework feature"
