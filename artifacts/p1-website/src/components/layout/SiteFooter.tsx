@@ -52,11 +52,13 @@ export function SiteFooter() {
             <li><Link href="/service-areas/greenville-sc" className="hover:text-primary transition-colors">Greenville</Link></li>
             <li><Link href="/service-areas/spartanburg-sc" className="hover:text-primary transition-colors">Spartanburg</Link></li>
             <li><Link href="/service-areas/anderson-sc" className="hover:text-primary transition-colors">Anderson</Link></li>
+            <li><Link href="/service-areas/lancaster-county-sc" className="hover:text-primary transition-colors">Lancaster County</Link></li>
             <li className="font-bold text-secondary-foreground/90 pt-3">Greater Charlotte NC</li>
             <li><Link href="/service-areas/charlotte-nc" className="hover:text-primary transition-colors">Charlotte</Link></li>
             <li><Link href="/service-areas/concord-nc" className="hover:text-primary transition-colors">Concord</Link></li>
             <li><Link href="/service-areas/mooresville-lake-norman-nc" className="hover:text-primary transition-colors">Mooresville & Lake Norman</Link></li>
             <li><Link href="/service-areas/gastonia-nc" className="hover:text-primary transition-colors">Gastonia</Link></li>
+            <li><Link href="/service-areas/union-county-nc" className="hover:text-primary transition-colors">Union County</Link></li>
             <li><Link href="/service-areas" className="font-semibold text-secondary-foreground/90 hover:text-primary transition-colors">All Areas →</Link></li>
           </ul>
         </div>

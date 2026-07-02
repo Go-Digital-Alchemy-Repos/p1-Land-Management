@@ -114,6 +114,21 @@ export function serviceAreaSchema(opts: {
 }
 
 /**
+ * FAQPage schema from a list of question/answer pairs.
+ */
+export function faqSchema(items: { question: string; answer: string }[]): JsonLd {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: items.map((f) => ({
+      "@type": "Question",
+      name: f.question,
+      acceptedAnswer: { "@type": "Answer", text: f.answer },
+    })),
+  };
+}
+
+/**
  * BreadcrumbList schema from an ordered list of crumbs. Paths are made absolute.
  */
 export function breadcrumbSchema(items: { name: string; path: string }[]): JsonLd {

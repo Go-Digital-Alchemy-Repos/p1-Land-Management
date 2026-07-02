@@ -64,6 +64,9 @@ export default function ServiceAreasIndex() {
                   <Link href="/service-areas/anderson-sc" className="flex items-center gap-2 text-secondary hover:text-primary font-medium">
                     <MapPin className="w-4 h-4 text-primary" /> Anderson, SC
                   </Link>
+                  <Link href="/service-areas/lancaster-county-sc" className="flex items-center gap-2 text-secondary hover:text-primary font-medium">
+                    <MapPin className="w-4 h-4 text-primary" /> Lancaster County, SC
+                  </Link>
                 </div>
               </div>
             </div>
@@ -94,6 +97,9 @@ export default function ServiceAreasIndex() {
                   </Link>
                   <Link href="/service-areas/gastonia-nc" className="flex items-center gap-2 text-secondary hover:text-primary font-medium">
                     <MapPin className="w-4 h-4 text-primary" /> Gastonia, NC
+                  </Link>
+                  <Link href="/service-areas/union-county-nc" className="flex items-center gap-2 text-secondary hover:text-primary font-medium">
+                    <MapPin className="w-4 h-4 text-primary" /> Union County, NC
                   </Link>
                 </div>
               </div>
