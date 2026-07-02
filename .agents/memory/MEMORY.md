@@ -4,3 +4,4 @@
 - [Asset conversion without ImageMagick](asset-conversion-no-imagemagick-deps.md) — EPS→PNG via embedded TIFF and docx→text via unzip when no image deps are available.
 - [P1 brand direction](p1-brand-direction.md) — blue primary, green supporting, add clay earth accent; rich/textured "Topographic" feel.
 - [P1 heading font & editorial hero](p1-heading-font-and-hero.md) — `--app-font-serif` is headings-only; a sans value there makes headings read as Inter. Editorial hero is the shared `PageHero`.
+- [P1 prerender/SSG pipeline](p1-prerender-ssg.md) — build prerenders every route to static HTML; pages must render `<SEO />`; flat `.html` copies exist because SPA rewrites shadow `dir/index.html` on extensionless URLs.

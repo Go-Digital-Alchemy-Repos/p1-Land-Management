@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { SITE_URL, BUSINESS_NAME } from "@/lib/site";
+import { collectHead } from "@/lib/ssr-head";
 
 interface SEOProps {
   title: string;
@@ -20,6 +21,10 @@ function upsertMeta(attr: "name" | "property", key: string, content: string) {
 }
 
 export function SEO({ title, description, image, jsonLd, noindex }: SEOProps) {
+  if (import.meta.env.SSR) {
+    collectHead({ title, description, image, jsonLd, noindex });
+  }
+
   useEffect(() => {
     document.title = title;
 
