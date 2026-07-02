@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { FramedImage } from "./FramedImage";
 
 interface FeatureRowProps {
   heading: string;
@@ -19,13 +20,8 @@ export function FeatureRow({ heading, image, imageAlt, reverse, children }: Feat
           {children}
         </div>
       </div>
-      <div className={reverse ? "md:order-1" : ""}>
-        <img
-          src={image}
-          alt={imageAlt}
-          className="w-full aspect-[4/3] object-cover rounded-xl shadow-md"
-          loading="lazy"
-        />
+      <div className={`px-4 py-5 ${reverse ? "md:order-1" : ""}`}>
+        <FramedImage src={image} alt={imageAlt} reverse={reverse} />
       </div>
     </div>
   );
