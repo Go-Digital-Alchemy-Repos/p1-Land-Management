@@ -40,6 +40,7 @@ export function SEO({ title, description, image, jsonLd, noindex }: SEOProps) {
     upsertMeta("property", "og:title", title);
     upsertMeta("property", "og:description", description);
     upsertMeta("property", "og:type", "website");
+    upsertMeta("property", "og:locale", "en_US");
     upsertMeta("property", "og:url", url);
     upsertMeta("property", "og:image", img);
     upsertMeta("property", "og:site_name", BUSINESS_NAME);

@@ -35,7 +35,7 @@ export function SiteHeader() {
         </Link>
         
         {/* Desktop Nav */}
-        <nav className="hidden lg:flex items-center gap-6 font-medium text-sm text-foreground/80">
+        <nav aria-label="Main navigation" className="hidden lg:flex items-center gap-6 font-medium text-sm text-foreground/80">
           <Link href="/" className="group relative hover:text-primary transition-colors">
             Home
             <span className="absolute -bottom-1.5 left-0 h-[2px] w-0 bg-clay transition-all duration-300 group-hover:w-full" />
