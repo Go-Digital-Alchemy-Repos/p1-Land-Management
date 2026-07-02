@@ -3,13 +3,37 @@ import { FinalCTA } from "@/components/layout/FinalCTA";
 import { PageHero } from "@/components/layout/PageHero";
 import { FeatureRow } from "@/components/layout/FeatureRow";
 import { SEO } from "@/components/seo";
-import { serviceSchema, breadcrumbSchema } from "@/lib/structured-data";
+import { serviceSchema, breadcrumbSchema, faqSchema } from "@/lib/structured-data";
 import { CheckCircle2 } from "lucide-react";
+import { Link } from "wouter";
 import heroImg from "@/assets/service-grading.png";
 import levelImg from "@/assets/features/grading-level.png";
 import drainageImg from "@/assets/features/grading-drainage.png";
 import turfImg from "@/assets/features/grading-turf.png";
 import constructionImg from "@/assets/features/grading-construction.png";
+
+const FAQS = [
+  {
+    question: "What's the difference between rough grading and fine grading?",
+    answer:
+      "Rough grading is the initial shaping and leveling of a site after clearing — establishing the overall contours and slopes. Fine grading is the precision finish pass that sets the exact final grade for drainage, turf installation, or construction. P1 performs both, from first cut to finish grade.",
+  },
+  {
+    question: "Can regrading fix drainage problems on my property?",
+    answer:
+      "In most cases, yes. More than 80% of land drainage problems trace back to improper grade. P1 regrades slopes, swales, and transitions so water moves where it belongs — and can pair grading with French drains, swales, and retention systems when the site needs them.",
+  },
+  {
+    question: "Does P1 grade sites for new construction?",
+    answer:
+      "Yes. P1 prepares building pads, roads, and full sites for new homes, neighborhoods, and commercial developments across Upstate SC and Charlotte NC — delivering grade that meets engineered plans, using GPS-guided equipment where precision tolerances demand it.",
+  },
+  {
+    question: "Why does grading matter before installing turf?",
+    answer:
+      "Turf installed on improperly graded ground fails — water pools, roots suffocate, and bare spots spread. P1 verifies grade is correct for drainage and root establishment before laying sod or seeding, and can handle both grading and turf so one team is accountable for the result.",
+  },
+];
 
 export default function GradingSitePreparation() {
   return (
@@ -24,6 +48,7 @@ export default function GradingSitePreparation() {
             { name: "Services", path: "/services" },
             { name: "Fine Grading & Site Preparation", path: "/services/grading-site-preparation" },
           ]),
+          faqSchema(FAQS),
         ]}
       />
 
@@ -101,6 +126,21 @@ export default function GradingSitePreparation() {
             </h2>
             <p className="text-lg text-secondary/80 leading-relaxed">
               P1 uses GPS-guided grading equipment where precision tolerances demand it, and experienced operators for the full range of work from rough shaping to fine finish. We work on properties from a few acres to several hundred, across both commercial and agricultural applications.
+            </p>
+          </div>
+
+          <div className="space-y-6">
+            <h2 className="text-2xl font-serif font-bold text-secondary border-b border-border pb-4">Grading & Site Preparation FAQs</h2>
+            <div className="space-y-6">
+              {FAQS.map((f) => (
+                <div key={f.question} className="bg-card border border-card-border rounded-xl p-6 shadow-sm space-y-2">
+                  <h3 className="text-lg font-serif font-bold text-secondary">{f.question}</h3>
+                  <p className="text-secondary/80 leading-relaxed">{f.answer}</p>
+                </div>
+              ))}
+            </div>
+            <p className="font-bold text-secondary mt-6 border-l-4 border-primary pl-4">
+              Call <a href="tel:7042218928" className="text-primary hover:underline">+1 (704) 221-8928</a> or <Link href="/contact" className="text-primary hover:underline">request a free estimate online</Link> to discuss your grading project.
             </p>
           </div>
 

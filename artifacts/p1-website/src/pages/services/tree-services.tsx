@@ -2,11 +2,35 @@ import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
-import { serviceSchema, breadcrumbSchema } from "@/lib/structured-data";
+import { serviceSchema, breadcrumbSchema, faqSchema } from "@/lib/structured-data";
 import { FeatureRow } from "@/components/layout/FeatureRow";
 import { CheckCircle2 } from "lucide-react";
+import { Link } from "wouter";
 import heroImg from "@/assets/service-tree.png";
 import treeImg from "@/assets/features/tree-management.png";
+
+const FAQS = [
+  {
+    question: "What tree services does P1 provide?",
+    answer:
+      "P1 provides tree trimming and canopy management, dead wood removal, hazardous tree removal, stump grinding, selective clearing, windbreak and tree line management, and storm damage cleanup — sized for commercial, agricultural, and large residential properties.",
+  },
+  {
+    question: "Does P1 handle storm damage cleanup?",
+    answer:
+      "Yes. After storms move through Upstate SC or the Charlotte NC region, P1 provides emergency debris clearing, downed tree removal, and hazard mitigation so your property is safe and accessible again quickly.",
+  },
+  {
+    question: "Can P1 remove some trees while preserving others?",
+    answer:
+      "Yes. Selective clearing is one of our specialties — removing unwanted or invasive species while preserving mature, valuable trees. It's a common approach for opening up land, clearing fence lines, and managing wooded acreage strategically.",
+  },
+  {
+    question: "How is P1 different from a residential tree company?",
+    answer:
+      "P1 is built for large acreage. We bring heavy equipment, forestry mulching capability, and crews experienced with commercial sites, farms, and estates — so tree work that would take a residential crew weeks gets done efficiently and safely at scale.",
+  },
+];
 
 export default function TreeServices() {
   return (
@@ -21,6 +45,7 @@ export default function TreeServices() {
             { name: "Services", path: "/services" },
             { name: "Tree Services", path: "/services/tree-services" },
           ]),
+          faqSchema(FAQS),
         ]}
       />
 
@@ -91,6 +116,21 @@ export default function TreeServices() {
                 Either way, the goal is the same: your land configured the way you want it, with the trees that belong there and without the ones that don't.
               </p>
             </div>
+          </div>
+
+          <div className="space-y-6">
+            <h2 className="text-2xl font-serif font-bold text-secondary border-b border-border pb-4">Tree Services FAQs</h2>
+            <div className="space-y-6">
+              {FAQS.map((f) => (
+                <div key={f.question} className="bg-card border border-card-border rounded-xl p-6 shadow-sm space-y-2">
+                  <h3 className="text-lg font-serif font-bold text-secondary">{f.question}</h3>
+                  <p className="text-secondary/80 leading-relaxed">{f.answer}</p>
+                </div>
+              ))}
+            </div>
+            <p className="font-bold text-secondary mt-6 border-l-4 border-primary pl-4">
+              Call <a href="tel:7042218928" className="text-primary hover:underline">+1 (704) 221-8928</a> or <Link href="/contact" className="text-primary hover:underline">request a free estimate online</Link> to discuss your trees.
+            </p>
           </div>
 
         </div>

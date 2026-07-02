@@ -2,12 +2,36 @@ import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
-import { serviceSchema, breadcrumbSchema } from "@/lib/structured-data";
+import { serviceSchema, breadcrumbSchema, faqSchema } from "@/lib/structured-data";
 import { FeatureRow } from "@/components/layout/FeatureRow";
 import { CheckCircle2 } from "lucide-react";
+import { Link } from "wouter";
 import heroImg from "@/assets/service-pond.png";
 import pondCareImg from "@/assets/features/pond-care.png";
 import pondConstructionImg from "@/assets/features/pond-construction.png";
+
+const FAQS = [
+  {
+    question: "Does P1 build new ponds?",
+    answer:
+      "Yes. P1 constructs new ponds that are properly sized and graded from the start — handling excavation, dam construction, inlet and outlet installation, and shoreline stabilization — and also restores existing ponds that have silted in or lost embankment integrity.",
+  },
+  {
+    question: "How often should a pond be professionally maintained?",
+    answer:
+      "Most ponds benefit from monthly or quarterly maintenance visits covering aquatic weed and algae management, water quality checks, shoreline condition, and dam inspection. P1 builds routine maintenance programs around your pond's size, use, and condition.",
+  },
+  {
+    question: "Can P1 restore a pond that has silted in or become overgrown?",
+    answer:
+      "Yes. P1 restores neglected ponds to full function — sediment and silt management, embankment repair, shoreline restoration, vegetation clearing, and inlet/outlet work — whether it's a farm pond, a decorative water feature, or a stormwater basin.",
+  },
+  {
+    question: "Does P1 maintain stormwater retention ponds for compliance?",
+    answer:
+      "Yes. Commercial retention ponds are often subject to local and state maintenance requirements. P1 provides documented maintenance programs that keep retention systems functioning within regulatory standards — with the records to prove it.",
+  },
+];
 
 export default function PondWaterwayManagement() {
   return (
@@ -22,6 +46,7 @@ export default function PondWaterwayManagement() {
             { name: "Services", path: "/services" },
             { name: "Pond & Waterway Management", path: "/services/pond-waterway-management" },
           ]),
+          faqSchema(FAQS),
         ]}
       />
 
@@ -115,6 +140,21 @@ export default function PondWaterwayManagement() {
             </h2>
             <p className="text-lg text-secondary/80 leading-relaxed">
               Commercial properties with stormwater retention ponds are often subject to local and state maintenance requirements. P1 provides documented maintenance programs that keep your retention systems functioning within regulatory standards — and gives you the records to prove it.
+            </p>
+          </div>
+
+          <div className="space-y-6">
+            <h2 className="text-2xl font-serif font-bold text-secondary border-b border-border pb-4">Pond & Waterway Management FAQs</h2>
+            <div className="space-y-6">
+              {FAQS.map((f) => (
+                <div key={f.question} className="bg-card border border-card-border rounded-xl p-6 shadow-sm space-y-2">
+                  <h3 className="text-lg font-serif font-bold text-secondary">{f.question}</h3>
+                  <p className="text-secondary/80 leading-relaxed">{f.answer}</p>
+                </div>
+              ))}
+            </div>
+            <p className="font-bold text-secondary mt-6 border-l-4 border-primary pl-4">
+              Call <a href="tel:7042218928" className="text-primary hover:underline">+1 (704) 221-8928</a> or <Link href="/contact" className="text-primary hover:underline">request a free estimate online</Link> to discuss your pond or waterway.
             </p>
           </div>
 

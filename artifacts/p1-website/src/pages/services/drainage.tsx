@@ -2,11 +2,35 @@ import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
-import { serviceSchema, breadcrumbSchema } from "@/lib/structured-data";
+import { serviceSchema, breadcrumbSchema, faqSchema } from "@/lib/structured-data";
 import { FeatureRow } from "@/components/layout/FeatureRow";
 import { CheckCircle2 } from "lucide-react";
+import { Link } from "wouter";
 import heroImg from "@/assets/service-drainage.png";
 import drainageFixImg from "@/assets/features/drainage-fix.png";
+
+const FAQS = [
+  {
+    question: "Why does my property have standing water after rain?",
+    answer:
+      "In the Carolinas, standing water usually comes from heavy clay soils, compacted ground, flat topography, or improper grading that leaves water nowhere to go. P1 assesses the whole system — where water enters, where it sits, and where it needs to go — then designs a fix that solves the problem at the source.",
+  },
+  {
+    question: "What drainage systems does P1 install?",
+    answer:
+      "P1 installs French drains, surface swales, catch basins and inlets, underground drainage pipe, retention and detention ponds, agricultural tile drainage, and erosion control in drainage zones — along with regrading when the root cause is improper slope.",
+  },
+  {
+    question: "Can P1 fix drainage on farm fields and pastures?",
+    answer:
+      "Yes. Saturated fields can't be worked and lose topsoil to runoff. P1 installs agricultural drainage systems — including field tile drainage and perimeter ditching — that improve field trafficability, root health, and long-term productivity.",
+  },
+  {
+    question: "Does P1 handle stormwater compliance for commercial properties?",
+    answer:
+      "Yes. P1 supports stormwater compliance for commercial sites — including retention and detention pond maintenance, ditch clearing and shaping, and documented maintenance programs that keep systems functioning within local and state requirements.",
+  },
+];
 
 export default function Drainage() {
   return (
@@ -21,6 +45,7 @@ export default function Drainage() {
             { name: "Services", path: "/services" },
             { name: "Drainage Solutions", path: "/services/drainage" },
           ]),
+          faqSchema(FAQS),
         ]}
       />
 
@@ -108,6 +133,21 @@ export default function Drainage() {
             </h2>
             <p className="text-lg text-secondary/80 leading-relaxed">
               For farm and agricultural properties, drainage is directly tied to productivity. Saturated fields can't be worked, can't support healthy root systems, and lose topsoil to runoff. P1 installs agricultural drainage systems — including field tile drainage and perimeter ditching — that improve field trafficability and long-term productivity.
+            </p>
+          </div>
+
+          <div className="space-y-6">
+            <h2 className="text-2xl font-serif font-bold text-secondary border-b border-border pb-4">Drainage FAQs</h2>
+            <div className="space-y-6">
+              {FAQS.map((f) => (
+                <div key={f.question} className="bg-card border border-card-border rounded-xl p-6 shadow-sm space-y-2">
+                  <h3 className="text-lg font-serif font-bold text-secondary">{f.question}</h3>
+                  <p className="text-secondary/80 leading-relaxed">{f.answer}</p>
+                </div>
+              ))}
+            </div>
+            <p className="font-bold text-secondary mt-6 border-l-4 border-primary pl-4">
+              Call <a href="tel:7042218928" className="text-primary hover:underline">+1 (704) 221-8928</a> or <Link href="/contact" className="text-primary hover:underline">request a free estimate online</Link> to discuss your drainage problem.
             </p>
           </div>
 

@@ -2,12 +2,36 @@ import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
-import { serviceSchema, breadcrumbSchema } from "@/lib/structured-data";
+import { serviceSchema, breadcrumbSchema, faqSchema } from "@/lib/structured-data";
 import { FeatureRow } from "@/components/layout/FeatureRow";
 import { CheckCircle2 } from "lucide-react";
+import { Link } from "wouter";
 import heroImg from "@/assets/service-commercial.png";
 import attentionImg from "@/assets/features/commercial-attention.png";
 import scheduleImg from "@/assets/features/commercial-schedule.png";
+
+const FAQS = [
+  {
+    question: "What's included in a P1 commercial maintenance program?",
+    answer:
+      "Programs are customized to each site, but typically include turf mowing and edging, tree trimming and canopy management, pond and stormwater retention care, drainage inspection and maintenance, erosion control, seasonal seeding and fertilization, and brush management for undeveloped acreage.",
+  },
+  {
+    question: "How often will P1 service my commercial property?",
+    answer:
+      "P1 offers weekly, bi-weekly, and monthly commercial maintenance contracts. Every program starts with a free on-site assessment — we walk your land, document what it needs, and build a scope and schedule that fits your property and budget.",
+  },
+  {
+    question: "Is there a minimum property size for commercial programs?",
+    answer:
+      "Yes — P1 focuses on properties 1 acre and larger. We're built for business campuses, industrial sites, HOA common areas, and large commercial landholdings, not small lawns.",
+  },
+  {
+    question: "Is P1 licensed and insured for commercial work?",
+    answer:
+      "Yes. P1 is licensed and insured for commercial work across Upstate South Carolina and the Charlotte, NC region, and provides single-vendor capability for turf, trees, drainage, ponds, clearing, and reconstruction.",
+  },
+];
 
 export default function CommercialPropertyManagement() {
   return (
@@ -22,6 +46,7 @@ export default function CommercialPropertyManagement() {
             { name: "Services", path: "/services" },
             { name: "Commercial Property Management", path: "/services/commercial-property-management" },
           ]),
+          faqSchema(FAQS),
         ]}
       />
 
@@ -109,6 +134,21 @@ export default function CommercialPropertyManagement() {
                 </li>
               ))}
             </ul>
+          </div>
+
+          <div className="space-y-6">
+            <h2 className="text-2xl font-serif font-bold text-secondary border-b border-border pb-4">Commercial Property Management FAQs</h2>
+            <div className="space-y-6">
+              {FAQS.map((f) => (
+                <div key={f.question} className="bg-card border border-card-border rounded-xl p-6 shadow-sm space-y-2">
+                  <h3 className="text-lg font-serif font-bold text-secondary">{f.question}</h3>
+                  <p className="text-secondary/80 leading-relaxed">{f.answer}</p>
+                </div>
+              ))}
+            </div>
+            <p className="font-bold text-secondary mt-6 border-l-4 border-primary pl-4">
+              Call <a href="tel:7042218928" className="text-primary hover:underline">+1 (704) 221-8928</a> or <Link href="/contact" className="text-primary hover:underline">request a free estimate online</Link> to discuss your commercial property.
+            </p>
           </div>
 
         </div>

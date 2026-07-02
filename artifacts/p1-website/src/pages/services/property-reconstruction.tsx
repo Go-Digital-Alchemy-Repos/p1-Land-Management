@@ -2,11 +2,35 @@ import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
-import { serviceSchema, breadcrumbSchema } from "@/lib/structured-data";
+import { serviceSchema, breadcrumbSchema, faqSchema } from "@/lib/structured-data";
 import { FeatureRow } from "@/components/layout/FeatureRow";
 import { CheckCircle2 } from "lucide-react";
+import { Link } from "wouter";
 import heroImg from "@/assets/service-reconstruction.png";
 import reconstructionImg from "@/assets/features/reconstruction.png";
+
+const FAQS = [
+  {
+    question: "What is full property reconstruction?",
+    answer:
+      "Property reconstruction is a complete reset for land that has gone too long without the right care — a full-scope project combining land clearing, rough and fine grading, drainage installation, erosion control, pond restoration, soil amendment, and turf establishment, all under one contractor.",
+  },
+  {
+    question: "How do I know if my property needs reconstruction instead of maintenance?",
+    answer:
+      "If drainage has failed, erosion has carved up slopes, invasive vegetation has taken over, ponds have silted in, or grade has shifted, maintenance alone won't fix the root causes. Reconstruction addresses those underlying problems and rebuilds the property to perform — then transitions into an ongoing maintenance program.",
+  },
+  {
+    question: "Do I need separate contractors for clearing, grading, drainage, and turf?",
+    answer:
+      "Not with P1. We handle the full project from first cut to final turf — one contract, one schedule, one point of contact, and one team accountable for the finished result. That eliminates the scope gaps and schedule slips that come with juggling multiple contractors.",
+  },
+  {
+    question: "Who typically needs property reconstruction?",
+    answer:
+      "New landowners who acquired neglected property, agricultural operators reclaiming unmanaged land, developers whose sites need major earthwork, owners recovering from storm or erosion damage, and landowners whose persistent drainage problems have outlasted multiple contractors.",
+  },
+];
 
 export default function PropertyReconstruction() {
   return (
@@ -21,6 +45,7 @@ export default function PropertyReconstruction() {
             { name: "Services", path: "/services" },
             { name: "Property Reconstruction", path: "/services/property-reconstruction" },
           ]),
+          faqSchema(FAQS),
         ]}
       />
 
@@ -117,6 +142,21 @@ export default function PropertyReconstruction() {
             </h3>
             <p className="text-lg text-secondary/80 leading-relaxed">
               P1 provides property reconstruction services throughout Upstate South Carolina (Greenville, Spartanburg, Anderson, and surrounding counties) and the greater Charlotte, NC region (Charlotte, Concord, Mooresville, Gastonia, Lake Norman, and Mecklenburg County).
+            </p>
+          </div>
+
+          <div className="space-y-6">
+            <h2 className="text-2xl font-serif font-bold text-secondary border-b border-border pb-4">Property Reconstruction FAQs</h2>
+            <div className="space-y-6">
+              {FAQS.map((f) => (
+                <div key={f.question} className="bg-card border border-card-border rounded-xl p-6 shadow-sm space-y-2">
+                  <h3 className="text-lg font-serif font-bold text-secondary">{f.question}</h3>
+                  <p className="text-secondary/80 leading-relaxed">{f.answer}</p>
+                </div>
+              ))}
+            </div>
+            <p className="font-bold text-secondary mt-6 border-l-4 border-primary pl-4">
+              Call <a href="tel:7042218928" className="text-primary hover:underline">+1 (704) 221-8928</a> or <Link href="/contact" className="text-primary hover:underline">request a free estimate online</Link> to discuss your reconstruction project.
             </p>
           </div>
 

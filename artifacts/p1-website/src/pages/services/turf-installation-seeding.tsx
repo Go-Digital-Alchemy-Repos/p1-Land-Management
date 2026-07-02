@@ -2,12 +2,36 @@ import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
-import { serviceSchema, breadcrumbSchema } from "@/lib/structured-data";
+import { serviceSchema, breadcrumbSchema, faqSchema } from "@/lib/structured-data";
 import { FeatureRow } from "@/components/layout/FeatureRow";
 import { CheckCircle2 } from "lucide-react";
+import { Link } from "wouter";
 import heroImg from "@/assets/service-turf.png";
 import turfPrepImg from "@/assets/features/turf-prep.png";
 import turfSpeciesImg from "@/assets/features/turf-species.png";
+
+const FAQS = [
+  {
+    question: "What grass species grow best in Upstate SC and Charlotte NC?",
+    answer:
+      "The Carolinas sit in the transition zone between warm- and cool-season grasses, so species selection matters. Bermudagrass suits high-traffic sunny sites, Tall Fescue handles shade and transition-zone lawns, Zoysia offers dense low-maintenance turf, Centipede fits low-fertility acidic soils, and Bahia works for drought-prone pastures.",
+  },
+  {
+    question: "Should I choose sod or seed for my property?",
+    answer:
+      "Sod gives instant coverage and is best for commercial grounds and high-visibility areas; seeding — including broadcast, drill, and hydroseed — is more economical at large acreage and the standard choice for pastures, hay fields, and erosion control. P1 recommends the right method for your use, budget, and timeline.",
+  },
+  {
+    question: "How large an area can P1 seed or sod?",
+    answer:
+      "P1 is built for large-acreage work — from commercial lawns to pastures and hay fields spanning dozens of acres. We use broadcast and drill seeding, hydroseed applications for slopes, and large-scale sod installation across Upstate SC and the Charlotte NC region.",
+  },
+  {
+    question: "Why do large turf installations fail within a few years?",
+    answer:
+      "Most failures trace back to bad grade, poor soil preparation, wrong species selection, or inadequate establishment practices. P1 handles the full process — soil testing, grading, amendment, species selection, and installation — so the result establishes strong and lasts.",
+  },
+];
 
 export default function TurfInstallationSeeding() {
   return (
@@ -22,6 +46,7 @@ export default function TurfInstallationSeeding() {
             { name: "Services", path: "/services" },
             { name: "Turf Installation & Seeding", path: "/services/turf-installation-seeding" },
           ]),
+          faqSchema(FAQS),
         ]}
       />
 
@@ -128,6 +153,21 @@ export default function TurfInstallationSeeding() {
             </h2>
             <p className="text-lg text-secondary/80 leading-relaxed">
               If P1 cleared your land, graded it, and installed drainage — we can take you all the way to a thriving stand of turf. That continuity eliminates finger-pointing between contractors, ensures grade is correct for both drainage and turf health, and gives you a single team responsible for the outcome.
+            </p>
+          </div>
+
+          <div className="space-y-6">
+            <h2 className="text-2xl font-serif font-bold text-secondary border-b border-border pb-4">Turf Installation & Seeding FAQs</h2>
+            <div className="space-y-6">
+              {FAQS.map((f) => (
+                <div key={f.question} className="bg-card border border-card-border rounded-xl p-6 shadow-sm space-y-2">
+                  <h3 className="text-lg font-serif font-bold text-secondary">{f.question}</h3>
+                  <p className="text-secondary/80 leading-relaxed">{f.answer}</p>
+                </div>
+              ))}
+            </div>
+            <p className="font-bold text-secondary mt-6 border-l-4 border-primary pl-4">
+              Call <a href="tel:7042218928" className="text-primary hover:underline">+1 (704) 221-8928</a> or <Link href="/contact" className="text-primary hover:underline">request a free estimate online</Link> to discuss your turf project.
             </p>
           </div>
 

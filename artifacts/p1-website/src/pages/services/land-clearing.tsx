@@ -2,12 +2,36 @@ import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
-import { serviceSchema, breadcrumbSchema } from "@/lib/structured-data";
+import { serviceSchema, breadcrumbSchema, faqSchema } from "@/lib/structured-data";
 import { FeatureRow } from "@/components/layout/FeatureRow";
 import { CheckCircle2 } from "lucide-react";
+import { Link } from "wouter";
 import heroImg from "@/assets/service-clearing.png";
 import preparesImg from "@/assets/features/clearing-prepares.png";
 import mulchingImg from "@/assets/features/clearing-mulching.png";
+
+const FAQS = [
+  {
+    question: "How much does land clearing cost in Upstate SC and Charlotte NC?",
+    answer:
+      "Land clearing cost depends on acreage, vegetation density, terrain, and the clearing method used — forestry mulching is often significantly less expensive than traditional clear-and-haul. P1 provides free on-site assessments and written estimates so you know the full scope and price before work begins.",
+  },
+  {
+    question: "What is forestry mulching and when is it the better option?",
+    answer:
+      "Forestry mulching uses a single machine to grind trees, brush, and stumps into mulch that stays on site — protecting topsoil, reducing erosion, and eliminating hauling costs. It's ideal for pasture expansion, fence lines, perimeter clearing, and vegetation control where construction-grade grubbing isn't required.",
+  },
+  {
+    question: "Does P1 clear land for new construction?",
+    answer:
+      "Yes. P1 clears residential and commercial construction sites — trees, stumps, brush, and debris — and can continue through rough grading, fine grading, drainage installation, and turf establishment so your site is fully build-ready under one contractor.",
+  },
+  {
+    question: "What size land clearing projects does P1 take on?",
+    answer:
+      "P1 handles everything from clearing a few overgrown acres to opening up 100+ acres for development. We focus on properties 1 acre and larger across Upstate South Carolina and the greater Charlotte, NC region.",
+  },
+];
 
 export default function LandClearing() {
   return (
@@ -22,6 +46,7 @@ export default function LandClearing() {
             { name: "Services", path: "/services" },
             { name: "Land Clearing", path: "/services/land-clearing" },
           ]),
+          faqSchema(FAQS),
         ]}
       />
 
@@ -100,6 +125,21 @@ export default function LandClearing() {
             </h3>
             <p className="text-lg text-secondary/80 leading-relaxed">
               P1 provides land clearing throughout Upstate South Carolina — including Greenville, Spartanburg, Anderson, Gaffney, Greer, and surrounding counties — and the greater Charlotte, NC region, including Concord, Mooresville, Lake Norman, Gastonia, and Mecklenburg County.
+            </p>
+          </div>
+
+          <div className="space-y-6">
+            <h2 className="text-2xl font-serif font-bold text-secondary border-b border-border pb-4">Land Clearing FAQs</h2>
+            <div className="space-y-6">
+              {FAQS.map((f) => (
+                <div key={f.question} className="bg-card border border-card-border rounded-xl p-6 shadow-sm space-y-2">
+                  <h3 className="text-lg font-serif font-bold text-secondary">{f.question}</h3>
+                  <p className="text-secondary/80 leading-relaxed">{f.answer}</p>
+                </div>
+              ))}
+            </div>
+            <p className="font-bold text-secondary mt-6 border-l-4 border-primary pl-4">
+              Call <a href="tel:7042218928" className="text-primary hover:underline">+1 (704) 221-8928</a> or <Link href="/contact" className="text-primary hover:underline">request a free estimate online</Link> to discuss your clearing project.
             </p>
           </div>
 
