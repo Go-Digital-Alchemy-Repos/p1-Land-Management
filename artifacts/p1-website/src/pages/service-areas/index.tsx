@@ -5,7 +5,9 @@ import { SEO } from "@/components/seo";
 import { breadcrumbSchema } from "@/lib/structured-data";
 import { Link } from "wouter";
 import heroImg from "@/assets/hero-service-areas.png";
-import { MapPin, Map } from "lucide-react";
+import unionCountyImg from "@/assets/features/union-county-equestrian.png";
+import lancasterCountyImg from "@/assets/features/lancaster-sitework.png";
+import { MapPin, Map, ArrowRight } from "lucide-react";
 
 export default function ServiceAreasIndex() {
   return (
@@ -105,6 +107,63 @@ export default function ServiceAreasIndex() {
               </div>
             </div>
 
+          </div>
+
+          {/* FEATURED COUNTY PAGES */}
+          <div>
+            <div className="text-center mb-10">
+              <p className="text-primary font-bold uppercase tracking-wider text-sm mb-2">County Spotlights</p>
+              <h2 className="text-3xl md:text-4xl font-serif font-bold text-secondary">Newest Service Areas</h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+              <Link
+                href="/service-areas/union-county-nc"
+                className="bg-card border border-card-border rounded-xl shadow-lg overflow-hidden flex flex-col group hover-elevate"
+                data-testid="link-union-county-card"
+              >
+                <div className="aspect-[16/9] overflow-hidden">
+                  <img
+                    src={unionCountyImg}
+                    alt="Equestrian pasture and fencing on a horse farm in Union County, NC"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+                <div className="p-8 flex-1 flex flex-col">
+                  <p className="text-primary font-bold uppercase tracking-wider text-xs mb-2">Charlotte Region · NC</p>
+                  <h3 className="text-2xl font-serif font-bold text-secondary mb-3">Union County, NC</h3>
+                  <p className="text-secondary/80 leading-relaxed mb-6 flex-1">
+                    Horse farms, working land, and fast-growing development from Monroe and Indian Trail to Waxhaw, Marvin, and Weddington.
+                  </p>
+                  <span className="flex items-center gap-2 text-primary font-bold">
+                    Explore Union County <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </span>
+                </div>
+              </Link>
+
+              <Link
+                href="/service-areas/lancaster-county-sc"
+                className="bg-card border border-card-border rounded-xl shadow-lg overflow-hidden flex flex-col group hover-elevate"
+                data-testid="link-lancaster-county-card"
+              >
+                <div className="aspect-[16/9] overflow-hidden">
+                  <img
+                    src={lancasterCountyImg}
+                    alt="Heavy equipment performing sitework on a development site in Lancaster County, SC"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+                <div className="p-8 flex-1 flex flex-col">
+                  <p className="text-primary font-bold uppercase tracking-wider text-xs mb-2">Upstate & Midlands · SC</p>
+                  <h3 className="text-2xl font-serif font-bold text-secondary mb-3">Lancaster County, SC</h3>
+                  <p className="text-secondary/80 leading-relaxed mb-6 flex-1">
+                    From the booming Indian Land panhandle to rural acreage around Kershaw and Heath Springs — clearing, grading, and full property management.
+                  </p>
+                  <span className="flex items-center gap-2 text-primary font-bold">
+                    Explore Lancaster County <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </span>
+                </div>
+              </Link>
+            </div>
           </div>
         </div>
       </section>
