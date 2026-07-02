@@ -34,6 +34,7 @@ import MooresvilleLakeNormanNc from "@/pages/service-areas/mooresville-lake-norm
 import GastoniaNc from "@/pages/service-areas/gastonia-nc";
 import UnionCountyNc from "@/pages/service-areas/union-county-nc";
 import LancasterCountySc from "@/pages/service-areas/lancaster-county-sc";
+import YorkCountySc from "@/pages/service-areas/york-county-sc";
 
 import BlogIndex from "@/pages/blog/index";
 import BlogLandClearingCost from "@/pages/blog/land-clearing-cost-per-acre-south-carolina";
@@ -78,6 +79,7 @@ function Router() {
       <Route path="/service-areas/gastonia-nc" component={GastoniaNc} />
       <Route path="/service-areas/union-county-nc" component={UnionCountyNc} />
       <Route path="/service-areas/lancaster-county-sc" component={LancasterCountySc} />
+      <Route path="/service-areas/york-county-sc" component={YorkCountySc} />
 
       {/* Blog */}
       <Route path="/blog" component={BlogIndex} />

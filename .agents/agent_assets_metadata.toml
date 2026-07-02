@@ -288,3 +288,15 @@ id = "5ccsA5zrVARu9a7u6-i6x"
 uri = "file://artifacts/p1-website/src/assets/features/lancaster-sitework.png"
 type = "image"
 title = "Lancaster County sitework feature"
+
+[[generated]]
+id = "AtgWO3b9PPt-TUTajl2GT"
+uri = "file://artifacts/p1-website/src/assets/hero-york-county.png"
+type = "image"
+title = "Lake Wylie waterfront aerial hero"
+
+[[generated]]
+id = "bGqT2NFPTuAZ4S36UMdRe"
+uri = "file://artifacts/p1-website/src/assets/features/york-county-lakewylie.png"
+type = "image"
+title = "Lakeside lawn maintenance feature"

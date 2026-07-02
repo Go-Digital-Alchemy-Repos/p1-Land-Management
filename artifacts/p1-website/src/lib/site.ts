@@ -39,4 +39,5 @@ export const AREAS_SERVED: { name: string; type: "AdministrativeArea" | "City" }
   { name: "Gastonia, North Carolina", type: "City" },
   { name: "Union County, North Carolina", type: "AdministrativeArea" },
   { name: "Lancaster County, South Carolina", type: "AdministrativeArea" },
+  { name: "York County, South Carolina", type: "AdministrativeArea" },
 ];

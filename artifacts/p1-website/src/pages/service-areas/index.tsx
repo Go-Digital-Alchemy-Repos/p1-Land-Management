@@ -7,13 +7,14 @@ import { Link } from "wouter";
 import heroImg from "@/assets/hero-service-areas.png";
 import unionCountyImg from "@/assets/features/union-county-equestrian.png";
 import lancasterCountyImg from "@/assets/features/lancaster-sitework.png";
+import yorkCountyImg from "@/assets/features/york-county-lakewylie.png";
 import { MapPin, Map, ArrowRight } from "lucide-react";
 
 const FAQS = [
   {
     question: "Which regions does P1 Land & Property Management cover?",
     answer:
-      "P1 covers two markets in the Carolinas: Upstate South Carolina — including Greenville, Spartanburg, Anderson, and Lancaster County — and the greater Charlotte, NC region, including Charlotte, Concord, Mooresville and Lake Norman, Gastonia, and Union County.",
+      "P1 covers two markets in the Carolinas: Upstate South Carolina — including Greenville, Spartanburg, Anderson, Lancaster County, and York County — and the greater Charlotte, NC region, including Charlotte, Concord, Mooresville and Lake Norman, Gastonia, and Union County.",
   },
   {
     question: "Will P1 travel to properties outside the cities listed on this page?",
@@ -95,6 +96,9 @@ export default function ServiceAreasIndex() {
                   <Link href="/service-areas/lancaster-county-sc" className="flex items-center gap-2 text-secondary hover:text-primary font-medium">
                     <MapPin className="w-4 h-4 text-primary" /> Lancaster County, SC
                   </Link>
+                  <Link href="/service-areas/york-county-sc" className="flex items-center gap-2 text-secondary hover:text-primary font-medium">
+                    <MapPin className="w-4 h-4 text-primary" /> York County, SC
+                  </Link>
                 </div>
               </div>
             </div>
@@ -141,7 +145,7 @@ export default function ServiceAreasIndex() {
               <p className="text-primary font-bold uppercase tracking-wider text-sm mb-2">County Spotlights</p>
               <h2 className="text-3xl md:text-4xl font-serif font-bold text-secondary">Newest Service Areas</h2>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
               <Link
                 href="/service-areas/union-county-nc"
                 className="bg-card border border-card-border rounded-xl shadow-lg overflow-hidden flex flex-col group hover-elevate"
@@ -186,6 +190,30 @@ export default function ServiceAreasIndex() {
                   </p>
                   <span className="flex items-center gap-2 text-primary font-bold">
                     Explore Lancaster County <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </span>
+                </div>
+              </Link>
+
+              <Link
+                href="/service-areas/york-county-sc"
+                className="bg-card border border-card-border rounded-xl shadow-lg overflow-hidden flex flex-col group hover-elevate"
+                data-testid="link-york-county-card"
+              >
+                <div className="aspect-[16/9] overflow-hidden">
+                  <img
+                    src={yorkCountyImg}
+                    alt="Lakeside lawn maintenance on a Lake Wylie waterfront estate in York County, SC"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+                <div className="p-8 flex-1 flex flex-col">
+                  <p className="text-primary font-bold uppercase tracking-wider text-xs mb-2">Charlotte Metro · SC</p>
+                  <h3 className="text-2xl font-serif font-bold text-secondary mb-3">York County, SC</h3>
+                  <p className="text-secondary/80 leading-relaxed mb-6 flex-1">
+                    Lake Wylie waterfront estates, I-77 corridor development, and western-county horse farms from Rock Hill and Fort Mill to Clover and York.
+                  </p>
+                  <span className="flex items-center gap-2 text-primary font-bold">
+                    Explore York County <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </span>
                 </div>
               </Link>

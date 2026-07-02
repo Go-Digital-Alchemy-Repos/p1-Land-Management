@@ -53,6 +53,7 @@ export function SiteFooter() {
             <li><Link href="/service-areas/spartanburg-sc" className="hover:text-primary transition-colors">Spartanburg</Link></li>
             <li><Link href="/service-areas/anderson-sc" className="hover:text-primary transition-colors">Anderson</Link></li>
             <li><Link href="/service-areas/lancaster-county-sc" className="hover:text-primary transition-colors">Lancaster County</Link></li>
+            <li><Link href="/service-areas/york-county-sc" className="hover:text-primary transition-colors">York County</Link></li>
             <li className="font-bold text-secondary-foreground/90 pt-3">Greater Charlotte NC</li>
             <li><Link href="/service-areas/charlotte-nc" className="hover:text-primary transition-colors">Charlotte</Link></li>
             <li><Link href="/service-areas/concord-nc" className="hover:text-primary transition-colors">Concord</Link></li>
