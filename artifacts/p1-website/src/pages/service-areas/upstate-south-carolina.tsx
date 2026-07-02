@@ -7,7 +7,8 @@ import { Link } from "wouter";
 import { FeatureRow } from "@/components/layout/FeatureRow";
 import heroImg from "@/assets/hero-upstate-sc.png";
 import upstateImg from "@/assets/features/upstate-partner.png";
-import { CheckCircle2 } from "lucide-react";
+import lancasterCountyImg from "@/assets/features/lancaster-sitework.png";
+import { CheckCircle2, ArrowRight } from "lucide-react";
 
 const FAQS = [
   {
@@ -139,6 +140,33 @@ export default function UpstateSC() {
                 Call <a href="tel:7042218928" className="text-primary hover:underline">+1 (704) 221-8928</a> or <Link href="/contact" className="text-primary hover:underline">request a free estimate online</Link> to discuss your property.
               </p>
             </div>
+          </div>
+
+          <div className="space-y-6">
+            <h2 className="text-2xl font-serif font-bold text-secondary border-b border-border pb-4">County Spotlight</h2>
+            <Link
+              href="/service-areas/lancaster-county-sc"
+              className="bg-card border border-card-border rounded-xl shadow-lg overflow-hidden flex flex-col md:flex-row group hover-elevate"
+              data-testid="link-lancaster-county-card"
+            >
+              <div className="md:w-2/5 aspect-[16/9] md:aspect-auto overflow-hidden">
+                <img
+                  src={lancasterCountyImg}
+                  alt="Heavy equipment performing sitework on a development site in Lancaster County, SC"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+              <div className="p-8 flex-1 flex flex-col">
+                <p className="text-primary font-bold uppercase tracking-wider text-xs mb-2">Upstate & Midlands · SC</p>
+                <h3 className="text-2xl font-serif font-bold text-secondary mb-3">Lancaster County, SC</h3>
+                <p className="text-secondary/80 leading-relaxed mb-6 flex-1">
+                  From the booming Indian Land panhandle to rural acreage around Kershaw and Heath Springs — clearing, grading, and full property management across Lancaster County.
+                </p>
+                <span className="flex items-center gap-2 text-primary font-bold">
+                  Explore Lancaster County <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </span>
+              </div>
+            </Link>
           </div>
 
           <div className="space-y-6">
