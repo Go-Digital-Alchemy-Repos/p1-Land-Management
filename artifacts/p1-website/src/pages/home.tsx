@@ -133,7 +133,10 @@ export default function Home() {
               <Kicker onDark>The Land Specialists · Est. 2009</Kicker>
             </div>
             <h1 className="max-w-3xl font-display text-[clamp(2.6rem,6.4vw,5.4rem)] font-light leading-[0.98] tracking-[-0.02em] text-white">
-              Your first impressions start at the curb.
+              Your first impressions{" "}
+              <em className="font-semibold not-italic text-tan" style={{ fontStyle: "italic" }}>
+                start at the curb.
+              </em>
             </h1>
             <p className="mt-7 max-w-xl text-lg leading-relaxed" style={{ color: "hsl(40 20% 92% / 0.82)" }}>
               Grading, drainage, clearing and ponds for big properties across Upstate South Carolina and the Charlotte metro. Heavy-equipment professionals for farms, estates, HOAs and commercial sites.
