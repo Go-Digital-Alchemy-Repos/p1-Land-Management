@@ -15,6 +15,11 @@ const { render } = await import(pathToFileURL(path.join(root,'dist/server/entry-
 const origin = process.env.P1_CORE_ORIGIN?.replace(/\/$/,'');
 const content = createContentStore({ manifest, origin, cacheDir: process.env.P1_CONTENT_CACHE_DIR });
 const canonical = 'https://www.p1landmanagement.com';
+// Deployment-owned configuration, never the request Host, controls indexing.
+const indexableDeployment = (() => {
+  try { return new URL(manifest.origins?.publicSite).origin === canonical; }
+  catch { return false; }
+})();
 const mime = { '.html':'text/html; charset=utf-8', '.js':'text/javascript; charset=utf-8', '.css':'text/css; charset=utf-8', '.json':'application/json', '.xml':'application/xml', '.txt':'text/plain; charset=utf-8', '.svg':'image/svg+xml', '.webp':'image/webp', '.avif':'image/avif', '.jpg':'image/jpeg', '.png':'image/png', '.woff2':'font/woff2' };
 const escape = x => String(x).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 function send(req,res,status,body,type='text/html; charset=utf-8',cache='no-cache') {
@@ -35,7 +40,7 @@ function proxy(req,res) {
   headers['x-forwarded-for']=clientIp(req);
   headers['x-real-ip']=headers['x-forwarded-for'];
   const upstream=(target.protocol==='https:'?https:http).request(target,{method:req.method,headers},response=>{
-    res.writeHead(response.statusCode || 502,response.headers);
+    res.writeHead(response.statusCode || 502,{ ...response.headers, ...(!indexableDeployment ? { 'x-robots-tag': 'noindex, nofollow' } : {}) });
     if (req.method==='POST' && req.url.includes('/publish') && response.statusCode>=200 && response.statusCode<300) content.invalidate();
     response.pipe(res);
   });
@@ -45,7 +50,7 @@ function proxy(req,res) {
 }
 function headHtml(head,route) {
   const url=canonical+route; const img=head?.image?.startsWith('http')?head.image:canonical+(head?.image || '/opengraph.jpg');
-  let text=`<title>${escape(head?.title || 'P1 Land & Property Management')}</title><meta name="description" content="${escape(head?.description || '')}"><meta name="robots" content="${head?.noindex?'noindex, follow':'index, follow'}"><link rel="canonical" href="${url}">`;
+  let text=`<title>${escape(head?.title || 'P1 Land & Property Management')}</title><meta name="description" content="${escape(head?.description || '')}"><meta name="robots" content="${!indexableDeployment?'noindex, nofollow':head?.noindex?'noindex, follow':'index, follow'}"><link rel="canonical" href="${url}">`;
   for(const [k,v]of Object.entries({'og:title':head?.title,'og:description':head?.description,'og:url':url,'og:image':img,'og:type':route.startsWith('/blog/')?'article':'website','og:site_name':'P1 Land & Property Management','og:locale':'en_US'}))text+=`<meta property="${k}" content="${escape(v || '')}">`;
   for(const [k,v]of Object.entries({'twitter:card':'summary_large_image','twitter:title':head?.title,'twitter:description':head?.description,'twitter:image':img}))text+=`<meta name="${k}" content="${escape(v || '')}">`;
   for(const item of (Array.isArray(head?.jsonLd)?head.jsonLd:head?.jsonLd?[head.jsonLd]:[]))text+=`<script type="application/ld+json" data-seo-jsonld>${JSON.stringify(item).replaceAll('<','\\u003c')}</script>`;
@@ -53,6 +58,7 @@ function headHtml(head,route) {
 }
 const server=http.createServer(async(req,res)=>{
   try {
+    if (!indexableDeployment) res.setHeader('X-Robots-Tag','noindex, nofollow');
     if (!req.url?.startsWith('/') || req.url.startsWith('//')) return send(req,res,400,'Bad request');
     const url=new URL(req.url,'http://localhost');
     const pathname=decodeURIComponent(url.pathname);
@@ -61,16 +67,22 @@ const server=http.createServer(async(req,res)=>{
     res.setHeader('Permissions-Policy','camera=(), microphone=(), geolocation=()');
     if(process.env.NODE_ENV==='production')res.setHeader('Strict-Transport-Security','max-age=31536000');
     const host=(req.headers.host || '').split(':')[0];
+    const backendPath = ['/admin','/api','/uploads','/r2'].some(prefix => pathname === prefix || pathname.startsWith(prefix + '/'));
+    const infrastructurePath = backendPath || pathname === '/healthz' || pathname === '/assets' || pathname.startsWith('/assets/');
     let normalized=pathname;
-    if(normalized.endsWith('.html'))normalized=normalized.slice(0,-5);
-    if(normalized.endsWith('/index'))normalized=normalized.slice(0,-6)||'/';
-    if(normalized!=='/')normalized=normalized.replace(/\/+$/,'');
-    if(host==='p1landmanagement.com' || (normalized!==pathname && !pathname.startsWith('/api/'))) {res.writeHead(308,{Location:`${host==='p1landmanagement.com'?canonical:''}${normalized}${url.search}`});return res.end();}
+    // Core and static asset servers own their exact paths and directory redirects.
+    if (!infrastructurePath) {
+      if(normalized.endsWith('.html'))normalized=normalized.slice(0,-5);
+      if(normalized.endsWith('/index'))normalized=normalized.slice(0,-6)||'/';
+      if(normalized!=='/')normalized=normalized.replace(/\/+$/,'');
+    }
+    if(host==='p1landmanagement.com' || normalized!==pathname) {res.writeHead(308,{Location:`${host==='p1landmanagement.com'?canonical:''}${normalized}${url.search}`});return res.end();}
     if(pathname==='/api/p1/page-content' && ['GET','HEAD'].includes(req.method)) {const snapshot=await content.snapshot(url.searchParams.get('path')||'/');return send(req,res,snapshot?200:404,JSON.stringify(snapshot||{error:'Not found'}),'application/json','no-store');}
     if(pathname==='/healthz')return send(req,res,200,'{"status":"ok"}','application/json','no-store');
-    if(pathname==='/admin'||pathname.startsWith('/admin/')||pathname==='/api'||pathname.startsWith('/api/')||pathname.startsWith('/uploads/')||pathname.startsWith('/r2/'))return proxy(req,res);
+    if(backendPath)return proxy(req,res);
     if(!['GET','HEAD'].includes(req.method))return send(req,res,405,'Method not allowed');
     res.setHeader('Content-Security-Policy',"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'self'; base-uri 'self'; object-src 'none'; form-action 'self'");
+    if(pathname==='/robots.txt' && !indexableDeployment)return send(req,res,200,'User-agent: *\nDisallow: /\n','text/plain; charset=utf-8');
     if(url.searchParams.has('cmsPreview'))res.setHeader('X-Robots-Tag','noindex, nofollow');
     if(pathname==='/sitemap.xml') {
       const snapshots=await Promise.all([...content.routes.keys()].map(p=>content.snapshot(p)));
@@ -86,7 +98,7 @@ const server=http.createServer(async(req,res)=>{
     const file=path.resolve(publicDir,'.'+pathname);
     if(!file.startsWith(publicDir+path.sep)||pathname.split('/').some(p=>p.startsWith('.')) )return send(req,res,404,'Not found');
     try { const info=await stat(file);if(!info.isFile())throw new Error();const type=mime[path.extname(file)]||'application/octet-stream';const immutable=pathname.startsWith('/assets/');if(/text|javascript|json|xml/.test(type))return send(req,res,200,await readFile(file),type,immutable?'public, max-age=31536000, immutable':'no-cache');res.writeHead(200,{'Content-Type':type,'Content-Length':info.size,'Cache-Control':immutable?'public, max-age=31536000, immutable':'no-cache'});if(req.method==='HEAD')return res.end();createReadStream(file).pipe(res);return;}catch{}
-    res.setHeader('X-Robots-Tag','noindex');
+    res.setHeader('X-Robots-Tag',indexableDeployment?'noindex':'noindex, nofollow');
     return send(req,res,404,'<!doctype html><html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1"><title>Page not found | P1 Land Management</title></head><body><main><h1>Page not found</h1><p>We could not find this page.</p><a href="/">Return home</a> · <a href="/contact">Request an estimate</a></main></body></html>');
   } catch { if(!res.headersSent)send(req,res,500,'Service temporarily unavailable');else res.destroy(); }
 });

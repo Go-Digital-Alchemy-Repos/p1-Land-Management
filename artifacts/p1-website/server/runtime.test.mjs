@@ -4,6 +4,8 @@ import http from 'node:http';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
 import { dirname, resolve } from 'node:path';
+import { mkdtemp, mkdir, readFile, writeFile, copyFile, symlink, rm } from 'node:fs/promises';
+import os from 'node:os';
 import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -30,6 +32,8 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
     } else if (req.url === '/admin/assets/dashboard-qa.js') {
       res.setHeader('Content-Type', 'text/javascript'); res.end('/* QA dashboard bundle */');
     } else if (req.url === '/admin') {
+      res.writeHead(301, { Location: '/admin/' }); res.end();
+    } else if (req.url === '/admin/') {
       res.setHeader('Content-Type', 'text/html'); res.end('<main>QA private dashboard login</main>');
     } else { res.statusCode = 404; res.end('No mock endpoint'); }
   });
@@ -95,9 +99,80 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
     assert.equal(script.headers['cache-control'], 'public, max-age=31536000, immutable');
     const head = await request(port, asset[1], {}, 'HEAD'); assert.equal(head.status, 200); assert.equal(head.body, '');
   });
+  await t.test('production stays indexable based on manifest with preview exclusion preserved', async () => {
+    const home = await request(port, '/', { Host: 'staging-looking.example.test' });
+    assert.equal(home.headers['x-robots-tag'], undefined);
+    assert(home.body.includes('name="robots" content="index, follow"'));
+    const robots = await request(port, '/robots.txt');
+    assert.equal(robots.status, 200);
+    assert(!/^Disallow:\s*\/\s*$/m.test(robots.body), 'Production robots must not block the entire site');
+    const preview = await request(port, '/?cmsPreview=1');
+    assert.equal(preview.headers['x-robots-tag'], 'noindex, nofollow');
+  });
   await t.test('dashboard routes and assets proxy to configured upstream', async () => {
-    const admin = await request(port, '/admin'); assert.equal(admin.status, 200); assert(admin.body.includes('QA private dashboard login'));
+    let adminPath = '/admin'; let admin;
+    for (let hop = 0; hop < 4; hop++) {
+      admin = await request(port, adminPath);
+      if (![301,302,307,308].includes(admin.status)) break;
+      adminPath = admin.headers.location;
+    }
+    assert.equal(adminPath, '/admin/'); assert.equal(admin.status, 200); assert(admin.body.includes('QA private dashboard login'));
     const asset = await request(port, '/admin/assets/dashboard-qa.js'); assert.equal(asset.status, 200); assert.equal(asset.headers['content-type'], 'text/javascript');
     assert(upstreamRequests.some(item => item.path === '/admin/assets/dashboard-qa.js'));
+    for (const exactPath of ['/admin/cms/team/', '/admin/index.html', '/api/test/', '/uploads/photo.html', '/r2/photo.html']) {
+      const response = await request(port, exactPath);
+      assert.equal(response.headers.location, undefined, `Gateway must preserve ${exactPath}`);
+      assert(upstreamRequests.some(item => item.path === exactPath));
+    }
+    const asset404 = await request(port, '/assets/missing.html');
+    assert.equal(asset404.status, 404); assert.equal(asset404.headers.location, undefined);
+    const apexAdmin = await request(port, '/admin/', { Host: 'p1landmanagement.com' });
+    assert.equal(apexAdmin.headers.location, 'https://www.p1landmanagement.com/admin/');
   });
+});
+
+test('staging manifest blocks indexing across public and proxied responses regardless of Host', { timeout: 20000 }, async t => {
+  const temporary = await mkdtemp(resolve(os.tmpdir(), 'p1-staging-runtime-'));
+  t.after(() => rm(temporary, { recursive: true, force: true }));
+  await mkdir(resolve(temporary, 'server')); await mkdir(resolve(temporary, 'config'));
+  await copyFile(resolve(root, 'server/index.mjs'), resolve(temporary, 'server/index.mjs'));
+  await copyFile(resolve(root, 'server/content.mjs'), resolve(temporary, 'server/content.mjs'));
+  await copyFile(resolve(root, 'server/client-ip.mjs'), resolve(temporary, 'server/client-ip.mjs')); 
+  await symlink(resolve(root, 'dist'), resolve(temporary, 'dist'), 'dir');
+  const manifest = JSON.parse(await readFile(resolve(root, 'config/client-site-manifest.json'), 'utf8'));
+  manifest.origins.publicSite = 'https://p1-staging-example.up.railway.app';
+  manifest.origins.admin = manifest.origins.publicSite;
+  await writeFile(resolve(temporary, 'config/client-site-manifest.json'), JSON.stringify(manifest));
+  const upstream = http.createServer((req, res) => {
+    if (req.url.startsWith('/api/client-site-content/')) { res.statusCode = 503; res.end('Use published fallback'); return; }
+    res.setHeader('X-Robots-Tag', 'index, follow');
+    res.end('Mock admin response');
+  });
+  const upstreamPort = await listen(upstream);
+  t.after(() => new Promise(resolveClose => upstream.close(resolveClose)));
+  const reservation = http.createServer(); const port = await listen(reservation);
+  await new Promise(resolveClose => reservation.close(resolveClose));
+  const child = spawn(process.execPath, [resolve(temporary, 'server/index.mjs')], {
+    cwd: temporary, env: { ...process.env, NODE_ENV: 'production', PORT: String(port), P1_CORE_ORIGIN: `http://127.0.0.1:${upstreamPort}`, P1_CONTENT_CACHE_DIR: '' },
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  t.after(async () => { if (child.exitCode === null) { child.kill('SIGTERM'); await once(child, 'exit'); } });
+  let diagnostics = '';
+  child.stderr.on('data', chunk => { diagnostics += chunk; });
+  await new Promise((resolveReady, reject) => {
+    const timer = setTimeout(() => reject(new Error(`Staging server startup timed out: ${diagnostics}`)), 10000);
+    child.once('exit', code => { clearTimeout(timer); reject(new Error(`Staging server exited ${code}: ${diagnostics}`)); });
+    child.stdout.on('data', chunk => { if (String(chunk).includes('P1 website listening')) { clearTimeout(timer); resolveReady(); } });
+  });
+  for (const pathname of ['/', '/contact', '/?cmsPreview=1', '/sitemap.xml', '/api/p1/page-content?path=%2F', '/admin', '/admin/assets/example.js', '/not-a-page', '/favicon.svg']) {
+    const response = await request(port, pathname, { Host: 'www.p1landmanagement.com' });
+    assert.equal(response.headers['x-robots-tag'], 'noindex, nofollow', pathname);
+    if (pathname === '/') assert(response.body.includes('name="robots" content="noindex, nofollow"'));
+  }
+  const robots = await request(port, '/robots.txt', { Host: 'www.p1landmanagement.com' });
+  assert.equal(robots.status, 200);
+  assert.equal(robots.body, 'User-agent: *\nDisallow: /\n');
+  assert.equal(robots.headers['content-type'], 'text/plain; charset=utf-8');
+  assert.equal(robots.headers['x-robots-tag'], 'noindex, nofollow');
+  assert.equal((await request(port, '/robots.txt', {}, 'HEAD')).body, '');
 });
