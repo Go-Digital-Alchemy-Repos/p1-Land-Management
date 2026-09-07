@@ -118,6 +118,7 @@ try {
       "src/dashboard/core-federation.test.ts",
       "src/dashboard/work-readiness.test.ts",
       "../p1-dashboard/tests/schedule-dates.test.ts",
+      "../p1-dashboard/tests/dashboard-routes.test.ts",
       "../p1-dashboard/tests/dashboard-contract.test.ts",
       "src/dashboard/integration.test.ts",
     ],

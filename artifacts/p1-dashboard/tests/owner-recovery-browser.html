@@ -54,6 +54,7 @@
           throw new Error("Protected data requested before owner verification");
         return Response.json([]);
       };
+      history.replaceState(null, "", "/");
       await import("/src/main.tsx");
     </script>
   </body>

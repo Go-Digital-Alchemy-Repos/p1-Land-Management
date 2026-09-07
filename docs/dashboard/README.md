@@ -16,7 +16,7 @@ Implementation status: **preview deployed at https://dashboard.p1landmanagement.
 
 The dashboard uses browser-history-aware paths for its primary workspaces: `/`, `/properties`, `/clients`, `/schedule`, `/my-day`, `/sales`, `/agreements`, `/billing`, `/requests`, `/recurring`, `/projects`, `/inspections` and `/expenses`. Settings is deliberately divided into stable, shareable destinations: `/settings/people`, `/settings/security`, `/settings/integrations` and `/settings/preferences`.
 
-The sidebar groups those destinations into Workspace, Operations, Revenue and Settings. A role never receives a navigation link it cannot use, and a direct path is still authorized by the API after it loads. Browser Back and Forward restore the selected destination; links do not encode resource records, mutable form state, credentials, MFA material or provider return values.
+The sidebar groups those destinations into Workspace, Customers, Operations, Revenue and Settings. The current detail workflows also support shareable property, work-order and agreement URLs. A role never receives a navigation link it cannot use, and a direct path is still authorized by the API after it loads. Browser Back and Forward restore the selected destination; links do not encode mutable form state, credentials, MFA material or provider return values.
 
 ## Remaining release work
 
