@@ -1,3 +1,4 @@
+import { Link } from "wouter";
 import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { PageHero } from "@/components/layout/PageHero";
@@ -48,9 +49,10 @@ export default function BlogPost() {
               Choosing the wrong grass species for a large-acreage property in South Carolina or North Carolina is an expensive mistake. Reseed or re-sod even a modest number of acres and you're talking about thousands of dollars — not counting the cost of the establishment period when the wrong grass fails to thrive and leaves bare ground that invites erosion and weed pressure.
             </p>
             <p>
-              The Carolinas straddle the warm-cool season transition zone, which makes grass selection more complex here than in most of the country. The right species depends on your specific location, soil type, sun exposure, intended use, and maintenance commitment. This guide helps you make the right call.
+              The Carolinas straddle the warm-cool season transition zone, which makes grass selection more complex here than in most of the country. The right species depends on your specific location, soil type, sun exposure, intended use, and maintenance commitment. Use this guide to frame the discussion, then check cultivar suitability for your site.
             </p>
 
+            <p><a href="https://hgic.clemson.edu/factsheet/selecting-a-lawn-grass/">Clemson Extension’s lawn grass selection guide</a> compares site suitability and establishment methods. For grazing land, seek a forage-specific recommendation before selecting a turf variety.</p>
             <h2>The Transition Zone Challenge</h2>
             <p>
               Upstate South Carolina and the Charlotte, NC region sit in what turfgrass scientists call the transition zone — a band across the mid-South where neither warm-season nor cool-season grasses perform optimally year-round. Warm-season grasses go dormant and brown in winter. Cool-season grasses suffer in summer heat. Neither is perfect. The goal is to choose the species that performs best for your specific use during the seasons that matter most.
@@ -70,7 +72,7 @@ export default function BlogPost() {
 
             <h3>Zoysiagrass</h3>
             <p>
-              A dense, slow-growing warm-season grass that produces a tight, attractive turf with fewer inputs than Bermuda once established. Zoysia is more shade-tolerant than Bermuda and has better cold hardiness — useful in the transition zone. The downside is slow establishment and relatively high cost if sodded.
+              A dense, slow-growing warm-season grass that produces a tight, attractive turf with fewer inputs than Bermuda once established. Shade and cold tolerance vary by cultivar; match the selection to the site. The downside is slow establishment and relatively high cost if sodded.
             </p>
             <ul>
               <li><strong>Best for:</strong> Commercial properties, HOA common areas, estate lawns</li>
@@ -125,6 +127,9 @@ export default function BlogPost() {
         </section>
       </article>
 
+      <aside className="container mx-auto max-w-4xl px-4 pb-12 text-lg">
+        <p>Planning work on your land? <Link href="/services/turf-installation-seeding" className="text-primary underline">Explore this service</Link> and <Link href="/contact" className="text-primary underline">request a property estimate</Link>.</p>
+      </aside>
       <FinalCTA />
     </Layout>
   );

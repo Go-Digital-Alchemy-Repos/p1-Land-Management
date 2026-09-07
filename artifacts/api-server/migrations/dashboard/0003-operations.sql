@@ -1,0 +1,14 @@
+CREATE TABLE recurring_service (id uuid PRIMARY KEY, property_id uuid NOT NULL REFERENCES property(id), title text NOT NULL, scope text NOT NULL DEFAULT '', cadence text NOT NULL CHECK(cadence IN ('weekly','monthly')), interval_count integer NOT NULL CHECK(interval_count BETWEEN 1 AND 52), next_date date NOT NULL, local_time text NOT NULL DEFAULT '08:00', assigned_to text REFERENCES "user"(id), billing_mode text NOT NULL CHECK(billing_mode IN ('fixed_monthly','per_visit')), paused boolean NOT NULL DEFAULT false, created_at timestamptz NOT NULL DEFAULT now());
+ALTER TABLE work_order ADD COLUMN recurring_service_id uuid REFERENCES recurring_service(id);
+ALTER TABLE work_order ADD COLUMN occurrence_date date;
+CREATE UNIQUE INDEX ON work_order(recurring_service_id,occurrence_date);
+CREATE TABLE property_area (id uuid PRIMARY KEY, property_id uuid NOT NULL REFERENCES property(id), name text NOT NULL, description text NOT NULL DEFAULT '', acreage numeric CHECK(acreage>=0));
+CREATE TABLE property_asset (id uuid PRIMARY KEY, property_id uuid NOT NULL REFERENCES property(id), area_id uuid REFERENCES property_area(id), name text NOT NULL, kind text NOT NULL, condition text NOT NULL DEFAULT 'not_assessed', observed_at timestamptz, notes text NOT NULL DEFAULT '');
+CREATE TABLE inspection (id uuid PRIMARY KEY, property_id uuid NOT NULL REFERENCES property(id), user_id text NOT NULL REFERENCES "user"(id), title text NOT NULL, findings jsonb NOT NULL, published boolean NOT NULL DEFAULT false, created_at timestamptz NOT NULL DEFAULT now());
+CREATE TABLE project (id uuid PRIMARY KEY, property_id uuid NOT NULL REFERENCES property(id), name text NOT NULL, scope text NOT NULL, status text NOT NULL DEFAULT 'planned', phases jsonb NOT NULL DEFAULT '[]', created_at timestamptz NOT NULL DEFAULT now());
+ALTER TABLE work_order ADD COLUMN project_id uuid REFERENCES project(id);
+CREATE TABLE expense (id uuid PRIMARY KEY, property_id uuid NOT NULL REFERENCES property(id), work_order_id uuid REFERENCES work_order(id), amount_cents bigint NOT NULL CHECK(amount_cents>0), category text NOT NULL, description text NOT NULL, incurred_on date NOT NULL, created_by text NOT NULL REFERENCES "user"(id));
+CREATE TABLE integration_connection (provider text PRIMARY KEY, realm_id text NOT NULL, credentials_encrypted text NOT NULL, updated_at timestamptz NOT NULL DEFAULT now());
+CREATE TABLE oauth_state (hash text PRIMARY KEY, user_id text NOT NULL REFERENCES "user"(id), expires_at timestamptz NOT NULL);
+ALTER TABLE billing_draft ADD COLUMN posting_request_id uuid UNIQUE;
+ALTER TABLE file_record ADD COLUMN classification text NOT NULL DEFAULT 'general';

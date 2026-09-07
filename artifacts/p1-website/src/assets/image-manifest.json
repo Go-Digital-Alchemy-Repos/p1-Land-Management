@@ -1,0 +1,2852 @@
+{
+  "blog-ag-land.png": {
+    "sourceBytes": 1976889,
+    "sourceHash": "ccefd520f7f9bea22c738a0195826e6b1914c853043d6f7ea8bcbbdc737e2e6d",
+    "width": 1408,
+    "height": 768,
+    "default": "optimized/blog-ag-land-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/blog-ag-land-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 262,
+        "bytes": 28790,
+        "quality": 78
+      },
+      {
+        "path": "optimized/blog-ag-land-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 262,
+        "bytes": 24207,
+        "quality": 58
+      },
+      {
+        "path": "optimized/blog-ag-land-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 419,
+        "bytes": 68108,
+        "quality": 78
+      },
+      {
+        "path": "optimized/blog-ag-land-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 419,
+        "bytes": 61070,
+        "quality": 58
+      },
+      {
+        "path": "optimized/blog-ag-land-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 698,
+        "bytes": 171320,
+        "quality": 78
+      },
+      {
+        "path": "optimized/blog-ag-land-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 698,
+        "bytes": 153205,
+        "quality": 58
+      }
+    ]
+  },
+  "blog-drainage.png": {
+    "sourceBytes": 2004161,
+    "sourceHash": "04fc8d699d440b64a6db990d481a79c06d5784272c823d4436a517099a5d898b",
+    "width": 1408,
+    "height": 768,
+    "default": "optimized/blog-drainage-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/blog-drainage-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 262,
+        "bytes": 29768,
+        "quality": 78
+      },
+      {
+        "path": "optimized/blog-drainage-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 262,
+        "bytes": 27997,
+        "quality": 58
+      },
+      {
+        "path": "optimized/blog-drainage-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 419,
+        "bytes": 69958,
+        "quality": 78
+      },
+      {
+        "path": "optimized/blog-drainage-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 419,
+        "bytes": 65353,
+        "quality": 58
+      },
+      {
+        "path": "optimized/blog-drainage-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 698,
+        "bytes": 169462,
+        "quality": 78
+      },
+      {
+        "path": "optimized/blog-drainage-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 698,
+        "bytes": 156063,
+        "quality": 58
+      }
+    ]
+  },
+  "blog-grass-acreage.png": {
+    "sourceBytes": 1923199,
+    "sourceHash": "b37ee0a732ec3d6662eb61187dcc92078612593df8e9c8980e3c002a9b9dbfd1",
+    "width": 1408,
+    "height": 768,
+    "default": "optimized/blog-grass-acreage-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/blog-grass-acreage-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 262,
+        "bytes": 21388,
+        "quality": 78
+      },
+      {
+        "path": "optimized/blog-grass-acreage-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 262,
+        "bytes": 17066,
+        "quality": 58
+      },
+      {
+        "path": "optimized/blog-grass-acreage-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 419,
+        "bytes": 55042,
+        "quality": 78
+      },
+      {
+        "path": "optimized/blog-grass-acreage-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 419,
+        "bytes": 47515,
+        "quality": 58
+      },
+      {
+        "path": "optimized/blog-grass-acreage-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 698,
+        "bytes": 155430,
+        "quality": 78
+      },
+      {
+        "path": "optimized/blog-grass-acreage-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 698,
+        "bytes": 137337,
+        "quality": 58
+      }
+    ]
+  },
+  "blog-land-clearing.png": {
+    "sourceBytes": 2370809,
+    "sourceHash": "0aac1bd9fd3d8406ff7659665226a0d1e00c5787f60eda0f0a242d3395f4539d",
+    "width": 1408,
+    "height": 768,
+    "default": "optimized/blog-land-clearing-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/blog-land-clearing-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 262,
+        "bytes": 39776,
+        "quality": 78
+      },
+      {
+        "path": "optimized/blog-land-clearing-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 262,
+        "bytes": 41515,
+        "quality": 58
+      },
+      {
+        "path": "optimized/blog-land-clearing-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 419,
+        "bytes": 98354,
+        "quality": 78
+      },
+      {
+        "path": "optimized/blog-land-clearing-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 419,
+        "bytes": 85446,
+        "quality": 53
+      },
+      {
+        "path": "optimized/blog-land-clearing-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 698,
+        "bytes": 243314,
+        "quality": 78
+      },
+      {
+        "path": "optimized/blog-land-clearing-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 698,
+        "bytes": 243858,
+        "quality": 58
+      }
+    ]
+  },
+  "blog-retention-pond.png": {
+    "sourceBytes": 1802830,
+    "sourceHash": "dce91589ad9ac05ba330ac5bba4b54811d27dae41d122ed63fc379e7b20b0749",
+    "width": 1408,
+    "height": 768,
+    "default": "optimized/blog-retention-pond-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/blog-retention-pond-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 262,
+        "bytes": 18122,
+        "quality": 78
+      },
+      {
+        "path": "optimized/blog-retention-pond-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 262,
+        "bytes": 18790,
+        "quality": 58
+      },
+      {
+        "path": "optimized/blog-retention-pond-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 419,
+        "bytes": 44752,
+        "quality": 78
+      },
+      {
+        "path": "optimized/blog-retention-pond-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 419,
+        "bytes": 45325,
+        "quality": 58
+      },
+      {
+        "path": "optimized/blog-retention-pond-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 698,
+        "bytes": 120030,
+        "quality": 78
+      },
+      {
+        "path": "optimized/blog-retention-pond-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 698,
+        "bytes": 115715,
+        "quality": 58
+      }
+    ]
+  },
+  "commercial-property.png": {
+    "sourceBytes": 1885204,
+    "sourceHash": "8ea36a3fe6c788f063218911b55051b2cabf7b155f98f7aa91ce0fbababc4703",
+    "width": 1408,
+    "height": 768,
+    "default": "optimized/commercial-property-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/commercial-property-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 262,
+        "bytes": 23234,
+        "quality": 78
+      },
+      {
+        "path": "optimized/commercial-property-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 262,
+        "bytes": 21683,
+        "quality": 58
+      },
+      {
+        "path": "optimized/commercial-property-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 419,
+        "bytes": 56814,
+        "quality": 78
+      },
+      {
+        "path": "optimized/commercial-property-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 419,
+        "bytes": 52640,
+        "quality": 58
+      },
+      {
+        "path": "optimized/commercial-property-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 698,
+        "bytes": 146242,
+        "quality": 78
+      },
+      {
+        "path": "optimized/commercial-property-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 698,
+        "bytes": 136441,
+        "quality": 58
+      }
+    ]
+  },
+  "features/about-who.png": {
+    "sourceBytes": 2064870,
+    "sourceHash": "a785a80db6fea0b44ed8f07db2047f86fcbf56b3fe41de939bedbf4e1700878a",
+    "width": 1280,
+    "height": 896,
+    "default": "optimized/features/about-who-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/features/about-who-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 336,
+        "bytes": 36548,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/about-who-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 336,
+        "bytes": 37729,
+        "quality": 58
+      },
+      {
+        "path": "optimized/features/about-who-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 538,
+        "bytes": 88356,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/about-who-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 538,
+        "bytes": 89129,
+        "quality": 58
+      },
+      {
+        "path": "optimized/features/about-who-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 896,
+        "bytes": 217686,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/about-who-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 896,
+        "bytes": 211698,
+        "quality": 58
+      }
+    ]
+  },
+  "features/charlotte-region.png": {
+    "sourceBytes": 1961988,
+    "sourceHash": "a610d89e1130926c1669996a41336e5eea1a63df31a1e70e4d2015606c9be183",
+    "width": 1280,
+    "height": 896,
+    "default": "optimized/features/charlotte-region-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/features/charlotte-region-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 336,
+        "bytes": 30902,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/charlotte-region-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 336,
+        "bytes": 30240,
+        "quality": 58
+      },
+      {
+        "path": "optimized/features/charlotte-region-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 538,
+        "bytes": 72818,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/charlotte-region-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 538,
+        "bytes": 69890,
+        "quality": 58
+      },
+      {
+        "path": "optimized/features/charlotte-region-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 896,
+        "bytes": 181050,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/charlotte-region-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 896,
+        "bytes": 170629,
+        "quality": 58
+      }
+    ]
+  },
+  "features/clearing-mulching.png": {
+    "sourceBytes": 2801462,
+    "sourceHash": "594929cf74e4b711df1211ba4bbe881a4e72705ed68ff8451a1d72ff1a347eee",
+    "width": 1280,
+    "height": 896,
+    "default": "optimized/features/clearing-mulching-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/features/clearing-mulching-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 336,
+        "bytes": 63946,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/clearing-mulching-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 336,
+        "bytes": 67104,
+        "quality": 58
+      },
+      {
+        "path": "optimized/features/clearing-mulching-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 538,
+        "bytes": 97968,
+        "quality": 33
+      },
+      {
+        "path": "optimized/features/clearing-mulching-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 538,
+        "bytes": 88634,
+        "quality": 38
+      },
+      {
+        "path": "optimized/features/clearing-mulching-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 896,
+        "bytes": 235640,
+        "quality": 33
+      },
+      {
+        "path": "optimized/features/clearing-mulching-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 896,
+        "bytes": 248805,
+        "quality": 43
+      }
+    ]
+  },
+  "features/clearing-prepares.png": {
+    "sourceBytes": 2277334,
+    "sourceHash": "37fc77917b35268114262a574cf42171b1c05b3740695c1be705de88f445b1e9",
+    "width": 1280,
+    "height": 896,
+    "default": "optimized/features/clearing-prepares-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/features/clearing-prepares-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 336,
+        "bytes": 38056,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/clearing-prepares-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 336,
+        "bytes": 38208,
+        "quality": 58
+      },
+      {
+        "path": "optimized/features/clearing-prepares-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 538,
+        "bytes": 97346,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/clearing-prepares-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 538,
+        "bytes": 98484,
+        "quality": 58
+      },
+      {
+        "path": "optimized/features/clearing-prepares-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 896,
+        "bytes": 222686,
+        "quality": 73
+      },
+      {
+        "path": "optimized/features/clearing-prepares-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 896,
+        "bytes": 211915,
+        "quality": 53
+      }
+    ]
+  },
+  "features/commercial-attention.png": {
+    "sourceBytes": 2386787,
+    "sourceHash": "d0fe1b0ac402697d61798e4c45f05b1950988091c450c554889ad7544a54eaa4",
+    "width": 1280,
+    "height": 896,
+    "default": "optimized/features/commercial-attention-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/features/commercial-attention-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 336,
+        "bytes": 44478,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/commercial-attention-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 336,
+        "bytes": 43222,
+        "quality": 58
+      },
+      {
+        "path": "optimized/features/commercial-attention-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 538,
+        "bytes": 97990,
+        "quality": 73
+      },
+      {
+        "path": "optimized/features/commercial-attention-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 538,
+        "bytes": 90765,
+        "quality": 53
+      },
+      {
+        "path": "optimized/features/commercial-attention-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 896,
+        "bytes": 248274,
+        "quality": 73
+      },
+      {
+        "path": "optimized/features/commercial-attention-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 896,
+        "bytes": 225248,
+        "quality": 53
+      }
+    ]
+  },
+  "features/commercial-schedule.png": {
+    "sourceBytes": 1708868,
+    "sourceHash": "60c52dba2f153efc93991c12ee229d435f02adc37532036907e068e9f20656b7",
+    "width": 1280,
+    "height": 896,
+    "default": "optimized/features/commercial-schedule-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/features/commercial-schedule-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 336,
+        "bytes": 24982,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/commercial-schedule-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 336,
+        "bytes": 25002,
+        "quality": 58
+      },
+      {
+        "path": "optimized/features/commercial-schedule-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 538,
+        "bytes": 50964,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/commercial-schedule-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 538,
+        "bytes": 47617,
+        "quality": 58
+      },
+      {
+        "path": "optimized/features/commercial-schedule-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 896,
+        "bytes": 110082,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/commercial-schedule-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 896,
+        "bytes": 93582,
+        "quality": 58
+      }
+    ]
+  },
+  "features/drainage-fix.png": {
+    "sourceBytes": 2223752,
+    "sourceHash": "342cbc3dacbfb119df659ee7594d580042504e58559d9679cf4a6819454648e3",
+    "width": 1280,
+    "height": 896,
+    "default": "optimized/features/drainage-fix-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/features/drainage-fix-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 336,
+        "bytes": 42880,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/drainage-fix-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 336,
+        "bytes": 41002,
+        "quality": 58
+      },
+      {
+        "path": "optimized/features/drainage-fix-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 538,
+        "bytes": 99238,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/drainage-fix-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 538,
+        "bytes": 97099,
+        "quality": 58
+      },
+      {
+        "path": "optimized/features/drainage-fix-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 896,
+        "bytes": 238328,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/drainage-fix-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 896,
+        "bytes": 225521,
+        "quality": 58
+      }
+    ]
+  },
+  "features/grading-construction.png": {
+    "sourceBytes": 1859754,
+    "sourceHash": "59ab88de1e8b8ce31af097c1c2fd8fd727a732f2c6758adc66faaf22ccc4093a",
+    "width": 1280,
+    "height": 896,
+    "default": "optimized/features/grading-construction-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/features/grading-construction-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 336,
+        "bytes": 28502,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/grading-construction-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 336,
+        "bytes": 25143,
+        "quality": 58
+      },
+      {
+        "path": "optimized/features/grading-construction-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 538,
+        "bytes": 67008,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/grading-construction-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 538,
+        "bytes": 60521,
+        "quality": 58
+      },
+      {
+        "path": "optimized/features/grading-construction-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 896,
+        "bytes": 167442,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/grading-construction-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 896,
+        "bytes": 148744,
+        "quality": 58
+      }
+    ]
+  },
+  "features/grading-drainage.png": {
+    "sourceBytes": 2306125,
+    "sourceHash": "4e02ad0b21271c86e74082f299153c6a40a480a6884228ebeec55837055e55a4",
+    "width": 1280,
+    "height": 896,
+    "default": "optimized/features/grading-drainage-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/features/grading-drainage-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 336,
+        "bytes": 38188,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/grading-drainage-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 336,
+        "bytes": 32888,
+        "quality": 58
+      },
+      {
+        "path": "optimized/features/grading-drainage-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 538,
+        "bytes": 93946,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/grading-drainage-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 538,
+        "bytes": 82070,
+        "quality": 58
+      },
+      {
+        "path": "optimized/features/grading-drainage-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 896,
+        "bytes": 246504,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/grading-drainage-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 896,
+        "bytes": 215353,
+        "quality": 58
+      }
+    ]
+  },
+  "features/grading-level.png": {
+    "sourceBytes": 1970159,
+    "sourceHash": "49035cdfa8d0a17f170e450b7c2a2c96c53d830eacd18b227704aec62f1b1146",
+    "width": 1280,
+    "height": 896,
+    "default": "optimized/features/grading-level-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/features/grading-level-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 336,
+        "bytes": 33980,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/grading-level-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 336,
+        "bytes": 31897,
+        "quality": 58
+      },
+      {
+        "path": "optimized/features/grading-level-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 538,
+        "bytes": 78824,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/grading-level-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 538,
+        "bytes": 73575,
+        "quality": 58
+      },
+      {
+        "path": "optimized/features/grading-level-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 896,
+        "bytes": 185716,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/grading-level-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 896,
+        "bytes": 170804,
+        "quality": 58
+      }
+    ]
+  },
+  "features/grading-turf.png": {
+    "sourceBytes": 1888825,
+    "sourceHash": "1a970132f9fbd153d984b9860803f2b379936f7ebfffa9479d55ad9ccf01e677",
+    "width": 1280,
+    "height": 896,
+    "default": "optimized/features/grading-turf-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/features/grading-turf-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 336,
+        "bytes": 36476,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/grading-turf-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 336,
+        "bytes": 31890,
+        "quality": 58
+      },
+      {
+        "path": "optimized/features/grading-turf-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 538,
+        "bytes": 75466,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/grading-turf-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 538,
+        "bytes": 63062,
+        "quality": 58
+      },
+      {
+        "path": "optimized/features/grading-turf-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 896,
+        "bytes": 159220,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/grading-turf-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 896,
+        "bytes": 124461,
+        "quality": 58
+      }
+    ]
+  },
+  "features/industrial-maintenance.png": {
+    "sourceBytes": 2099917,
+    "sourceHash": "7bad9b5cbecd6c97b82b23ef80fea74b5050e6d0693ea1eceba07082fb7e9d61",
+    "width": 1280,
+    "height": 896,
+    "default": "optimized/features/industrial-maintenance-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/features/industrial-maintenance-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 336,
+        "bytes": 35698,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/industrial-maintenance-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 336,
+        "bytes": 35361,
+        "quality": 58
+      },
+      {
+        "path": "optimized/features/industrial-maintenance-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 538,
+        "bytes": 84862,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/industrial-maintenance-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 538,
+        "bytes": 83574,
+        "quality": 58
+      },
+      {
+        "path": "optimized/features/industrial-maintenance-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 896,
+        "bytes": 211330,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/industrial-maintenance-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 896,
+        "bytes": 204385,
+        "quality": 58
+      }
+    ]
+  },
+  "features/lancaster-sitework.png": {
+    "sourceBytes": 2159207,
+    "sourceHash": "670b6f71c84d8435afd2d3638b0a526a1231625ab965bf37cf51accb6207c1f8",
+    "width": 1280,
+    "height": 896,
+    "default": "optimized/features/lancaster-sitework-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/features/lancaster-sitework-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 336,
+        "bytes": 33014,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/lancaster-sitework-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 336,
+        "bytes": 34094,
+        "quality": 58
+      },
+      {
+        "path": "optimized/features/lancaster-sitework-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 538,
+        "bytes": 83716,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/lancaster-sitework-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 538,
+        "bytes": 85657,
+        "quality": 58
+      },
+      {
+        "path": "optimized/features/lancaster-sitework-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 896,
+        "bytes": 223202,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/lancaster-sitework-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 896,
+        "bytes": 226435,
+        "quality": 58
+      }
+    ]
+  },
+  "features/pond-care.png": {
+    "sourceBytes": 2283621,
+    "sourceHash": "3ed40aaabb57e3ce2b2de83bee4fb634ff44bcac2e25731a59da02d3b980590e",
+    "width": 1280,
+    "height": 896,
+    "default": "optimized/features/pond-care-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/features/pond-care-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 336,
+        "bytes": 33534,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/pond-care-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 336,
+        "bytes": 33226,
+        "quality": 58
+      },
+      {
+        "path": "optimized/features/pond-care-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 538,
+        "bytes": 85176,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/pond-care-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 538,
+        "bytes": 86679,
+        "quality": 58
+      },
+      {
+        "path": "optimized/features/pond-care-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 896,
+        "bytes": 237952,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/pond-care-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 896,
+        "bytes": 235387,
+        "quality": 58
+      }
+    ]
+  },
+  "features/pond-construction.png": {
+    "sourceBytes": 2430305,
+    "sourceHash": "a16debd342590c5a73e02593c06bafafa500bed517eab4395414ad21b4a6d2e3",
+    "width": 1280,
+    "height": 896,
+    "default": "optimized/features/pond-construction-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/features/pond-construction-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 336,
+        "bytes": 42362,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/pond-construction-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 336,
+        "bytes": 41358,
+        "quality": 58
+      },
+      {
+        "path": "optimized/features/pond-construction-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 538,
+        "bytes": 96168,
+        "quality": 73
+      },
+      {
+        "path": "optimized/features/pond-construction-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 538,
+        "bytes": 90031,
+        "quality": 53
+      },
+      {
+        "path": "optimized/features/pond-construction-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 896,
+        "bytes": 239400,
+        "quality": 68
+      },
+      {
+        "path": "optimized/features/pond-construction-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 896,
+        "bytes": 230308,
+        "quality": 53
+      }
+    ]
+  },
+  "features/reconstruction.png": {
+    "sourceBytes": 2062910,
+    "sourceHash": "73a1432dc599f79af040745b55b912f979c8ce89cd42e42db96e78dab5c8963a",
+    "width": 1280,
+    "height": 896,
+    "default": "optimized/features/reconstruction-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/features/reconstruction-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 336,
+        "bytes": 34524,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/reconstruction-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 336,
+        "bytes": 33509,
+        "quality": 58
+      },
+      {
+        "path": "optimized/features/reconstruction-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 538,
+        "bytes": 83304,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/reconstruction-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 538,
+        "bytes": 81845,
+        "quality": 58
+      },
+      {
+        "path": "optimized/features/reconstruction-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 896,
+        "bytes": 205212,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/reconstruction-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 896,
+        "bytes": 198360,
+        "quality": 58
+      }
+    ]
+  },
+  "features/tree-management.png": {
+    "sourceBytes": 2457972,
+    "sourceHash": "28d9d73d8da95fe4d66837d081c24ce00125493c45515eece559f61316fc1f27",
+    "width": 1280,
+    "height": 896,
+    "default": "optimized/features/tree-management-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/features/tree-management-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 336,
+        "bytes": 45328,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/tree-management-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 336,
+        "bytes": 46149,
+        "quality": 58
+      },
+      {
+        "path": "optimized/features/tree-management-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 538,
+        "bytes": 94434,
+        "quality": 68
+      },
+      {
+        "path": "optimized/features/tree-management-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 538,
+        "bytes": 96050,
+        "quality": 53
+      },
+      {
+        "path": "optimized/features/tree-management-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 896,
+        "bytes": 247332,
+        "quality": 68
+      },
+      {
+        "path": "optimized/features/tree-management-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 896,
+        "bytes": 241050,
+        "quality": 53
+      }
+    ]
+  },
+  "features/turf-prep.png": {
+    "sourceBytes": 2193018,
+    "sourceHash": "0cde92c28ffbe05b8c9bdf1b9edb41edaab195208242fa506553e7e74be4b8d9",
+    "width": 1280,
+    "height": 896,
+    "default": "optimized/features/turf-prep-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/features/turf-prep-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 336,
+        "bytes": 38940,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/turf-prep-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 336,
+        "bytes": 38364,
+        "quality": 58
+      },
+      {
+        "path": "optimized/features/turf-prep-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 538,
+        "bytes": 94046,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/turf-prep-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 538,
+        "bytes": 92453,
+        "quality": 58
+      },
+      {
+        "path": "optimized/features/turf-prep-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 896,
+        "bytes": 230526,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/turf-prep-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 896,
+        "bytes": 218962,
+        "quality": 58
+      }
+    ]
+  },
+  "features/turf-species.png": {
+    "sourceBytes": 1786394,
+    "sourceHash": "13e345ce5314f3d90ef25241ee7963cf1652ed1b1e0c6e05f326c823622f06ce",
+    "width": 1280,
+    "height": 896,
+    "default": "optimized/features/turf-species-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/features/turf-species-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 336,
+        "bytes": 37188,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/turf-species-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 336,
+        "bytes": 36828,
+        "quality": 58
+      },
+      {
+        "path": "optimized/features/turf-species-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 538,
+        "bytes": 72148,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/turf-species-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 538,
+        "bytes": 68006,
+        "quality": 58
+      },
+      {
+        "path": "optimized/features/turf-species-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 896,
+        "bytes": 137502,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/turf-species-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 896,
+        "bytes": 120087,
+        "quality": 58
+      }
+    ]
+  },
+  "features/union-county-equestrian.png": {
+    "sourceBytes": 2301646,
+    "sourceHash": "a6aacd0fdd268b2bb5167ab8a298d2384901b255ba3b49917c0e509ad6dad9bc",
+    "width": 1280,
+    "height": 896,
+    "default": "optimized/features/union-county-equestrian-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/features/union-county-equestrian-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 336,
+        "bytes": 38494,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/union-county-equestrian-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 336,
+        "bytes": 38926,
+        "quality": 58
+      },
+      {
+        "path": "optimized/features/union-county-equestrian-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 538,
+        "bytes": 88666,
+        "quality": 73
+      },
+      {
+        "path": "optimized/features/union-county-equestrian-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 538,
+        "bytes": 86148,
+        "quality": 53
+      },
+      {
+        "path": "optimized/features/union-county-equestrian-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 896,
+        "bytes": 242252,
+        "quality": 73
+      },
+      {
+        "path": "optimized/features/union-county-equestrian-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 896,
+        "bytes": 228236,
+        "quality": 53
+      }
+    ]
+  },
+  "features/upstate-partner.png": {
+    "sourceBytes": 2098957,
+    "sourceHash": "2e90da8f1af52e900006d51d2b787f417f8c0894c5988d5d99c0662a4a39a8b3",
+    "width": 1280,
+    "height": 896,
+    "default": "optimized/features/upstate-partner-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/features/upstate-partner-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 336,
+        "bytes": 34462,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/upstate-partner-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 336,
+        "bytes": 32711,
+        "quality": 58
+      },
+      {
+        "path": "optimized/features/upstate-partner-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 538,
+        "bytes": 84100,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/upstate-partner-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 538,
+        "bytes": 79673,
+        "quality": 58
+      },
+      {
+        "path": "optimized/features/upstate-partner-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 896,
+        "bytes": 213964,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/upstate-partner-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 896,
+        "bytes": 203943,
+        "quality": 58
+      }
+    ]
+  },
+  "features/york-county-lakewylie.png": {
+    "sourceBytes": 2518804,
+    "sourceHash": "cd84f14b615ee580248ad3e16012bf7f6124122b701b5fecc68bc6281a66ed05",
+    "width": 1280,
+    "height": 896,
+    "default": "optimized/features/york-county-lakewylie-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/features/york-county-lakewylie-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 336,
+        "bytes": 46332,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/york-county-lakewylie-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 336,
+        "bytes": 47222,
+        "quality": 58
+      },
+      {
+        "path": "optimized/features/york-county-lakewylie-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 538,
+        "bytes": 97394,
+        "quality": 68
+      },
+      {
+        "path": "optimized/features/york-county-lakewylie-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 538,
+        "bytes": 99039,
+        "quality": 53
+      },
+      {
+        "path": "optimized/features/york-county-lakewylie-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 896,
+        "bytes": 245186,
+        "quality": 63
+      },
+      {
+        "path": "optimized/features/york-county-lakewylie-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 896,
+        "bytes": 211337,
+        "quality": 48
+      }
+    ]
+  },
+  "fine-grading.png": {
+    "sourceBytes": 2113394,
+    "sourceHash": "99691ecffea5e9a14093601d6f820e983f9648f2db354badaeeb778ef8fca718",
+    "width": 1408,
+    "height": 768,
+    "default": "optimized/fine-grading-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/fine-grading-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 262,
+        "bytes": 33326,
+        "quality": 78
+      },
+      {
+        "path": "optimized/fine-grading-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 262,
+        "bytes": 28286,
+        "quality": 58
+      },
+      {
+        "path": "optimized/fine-grading-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 419,
+        "bytes": 80308,
+        "quality": 78
+      },
+      {
+        "path": "optimized/fine-grading-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 419,
+        "bytes": 73317,
+        "quality": 58
+      },
+      {
+        "path": "optimized/fine-grading-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 698,
+        "bytes": 201498,
+        "quality": 78
+      },
+      {
+        "path": "optimized/fine-grading-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 698,
+        "bytes": 188843,
+        "quality": 58
+      }
+    ]
+  },
+  "hero-bg.png": {
+    "sourceBytes": 1869494,
+    "sourceHash": "c4693ecc42a537ea791f7b2f42951f9a6a2850ce6660cfd079d5d7eeb1eb102e",
+    "width": 1408,
+    "height": 768,
+    "default": "optimized/hero-bg-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/hero-bg-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 262,
+        "bytes": 23598,
+        "quality": 78
+      },
+      {
+        "path": "optimized/hero-bg-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 262,
+        "bytes": 20321,
+        "quality": 58
+      },
+      {
+        "path": "optimized/hero-bg-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 419,
+        "bytes": 58744,
+        "quality": 78
+      },
+      {
+        "path": "optimized/hero-bg-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 419,
+        "bytes": 52296,
+        "quality": 58
+      },
+      {
+        "path": "optimized/hero-bg-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 698,
+        "bytes": 156420,
+        "quality": 78
+      },
+      {
+        "path": "optimized/hero-bg-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 698,
+        "bytes": 143728,
+        "quality": 58
+      }
+    ]
+  },
+  "hero-charlotte-metro.png": {
+    "sourceBytes": 1766059,
+    "sourceHash": "cb0df8b9e5d3e09ac020b189f60db8e6bfffc373984be636031d376811327e02",
+    "width": 1408,
+    "height": 768,
+    "default": "optimized/hero-charlotte-metro-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/hero-charlotte-metro-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 262,
+        "bytes": 20558,
+        "quality": 78
+      },
+      {
+        "path": "optimized/hero-charlotte-metro-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 262,
+        "bytes": 18929,
+        "quality": 58
+      },
+      {
+        "path": "optimized/hero-charlotte-metro-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 419,
+        "bytes": 48692,
+        "quality": 78
+      },
+      {
+        "path": "optimized/hero-charlotte-metro-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 419,
+        "bytes": 44037,
+        "quality": 58
+      },
+      {
+        "path": "optimized/hero-charlotte-metro-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 698,
+        "bytes": 124564,
+        "quality": 78
+      },
+      {
+        "path": "optimized/hero-charlotte-metro-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 698,
+        "bytes": 114897,
+        "quality": 58
+      }
+    ]
+  },
+  "hero-charlotte-region.png": {
+    "sourceBytes": 1948767,
+    "sourceHash": "7d3edf1746a455059440e16347a4a5c5958b80c19689a64a53f91b02598bc90f",
+    "width": 1408,
+    "height": 768,
+    "default": "optimized/hero-charlotte-region-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/hero-charlotte-region-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 262,
+        "bytes": 29710,
+        "quality": 78
+      },
+      {
+        "path": "optimized/hero-charlotte-region-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 262,
+        "bytes": 27910,
+        "quality": 58
+      },
+      {
+        "path": "optimized/hero-charlotte-region-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 419,
+        "bytes": 69918,
+        "quality": 78
+      },
+      {
+        "path": "optimized/hero-charlotte-region-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 419,
+        "bytes": 67242,
+        "quality": 58
+      },
+      {
+        "path": "optimized/hero-charlotte-region-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 698,
+        "bytes": 167278,
+        "quality": 78
+      },
+      {
+        "path": "optimized/hero-charlotte-region-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 698,
+        "bytes": 161820,
+        "quality": 58
+      }
+    ]
+  },
+  "hero-lake-norman.png": {
+    "sourceBytes": 1858669,
+    "sourceHash": "0f38621d5db069062d55615fa921307375ad977c6b396234f0ea7726e0257d0f",
+    "width": 1408,
+    "height": 768,
+    "default": "optimized/hero-lake-norman-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/hero-lake-norman-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 262,
+        "bytes": 24202,
+        "quality": 78
+      },
+      {
+        "path": "optimized/hero-lake-norman-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 262,
+        "bytes": 24694,
+        "quality": 58
+      },
+      {
+        "path": "optimized/hero-lake-norman-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 419,
+        "bytes": 55084,
+        "quality": 78
+      },
+      {
+        "path": "optimized/hero-lake-norman-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 419,
+        "bytes": 55100,
+        "quality": 58
+      },
+      {
+        "path": "optimized/hero-lake-norman-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 698,
+        "bytes": 132750,
+        "quality": 78
+      },
+      {
+        "path": "optimized/hero-lake-norman-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 698,
+        "bytes": 129271,
+        "quality": 58
+      }
+    ]
+  },
+  "hero-lancaster-county.png": {
+    "sourceBytes": 2003590,
+    "sourceHash": "1965c40a0864db341acf60b31838b2f1b84a6061ac6d9e688c78df7c9793c417",
+    "width": 1408,
+    "height": 768,
+    "default": "optimized/hero-lancaster-county-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/hero-lancaster-county-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 262,
+        "bytes": 30552,
+        "quality": 78
+      },
+      {
+        "path": "optimized/hero-lancaster-county-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 262,
+        "bytes": 31848,
+        "quality": 58
+      },
+      {
+        "path": "optimized/hero-lancaster-county-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 419,
+        "bytes": 68168,
+        "quality": 78
+      },
+      {
+        "path": "optimized/hero-lancaster-county-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 419,
+        "bytes": 68313,
+        "quality": 58
+      },
+      {
+        "path": "optimized/hero-lancaster-county-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 698,
+        "bytes": 159976,
+        "quality": 78
+      },
+      {
+        "path": "optimized/hero-lancaster-county-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 698,
+        "bytes": 155088,
+        "quality": 58
+      }
+    ]
+  },
+  "hero-service-areas.png": {
+    "sourceBytes": 1487089,
+    "sourceHash": "c5f22fababcbafa77d38cb01e672fdd8926df2c56af4f527797f74ddc7d890dd",
+    "width": 1408,
+    "height": 768,
+    "default": "optimized/hero-service-areas-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/hero-service-areas-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 262,
+        "bytes": 15936,
+        "quality": 78
+      },
+      {
+        "path": "optimized/hero-service-areas-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 262,
+        "bytes": 13603,
+        "quality": 58
+      },
+      {
+        "path": "optimized/hero-service-areas-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 419,
+        "bytes": 35032,
+        "quality": 78
+      },
+      {
+        "path": "optimized/hero-service-areas-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 419,
+        "bytes": 29412,
+        "quality": 58
+      },
+      {
+        "path": "optimized/hero-service-areas-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 698,
+        "bytes": 82380,
+        "quality": 78
+      },
+      {
+        "path": "optimized/hero-service-areas-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 698,
+        "bytes": 68729,
+        "quality": 58
+      }
+    ]
+  },
+  "hero-union-county.png": {
+    "sourceBytes": 1917849,
+    "sourceHash": "f60a888479c52c33e11ca054d0394af2a5d168af823656c48b71a786a1d4476c",
+    "width": 1408,
+    "height": 768,
+    "default": "optimized/hero-union-county-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/hero-union-county-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 262,
+        "bytes": 25998,
+        "quality": 78
+      },
+      {
+        "path": "optimized/hero-union-county-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 262,
+        "bytes": 25073,
+        "quality": 58
+      },
+      {
+        "path": "optimized/hero-union-county-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 419,
+        "bytes": 60662,
+        "quality": 78
+      },
+      {
+        "path": "optimized/hero-union-county-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 419,
+        "bytes": 56459,
+        "quality": 58
+      },
+      {
+        "path": "optimized/hero-union-county-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 698,
+        "bytes": 153072,
+        "quality": 78
+      },
+      {
+        "path": "optimized/hero-union-county-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 698,
+        "bytes": 141318,
+        "quality": 58
+      }
+    ]
+  },
+  "hero-upstate-cities.png": {
+    "sourceBytes": 2114893,
+    "sourceHash": "f087f50ec8340f2c349926dfa85b69b53803c40c398375be18e1f64262a4d59a",
+    "width": 1408,
+    "height": 768,
+    "default": "optimized/hero-upstate-cities-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/hero-upstate-cities-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 262,
+        "bytes": 29628,
+        "quality": 78
+      },
+      {
+        "path": "optimized/hero-upstate-cities-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 262,
+        "bytes": 28847,
+        "quality": 58
+      },
+      {
+        "path": "optimized/hero-upstate-cities-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 419,
+        "bytes": 72106,
+        "quality": 78
+      },
+      {
+        "path": "optimized/hero-upstate-cities-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 419,
+        "bytes": 70756,
+        "quality": 58
+      },
+      {
+        "path": "optimized/hero-upstate-cities-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 698,
+        "bytes": 186292,
+        "quality": 78
+      },
+      {
+        "path": "optimized/hero-upstate-cities-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 698,
+        "bytes": 177624,
+        "quality": 58
+      }
+    ]
+  },
+  "hero-upstate-sc.png": {
+    "sourceBytes": 1807936,
+    "sourceHash": "4265edcbd0dbaef8e430ec3dfd468bdfc2cef25b7f73dce9791712cf6df4e2c0",
+    "width": 1408,
+    "height": 768,
+    "default": "optimized/hero-upstate-sc-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/hero-upstate-sc-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 262,
+        "bytes": 21408,
+        "quality": 78
+      },
+      {
+        "path": "optimized/hero-upstate-sc-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 262,
+        "bytes": 20270,
+        "quality": 58
+      },
+      {
+        "path": "optimized/hero-upstate-sc-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 419,
+        "bytes": 48252,
+        "quality": 78
+      },
+      {
+        "path": "optimized/hero-upstate-sc-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 419,
+        "bytes": 45037,
+        "quality": 58
+      },
+      {
+        "path": "optimized/hero-upstate-sc-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 698,
+        "bytes": 120970,
+        "quality": 78
+      },
+      {
+        "path": "optimized/hero-upstate-sc-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 698,
+        "bytes": 113160,
+        "quality": 58
+      }
+    ]
+  },
+  "hero-york-county.png": {
+    "sourceBytes": 1945577,
+    "sourceHash": "9482e1e3fa89453ba5d3668c64239ffce11742bbc6cc2f4e41260292ef118155",
+    "width": 1408,
+    "height": 768,
+    "default": "optimized/hero-york-county-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/hero-york-county-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 262,
+        "bytes": 25640,
+        "quality": 78
+      },
+      {
+        "path": "optimized/hero-york-county-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 262,
+        "bytes": 24643,
+        "quality": 58
+      },
+      {
+        "path": "optimized/hero-york-county-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 419,
+        "bytes": 59614,
+        "quality": 78
+      },
+      {
+        "path": "optimized/hero-york-county-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 419,
+        "bytes": 55542,
+        "quality": 58
+      },
+      {
+        "path": "optimized/hero-york-county-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 698,
+        "bytes": 150652,
+        "quality": 78
+      },
+      {
+        "path": "optimized/hero-york-county-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 698,
+        "bytes": 137503,
+        "quality": 58
+      }
+    ]
+  },
+  "pond-management.png": {
+    "sourceBytes": 1878319,
+    "sourceHash": "825194d7105cd8a0bbd8dbcfd4d497115079f1ceca599c3e735c5aa212291da4",
+    "width": 1408,
+    "height": 768,
+    "default": "optimized/pond-management-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/pond-management-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 262,
+        "bytes": 22042,
+        "quality": 78
+      },
+      {
+        "path": "optimized/pond-management-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 262,
+        "bytes": 19845,
+        "quality": 58
+      },
+      {
+        "path": "optimized/pond-management-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 419,
+        "bytes": 52470,
+        "quality": 78
+      },
+      {
+        "path": "optimized/pond-management-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 419,
+        "bytes": 48415,
+        "quality": 58
+      },
+      {
+        "path": "optimized/pond-management-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 698,
+        "bytes": 139848,
+        "quality": 78
+      },
+      {
+        "path": "optimized/pond-management-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 698,
+        "bytes": 127632,
+        "quality": 58
+      }
+    ]
+  },
+  "service-clearing.png": {
+    "sourceBytes": 2449397,
+    "sourceHash": "dea62173bbee4a4cb1128de1d8f1441cba98e0765c8806c683dc48edf5d5530f",
+    "width": 1408,
+    "height": 768,
+    "default": "optimized/service-clearing-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/service-clearing-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 262,
+        "bytes": 43032,
+        "quality": 78
+      },
+      {
+        "path": "optimized/service-clearing-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 262,
+        "bytes": 44550,
+        "quality": 58
+      },
+      {
+        "path": "optimized/service-clearing-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 419,
+        "bytes": 97698,
+        "quality": 73
+      },
+      {
+        "path": "optimized/service-clearing-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 419,
+        "bytes": 94576,
+        "quality": 53
+      },
+      {
+        "path": "optimized/service-clearing-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 698,
+        "bytes": 242906,
+        "quality": 73
+      },
+      {
+        "path": "optimized/service-clearing-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 698,
+        "bytes": 222485,
+        "quality": 53
+      }
+    ]
+  },
+  "service-commercial.png": {
+    "sourceBytes": 2264441,
+    "sourceHash": "5be3d8c984162f8abd29ee064626a54792e50fa11d0723694ae99e3d59b000e8",
+    "width": 1408,
+    "height": 768,
+    "default": "optimized/service-commercial-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/service-commercial-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 262,
+        "bytes": 34324,
+        "quality": 78
+      },
+      {
+        "path": "optimized/service-commercial-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 262,
+        "bytes": 34727,
+        "quality": 58
+      },
+      {
+        "path": "optimized/service-commercial-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 419,
+        "bytes": 84246,
+        "quality": 78
+      },
+      {
+        "path": "optimized/service-commercial-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 419,
+        "bytes": 83322,
+        "quality": 58
+      },
+      {
+        "path": "optimized/service-commercial-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 698,
+        "bytes": 214408,
+        "quality": 78
+      },
+      {
+        "path": "optimized/service-commercial-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 698,
+        "bytes": 208543,
+        "quality": 58
+      }
+    ]
+  },
+  "service-drainage.png": {
+    "sourceBytes": 1713391,
+    "sourceHash": "7836778b70ca91474ca187de0015e5a11133e75f3dee5b499e78927c41552547",
+    "width": 1408,
+    "height": 768,
+    "default": "optimized/service-drainage-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/service-drainage-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 262,
+        "bytes": 22528,
+        "quality": 78
+      },
+      {
+        "path": "optimized/service-drainage-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 262,
+        "bytes": 21186,
+        "quality": 58
+      },
+      {
+        "path": "optimized/service-drainage-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 419,
+        "bytes": 48964,
+        "quality": 78
+      },
+      {
+        "path": "optimized/service-drainage-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 419,
+        "bytes": 43471,
+        "quality": 58
+      },
+      {
+        "path": "optimized/service-drainage-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 698,
+        "bytes": 108380,
+        "quality": 78
+      },
+      {
+        "path": "optimized/service-drainage-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 698,
+        "bytes": 88874,
+        "quality": 58
+      }
+    ]
+  },
+  "service-grading.png": {
+    "sourceBytes": 1692124,
+    "sourceHash": "7ce7f6995efbf028d9b388b6cd2b043aa377f7b7432ba46f1725a5a5b726c54a",
+    "width": 1408,
+    "height": 768,
+    "default": "optimized/service-grading-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/service-grading-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 262,
+        "bytes": 20766,
+        "quality": 78
+      },
+      {
+        "path": "optimized/service-grading-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 262,
+        "bytes": 18277,
+        "quality": 58
+      },
+      {
+        "path": "optimized/service-grading-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 419,
+        "bytes": 45872,
+        "quality": 78
+      },
+      {
+        "path": "optimized/service-grading-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 419,
+        "bytes": 38245,
+        "quality": 58
+      },
+      {
+        "path": "optimized/service-grading-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 698,
+        "bytes": 104256,
+        "quality": 78
+      },
+      {
+        "path": "optimized/service-grading-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 698,
+        "bytes": 84429,
+        "quality": 58
+      }
+    ]
+  },
+  "service-industrial.png": {
+    "sourceBytes": 1863077,
+    "sourceHash": "17b48c22b880b42074bcea73c2872df865d762269c2b4f0697de1370d7e1b1c7",
+    "width": 1408,
+    "height": 768,
+    "default": "optimized/service-industrial-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/service-industrial-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 262,
+        "bytes": 25860,
+        "quality": 78
+      },
+      {
+        "path": "optimized/service-industrial-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 262,
+        "bytes": 23944,
+        "quality": 58
+      },
+      {
+        "path": "optimized/service-industrial-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 419,
+        "bytes": 58890,
+        "quality": 78
+      },
+      {
+        "path": "optimized/service-industrial-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 419,
+        "bytes": 55465,
+        "quality": 58
+      },
+      {
+        "path": "optimized/service-industrial-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 698,
+        "bytes": 140284,
+        "quality": 78
+      },
+      {
+        "path": "optimized/service-industrial-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 698,
+        "bytes": 132210,
+        "quality": 58
+      }
+    ]
+  },
+  "service-pond.png": {
+    "sourceBytes": 1676640,
+    "sourceHash": "1fc527e14db5f471b1c7121a1c2866852ebe4a638830f70c1bc7a91109bbbbbd",
+    "width": 1408,
+    "height": 768,
+    "default": "optimized/service-pond-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/service-pond-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 262,
+        "bytes": 17010,
+        "quality": 78
+      },
+      {
+        "path": "optimized/service-pond-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 262,
+        "bytes": 15751,
+        "quality": 58
+      },
+      {
+        "path": "optimized/service-pond-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 419,
+        "bytes": 39030,
+        "quality": 78
+      },
+      {
+        "path": "optimized/service-pond-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 419,
+        "bytes": 36068,
+        "quality": 58
+      },
+      {
+        "path": "optimized/service-pond-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 698,
+        "bytes": 99818,
+        "quality": 78
+      },
+      {
+        "path": "optimized/service-pond-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 698,
+        "bytes": 91480,
+        "quality": 58
+      }
+    ]
+  },
+  "service-reconstruction.png": {
+    "sourceBytes": 1883898,
+    "sourceHash": "ee8d826d9f2c62d0887c877ad3c6191d1ee2d875d3c139712822517257c0d795",
+    "width": 1408,
+    "height": 768,
+    "default": "optimized/service-reconstruction-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/service-reconstruction-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 262,
+        "bytes": 25766,
+        "quality": 78
+      },
+      {
+        "path": "optimized/service-reconstruction-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 262,
+        "bytes": 24549,
+        "quality": 58
+      },
+      {
+        "path": "optimized/service-reconstruction-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 419,
+        "bytes": 59352,
+        "quality": 78
+      },
+      {
+        "path": "optimized/service-reconstruction-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 419,
+        "bytes": 55751,
+        "quality": 58
+      },
+      {
+        "path": "optimized/service-reconstruction-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 698,
+        "bytes": 139082,
+        "quality": 78
+      },
+      {
+        "path": "optimized/service-reconstruction-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 698,
+        "bytes": 127515,
+        "quality": 58
+      }
+    ]
+  },
+  "service-tree.png": {
+    "sourceBytes": 1844733,
+    "sourceHash": "fa08c60f617effd9dbe086c1fee602ba96675f602c22fa8b417fccb8259b3a76",
+    "width": 1408,
+    "height": 768,
+    "default": "optimized/service-tree-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/service-tree-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 262,
+        "bytes": 23764,
+        "quality": 78
+      },
+      {
+        "path": "optimized/service-tree-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 262,
+        "bytes": 23122,
+        "quality": 58
+      },
+      {
+        "path": "optimized/service-tree-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 419,
+        "bytes": 53900,
+        "quality": 78
+      },
+      {
+        "path": "optimized/service-tree-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 419,
+        "bytes": 51613,
+        "quality": 58
+      },
+      {
+        "path": "optimized/service-tree-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 698,
+        "bytes": 131600,
+        "quality": 78
+      },
+      {
+        "path": "optimized/service-tree-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 698,
+        "bytes": 121313,
+        "quality": 58
+      }
+    ]
+  },
+  "service-turf.png": {
+    "sourceBytes": 2261439,
+    "sourceHash": "4d4fe34906e061bd874f746c0785b5bdfd4257d2cc8c50fd4a60e48846261149",
+    "width": 1408,
+    "height": 768,
+    "default": "optimized/service-turf-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/service-turf-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 262,
+        "bytes": 38288,
+        "quality": 78
+      },
+      {
+        "path": "optimized/service-turf-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 262,
+        "bytes": 38572,
+        "quality": 58
+      },
+      {
+        "path": "optimized/service-turf-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 419,
+        "bytes": 97000,
+        "quality": 78
+      },
+      {
+        "path": "optimized/service-turf-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 419,
+        "bytes": 97760,
+        "quality": 58
+      },
+      {
+        "path": "optimized/service-turf-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 698,
+        "bytes": 235516,
+        "quality": 78
+      },
+      {
+        "path": "optimized/service-turf-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 698,
+        "bytes": 220762,
+        "quality": 58
+      }
+    ]
+  },
+  "services-hero.png": {
+    "sourceBytes": 1662222,
+    "sourceHash": "a454fca7592b671311da11af91e7e74d40839624c4e566c719c5d7f92bb642ff",
+    "width": 1408,
+    "height": 768,
+    "default": "optimized/services-hero-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/services-hero-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 262,
+        "bytes": 16922,
+        "quality": 78
+      },
+      {
+        "path": "optimized/services-hero-480.avif",
+        "format": "avif",
+        "width": 480,
+        "height": 262,
+        "bytes": 15412,
+        "quality": 58
+      },
+      {
+        "path": "optimized/services-hero-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 419,
+        "bytes": 39898,
+        "quality": 78
+      },
+      {
+        "path": "optimized/services-hero-768.avif",
+        "format": "avif",
+        "width": 768,
+        "height": 419,
+        "bytes": 36106,
+        "quality": 58
+      },
+      {
+        "path": "optimized/services-hero-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 698,
+        "bytes": 106346,
+        "quality": 78
+      },
+      {
+        "path": "optimized/services-hero-1280.avif",
+        "format": "avif",
+        "width": 1280,
+        "height": 698,
+        "bytes": 95829,
+        "quality": 58
+      }
+    ]
+  }
+}

@@ -1,0 +1,17 @@
+.git
+**/node_modules
+**/dist
+**/.env
+**/.env.*
+!**/.env.example
+**/*.log
+**/coverage
+**/test-results
+**/playwright-report
+platform
+.agents
+attached_assets/content-extracted
+attached_assets/*.docx
+attached_assets/*.eps
+attached_assets/Screenshot*
+docs/audits/security

@@ -1,0 +1,20 @@
+import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
+const root=resolve(import.meta.dirname,'..');
+process.env.NODE_ENV='production';
+const {render}=await import(pathToFileURL(resolve(root,'dist/server/entry-server.js')));
+const app=readFileSync(resolve(root,'src/App.tsx'),'utf8');
+const idFor=p=>p==='/'?'home':p.replace(/^\/+|\/+$/g,'').replace(/[^a-z0-9]+/g,'-');
+const componentsByName=Object.fromEntries([...app.matchAll(/const (\w+) = page\("\.\/(.*?)"\)/g)].map(m=>[m[1],m[2]]));
+const paths=[...app.matchAll(/<Route\s+path="([^"]+)"\s+component=\{(\w+)\}/g)].map(m=>({path:m[1],file:componentsByName[m[2]]}));
+const components=[];const globals={};
+function editable(key,fields,region) {
+ return {key,version:'1.0.0',rendererRef:'src/lib/cms-jsx-runtime.ts',fieldSchemaRef:'src/lib/cms.tsx',allowedRegions:[region],editableFields:['heading','copy','image','imageAlt','ctaTarget'],fields:Object.values(fields).map(x=>x.field),defaultContent:Object.fromEntries(Object.entries(fields).map(([k,v])=>[k,v.value])),lockedBehaviors:['routing','form-validation','authentication','responsive-layout']};
+}
+for(const route of paths){const result=render(route.path);if(!result.head||!Object.keys(result.fields.page).length)throw Error(`Missing content ${route.path}`);components.push(editable(`${idFor(route.path)}-content`,result.fields.page,idFor(route.path)));Object.assign(globals,result.fields.global);}
+components.push(editable('site-chrome',globals,'global'));
+const manifest={schemaVersion:'1.0',status:'approved',client:{stackId:'p1-land-management',displayName:'P1 Land & Property Management',source:{repository:'https://github.com/Go-Digital-Alchemy-Repos/p1-Land-Management.git',revision:process.env.P1_SOURCE_REVISION||'5303da0113a86c6d569712af92e69fb43fb16148'},owners:[{role:'technical',name:'Digital Alchemy',contactReference:'P1 project owner'}]},compatibility:{corePlatform:{minimum:'1.0.0'},siteAdapter:'1.0.0',themeAdapter:'1.0.0',puckRegistry:'1.0.0'},origins:{publicSite:'https://www.p1landmanagement.com',admin:'https://www.p1landmanagement.com',publicApiPath:'/api',adminApiPath:'/api',routingMode:'same-origin-proxy'},build:{packageManager:'pnpm',nodeVersion:'22',installCommand:'pnpm install --frozen-lockfile',buildCommand:'pnpm --filter @workspace/p1-website build',startCommand:'node server/index.mjs',outputDirectory:'dist/public',artifact:'static-site'},routes:paths.map(r=>({id:idFor(r.path),path:r.path,owner:'site',componentRef:`src/${r.file}`,editableRegions:[idFor(r.path),'global'],lockedBehaviors:['routing','validation','accessibility']})),assets:[{id:'p1-logo',kind:'image',path:'/opengraph.jpg',sourceRef:'public/opengraph.jpg',altPolicy:'required'}],theme:{adapterId:'p1-theme',version:'1.0.0',tokenSource:'src/index.css',semanticTokenGroups:['color','typography','spacing','radius','motion']},puck:{registryId:'p1-content',version:'1.0.0',contentSchemaVersion:'1.0.0',publishMode:'runtime-api',editableComponents:components},forms:[{id:'p1-estimate',routeId:'contact',endpoint:'/api/forms/p1-estimate/submit',method:'POST',authentication:'public',handlerOwner:'platform',secretRefs:[]}],apiIntegrations:[{id:'p1-content',basePath:'/api/client-site-content',direction:'site-to-platform',authentication:'none',capabilities:['published-content'],secretRefs:[]}],modules:[{id:'cms',enabled:true,required:true,routeIds:paths.map(r=>idFor(r.path)),themeRoles:['p1-theme'],configurationRefs:[],secretRefs:[]},{id:'crm',enabled:true,required:true,routeIds:[],themeRoles:[],configurationRefs:[],secretRefs:[]}],secretReferences:[]};
+mkdirSync(resolve(root,'config'),{recursive:true});writeFileSync(resolve(root,'config/client-site-manifest.json'),JSON.stringify(manifest,null,2)+'\n');
+const backend=resolve(root,'../../platform/p1-core/config');mkdirSync(backend,{recursive:true});writeFileSync(resolve(backend,'p1-client-site-manifest.json'),JSON.stringify(manifest,null,2)+'\n');
+console.log(`Generated ${paths.length} editable routes, ${components.length} components, ${components.reduce((n,c)=>n+c.fields.length,0)} editable fields`);

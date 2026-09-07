@@ -1,0 +1,30 @@
+{
+  "status": "passed",
+  "baseline": "a006f36a3c4f37566c71b278d561844b45fb3b81",
+  "candidate": "9d18400ec699673f32fed791a5436afcd07767f5",
+  "candidate_migration_runner_sha256": "2aa4900d8e4d0203967e9aaca8e9df2428b9ade9fdaf8fbffc0ceafd8d94f8be",
+  "candidate_migration_files_sha256": "daafc4515575e094679804eb5edaf22a494bf1c32a987d36c1a22fc0af97968a",
+  "baseline_dependency_install": "npm ci from pinned package-lock, lifecycle scripts disabled",
+  "baseline_counts": {
+    "system_settings": 2,
+    "cms_forms": 1,
+    "cms_form_submissions": 1,
+    "crm_leads": 1,
+    "crm_lead_notes": 1,
+    "ecommerce_products": 1,
+    "ecommerce_product_variants": 1,
+    "ecommerce_customers": 1,
+    "ecommerce_orders": 1,
+    "ecommerce_inventory_adjustments": 1
+  },
+  "upgrade_runs": 2,
+  "legacy_data_preserved": true,
+  "historical_jobs_replayed": false,
+  "new_constraints_verified": true,
+  "duplicate_paid_history": {
+    "migration_rejected": true,
+    "records_preserved": 2,
+    "index": "idx_ecommerce_inventory_adjustments_paid_order_effect"
+  },
+  "fixture_removed": true
+}

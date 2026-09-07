@@ -1,0 +1,134 @@
+{
+  "documentType": "codex-security.findings",
+  "findings": [
+    {
+      "attackPath": {
+        "dataflow": {
+          "outcome": "source readable through attacker origin",
+          "sink": "Vite development source response",
+          "source": "attacker-controlled Host header",
+          "summary": "Attacker Host header -> disabled Vite Host-validation middleware -> development source serving."
+        },
+        "impact": {
+          "level": "medium",
+          "why": "Workspace source or unreleased mockups may be read; no secrets or host execution established."
+        },
+        "likelihood": {
+          "level": "low",
+          "why": "Requires developer interaction and a permissive browser/network path."
+        },
+        "reachability": {
+          "attacker": "malicious website operator",
+          "entrypoint": "HTTP development server",
+          "outcome": "disclosure of development-served source",
+          "summary": "Requires a running development server and successful browser/network rebinding; no privileged account required."
+        },
+        "summary": "A developer runs either HTTP development server and visits a malicious origin. If DNS rebinding reaches that server, the attacker's hostname is accepted and same-origin script can read development-served source."
+      },
+      "codeEvidence": [
+        {
+          "code": "  server: {\n    port,\n    strictPort: true,\n    host: \"0.0.0.0\",\n    allowedHosts: true,\n    fs: {\n      strict: true,\n    },",
+          "endLine": 56,
+          "explanation": "An attacker-controlled Host value is accepted by the all-interface HTTP development server; filesystem strict mode limits file scope but does not validate the browser origin.",
+          "id": "p1-host",
+          "label": "Public-site development server disables host checks",
+          "path": "artifacts/p1-website/vite.config.ts",
+          "role": "root_control",
+          "startLine": 49
+        },
+        {
+          "code": "  server: {\n    port,\n    host: \"0.0.0.0\",\n    allowedHosts: true,\n    fs: {\n      strict: true,\n    },",
+          "endLine": 52,
+          "explanation": "The mockup development server also accepts arbitrary Host values and can serve unreleased source under a rebound attacker origin.",
+          "id": "mockup-host",
+          "label": "Mockup server disables the same control",
+          "path": "artifacts/mockup-sandbox/vite.config.ts",
+          "role": "root_control",
+          "startLine": 46
+        }
+      ],
+      "confidence": {
+        "level": "high",
+        "rationale": "Both repository configs explicitly set allowedHosts:true; installed Vite source confirms this bypasses host validation. Runtime exploitation was not attempted."
+      },
+      "findingId": "csf_50532bf8ad3b2de3cc9ab98e",
+      "fingerprints": {
+        "algorithm": "codex-security/v1",
+        "primary": "codex-security/v1:sha256:02136d134eaea8b0ce2867c9d9942e45403335d067e7b02883defbd6eca44865"
+      },
+      "identity": {
+        "anchor": "development-servers-accept-arbitrary-host-headers"
+      },
+      "locations": [
+        {
+          "endLine": 53,
+          "path": "artifacts/p1-website/vite.config.ts",
+          "role": "root_control",
+          "startLine": 53
+        },
+        {
+          "endLine": 49,
+          "path": "artifacts/mockup-sandbox/vite.config.ts",
+          "role": "root_control",
+          "startLine": 49
+        }
+      ],
+      "occurrenceId": "occ_469c08af9562406360a664f5",
+      "preventiveControls": [
+        "Keep development servers private and separate from the public static production server."
+      ],
+      "provenance": {
+        "candidateId": "vite-host-check",
+        "originalCandidates": [
+          {
+            "paths": [
+              "artifacts/p1-website/vite.config.ts:53",
+              "artifacts/mockup-sandbox/vite.config.ts:49"
+            ],
+            "title": "Development servers disable Host validation"
+          }
+        ],
+        "source": "local_plugin"
+      },
+      "remediation": "Restore Vite Host validation in both development configs, default to loopback binding, and explicitly allow only controlled development hostnames when remote previews are required.",
+      "remediationTests": [
+        "With each dev config, an unrecognized Host header returns 403 while localhost and explicitly configured development hosts still work.",
+        "Verify remote preview requirements with a narrow controlled hostname allowlist; do not use allowedHosts:true."
+      ],
+      "rootCause": {
+        "evidenceRefs": [
+          "p1-host",
+          "mockup-host"
+        ],
+        "summary": "Both development entry points bind to all interfaces and set allowedHosts to true. Vite consumes that boolean by omitting host-validation middleware, so requests bearing an attacker-controlled hostname can reach development source serving. Filesystem strict mode limits reachable files but does not restore origin validation."
+      },
+      "ruleId": "dns-rebinding.disabled-host-validation",
+      "severity": {
+        "level": "low",
+        "rationale": "Conditional developer-only source disclosure requires a running HTTP development server and successful browser/network rebinding. No production secret access or code execution established."
+      },
+      "summary": "Opening a malicious website while a P1 development server is running can expose workspace source through DNS rebinding when the browser and network permit it. Both development configs disable Vite's Host-header protection.",
+      "taxonomy": {
+        "category": "security-misconfiguration",
+        "cwe": [
+          "CWE-346"
+        ]
+      },
+      "title": "Development servers accept arbitrary Host headers",
+      "validation": {
+        "evidenceRefs": [
+          "p1-host",
+          "mockup-host"
+        ],
+        "limitations": [
+          "Browser local-network protections, DNS behavior, developer browsing and server reachability govern exploitability.",
+          "The production preview serves built public files; this finding concerns development source confidentiality."
+        ],
+        "method": "static source trace",
+        "summary": "Inspected both complete Vite configs and installed Vite 7.3.3 config.js:25616; middleware installation is guarded by allowedHosts !== true. Confirmed development scripts invoke Vite with these configs. No application or exploit was run."
+      }
+    }
+  ],
+  "scanId": "9f9e5d8d-22c1-4352-945e-44eee12a4510",
+  "schemaVersion": "1.0"
+}

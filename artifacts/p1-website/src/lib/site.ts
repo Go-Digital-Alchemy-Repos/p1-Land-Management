@@ -41,3 +41,5 @@ export const AREAS_SERVED: { name: string; type: "AdministrativeArea" | "City" }
   { name: "Lancaster County, South Carolina", type: "AdministrativeArea" },
   { name: "York County, South Carolina", type: "AdministrativeArea" },
 ];
+
+export const COMPANY_ICON_URL = `${SITE_URL}/p1-symbol.svg`;

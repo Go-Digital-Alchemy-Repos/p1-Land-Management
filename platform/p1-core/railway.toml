@@ -1,0 +1,11 @@
+[build]
+buildCommand = "npm run build"
+
+[deploy]
+startCommand = "env NODE_ENV=production node dist/index.cjs"
+# Allow the 30s application drain deadline plus process teardown margin.
+drainingSeconds = 45
+healthcheckPath = "/api/health/ready"
+healthcheckTimeout = 30
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 5

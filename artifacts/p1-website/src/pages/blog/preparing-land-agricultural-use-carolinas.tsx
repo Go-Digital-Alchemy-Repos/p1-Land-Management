@@ -1,3 +1,4 @@
+import { Link } from "wouter";
 import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { PageHero } from "@/components/layout/PageHero";
@@ -57,7 +58,7 @@ export default function BlogPost() {
               Before you clear a single tree or turn a shovel of dirt, collect soil samples and send them to your state's agricultural extension laboratory. In South Carolina, that's the Clemson University Soil Testing Laboratory. In North Carolina, it's the NC Department of Agriculture Agronomic Services.
             </p>
             <p>
-              A soil test tells you pH, nutrient levels, and organic matter content — the baseline you need to determine what amendments are required before you plant anything. Most Piedmont soils are acidic and require lime to raise pH to the range crops and forage grasses need. Applying lime after grading and drainage work is done — rather than before — means you're working with the corrected chemistry from the start.
+              Use representative soil samples to plan amendments for the intended crop or forage. Conditions can vary within a field; follow the laboratory’s sampling instructions and interpret results with a local agricultural adviser. See <a href="https://content.ces.ncsu.edu/soil-sampling-strategies-for-site-specific-field-management">NC State Extension’s field sampling guidance</a>.
             </p>
 
             <h2>Step 2: Land Clearing</h2>
@@ -124,6 +125,9 @@ export default function BlogPost() {
         </section>
       </article>
 
+      <aside className="container mx-auto max-w-4xl px-4 pb-12 text-lg">
+        <p>Planning work on your land? <Link href="/services/industrial-agricultural" className="text-primary underline">Explore this service</Link> and <Link href="/contact" className="text-primary underline">request a property estimate</Link>.</p>
+      </aside>
       <FinalCTA />
     </Layout>
   );

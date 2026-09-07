@@ -1,0 +1,335 @@
+import { test, after } from "node:test";
+import assert from "node:assert/strict";
+import { createHmac, randomUUID } from "node:crypto";
+import { pool, transaction } from "./database";
+import { refreshInvoiceOwnership, bindQuickBooksRealm } from "./quickbooks";
+import {generateRecurring} from "./recurrence";
+const base = process.env.DASHBOARD_TEST_ORIGIN;
+if (base && !base.startsWith("http://localhost:"))
+  throw new Error("Integration tests require an explicitly local test server");
+const headers = { origin: base || "", "Content-Type": "application/json" };
+function totp(secret: string) {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+  let bits = "";
+  for (const c of secret.toUpperCase().replace(/=+$/, ""))
+    bits += chars.indexOf(c).toString(2).padStart(5, "0");
+  const key = Buffer.from(bits.match(/.{8}/g)!.map((b) => parseInt(b, 2)));
+  const counter = Buffer.alloc(8);
+  counter.writeBigUInt64BE(BigInt(Math.floor(Date.now() / 30000)));
+  const h = createHmac("sha1", key).update(counter).digest();
+  const i = h[19] & 15;
+  return String((h.readUInt32BE(i) & 0x7fffffff) % 1000000).padStart(6, "0");
+}
+function client() {
+  const jar = new Map<string, string>();
+  return async (
+    path: string,
+    body?: unknown,
+    extra: Record<string, string> = {},
+  ) => {
+    const r = await fetch(base + path, {
+      method: body === undefined ? "GET" : "POST",
+      headers: {
+        ...headers,
+        cookie: [...jar].map(([k, v]) => `${k}=${v}`).join("; "),
+        ...extra,
+      },
+      body: body === undefined ? undefined : JSON.stringify(body),
+      redirect: "manual",
+    });
+    for (const c of r.headers.getSetCookie()) {
+      const [name, ...v] = c.split(";")[0].split("=");
+      jar.set(name, v.join("="));
+    }
+    const raw = await r.text();
+    let data: any;
+    try {
+      data = JSON.parse(raw);
+    } catch {
+      data = raw;
+    }
+    return { status: r.status, data };
+  };
+}
+after(async () => {
+  await pool.end();
+});
+test(
+  "local integration: bootstrap, isolation, approvals, offline replay, billing cap and slot collision",
+  { skip: !base },
+  async () => {
+    const owner = client();
+    const suffix = randomUUID();
+    const ownerEmail =
+      process.env.BOOTSTRAP_OWNER_EMAIL || "owner@example.test";
+    const password = "Local-test-password-42!";
+    let r = await owner(
+      "/api/auth/sign-up/email",
+      { name: "Test owner", email: ownerEmail, password },
+      { "x-p1-setup-code": "wrong" },
+    );
+    assert.equal(r.status, 403);
+    r = await owner(
+      "/api/auth/sign-up/email",
+      { name: "Test owner", email: ownerEmail, password },
+      { "x-p1-setup-code": "secret" },
+    );
+    assert.equal(r.status, 200, JSON.stringify(r.data));
+    async function verify(email: string) {
+      const message = (
+        await pool.query(
+          "SELECT payload FROM outbox WHERE payload->>'to'=$1 ORDER BY created_at DESC LIMIT 1",
+          [email],
+        )
+      ).rows[0];
+      assert.ok(message);
+      const url = new URL(message.payload.text);
+      const response = await fetch(url, { redirect: "manual" });
+      assert.ok([200, 302].includes(response.status));
+    }
+    await verify(ownerEmail);
+    r = await owner("/api/auth/sign-in/email", { email: ownerEmail, password });
+    assert.equal(r.status, 200, JSON.stringify(r.data));
+    assert.equal((await owner("/api/v1/clients")).status, 403);
+    const staleOwner = client();
+    assert.equal((await staleOwner("/api/auth/sign-in/email", {email:ownerEmail,password})).status,200);
+    r = await owner("/api/auth/two-factor/enable", { password });
+    assert.equal(r.status, 200, JSON.stringify(r.data));
+    const secret = new URL(r.data.totpURI).searchParams.get("secret")!;
+    r = await owner("/api/auth/two-factor/verify-totp", { code: totp(secret) });
+    assert.equal(r.status, 200, JSON.stringify(r.data));
+    assert.equal((await staleOwner("/api/v1/setup/complete", {code:"secret"})).status,409);
+    r = await owner("/api/v1/setup/complete", { code: "secret" });
+    assert.equal(r.status, 201, JSON.stringify(r.data));
+    assert.equal(
+      (await owner("/api/v1/setup/complete", { code: "secret" })).status,
+      409,
+    );
+    assert.equal((await staleOwner("/api/v1/clients")).status,401);
+    const ca = (await owner("/api/v1/clients", { name: "Client A " + suffix }))
+      .data.id;
+    const cb = (await owner("/api/v1/clients", { name: "Client B " + suffix }))
+      .data.id;
+    const pa = (
+      await owner("/api/v1/properties", {
+        clientId: ca,
+        name: "Property A",
+        address: "Test A",
+        accessInstructions: "Private gate code",
+      })
+    ).data.id;
+    const pb = (
+      await owner("/api/v1/properties", {
+        clientId: cb,
+        name: "Property B",
+        address: "Test B",
+      })
+    ).data.id;
+    const email = "client-" + suffix + "@example.test";
+    r = await owner("/api/v1/invitations", {
+      email,
+      role: "client",
+      clientId: ca,
+    });
+    assert.equal(r.status, 201);
+    const invite = (
+      await pool.query("SELECT payload FROM outbox WHERE payload->>'to'=$1", [
+        email,
+      ])
+    ).rows[0].payload.text;
+    const token = new URL(invite.match(/http\S+/)[0]).searchParams.get(
+      "invitation",
+    )!;
+    const customer = client();
+    r = await customer(
+      "/api/auth/sign-up/email",
+      { name: "Client A", email, password },
+      { "x-p1-invitation": token },
+    );
+    assert.equal(r.status, 200, JSON.stringify(r.data));
+    await verify(email);
+    assert.equal(
+      (await customer("/api/auth/sign-in/email", { email, password })).status,
+      200,
+    );
+    assert.equal(
+      (await customer("/api/v1/invitations/accept", { token })).status,
+      200,
+    );
+    const props = (await customer("/api/v1/properties")).data;
+    assert.equal(props.length, 1);
+    assert.equal(props[0].id, pa);
+    assert.equal(props[0].access_instructions, undefined);
+    assert.equal(
+      (await customer("/api/v1/properties/" + pb + "/timeline")).status,
+      404,
+    );
+    assert.equal(
+      (await customer("/api/v1/clients", { name: "Unauthorized" })).status,
+      403,
+    );
+    const work = (
+      await owner("/api/v1/work-orders", { propertyId: pa, title: "Mow" })
+    ).data.id;
+    assert.equal((await customer("/api/v1/work-orders")).data.length, 0);
+    assert.equal(
+      (
+        await owner("/api/v1/work-orders/" + work + "/status", {
+          status: "scheduled",
+          version: 1,
+        })
+      ).status,
+      200,
+    );
+    const event = {
+      id: randomUUID(),
+      workOrderId: work,
+      baseVersion: 2,
+      kind: "note",
+      payload: { text: "Before condition" },
+      capturedAt: new Date().toISOString(),
+    };
+    assert.equal(
+      (await owner("/api/v1/field/sync", { events: [event] })).data.results[0]
+        .status,
+      "accepted",
+    );
+    assert.equal(
+      (await owner("/api/v1/field/sync", { events: [event] })).data.results[0]
+        .status,
+      "accepted",
+    );
+    assert.equal(
+      (
+        await pool.query("SELECT count(*) FROM field_event WHERE id=$1", [
+          event.id,
+        ])
+      ).rows[0].count,
+      "1",
+    );
+    assert.equal(
+      (await customer("/api/v1/properties/" + pa + "/timeline")).data.length,
+      0,
+    );
+    const est = (
+      await owner("/api/v1/estimates", {
+        propertyId: pa,
+        title: "Mowing",
+        scope: "Approved scope",
+        amountCents: 10000,
+      })
+    ).data.id;
+    assert.equal(
+      (
+        await owner("/api/v1/estimates/" + est + "/decision", {
+          status: "sent",
+          revision: 1,
+        })
+      ).status,
+      200,
+    );
+    assert.equal(
+      (
+        await customer("/api/v1/estimates/" + est + "/decision", {
+          status: "approved",
+          revision: 1,
+        })
+      ).status,
+      200,
+    );
+    assert.equal(
+      (
+        await customer("/api/v1/estimates/" + est + "/decision", {
+          status: "declined",
+          revision: 1,
+        })
+      ).status,
+      409,
+    );
+    assert.equal(
+      (
+        await owner("/api/v1/billing", {
+          operationId: randomUUID(),
+          propertyId: pa,
+          estimateId: est,
+          title: "Deposit",
+          kind: "deposit",
+          amountCents: 6000,
+        })
+      ).status,
+      201,
+    );
+    assert.equal(
+      (
+        await owner("/api/v1/billing", {
+          operationId: randomUUID(),
+          propertyId: pa,
+          estimateId: est,
+          title: "Final",
+          kind: "final",
+          amountCents: 5000,
+        })
+      ).status,
+      409,
+    );
+    const billingIntent = {operationId:randomUUID(),propertyId:pa,estimateId:est,title:"Progress",kind:"progress",amountCents:1000};
+    const retries = await Promise.all([owner("/api/v1/billing",billingIntent),owner("/api/v1/billing",billingIntent)]);
+    assert.deepEqual(retries.map(x=>x.status),[201,201]);
+    assert.equal(retries[0].data.id,retries[1].data.id);
+    assert.equal((await owner("/api/v1/billing",{...billingIntent,amountCents:1200})).status,409);
+    await pool.query("UPDATE client SET quickbooks_id=$2 WHERE id=$1",[ca,"qa"]);
+    await pool.query("UPDATE client SET quickbooks_id=$2 WHERE id=$1",[cb,"qb"]);
+    await pool.query("INSERT INTO external_invoice(id,client_id,total_cents,balance_cents,ownership_verified) VALUES('qi',$1,100,100,true)",[ca]);
+    await refreshInvoiceOwnership({Id:"qi",CustomerRef:{value:"qb"},TotalAmt:1,Balance:1});
+    assert.equal((await customer("/api/v1/quickbooks/invoices")).data.length,0);
+    assert.equal((await pool.query("SELECT client_id FROM external_invoice WHERE id='qi'")).rows[0].client_id,cb);
+    await refreshInvoiceOwnership({Id:"qi",CustomerRef:{value:"unknown"},TotalAmt:1,Balance:1});
+    assert.equal((await pool.query("SELECT ownership_verified FROM external_invoice WHERE id='qi'")).rows[0].ownership_verified,false);
+    // Locally originated billing must remain attached to the operational client, but hidden on mismatch.
+    await pool.query("UPDATE billing_draft SET status='posted',quickbooks_id='qi',ownership_verified=true WHERE id=$1",[retries[0].data.id]);
+    await refreshInvoiceOwnership({Id:"qi",CustomerRef:{value:"qb"},TotalAmt:1,Balance:1});
+    assert.equal((await customer("/api/v1/billing")).data.length,0);
+    process.env.INTEGRATION_ENCRYPTION_KEY = "ab".repeat(32);
+    const connections = await Promise.allSettled(["123", "456"].map(realm => transaction(c => bindQuickBooksRealm(c,realm,async()=>({access_token:"synthetic-"+realm,refresh_token:"synthetic",expires_in:3600})))));
+    assert.equal(connections.filter(x=>x.status==="fulfilled").length,1);
+    assert.equal(connections.filter(x=>x.status==="rejected").length,1);
+    assert.equal((await pool.query("SELECT count(*) FROM integration_connection")).rows[0].count,"1");
+    const anonymous = await fetch(base+"/api/v1/files/"+randomUUID(),{method:"POST",headers:{origin:base!,"content-type":"image/png"},body:"invalid image"});
+    assert.equal(anonymous.status,401);
+    assert.equal((await owner('/api/v1/work-orders/'+work+'/status',{status:'in_progress',version:2})).status,200);
+    const completion={id:randomUUID(),workOrderId:work,baseVersion:3,kind:'complete',payload:{text:'Completed'},capturedAt:new Date().toISOString()};
+    assert.equal((await owner('/api/v1/field/sync',{events:[completion]})).data.results[0].status,'accepted');
+    assert.equal((await owner('/api/v1/work-orders/'+work+'/status',{status:'reviewed',version:4})).status,200);
+    assert.equal((await customer('/api/v1/work-orders/'+work+'/publish',{})).status,403);
+    assert.equal((await owner('/api/v1/work-orders/'+work+'/publish',{})).status,200);
+    assert.equal((await customer('/api/v1/properties/'+pa+'/timeline')).data.length,2);
+    const recurring=randomUUID();await pool.query("INSERT INTO recurring_service(id,property_id,title,cadence,interval_count,next_date,local_time,billing_mode,anchor_day) VALUES($1,$2,'Month end','monthly',1,'2026-01-31','08:00','per_visit',31)",[recurring,pa]);
+    await generateRecurring();await generateRecurring();
+    assert.equal((await pool.query('SELECT next_date::text FROM recurring_service WHERE id=$1',[recurring])).rows[0].next_date,'2026-03-31');
+    await generateRecurring();
+    const occurrences=(await pool.query("SELECT occurrence_date::text,extract(hour from scheduled_at AT TIME ZONE 'UTC')::int AS hour FROM work_order WHERE recurring_service_id=$1 ORDER BY occurrence_date",[recurring])).rows;
+    assert.equal(occurrences[0].hour,13);assert.equal(occurrences[2].hour,12);
+    await pool.query('UPDATE recurring_service SET paused=true WHERE id=$1',[recurring]);await generateRecurring();assert.equal((await pool.query('SELECT count(*) FROM work_order WHERE recurring_service_id=$1',[recurring])).rows[0].count,'3');
+    const startsAt = new Date(Date.now() + 86400000).toISOString();
+    const endsAt = new Date(Date.now() + 90000000).toISOString();
+    const slot = (await owner("/api/v1/assessment-slots", { startsAt, endsAt }))
+      .data.id;
+    const bookings = await Promise.all([
+      customer("/api/v1/assessment-slots/" + slot + "/book", {
+        propertyId: pa,
+      }),
+      customer("/api/v1/assessment-slots/" + slot + "/book", {
+        propertyId: pa,
+      }),
+    ]);
+    assert.deepEqual(bookings.map((x) => x.status).sort(), [200, 409]);
+    const crewId = (await customer("/api/v1/me")).data.id;
+    await pool.query("UPDATE staff_profile SET role='crew' WHERE user_id=$1",[crewId]);
+    await pool.query("UPDATE work_order SET assigned_to=$2 WHERE id=$1",[work,crewId]);
+    const active = (await owner("/api/v1/work-orders",{propertyId:pa,title:"Active crew job",assignedTo:crewId})).data.id;
+    const uploadHeaders={"content-type":"image/png","x-p1-property":pa,"x-p1-work":work};
+    assert.equal((await customer("/api/v1/files/"+randomUUID(),"invalid image",uploadHeaders)).status,403);
+    assert.equal((await customer("/api/v1/files/"+randomUUID(),"invalid image",{...uploadHeaders,"x-p1-work":active})).status,400);
+
+  },
+);

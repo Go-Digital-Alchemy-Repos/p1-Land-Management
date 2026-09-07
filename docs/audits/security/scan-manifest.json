@@ -1,0 +1,84 @@
+{
+  "documentType": "codex-security.scan-manifest",
+  "scan": {
+    "artifacts": [
+      {
+        "mediaType": "application/json",
+        "path": "findings.json",
+        "sha256": "b0ee880f518626fd34760aa0005346cc7745da015cd7c6ee90b91e1bcdf82443"
+      },
+      {
+        "mediaType": "application/json",
+        "path": "coverage.json",
+        "sha256": "fe3a40d1ee2ca5a88ba9f9cefea397b0e3aac7e9c47e4fb290ed87f5f0869a83"
+      }
+    ],
+    "completedAt": "2026-09-07T04:27:12.249173Z",
+    "coverageRef": "coverage.json",
+    "findingsRef": "findings.json",
+    "id": "9f9e5d8d-22c1-4352-945e-44eee12a4510",
+    "preservedSources": {
+      "checkpoints/1de7bd4219b20aef5ebeab21da895745b23d7c26bece08d877718e60d3520ae0.json": "1de7bd4219b20aef5ebeab21da895745b23d7c26bece08d877718e60d3520ae0",
+      "checkpoints/1fe60ae66660be3258867b581f7a6dffad067499d9359305868879593f4f43a7.json": "28219b6918141c237f0721e17192328c6c8feb49ec7d5edd4c6999e7a85dce84",
+      "checkpoints/6e2b8ce7a9b8a97bf29ad047ff01fa28c6682f32eec2b8fa51cb2213108f771e.json": "048cbfa98d6cb85902416a2cb885c3ccfeed0a97b199e877a3d9c08c3b0ff361",
+      "checkpoints/a8f9900e40a4bd6640b88a9bca5c61ea124a04211aac98153b4273c2dabdf9d0.json": "ab790c46807d2d28bd56790da217f64f239473a22a5d23d675aac18ac4f58e9e"
+    },
+    "producer": {
+      "name": "codex-security-plugin",
+      "version": "0.1.23"
+    },
+    "scope": {
+      "excludePaths": [],
+      "includePaths": [
+        "."
+      ],
+      "limitations": [
+        "Coverage partial; not an exhaustive dependency or all-files scan.",
+        "No independent baseline due to occupied worker slots."
+      ],
+      "summary": "Bounded source-led security audit of current P1 worktree; production-boundary and developer configuration focus.",
+      "validationMode": "offline static source trace"
+    },
+    "sealedAt": "2026-09-07T04:27:12.249173Z",
+    "startedAt": "2026-09-07T04:23:31.667798Z",
+    "status": "completed",
+    "target": {
+      "displayName": "P1 Land Mangement",
+      "kind": "git_worktree",
+      "revision": "6ae56f8541020891e030c99d485aa10af260cd37",
+      "snapshotDigest": "codex-security-snapshot/v1:sha256:8377a67e2ca22975deaebe4eb5764b86f6bb9b5903737ded62ad0a90d1be7af9",
+      "targetId": "target_sha256_5a042267d09e22854b0798ed0983178627fb4356131b4aa6b540d200beb25d75"
+    },
+    "threatModel": {
+      "assets": [
+        "Developer workspace source and unreleased mockups.",
+        "Public website availability and content integrity.",
+        "Prospect contact details, delivered through the user's mail application."
+      ],
+      "assumptions": [
+        "Offline source-only review; no production access, forms, network advisory database, application execution or runtime exploit testing.",
+        "Current dirty worktree preserved; baseline 6ae56f8541020891e030c99d485aa10af260cd37.",
+        "Production deployment, proxy header policy, secrets and authentication at Railway not inspected.",
+        "Available worker slots exhausted; baseline and architecture passes performed sequentially, not independently."
+      ],
+      "attackerCapabilities": [
+        "Remote web visitor can choose URLs, Host headers and form fields; no authenticated accounts or write API are implemented.",
+        "A malicious website can attempt DNS rebinding against a developer's running HTTP server; browser and network restrictions may prevent that path.",
+        "No attacker control of repository, deployment credentials, DATABASE_URL or trusted build inputs is assumed."
+      ],
+      "securityObjectives": [
+        "Protect developer source from cross-origin reading.",
+        "Preserve integrity and availability of public content and reliable, private handling of future server-side leads.",
+        "Exclude unnecessary source, tools and local secrets from the runtime image."
+      ],
+      "summary": "P1 is a React/Vite marketing site prerendered to static HTML and served by Vite preview through Railway Docker (Dockerfile:12-17; artifacts/p1-website/package.json:8-10). Contact data is handed to the visitor's mail client, not an application backend (artifacts/p1-website/src/pages/contact.tsx:23-47). A separate Express starter exposes healthz only (artifacts/api-server/src/routes/health.ts:7-10).",
+      "trustBoundaries": [
+        "Untrusted HTTP Host headers -> development Vite servers with all-interface binding and host checks disabled (artifacts/p1-website/vite.config.ts:49-56; artifacts/mockup-sandbox/vite.config.ts:46-52).",
+        "Visitor form input -> encodeURIComponent -> mailto handoff to fixed business email (artifacts/p1-website/src/pages/contact.tsx:23-47).",
+        "Repository-maintainer content -> prerender HTML with escaping and JSON-LD less-than escaping (artifacts/p1-website/scripts/prerender.mjs:77-87).",
+        "Docker build context -> full runtime image via COPY . . (Dockerfile:12); no .dockerignore observed."
+      ]
+    }
+  },
+  "schemaVersion": "1.0"
+}

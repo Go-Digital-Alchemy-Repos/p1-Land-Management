@@ -1,0 +1,15 @@
+{
+  "commit": "a006f36a3c4f37566c71b278d561844b45fb3b81",
+  "pullRequest": 10,
+  "deploymentId": "b620280d-6445-4ba8-bb23-b6e9226391d9",
+  "railwayStatus": "SUCCESS",
+  "previousDeploymentStatus": "REMOVED",
+  "runtimeCommitMatched": true,
+  "compiledGuardPresent": true,
+  "freezeConfigured": false,
+  "freezeEnabled": false,
+  "readinessHttpStatus": 200,
+  "storageCopiesPerformed": false,
+  "configurationChangesPerformed": false,
+  "verificationLimit": "Read-only deployment identity, compiled guard presence and readiness. Live frozen mutation rejection was not exercised; focused isolated tests cover it. HTML shell responses are not authenticated route-render acceptance."
+}

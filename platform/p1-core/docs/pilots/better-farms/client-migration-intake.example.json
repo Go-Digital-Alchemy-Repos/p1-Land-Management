@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "1.0",
+  "status": "draft",
+  "client": {
+    "stackId": "better-farms-foundation",
+    "displayName": "Better Farms Foundation"
+  },
+  "sourceAccess": {
+    "system": "none",
+    "ownerReference": "client decision recorded 2026-09-04",
+    "accessMode": "not-applicable",
+    "reference": "No WooCommerce site is ready for import; source import is excluded from this pilot.",
+    "credentialsStored": false
+  },
+  "pilotScope": {
+    "routeIds": [
+      "home",
+      "about",
+      "how-it-works",
+      "contact",
+      "for-farmers",
+      "fund-a-farm",
+      "get-involved"
+    ],
+    "excludedCapabilities": [
+      "live ecommerce checkout",
+      "WooCommerce catalog and media import",
+      "customer and order history import",
+      "production DNS cutover"
+    ],
+    "successMeasures": [
+      "approved representative page and form behavior",
+      "approved rollback evidence",
+      "no client source data imported"
+    ],
+    "status": "approved"
+  },
+  "dataMigration": {
+    "entities": [
+      {
+        "id": "categories",
+        "disposition": "excluded",
+        "rationale": "No WooCommerce source is available for this pilot."
+      },
+      {
+        "id": "products",
+        "disposition": "excluded",
+        "rationale": "No WooCommerce source is available for this pilot."
+      },
+      {
+        "id": "customers",
+        "disposition": "excluded",
+        "rationale": "Customer history is excluded from this pilot."
+      },
+      {
+        "id": "orders",
+        "disposition": "excluded",
+        "rationale": "Order history is excluded from this pilot."
+      },
+      {
+        "id": "media",
+        "disposition": "excluded",
+        "rationale": "No source media is available for this pilot."
+      }
+    ],
+    "historyPolicy": "none",
+    "reconciliationOwner": "not applicable: no source import is in pilot scope",
+    "status": "approved"
+  },
+  "operations": {
+    "dnsOperator": "Mike at Go Digital Alchemy (primary super admin)",
+    "releaseOwner": "Mike at Go Digital Alchemy (primary super admin)",
+    "recovery": {
+      "status": "approved",
+      "rpoMinutes": 1440,
+      "rtoMinutes": 1440
+    },
+    "release": {
+      "status": "blocked",
+      "approverRoles": ["business", "technical", "operations"],
+      "blockers": [
+        "sandbox and production-like evidence",
+        "approved content and accessibility evidence"
+      ]
+    }
+  }
+}

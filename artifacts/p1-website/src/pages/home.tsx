@@ -36,7 +36,6 @@ import {
   Truck,
   Ruler,
   CalendarCheck,
-  Quote,
 } from "lucide-react";
 
 const TAN = "hsl(32 42% 62%)";
@@ -130,7 +129,7 @@ export default function Home() {
         <div className="relative mx-auto grid max-w-[1240px] grid-cols-12 gap-8 px-6 pb-28 pt-24 lg:pt-28">
           <div className="col-span-12 lg:col-span-8">
             <div className="mb-7 flex items-center gap-4">
-              <Kicker onDark>The Land Specialists · Est. 2009</Kicker>
+              <Kicker onDark>The Land Specialists</Kicker>
             </div>
             <h1 className="max-w-3xl font-display text-[clamp(2.6rem,6.4vw,5.4rem)] font-light leading-[0.98] tracking-[-0.02em] text-white">
               Your first impressions{" "}
@@ -245,8 +244,8 @@ export default function Home() {
                 <img src={featureImg} alt="Grading for new construction" className="h-[420px] w-full object-cover" />
               </div>
               <div className="absolute -bottom-6 left-8 z-10 rounded-[3px] bg-navy px-5 py-4 text-white" style={{ boxShadow: "0 20px 40px -18px hsl(215 45% 15%)" }}>
-                <div className="font-sans text-3xl font-black leading-none text-tan">±0.1"</div>
-                <div className="mt-1 text-[10px] font-semibold uppercase text-white" style={{ letterSpacing: "0.22em" }}>Grade tolerance</div>
+                <div className="font-sans text-3xl font-black leading-none text-tan">Site Prep</div>
+                <div className="mt-1 text-[10px] font-semibold uppercase text-white" style={{ letterSpacing: "0.22em" }}>Built around your plan</div>
               </div>
             </div>
           </div>
@@ -257,7 +256,7 @@ export default function Home() {
               Grading for New Construction
             </h2>
             <p className="mt-5 text-[15px] leading-relaxed" style={{ color: "hsl(215 20% 34%)" }}>
-              Before the first footing is poured, the pad has to be right. We deliver compacted, properly sloped building pads and site grades that pass inspection and keep water moving exactly where it should — protecting the structures that follow for decades.
+              Before construction begins, grading and drainage need a coordinated plan. Discuss building pads, site grades, and sub-grade preparation with P1 alongside the requirements of your project team.
             </p>
             <ul className="mt-6 space-y-3">
               {[
@@ -302,7 +301,7 @@ export default function Home() {
               </p>
               <div className="mt-8 inline-flex items-center gap-2 rounded-[3px] px-4 py-2 font-sans text-[12px] font-bold uppercase" style={{ background: "hsl(145 40% 35% / 0.18)", color: "hsl(145 45% 70%)", letterSpacing: "0.16em" }}>
                 <ShieldCheck className="h-4 w-4" />
-                Licensed &amp; Insured
+                Discuss Your Project
               </div>
             </div>
 
@@ -335,22 +334,15 @@ export default function Home() {
               <div className="relative">
                 <div className="absolute -left-3 -top-3 h-full w-full rounded-[4px] bg-clay" style={{ opacity: 0.9 }} />
                 <div className="relative overflow-hidden rounded-[4px] border-4 border-white" style={{ boxShadow: "0 30px 60px -28px hsl(215 45% 15%)" }}>
-                  <img src={testimonialImg} alt="Managed commercial property" className="h-[340px] w-full object-cover" />
+                  <img src={testimonialImg} alt="Illustrative commercial property" className="h-[340px] w-full object-cover" />
                 </div>
               </div>
             </div>
             <div className="col-span-12 md:col-span-7 md:pl-4">
-              <Quote className="h-10 w-10 text-tan" />
-              <blockquote className="mt-5 font-sans text-[clamp(1.4rem,2.6vw,2rem)] font-light leading-[1.25] tracking-[-0.01em] text-secondary">
-                "P1 took over our 40-acre commercial park and fixed drainage issues we'd fought for years. Their crew is completely self-sufficient — and the grade work is flawless."
-              </blockquote>
-              <div className="mt-7 flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary font-sans text-sm font-black text-white">MT</div>
-                <div>
-                  <div className="font-sans font-bold text-secondary">Marcus T.</div>
-                  <div className="text-[13px]" style={{ color: "hsl(215 18% 42%)" }}>Property Manager · Spartanburg, SC</div>
-                </div>
-              </div>
+              <h2 className="font-display text-3xl text-secondary">A coordinated approach to your property</h2>
+              <p className="mt-5 text-lg leading-relaxed text-secondary">From clearing and grading to drainage and ongoing maintenance, discuss the services your property needs with one team.</p>
+              <Link href="/contact" className="mt-7 inline-block font-bold text-primary underline">Tell us about your project</Link>
+
             </div>
           </div>
         </div>

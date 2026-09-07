@@ -1,49 +1,55 @@
-import { useEffect } from "react";
+import { trackAcquisition } from "@/lib/acquisition";
+import { lazy, Suspense, useEffect, type ComponentType } from "react";
 import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Toaster } from "@/components/ui/toaster";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import NotFound from "@/pages/not-found";
+// Eager server modules preserve synchronous prerendering; browser routes load on demand.
+const serverPages = import.meta.env.SSR
+  ? import.meta.glob<{ default: ComponentType }>("./pages/**/*.tsx", { eager: true })
+  : {};
+const browserPages = import.meta.env.SSR ? {} : import.meta.glob<{ default: ComponentType }>("./pages/**/*.tsx");
+function page(path: string): ComponentType {
+  return import.meta.env.SSR ? serverPages[path].default : lazy(browserPages[path]);
+}
 
-import Home from "@/pages/home";
-import About from "@/pages/about";
-import Contact from "@/pages/contact";
-import Gallery from "@/pages/gallery";
-import Testimonials from "@/pages/testimonials";
+const NotFound = page("./pages/not-found.tsx");
 
-import ServicesIndex from "@/pages/services/index";
-import CommercialPropertyManagement from "@/pages/services/commercial-property-management";
-import IndustrialAgricultural from "@/pages/services/industrial-agricultural";
-import LandClearing from "@/pages/services/land-clearing";
-import GradingSitePreparation from "@/pages/services/grading-site-preparation";
-import Drainage from "@/pages/services/drainage";
-import TurfInstallationSeeding from "@/pages/services/turf-installation-seeding";
-import TreeServices from "@/pages/services/tree-services";
-import PondWaterwayManagement from "@/pages/services/pond-waterway-management";
-import PropertyReconstruction from "@/pages/services/property-reconstruction";
+const Home = page("./pages/home.tsx");
+const About = page("./pages/about.tsx");
+const Contact = page("./pages/contact.tsx");
+const Gallery = page("./pages/gallery.tsx");
+const Testimonials = page("./pages/testimonials.tsx");
 
-import ServiceAreasIndex from "@/pages/service-areas/index";
-import UpstateSouthCarolina from "@/pages/service-areas/upstate-south-carolina";
-import CharlotteNorthCarolina from "@/pages/service-areas/charlotte-north-carolina";
-import GreenvilleSc from "@/pages/service-areas/greenville-sc";
-import SpartanburgSc from "@/pages/service-areas/spartanburg-sc";
-import AndersonSc from "@/pages/service-areas/anderson-sc";
-import CharlotteNc from "@/pages/service-areas/charlotte-nc";
-import ConcordNc from "@/pages/service-areas/concord-nc";
-import MooresvilleLakeNormanNc from "@/pages/service-areas/mooresville-lake-norman-nc";
-import GastoniaNc from "@/pages/service-areas/gastonia-nc";
-import UnionCountyNc from "@/pages/service-areas/union-county-nc";
-import LancasterCountySc from "@/pages/service-areas/lancaster-county-sc";
-import YorkCountySc from "@/pages/service-areas/york-county-sc";
+const ServicesIndex = page("./pages/services/index.tsx");
+const CommercialPropertyManagement = page("./pages/services/commercial-property-management.tsx");
+const IndustrialAgricultural = page("./pages/services/industrial-agricultural.tsx");
+const LandClearing = page("./pages/services/land-clearing.tsx");
+const GradingSitePreparation = page("./pages/services/grading-site-preparation.tsx");
+const Drainage = page("./pages/services/drainage.tsx");
+const TurfInstallationSeeding = page("./pages/services/turf-installation-seeding.tsx");
+const TreeServices = page("./pages/services/tree-services.tsx");
+const PondWaterwayManagement = page("./pages/services/pond-waterway-management.tsx");
+const PropertyReconstruction = page("./pages/services/property-reconstruction.tsx");
 
-import BlogIndex from "@/pages/blog/index";
-import BlogLandClearingCost from "@/pages/blog/land-clearing-cost-per-acre-south-carolina";
-import BlogRetentionPond from "@/pages/blog/how-to-manage-retention-pond-south-carolina";
-import BlogBestGrass from "@/pages/blog/best-grass-large-acreage-carolinas";
-import BlogDrainageSigns from "@/pages/blog/signs-property-drainage-problem";
-import BlogPreparingLand from "@/pages/blog/preparing-land-agricultural-use-carolinas";
+const ServiceAreasIndex = page("./pages/service-areas/index.tsx");
+const UpstateSouthCarolina = page("./pages/service-areas/upstate-south-carolina.tsx");
+const CharlotteNorthCarolina = page("./pages/service-areas/charlotte-north-carolina.tsx");
+const GreenvilleSc = page("./pages/service-areas/greenville-sc.tsx");
+const SpartanburgSc = page("./pages/service-areas/spartanburg-sc.tsx");
+const AndersonSc = page("./pages/service-areas/anderson-sc.tsx");
+const CharlotteNc = page("./pages/service-areas/charlotte-nc.tsx");
+const ConcordNc = page("./pages/service-areas/concord-nc.tsx");
+const MooresvilleLakeNormanNc = page("./pages/service-areas/mooresville-lake-norman-nc.tsx");
+const GastoniaNc = page("./pages/service-areas/gastonia-nc.tsx");
+const UnionCountyNc = page("./pages/service-areas/union-county-nc.tsx");
+const LancasterCountySc = page("./pages/service-areas/lancaster-county-sc.tsx");
+const YorkCountySc = page("./pages/service-areas/york-county-sc.tsx");
 
-const queryClient = new QueryClient();
+const BlogIndex = page("./pages/blog/index.tsx");
+const BlogLandClearingCost = page("./pages/blog/land-clearing-cost-per-acre-south-carolina.tsx");
+const BlogRetentionPond = page("./pages/blog/how-to-manage-retention-pond-south-carolina.tsx");
+const BlogBestGrass = page("./pages/blog/best-grass-large-acreage-carolinas.tsx");
+const BlogDrainageSigns = page("./pages/blog/signs-property-drainage-problem.tsx");
+const BlogPreparingLand = page("./pages/blog/preparing-land-agricultural-use-carolinas.tsx");
+
 
 function Router() {
   return (
@@ -98,24 +104,31 @@ function ScrollToTop() {
   const [location] = useLocation();
   useEffect(() => {
     window.scrollTo(0, 0);
+    trackAcquisition("page_view");
   }, [location]);
+  useEffect(() => {
+    const trackLink = (event: MouseEvent) => {
+      const link = event.target instanceof Element ? event.target.closest("a") : null;
+      const href = link?.getAttribute("href") || "";
+      if (href.startsWith("tel:")) trackAcquisition("call_click");
+      else if (href.startsWith("mailto:")) trackAcquisition("email_click");
+      else if (href === "/contact") trackAcquisition("estimate_click");
+    };
+    document.addEventListener("click", trackLink);
+    return () => document.removeEventListener("click", trackLink);
+  }, []);
   return null;
 }
 
 function App({ ssrPath }: { ssrPath?: string }) {
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
         <WouterRouter
           base={import.meta.env.BASE_URL.replace(/\/$/, "")}
           ssrPath={ssrPath}
         >
           <ScrollToTop />
-          <Router />
+          <Suspense fallback={<main className="p-12" role="status">Loading page…</main>}><Router /></Suspense>
         </WouterRouter>
-        <Toaster />
-      </TooltipProvider>
-    </QueryClientProvider>
   );
 }
 

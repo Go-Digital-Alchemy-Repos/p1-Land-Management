@@ -1,0 +1,12 @@
+ALTER TABLE lead ADD COLUMN converted_client_id uuid REFERENCES client(id);
+ALTER TABLE lead ADD COLUMN converted_property_id uuid REFERENCES property(id);
+ALTER TABLE estimate ADD COLUMN series_id uuid;
+UPDATE estimate SET series_id=id;
+ALTER TABLE estimate ALTER COLUMN series_id SET NOT NULL;
+ALTER TABLE estimate ALTER COLUMN series_id SET DEFAULT gen_random_uuid();
+ALTER TABLE estimate ADD COLUMN is_current boolean NOT NULL DEFAULT true;
+ALTER TABLE estimate ADD COLUMN change_order_for uuid REFERENCES estimate(id);
+CREATE UNIQUE INDEX ON estimate(series_id,revision);
+CREATE UNIQUE INDEX ON estimate(series_id) WHERE is_current=true;
+ALTER TABLE recurring_service ADD COLUMN anchor_day integer;
+UPDATE recurring_service SET anchor_day=extract(day from next_date);

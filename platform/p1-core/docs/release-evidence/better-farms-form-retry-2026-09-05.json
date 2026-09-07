@@ -1,0 +1,48 @@
+{
+  "coreRevision": "8b9df9b",
+  "siteRevision": "cec78dfd9ed1d89d906461db25f257a008d41a49",
+  "actualBrowserCasesPassed": 3,
+  "coreRuntime": "development application",
+  "siteRuntime": "compiled production application",
+  "productionChanges": false,
+  "forms": {
+    "contact-durable-receipts.json": {
+      "lostResponseSubmissionId": "a3b85983-64dc-4d30-8254-443180b4ec68",
+      "retrySubmissionId": "a3b85983-64dc-4d30-8254-443180b4ec68",
+      "countAfterRetry": 1,
+      "changedSubmissionId": "240b34ff-6c64-46c7-afcd-dfd127c59efc",
+      "countAfterChanged": 2,
+      "effects": [
+        {
+          "submissionId": "a3b85983-64dc-4d30-8254-443180b4ec68",
+          "effectId": "21b4c0f6-de2e-4480-af04-a081b498de6a",
+          "kind": "contact_message"
+        },
+        {
+          "submissionId": "240b34ff-6c64-46c7-afcd-dfd127c59efc",
+          "effectId": "845dbf26-7c49-4526-9ac9-fcde098df1f1",
+          "kind": "contact_message"
+        }
+      ]
+    },
+    "newsletter-durable-receipts.json": {
+      "lostResponseSubmissionId": "be024fb6-cde7-4251-bf9b-9ff4a7fc676b",
+      "retrySubmissionId": "be024fb6-cde7-4251-bf9b-9ff4a7fc676b",
+      "countAfterRetry": 1,
+      "changedSubmissionId": "fda30229-39fd-4457-ac3b-71661a862bd1",
+      "countAfterChanged": 2,
+      "effects": [
+        {
+          "submissionId": "be024fb6-cde7-4251-bf9b-9ff4a7fc676b",
+          "effectId": "3bf82ae8-6a11-4d4d-ae90-d417f12de531",
+          "kind": "crm_intake"
+        },
+        {
+          "submissionId": "fda30229-39fd-4457-ac3b-71661a862bd1",
+          "effectId": "24980cdf-4eca-439d-9be2-d332ebbc96fc",
+          "kind": "crm_intake"
+        }
+      ]
+    }
+  }
+}

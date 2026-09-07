@@ -1,0 +1,82 @@
+{
+  "completeness": "partial",
+  "deferred": [
+    {
+      "id": "unreviewed-low-priority-source",
+      "paths": [
+        "artifacts/p1-website/src/pages",
+        "artifacts/p1-website/src/components/ui",
+        "artifacts/mockup-sandbox/src/components",
+        "attached_assets",
+        "pnpm-lock.yaml"
+      ],
+      "reason": "Bounded security pass prioritized trust-boundary code. Remaining marketing pages, duplicated UI components, binary content assets, and complete dependency implementations were not exhaustively reviewed."
+    }
+  ],
+  "documentType": "codex-security.coverage",
+  "excludePaths": [],
+  "explicitExclusions": [
+    {
+      "pattern": "external-runtime-and-git-history",
+      "reason": "No production/network access, form submissions, exploit execution, registry advisory lookup, Git-history scan or deployment credential inspection."
+    }
+  ],
+  "includePaths": [
+    "."
+  ],
+  "inventoryStrategy": "repository",
+  "mode": "repository",
+  "openQuestions": [
+    {
+      "question": "Are production headers enforced at Railway or another edge?"
+    },
+    {
+      "question": "Do any developer previews run remotely with private workspace material?"
+    },
+    {
+      "question": "Does CI scan dependencies/secrets and container images outside this repository?"
+    },
+    {
+      "question": "What contact-data retention and delivery controls will accompany a real server-side lead endpoint?"
+    }
+  ],
+  "scanId": "9f9e5d8d-22c1-4352-945e-44eee12a4510",
+  "schemaVersion": "1.0",
+  "surfaces": [
+    {
+      "disposition": "reported",
+      "id": "vite-host",
+      "label": "Development host/origin boundary",
+      "notes": "Both development configs disable host validation. Installed Vite consumer inspected.",
+      "receiptRefs": []
+    },
+    {
+      "disposition": "no_issue_found",
+      "id": "contact-api",
+      "label": "Contact handoff and API",
+      "notes": "Full contact form and all Express routes reviewed. URI-encoded mailto fields do not reach SQL or HTML. Public healthz is the only route; wildcard CORS does not expose a protected resource here.",
+      "receiptRefs": []
+    },
+    {
+      "disposition": "no_issue_found",
+      "id": "render",
+      "label": "HTML generation and frontend sinks",
+      "notes": "SEO component, head collector, renderer, prerender script, routing, schema helpers and chart helper reviewed. HTML and JSON-LD escaping are present; chart config has no untrusted caller established. API bearer getter has no application call site.",
+      "receiptRefs": []
+    },
+    {
+      "disposition": "needs_follow_up",
+      "id": "deployment",
+      "label": "Container and build trust boundaries",
+      "notes": "Dockerfile copies the full context into a single-stage root runtime and runs Vite preview. No .dockerignore or repository header policy observed. Treat runtime minimization/secret exclusion/header configuration as hardening, not a proven exploit.",
+      "receiptRefs": []
+    },
+    {
+      "disposition": "no_issue_found",
+      "id": "contact",
+      "label": "Contact handoff and public API",
+      "notes": "Form data is encoded into fixed mailto target; API exposes health only. No injection or authorization bypass established.",
+      "receiptRefs": []
+    }
+  ]
+}

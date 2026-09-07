@@ -1,0 +1,58 @@
+{
+  "contract": "core.woocommerce-import",
+  "contractVersion": "1.0.0",
+  "source": {
+    "system": "woocommerce",
+    "storeId": "synthetic-woo-store",
+    "baseUrl": "https://store.example.test",
+    "woocommerceVersion": "9.0.0",
+    "wordpressTimezone": "America/New_York",
+    "currency": "USD",
+    "currencyMinorUnits": 2,
+    "exportedAt": "2026-09-03T12:00:00Z",
+    "highWaterMark": "2026-09-03T12:00:00Z:101"
+  },
+  "entities": {
+    "categories": [
+      {
+        "id": 9,
+        "name": "Drinkware",
+        "slug": "drinkware",
+        "description": "<p>Cups and mugs.</p>",
+        "parent": 0,
+        "menu_order": 1
+      }
+    ],
+    "products": [
+      {
+        "id": 101,
+        "name": "Migration-safe mug",
+        "slug": "migration-safe-mug",
+        "permalink": "https://store.example.test/product/migration-safe-mug/",
+        "type": "simple",
+        "status": "publish",
+        "description": "<p>A useful mug.</p>",
+        "sku": "MUG-101",
+        "price": "12.50",
+        "regular_price": "15.00",
+        "sale_price": "12.50",
+        "on_sale": true,
+        "tax_status": "taxable",
+        "manage_stock": true,
+        "stock_quantity": 7,
+        "backorders": "no",
+        "categories": [{ "id": 9, "name": "Drinkware", "slug": "drinkware" }],
+        "images": [
+          {
+            "id": 501,
+            "src": "https://cdn.example.test/mug.jpg",
+            "alt": "A mug"
+          }
+        ],
+        "date_created": "2026-08-01T12:00:00Z"
+      }
+    ],
+    "customers": [],
+    "orders": []
+  }
+}

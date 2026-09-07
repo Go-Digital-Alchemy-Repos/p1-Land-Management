@@ -1,0 +1,20 @@
+{
+  "status": "passed",
+  "fixture": "core-recovery-dc5eb6e17742",
+  "backupSha256": "6030539debb7521462213a22ae0cda5454db1eab2f07e51ec903bfbf03305a7d",
+  "compressedBytes": 173210,
+  "candidate": "9a8bf1a2d0e5d5fd17bac1fac935860c841bb81b",
+  "restoreSourceSha256": "b4f3ce3db5fe0e157823f07cac996e2aae6f720b38e96375d8aa8e545ff475fc",
+  "migrationFilesSha256": "daafc4515575e094679804eb5edaf22a494bf1c32a987d36c1a22fc0af97968a",
+  "migrationRunnerSha256": "2aa4900d8e4d0203967e9aaca8e9df2428b9ade9fdaf8fbffc0ceafd8d94f8be",
+  "tableCount": 94,
+  "rowCount": 391,
+  "restoredRowsVerified": true,
+  "postRestoreMigrationsVerified": true,
+  "legacyIdentityAcknowledged": true,
+  "fixtureRemoved": true,
+  "observedAt": "2026-09-06T00:06:32.697Z",
+  "backupCreatedAt": "2026-09-06T00:01:45.425Z",
+  "backupSourceRevision": "f09e9d4199ffca634c0bc1df5c4e48d3c63bb762",
+  "productionWrites": false
+}

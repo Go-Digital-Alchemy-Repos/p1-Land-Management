@@ -1,3 +1,4 @@
+import { cmsValue, fieldId, safeValue, useCms } from "@/lib/cms";
 import { useEffect } from "react";
 import { SITE_URL, BUSINESS_NAME } from "@/lib/site";
 import { collectHead } from "@/lib/ssr-head";
@@ -20,7 +21,24 @@ function upsertMeta(attr: "name" | "property", key: string, content: string) {
   el.setAttribute("content", content);
 }
 
-export function SEO({ title, description, image, jsonLd, noindex }: SEOProps) {
+export function SEO(props: SEOProps) {
+  const context = useCms();
+  const title = cmsValue(context, props.title, "text", false, "seoTitle");
+  const description = cmsValue(context, props.description, "textarea", false, "seoDescription");
+  const image = cmsValue(context, props.image || "/opengraph.jpg", "image", false, "seoImage");
+  const noindex = props.noindex;
+  // Reuse editable visible text in structured data without exposing schema internals as fields.
+  const translate = (value: unknown): unknown => {
+    if (typeof value === "string") {
+      const key = fieldId(value, "text");
+      const replacement = context.snapshot.content[key] ?? context.snapshot.global[key];
+      return safeValue(replacement, "text") ? replacement : value;
+    }
+    if (Array.isArray(value)) return value.map(translate);
+    if (value && typeof value === "object") return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, translate(item)]));
+    return value;
+  };
+  const jsonLd = translate(props.jsonLd) as SEOProps["jsonLd"];
   if (import.meta.env.SSR) {
     collectHead({ title, description, image, jsonLd, noindex });
   }
@@ -34,7 +52,7 @@ export function SEO({ title, description, image, jsonLd, noindex }: SEOProps) {
       noindex ? "noindex, follow" : "index, follow"
     );
 
-    const url = SITE_URL + window.location.pathname;
+    const url = SITE_URL + (window.location.pathname.replace(/\.html$/, "").replace(/\/+$/, "") || "/");
     const img = image
       ? image.startsWith("http")
         ? image
@@ -80,6 +98,7 @@ export function SEO({ title, description, image, jsonLd, noindex }: SEOProps) {
         document.head.appendChild(script);
       });
     }
+    return () => { document.head.querySelectorAll("script[data-seo-jsonld]").forEach(node => node.remove()); };
   }, [title, description, image, noindex, JSON.stringify(jsonLd)]);
 
   return null;

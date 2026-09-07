@@ -1,0 +1,33 @@
+# P1 implementation tasks
+
+Canonical scope: [Master project plan](MASTER_PLAN.md).
+
+All tasks use branch codex/p1-cms-crm from P1 5303da0 and upstream Core aad2057. Owner requested implementation 2026-09-07. Existing local modifications are retained.
+
+| ID | Owner | Status | Surface / next gate |
+|---|---|---|---|
+| P1-CORE | Backend specialist | INTEGRATION VALIDATION | Isolated copy and migrations implemented; auth/forms/CRM/container tests pass; deployed verification pending |
+| P1-PUBLIC | Public specialist | REVIEW | public src; contact, proof, SEO, accessibility and bundle checks |
+| P1-IMAGES | Image specialist | REVIEW | image variants/manifest/pipeline; budgets passed, integrated visual QA next |
+| P1-CMS | Orchestrator | INTEGRATION VALIDATION | 35 components; seven-family private draft/conflict/publish/HTML checks passed; preview UI/revision restore endpoint pending |
+| P1-OPS | Orchestrator | IN PROGRESS | public server, isolated Railway DB/core service, staging; deployment review next |
+| P1-QA | Orchestrator | IN PROGRESS | 34 routes +19 runtime tests pass; scoped security fixes integrated; staging/live and final release gates pending |
+| P1-CONTENT | Strategy task; Orchestrator integration | PLANNED | Strategy/proof brief under docs/strategy; public/CMS implementation follows acceptance of P1-PUBLIC, P1-IMAGES and P1-CMS review gates |
+| P1-COMMERCIAL | Orchestrator + content/Core/dashboard owners | PLANNED | /commercial, assessment offer, durable commercial intake, target-account pursuit; COM-01–07 in [initiative](initiatives/commercial-industrial-sales.md) |
+
+Latest evidence and deployment limits: [implementation-status.md](implementation-status.md). Separate business dashboard candidate undergoing independent review; no pilot acceptance.
+
+## P1-CONTENT scope and integration gate
+
+Registered 2026-09-07 from strategy task `01a07a5b-2a83-7810-bcd7-b9fa65f847d6`. That task owns the content strategy and proof-inventory brief under `docs/strategy`; the Orchestrator owns scheduling and integration. [Strategy and proof-inventory brief](strategy/2026-09-07-growth-corridor-content-strategy.md) received and reviewed for scope alignment. No public or CMS copy changes are authorized by this registration alone before the current review boundaries clear.
+
+- Core service emphasis: commercial and industrial landscaping/grounds management, land management and clearing, site work/earthwork, and verified commercial concrete flatwork.
+- Priority markets: York County/Lake Wylie–Rock Hill, West Charlotte/Airport/I-85/Moores Chapel, and University City.
+- Chester, Blythewood, Kershaw and the broader mapped region remain select-project or monitoring markets until operational coverage and local evidence are confirmed.
+- Data-center vertical is capability-led: no named-client claims, asserted sector experience, security/compliance guarantees, or automatic dashboard-to-CMS publication.
+- Project stories remain within the approved CMS/blog model. No separate Portfolio application.
+- Every public claim, photograph and reported result requires supporting evidence, technical review and publication permission.
+
+After the three prerequisite review gates are accepted, reconcile the delivered strategy/proof inventory with the approved site routes, claim evidence and CMS contracts. Assign bounded public/CMS edits through existing owners, preserve layout and URLs, and record any additional route/schema proposal before implementation. Acceptance requires verified claims and permissions, content/metadata parity, preview/publish checks and no regression in the existing technical budgets.
+
+Brief integration notes: the proposed `project_story` fields are an editorial/schema proposal, not an accepted contract change yet. The monthly content/repurposing cadence is planning guidance, not a scheduled automation or permission to send email/social posts. Broader core-market classifications, including Lancaster, require serviceability evidence before new local claims. The brief now includes a market-source register dated September 7, 2026, with official/developer sources and a Colliers market report. Source presence is recorded; the Orchestrator has not independently revalidated those external claims. Time-sensitive development, permit, investment and policy statements require revalidation before publication. The delivered document is not itself evidence of P1 project experience or customer permission.

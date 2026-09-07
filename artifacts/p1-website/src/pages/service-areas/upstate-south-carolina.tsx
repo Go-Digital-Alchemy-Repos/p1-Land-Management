@@ -184,6 +184,9 @@ export default function UpstateSC() {
         </div>
       </section>
 
+      <aside className="container mx-auto max-w-4xl px-4 pb-12 text-lg">
+        <p><Link href="/services" className="text-primary underline">Compare land management services</Link> or <Link href="/contact" className="text-primary underline">tell us about your property</Link> to discuss scope and availability.</p>
+      </aside>
       <FinalCTA />
     </Layout>
   );

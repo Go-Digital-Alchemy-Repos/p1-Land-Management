@@ -1,0 +1,13 @@
+{
+  "conditionalRejected": true,
+  "originalBytesPreserved": true,
+  "temporaryObjectRemoved": true,
+  "status": "passed",
+  "sourceCommit": "a006f36a3c4f37566c71b278d561844b45fb3b81",
+  "probeScope": "new random temporary object under clients/core-platform/uploads/.verification",
+  "existingCmsObjectTouched": false,
+  "databaseWrites": false,
+  "conditionalOperation": "PutObject IfNoneMatch=*",
+  "rejectionHttpStatus": 412,
+  "cleanupVerifiedByGet404": true
+}

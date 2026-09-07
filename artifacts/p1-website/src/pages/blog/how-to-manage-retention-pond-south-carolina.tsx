@@ -1,3 +1,4 @@
+import { Link } from "wouter";
 import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { PageHero } from "@/components/layout/PageHero";
@@ -49,7 +50,7 @@ export default function BlogPost() {
               Whether your property has a farm pond, a stormwater retention basin, or a decorative lake, that water feature is either an asset or a liability — depending on how well it's maintained.
             </p>
             <p>
-              A well-managed pond improves drainage, supports wildlife, adds property value, and meets regulatory requirements. A neglected pond silts in, develops algae and aquatic weed problems, erodes its banks, and — for commercial properties — can trigger compliance violations.
+              Pond management starts with understanding the purpose of the water feature, its condition, and the maintenance responsibilities for the property. Watch for changes in water quality, sediment, vegetation, and shoreline condition.
             </p>
             <p>
               This guide covers what retention pond management actually involves, what problems to watch for, and when DIY maintenance ends and professional help begins.
@@ -77,7 +78,7 @@ export default function BlogPost() {
 
             <h3>4. Aeration</h3>
             <p>
-              Aeration keeps water circulating and oxygenated — which suppresses algae, supports fish populations, and improves water clarity. Surface aerators, subsurface diffusers, and fountain systems are all options depending on pond depth and size. Aeration systems require regular inspection and maintenance to stay effective.
+              Aeration and circulation equipment serve different purposes. A fountain is not automatically an effective oxygen-management system for the whole pond. Have the pond’s depth, shape, and water-quality needs assessed before selecting equipment.
             </p>
 
             <h3>5. Sediment Management</h3>
@@ -85,12 +86,13 @@ export default function BlogPost() {
               All ponds accumulate sediment over time as runoff carries soil particles into the water. When sediment buildup reduces pond depth significantly, the pond loses storage capacity, water quality declines, and aquatic habitat degrades. Addressing sediment means either dredging (expensive but thorough) or managing upstream erosion to slow the accumulation rate.
             </p>
 
+            <p>For background on equipment selection, see <a href="https://www.clemson.edu/extension/water/stormwater-ponds/problem-solving/aeration-circulation.html">Clemson Extension’s guide to aeration, circulation, and fountains</a>.</p>
             <h2>Signs Your Pond Needs Attention</h2>
             <ul>
               <li>Green or blue-green water — algae bloom in progress</li>
-              <li>Excessive aquatic weed growth covering more than 20–30% of the surface</li>
+              <li>Aquatic weed growth that interferes with the intended use of the pond</li>
               <li>Fish kills or visible dead fish</li>
-              <li>Foul odor — sulfur or rotten-egg smell indicates oxygen depletion</li>
+              <li>A new or persistent foul odor that warrants investigation</li>
               <li>Visibly eroding banks or muddy water after rain</li>
               <li>Water level that doesn't recover after dry periods — may indicate dam or outlet issue</li>
               <li>Sediment delta visible at inlet points — accelerating siltation</li>
@@ -98,10 +100,10 @@ export default function BlogPost() {
 
             <h2>Commercial Property Retention Ponds: Compliance Matters</h2>
             <p>
-              If your property has a stormwater retention or detention pond, it may be subject to local or state maintenance requirements. Many municipalities in South Carolina and North Carolina require documented pond maintenance records as part of stormwater management permits. Failing to maintain these ponds can result in notices of violation and fines.
+              For a stormwater pond, review the approved maintenance plan and contact the relevant local stormwater office about the property’s requirements. Keep inspection and maintenance records with the property documentation.
             </p>
             <p>
-              P1 Land & Property Management provides documented maintenance programs for commercial retention ponds — keeping your system functioning and your compliance records current.
+              Discuss maintenance scope and recordkeeping needs with P1 before arranging a pond maintenance program.
             </p>
 
             <h2>When to Call a Professional</h2>
@@ -118,6 +120,9 @@ export default function BlogPost() {
         </section>
       </article>
 
+      <aside className="container mx-auto max-w-4xl px-4 pb-12 text-lg">
+        <p>Planning work on your land? <Link href="/services/pond-waterway-management" className="text-primary underline">Explore this service</Link> and <Link href="/contact" className="text-primary underline">request a property estimate</Link>.</p>
+      </aside>
       <FinalCTA />
     </Layout>
   );

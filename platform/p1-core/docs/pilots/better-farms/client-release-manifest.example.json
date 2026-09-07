@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "3.0",
+  "status": "draft",
+  "clientStackId": "better-farms-foundation",
+  "candidate": {
+    "coreRevision": "8dcd98ca8b129a3b5196bb86fefd7fbf0007e396",
+    "siteRevision": "ee14d6746cc14cb4b441eecf6598aaaf0e18e975"
+  },
+  "origins": {
+    "publicSite": "https://better-farms.example",
+    "admin": "https://dashboard.better-farms.example"
+  },
+  "backup": {
+    "status": "pending"
+  },
+  "gates": [
+    {
+      "id": "identity",
+      "required": true,
+      "status": "passed",
+      "evidenceReference": "migration-intake-draft"
+    },
+    {
+      "id": "topology",
+      "required": true,
+      "status": "passed",
+      "evidenceReference": "two-origin-preflight"
+    },
+    { "id": "database", "required": true, "status": "pending" },
+    { "id": "backup", "required": true, "status": "pending" },
+    { "id": "restore", "required": true, "status": "pending" },
+    { "id": "health", "required": true, "status": "pending" },
+    { "id": "security", "required": true, "status": "pending" },
+    { "id": "monitoring", "required": true, "status": "pending" },
+    { "id": "content", "required": true, "status": "pending" },
+    { "id": "transactions", "required": false, "status": "not-required" },
+    {
+      "id": "import",
+      "required": false,
+      "status": "not-required",
+      "evidenceReference": "better-farms-no-woocommerce-source-2026-09-04"
+    }
+  ],
+  "approvals": [
+    {
+      "role": "business",
+      "reference": "user authorization in Codex thread, 2026-09-04"
+    },
+    {
+      "role": "technical",
+      "reference": "user authorization in Codex thread, 2026-09-04"
+    },
+    {
+      "role": "operations",
+      "reference": "user authorization in Codex thread, 2026-09-04"
+    }
+  ]
+}

@@ -1,0 +1,766 @@
+import { Router } from "express";
+import { fieldEventSchema } from "@workspace/api-zod/dashboard";
+import { z } from "zod";
+import { randomUUID, createHash } from "node:crypto";
+import { pool, transaction } from "./database";
+import { actor, identity, propertyAccess } from "./access";
+import {
+  HttpError,
+  requireRole,
+  verifyCode,
+  transition,
+  type Role,
+} from "./policy";
+export const api = Router();
+const office: Role[] = ["owner", "manager", "dispatch", "sales", "finance"];
+const operations: Role[] = ["owner", "manager", "dispatch"];
+const managers: Role[] = ["owner", "manager"];
+const id = z.string().uuid();
+const text = z.string().trim().min(1).max(10000);
+const audit = async (c: any, user: string, action: string, entity: string) =>
+  c.query(
+    "INSERT INTO audit_event(id,user_id,action,entity_id) VALUES($1,$2,$3,$4)",
+    [randomUUID(), user, action, entity],
+  );
+api.get("/setup", async (_req, res) => {
+  const r = await pool.query(
+    "SELECT completed_at FROM installation WHERE id=1",
+  );
+  res.json({
+    initialized: Boolean(r.rows[0]?.completed_at),
+    configured: Boolean(
+      process.env.BOOTSTRAP_OWNER_EMAIL &&
+      process.env.BOOTSTRAP_CODE_HASH &&
+      process.env.BOOTSTRAP_EXPIRES_AT,
+    ),
+  });
+});
+api.post("/setup/complete", async (req, res) => {
+  const s = await identity(req);
+  const b = z.object({ code: text }).parse(req.body);
+  if (
+    s.user.email.toLowerCase() !==
+      process.env.BOOTSTRAP_OWNER_EMAIL?.toLowerCase() ||
+    !verifyCode(
+      b.code,
+      process.env.BOOTSTRAP_CODE_HASH,
+      process.env.BOOTSTRAP_EXPIRES_AT,
+    )
+  )
+    throw new HttpError(403, "Invalid or expired setup authorization");
+  const assurance = await pool.query("SELECT 1 FROM session_assurance WHERE session_id=$1", [s.session.id]);
+  if (!s.user.twoFactorEnabled || !assurance.rowCount)
+    throw new HttpError(409, "Enable and verify MFA before completing setup");
+  await transaction(async (c) => {
+    const r = await c.query(
+      "SELECT completed_at FROM installation WHERE id=1 FOR UPDATE",
+    );
+    if (r.rows[0]?.completed_at)
+      throw new HttpError(409, "Setup is already complete");
+    await c.query(
+      "INSERT INTO staff_profile(user_id,role) VALUES($1,'owner')",
+      [s.user.id],
+    );
+    await c.query(
+      "UPDATE installation SET owner_id=$1,completed_at=now() WHERE id=1",
+      [s.user.id],
+    );
+    await c.query('DELETE FROM session WHERE "userId"=$1 AND id<>$2', [s.user.id, s.session.id]);
+    await audit(c, s.user.id, "installation.completed", s.user.id);
+  });
+  res.status(201).json({ ok: true });
+});
+api.get("/me", async (req, res) => {
+  const s = await identity(req);
+  const p = await pool.query(
+    "SELECT role,active FROM staff_profile WHERE user_id=$1",
+    [s.user.id],
+  );
+  res.json({
+    id: s.user.id,
+    name: s.user.name,
+    email: s.user.email,
+    twoFactorEnabled: s.user.twoFactorEnabled,
+    role: p.rows[0]?.active ? p.rows[0].role : null,
+  });
+});
+api.get("/staff", async (req, res) => {
+  const a = await actor(req);
+  requireRole(a.role, office);
+  res.json(
+    (
+      await pool.query(
+        "SELECT u.id,u.name,p.role FROM \"user\" u JOIN staff_profile p ON p.user_id=u.id WHERE p.active=true AND p.role<>'client' ORDER BY u.name",
+      )
+    ).rows,
+  );
+});
+api.post("/invitations", async (req, res) => {
+  const a = await actor(req);
+  requireRole(a.role, managers);
+  const b = z
+    .object({
+      email: z.string().email(),
+      role: z.enum([
+        "manager",
+        "dispatch",
+        "sales",
+        "finance",
+        "crew",
+        "client",
+      ]),
+      clientId: id.optional(),
+    })
+    .parse(req.body);
+  if (b.role === "client" && !b.clientId)
+    throw new HttpError(400, "Client access is required");
+  const token = randomUUID() + randomUUID();
+  const inviteId = randomUUID();
+  await transaction(async (c) => {
+    await c.query(
+      "INSERT INTO invitation(id,email,role,client_id,token_hash,expires_at) VALUES($1,$2,$3,$4,$5,now()+interval '7 days')",
+      [
+        inviteId,
+        b.email.toLowerCase(),
+        b.role,
+        b.clientId || null,
+        createHash("sha256").update(token).digest("hex"),
+      ],
+    );
+    await c.query("INSERT INTO outbox(id,kind,payload) VALUES($1,$2,$3)", [
+      randomUUID(),
+      "email",
+      {
+        to: b.email,
+        subject: "Your P1 dashboard invitation",
+        text: `Open ${process.env.DASHBOARD_ORIGIN}/?invitation=${token} to create your account.`,
+      },
+    ]);
+    await audit(c, a.id, "invitation.created", inviteId);
+  });
+  res.status(201).json({ id: inviteId });
+});
+api.post("/invitations/accept", async (req, res) => {
+  const s = await identity(req);
+  const b = z.object({ token: text }).parse(req.body);
+  await transaction(async (c) => {
+    const r = await c.query(
+      "SELECT * FROM invitation WHERE token_hash=$1 AND email=$2 AND accepted_at IS NULL AND expires_at>now() FOR UPDATE",
+      [
+        createHash("sha256").update(b.token).digest("hex"),
+        s.user.email.toLowerCase(),
+      ],
+    );
+    const v = r.rows[0];
+    if (!v) throw new HttpError(403, "Invalid invitation");
+    const existing = await c.query(
+      "SELECT role FROM staff_profile WHERE user_id=$1",
+      [s.user.id],
+    );
+    if (existing.rowCount && existing.rows[0].role !== v.role)
+      throw new HttpError(409, "Account already has a different role");
+    await c.query(
+      "INSERT INTO staff_profile(user_id,role) VALUES($1,$2) ON CONFLICT(user_id) DO NOTHING",
+      [s.user.id, v.role],
+    );
+    if (v.client_id)
+      await c.query(
+        "INSERT INTO client_access(user_id,client_id) VALUES($1,$2) ON CONFLICT DO NOTHING",
+        [s.user.id, v.client_id],
+      );
+    await c.query("UPDATE invitation SET accepted_at=now() WHERE id=$1", [
+      v.id,
+    ]);
+    await audit(c, s.user.id, "invitation.accepted", v.id);
+  });
+  res.json({ ok: true });
+});
+api.get("/clients", async (req, res) => {
+  const a = await actor(req);
+  requireRole(a.role, [...office, "client"]);
+  res.json(
+    (
+      await pool.query(
+        a.role === "client"
+          ? "SELECT c.id,c.name FROM client c JOIN client_access ca ON ca.client_id=c.id WHERE ca.user_id=$1"
+          : "SELECT * FROM client WHERE archived=false ORDER BY name",
+        a.role === "client" ? [a.id] : [],
+      )
+    ).rows,
+  );
+});
+api.post("/clients", async (req, res) => {
+  const a = await actor(req);
+  requireRole(a.role, office);
+  const b = z
+    .object({
+      name: text,
+      email: z.string().email().optional(),
+      phone: z.string().max(50).optional(),
+    })
+    .parse(req.body);
+  const key = randomUUID();
+  await transaction(async (c) => {
+    await c.query(
+      "INSERT INTO client(id,name,email,phone) VALUES($1,$2,$3,$4)",
+      [key, b.name, b.email || null, b.phone || null],
+    );
+    await audit(c, a.id, "client.created", key);
+  });
+  res.status(201).json({ id: key });
+});
+api.get("/properties", async (req, res) => {
+  const a = await actor(req);
+  let sql = "SELECT p.* FROM property p WHERE p.archived=false";
+  const args: string[] = [];
+  if (a.role === "client") {
+    sql +=
+      " AND EXISTS(SELECT 1 FROM client_access ca WHERE ca.client_id=p.client_id AND ca.user_id=$1)";
+    args.push(a.id);
+  }
+  if (a.role === "crew") {
+    sql +=
+      " AND EXISTS(SELECT 1 FROM work_order w WHERE w.property_id=p.id AND w.assigned_to=$1 AND w.status NOT IN ('cancelled','skipped','reviewed'))";
+    args.push(a.id);
+  }
+  const rows = (await pool.query(sql + " ORDER BY p.name", args)).rows;
+  res.json(
+    rows.map((p) =>
+      a.role === "client"
+        ? {
+            id: p.id,
+            client_id: p.client_id,
+            name: p.name,
+            address: p.address,
+            acreage: p.acreage,
+          }
+        : p,
+    ),
+  );
+});
+api.post("/properties", async (req, res) => {
+  const a = await actor(req);
+  requireRole(a.role, office);
+  const b = z
+    .object({
+      clientId: id,
+      name: text,
+      address: text,
+      acreage: z.number().nonnegative().optional(),
+      accessInstructions: z.string().max(10000).default(""),
+    })
+    .parse(req.body);
+  const key = randomUUID();
+  await transaction(async (c) => {
+    await c.query(
+      "INSERT INTO property(id,client_id,name,address,acreage,access_instructions) VALUES($1,$2,$3,$4,$5,$6)",
+      [
+        key,
+        b.clientId,
+        b.name,
+        b.address,
+        b.acreage ?? null,
+        b.accessInstructions,
+      ],
+    );
+    await audit(c, a.id, "property.created", key);
+  });
+  res.status(201).json({ id: key });
+});
+api.get("/work-orders", async (req, res) => {
+  const a = await actor(req);
+  let sql =
+    "SELECT w.*,p.name AS property_name,p.address,p.access_instructions FROM work_order w JOIN property p ON p.id=w.property_id";
+  const args: string[] = [];
+  if (a.role === "crew") {
+    sql +=
+      " WHERE w.assigned_to=$1 AND w.status NOT IN ('cancelled','skipped','reviewed')";
+    args.push(a.id);
+  }
+  if (a.role === "client") {
+    sql +=
+      " WHERE w.status<>'draft' AND EXISTS(SELECT 1 FROM client_access ca WHERE ca.client_id=p.client_id AND ca.user_id=$1)";
+    args.push(a.id);
+  }
+  const rows = (
+    await pool.query(
+      sql + " ORDER BY w.scheduled_at NULLS LAST,w.created_at DESC LIMIT 500",
+      args,
+    )
+  ).rows;
+  res.json(
+    rows.map((w) =>
+      a.role === "client"
+        ? {
+            id: w.id,
+            property_id: w.property_id,
+            property_name: w.property_name,
+            title: w.title,
+            scheduled_at: w.scheduled_at,
+            status: w.status === "completed" ? "in_review" : w.status,
+          }
+        : w,
+    ),
+  );
+});
+api.post("/work-orders", async (req, res) => {
+  const a = await actor(req);
+  requireRole(a.role, operations);
+  const b = z
+    .object({
+      propertyId: id,
+      title: text,
+      scope: z.string().max(10000).default(""),
+      assignedTo: z.string().optional(),
+      scheduledAt: z.string().datetime().optional(),
+      checklist: z
+        .array(z.object({ label: text, done: z.boolean() }))
+        .max(100)
+        .default([]),
+      prerequisites: z
+        .array(z.object({ label: text, done: z.boolean() }))
+        .max(50)
+        .default([]),
+    })
+    .parse(req.body);
+  await propertyAccess(a, b.propertyId);
+  const key = randomUUID();
+  await transaction(async (c) => {
+    await c.query(
+      "INSERT INTO work_order(id,property_id,title,scope,assigned_to,scheduled_at,checklist,prerequisites) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
+      [
+        key,
+        b.propertyId,
+        b.title,
+        b.scope,
+        b.assignedTo || null,
+        b.scheduledAt || null,
+        JSON.stringify(b.checklist),
+        JSON.stringify(b.prerequisites),
+      ],
+    );
+    await audit(c, a.id, "work.created", key);
+  });
+  res.status(201).json({ id: key });
+});
+api.post("/work-orders/:id/status", async (req, res) => {
+  const a = await actor(req);
+  requireRole(a.role, operations);
+  const key = id.parse(req.params.id);
+  const b = z
+    .object({
+      status: text,
+      version: z.number().int().positive(),
+      overrideReason: z.string().max(1000).optional(),
+    })
+    .parse(req.body);
+  if (b.overrideReason) requireRole(a.role, managers);
+  await transaction(async (c) => {
+    const w = (
+      await c.query("SELECT * FROM work_order WHERE id=$1 FOR UPDATE", [key])
+    ).rows[0];
+    if (!w) throw new HttpError(404, "Work order not found");
+    if (w.version !== b.version)
+      throw new HttpError(409, "Work order changed; refresh and retry");
+    transition(
+      w.status,
+      b.status,
+      a.role,
+      w.prerequisites,
+      b.overrideReason || w.override_reason,
+    );
+    await c.query(
+      "UPDATE work_order SET status=$2,version=version+1,override_reason=COALESCE($3,override_reason) WHERE id=$1",
+      [key, b.status, b.overrideReason || null],
+    );
+    await audit(c, a.id, "work." + b.status, key);
+  });
+  res.json({ ok: true });
+});
+api.post("/work-orders/:id/publish", async (req, res) => {
+  const a = await actor(req);
+  requireRole(a.role, managers);
+  const key = id.parse(req.params.id);
+  await transaction(async (c) => {
+    const w = (
+      await c.query("SELECT status FROM work_order WHERE id=$1 FOR UPDATE", [
+        key,
+      ])
+    ).rows[0];
+    if (w?.status !== "reviewed")
+      throw new HttpError(409, "Review this work before publishing");
+    await c.query("UPDATE work_order SET published=true WHERE id=$1", [key]);
+    await c.query(
+      "UPDATE field_event SET published=true WHERE work_order_id=$1 AND conflict=false AND kind IN ('note','checklist','complete')",
+      [key],
+    );
+    await audit(c, a.id, "work.published", key);
+  });
+  res.json({ ok: true });
+});
+api.post("/field/sync", async (req, res) => {
+  const a = await actor(req);
+  requireRole(a.role, [...operations, "crew"]);
+  const events = z.array(fieldEventSchema).max(100).parse(req.body.events);
+  const results = [];
+  for (const e of events) {
+    const result = await transaction(async (c) => {
+      const w = (
+        await c.query("SELECT * FROM work_order WHERE id=$1 FOR UPDATE", [
+          e.workOrderId,
+        ])
+      ).rows[0];
+      if (!w) throw new HttpError(404, "Work order not found");
+      if (a.role === "crew" && w.assigned_to !== a.id)
+        throw new HttpError(
+          403,
+          "Assignment changed; retain this submission for office review",
+        );
+      const old = (
+        await c.query(
+          "SELECT user_id,conflict,work_order_id FROM field_event WHERE id=$1",
+          [e.id],
+        )
+      ).rows[0];
+      if (old) {
+        if (old.user_id !== a.id || old.work_order_id !== w.id)
+          throw new HttpError(409, "Operation ID conflict");
+        return { id: e.id, status: old.conflict ? "conflict" : "accepted" };
+      }
+      const conflict =
+        w.version !== e.baseVersion ||
+        ["cancelled", "skipped", "reviewed"].includes(w.status);
+      await c.query(
+        "INSERT INTO field_event(id,work_order_id,user_id,kind,payload,base_version,conflict,captured_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
+        [
+          e.id,
+          w.id,
+          a.id,
+          e.kind,
+          e.payload,
+          e.baseVersion,
+          conflict,
+          e.capturedAt,
+        ],
+      );
+      if (e.kind === "complete" && !conflict && w.status !== "in_progress")
+        throw new HttpError(
+          409,
+          "Start the work order before submitting completion",
+        );
+      if (e.kind === "checklist" && !conflict) {
+        if (
+          !e.payload.items || e.payload.items.length !== w.checklist.length ||
+          !e.payload.items.every(
+            (item, index) => item.label === w.checklist[index].label,
+          )
+        )
+          throw new HttpError(409, "Checklist does not match this assignment");
+      }
+      if (e.kind === "complete" && !conflict && w.checklist.length) {
+        const latest = (
+          await c.query(
+            "SELECT payload FROM field_event WHERE work_order_id=$1 AND kind='checklist' AND conflict=false ORDER BY received_at DESC LIMIT 1",
+            [w.id],
+          )
+        ).rows[0];
+        if (
+          !latest?.payload.items?.every((item: { done: boolean }) => item.done)
+        )
+          throw new HttpError(
+            409,
+            "Complete the job checklist before submitting completion",
+          );
+      }
+      if (e.kind === "complete" && !conflict)
+        await c.query(
+          "UPDATE work_order SET status='completed',version=version+1 WHERE id=$1",
+          [w.id],
+        );
+      await audit(
+        c,
+        a.id,
+        conflict ? "field.conflict" : "field.received",
+        e.id,
+      );
+      return { id: e.id, status: conflict ? "conflict" : "accepted" };
+    });
+    results.push(result);
+  }
+  res.json({ results });
+});
+api.get("/properties/:id/timeline", async (req, res) => {
+  const a = await actor(req);
+  const key = id.parse(req.params.id);
+  await propertyAccess(a, key);
+  const rows = await pool.query(
+    `SELECT f.id,f.kind,f.payload,f.conflict,f.published,f.captured_at,w.title FROM field_event f JOIN work_order w ON w.id=f.work_order_id WHERE w.property_id=$1 ${a.role === "client" ? "AND f.published=true AND w.published=true" : a.role === "crew" ? "AND w.assigned_to=$2" : ""} ORDER BY f.captured_at DESC LIMIT 200`,
+    a.role === "crew" ? [key, a.id] : [key],
+  );
+  res.json(rows.rows);
+});
+api.get("/leads", async (req, res) => {
+  const a = await actor(req);
+  requireRole(a.role, office);
+  res.json(
+    (await pool.query("SELECT * FROM lead ORDER BY created_at DESC LIMIT 200"))
+      .rows,
+  );
+});
+api.post("/leads", async (req, res) => {
+  const a = await actor(req);
+  requireRole(a.role, office);
+  const b = z
+    .object({
+      name: text,
+      email: z.string().email(),
+      phone: z.string().optional(),
+      location: text,
+      description: text,
+      source: z.string().max(500).optional(),
+    })
+    .parse(req.body);
+  const key = randomUUID();
+  await pool.query(
+    "INSERT INTO lead(id,name,email,phone,location,description,source) VALUES($1,$2,$3,$4,$5,$6,$7)",
+    [
+      key,
+      b.name,
+      b.email,
+      b.phone || null,
+      b.location,
+      b.description,
+      b.source || "office",
+    ],
+  );
+  res.status(201).json({ id: key });
+});
+api.get("/estimates", async (req, res) => {
+  const a = await actor(req);
+  requireRole(a.role, [...office, "client"]);
+  res.json(
+    (
+      await pool.query(
+        `SELECT e.*,p.name AS property_name FROM estimate e JOIN property p ON p.id=e.property_id ${a.role === "client" ? "WHERE e.status<>'draft' AND EXISTS(SELECT 1 FROM client_access ca WHERE ca.client_id=p.client_id AND ca.user_id=$1)" : ""} ORDER BY e.created_at DESC`,
+        a.role === "client" ? [a.id] : [],
+      )
+    ).rows,
+  );
+});
+api.post("/estimates", async (req, res) => {
+  const a = await actor(req);
+  requireRole(a.role, ["owner", "manager", "sales"]);
+  const b = z
+    .object({
+      propertyId: id,
+      title: text,
+      scope: text,
+      amountCents: z.number().int().positive().max(1e10),
+    })
+    .parse(req.body);
+  const key = randomUUID();
+  await pool.query(
+    "INSERT INTO estimate(id,property_id,title,scope,amount_cents) VALUES($1,$2,$3,$4,$5)",
+    [key, b.propertyId, b.title, b.scope, b.amountCents],
+  );
+  res.status(201).json({ id: key });
+});
+api.post("/estimates/:id/decision", async (req, res) => {
+  const a = await actor(req);
+  const key = id.parse(req.params.id);
+  const b = z
+    .object({
+      status: z.enum(["sent", "approved", "declined"]),
+      revision: z.number().int().positive(),
+    })
+    .parse(req.body);
+  await transaction(async (c) => {
+    const e = (
+      await c.query("SELECT * FROM estimate WHERE id=$1 FOR UPDATE", [key])
+    ).rows[0];
+    if (!e) throw new HttpError(404, "Estimate not found");
+    await propertyAccess(a, e.property_id);
+    if (b.status === "sent") requireRole(a.role, ["owner", "manager", "sales"]);
+    else requireRole(a.role, ["client"]);
+    if (
+      !e.is_current ||
+      e.revision !== b.revision ||
+      e.status !== (b.status === "sent" ? "draft" : "sent")
+    )
+      throw new HttpError(409, "Estimate changed or decision already recorded");
+    await c.query(
+      "UPDATE estimate SET status=$2,approved_by=$3,approved_at=$4 WHERE id=$1",
+      [
+        key,
+        b.status,
+        b.status === "approved" ? a.id : null,
+        b.status === "approved" ? new Date() : null,
+      ],
+    );
+    await audit(c, a.id, "estimate." + b.status, key);
+  });
+  res.json({ ok: true });
+});
+api.get("/billing", async (req, res) => {
+  const a = await actor(req);
+  requireRole(a.role, ["owner", "manager", "finance", "client"]);
+  res.json(
+    (
+      await pool.query(
+        `SELECT b.*,p.name AS property_name FROM billing_draft b JOIN property p ON p.id=b.property_id ${a.role === "client" ? "WHERE b.status='posted' AND b.ownership_verified=true AND EXISTS(SELECT 1 FROM client_access ca WHERE ca.client_id=p.client_id AND ca.user_id=$1)" : ""} ORDER BY b.created_at DESC`,
+        a.role === "client" ? [a.id] : [],
+      )
+    ).rows,
+  );
+});
+api.post("/billing", async (req, res) => {
+  const a = await actor(req);
+  requireRole(a.role, ["owner", "manager", "finance"]);
+  const b = z
+    .object({
+      operationId: id,
+      propertyId: id,
+      estimateId: id,
+      title: text,
+      amountCents: z.number().int().positive().max(1e10),
+      kind: z.enum(["service", "deposit", "progress", "final"]),
+    })
+    .parse(req.body);
+  const fingerprint = createHash("sha256").update(JSON.stringify(b)).digest("hex");
+  const key = await transaction(async (c) => {
+    await c.query("SELECT pg_advisory_xact_lock(hashtextextended($1,0))", ["billing:" + b.operationId]);
+    const previous = (await c.query("SELECT * FROM billing_operation WHERE id=$1", [b.operationId])).rows[0];
+    if (previous) {
+      if (previous.user_id !== a.id || previous.fingerprint !== fingerprint) throw new HttpError(409, "Billing operation ID conflict");
+      return previous.draft_id;
+    }
+    const key = randomUUID();
+    const e = (
+      await c.query(
+        "SELECT * FROM estimate WHERE id=$1 AND property_id=$2 AND status='approved' FOR UPDATE",
+        [b.estimateId, b.propertyId],
+      )
+    ).rows[0];
+    if (!e) throw new HttpError(409, "An approved estimate is required");
+    const sum = (
+      await c.query(
+        "SELECT COALESCE(sum(amount_cents),0) AS total FROM billing_draft WHERE estimate_id=$1",
+        [e.id],
+      )
+    ).rows[0].total;
+    if (Number(sum) + b.amountCents > Number(e.amount_cents))
+      throw new HttpError(409, "Billing exceeds the approved estimate");
+    await c.query(
+      "INSERT INTO billing_draft(id,property_id,estimate_id,title,amount_cents,kind) VALUES($1,$2,$3,$4,$5,$6)",
+      [key, b.propertyId, b.estimateId, b.title, b.amountCents, b.kind],
+    );
+    await c.query("INSERT INTO billing_operation(id,user_id,fingerprint,draft_id) VALUES($1,$2,$3,$4)", [b.operationId,a.id,fingerprint,key]);
+    await audit(c, a.id, "billing.created", key);
+    return key;
+  });
+  res.status(201).json({ id: key });
+});
+api.get("/requests", async (req, res) => {
+  const a = await actor(req);
+  requireRole(a.role, [...office, "client"]);
+  res.json(
+    (
+      await pool.query(
+        `SELECT r.*,p.name AS property_name FROM service_request r JOIN property p ON p.id=r.property_id ${a.role === "client" ? "WHERE EXISTS(SELECT 1 FROM client_access ca WHERE ca.client_id=p.client_id AND ca.user_id=$1)" : ""} ORDER BY r.created_at DESC`,
+        a.role === "client" ? [a.id] : [],
+      )
+    ).rows,
+  );
+});
+api.post("/requests", async (req, res) => {
+  const a = await actor(req);
+  requireRole(a.role, [...office, "client"]);
+  const b = z.object({ propertyId: id, description: text }).parse(req.body);
+  await propertyAccess(a, b.propertyId);
+  const key = randomUUID();
+  await pool.query(
+    "INSERT INTO service_request(id,property_id,user_id,description) VALUES($1,$2,$3,$4)",
+    [key, b.propertyId, a.id, b.description],
+  );
+  res.status(201).json({ id: key });
+});
+api.get("/assessment-slots", async (req, res) => {
+  const a = await actor(req);
+  requireRole(a.role, [...office, "client"]);
+  res.json(
+    (
+      await pool.query(
+        "SELECT id,starts_at,ends_at FROM assessment_slot WHERE property_id IS NULL AND starts_at>now() ORDER BY starts_at LIMIT 100",
+      )
+    ).rows,
+  );
+});
+api.post("/assessment-slots", async (req, res) => {
+  const a = await actor(req);
+  requireRole(a.role, operations);
+  const b = z
+    .object({ startsAt: z.string().datetime(), endsAt: z.string().datetime() })
+    .parse(req.body);
+  if (Date.parse(b.endsAt) <= Date.parse(b.startsAt))
+    throw new HttpError(400, "End must follow start");
+  const key = randomUUID();
+  await transaction(async (c) => {
+    await c.query("SELECT pg_advisory_xact_lock(918278)");
+    if (
+      (
+        await c.query(
+          "SELECT 1 FROM assessment_slot WHERE starts_at<$2 AND ends_at>$1",
+          [b.startsAt, b.endsAt],
+        )
+      ).rowCount
+    )
+      throw new HttpError(409, "Slot overlaps existing availability");
+    await c.query(
+      "INSERT INTO assessment_slot(id,starts_at,ends_at) VALUES($1,$2,$3)",
+      [key, b.startsAt, b.endsAt],
+    );
+  });
+  res.status(201).json({ id: key });
+});
+api.post("/assessment-slots/:id/book", async (req, res) => {
+  const a = await actor(req);
+  requireRole(a.role, [...operations, "client"]);
+  const key = id.parse(req.params.id);
+  const b = z.object({ propertyId: id }).parse(req.body);
+  await propertyAccess(a, b.propertyId);
+  const r = await pool.query(
+    "UPDATE assessment_slot SET property_id=$2,booked_by=$3 WHERE id=$1 AND property_id IS NULL AND starts_at>now() RETURNING id",
+    [key, b.propertyId, a.id],
+  );
+  if (!r.rowCount)
+    throw new HttpError(409, "This appointment is no longer available");
+  res.json({ ok: true });
+});
+api.get("/integrations", async (req, res) => {
+  const a = await actor(req);
+  requireRole(a.role, managers);
+  const r = await pool.query(
+    "SELECT id,kind,status,attempts,last_error,created_at FROM outbox WHERE status<>'sent' ORDER BY created_at DESC LIMIT 50",
+  );
+  res.json({
+    quickbooks: {
+      configured: Boolean(
+        (
+          await pool.query(
+            "SELECT 1 FROM integration_connection WHERE provider='quickbooks'",
+          )
+        ).rowCount,
+      ),
+      status: "Connection requires sandbox verification",
+    },
+    email: { configured: Boolean(process.env.MAILGUN_API_KEY) },
+    sms: {
+      configured: Boolean(
+        process.env.TWILIO_ACCOUNT_SID &&
+        process.env.TWILIO_AUTH_TOKEN &&
+        process.env.TWILIO_FROM,
+      ),
+    },
+    jobs: r.rows,
+  });
+});

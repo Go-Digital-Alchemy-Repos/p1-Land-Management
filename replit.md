@@ -1,45 +1,37 @@
-# [Project name]
+# P1 Land Management
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+P1 Land & Property Management website workspace.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
-- `pnpm run typecheck` — full typecheck across all packages
-- `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- `npx --yes pnpm@11.7.0 install --frozen-lockfile` - install dependencies.
+- `npx --yes pnpm@11.7.0 run typecheck` - typecheck workspace libs and runnable artifacts.
+- `npx --yes pnpm@11.7.0 --filter @workspace/p1-website check:faq` - validate FAQ JSON-LD.
+- `npx --yes pnpm@11.7.0 --filter @workspace/p1-website build` - build and prerender the production website.
+- `npx --yes pnpm@11.7.0 run build` - run the full workspace build.
+- `npx --yes pnpm@11.7.0 --filter @workspace/p1-website serve` - preview the built site locally.
 
 ## Stack
 
-- pnpm workspaces, Node.js 24, TypeScript 5.9
-- API: Express 5
-- DB: PostgreSQL + Drizzle ORM
-- Validation: Zod (`zod/v4`), `drizzle-zod`
-- API codegen: Orval (from OpenAPI spec)
-- Build: esbuild (CJS bundle)
+- pnpm workspaces, Node.js 22+ locally and in Docker, TypeScript 5.9.
+- Website: Vite 7, React 19, Wouter, Tailwind CSS 4.
+- SEO: static prerendering, generated sitemap, robots.txt, page-level metadata and JSON-LD.
+- API skeleton: Express 5 with `/api/healthz`.
+- Deployment: Railway Dockerfile serving `artifacts/p1-website/dist/public`.
 
-## Where things live
+## Where Things Live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
-
-## Architecture decisions
-
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
-
-## Product
-
-_Describe the high-level user-facing capabilities of this app once they exist._
-
-## User preferences
-
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- Website source: `artifacts/p1-website/src`.
+- Website routes: `artifacts/p1-website/src/App.tsx`.
+- Shared business constants: `artifacts/p1-website/src/lib/site.ts`.
+- Sitemap/prerender/FAQ checks: `artifacts/p1-website/scripts`.
+- Railway deploy config: `Dockerfile` and `railway.json`.
+- API server: `artifacts/api-server/src`.
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
-
-## Pointers
-
-- See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details
+- Use pnpm, not npm or yarn. The root preinstall hook enforces this.
+- The production site is static/prerendered; route coverage depends on the static routes declared in `App.tsx`.
+- Local macOS ARM QA needs native Rollup/esbuild/Tailwind/Lightning CSS optional packages in the lockfile.
+- Website and mockup Vite configs default `PORT` and `BASE_PATH` for local builds; Railway still supplies `PORT` at runtime.
+- Large PNG assets are the main known performance debt.

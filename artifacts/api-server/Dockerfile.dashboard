@@ -1,0 +1,11 @@
+FROM node:24-bookworm-slim AS build
+RUN corepack enable && corepack prepare pnpm@11.19.0 --activate
+WORKDIR /app
+COPY . .
+RUN pnpm install --frozen-lockfile
+RUN pnpm --filter @workspace/p1-dashboard build && pnpm --filter @workspace/api-server build:dashboard
+ENV NODE_ENV=production
+WORKDIR /app/artifacts/api-server
+USER node
+EXPOSE 8080
+CMD ["node", "dist/dashboard/main.js"]

@@ -1,0 +1,50 @@
+{
+  "candidateBase": "a27584f",
+  "workingChanges": "reviewed image policy, site reference verifier, dry-run command and pilot pin included in this checkpoint",
+  "siteRevision": "21eeb76b33c1258c75a001296074b880ef85f87f",
+  "browserCasesPassed": 3,
+  "elapsedSeconds": 17.1,
+  "coreHostedImageDecodedInPreview": true,
+  "coreHostedImageDecodedAfterPublish": true,
+  "productionChanges": false,
+  "forms": {
+    "contact-durable-receipts.json": {
+      "lostResponseSubmissionId": "b73ce3f2-7b93-4420-9a25-bb3b920640e7",
+      "retrySubmissionId": "b73ce3f2-7b93-4420-9a25-bb3b920640e7",
+      "countAfterRetry": 1,
+      "changedSubmissionId": "60bf9b55-28b6-4675-a2dd-3ffcdccf824c",
+      "countAfterChanged": 2,
+      "effects": [
+        {
+          "submissionId": "b73ce3f2-7b93-4420-9a25-bb3b920640e7",
+          "effectId": "f3e6b433-89d7-4b31-b898-1cedb1f2c3e1",
+          "kind": "contact_message"
+        },
+        {
+          "submissionId": "60bf9b55-28b6-4675-a2dd-3ffcdccf824c",
+          "effectId": "7e825bf7-d331-4626-8e17-cab6a34f77c4",
+          "kind": "contact_message"
+        }
+      ]
+    },
+    "newsletter-durable-receipts.json": {
+      "lostResponseSubmissionId": "fde7b487-f7d3-4a52-b890-d459d0170092",
+      "retrySubmissionId": "fde7b487-f7d3-4a52-b890-d459d0170092",
+      "countAfterRetry": 1,
+      "changedSubmissionId": "bfadc6bd-8623-48d6-a3ce-a66789286aee",
+      "countAfterChanged": 2,
+      "effects": [
+        {
+          "submissionId": "fde7b487-f7d3-4a52-b890-d459d0170092",
+          "effectId": "6b849123-6778-45ea-848a-6cdbc918c172",
+          "kind": "crm_intake"
+        },
+        {
+          "submissionId": "bfadc6bd-8623-48d6-a3ce-a66789286aee",
+          "effectId": "9f76c5d8-69bc-4e63-9825-b54081b18e56",
+          "kind": "crm_intake"
+        }
+      ]
+    }
+  }
+}

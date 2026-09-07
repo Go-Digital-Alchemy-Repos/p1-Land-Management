@@ -25,7 +25,7 @@ interface Project {
 }
 
 const projects: Project[] = [
-  { title: "50-Acre Forestry Mulching & Clearing", location: "Spartanburg County, SC", service: "Land Clearing", market: "Upstate SC", image: imgClearing },
+  { title: "Forestry Mulching & Clearing", location: "Spartanburg County, SC", service: "Land Clearing", market: "Upstate SC", image: imgClearing },
   { title: "Commercial Site Fine Grading", location: "Greenville, SC", service: "Grading & Site Prep", market: "Upstate SC", image: imgGrading },
   { title: "French Drain & Regrade Drainage Fix", location: "Charlotte, NC", service: "Drainage Solutions", market: "Charlotte NC", image: imgDrainage },
   { title: "Large-Acreage Turf Installation", location: "Anderson, SC", service: "Turf & Seeding", market: "Upstate SC", image: imgTurf },
@@ -49,39 +49,36 @@ const serviceFilters = [
   "Tree Services",
 ];
 
-const marketFilters = ["All Markets", "Upstate SC", "Charlotte NC"] as const;
 
 export default function Gallery() {
   const [activeService, setActiveService] = useState("All");
-  const [activeMarket, setActiveMarket] = useState<(typeof marketFilters)[number]>("All Markets");
 
   const filtered = projects.filter(
     (p) =>
-      (activeService === "All" || p.service === activeService) &&
-      (activeMarket === "All Markets" || p.market === activeMarket)
+      (activeService === "All" || p.service === activeService)
   );
 
   return (
     <Layout>
       <SEO
-        title="Project Gallery | P1 Land & Property Management"
-        description="Browse P1's land clearing, grading, drainage, turf, pond, and property reconstruction projects across Upstate South Carolina and the Charlotte, NC region. Filter by service and market."
+        title="Service Gallery | P1 Land & Property Management"
+        description="Explore illustrative examples of land clearing, grading, drainage, turf, pond, and property reconstruction services."
       />
 
       {/* PAGE HERO */}
       <PageHero
-        eyebrow="Selected Work"
+        eyebrow="Service Illustrations"
         title={
           <>
-            Project{" "}
+            Service{" "}
             <em className="font-semibold not-italic text-tan" style={{ fontStyle: "italic" }}>
               Gallery
             </em>
           </>
         }
-        subtitle="Visual proof of large-acreage work across both of our markets — from rough clearing and grading to finished turf, drainage, and complete property reconstruction."
+        subtitle="Illustrative imagery showing types of land management services. These images are not verified photographs of completed P1 projects."
         image={heroImg}
-        imageAlt="P1 land management project work"
+        imageAlt="Illustration of land management services"
       />
 
       {/* FILTERS + GRID */}
@@ -92,6 +89,7 @@ export default function Gallery() {
             {serviceFilters.map((f) => (
               <button
                 key={f}
+                aria-pressed={activeService === f}
                 onClick={() => setActiveService(f)}
                 className={cn(
                   "px-4 py-2 rounded-full text-sm font-semibold border transition-colors",
@@ -105,24 +103,7 @@ export default function Gallery() {
             ))}
           </div>
 
-          {/* Market filters */}
-          <div className="flex flex-wrap justify-center gap-3">
-            {marketFilters.map((m) => (
-              <button
-                key={m}
-                onClick={() => setActiveMarket(m)}
-                className={cn(
-                  "px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide border transition-colors",
-                  activeMarket === m
-                    ? "bg-secondary text-white border-secondary"
-                    : "bg-background text-secondary/60 border-border hover:border-secondary hover:text-secondary"
-                )}
-              >
-                {m}
-              </button>
-            ))}
-          </div>
-
+          <p role="status" className="text-center text-sm">{filtered.length} service illustrations shown</p>
           {/* Grid */}
           {filtered.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -133,8 +114,9 @@ export default function Gallery() {
                 >
                   <div className="aspect-[4/3] overflow-hidden">
                     <img
+                      loading="lazy" decoding="async"
                       src={p.image}
-                      alt={p.title}
+                      alt={`Illustration: ${p.title}`}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                   </div>
@@ -143,7 +125,7 @@ export default function Gallery() {
                       {p.service}
                     </span>
                     <h3 className="font-serif font-bold text-secondary leading-snug">{p.title}</h3>
-                    <p className="text-sm text-secondary/60">{p.location}</p>
+                    <p className="text-sm text-secondary/60">Illustrative image</p>
                   </div>
                 </div>
               ))}
@@ -155,8 +137,7 @@ export default function Gallery() {
           )}
 
           <p className="text-center text-sm text-secondary/50 max-w-2xl mx-auto pt-4">
-            Gallery imagery is representative of the scope and quality of P1's large-acreage work
-            across Upstate SC and the Charlotte region.
+            Gallery imagery illustrates service categories. It does not document specific completed jobs or customer results.
           </p>
         </div>
       </section>

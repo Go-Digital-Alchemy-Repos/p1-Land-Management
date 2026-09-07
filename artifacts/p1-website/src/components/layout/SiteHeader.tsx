@@ -57,25 +57,13 @@ export function SiteHeader() {
                 </DropdownMenuItem>
               ))}
               <DropdownMenuItem asChild className="font-bold text-primary mt-2 border-t border-[#ededed]">
-                <Link href="/services" className="cursor-pointer">View All Services</Link>
+                <Link href="/service-areas" className="cursor-pointer">Service Areas</Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Link href="/service-areas" className="group relative hover:text-primary transition-colors">
-            Service Areas
-            <span className="absolute -bottom-1.5 left-0 h-[2px] w-0 bg-clay transition-all duration-300 group-hover:w-full" />
-          </Link>
-          <Link href="/gallery" className="group relative hover:text-primary transition-colors">
-            Gallery
-            <span className="absolute -bottom-1.5 left-0 h-[2px] w-0 bg-clay transition-all duration-300 group-hover:w-full" />
-          </Link>
           <Link href="/testimonials" className="group relative hover:text-primary transition-colors">
-            Testimonials
-            <span className="absolute -bottom-1.5 left-0 h-[2px] w-0 bg-clay transition-all duration-300 group-hover:w-full" />
-          </Link>
-          <Link href="/blog" className="group relative hover:text-primary transition-colors">
-            Blog
+            Working With P1
             <span className="absolute -bottom-1.5 left-0 h-[2px] w-0 bg-clay transition-all duration-300 group-hover:w-full" />
           </Link>
           <Link href="/contact" className="group relative hover:text-primary transition-colors">
@@ -119,13 +107,13 @@ export function SiteHeader() {
                           {s.name}
                         </Link>
                       ))}
+                      <Link href="/service-areas" onClick={() => setIsOpen(false)} className="font-bold text-primary mt-2 border-t border-[#ededed] pt-3">
+                        Service Areas
+                      </Link>
                     </div>
                   </div>
 
-                  <Link href="/service-areas" onClick={() => setIsOpen(false)} className="text-lg font-medium text-secondary">Service Areas</Link>
-                  <Link href="/gallery" onClick={() => setIsOpen(false)} className="text-lg font-medium text-secondary">Gallery</Link>
-                  <Link href="/testimonials" onClick={() => setIsOpen(false)} className="text-lg font-medium text-secondary">Testimonials</Link>
-                  <Link href="/blog" onClick={() => setIsOpen(false)} className="text-lg font-medium text-secondary">Blog</Link>
+                  <Link href="/testimonials" onClick={() => setIsOpen(false)} className="text-lg font-medium text-secondary">Working With P1</Link>
                   <Link href="/contact" onClick={() => setIsOpen(false)} className="text-lg font-medium text-secondary">Contact</Link>
                 </div>
 

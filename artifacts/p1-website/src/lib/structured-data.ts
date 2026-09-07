@@ -93,23 +93,13 @@ export function serviceAreaSchema(opts: {
 }): JsonLd {
   return {
     "@context": "https://schema.org",
-    "@type": "LandscapingBusiness",
-    "@id": BUSINESS_ID,
-    name: BUSINESS_NAME,
+    "@type": "Service",
+    "@id": `${SITE_URL}${opts.path}#service`,
+    name: `Land and property management in ${opts.areaName}`,
     description: opts.description,
     url: SITE_URL + opts.path,
-    telephone: PHONE_E164,
-    email: EMAIL,
-    image: LOGO_URL,
-    logo: LOGO_URL,
-    priceRange: "$$",
-    address: {
-      "@type": "PostalAddress",
-      addressRegion: ADDRESS.addressRegion,
-      addressCountry: ADDRESS.addressCountry,
-    },
+    provider: { "@id": BUSINESS_ID, "@type": "LandscapingBusiness", name: BUSINESS_NAME, url: SITE_URL },
     areaServed: { "@type": opts.areaType ?? "AdministrativeArea", name: opts.areaName },
-    openingHoursSpecification: openingHoursSpecification(),
   };
 }
 

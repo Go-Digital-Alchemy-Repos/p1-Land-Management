@@ -84,7 +84,7 @@ function escapeHtml(value) {
 
 function jsonLdScript(obj) {
   const json = JSON.stringify(obj).replace(/</g, "\\u003c");
-  return `<script type="application/ld+json">${json}</script>`;
+  return `<script type="application/ld+json" data-seo-jsonld>${json}</script>`;
 }
 
 function buildHeadHtml(head, path) {

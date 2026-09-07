@@ -1,3 +1,4 @@
+import { Link } from "wouter";
 import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { PageHero } from "@/components/layout/PageHero";
@@ -49,7 +50,7 @@ export default function BlogPost() {
               Drainage problems don't announce themselves with a clear label. They show up as inconveniences — a soggy corner of the field, a driveway that washes out after every storm, a patch of turf that never seems to dry out — until the underlying problem is serious enough that small fixes won't cut it.
             </p>
             <p>
-              For large commercial, agricultural, and rural residential properties, drainage failures are especially costly: they damage structures, reduce the productive capacity of fields, create erosion that compounds over years, and generate maintenance costs that dwarf what proper drainage installation would have cost upfront.
+              For large commercial, agricultural, and rural residential properties, drainage failures are especially costly: they damage structures, reduce the productive capacity of fields, create erosion and additional maintenance work.
             </p>
             <p>
               Here are five signs that your property has a drainage problem that deserves a professional look — and what your options are when you find one.
@@ -57,7 +58,7 @@ export default function BlogPost() {
 
             <h2>Sign 1: Standing Water After Rain</h2>
             <p>
-              The most obvious indicator. If water is pooling on your property after moderate rainfall and staying there for more than 24 to 48 hours, your drainage is inadequate. This could be a grading problem (water has nowhere to flow), a soil permeability problem (water can't infiltrate fast enough), or a drainage infrastructure problem (pipes, ditches, or swales that are undersized, blocked, or nonexistent).
+              The most obvious indicator. If water is pooling on your property after moderate rainfall and persisting beyond the rainfall event, arrange an assessment of how the site drains. This could be a grading problem (water has nowhere to flow), a soil permeability problem (water can't infiltrate fast enough), or a drainage infrastructure problem (pipes, ditches, or swales that are undersized, blocked, or nonexistent).
             </p>
             <p>
               Standing water that persists damages turf, compacts soil, creates muddy access conditions, and in warm months breeds mosquitoes and other pests. On agricultural land, it can make fields unworkable for days after each rain event.
@@ -112,6 +113,9 @@ export default function BlogPost() {
         </section>
       </article>
 
+      <aside className="container mx-auto max-w-4xl px-4 pb-12 text-lg">
+        <p>Planning work on your land? <Link href="/services/drainage" className="text-primary underline">Explore this service</Link> and <Link href="/contact" className="text-primary underline">request a property estimate</Link>.</p>
+      </aside>
       <FinalCTA />
     </Layout>
   );

@@ -7,12 +7,16 @@
     "dev": "vite --config vite.config.ts --host 0.0.0.0",
     "sitemap": "node scripts/generate-sitemap.mjs",
     "prebuild": "node scripts/generate-sitemap.mjs",
-    "build": "vite build --config vite.config.ts && node scripts/prerender.mjs",
-    "serve": "vite preview --config vite.config.ts --host 0.0.0.0",
+    "build": "vite build --config vite.config.ts && node scripts/prerender.mjs && node scripts/generate-cms-manifest.mjs",
+    "serve": "node server/index.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "check:faq": "node scripts/validate-faq-schema.mjs"
+    "check:faq": "node scripts/validate-faq-schema.mjs",
+    "optimize:images": "node scripts/optimize-images.mjs",
+    "check:images": "node scripts/image-budget.mjs",
+    "check:server": "node --test server/*.test.mjs"
   },
   "devDependencies": {
+    "sharp": "0.34.5",
     "@hookform/resolvers": "^3.10.0",
     "@radix-ui/react-accordion": "^1.2.4",
     "@radix-ui/react-alert-dialog": "^1.1.7",

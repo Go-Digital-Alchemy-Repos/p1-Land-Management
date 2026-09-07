@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { acquisitionSource, trackAcquisition } from "@/lib/acquisition";
+import { useRef, useState } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
@@ -20,31 +21,45 @@ const SERVICES = [
 export default function Contact() {
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const formStarted = useRef(false);
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState("");
+  const request = useRef<{ payload: string; key: string } | null>(null);
+  const successHeading = useRef<HTMLHeadingElement>(null);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (pending) return;
     const fd = new FormData(e.currentTarget);
-    const get = (k: string) => ((fd.get(k) as string) || "").trim();
-    const services = fd.getAll("service").join(", ") || "Not specified";
-
-    const lines = [
-      `Name: ${get("firstName")} ${get("lastName")}`,
-      `Phone: ${get("phone")}`,
-      `Email: ${get("email")}`,
-      `Company: ${get("company") || "N/A"}`,
-      `Property Address / City: ${get("address")}`,
-      `Approximate Acreage: ${get("acreage") || "Not specified"}`,
-      `Property Type: ${get("propertyType") || "Not specified"}`,
-      `Service(s) Needed: ${services}`,
-      `How they heard about us: ${get("referral") || "N/A"}`,
-      "",
-      "Project Details:",
-      get("project") || "(none provided)",
-    ];
-
-    const subject = encodeURIComponent("Free Estimate Request — P1 Land & Property Management");
-    const body = encodeURIComponent(lines.join("\n"));
-    window.location.href = `mailto:${EMAIL}?subject=${subject}&body=${body}`;
-    setSubmitted(true);
+    const get = (key: string) => String(fd.get(key) || "").trim();
+    const payload = JSON.stringify({
+      name: get("name"), email: get("email"), phone: get("phone"),
+      company: get("company"), address: get("address"), acreage: get("acreage"),
+      propertyType: get("propertyType"), services: fd.getAll("service"),
+      message: get("project"), website: get("website"),
+      attribution: acquisitionSource(),
+    });
+    if (!request.current || request.current.payload !== payload) {
+      request.current = { payload, key: crypto.randomUUID() };
+    }
+    setPending(true);
+    setError("");
+    try {
+      const response = await fetch("/api/forms/p1-estimate/submit", {
+        method: "POST", headers: { "Content-Type": "application/json", "Idempotency-Key": request.current.key },
+        body: payload, signal: AbortSignal.timeout(20000),
+      });
+      const receipt = await response.json().catch(() => null);
+      if (!response.ok || !receipt?.submissionId) throw new Error("We couldn't confirm your request. Please try again, or call us directly. Your information is still here.");
+      setSubmitted(true);
+      request.current = null;
+      requestAnimationFrame(() => successHeading.current?.focus());
+    } catch (cause) {
+      trackAcquisition("form_error");
+      setError("We couldn’t confirm your request. Please try again or call us. Your information is still here.");
+    } finally {
+      setPending(false);
+    }
   };
 
   return (
@@ -72,10 +87,10 @@ export default function Contact() {
             </em>
           </>
         }
-        subtitle="Tell us about your property and what you need. We'll schedule a time to walk the land and give you a straight, no-obligation estimate. Most assessments scheduled within 48 hours."
+        subtitle="Tell us about your property and what you need. We'll schedule a time to walk the land and give you a straight, no-obligation estimate. Scheduling depends on your project and availability."
       />
 
-      <section className="py-24 px-4 bg-background">
+      <section className="py-10 md:py-16 px-4 bg-background">
         <div className="container mx-auto max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-16">
           
           {/* FORM COLUMN */}
@@ -87,9 +102,9 @@ export default function Contact() {
                 <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
                   <CheckCircle2 className="w-10 h-10 text-primary" />
                 </div>
-                <h3 className="text-2xl font-serif font-bold text-secondary">Your Request Is Ready to Send</h3>
+                <h3 ref={successHeading} tabIndex={-1} className="text-2xl font-serif font-bold text-secondary">Your Request Has Been Received</h3>
                 <p className="text-lg text-secondary/80 max-w-md mx-auto">
-                  We've opened a pre-filled email addressed to our team — just hit send in your email app and we'll reach out within 1 business day to schedule your free on-site visit.
+                  Your estimate request has been saved. Our team will review your project and contact you to discuss the next step.
                 </p>
                 <p className="text-base text-secondary/70 max-w-md mx-auto">
                   Prefer to talk now? Call us directly at{" "}
@@ -98,26 +113,24 @@ export default function Contact() {
                 <Button onClick={() => setSubmitted(false)} variant="outline" className="mt-8">Submit Another Request</Button>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-6 animate-in fade-in duration-500">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="firstName">First Name *</Label>
-                    <Input id="firstName" name="firstName" required className="bg-background" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="lastName">Last Name *</Label>
-                    <Input id="lastName" name="lastName" required className="bg-background" />
-                  </div>
+              <form onFocus={() => { if (!formStarted.current) { formStarted.current = true; trackAcquisition("form_start"); } }} onSubmit={handleSubmit} className="space-y-6 animate-in fade-in duration-500">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Your Name *</Label>
+                  <Input id="name" name="name" autoComplete="name" required maxLength={200} className="bg-background" />
+                </div>
+                <div className="hidden" aria-hidden="true">
+                  <label htmlFor="website">Leave this empty</label>
+                  <input id="website" name="website" tabIndex={-1} autoComplete="off" />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="phone">Phone Number *</Label>
-                    <Input id="phone" name="phone" type="tel" required className="bg-background" />
+                    <Label htmlFor="phone">Phone Number (optional)</Label>
+                    <Input id="phone" name="phone" type="tel" autoComplete="tel" maxLength={40} className="bg-background" />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="email">Email Address *</Label>
-                    <Input id="email" name="email" type="email" required className="bg-background" />
+                    <Input id="email" name="email" type="email" autoComplete="email" maxLength={254} required className="bg-background" />
                   </div>
                 </div>
 
@@ -133,9 +146,9 @@ export default function Contact() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label>Approximate Acreage *</Label>
-                    <Select name="acreage" required>
-                      <SelectTrigger className="bg-background">
+                    <Label htmlFor="acreage">Approximate Acreage (optional)</Label>
+                    <Select name="acreage">
+                      <SelectTrigger id="acreage" className="bg-background">
                         <SelectValue placeholder="Select Acreage" />
                       </SelectTrigger>
                       <SelectContent>
@@ -147,9 +160,9 @@ export default function Contact() {
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label>Property Type *</Label>
-                    <Select name="propertyType" required>
-                      <SelectTrigger className="bg-background">
+                    <Label htmlFor="propertyType">Property Type (optional)</Label>
+                    <Select name="propertyType">
+                      <SelectTrigger id="propertyType" className="bg-background">
                         <SelectValue placeholder="Select Property Type" />
                       </SelectTrigger>
                       <SelectContent>
@@ -165,8 +178,8 @@ export default function Contact() {
                 </div>
 
                 <div className="space-y-3 pt-2">
-                  <Label>Service Needed *</Label>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 bg-muted/50 rounded-lg border border-border">
+                  <Label id="services-label">Services Needed (optional)</Label>
+                  <div role="group" aria-labelledby="services-label" className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 bg-muted/50 rounded-lg border border-border">
                     {SERVICES.map((service, i) => (
                       <div key={i} className="flex items-center space-x-2">
                         <Checkbox id={`service-${i}`} name="service" value={service} />
@@ -183,24 +196,10 @@ export default function Contact() {
                   <Textarea id="project" name="project" rows={4} className="bg-background resize-y" placeholder="Any specific issues or timeline requirements?" />
                 </div>
 
-                <div className="space-y-2">
-                  <Label>How did you hear about us? (Optional)</Label>
-                  <Select name="referral">
-                    <SelectTrigger className="bg-background">
-                      <SelectValue placeholder="Select an option" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="search">Search Engine (Google)</SelectItem>
-                      <SelectItem value="social">Social Media</SelectItem>
-                      <SelectItem value="referral">Friend / Colleague</SelectItem>
-                      <SelectItem value="truck">Saw your trucks</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <Button type="submit" size="lg" className="w-full text-lg h-14 font-bold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg">
-                  Request My Free Estimate
+                <p className="text-sm text-secondary/80">We use these details to respond to your project inquiry. Please avoid including sensitive information.</p>
+                {error && <p role="alert" className="text-destructive font-medium">{error}</p>}
+                <Button disabled={pending} type="submit" size="lg" className="w-full text-lg h-14 font-bold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg">
+                  {pending ? "Sending request…" : "Request My Free Estimate"}
                 </Button>
               </form>
             )}
@@ -215,14 +214,14 @@ export default function Contact() {
                 <div className="flex items-start gap-4">
                   <Phone className="w-6 h-6 text-primary mt-1" />
                   <div>
-                    <p className="font-bold text-lg">+1 (704) 221-8928</p>
+                    <a className="font-bold text-lg" href={PHONE_HREF}>{PHONE_DISPLAY}</a>
                     <p className="text-white/60 text-sm">Call us direct</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
                   <Mail className="w-6 h-6 text-primary mt-1" />
                   <div>
-                    <p className="font-bold text-lg">info@p1landmanagement.com</p>
+                    <a className="font-bold text-lg" href={`mailto:${EMAIL}`}>{EMAIL}</a>
                     <p className="text-white/60 text-sm">Email us</p>
                   </div>
                 </div>
@@ -243,7 +242,7 @@ export default function Contact() {
               </div>
               <div className="pt-6 border-t border-white/20">
                 <p className="font-bold italic text-white/90">
-                  "We respond to all estimate requests within 1 business day. Most on-site visits scheduled within 48 hours."
+                  "Tell us about your property and we’ll discuss scope, availability, and next steps."
                 </p>
               </div>
             </div>
@@ -252,7 +251,7 @@ export default function Contact() {
               <h3 className="text-2xl font-serif font-bold text-secondary">What Happens After You Submit</h3>
               <ul className="space-y-4">
                 {[
-                  "One of our team members reviews your request and reaches out within 1 business day",
+                  "One of our team members reviews your request and contacts you",
                   "We schedule a free on-site visit at a time that works for you",
                   "We walk your property, assess the scope, and give you a clear, written estimate",
                   "No pressure, no obligation — just a straight answer on what your property needs and what it will cost"
@@ -289,7 +288,7 @@ export default function Contact() {
             </div>
             <div className="bg-card border border-border p-6 rounded-lg shadow-sm">
               <h4 className="font-bold text-lg text-secondary mb-2">How quickly can you start a project?</h4>
-              <p className="text-secondary/80 leading-relaxed">Timeline depends on project type and current schedule. After your estimate, we'll give you a realistic start date. Maintenance contracts can often begin within two weeks of signing.</p>
+              <p className="text-secondary/80 leading-relaxed">Timeline depends on project type and current schedule. After your estimate, we'll give you a realistic start date.</p>
             </div>
             <div className="bg-card border border-border p-6 rounded-lg shadow-sm">
               <h4 className="font-bold text-lg text-secondary mb-2">Do you offer ongoing maintenance contracts?</h4>
@@ -297,7 +296,7 @@ export default function Contact() {
             </div>
             <div className="bg-card border border-border p-6 rounded-lg shadow-sm">
               <h4 className="font-bold text-lg text-secondary mb-2">Are you licensed and insured?</h4>
-              <p className="text-secondary/80 leading-relaxed">Yes. P1 Land & Property Management is fully licensed and insured for all services we provide.</p>
+              <p className="text-secondary/80 leading-relaxed">Ask our team for current insurance documentation and any license information relevant to your project before work begins.</p>
             </div>
           </div>
         </div>

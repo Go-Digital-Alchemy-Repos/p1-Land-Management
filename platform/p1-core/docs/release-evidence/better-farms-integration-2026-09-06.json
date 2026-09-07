@@ -1,0 +1,50 @@
+{
+  "coreRevision": "aa6ef76d970a6f9a1a6302d7d326433e689e3240",
+  "coreWorkingChange": "e2e/pilot/launch.ts source pin updated to siteRevision",
+  "siteRevision": "8021f6bab7727b4ffd0614acea8d619ce39a3400",
+  "actualBrowserCasesPassed": 3,
+  "elapsedSeconds": 16.6,
+  "coreRuntime": "development application",
+  "siteRuntime": "compiled production application",
+  "productionChanges": false,
+  "forms": {
+    "contact-durable-receipts.json": {
+      "lostResponseSubmissionId": "a1f31144-7212-4931-9596-274df79e7f87",
+      "retrySubmissionId": "a1f31144-7212-4931-9596-274df79e7f87",
+      "countAfterRetry": 1,
+      "changedSubmissionId": "7bcd176c-4b20-40b1-aceb-6a5b7918dc08",
+      "countAfterChanged": 2,
+      "effects": [
+        {
+          "submissionId": "a1f31144-7212-4931-9596-274df79e7f87",
+          "effectId": "403e4dbc-b429-4531-bb0c-5e19665a6649",
+          "kind": "contact_message"
+        },
+        {
+          "submissionId": "7bcd176c-4b20-40b1-aceb-6a5b7918dc08",
+          "effectId": "a035db89-4ccb-48ff-aa44-7acfa1629e32",
+          "kind": "contact_message"
+        }
+      ]
+    },
+    "newsletter-durable-receipts.json": {
+      "lostResponseSubmissionId": "75efe94f-1687-4830-b4ce-4d54455b9311",
+      "retrySubmissionId": "75efe94f-1687-4830-b4ce-4d54455b9311",
+      "countAfterRetry": 1,
+      "changedSubmissionId": "16ad0d87-d3f2-4ca9-9391-15a11de41fbe",
+      "countAfterChanged": 2,
+      "effects": [
+        {
+          "submissionId": "75efe94f-1687-4830-b4ce-4d54455b9311",
+          "effectId": "e34b8a07-e0ee-4105-a737-256fb981c0d3",
+          "kind": "crm_intake"
+        },
+        {
+          "submissionId": "16ad0d87-d3f2-4ca9-9391-15a11de41fbe",
+          "effectId": "b39a1298-20a1-45fb-914a-97a7c4f3c8e7",
+          "kind": "crm_intake"
+        }
+      ]
+    }
+  }
+}

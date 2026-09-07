@@ -1,3 +1,4 @@
+import { Link } from "wouter";
 import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { PageHero } from "@/components/layout/PageHero";
@@ -52,22 +53,11 @@ export default function BlogPost() {
               The honest answer is that land clearing costs in South Carolina vary significantly depending on several factors. But understanding what drives that variation will help you budget accurately and avoid surprises when you start getting estimates.
             </p>
             <p>
-              This post breaks down the typical cost ranges for land clearing in Upstate SC, what factors move the number up or down, and how to evaluate competing bids when you start talking to contractors.
+              This post breaks down the cost considerations for land clearing in Upstate SC, what factors move the number up or down, and how to evaluate competing bids when you start talking to contractors.
             </p>
 
-            <h2>Typical Land Clearing Cost Ranges in South Carolina</h2>
-            <p>
-              Land clearing costs in South Carolina generally fall in the following ranges, depending on the density of vegetation and the clearing method used:
-            </p>
-            <ul>
-              <li><strong>Light clearing</strong> (brush, small trees, saplings): $1,000 – $2,500 per acre</li>
-              <li><strong>Moderate clearing</strong> (mixed brush and medium trees): $2,500 – $5,000 per acre</li>
-              <li><strong>Heavy clearing</strong> (dense timber, large trees, hardwoods): $5,000 – $10,000+ per acre</li>
-              <li><strong>Forestry mulching</strong> (all-in-one clearing method): $1,500 – $4,000 per acre</li>
-            </ul>
-            <p>
-              These are estimates, not guarantees. Every parcel is different. Steep slopes, wet ground, proximity to structures or utilities, access challenges, and soil type all affect the final cost.
-            </p>
+            <h2>Why a Per-Acre Price Needs a Site Assessment</h2>
+            <p>There is no verified P1 price schedule published here. Brush density, tree size, site access, ground conditions, stump removal, and debris handling change the scope. Request a written estimate for your parcel before setting a budget.</p>
 
             <h2>What Factors Affect Land Clearing Cost?</h2>
             
@@ -92,17 +82,17 @@ export default function BlogPost() {
 
             <h3>4. What Happens to the Debris</h3>
             <p>
-              If you're burning debris on site (where permitted), that's typically the cheapest option. If the contractor hauls it off, disposal fees add up quickly. Forestry mulching eliminates this cost entirely by processing everything in place.
+              Ask how debris will be handled and which disposal costs are included. Mulching may reduce hauling, but the appropriate approach depends on the vegetation and intended use of the cleared area. Confirm applicable requirements before any burning or disposal.
             </p>
 
             <h3>5. Post-Clearing Needs</h3>
             <p>
-              If your clearing project is followed immediately by grading, drainage work, or turf establishment, bundling these services with one contractor can reduce total project cost. A contractor who handles clearing, grading, and seeding has no mobilization gaps and can plan the clearing to optimize the subsequent work.
+              If your clearing project is followed immediately by grading, drainage work, or turf establishment, bundling these services with one contractor can reduce total project cost. A contractor who handles clearing, grading, and seeding can discuss the sequence and mobilization costs across the proposed work.
             </p>
 
             <h2>Getting an Accurate Estimate</h2>
             <p>
-              The only way to get an accurate land clearing estimate is to have a contractor walk your property. Photos and acreage numbers give a ballpark — but the actual terrain, slope, soil conditions, vegetation density, and access will be assessed on site. Any reputable contractor will do this assessment for free before providing a written bid.
+              The only way to get an accurate land clearing estimate is to have a contractor walk your property. Photos and acreage numbers give a ballpark — but the actual terrain, slope, soil conditions, vegetation density, and access will be assessed on site. Ask whether an assessment has a fee and what the written bid includes.
             </p>
             <p>
               When comparing bids, make sure you're comparing apples to apples: Does the bid include stump grinding? Debris hauling? Site cleanup? Will the cleared area be left at rough grade, or is fine grading a separate line item? These questions will surface the real differences between quotes.
@@ -119,6 +109,9 @@ export default function BlogPost() {
         </section>
       </article>
 
+      <aside className="container mx-auto max-w-4xl px-4 pb-12 text-lg">
+        <p>Planning work on your land? <Link href="/services/land-clearing" className="text-primary underline">Explore this service</Link> and <Link href="/contact" className="text-primary underline">request a property estimate</Link>.</p>
+      </aside>
       <FinalCTA />
     </Layout>
   );

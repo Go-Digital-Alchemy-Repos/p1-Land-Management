@@ -1,0 +1,38 @@
+# Deployment and support
+
+Status on 2026-09-07: reviewed preview is deployed to staging and the production dashboard hostname. Full launch acceptance remains pending provider, device and pilot gates.
+
+Railway project: `e83f79dd-d901-4ab1-836b-bdf272b58dc2` (p1-Land-Management).
+
+| Resource                             | Identifier                           |
+| ------------------------------------ | ------------------------------------ |
+| Production environment               | 6126e9ca-b071-4c41-b7c0-aa945fa37067 |
+| Dashboard web                        | 7d129f6d-9f9b-4790-b21c-d8919a0a079c |
+| Dashboard worker                     | 171f4abc-c24f-4924-bc06-abf0a75a4c15 |
+| Dashboard PostgreSQL (Postgres-EjJV) | 9488d9fe-6e0e-42c1-8965-8757a8b2a034 |
+| Private bucket                       | 85f53342-3f1e-4552-ad78-2dc686951479 |
+| Staging environment                  | 039000ad-9deb-448d-b340-ab84fc74ecd5 |
+| Staging web                          | 586fc0ae-a3e3-4520-8c6e-b4c64bd6f7a0 |
+| Staging DB (Postgres-x2kH)           | ad0db535-0f4d-4f5f-88eb-7e7522af8db9 |
+
+Production URL: https://dashboard.p1landmanagement.com. Cloudflare DNS task owns its CNAME/TXT. Staging URL: https://p1-dashboard-staging-dashboard-staging.up.railway.app. Marketing website/Core resources must not be modified by dashboard deployment.
+
+`node scripts/package-dashboard.mjs` creates an allowlisted temporary source snapshot, omitting environment files, website source/assets and Core. Explicitly target project/environment/service IDs on Railway commands. The Dockerfile is `artifacts/api-server/Dockerfile.dashboard`. New Railway services reject deprecated railway.json configuration: set service config through Railway tools/API. No dashboard railway.json is packaged; service settings are authoritative.
+
+Web start: `node dist/dashboard/main.js`; predeploy: `node dist/dashboard/migrate.js`; health: `/api/healthz`; port 8080. Worker start: `node dist/dashboard/worker.js`; deploy only after web migrations succeed. Required web environment: private `DASHBOARD_DATABASE_URL`, `DASHBOARD_ORIGIN`, random `BETTER_AUTH_SECRET`, random `INTEGRATION_ENCRYPTION_KEY`, NODE_ENV and storage credentials. Workers share database and provider/crypto secrets through Railway variable references. Keep staging synthetic and avoid persistent duplicate provider resources.
+
+Verify deployment status, health, setup behavior, TLS, authenticated no-store headers, deep links, static assets, provider redirects, uploads and webhook signatures before declaring release. Inspect logs without printing credentials or customer content. Roll back application deployment through Railway to the previously verified image; retain additive schema changes. Rehearse compatibility before production data is present.
+
+Production dashboard DB volume backup schedule has DAILY/WEEKLY/MONTHLY enabled. Provider schedule retention is **not a guarantee of 30 daily recovery points**; confirm/implement the proposed 30-day retention before acceptance. A synthetic local pg_dump/restore succeeded previously (6 migrations, 2 properties, 2 field events); this is not a deployed restore rehearsal. Initial targets remain <=24 hours server data loss and restoration within one business day. Backup failure alerts, provider disconnection alerts and operational support ownership still need verification.
+
+Owner authorized setup costs without another cost approval step. A source-backed assumption estimate is in [COSTS.md](COSTS.md); actual measured usage remains to be recorded from provider billing. Messaging, storage/egress, backups and QuickBooks subscription/payment eligibility are separate expenses.
+
+## Reviewed preview candidate
+
+Snapshot manifest: `preview-source-manifest.json` (SHA-256 `73b231fbf24132e4db951ca84f2e8f9d2eea12490f2e50c9c53eed228e619be8`). Staging deployment `d7ffd471-d0bd-4bf1-881d-89b98cb9cb72` reached SUCCESS. Health/setup, root/deep-link HTML, JS/CSS, logo and service worker returned200; anonymous clients/properties/file content returned401 with no-store. Browser rendered the supplied logo and fail-closed setup message.
+
+Production pre-initialization backup `71ace7f8-6a28-42ba-8b1c-5bdbcadc144e` was created and listed by Railway. The private bucket synthetic write/read test passed and removed only its own probe object. This validates S3 connectivity, not authenticated image-route end-to-end behavior. Production web deployment `34c4634a-8148-4ffd-a602-80c8558151fe` reached SUCCESS. Logs confirm migrations0001–0007 applied; production health/setup, deep links and assets returned200. Anonymous clients/files and unsigned QuickBooks webhook returned401 with no-store. Browser verified the custom domain; live SVG exactly matches the supplied file. Owner setup remains configured:false until owner email and email provider activation are available.
+
+Independent scoped reviews accepted the original six findings and two follow-ups; see `security-recheck-auth-files.md` and `security-recheck-api-qbo.md`. Parent independently reran the fresh synthetic suite (5 tests, no failures/skips, migration replay). No claim of complete provider/device/pilot acceptance is implied.
+
+Production worker deployment `28a3cb2b-9c33-45b0-92b6-2c98b7e077e6` reached SUCCESS; startup logs showed container start with no application error in the inspected output. Provider jobs cannot be proven without authorized credentials and test accounts.

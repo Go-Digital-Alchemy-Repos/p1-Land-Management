@@ -30,7 +30,7 @@ if (routes.length === 0) {
   throw new Error("No routes found in src/App.tsx");
 }
 
-const today = new Date().toISOString().split("T")[0];
+// Published CMS dates are added by the production content server. Do not invent modification dates at build time.
 
 const urls = routes
   .map((path) => {
@@ -39,7 +39,6 @@ const urls = routes
     return [
       "  <url>",
       `    <loc>${loc}</loc>`,
-      `    <lastmod>${today}</lastmod>`,
       `    <changefreq>weekly</changefreq>`,
       `    <priority>${priority}</priority>`,
       "  </url>",

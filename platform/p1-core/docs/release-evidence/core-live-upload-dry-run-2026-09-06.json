@@ -1,0 +1,31 @@
+{
+  "sourceCommit": "a006f36a3c4f37566c71b278d561844b45fb3b81",
+  "deploymentId": "b620280d-6445-4ba8-bb23-b6e9226391d9",
+  "recordObservationAt": "2026-09-06T01:04:09.314Z",
+  "artifactSha256": "6c1c584a8d74e95c34318d2f1264f9db328637b02d81b7bfdbd0d9819da2e95e",
+  "sourceBytes": 199788,
+  "verification": {
+    "exitCode": 0,
+    "results": [
+      {
+        "schemaVersion": 1,
+        "mode": "dry-run",
+        "planId": "241f66b679a75b138655322090126eabd8311a317f22ffc2d88ca4cb237aceff",
+        "complete": true,
+        "objectCount": 1,
+        "statuses": [
+          "would-copy"
+        ],
+        "sourceRecordVerified": true,
+        "writesPerformed": false
+      },
+      {
+        "temporaryRuntimeFilesRemoved": true
+      }
+    ]
+  },
+  "uploadsFrozen": false,
+  "cutoverBarrierEstablished": false,
+  "copyApproved": false,
+  "configurationChanges": false
+}

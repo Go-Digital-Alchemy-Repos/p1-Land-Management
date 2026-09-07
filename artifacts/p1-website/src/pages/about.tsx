@@ -17,7 +17,7 @@ export default function About() {
 
       {/* PAGE HERO */}
       <PageHero
-        eyebrow="About P1 · Est. 2009"
+        eyebrow="About P1"
         title={
           <>
             Built for the property owner who needs{" "}
@@ -39,10 +39,10 @@ export default function About() {
               P1 Land & Property Management was founded on a simple idea: that commercial, agricultural, and large residential landowners in the Carolinas deserve a single, capable contractor who can manage the full life of their property — from rough clearing to fine turf, from drainage repair to complete reconstruction.
             </p>
             <p>
-              We operate across two of the region's fastest-growing markets: the Greenville-Spartanburg corridor in Upstate South Carolina, and the greater Charlotte, North Carolina area. Our crews are equipped for heavy earthwork and trained for precision maintenance — the same team that clears 50 acres can turn around and seed it perfectly.
+              We operate across two of the region's fastest-growing markets: the Greenville-Spartanburg corridor in Upstate South Carolina, and the greater Charlotte, North Carolina area. Our services span land preparation and ongoing property maintenance.
             </p>
             <p>
-              Our clients include commercial property developers, farm owners, industrial site managers, HOAs managing large common areas, equestrian property owners, and rural landowners who simply want their land working for them, not against them.
+              Our services are intended for commercial property developers, farm owners, industrial site managers, HOAs managing large common areas, equestrian property owners, and rural landowners who simply want their land working for them, not against them.
             </p>
             <p className="font-bold text-secondary text-xl border-l-4 border-primary pl-6 py-2 mt-8">
               We don't take small residential lawn jobs. Our minimum is 1 acre, and our specialty is the kind of work that takes real equipment, real experience, and a real commitment to getting it done right.
@@ -96,11 +96,11 @@ export default function About() {
           </div>
           <div className="space-y-6">
             <h2 className="text-3xl font-serif font-bold text-secondary border-b border-border pb-4">
-              Licensed, Insured, and Ready
+              Discuss Your Property With P1
             </h2>
             <ul className="space-y-4">
               {[
-                "Fully licensed and insured",
+                "Discuss project requirements and documentation with our team",
                 "Commercial and agricultural property experience",
                 "Equipped for large-scale earthwork and fine maintenance",
                 "Serving both Upstate SC and Charlotte NC markets",
