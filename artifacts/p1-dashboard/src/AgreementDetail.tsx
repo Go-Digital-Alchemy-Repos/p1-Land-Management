@@ -2,12 +2,14 @@ import type {
   ServiceAgreement,
   ServiceAgreementFinancial,
   AgreementActivationPreview,
+  AgreementChargeHistory,
 } from "../../../lib/api-client-react/src/dashboard/models";
 import { useState, useRef } from "react";
 import {
   previewServiceAgreementActivation,
   activateServiceAgreement,
   cancelServiceAgreement,
+  listAgreementCharges,
 } from "@workspace/api-client-react/dashboard";
 import { agreementMoney } from "./agreement-ui";
 export function AgreementDetail({
@@ -33,7 +35,11 @@ export function AgreementDetail({
     [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
     [cancelDate, setCancelDate] = useState(""),
-    [reason, setReason] = useState("");
+    [reason, setReason] = useState(""),
+    [chargeHistory, setChargeHistory] = useState<AgreementChargeHistory | null>(
+      null,
+    ),
+    [chargeCursor, setChargeCursor] = useState<string | null>(null);
   const pending = useRef(false);
   const financial = "version" in agreement;
   async function action(fn: () => Promise<void>) {
@@ -54,6 +60,32 @@ export function AgreementDetail({
       onBusy(false);
       setBusy(false);
     }
+  }
+  async function loadChargeHistory(more = false) {
+    if (more && !chargeCursor) return;
+    await action(async () => {
+      const page = await listAgreementCharges(agreement.id, {
+        limit: 25,
+        ...(more && chargeCursor ? { after: chargeCursor } : {}),
+      });
+      setChargeHistory((current) =>
+        more && current
+          ? {
+              ...page,
+              items: [
+                ...current.items,
+                ...page.items.filter(
+                  (item) =>
+                    !current.items.some(
+                      (existing) => existing.chargeId === item.chargeId,
+                    ),
+                ),
+              ],
+            }
+          : page,
+      );
+      setChargeCursor(page.nextCursor);
+    });
   }
   return (
     <article
@@ -140,7 +172,67 @@ export function AgreementDetail({
                 Review activation plan
               </button>
             )}
+            <button disabled={busy} onClick={() => void loadChargeHistory()}>
+              View prepared charge history
+            </button>
           </div>
+          {chargeHistory && (
+            <section
+              className="agreement-plan"
+              aria-label="Prepared charge history"
+            >
+              <h4>Prepared charge history</h4>
+              {!chargeHistory.items.length && (
+                <p>No charges have been prepared for this agreement.</p>
+              )}
+              {!!chargeHistory.items.length && (
+                <table>
+                  <caption>
+                    Charge history remains available after a keep-due review.
+                  </caption>
+                  <thead>
+                    <tr>
+                      <th>Prepared</th>
+                      <th>Source</th>
+                      <th>Amount</th>
+                      <th>Review state</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {chargeHistory.items.map((item) => (
+                      <tr key={item.chargeId}>
+                        <td>{new Date(item.createdAt).toLocaleString()}</td>
+                        <td>{item.sourceKey}</td>
+                        <td>{agreementMoney(item.amountCents)}</td>
+                        <td>
+                          {item.reviewState.replaceAll("_", " ")}
+                          {item.latestReceipt && (
+                            <small>
+                              {" "}
+                              ·{" "}
+                              {item.latestReceipt.outcome.replaceAll(
+                                "_",
+                                " ",
+                              )}{" "}
+                              review {item.latestReceipt.reviewVersion}
+                            </small>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+              {chargeCursor && (
+                <button
+                  disabled={busy}
+                  onClick={() => void loadChargeHistory(true)}
+                >
+                  Load more prepared charges
+                </button>
+              )}
+            </section>
+          )}
           {preview && (
             <section aria-label="Activation plan" className="agreement-plan">
               <h4>Review before activation</h4>

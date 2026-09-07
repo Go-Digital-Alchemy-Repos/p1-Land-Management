@@ -259,6 +259,28 @@ window.fetch = async (input, options) => {
       outcome: body.outcome,
       recordedAt: "2099-01-01T00:00:00.000Z",
     };
+  } else if (
+    path === "/api/v1/service-agreements/" + agreement.id + "/charges" &&
+    method === "GET"
+  ) {
+    data = {
+      items: prepared
+        ? [
+            {
+              chargeId: charge,
+              agreementId: agreement.id,
+              sourceKey: "period:" + period,
+              createdAt: "2099-01-01T00:00:00.000Z",
+              amountCents: 1000,
+              billingDraftId: draft,
+              reviewVersion,
+              reviewState,
+              latestReceipt: currentReview().latestReceipt,
+            },
+          ]
+        : [],
+      nextCursor: null,
+    };
   } else if (path.endsWith("/charges")) {
     prepared = true;
     data = {
