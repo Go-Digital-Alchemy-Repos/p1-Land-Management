@@ -135,3 +135,61 @@ test("generated identity transport preserves nullable role and optional MFA stat
     globalThis.fetch = original;
   }
 });
+
+test("generated property reads preserve role-minimized snapshots and unknown historical payloads", async () => {
+  const { listDashboardProperties, getPropertyTimeline, listPropertyFiles } =
+    await import("@workspace/api-client-react/dashboard");
+  const original = globalThis.fetch;
+  const property = {
+    id: "property",
+    client_id: "client",
+    name: "Fixture",
+    address: "Synthetic",
+    acreage: null,
+  };
+  const event = {
+    id: "event",
+    kind: "note",
+    payload: { historicalField: "retained" },
+    conflict: false,
+    published: true,
+    captured_at: "2026-09-07T09:00:00Z",
+    title: "Visit",
+  };
+  const file = {
+    id: "file",
+    name: "before",
+    mime: "image/webp",
+    classification: "before",
+    published: true,
+    created_at: "2026-09-07T09:00:00Z",
+  };
+  globalThis.fetch = async (input, init) => {
+    assert.equal(init?.method, "GET");
+    const path = String(input);
+    assert.ok(
+      [
+        "/api/v1/properties",
+        "/api/v1/properties/property/timeline",
+        "/api/v1/properties/property/files",
+      ].includes(path),
+    );
+    return Response.json(
+      path.endsWith("/timeline")
+        ? [event]
+        : path.endsWith("/files")
+          ? [file]
+          : [property],
+    );
+  };
+  try {
+    const [p] = await listDashboardProperties();
+    assert.deepEqual(p, property);
+    assert.equal(p.access_instructions, undefined);
+    assert.equal(p.acreage, null);
+    assert.deepEqual(await getPropertyTimeline("property"), [event]);
+    assert.deepEqual(await listPropertyFiles("property"), [file]);
+  } finally {
+    globalThis.fetch = original;
+  }
+});

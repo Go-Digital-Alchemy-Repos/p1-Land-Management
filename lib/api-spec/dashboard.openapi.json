@@ -810,6 +810,118 @@
           }
         }
       }
+    },
+    "/properties": {
+      "get": {
+        "operationId": "listDashboardProperties",
+        "description": "Operational unarchived properties. Client responses omit internal fields; crew only sees properties with active assigned work.",
+        "responses": {
+          "200": {
+            "description": "Authorized snapshot",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DashboardProperty"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Business role or current owner MFA required"
+          },
+          "404": {
+            "description": "Property not accessible"
+          }
+        }
+      }
+    },
+    "/properties/{id}/timeline": {
+      "get": {
+        "operationId": "getPropertyTimeline",
+        "description": "Latest 200 captured field events; clients require both event and work publication. Crew sees assigned work only.",
+        "responses": {
+          "200": {
+            "description": "Authorized snapshot",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PropertyTimelineEvent"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Business role or current owner MFA required"
+          },
+          "404": {
+            "description": "Property not accessible"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    },
+    "/properties/{id}/files": {
+      "get": {
+        "operationId": "listPropertyFiles",
+        "description": "Ready file metadata only; clients see published files and crew sees files for assigned work. Object keys and storage URLs are never included.",
+        "responses": {
+          "200": {
+            "description": "Authorized snapshot",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PropertyFile"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Business role or current owner MFA required"
+          },
+          "404": {
+            "description": "Property not accessible"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -1451,6 +1563,134 @@
             ]
           }
         }
+      },
+      "DashboardProperty": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "client_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "acreage": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "PostgreSQL numeric wire representation; do not coerce missing to zero"
+          },
+          "access_instructions": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "archived": {
+            "type": "boolean"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "client_id",
+          "name",
+          "address",
+          "acreage"
+        ],
+        "additionalProperties": false
+      },
+      "PropertyTimelineEvent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "kind": {
+            "enum": [
+              "note",
+              "issue",
+              "time",
+              "checklist",
+              "complete"
+            ],
+            "type": "string"
+          },
+          "payload": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Stored JSONB; shared field-event payload describes current writes, avoid narrowing historical reads without evidence"
+          },
+          "conflict": {
+            "type": "boolean"
+          },
+          "published": {
+            "type": "boolean"
+          },
+          "captured_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "payload",
+          "conflict",
+          "published",
+          "captured_at",
+          "title"
+        ],
+        "additionalProperties": false
+      },
+      "PropertyFile": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "mime": {
+            "type": "string"
+          },
+          "classification": {
+            "type": "string"
+          },
+          "published": {
+            "type": "boolean"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "mime",
+          "classification",
+          "published",
+          "created_at"
+        ],
+        "additionalProperties": false
       }
     }
   }

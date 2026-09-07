@@ -11,10 +11,13 @@ import type {
   CommercialInquiryDetail,
   CommercialInquiryPage,
   DashboardMe,
+  DashboardProperty,
   FieldSyncResponse,
   GetScheduleParams,
   GetSetupStatus200,
   ListCommercialInquiriesParams,
+  PropertyFile,
+  PropertyTimelineEvent,
   ReadinessResult,
   ReadinessUpdate,
   RescheduleWork,
@@ -292,6 +295,78 @@ export const getGetDashboardMeUrl = () => {
 export const getDashboardMe = async ( options?: RequestInit): Promise<DashboardMe> => {
 
   return customFetch<DashboardMe>(getGetDashboardMeUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getListDashboardPropertiesUrl = () => {
+
+
+
+
+  return `/api/v1/properties`
+}
+
+/**
+ * Operational unarchived properties. Client responses omit internal fields; crew only sees properties with active assigned work.
+ */
+export const listDashboardProperties = async ( options?: RequestInit): Promise<DashboardProperty[]> => {
+
+  return customFetch<DashboardProperty[]>(getListDashboardPropertiesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getGetPropertyTimelineUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/properties/${id}/timeline`
+}
+
+/**
+ * Latest 200 captured field events; clients require both event and work publication. Crew sees assigned work only.
+ */
+export const getPropertyTimeline = async (id: string, options?: RequestInit): Promise<PropertyTimelineEvent[]> => {
+
+  return customFetch<PropertyTimelineEvent[]>(getGetPropertyTimelineUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getListPropertyFilesUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/properties/${id}/files`
+}
+
+/**
+ * Ready file metadata only; clients see published files and crew sees files for assigned work. Object keys and storage URLs are never included.
+ */
+export const listPropertyFiles = async (id: string, options?: RequestInit): Promise<PropertyFile[]> => {
+
+  return customFetch<PropertyFile[]>(getListPropertyFilesUrl(id),
   {
     ...options,
     method: 'GET'

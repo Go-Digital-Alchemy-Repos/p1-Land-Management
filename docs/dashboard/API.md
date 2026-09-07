@@ -55,3 +55,5 @@ Scheduling review follow-up: `GET /work-orders/:id` authorizes the same client/c
 ### Shared identity contract for mobile
 
 `getDashboardMe` and `DashboardMe` are generated from `/api/v1/me` in the dashboard OpenAPI contract. A verified session may return `role: null` when its business profile is missing or inactive. `twoFactorEnabled` is optional and nullable because the handler forwards the identity provider value without normalization; consumers must compare it with `true`. `ownerMfaRequired` remains required. Reading this endpoint does not create session assurance or authorize operational data access.
+
+`listDashboardProperties`, `getPropertyTimeline`, and `listPropertyFiles` share the existing authorized read projections with native clients. Internal property fields are optional because they are omitted for clients; acreage is a nullable PostgreSQL numeric string. Timeline reads contain the latest 200 events and retain historical JSON payloads. File metadata omits object keys and bucket URLs. These endpoints remain online snapshots rather than a complete synchronization feed.
