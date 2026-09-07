@@ -8,6 +8,7 @@
 **/playwright-report
 **/*.log
 .agents
+artifacts/mockup-sandbox/public/images
 platform
 !platform/
 platform/*

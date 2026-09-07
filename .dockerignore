@@ -17,6 +17,7 @@ platform/p1-core/*
 platform/p1-core/script/*
 !platform/p1-core/script/p1-manifest-config.mjs
 .agents
+artifacts/mockup-sandbox/public/images
 attached_assets/content-extracted
 attached_assets/*.docx
 attached_assets/*.eps
