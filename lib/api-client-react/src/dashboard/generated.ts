@@ -21,6 +21,12 @@ import type {
   AgreementChargeReviewRecordInput,
   AgreementChargeSource,
   AgreementEstimateOption,
+  AgreementPreparationJob,
+  AgreementPreparationJobPage,
+  AgreementPreparationRetryInput,
+  AgreementPreparationRetryPreview,
+  AgreementPreparationRetryPreviewInput,
+  AgreementPreparationRetryReceipt,
   AgreementRecurrenceOption,
   AgreementVersion,
   CancelServiceAgreement,
@@ -38,6 +44,7 @@ import type {
   ListAgreementChargeQueueParams,
   ListAgreementChargeReviewsParams,
   ListAgreementChargesParams,
+  ListAgreementPreparationJobsParams,
   ListCommercialInquiriesParams,
   ListServiceAgreementsParams,
   PhotoUploadReceipt,
@@ -881,6 +888,110 @@ export const listAgreementChargeQueue = async (params?: ListAgreementChargeQueue
     method: 'GET'
 
 
+  }
+);}
+
+
+
+export const getListAgreementPreparationJobsUrl = (params?: ListAgreementPreparationJobsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/agreement-preparation-jobs?${stringifiedParams}` : `/api/v1/agreement-preparation-jobs`
+}
+
+/**
+ * Management and finance durable billing-draft preparation queue. This never posts an invoice, sends a message, or charges a payment method.
+ */
+export const listAgreementPreparationJobs = async (params?: ListAgreementPreparationJobsParams, options?: RequestInit): Promise<AgreementPreparationJobPage> => {
+
+  return customFetch<AgreementPreparationJobPage>(getListAgreementPreparationJobsUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getGetAgreementPreparationJobUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/agreement-preparation-jobs/${id}`
+}
+
+export const getAgreementPreparationJob = async (id: string, options?: RequestInit): Promise<AgreementPreparationJob> => {
+
+  return customFetch<AgreementPreparationJob>(getGetAgreementPreparationJobUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getPreviewAgreementPreparationRetryUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/agreement-preparation-jobs/${id}/retry-preview`
+}
+
+/**
+ * Zero-write eligibility evaluation before retrying a failed preparation job. It never calls accounting or messaging providers.
+ */
+export const previewAgreementPreparationRetry = async (id: string,
+    agreementPreparationRetryPreviewInput: AgreementPreparationRetryPreviewInput, options?: RequestInit): Promise<AgreementPreparationRetryPreview> => {
+
+  return customFetch<AgreementPreparationRetryPreview>(getPreviewAgreementPreparationRetryUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      agreementPreparationRetryPreviewInput,)
+  }
+);}
+
+
+
+export const getRetryAgreementPreparationUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/agreement-preparation-jobs/${id}/retries`
+}
+
+/**
+ * Records an idempotent office retry request for an eligible failed job. The worker creates a billing draft later; this endpoint never posts an invoice or sends a message.
+ */
+export const retryAgreementPreparation = async (id: string,
+    agreementPreparationRetryInput: AgreementPreparationRetryInput, options?: RequestInit): Promise<AgreementPreparationRetryReceipt> => {
+
+  return customFetch<AgreementPreparationRetryReceipt>(getRetryAgreementPreparationUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      agreementPreparationRetryInput,)
   }
 );}
 

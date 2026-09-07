@@ -1859,6 +1859,112 @@
         "description": "Management/finance current action queue. Capped, unmatched and prepared cancellation issues remain visible. Recheck eligibility before preparing."
       }
     },
+    "/agreement-preparation-jobs": {
+      "get": {
+        "operationId": "listAgreementPreparationJobs",
+        "description": "Management and finance durable billing-draft preparation queue. This never posts an invoice, sends a message, or charges a payment method.",
+        "parameters": [
+          {
+            "name": "agreementId",
+            "in": "query",
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": { "type": "string", "enum": ["pending", "processing", "sent", "failed"] }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "schema": { "type": "string", "maxLength": 1024 }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 25 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Newest-first page of preparation jobs",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AgreementPreparationJobPage" } } }
+          },
+          "400": { "description": "Invalid input or cursor" },
+          "401": { "description": "Verified session required" },
+          "403": { "description": "Owner, manager, or finance role required" }
+        }
+      }
+    },
+    "/agreement-preparation-jobs/{id}": {
+      "get": {
+        "operationId": "getAgreementPreparationJob",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current durable preparation-job state",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AgreementPreparationJob" } } }
+          },
+          "401": { "description": "Verified session required" },
+          "403": { "description": "Owner, manager, or finance role required" },
+          "404": { "description": "Preparation job not found" }
+        }
+      }
+    },
+    "/agreement-preparation-jobs/{id}/retry-preview": {
+      "post": {
+        "operationId": "previewAgreementPreparationRetry",
+        "description": "Zero-write eligibility evaluation before retrying a failed preparation job. It never calls accounting or messaging providers.",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AgreementPreparationRetryPreviewInput" } } }
+        },
+        "responses": {
+          "200": {
+            "description": "Current retry eligibility",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AgreementPreparationRetryPreview" } } }
+          },
+          "400": { "description": "Invalid request" },
+          "401": { "description": "Verified session required" },
+          "403": { "description": "Owner, manager, or finance role required" },
+          "404": { "description": "Preparation job not found" },
+          "409": { "description": "Preparation job changed or is not failed" }
+        }
+      }
+    },
+    "/agreement-preparation-jobs/{id}/retries": {
+      "post": {
+        "operationId": "retryAgreementPreparation",
+        "description": "Records an idempotent office retry request for an eligible failed job. The worker creates a billing draft later; this endpoint never posts an invoice or sends a message.",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AgreementPreparationRetryInput" } } }
+        },
+        "responses": {
+          "201": {
+            "description": "New retry request recorded",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AgreementPreparationRetryReceipt" } } }
+          },
+          "200": {
+            "description": "Idempotent historical retry receipt",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AgreementPreparationRetryReceipt" } } }
+          },
+          "400": { "description": "Invalid request" },
+          "401": { "description": "Verified session required" },
+          "403": { "description": "Owner, manager, or finance role required" },
+          "404": { "description": "Preparation job not found" },
+          "409": { "description": "Preparation job, retry operation, or eligibility changed" }
+        }
+      }
+    },
     "/recurring-services": {
       "get": {
         "operationId": "listAgreementRecurrences",
@@ -3471,6 +3577,107 @@
         },
         "required": ["items", "nextCursor"],
         "additionalProperties": false
+      },
+      "AgreementPreparationJobPage": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["items", "nextCursor"],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/AgreementPreparationJob" }
+          },
+          "nextCursor": { "type": ["string", "null"] }
+        }
+      },
+      "AgreementPreparationJob": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "jobId", "agreementId", "source", "status", "failureCode", "revision",
+          "retryEpoch", "attempts", "attemptsInEpoch", "availableAt", "createdAt",
+          "completedAt", "chargeId"
+        ],
+        "properties": {
+          "jobId": { "type": "string", "format": "uuid" },
+          "agreementId": { "type": ["string", "null"], "format": "uuid" },
+          "source": {
+            "anyOf": [
+              { "$ref": "#/components/schemas/AgreementPreparationPeriodSource" },
+              { "$ref": "#/components/schemas/AgreementPreparationWorkSource" },
+              { "type": "null" }
+            ]
+          },
+          "status": { "type": "string", "enum": ["pending", "processing", "sent", "failed"] },
+          "failureCode": { "type": ["string", "null"] },
+          "revision": { "type": "integer", "minimum": 1 },
+          "retryEpoch": { "type": "integer", "minimum": 0 },
+          "attempts": { "type": "integer", "minimum": 0 },
+          "attemptsInEpoch": { "type": "integer", "minimum": 0 },
+          "availableAt": { "type": "string", "format": "date-time" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "completedAt": { "type": ["string", "null"], "format": "date-time" },
+          "chargeId": { "type": ["string", "null"], "format": "uuid" }
+        }
+      },
+      "AgreementPreparationPeriodSource": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["periodStart"],
+        "properties": { "periodStart": { "type": "string", "format": "date" } }
+      },
+      "AgreementPreparationWorkSource": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["workOrderId"],
+        "properties": { "workOrderId": { "type": "string", "format": "uuid" } }
+      },
+      "AgreementPreparationRetryPreviewInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["expectedRevision"],
+        "properties": { "expectedRevision": { "type": "integer", "minimum": 1 } }
+      },
+      "AgreementPreparationRetryPreview": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "revision", "eligibilityFingerprint", "eligible", "alreadyPrepared",
+          "reasonCode", "sourceReceipt", "nextRetryEpoch"
+        ],
+        "properties": {
+          "revision": { "type": "integer", "minimum": 1 },
+          "eligibilityFingerprint": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+          "eligible": { "type": "boolean" },
+          "alreadyPrepared": { "type": "boolean" },
+          "reasonCode": { "type": ["string", "null"] },
+          "sourceReceipt": { "type": ["string", "null"], "format": "uuid" },
+          "nextRetryEpoch": { "type": "integer", "minimum": 1 }
+        }
+      },
+      "AgreementPreparationRetryInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["operationId", "expectedRevision", "eligibilityFingerprint", "reason"],
+        "properties": {
+          "operationId": { "type": "string", "format": "uuid" },
+          "expectedRevision": { "type": "integer", "minimum": 1 },
+          "eligibilityFingerprint": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+          "reason": { "type": "string", "minLength": 1, "maxLength": 2000 }
+        }
+      },
+      "AgreementPreparationRetryReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["created", "operationId", "jobId", "resultingRevision", "retryEpoch", "recordedAt"],
+        "properties": {
+          "created": { "type": "boolean" },
+          "operationId": { "type": "string", "format": "uuid" },
+          "jobId": { "type": "string", "format": "uuid" },
+          "resultingRevision": { "type": "integer", "minimum": 1 },
+          "retryEpoch": { "type": "integer", "minimum": 1 },
+          "recordedAt": { "type": "string", "format": "date-time" }
+        }
       },
       "AgreementPeriod": {
         "type": "object",

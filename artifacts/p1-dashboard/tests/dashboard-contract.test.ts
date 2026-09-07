@@ -6,6 +6,9 @@ import {
   getSchedule,
   rescheduleWork,
   updateWorkReadiness,
+  listAgreementPreparationJobs,
+  previewAgreementPreparationRetry,
+  retryAgreementPreparation,
 } from "@workspace/api-client-react/dashboard";
 test("generated dashboard client preserves cursor filters, explicit nulls and conflict errors", async () => {
   const original = globalThis.fetch;
@@ -88,6 +91,42 @@ test("generated dashboard client preserves cursor filters, explicit nulls and co
       version: 4,
       prerequisites: [{ label: "Equipment: inspection", done: true }],
       reason: "Inspection completed",
+    });
+    await listAgreementPreparationJobs({
+      agreementId: "00000000-0000-4000-8000-000000000001",
+      status: "failed",
+      after: "opaque_cursor",
+      limit: 25,
+    });
+    {
+      const url = new URL(calls.at(-1)!.url, "https://example.test");
+      assert.equal(url.pathname, "/api/v1/agreement-preparation-jobs");
+      assert.equal(url.searchParams.get("agreementId"), "00000000-0000-4000-8000-000000000001");
+      assert.equal(url.searchParams.get("status"), "failed");
+      assert.equal(url.searchParams.get("after"), "opaque_cursor");
+    }
+    await previewAgreementPreparationRetry("00000000-0000-4000-8000-000000000002", {
+      expectedRevision: 3,
+    });
+    assert.equal(calls.at(-1)!.init?.method, "POST");
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), {
+      expectedRevision: 3,
+    });
+    await retryAgreementPreparation("00000000-0000-4000-8000-000000000002", {
+      operationId: "00000000-0000-4000-8000-000000000003",
+      expectedRevision: 3,
+      eligibilityFingerprint: "a".repeat(64),
+      reason: "Manager corrected the prerequisite.",
+    });
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      "/api/v1/agreement-preparation-jobs/00000000-0000-4000-8000-000000000002/retries",
+    );
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), {
+      operationId: "00000000-0000-4000-8000-000000000003",
+      expectedRevision: 3,
+      eligibilityFingerprint: "a".repeat(64),
+      reason: "Manager corrected the prerequisite.",
     });
     fail = true;
     await assert.rejects(
