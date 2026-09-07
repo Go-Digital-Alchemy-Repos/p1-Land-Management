@@ -6,7 +6,7 @@
     "displayName": "P1 Land & Property Management",
     "source": {
       "repository": "https://github.com/Go-Digital-Alchemy-Repos/p1-Land-Management.git",
-      "revision": "eff1e04ea1569e7163c9b9d8b0a1b1ab7e2ce962"
+      "revision": "f936fbb9b53bf43b022cc9d14fd9d5cd90acafcc"
     },
     "owners": [
       {
@@ -1908,8 +1908,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f11dnzgx",
-            "label": "Text: P1 offers the complete range of land and property services — which means you can start a relati",
+            "path": "fozf3s5",
+            "label": "Text: P1 works across land and property needs, so you can begin a relationship at any stage of your p",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -2020,8 +2020,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f2f8aux",
-            "label": "Text: Free on-site property assessments",
+            "path": "fpllfmr",
+            "label": "Text: Property-assessment availability confirmed during review",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -2122,7 +2122,7 @@
           "f7yqm4j": "/assets/about-who-1280-kGfOCNSN.webp",
           "fn2vs21": "Experienced P1 land management crew with heavy equipment",
           "fromw0p": "Full-Service. Full Commitment.",
-          "f11dnzgx": "P1 offers the complete range of land and property services — which means you can start a relationship with us at any stage of your property's life and never need to call anyone else.",
+          "fozf3s5": "P1 works across land and property needs, so you can begin a relationship at any stage of your property's life and coordinate the agreed scope with one accountable team.",
           "f1jw7e3j": "Weekly and seasonal property maintenance contracts",
           "fxm4gre": "Land clearing and forestry mulching",
           "f1dotjd1": "Fine grading and site preparation",
@@ -2138,7 +2138,7 @@
           "f13vhr91": "Commercial and agricultural property experience",
           "f1mbbbbl": "Equipped for large-scale earthwork and fine maintenance",
           "ff3bodm": "Serving both Upstate SC and Charlotte NC markets",
-          "f2f8aux": "Free on-site property assessments",
+          "fpllfmr": "Property-assessment availability confirmed during review",
           "f1u1km71": "/assets/fine-grading-1280-CWwHPN9f.webp",
           "f5dus4q": "Start the Conversation",
           "f19zqrt0": "Have acreage that needs shaping? Let's walk it together.",
