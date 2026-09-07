@@ -7,7 +7,7 @@ Branch: `codex/p1-cms-crm`. Original public baseline: `5303da0`; copied Core sou
 | Workstream | Verified state | Remaining release gate |
 |---|---|---|
 | Public website |35 routes including `/commercial` deployed to staging from `592d70bed8aa297b1f2d1f2a1b65c27abcf7a4c2`; production still serves its previous release | Final staged browser/content acceptance, shared CMS identity, production gateway/cache provisioning and exact-source rollout |
-| Independent P1 Core | Staging `1bbbe2b6-16c3-47b9-a47c-2d5b164998b0` SUCCESS from `bc3f41483b557afaebcd74fec350b11bd3c49acc`; isolated CMS, managed forms, private proof and commercial sender tested | Production deployment, fresh production integration keys and owner/shared-identity acceptance |
+| Independent P1 Core | Staging `1bbbe2b6-16c3-47b9-a47c-2d5b164998b0` SUCCESS from `bc3f41483b557afaebcd74fec350b11bd3c49acc`; isolated CMS, managed forms, private proof and commercial sender tested | Production backend549d2b7a is deployed and runtime-verified; fresh production integration keys and owner/shared-identity acceptance remain |
 | Business dashboard | Production web `0c02c3e1-ad33-4650-865c-7bb618607119` and worker `9bec9270-89b9-4387-9ced-7c6c65bbdf68` SUCCESS; commercial receiver and owner MFA recovery live | Actual owner recovery/enrollment, subsequent functional releases, provider/device/pilot gates |
 | Shared identity | Better Auth dashboard identity exists; CMS federation task remains waiting on tool approval | Reviewed CMS permission/account mapping, common sign-in, revocation and native acceptance; do not bypass pending approval or required owner MFA |
 | Commercial prospect context | Reviewed `fc302b1` committed and pushed; isolated migrations, role/operational boundaries and conversion protection tested | Editing panel, combined build, staged migration/live checks and post-upgrade restore rehearsal |
@@ -34,7 +34,7 @@ Fresh Core and dashboard staging backups restored successfully into network-isol
 
 An active, verified dashboard owner and completed installation were observed after the earlier zero-owner check. The previous password is not recoverable; the login page offers password reset. Required owner MFA remains enforced. The deployed recovery screen guides enrollment/verification without granting business access or manufacturing session assurance. Actual owner completion remains unverified. CMS/dashboard common credentials are required but not live.
 
-Dedicated P1 database/storage/secrets are separate from original Core, which remains untouched. Mailgun delivery probes passed and Google mailbox records were retained. Production Core/public promotion is still outstanding; staging email failures were not represented as delivered mail. Production commercial signing keys have not been activated.
+Dedicated P1 database/storage/secrets are separate from original Core, which remains untouched. Mailgun delivery probes passed and Google mailbox records were retained. Production Core foundation is deployed (see p1-core-production.md); public promotion is still outstanding; staging email failures were not represented as delivered mail. Production commercial signing keys have not been activated.
 
 ## Scope still required
 
