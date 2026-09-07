@@ -84,6 +84,7 @@ export default function Gallery() {
       {/* FILTERS + GRID */}
       <section className="py-20 bg-background">
         <div className="site-shell space-y-10">
+          <h2 className="sr-only">Illustrated service categories</h2>
           {/* Service filters */}
           <div className="flex flex-wrap justify-center gap-3">
             {serviceFilters.map((f) => (

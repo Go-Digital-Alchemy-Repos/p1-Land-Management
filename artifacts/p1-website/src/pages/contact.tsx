@@ -279,23 +279,23 @@ export default function Contact() {
           
           <div className="grid gap-6">
             <div className="bg-card border border-border p-6 rounded-lg shadow-sm">
-              <h4 className="font-bold text-lg text-secondary mb-2">What is your minimum property size?</h4>
+              <h3 className="font-bold text-lg text-secondary mb-2">What is your minimum property size?</h3>
               <p className="text-secondary/80 leading-relaxed">P1 specializes in properties 1 acre and larger. We do not take standard residential lawn maintenance jobs.</p>
             </div>
             <div className="bg-card border border-border p-6 rounded-lg shadow-sm">
-              <h4 className="font-bold text-lg text-secondary mb-2">Do you serve both South Carolina and North Carolina?</h4>
+              <h3 className="font-bold text-lg text-secondary mb-2">Do you serve both South Carolina and North Carolina?</h3>
               <p className="text-secondary/80 leading-relaxed">Yes. We serve Upstate South Carolina (Greenville, Spartanburg, and surrounding areas) and the Charlotte, NC region (Charlotte, Concord, Mooresville, Lake Norman, Gastonia, and surrounding areas).</p>
             </div>
             <div className="bg-card border border-border p-6 rounded-lg shadow-sm">
-              <h4 className="font-bold text-lg text-secondary mb-2">How quickly can you start a project?</h4>
+              <h3 className="font-bold text-lg text-secondary mb-2">How quickly can you start a project?</h3>
               <p className="text-secondary/80 leading-relaxed">Timeline depends on project type and current schedule. After your estimate, we'll give you a realistic start date.</p>
             </div>
             <div className="bg-card border border-border p-6 rounded-lg shadow-sm">
-              <h4 className="font-bold text-lg text-secondary mb-2">Do you offer ongoing maintenance contracts?</h4>
+              <h3 className="font-bold text-lg text-secondary mb-2">Do you offer ongoing maintenance contracts?</h3>
               <p className="text-secondary/80 leading-relaxed">Yes. We offer weekly, bi-weekly, and monthly maintenance programs for commercial, agricultural, and large residential properties.</p>
             </div>
             <div className="bg-card border border-border p-6 rounded-lg shadow-sm">
-              <h4 className="font-bold text-lg text-secondary mb-2">Are you licensed and insured?</h4>
+              <h3 className="font-bold text-lg text-secondary mb-2">Are you licensed and insured?</h3>
               <p className="text-secondary/80 leading-relaxed">Ask our team for current insurance documentation and any license information relevant to your project before work begins.</p>
             </div>
           </div>

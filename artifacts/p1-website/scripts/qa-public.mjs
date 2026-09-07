@@ -20,7 +20,7 @@ try {
     if (path === "/") assert(/href="\/contact"[^>]*class="[^"]*inline-flex|class="[^"]*inline-flex[^>]*href="\/contact"/.test(result.html), "Slot CTA must retain button styling");
     assert(!/Marcus T\.|50-Acre Forestry|P1 took over our|fill-current|Est\. 2009|±0\.1/.test(result.html), `${path}: unverified proof`);
     assert(!/Yes\. P1 is licensed and insured for commercial work|Licensed and insured for commercial work/.test(result.html), `${path}: unsupported commercial credential claim`);
-    assert(!/never need to call anyone else|Free on-site property assessments/.test(result.html), `${path}: unsupported universal service claim`);
+    assert(!/never need to call anyone else|Free on-site property assessments|One contractor\. No gaps\./.test(result.html), `${path}: unsupported universal service claim`);
     for (const match of result.html.matchAll(/href="([^"#]+)(?:#[^"]*)?"/g)) {
       const href = match[1].replaceAll('&amp;', '&');
       if (!href.startsWith('/') || href.startsWith('//')) continue;
@@ -38,6 +38,13 @@ try {
     }
     const html = readFileSync(resolve(root, `dist/public/${path === '/' ? '' : path.slice(1) + '/'}index.html`), 'utf8');
     assert(!html.includes('GeneralContractor'), `${path}: competing business schema`);
+    assert(html.includes('href="#main-content"'), `${path}: skip link`);
+    const main = html.match(/<main\b[^>]*\bid="main-content"[^>]*>([\s\S]*?)<\/main>/)?.[1];
+    assert(main, `${path}: main landmark`);
+    const headings = [...main.matchAll(/<h([1-6])\b[^>]*>/g)].map((match) => Number(match[1]));
+    assert.equal(headings[0], 1, `${path}: main starts with h1`);
+    assert(!headings.some((level, index) => index > 0 && level - headings[index - 1] > 1), `${path}: heading level jump`);
+    for (const image of main.matchAll(/<img\b[^>]*>/g)) assert(/\balt="[^"]*"/.test(image[0]) || /\baria-hidden="true"/.test(image[0]), `${path}: image alternative text`);
     for (const image of html.matchAll(/<img\b[^>]*\bsrc="([^"]+)"[^>]*>/g)) {
       const src = image[1].split('?')[0];
       assert(!/\.(?:png|jpe?g|avif)$/i.test(src), `${path}: public raster image must use WebP (${src})`);

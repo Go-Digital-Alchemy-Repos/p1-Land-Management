@@ -33,7 +33,7 @@ export default function ServicesIndex() {
             </em>
           </>
         }
-        subtitle="From the first cut of land clearing to the ongoing maintenance of fine turf, P1 handles the full lifecycle of your large-acreage property in the Carolinas. One contractor. No gaps."
+        subtitle="From early land clearing to ongoing property maintenance, discuss the work your large-acreage property needs in the Carolinas and define a connected scope with P1."
         image={heroImg}
         imageAlt="Heavy equipment on a large property"
       />
@@ -41,6 +41,7 @@ export default function ServicesIndex() {
       {/* SERVICES GRID */}
       <section className="py-24 bg-background">
         <div className="site-shell">
+          <h2 className="sr-only">P1 land and property services</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               { title: "Commercial Property Management", desc: "Scheduled maintenance programs for commercial and business properties", icon: Building2, slug: "commercial-property-management" },
