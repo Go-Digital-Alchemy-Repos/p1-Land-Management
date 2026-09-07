@@ -8,3 +8,15 @@
 **/playwright-report
 **/*.log
 .agents
+platform
+!platform/
+platform/*
+!platform/p1-core/
+platform/p1-core/*
+!platform/p1-core/script/
+platform/p1-core/script/*
+!platform/p1-core/script/p1-manifest-config.mjs
+attached_assets/content-extracted
+attached_assets/*.docx
+attached_assets/*.eps
+attached_assets/Screenshot*
