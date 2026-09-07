@@ -62,7 +62,7 @@ test("mounted image upload limits and immutable retry metadata with real databas
   const base = `http://127.0.0.1:${(server.address() as any).port}/api/v1`;
   const bytes = await sharp({ create: { width: 4, height: 4, channels: 3, background: "red" } }).png().toBuffer();
   const different = await sharp({ create: { width: 4, height: 4, channels: 3, background: "blue" } }).png().toBuffer();
-  const upload = (id: string, extra: Record<string, string> = {}, body = bytes) => fetch(`${base}/files/${id}`, {
+  const upload = (id: string, extra: Record<string, string> = {}, body: Uint8Array = bytes) => fetch(`${base}/files/${id}`, {
     method: "POST", headers: { "content-type": "image/png", "x-test-user": manager, "x-p1-property": property, "x-p1-work": work, "x-p1-classification": "before", ...extra }, body: body as unknown as NonNullable<Parameters<typeof fetch>[1]>["body"],
   });
   try {
@@ -88,7 +88,7 @@ test("mounted image upload limits and immutable retry metadata with real databas
       for (const [headers, body] of [
         [{ "x-p1-work": work2 }, bytes], [{ "x-p1-classification": "after" }, bytes],
         [{ "x-test-user": other }, bytes], [{ "x-p1-property": property2, "x-p1-work": foreignWork }, bytes], [{}, different],
-      ] as [Record<string, string>, Buffer][]) {
+      ] as [Record<string, string>, Uint8Array][]) {
         const response = await upload(id, headers, body);
         assert.equal(response.status, 409); assert.equal(writes, 1);
       }

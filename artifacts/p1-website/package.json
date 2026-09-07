@@ -16,7 +16,7 @@
     "check:server": "node --test server/*.test.mjs"
   },
   "devDependencies": {
-    "sharp": "0.35.0",
+    "sharp": "0.35.4",
     "@hookform/resolvers": "^3.10.0",
     "@radix-ui/react-accordion": "^1.2.4",
     "@radix-ui/react-alert-dialog": "^1.1.7",
