@@ -1,3 +1,4 @@
+import { FederationPanel, useFederationStatus } from "./federation-panel";
 import { useLocation, Link } from "wouter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,7 +27,7 @@ const loginSchema = z.object({
 
 type LoginForm = z.infer<typeof loginSchema>;
 
-export default function LoginPage() {
+function LegacyLoginPage() {
   const [, setLocation] = useLocation();
   const { login } = useAuth();
   const { toast } = useToast();
@@ -209,4 +210,11 @@ export default function LoginPage() {
       </div>
     </PageLayout>
   );
+}
+
+export default function LoginPage(){
+ const status=useFederationStatus();
+ if(status.isLoading)return <p role="status">Loading sign-in options…</p>;
+ if(status.error)return <p role="alert">Sign-in options are temporarily unavailable. Refresh to try again.</p>;
+ return status.data?.enabled ? <FederationPanel/> : <LegacyLoginPage/>;
 }

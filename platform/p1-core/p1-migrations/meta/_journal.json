@@ -15,6 +15,13 @@
       "when": 1788758207911,
       "tag": "0001_commercial_handoff",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1788758207912,
+      "tag": "0002_identity_federation",
+      "breakpoints": true
     }
   ]
 }

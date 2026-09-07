@@ -1,3 +1,5 @@
+import { federationConfig, federationEnabled } from "../services/federation-client";
+import { readBootstrapProofConfig } from "../services/federation-bootstrap-proof";
 import type { Request, Response, NextFunction, RequestHandler } from "express";
 import helmet from "helmet";
 import { loadClientSiteManifest } from "../services/client-site-manifest.service";
@@ -8,6 +10,7 @@ const isDev = process.env.NODE_ENV !== "production";
 const originCheckExemptPaths = new Set<string>();
 
 export function enforceRequiredSecrets() {
+  if (federationEnabled()) { federationConfig(); readBootstrapProofConfig(process.env); }
   if (isDev) return;
 
   const required: Record<string, string | undefined> = {

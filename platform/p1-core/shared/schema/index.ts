@@ -343,3 +343,5 @@ export {
 
 export * from "./team-members";
 export * from "./client-stack-onboarding";
+
+export * from "./identity-federation";

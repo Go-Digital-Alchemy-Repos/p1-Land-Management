@@ -1,3 +1,5 @@
+import { federationEnabled } from "../../services/federation-client";
+import { hasFederationHistory, updateUnlinkedPassword } from "../../services/federation-runtime";
 import { Router } from "express";
 import { z } from "zod";
 import { inArray, eq } from "drizzle-orm";
@@ -266,6 +268,7 @@ router.delete(
       return;
     }
 
+    if (await hasFederationHistory(userId)) { res.status(409).json({message:"Linked account history must be retained; suspend access instead"}); return; }
     await ensureAdminGuardrails({ targetUserId: userId, deleting: true });
     await storage.users.deleteUser(userId);
     res.json({ message: "User deleted" });
@@ -310,11 +313,12 @@ router.post(
       return;
     }
 
+    if (federationEnabled() || await hasFederationHistory(user.id)) { res.status(403).json({message:"Use P1 Dashboard password recovery"}); return; }
     const { newPassword } = z.object({ newPassword: z.string().min(6).optional() }).parse(req.body);
 
     if (newPassword) {
       const hashed = await hashPassword(newPassword);
-      await storage.users.updateUser(user.id, { password: hashed });
+      await updateUnlinkedPassword(user.id, hashed);
       res.json({ message: "Password reset successfully" });
       return;
     }
