@@ -1,3 +1,4 @@
+import { ScheduleCalendar } from "./ScheduleCalendar";
 import { AssessmentAvailability } from "./AssessmentAvailability";
 import { ClientContacts } from "./ClientContacts";
 import React, { useEffect, useState } from "react";
@@ -1177,6 +1178,21 @@ function App() {
                   </button>
                 </div>
               )}
+              {view === "Schedule" && (
+                <ScheduleCalendar
+                  work={data.work || []}
+                  staff={data.staff || []}
+                  canManage={ops}
+                  onSelect={(id) => {
+                    const target = document.getElementById("work-" + id);
+                    target?.scrollIntoView({
+                      behavior: "smooth",
+                      block: "center",
+                    });
+                    target?.focus({ preventScroll: true });
+                  }}
+                />
+              )}
               <section className="panel">
                 {data.work?.some(
                   (work: any) =>
@@ -1192,7 +1208,12 @@ function App() {
                           operatingDate(work.scheduled_at) === fieldDay),
                     )
                     .map((w: any) => (
-                      <article className="work-card" key={w.id}>
+                      <article
+                        className="work-card"
+                        key={w.id}
+                        id={"work-" + w.id}
+                        tabIndex={-1}
+                      >
                         <div>
                           <span className={"badge " + w.status}>
                             {w.status.replaceAll("_", " ")}

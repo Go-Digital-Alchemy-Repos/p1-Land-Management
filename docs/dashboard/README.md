@@ -15,7 +15,7 @@ Implementation status: **preview deployed at https://dashboard.p1landmanagement.
 ## Remaining release work
 
 - Physical iPhone and Android offline/restart/low-storage/interrupted-upload acceptance; installed PWA and private S3 end-to-end tests.
-- Complete contract/renewal management, fixed-monthly/per-visit automatic billing preparation, project phase/prerequisite and progress accounting workflows, equipment readiness UI, usable schedule day/week interactions and full report publication workflows. Existing simple forms/data structures do not constitute completion of these requirements.
+- Complete contract/renewal management, fixed-monthly/per-visit automatic billing preparation, project phase/prerequisite and progress accounting workflows, equipment readiness UI, versioned schedule editing and crew availability conflict checks and full report publication workflows. Existing simple forms/data structures do not constitute completion of these requirements.
 - Assessment weekly windows, configurable duration/travel buffers, blackout management and retry-safe generation are deployed and independently reviewed (checkpoint4079996, migration0009). Multi-assessor allocation and booking-change/cancellation workflows still need product acceptance.
 - Broaden permission/integration coverage. The six original scoped security findings and two follow-ups have independent accepted rechecks; these are not an exhaustive security certification.
 - Full OpenAPI coverage and generation for office routes, component decomposition, accessibility/mobile acceptance, support action queues and operational alerts.
@@ -42,3 +42,5 @@ See [architecture](ARCHITECTURE.md), [access and initialization](AUTH.md), [API]
 ## Commercial sales addition
 
 The [master plan](../MASTER_PLAN.md) and [Commercial / Industrial Sales initiative](../initiatives/commercial-industrial-sales.md) add a property-centered commercial acquisition path, Commercial Site Assessment and future target-account pursuit. Plan additive prospect company/contact/site/opportunity relationships, durable Core intake handoff, explicit operational promotion and assessment/proposal/onboarding continuity. This addition preserves every remaining requirement above; it does not claim those features are implemented.
+
+Calendar follow-up: local day/week view includes New York navigation, assignment filters, unscheduled work and accessible job selection. Date helper tests cover midnight, DST, leap year and year boundaries. Browser fixture verified selection, day mode and unassigned filtering. Deployment pending; this view does not yet provide schedule editing or capacity validation, and the existing work-order response remains capped at500 records.
