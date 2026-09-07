@@ -5,6 +5,7 @@ import { deliverSms } from "./notifications";
 let stopping = false;
 process.on("SIGTERM", () => {
   stopping = true;
+  console.info(JSON.stringify({ event: "worker.stopping", signal: "SIGTERM" }));
 });
 async function deliver(job: {
   kind: string;
@@ -49,6 +50,7 @@ async function deliver(job: {
 let lastRecurring = 0,
   lastReconcile = 0;
 try {
+  console.info(JSON.stringify({ event: "worker.started" }));
   while (!stopping) {
     if (Date.now() - lastReconcile > 900000) {
       await pool.query(
@@ -57,7 +59,11 @@ try {
       lastReconcile = Date.now();
     }
     if (Date.now() - lastRecurring > 60000) {
-      await generateRecurring();
+      const generated = await generateRecurring();
+      if (generated)
+        console.info(
+          JSON.stringify({ event: "recurrence.generated", count: generated }),
+        );
       lastRecurring = Date.now();
     }
     const job = await transaction(async (c) => {
@@ -84,6 +90,9 @@ try {
         "UPDATE outbox SET status='sent',payload='{}'::jsonb,last_error=NULL,provider_message_id=$2 WHERE id=$1",
         [job.id, providerId || null],
       );
+      console.info(
+        JSON.stringify({ event: "delivery.sent", jobId: job.id, kind: job.kind }),
+      );
     } catch (error) {
       await pool.query(
         "UPDATE outbox SET status='failed',last_error=$2 WHERE id=$1",
@@ -95,5 +104,6 @@ try {
     }
   }
 } finally {
+  console.info(JSON.stringify({ event: "worker.stopped" }));
   await pool.end();
 }
