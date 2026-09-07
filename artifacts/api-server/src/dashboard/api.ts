@@ -54,6 +54,12 @@ api.post("/setup/complete", async (req, res) => {
     )
   )
     throw new HttpError(403, "Invalid or expired setup authorization");
+  const assurance = await pool.query(
+    "SELECT 1 FROM session_assurance WHERE session_id=$1",
+    [s.session.id],
+  );
+  if (!s.user.twoFactorEnabled || !assurance.rowCount)
+    throw new HttpError(409, "Enable and verify MFA before completing setup");
   await transaction(async (c) => {
     const r = await c.query(
       "SELECT completed_at FROM installation WHERE id=1 FOR UPDATE",
