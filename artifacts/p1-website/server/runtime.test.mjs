@@ -93,6 +93,7 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
   await t.test('favicon MIME, security headers and hashed-asset caching', async () => {
     const favicon = await request(port, '/favicon.svg'); assert.equal(favicon.status, 200); assert.equal(favicon.headers['content-type'], 'image/svg+xml');
     assert.equal(favicon.headers['x-content-type-options'], 'nosniff');
+    const faviconIco = await request(port, '/favicon.ico'); assert.equal(faviconIco.status, 200); assert.equal(faviconIco.headers['content-type'], 'image/x-icon');
     const home = await request(port, '/');
     const asset = home.body.match(/<script[^>]*src="(\/assets\/[^"?]+\.js)"/); assert(asset, 'Public entry asset');
     const script = await request(port, asset[1]); assert.equal(script.status, 200);

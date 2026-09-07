@@ -20,7 +20,7 @@ const indexableDeployment = (() => {
   try { return new URL(manifest.origins?.publicSite).origin === canonical; }
   catch { return false; }
 })();
-const mime = { '.html':'text/html; charset=utf-8', '.js':'text/javascript; charset=utf-8', '.css':'text/css; charset=utf-8', '.json':'application/json', '.xml':'application/xml', '.txt':'text/plain; charset=utf-8', '.svg':'image/svg+xml', '.webp':'image/webp', '.avif':'image/avif', '.jpg':'image/jpeg', '.png':'image/png', '.woff2':'font/woff2' };
+const mime = { '.html':'text/html; charset=utf-8', '.js':'text/javascript; charset=utf-8', '.css':'text/css; charset=utf-8', '.json':'application/json', '.xml':'application/xml', '.txt':'text/plain; charset=utf-8', '.svg':'image/svg+xml', '.ico':'image/x-icon', '.webp':'image/webp', '.avif':'image/avif', '.jpg':'image/jpeg', '.png':'image/png', '.woff2':'font/woff2' };
 const escape = x => String(x).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 function send(req,res,status,body,type='text/html; charset=utf-8',cache='no-cache') {
   res.statusCode=status; res.setHeader('Content-Type',type); res.setHeader('Cache-Control',cache);
