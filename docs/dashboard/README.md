@@ -5,7 +5,7 @@ Implementation status: **preview deployed at https://dashboard.p1landmanagement.
 ## Implemented and locally exercised
 
 - Invitation-gated Better Auth accounts, verified email, session-specific owner MFA, permanently consumed transactional bootstrap, client/crew authorization.
-- Office site/billing/primary contacts with optimistic edits, archival/restoration, audit records and role checks (follow-up implemented; deployment pending).
+- Office site/billing/primary contacts with optimistic edits, archival/restoration, audit records and role checks (deployed checkpoint8039f99).
 - Clients, properties, work orders, prerequisites, versioned field submissions, review and explicit publication, assessment-slot collision prevention.
 - Estimate decisions, lead conversion, estimate revisions/change orders, retry-safe billing drafts and cumulative estimate caps.
 - Recurring occurrence generation with month-end anchoring, pauses, independent billing-mode metadata, and New York daylight-saving conversion.

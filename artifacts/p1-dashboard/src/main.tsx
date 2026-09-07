@@ -314,7 +314,7 @@ function App() {
           name: values.name,
           email: values.email,
           password: values.password,
-          callbackURL: location.origin,
+          callbackURL: location.origin + "?signin=1",
           fetchOptions: {
             headers: {
               "x-p1-setup-code": values.code || "",
@@ -341,6 +341,16 @@ function App() {
       await session();
     });
   }
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (
+      boot?.configured &&
+      !boot.initialized &&
+      !params.has("reset") &&
+      !params.has("signin")
+    )
+      setAuthMode("signup");
+  }, [boot?.configured, boot?.initialized]);
   useEffect(() => {
     if (new URLSearchParams(location.search).has("reset"))
       setAuthMode("new-password");
@@ -619,7 +629,9 @@ function App() {
           <p className="eyebrow">WELCOME TO P1</p>
           <h2>
             {authMode === "signup"
-              ? "Create your account"
+              ? !boot?.initialized
+                ? "Set up your owner account"
+                : "Create your account"
               : ["totp", "recovery"].includes(authMode)
                 ? "Verify your sign-in"
                 : authMode === "reset"
@@ -631,7 +643,9 @@ function App() {
           <p className="muted">
             {boot && !boot.initialized
               ? boot.configured
-                ? "First-time setup is available to the designated owner."
+                ? authMode === "signup"
+                  ? "Use the designated owner email and setup code from your email. Choose a new dashboard password below. Then verify your email and enroll your authenticator to activate ownership."
+                  : "Already created your dashboard account? Sign in with the password you chose during setup. Otherwise, start owner setup below."
                 : "Owner setup is awaiting configuration. Account creation is currently unavailable."
               : "Sign in to your property operations workspace."}
           </p>
@@ -650,7 +664,13 @@ function App() {
             {!["totp", "recovery", "new-password"].includes(authMode) &&
               field("email", "Email address", "email")}
             {!["reset", "totp", "recovery"].includes(authMode) &&
-              field("password", "Password", "password")}
+              field(
+                "password",
+                authMode === "signup"
+                  ? "Choose a password (at least 12 characters)"
+                  : "Password",
+                "password",
+              )}
             {authMode === "signup" &&
               (boot?.initialized
                 ? field("invitation", "Invitation token", "text", false)
@@ -663,7 +683,10 @@ function App() {
                   : "Authenticator code",
               )}
             <button className="primary" type="submit">
-              Continue <ArrowUpRight size={17} />
+              {authMode === "signup"
+                ? "Create account and verify email"
+                : "Continue"}{" "}
+              <ArrowUpRight size={17} />
             </button>
           </form>
           <div className="auth-links">
@@ -684,8 +707,10 @@ function App() {
               }
             >
               {authMode === "login"
-                ? "Set up an invited account"
-                : "Back to sign in"}
+                ? !boot?.initialized
+                  ? "Start owner setup"
+                  : "Set up an invited account"
+                : "Already created an account? Sign in"}
             </button>
             <button onClick={() => setAuthMode("reset")}>
               Forgot password?
