@@ -29,3 +29,17 @@ Worker retries use existing bounded backoff and dead-letter behavior. Failed con
 Dashboard `0010_commercial_intake.sql` precedes receiver deployment. Core `0001_commercial_handoff.sql` adds frozen delivery bytes and acknowledgement fields; SSO uses0002+. Back up each isolated database before applying migrations. Deploy compatible dashboard first, Core next; provision separate credentials and verify a synthetic receipt end-to-end before production activation. Rollback disables delivery configuration and preserves all receipt/job/lead tables; do not drop populated schema or erase deduplication identities.
 
 This slice leaves full prospect company/contact/site relationships, reviewed historical backfill, live staged cross-service acceptance, and deployed staff UI acceptance to subsequent integration gates. An email being syntactically present is not proof of consent or verified deliverability; staff must establish those facts before conversion/outreach.
+
+## Explicit historical receipt backfill
+
+`POST /api/admin/form-delivery-jobs/commercial-backfill` requires the authenticated Core admin role (content editors are denied). Strict requests contain1–100 unique UUID receipt IDs. No wildcard, automatic sweep, public resubmit or new migration is used.
+
+Preview request: `{mode:"dry_run",receipts:[{submissionId}]}`. Its repeatable-read transaction is read-only: no job, receipt or audit writes. Response contains `{mode,outcome:"preview",items,counts}`. Each item includes receipt ID, status, normalized snapshot SHA256 when valid, and existing job ID when present. Names, email, phone, messages and attribution are not returned.
+
+Apply request: `{mode:"apply",receipts:[{submissionId,expectedSnapshotSha256}]}`. Every expected hash must come from reviewed preview output. Under sorted parent-form locks followed by sorted receipt locks, the action validates current form identity, original acceptance timestamp and the same strict commercial schema used for live acceptance. Fixed field ordering and sorted attribution produce stable hashes. A form rename, malformed/unsupported snapshot, missing receipt or changed hash rejects the whole batch with409; no jobs are inserted. Rejection is audited. Valid calls return200 with `outcome:"applied"`, including repeat calls that find existing jobs.
+
+Item statuses are `eligible`, `existing`, `enqueued`, `missing`, `not_commercial`, `invalid_snapshot`, or `snapshot_changed`. Counts are keyed by returned status. Existing jobs remain unchanged, including failed/completed jobs. Only missing jobs receive the normalized immutable inquiry payload, protected by the existing receipt/effect unique key. The worker later freezes wire bytes normally. Blank optional fields normalize to null; phone-only receipts retain null email. No original submission, CRM job or notification job is updated.
+
+Apply commits its actor-bound `commercial_backfill_applied` or `commercial_backfill_rejected` activity record in the same transaction. Details contain only receipt/job IDs, snapshot hashes and outcomes. Audit failure rolls back new jobs. Actor comes from the authenticated session, never the body. Malformed request envelopes return400 before execution. Review up to100 explicit IDs per action; recover failed delivery through the existing retry endpoint rather than backfill.
+
+This endpoint is implemented and tested with synthetic disposable data. Its availability does not authorize live historical execution: the Orchestrator must review dry-run output and release evidence before any staging/production backfill.

@@ -1,3 +1,5 @@
+import { requireRole } from "../../middleware/auth";
+import { backfillCommercialInquiries } from "../../services/commercial-backfill.service";
 import { Router } from "express";
 import { insertCmsFormSchema } from "@shared/schema";
 import { asyncHandler } from "../../middleware/error-handler";
@@ -5,6 +7,21 @@ import { storage } from "../../storage";
 import { paramString } from "../../utils/params";
 
 const router = Router();
+
+router.post(
+  "/form-delivery-jobs/commercial-backfill",
+  requireRole("admin"),
+  asyncHandler(async (req, res) => {
+    try {
+      const result = await backfillCommercialInquiries(req.body, req.user!.id);
+      res.status(result.outcome === "rejected" ? 409 : 200).json(result);
+    } catch (error) {
+      if (error instanceof Error && error.name === "ZodError")
+        return res.status(400).json({ message: "Invalid commercial backfill request" });
+      throw error;
+    }
+  }),
+);
 
 router.get(
   "/form-delivery-jobs",

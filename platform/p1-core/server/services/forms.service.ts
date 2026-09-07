@@ -1,4 +1,4 @@
-import { commercialInquirySchema } from "../../shared/commercial-intake-contract";
+import { commercialInquirySnapshot } from "./commercial-inquiry-snapshot";
 import { p1CommercialAssessmentSchema } from "./p1-commercial-assessment";
 import { p1EstimateSchema } from "./p1-estimate";
 import type { CmsForm, CmsFormField, CmsFormEffectPayload } from "@shared/schema";
@@ -360,27 +360,7 @@ async function buildFormEffects(form: CmsForm, data: Record<string, unknown>, ba
   const settings = normalizeFormSettings(form);
   const effects: CmsFormEffectPayload[] = [];
   if (form.slug === "p1-commercial-assessment") {
-    const optional = (key: string) => stringValue(data[key]) || null;
-    effects.push({
-      kind: "commercial_dashboard_intake",
-      inquiry: commercialInquirySchema.parse({
-        inquiryType: data.inquiryType,
-        name: data.name,
-        company: data.company,
-        email: optional("email"),
-        phone: optional("phone"),
-        title: optional("title"),
-        propertyName: optional("propertyName"),
-        address: data.address,
-        propertyType: optional("propertyType"),
-        acreage: optional("acreage"),
-        services: data.services,
-        projectStage: data.projectStage,
-        serviceTiming: data.serviceTiming,
-        message: optional("message"),
-        attribution: data.attribution || {},
-      }),
-    });
+    effects.push({ kind: "commercial_dashboard_intake", inquiry: commercialInquirySnapshot(data) });
   }
   if (settings.createCrmLead) effects.push({ kind: "crm_intake", formName: form.name });
   const contact = {

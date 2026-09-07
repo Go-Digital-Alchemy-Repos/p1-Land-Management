@@ -1,3 +1,8 @@
+import {
+  backfillCommercialInquiries,
+  commercialBackfillRequest,
+} from "../services/commercial-backfill.service";
+import { randomUUID } from "node:crypto";
 import { beforeAll, beforeEach, afterAll, describe, expect, it, vi } from "vitest";
 import { sql } from "drizzle-orm";
 
@@ -103,6 +108,188 @@ describe.skipIf(!testUrl)("managed form outbox disposable PostgreSQL", () => {
       forms.listDeliveryJobs({ cursor: first.nextCursor, status: "completed" }),
     ).rejects.toThrow();
     expect((await forms.listDeliveryJobs({ status: "completed" })).items).toHaveLength(0);
+  });
+  it("backfills reviewed commercial receipts exactly once with atomic audit and no changes during preview", async () => {
+    const actorId = randomUUID();
+    await pool.query(
+      "INSERT INTO users(id,email,password,role) VALUES($1,$2,'synthetic-unused','admin')",
+      [actorId, actorId + "@example.test"],
+    );
+    const commercial = await forms.create({
+      name: "Commercial",
+      slug: "p1-commercial-assessment",
+      fields: [],
+      settings: {},
+      kind: "custom",
+      isActive: true,
+    });
+    const data = {
+      inquiryType: "commercial_site_assessment",
+      name: "Test",
+      company: "Synthetic",
+      phone: "7045550100",
+      address: "Region",
+      services: ["general_site_assessment"],
+      projectStage: "unknown",
+      serviceTiming: "both",
+    };
+    const receipt = await forms.createSubmissionWithEffects({ formId: commercial.id, data }, [
+      { kind: "crm_intake", formName: "Commercial" },
+    ]);
+    const id = receipt.submission.id;
+    const before = await pool.query(
+      "SELECT * FROM cms_form_effect_jobs WHERE submission_id=$1 ORDER BY id",
+      [id],
+    );
+    const auditBefore = (await pool.query("SELECT count(*) FROM activity_logs")).rows[0].count;
+    const preview = await backfillCommercialInquiries(
+      { mode: "dry_run", receipts: [{ submissionId: id }] },
+      actorId,
+    );
+    expect(preview.items[0].status).toBe("eligible");
+    expect(
+      (
+        await pool.query("SELECT * FROM cms_form_effect_jobs WHERE submission_id=$1 ORDER BY id", [
+          id,
+        ])
+      ).rows,
+    ).toEqual(before.rows);
+    expect((await pool.query("SELECT count(*) FROM activity_logs")).rows[0].count).toBe(
+      auditBefore,
+    );
+    const request = {
+      mode: "apply",
+      receipts: [{ submissionId: id, expectedSnapshotSha256: preview.items[0].snapshotSha256 }],
+    };
+    const outcomes = await Promise.all([
+      backfillCommercialInquiries(request, actorId),
+      backfillCommercialInquiries(request, actorId),
+    ]);
+    expect(
+      outcomes
+        .flatMap((r) => r.items)
+        .map((i) => i.status)
+        .sort(),
+    ).toEqual(["enqueued", "existing"]);
+    expect((await backfillCommercialInquiries(request, actorId)).items[0].status).toBe("existing");
+    const jobs = (
+      await pool.query("SELECT * FROM cms_form_effect_jobs WHERE submission_id=$1", [id])
+    ).rows;
+    expect(jobs).toHaveLength(2);
+    expect(jobs.find((j) => j.deduplication_key === "crm_intake")).toEqual(before.rows[0]);
+    expect(
+      jobs.find((j) => j.deduplication_key === "commercial_dashboard_intake").payload.inquiry.email,
+    ).toBeNull();
+    const audits = (await pool.query("SELECT * FROM activity_logs WHERE user_id=$1", [actorId]))
+      .rows;
+    expect(audits).toHaveLength(3);
+    expect(audits.every((a) => a.action === "commercial_backfill_applied")).toBe(true);
+    expect(audits.every((a) => JSON.parse(a.details).items[0].submissionId === id)).toBe(true);
+    expect(audits.some((a) => a.details.includes("7045550100"))).toBe(false);
+    const invalid = await forms.createSubmissionWithEffects(
+      { formId: commercial.id, data: { ...data, attribution: { evil: { nested: true } } } },
+      [],
+    );
+    const ordinary = await accepted("ordinary-backfill");
+    const missing = randomUUID();
+    const rejected = await backfillCommercialInquiries(
+      {
+        mode: "apply",
+        receipts: [invalid.submission.id, ordinary.submission.id, missing].map((submissionId) => ({
+          submissionId,
+          expectedSnapshotSha256: "0".repeat(64),
+        })),
+      },
+      actorId,
+    );
+    expect(rejected.outcome).toBe("rejected");
+    expect(rejected.items.map((i) => i.status)).toEqual([
+      "invalid_snapshot",
+      "not_commercial",
+      "missing",
+    ]);
+    expect(
+      (
+        await pool.query(
+          "SELECT action FROM activity_logs WHERE user_id=$1 ORDER BY created_at DESC LIMIT 1",
+          [actorId],
+        )
+      ).rows[0].action,
+    ).toBe("commercial_backfill_rejected");
+    const fresh = await forms.createSubmissionWithEffects({ formId: commercial.id, data }, []);
+    const freshPreview = await backfillCommercialInquiries(
+      { mode: "dry_run", receipts: [{ submissionId: fresh.submission.id }] },
+      actorId,
+    );
+    const freshRequest = {
+      mode: "apply",
+      receipts: [
+        {
+          submissionId: fresh.submission.id,
+          expectedSnapshotSha256: freshPreview.items[0].snapshotSha256,
+        },
+      ],
+    };
+    const mixed = await backfillCommercialInquiries(
+      {
+        mode: "apply",
+        receipts: [
+          ...freshRequest.receipts,
+          { submissionId: missing, expectedSnapshotSha256: "0".repeat(64) },
+        ],
+      },
+      actorId,
+    );
+    expect(mixed.outcome).toBe("rejected");
+    expect(
+      (
+        await pool.query("SELECT count(*) FROM cms_form_effect_jobs WHERE submission_id=$1", [
+          fresh.submission.id,
+        ])
+      ).rows[0].count,
+    ).toBe("0");
+    await pool.query("UPDATE cms_forms SET slug='renamed-commercial' WHERE id=$1", [commercial.id]);
+    expect((await backfillCommercialInquiries(freshRequest, actorId)).items[0].status).toBe(
+      "not_commercial",
+    );
+    await pool.query("UPDATE cms_forms SET slug='p1-commercial-assessment' WHERE id=$1", [
+      commercial.id,
+    ]);
+    await pool.query(
+      'UPDATE cms_form_submissions SET data=data || \'{"company":"Changed"}\'::jsonb WHERE id=$1',
+      [fresh.submission.id],
+    );
+    expect((await backfillCommercialInquiries(freshRequest, actorId)).items[0].status).toBe(
+      "snapshot_changed",
+    );
+    await pool.query("UPDATE cms_form_submissions SET data=$2 WHERE id=$1", [
+      fresh.submission.id,
+      JSON.stringify(data),
+    ]);
+    await expect(backfillCommercialInquiries(freshRequest, randomUUID())).rejects.toThrow(); // Invalid audit actor FK must roll back insertion.
+    expect(
+      (
+        await pool.query("SELECT count(*) FROM cms_form_effect_jobs WHERE submission_id=$1", [
+          fresh.submission.id,
+        ])
+      ).rows[0].count,
+    ).toBe("0");
+    const hundred = Array.from({ length: 100 }, () => ({ submissionId: randomUUID() }));
+    expect(
+      (await backfillCommercialInquiries({ mode: "dry_run", receipts: hundred }, actorId)).items,
+    ).toHaveLength(100);
+    expect(
+      commercialBackfillRequest.safeParse({
+        mode: "dry_run",
+        receipts: [...hundred, { submissionId: randomUUID() }],
+      }).success,
+    ).toBe(false);
+    expect(
+      commercialBackfillRequest.safeParse({ mode: "dry_run", receipts: [hundred[0], hundred[0]] })
+        .success,
+    ).toBe(false);
+    await pool.query("DELETE FROM activity_logs WHERE user_id=$1", [actorId]);
+    await pool.query("DELETE FROM users WHERE id=$1", [actorId]);
   });
   beforeEach(async () => {
     await pool.query("TRUNCATE cms_forms, contact_messages, crm_leads CASCADE");
