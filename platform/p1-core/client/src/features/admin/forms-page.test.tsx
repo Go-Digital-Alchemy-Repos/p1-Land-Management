@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 
 import React, { act } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createRoot, type Root } from "react-dom/client";
 import AdminFormsPage from "@/features/admin/forms-page";
@@ -84,13 +85,21 @@ vi.mock("@/hooks/use-lock-conflict-guard", () => ({
 describe("AdminFormsPage", () => {
   let container: HTMLDivElement;
   let root: Root | null = null;
+  let queryClient: QueryClient;
 
   beforeEach(() => {
+    queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false, staleTime: Infinity } },
+    });
+    queryClient.setQueryData(["/api/admin/form-delivery-jobs", "actionable"], {
+      pages: [{ items: [], nextCursor: null }],
+      pageParams: [null],
+    });
     lockGuardMock.mockReset();
     editorLockState.isReadOnly = true;
     mutationStates = [];
     useQueryMock.mockImplementation(({ queryKey }: { queryKey: unknown[] }) => {
-      if (queryKey[0] === "/api/admin/forms") {
+      if (queryKey[0] === "/api/admin/forms" && queryKey.length === 1) {
         return { data: mockForms, isLoading: false };
       }
 
@@ -137,6 +146,7 @@ describe("AdminFormsPage", () => {
       root?.unmount();
     });
     root = null;
+    queryClient.clear();
     vi.unstubAllGlobals();
     container.remove();
     document.body.innerHTML = "";
@@ -146,9 +156,15 @@ describe("AdminFormsPage", () => {
     root = createRoot(container);
 
     await act(async () => {
-      root!.render(React.createElement(AdminFormsPage));
+      root!.render(
+        <QueryClientProvider client={queryClient}>
+          <AdminFormsPage />
+        </QueryClientProvider>,
+      );
     });
 
+    expect(document.body.textContent).toContain("Lead delivery monitoring");
+    expect(document.body.textContent).toContain("No commercial handoffs or failed delivery jobs.");
     expect(document.body.textContent).toContain("Save Form");
     expect(lockGuardMock).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -173,7 +189,11 @@ describe("AdminFormsPage", () => {
     root = createRoot(container);
 
     await act(async () => {
-      root!.render(React.createElement(AdminFormsPage));
+      root!.render(
+        <QueryClientProvider client={queryClient}>
+          <AdminFormsPage />
+        </QueryClientProvider>,
+      );
     });
 
     const saveButton = Array.from(document.body.querySelectorAll("button")).find((button) =>

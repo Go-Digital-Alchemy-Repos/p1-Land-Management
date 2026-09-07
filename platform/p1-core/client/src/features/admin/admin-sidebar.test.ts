@@ -33,7 +33,12 @@ describe("buildNavGroups", () => {
     const groups = buildNavGroups(enabled, adminUser, () => true, directorySettings);
     const content = groups.find((group) => group.label === "Content")!;
     expect(content.href).toBe("/admin/cms");
-    expect(content.items[0]).toMatchObject({ title: "P1 Website", href: "/admin/cms/website" });
+    expect(content.items.filter((item) => item.title === "P1 Website")).toMatchObject([
+      { title: "P1 Website", href: "/admin/cms/website" },
+    ]);
+    expect(content.items.filter((item) => item.title === "Private proof")).toMatchObject([
+      { title: "Private proof", href: "/admin/cms/private-proof" },
+    ]);
     expect(content.items.map((item) => item.title)).toEqual(
       expect.arrayContaining(["Events", "Careers", "Team"]),
     );
@@ -59,7 +64,7 @@ describe("buildNavGroups", () => {
     expect(
       disabled
         .flatMap((group) => group.items)
-        .some((item) => ["Events", "Careers", "Team"].includes(item.title)),
+        .some((item) => ["Private proof", "P1 Website", "Events", "Careers", "Team"].includes(item.title)),
     ).toBe(false);
   });
   it("places Event Settings under Content after Create Event", () => {
