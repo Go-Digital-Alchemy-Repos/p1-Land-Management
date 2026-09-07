@@ -1,3 +1,5 @@
+import { CommercialContextPanel } from "./CommercialContextPanel";
+import type { ContextTransport } from "./commercial-context.types";
 import {
   listCommercialInquiries,
   getCommercialInquiry,
@@ -39,9 +41,11 @@ const dateInput = (value: string | null) => {
 export function CommercialInbox({
   staff,
   api = defaultApi,
+  contextApi,
 }: {
   staff: Staff[];
   api?: CommercialInboxApi;
+  contextApi?: ContextTransport;
 }) {
   const [status, setStatus] = useState<Filters["status"] | "">(""),
     [owner, setOwner] = useState(""),
@@ -58,7 +62,8 @@ export function CommercialInbox({
   const detailElement = useRef<HTMLElement>(null);
   // Synchronous gate prevents detail loads and saves overlapping before React renders.
   const interactionBusy = useRef(false);
-  const detailsBusy = saving || detailLoading;
+  const [contextBusy, setContextBusy] = useState(false);
+  const detailsBusy = saving || detailLoading || contextBusy;
   const generation = useRef(0),
     detailGeneration = useRef(0);
   const owners = staff.filter((person) =>
@@ -313,7 +318,7 @@ export function CommercialInbox({
             </dl>
             <p className="commercial-message">{selected.description}</p>
             <form
-              key={selected.id + ":" + selected.version + ":" + detailRevision}
+              key={selected.id + ":" + detailRevision}
               onSubmit={(e) => {
                 e.preventDefault();
                 void save(e.currentTarget);
@@ -382,6 +387,18 @@ export function CommercialInbox({
                 Reload inquiry and discard draft
               </button>
             </form>
+            <CommercialContextPanel
+              key={selected.id}
+              leadId={selected.id}
+              leadVersion={selected.version}
+              api={contextApi}
+              disabled={saving || detailLoading}
+              onBusyChange={(busy) => { interactionBusy.current = busy; setContextBusy(busy); }}
+              onMutationAck={({leadId: id, expectedVersion, newVersion}) => {
+                setSelected((current) => current?.id === id && current.version === expectedVersion ? {...current, version: newVersion} : current);
+                setRows((current) => current.map(row => row.id === id && row.version === expectedVersion ? {...row, version: newVersion} : row));
+              }}
+            />
           </article>
         ) : (
           <p>Select an inquiry to review its details.</p>
