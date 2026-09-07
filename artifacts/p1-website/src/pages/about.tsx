@@ -59,7 +59,7 @@ export default function About() {
               Full-Service. Full Commitment.
             </h2>
             <p className="text-lg text-secondary/80">
-              P1 offers the complete range of land and property services — which means you can start a relationship with us at any stage of your property's life and never need to call anyone else.
+              P1 works across land and property needs, so you can begin a relationship at any stage of your property's life and coordinate the agreed scope with one accountable team.
             </p>
           </div>
           
@@ -104,7 +104,7 @@ export default function About() {
                 "Commercial and agricultural property experience",
                 "Equipped for large-scale earthwork and fine maintenance",
                 "Serving both Upstate SC and Charlotte NC markets",
-                "Free on-site property assessments"
+                "Property-assessment availability confirmed during review"
               ].map((item, i) => (
                 <li key={i} className="flex items-center gap-3 text-lg text-secondary/80 font-medium">
                   <div className="w-2 h-2 rounded-full bg-primary" />

@@ -20,6 +20,7 @@ try {
     if (path === "/") assert(/href="\/contact"[^>]*class="[^"]*inline-flex|class="[^"]*inline-flex[^>]*href="\/contact"/.test(result.html), "Slot CTA must retain button styling");
     assert(!/Marcus T\.|50-Acre Forestry|P1 took over our|fill-current|Est\. 2009|±0\.1/.test(result.html), `${path}: unverified proof`);
     assert(!/Yes\. P1 is licensed and insured for commercial work|Licensed and insured for commercial work/.test(result.html), `${path}: unsupported commercial credential claim`);
+    assert(!/never need to call anyone else|Free on-site property assessments/.test(result.html), `${path}: unsupported universal service claim`);
     for (const match of result.html.matchAll(/href="([^"#]+)(?:#[^"]*)?"/g)) {
       const href = match[1].replaceAll('&amp;', '&');
       if (!href.startsWith('/') || href.startsWith('//')) continue;
