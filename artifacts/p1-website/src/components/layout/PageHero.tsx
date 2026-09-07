@@ -48,7 +48,7 @@ export function PageHero({ eyebrow, title, subtitle, image, imageAlt = "", child
         style={{ background: "linear-gradient(to bottom, transparent, hsl(40 20% 98%))" }}
       />
 
-      <div className="relative mx-auto grid max-w-[1240px] grid-cols-12 gap-8 px-6 pb-24 pt-24 lg:pb-28 lg:pt-28">
+      <div className="site-shell relative grid grid-cols-12 gap-8 pb-24 pt-24 lg:pb-28 lg:pt-28">
         <div className={indexOfWork ? "col-span-12 lg:col-span-8" : "col-span-12"}>
           <span
             className="inline-flex items-center gap-2 font-sans text-[11px] font-bold uppercase text-clay"

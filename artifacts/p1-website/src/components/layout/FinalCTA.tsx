@@ -16,7 +16,7 @@ export function FinalCTA() {
       <div className="absolute inset-0" style={{ mixBlendMode: "soft-light" }}>
         <ContourField stroke={TAN} opacity={0.45} />
       </div>
-      <div className="relative mx-auto flex max-w-[1240px] flex-col items-center gap-8 px-6 py-20 text-center">
+      <div className="site-shell relative flex flex-col items-center gap-8 py-20 text-center">
         <span className="inline-flex items-center gap-2 font-sans text-[11px] font-bold uppercase text-clay" style={{ letterSpacing: "0.28em" }}>
           <span className="inline-block h-px w-7 bg-clay" />
           Start the Conversation

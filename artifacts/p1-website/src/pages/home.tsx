@@ -126,7 +126,7 @@ export default function Home() {
         </div>
         <div className="absolute inset-x-0 bottom-0 h-24" style={{ background: "linear-gradient(to bottom, transparent, hsl(40 20% 98%))" }} />
 
-        <div className="relative mx-auto grid max-w-[1240px] grid-cols-12 gap-8 px-6 pb-28 pt-24 lg:pt-28">
+        <div className="site-shell relative grid grid-cols-12 gap-8 pb-28 pt-24 lg:pt-28">
           <div className="col-span-12 lg:col-span-8">
             <div className="mb-7 flex items-center gap-4">
               <Kicker onDark>The Land Specialists</Kicker>
@@ -162,7 +162,7 @@ export default function Home() {
 
       {/* TRUST STRIP */}
       <section className="relative z-10 bg-background py-12">
-        <div className="mx-auto max-w-[1240px] px-6">
+        <div className="site-shell">
           <div
             className="grid grid-cols-2 overflow-hidden rounded-[4px] border bg-white md:grid-cols-4"
             style={{ borderColor: "hsl(215 30% 15% / 0.08)", boxShadow: "0 30px 60px -32px hsl(215 45% 15%), 0 8px 18px -12px hsl(215 40% 20% / 0.3)" }}
@@ -183,7 +183,7 @@ export default function Home() {
 
       {/* SERVICES */}
       <section className="relative bg-background py-24">
-        <div className="mx-auto max-w-[1240px] px-6">
+        <div className="site-shell">
           <div className="mb-14 flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
             <div>
               <Kicker>What We Do</Kicker>
@@ -235,7 +235,7 @@ export default function Home() {
         <div className="absolute inset-0 opacity-50">
           <ContourField stroke={TAN} opacity={0.16} />
         </div>
-        <div className="relative mx-auto grid max-w-[1240px] grid-cols-12 items-center gap-10 px-6">
+        <div className="site-shell relative grid grid-cols-12 items-center gap-10">
           <div className="col-span-12 lg:col-span-7">
             <div className="relative">
               <div className="absolute -left-4 -top-4 h-full w-full rounded-[4px] bg-primary" style={{ opacity: 0.9 }} />
@@ -288,7 +288,7 @@ export default function Home() {
           <ContourField stroke={TAN} opacity={0.4} />
         </div>
         <div className="absolute inset-x-0 top-0 h-px" style={{ background: "hsl(40 30% 90% / 0.1)" }} />
-        <div className="relative mx-auto max-w-[1240px] px-6">
+        <div className="site-shell relative">
           <div className="grid grid-cols-12 gap-10">
             <div className="col-span-12 lg:col-span-4">
               <Kicker onDark>Why P1</Kicker>
@@ -350,7 +350,7 @@ export default function Home() {
 
       {/* SERVICE AREAS */}
       <section className="bg-background pb-24">
-        <div className="mx-auto max-w-[1240px] px-6">
+        <div className="site-shell">
           <div className="mb-12 text-center">
             <Kicker>Where We Work</Kicker>
             <h2 className="mt-4 font-display text-[clamp(1.9rem,4vw,3rem)] font-light leading-[1.05] tracking-[-0.02em] text-secondary">

@@ -6,7 +6,7 @@ import { Phone, Mail } from "lucide-react";
 export function SiteFooter() {
   return (
     <footer className="bg-secondary text-secondary-foreground py-16 border-t border-border">
-      <div className="container mx-auto px-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-10">
+      <div className="site-shell grid grid-cols-2 gap-10 md:grid-cols-3 lg:grid-cols-6">
         {/* Brand + contact */}
         <div className="col-span-2 space-y-6">
           <Link href="/">
@@ -92,7 +92,7 @@ export function SiteFooter() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 mt-16 pt-8 border-t border-secondary-foreground/10 text-sm text-secondary-foreground/50 text-center">
+      <div className="site-shell mt-16 border-t border-secondary-foreground/10 pt-8 text-center text-sm text-secondary-foreground/50">
         © {new Date().getFullYear()} P1 Land & Property Management. Serving Upstate South Carolina & the Charlotte, NC region. All rights reserved.
       </div>
     </footer>

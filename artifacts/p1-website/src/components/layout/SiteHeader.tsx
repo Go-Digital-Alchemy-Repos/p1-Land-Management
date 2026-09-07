@@ -38,7 +38,7 @@ export function SiteHeader({ assessmentCta = false }: { assessmentCta?: boolean 
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/60 shadow-md shadow-black/5 bg-background">
-      <div className="container mx-auto px-4 h-20 flex items-center justify-between">
+      <div className="site-shell flex h-20 items-center justify-between">
         <Link href="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
           <img src={logo} alt="P1 Land & Property Management" className="h-10 md:h-12 w-auto" />
         </Link>

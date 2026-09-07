@@ -25,13 +25,19 @@ for (const page of pages(pageRoot)) {
   const source = readFileSync(page, "utf8");
   const relative = page.slice(root.length + 1);
   if (relative === "src/pages/home.tsx") {
-    assert.match(source, /max-w-\[1240px\]/, "Homepage must define the 1,240px baseline");
+    assert.match(source, /site-shell/, "Homepage must define the shared 1,240px baseline");
     continue;
   }
   assert.match(source, /site-shell/, `${relative} must use the shared public-page frame`);
 }
 
 const hero = readFileSync(join(root, "src/components/layout/PageHero.tsx"), "utf8");
-assert.match(hero, /max-w-\[1240px\]/, "PageHero must use the homepage’s outer frame");
+assert.match(hero, /site-shell/, "PageHero must use the homepage’s shared outer frame");
 
-console.log("PASS shared public-page width is 1,240px with 24px gutters across every route module.");
+for (const layoutFile of ["SiteHeader.tsx", "SiteFooter.tsx", "FinalCTA.tsx"]) {
+  const source = readFileSync(join(root, "src/components/layout", layoutFile), "utf8");
+  assert.match(source, /site-shell/, `${layoutFile} must use the shared public-page frame`);
+  assert.doesNotMatch(source, /container\s+mx-auto/, `${layoutFile} must not use Tailwind's independent container width`);
+}
+
+console.log("PASS all public route, header, footer and CTA frames use 1,240px width with 24px responsive gutters.");
