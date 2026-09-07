@@ -6,10 +6,10 @@ Branch: `codex/p1-cms-crm`. Original public baseline: `5303da0`; copied Core sou
 
 | Workstream | Verified state | Remaining release gate |
 |---|---|---|
-| Public website |35 routes including `/commercial` deployed to staging from `03ba5b800937e32140170e68641d15a7326e786d`; production still serves its previous release | Final staged browser/content acceptance, shared CMS identity, production gateway/cache provisioning and exact-source rollout |
+| Public website |35 routes including `/commercial` deployed to staging from `c3955c1b8ff6275aa452ac60d5a44de00d77e7e7`; production still serves its previous release | Final staged browser/content acceptance, shared CMS identity, production gateway/cache provisioning and exact-source rollout |
 | Independent P1 Core | Staging `1bbbe2b6-16c3-47b9-a47c-2d5b164998b0` SUCCESS from `bc3f41483b557afaebcd74fec350b11bd3c49acc`; isolated CMS, managed forms, private proof and commercial sender tested | Production backend549d2b7a is deployed and runtime-verified; configured signing keys await activation; owner/shared-identity acceptance remains |
 | Business dashboard | Production web `f9572277-11f0-4900-bbc7-36f23fe7955e` and worker `3e979b6e-87e1-4395-9979-6d89f2476974` SUCCESS at source `bc7d3a6`; commercial intake, prospect guards, context and reviewed upload fixes live | Actual owner recovery/enrollment, subsequent functional releases, provider/device/pilot gates |
-| Shared identity | Better Auth dashboard identity exists; CMS federation task remains waiting on tool approval | Reviewed CMS permission/account mapping, common sign-in, revocation and native acceptance; do not bypass pending approval or required owner MFA |
+| Shared identity | Better Auth dashboard provider and Core federation consumer are implemented and independently verified in source; no paired live federation deployment has occurred | Configure separate staging credentials and exact callback origins, back up both P1 databases, then pass paired browser sign-in, linking, MFA, revocation, outage and preview acceptance before enabling it |
 | Commercial prospect context | Reviewed `fc302b1` committed and pushed; isolated migrations, role/operational boundaries and conversion protection tested | Reviewed panel7ef0ae2 and migration0011 passed staging UI/API and restored-copy checks; production promotion and full assessment/onboarding remain |
 | Dispatch readiness | Reviewed484f953 passed combined tests and staging readiness update/conflict/start checks | Production promotion and wider operational acceptance |
 
