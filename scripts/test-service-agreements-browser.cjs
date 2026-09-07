@@ -167,6 +167,20 @@ const fs = require("fs");
     );
     await p
       .getByRole("button", {
+        name: "View prepared charge history",
+        exact: true,
+      })
+      .click();
+    check(
+      (
+        await p
+          .getByRole("region", { name: "Prepared charge history" })
+          .innerText()
+      ).includes("correction required"),
+      "Correction history remains discoverable from the agreement",
+    );
+    await p
+      .getByRole("button", {
         name: "Create successor with new approval",
         exact: true,
       })
