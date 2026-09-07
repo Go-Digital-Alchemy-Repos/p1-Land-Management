@@ -36,12 +36,14 @@ import type {
   BillingDraft,
   BookAssessmentSlot,
   CancelServiceAgreement,
+  ClientContact,
   CommercialFollowUp,
   CommercialInquiry,
   CommercialInquiryDetail,
   CommercialInquiryPage,
   CreateAssessmentBlackout,
   CreateBillingDraft,
+  CreateClientContact,
   CreateInspectionReport,
   CreateManualAssessmentSlot,
   CreateServiceAgreement,
@@ -77,6 +79,7 @@ import type {
   ServiceRequest,
   SyncFieldEventsBody,
   UpdateAccountMfaPolicy,
+  UpdateClientContact,
   UploadFieldPhotoHeaders,
   WorkOrder,
   WorkVersion
@@ -603,6 +606,84 @@ export const bookAssessmentSlot = async (id: string,
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
       bookAssessmentSlot,)
+  }
+);}
+
+
+
+export const getListClientContactsUrl = (clientId: string,) => {
+
+
+
+
+  return `/api/v1/clients/${clientId}/contacts`
+}
+
+/**
+ * Lists active and archived contacts for a client. Owner, manager, dispatch, sales, and finance roles only; client and crew accounts cannot read another client's contacts.
+ */
+export const listClientContacts = async (clientId: string, options?: RequestInit): Promise<ClientContact[]> => {
+
+  return customFetch<ClientContact[]>(getListClientContactsUrl(clientId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateClientContactUrl = (clientId: string,) => {
+
+
+
+
+  return `/api/v1/clients/${clientId}/contacts`
+}
+
+/**
+ * Creates an additional primary, billing, site, or other client contact and writes an audit record. Contact identity is kept distinct from dashboard login identities.
+ */
+export const createClientContact = async (clientId: string,
+    createClientContact: CreateClientContact, options?: RequestInit): Promise<ClientContact> => {
+
+  return customFetch<ClientContact>(getCreateClientContactUrl(clientId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createClientContact,)
+  }
+);}
+
+
+
+export const getUpdateClientContactUrl = (clientId: string,
+    id: string,) => {
+
+
+
+
+  return `/api/v1/clients/${clientId}/contacts/${id}`
+}
+
+/**
+ * Updates or archives a contact using its current version. A stale or cross-client update fails and does not overwrite contact history.
+ */
+export const updateClientContact = async (clientId: string,
+    id: string,
+    updateClientContact: UpdateClientContact, options?: RequestInit): Promise<ClientContact> => {
+
+  return customFetch<ClientContact>(getUpdateClientContactUrl(clientId,id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      updateClientContact,)
   }
 );}
 

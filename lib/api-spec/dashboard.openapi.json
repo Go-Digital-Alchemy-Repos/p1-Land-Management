@@ -978,6 +978,51 @@
         }
       }
     },
+    "/clients/{clientId}/contacts": {
+      "get": {
+        "operationId": "listClientContacts",
+        "description": "Lists active and archived contacts for a client. Owner, manager, dispatch, sales, and finance roles only; client and crew accounts cannot read another client's contacts.",
+        "parameters": [{ "name": "clientId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "responses": {
+          "200": { "description": "Client contacts", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/ClientContact" } } } } },
+          "401": { "description": "Verified session required" },
+          "403": { "description": "Office role required" },
+          "404": { "description": "Client not found" }
+        }
+      },
+      "post": {
+        "operationId": "createClientContact",
+        "description": "Creates an additional primary, billing, site, or other client contact and writes an audit record. Contact identity is kept distinct from dashboard login identities.",
+        "parameters": [{ "name": "clientId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateClientContact" } } } },
+        "responses": {
+          "201": { "description": "Contact created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ClientContact" } } } },
+          "400": { "description": "Invalid contact input" },
+          "401": { "description": "Verified session required" },
+          "403": { "description": "Office role required" },
+          "404": { "description": "Active client not found" }
+        }
+      }
+    },
+    "/clients/{clientId}/contacts/{id}": {
+      "post": {
+        "operationId": "updateClientContact",
+        "description": "Updates or archives a contact using its current version. A stale or cross-client update fails and does not overwrite contact history.",
+        "parameters": [
+          { "name": "clientId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } },
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UpdateClientContact" } } } },
+        "responses": {
+          "200": { "description": "Contact updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ClientContact" } } } },
+          "400": { "description": "Invalid contact input" },
+          "401": { "description": "Verified session required" },
+          "403": { "description": "Office role required" },
+          "404": { "description": "Active client not found" },
+          "409": { "description": "Contact changed or is unavailable; refresh before saving" }
+        }
+      }
+    },
     "/requests": {
       "get": {
         "operationId": "listServiceRequests",
@@ -2915,6 +2960,47 @@
         "required": ["propertyId"],
         "properties": {
           "propertyId": { "type": "string", "format": "uuid" }
+        }
+      },
+      "ClientContact": {
+        "type": "object",
+        "required": ["id", "client_id", "name", "email", "phone", "position", "kind", "archived", "version"],
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "client_id": { "type": "string", "format": "uuid" },
+          "name": { "type": "string", "minLength": 1, "maxLength": 200 },
+          "first_name": { "type": ["string", "null"] },
+          "last_name": { "type": ["string", "null"] },
+          "email": { "type": ["string", "null"], "format": "email" },
+          "phone": { "type": ["string", "null"], "maxLength": 50 },
+          "position": { "type": ["string", "null"], "maxLength": 200 },
+          "kind": { "type": "string", "enum": ["primary", "billing", "site", "other"] },
+          "archived": { "type": "boolean" },
+          "version": { "type": "integer", "minimum": 1 }
+        }
+      },
+      "CreateClientContact": {
+        "type": "object",
+        "required": ["name", "kind"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1, "maxLength": 200 },
+          "email": { "type": ["string", "null"], "format": "email", "maxLength": 254 },
+          "phone": { "type": ["string", "null"], "maxLength": 50 },
+          "position": { "type": ["string", "null"], "maxLength": 200 },
+          "kind": { "type": "string", "enum": ["primary", "billing", "site", "other"] }
+        }
+      },
+      "UpdateClientContact": {
+        "type": "object",
+        "required": ["name", "kind", "version"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1, "maxLength": 200 },
+          "email": { "type": ["string", "null"], "format": "email", "maxLength": 254 },
+          "phone": { "type": ["string", "null"], "maxLength": 50 },
+          "position": { "type": ["string", "null"], "maxLength": 200 },
+          "kind": { "type": "string", "enum": ["primary", "billing", "site", "other"] },
+          "version": { "type": "integer", "minimum": 1 },
+          "archived": { "type": "boolean", "default": false }
         }
       },
       "CreateServiceRequest": {
