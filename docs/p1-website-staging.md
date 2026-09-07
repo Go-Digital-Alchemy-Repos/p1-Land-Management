@@ -84,3 +84,17 @@ Dashboard receiver `e1912029-71bd-4a4f-949f-3cbc871f471d` reached SUCCESS from r
 Fresh staging-only HMAC key and source instance were configured in each service with deploys suppressed, then read back in memory to verify exact sender/receiver equality. No production configuration or provider/session secret was reused. Core sends only to the explicitly allowed dashboard staging host. Cross-service inquiry/delivery/follow-up acceptance is underway; historical recovery remains preview-only until its synthetic receipt hashes are reviewed.
 
 Owner login recovery6d1e024 plus test typing345db82 separately passed independent disposable tests and review. The change exposes enrollment/current-session assurance status and guides recovery while retaining the existing access guard; it does not change roles, bootstrap, account data or required MFA. Its production deployment is tracked by the dashboard task. This is separate from the unfinished shared CMS/dashboard identity work.
+
+
+Cross-service acceptance passed: receipts `731fb2cc-f655-42f4-9665-89a681db809e` and phone-only `170b55d8-6ae9-455c-88a4-05d813ef6302` returned201, with retry200 and the same IDs. Each has one Core Forms record, one Core CRM lead, one completed commercial job with validated acknowledgement, and one dashboard lead preserving project fields. Phone-only email remains null. Manager follow-up saved and stale-version retry returned409; the live Sales inbox displayed the selected inquiry and follow-up without JavaScript errors. Mobile private proof now fits390px in the live Core build.
+
+Historical receipt `e2d105f0-f226-43ec-8145-063385789a5a` was previewed only and is eligible for explicit recovery with snapshot SHA-256 `bd422293239e491b07002c0a705d27bc6956cb903a8f20bcda0dd81924cbd666`. No production outreach or historical resend occurred in these checks. Production dashboard receiver/recovery promotion is authorized after its separate staging recovery and backup checks; production Core/public rollout and shared identity remain outstanding.
+
+
+## Historical commercial recovery acceptance
+
+The Orchestrator authorized applying only staging receipt `e2d105f0-f226-43ec-8145-063385789a5a` with the reviewed snapshot hash above. The apply created job `9700c0e9-27a8-468e-b642-e2dc3398d31d`; repeating the same apply returned that existing job. It completed on attempt1 and produced one dashboard mapping. Forms receipts and the complete Core CRM API list were byte-equivalent before and after; the original CRM count remains1. The two actor-scoped backfill audit entries record enqueued/existing outcomes for that receipt and hash only.
+
+Read-only database inspection afterward corroborated exactly three jobs: original CRM completed, original notification still failed after five attempts, and the new commercial delivery completed. No notification was retriggered. A SQL before-snapshot was not captured; API before/after snapshots and subsequent SQL timestamps/audit support this bounded acceptance. Evidence files: `/tmp/p1-backfill-apply-acceptance.json` and `/tmp/p1-backfill-db-supplement.json`.
+
+The temporary dashboard staging manager was deactivated and all its sessions revoked after acceptance. Its revoked cookie returns401; the user row is retained as the audit actor. Cleanup evidence: `/tmp/p1-commercial-fixture-cleanup.json`. No production account, historical inquiry or outreach was changed. Production Core/public rollout and shared identity remain outstanding.
