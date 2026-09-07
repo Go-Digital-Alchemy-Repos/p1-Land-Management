@@ -6,7 +6,7 @@
     "displayName": "P1 Land & Property Management",
     "source": {
       "repository": "https://github.com/Go-Digital-Alchemy-Repos/p1-Land-Management.git",
-      "revision": "f936fbb9b53bf43b022cc9d14fd9d5cd90acafcc"
+      "revision": "b9681fd8c093465c14e7fdd518183ddaa287d6c1"
     },
     "owners": [
       {
@@ -3802,6 +3802,13 @@
             "maxLength": 12000
           },
           {
+            "path": "f7td0ou",
+            "label": "Text: Illustrated service categories",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
             "path": "fg8ivbr",
             "label": "Text: All",
             "type": "text",
@@ -4162,6 +4169,7 @@
           "fqvb1zc": "Service Illustrations",
           "faj733m": "Gallery",
           "ffz5ynh": "Illustrative imagery showing types of land management services. These images are not verified photographs of completed P1 projects.",
+          "f7td0ou": "Illustrated service categories",
           "fg8ivbr": "All",
           "foa1vas": "Land Clearing",
           "f18l26bw": "Grading & Site Prep",
@@ -4535,11 +4543,18 @@
             "maxLength": 2000
           },
           {
-            "path": "f1vgttg2",
-            "label": "Text: From the first cut of land clearing to the ongoing maintenance of fine turf, P1 handles the ful",
+            "path": "f1cbjdtd",
+            "label": "Text: From early land clearing to ongoing property maintenance, discuss the work your large-acreage p",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
+          },
+          {
+            "path": "f1u6jl7i",
+            "label": "Text: P1 land and property services",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
           },
           {
             "path": "f1xlfu9k",
@@ -4824,7 +4839,8 @@
           "f1cg8l8r": "Heavy equipment on a large property",
           "fhdjdpj": "What We Do",
           "f1238i19": "Your Property Needs",
-          "f1vgttg2": "From the first cut of land clearing to the ongoing maintenance of fine turf, P1 handles the full lifecycle of your large-acreage property in the Carolinas. One contractor. No gaps.",
+          "f1cbjdtd": "From early land clearing to ongoing property maintenance, discuss the work your large-acreage property needs in the Carolinas and define a connected scope with P1.",
+          "f1u6jl7i": "P1 land and property services",
           "f1xlfu9k": "/services/commercial-property-management",
           "f1mphmae": "Commercial Property Management",
           "f1xt829i": "Scheduled maintenance programs for commercial and business properties",
