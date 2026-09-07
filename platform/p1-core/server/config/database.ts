@@ -1,5 +1,7 @@
 import type { PoolConfig } from "pg";
 import { checkServerIdentity } from "node:tls";
+import { X509Certificate } from "node:crypto";
+import { isIP } from "node:net";
 
 /** One TLS authority: remove URL SSL options before node-postgres parses them. */
 export function databasePoolConfig(env: NodeJS.ProcessEnv): PoolConfig {
@@ -79,8 +81,25 @@ export function databasePoolConfig(env: NodeJS.ProcessEnv): PoolConfig {
             rejectUnauthorized: true,
             // pg omits SNI for IP hosts; bind certificate identity to the URL,
             // rather than allowing TLS to fall back to a socket/default host.
-            checkServerIdentity: (_hostname, certificate) =>
-              checkServerIdentity(url.hostname.replace(/^\[|\]$/g, ""), certificate),
+            checkServerIdentity: (_hostname, certificate) => {
+              const hostname = url.hostname.replace(/^\[|\]$/g, "");
+              if (isIP(hostname) !== 6) return checkServerIdentity(hostname, certificate);
+              // Node's IDNA normalization can discard literal IPv6 before matching.
+              // Read the signed IP SAN directly; chain verification remains enabled.
+              try {
+                if (certificate.raw && new X509Certificate(certificate.raw).checkIP(hostname)) {
+                  return undefined;
+                }
+              } catch {
+                // Missing/malformed certificates must fail closed without CN fallback.
+              }
+              return Object.assign(
+                new Error("Database certificate does not match the configured IPv6 address"),
+                {
+                  code: "ERR_TLS_CERT_ALTNAME_INVALID",
+                },
+              );
+            },
             ...(env.DATABASE_TLS_CA ? { ca: env.DATABASE_TLS_CA } : {}),
           }
         : false,
