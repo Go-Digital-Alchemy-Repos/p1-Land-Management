@@ -157,7 +157,12 @@ overrides:
   "@expo/ngrok-bin>@expo/ngrok-bin-win32-x64": "-"
   # drizzle-kit uses esbuild internally on an older version that's vulnerable, this overrides it
   "@esbuild-kit/esm-loader": "npm:tsx@^4.21.0"
-  esbuild: "0.27.3"
+  # Keep every build-tool copy beyond the advisory's Windows development-server range.
+  esbuild: "0.28.1"
+  # Express and body-parser both resolve these parsers transitively. Pin their
+  # patched releases until Express carries them in its own locked graph.
+  qs: "6.16.0"
+  body-parser: "2.3.0"
 
 allowBuilds:
   sharp: true
