@@ -941,6 +941,27 @@
         }
       }
     },
+    "/inspections": {
+      "get": {
+        "operationId": "listInspectionReports",
+        "description": "Owner, manager, and dispatch receive operational inspection reports. Clients receive only explicitly published reports for accessible properties and never the submitting staff user ID.",
+        "responses": { "200": { "description": "Authorized reports", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/InspectionReport" } } } } }, "401": { "description": "Verified session required" }, "403": { "description": "Role or current owner MFA denied" } }
+      },
+      "post": {
+        "operationId": "createInspectionReport",
+        "description": "Records an operational inspection report. It remains private until an owner or manager explicitly publishes it.",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateInspectionReport" } } } },
+        "responses": { "201": { "description": "Inspection created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreatedResource" } } } }, "400": { "description": "Invalid report" }, "401": { "description": "Verified session required" }, "403": { "description": "Role or current owner MFA denied" }, "404": { "description": "Operational property not accessible" } }
+      }
+    },
+    "/inspections/{id}/publish": {
+      "post": {
+        "operationId": "publishInspectionReport",
+        "description": "Owner or manager only. Makes a report client-visible; it does not alter work, files, billing, payment, or underlying property condition data. Repeating publication is safe.",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "responses": { "200": { "description": "Published or already published", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PublicationReceipt" } } } }, "401": { "description": "Verified session required" }, "403": { "description": "Owner or manager role required" }, "404": { "description": "Operational inspection not found" } }
+      }
+    },
     "/properties": {
       "get": {
         "operationId": "listDashboardProperties",
@@ -2688,6 +2709,47 @@
             "maxLength": 10000
           }
         }
+      },
+      "CreateInspectionReport": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["propertyId", "title", "findings"],
+        "properties": {
+          "propertyId": { "type": "string", "format": "uuid" },
+          "title": { "type": "string", "minLength": 1, "maxLength": 10000 },
+          "findings": { "type": "array", "maxItems": 100, "items": { "$ref": "#/components/schemas/InspectionFinding" } }
+        }
+      },
+      "InspectionFinding": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["label", "condition", "note"],
+        "properties": {
+          "label": { "type": "string", "minLength": 1, "maxLength": 200 },
+          "condition": { "type": "string", "enum": ["good", "monitor", "action_required", "not_assessed"] },
+          "note": { "type": "string", "maxLength": 5000 }
+        }
+      },
+      "InspectionReport": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "property_id", "title", "findings", "published", "created_at", "property_name"],
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "property_id": { "type": "string", "format": "uuid" },
+          "user_id": { "type": "string", "description": "Submitting staff identity; omitted from client responses." },
+          "title": { "type": "string" },
+          "findings": { "type": "array", "items": { "$ref": "#/components/schemas/InspectionFinding" } },
+          "published": { "type": "boolean" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "property_name": { "type": "string" }
+        }
+      },
+      "PublicationReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["ok"],
+        "properties": { "ok": { "type": "boolean" } }
       },
       "ServiceRequest": {
         "type": "object",

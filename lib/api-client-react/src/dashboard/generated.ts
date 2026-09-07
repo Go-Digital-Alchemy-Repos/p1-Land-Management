@@ -34,6 +34,7 @@ import type {
   CommercialInquiry,
   CommercialInquiryDetail,
   CommercialInquiryPage,
+  CreateInspectionReport,
   CreateServiceAgreement,
   CreateServiceRequest,
   CreatedResource,
@@ -43,6 +44,7 @@ import type {
   FieldSyncResponse,
   GetScheduleParams,
   GetSetupStatus200,
+  InspectionReport,
   ListAgreementChargeQueueParams,
   ListAgreementChargeReviewsParams,
   ListAgreementChargesParams,
@@ -52,6 +54,7 @@ import type {
   PhotoUploadReceipt,
   PropertyFile,
   PropertyTimelineEvent,
+  PublicationReceipt,
   ReadinessResult,
   ReadinessUpdate,
   RescheduleWork,
@@ -439,6 +442,79 @@ export const createServiceRequest = async (createServiceRequest: CreateServiceRe
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
       createServiceRequest,)
+  }
+);}
+
+
+
+export const getListInspectionReportsUrl = () => {
+
+
+
+
+  return `/api/v1/inspections`
+}
+
+/**
+ * Owner, manager, and dispatch receive operational inspection reports. Clients receive only explicitly published reports for accessible properties and never the submitting staff user ID.
+ */
+export const listInspectionReports = async ( options?: RequestInit): Promise<InspectionReport[]> => {
+
+  return customFetch<InspectionReport[]>(getListInspectionReportsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateInspectionReportUrl = () => {
+
+
+
+
+  return `/api/v1/inspections`
+}
+
+/**
+ * Records an operational inspection report. It remains private until an owner or manager explicitly publishes it.
+ */
+export const createInspectionReport = async (createInspectionReport: CreateInspectionReport, options?: RequestInit): Promise<CreatedResource> => {
+
+  return customFetch<CreatedResource>(getCreateInspectionReportUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createInspectionReport,)
+  }
+);}
+
+
+
+export const getPublishInspectionReportUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/inspections/${id}/publish`
+}
+
+/**
+ * Owner or manager only. Makes a report client-visible; it does not alter work, files, billing, payment, or underlying property condition data. Repeating publication is safe.
+ */
+export const publishInspectionReport = async (id: string, options?: RequestInit): Promise<PublicationReceipt> => {
+
+  return customFetch<PublicationReceipt>(getPublishInspectionReportUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
   }
 );}
 
