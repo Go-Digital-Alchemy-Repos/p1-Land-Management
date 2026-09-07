@@ -1,0 +1,36 @@
+{
+  "name": "@workspace/p1-native",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "index.ts",
+  "scripts": {
+    "start": "expo start --dev-client",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "typecheck": "tsc --noEmit",
+    "test": "node --experimental-transform-types --test tests/*.test.ts",
+    "export": "expo export --platform all"
+  },
+  "dependencies": {
+    "@workspace/api-zod": "link:../../lib/api-zod",
+    "expo": "57.0.20",
+    "expo-crypto": "57.0.2",
+    "expo-dev-client": "57.0.18",
+    "expo-file-system": "57.0.6",
+    "expo-image-manipulator": "57.0.16",
+    "expo-image-picker": "57.0.16",
+    "expo-secure-store": "57.0.3",
+    "expo-sqlite": "57.0.2",
+    "react": "19.2.3",
+    "react-native": "0.86.3",
+    "react-native-safe-area-context": "5.7.0"
+  },
+  "devDependencies": {
+    "@types/react": "~19.2.0",
+    "typescript": "~5.9.3"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  }
+}
