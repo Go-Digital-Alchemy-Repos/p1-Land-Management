@@ -29,11 +29,13 @@ import type {
   AgreementPreparationRetryReceipt,
   AgreementRecurrenceOption,
   AgreementVersion,
+  BillingDraft,
   CancelServiceAgreement,
   CommercialFollowUp,
   CommercialInquiry,
   CommercialInquiryDetail,
   CommercialInquiryPage,
+  CreateBillingDraft,
   CreateInspectionReport,
   CreateServiceAgreement,
   CreateServiceRequest,
@@ -515,6 +517,55 @@ export const publishInspectionReport = async (id: string, options?: RequestInit)
     method: 'POST'
 
 
+  }
+);}
+
+
+
+export const getListBillingDraftsUrl = () => {
+
+
+
+
+  return `/api/v1/billing`
+}
+
+/**
+ * Office roles receive operational billing drafts. Clients receive only posted, ownership-verified drafts for accessible properties. QuickBooks remains authoritative for posted accounting balances and payments.
+ */
+export const listBillingDrafts = async ( options?: RequestInit): Promise<BillingDraft[]> => {
+
+  return customFetch<BillingDraft[]>(getListBillingDraftsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateBillingDraftUrl = () => {
+
+
+
+
+  return `/api/v1/billing`
+}
+
+/**
+ * Creates an idempotent dashboard billing draft under the approved-estimate cap. It never posts, sends, or pays a QuickBooks invoice.
+ */
+export const createBillingDraft = async (createBillingDraft: CreateBillingDraft, options?: RequestInit): Promise<CreatedResource> => {
+
+  return customFetch<CreatedResource>(getCreateBillingDraftUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createBillingDraft,)
   }
 );}
 

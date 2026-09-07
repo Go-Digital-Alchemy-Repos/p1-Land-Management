@@ -962,6 +962,19 @@
         "responses": { "200": { "description": "Published or already published", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PublicationReceipt" } } } }, "401": { "description": "Verified session required" }, "403": { "description": "Owner or manager role required" }, "404": { "description": "Operational inspection not found" } }
       }
     },
+    "/billing": {
+      "get": {
+        "operationId": "listBillingDrafts",
+        "description": "Office roles receive operational billing drafts. Clients receive only posted, ownership-verified drafts for accessible properties. QuickBooks remains authoritative for posted accounting balances and payments.",
+        "responses": { "200": { "description": "Authorized billing drafts", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/BillingDraft" } } } } }, "401": { "description": "Verified session required" }, "403": { "description": "Role or current owner MFA denied" } }
+      },
+      "post": {
+        "operationId": "createBillingDraft",
+        "description": "Creates an idempotent dashboard billing draft under the approved-estimate cap. It never posts, sends, or pays a QuickBooks invoice.",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateBillingDraft" } } } },
+        "responses": { "201": { "description": "New or idempotently reused billing draft", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreatedResource" } } } }, "400": { "description": "Invalid draft" }, "401": { "description": "Verified session required" }, "403": { "description": "Owner, manager, or finance role required" }, "409": { "description": "Operation, approved estimate, or cap conflict" } }
+      }
+    },
     "/properties": {
       "get": {
         "operationId": "listDashboardProperties",
@@ -2718,6 +2731,37 @@
           "propertyId": { "type": "string", "format": "uuid" },
           "title": { "type": "string", "minLength": 1, "maxLength": 10000 },
           "findings": { "type": "array", "maxItems": 100, "items": { "$ref": "#/components/schemas/InspectionFinding" } }
+        }
+      },
+      "CreateBillingDraft": {
+        "type": "object",
+        "required": ["operationId", "propertyId", "estimateId", "title", "amountCents", "kind"],
+        "properties": {
+          "operationId": { "type": "string", "format": "uuid" },
+          "propertyId": { "type": "string", "format": "uuid" },
+          "estimateId": { "type": "string", "format": "uuid" },
+          "title": { "type": "string", "minLength": 1, "maxLength": 10000 },
+          "amountCents": { "type": "integer", "exclusiveMinimum": 0, "maximum": 10000000000 },
+          "kind": { "type": "string", "enum": ["service", "deposit", "progress", "final"] }
+        }
+      },
+      "BillingDraft": {
+        "type": "object",
+        "required": ["id", "property_id", "title", "amount_cents", "kind", "status", "created_at", "property_name"],
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "property_id": { "type": "string", "format": "uuid" },
+          "estimate_id": { "type": ["string", "null"], "format": "uuid" },
+          "title": { "type": "string" },
+          "amount_cents": { "type": "integer" },
+          "kind": { "type": "string", "enum": ["service", "deposit", "progress", "final"] },
+          "status": { "type": "string", "enum": ["draft", "approved", "posted", "failed"] },
+          "quickbooks_id": { "type": ["string", "null"] },
+          "balance_cents": { "type": ["integer", "null"] },
+          "payment_url": { "type": ["string", "null"] },
+          "ownership_verified": { "type": "boolean" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "property_name": { "type": "string" }
         }
       },
       "InspectionFinding": {
