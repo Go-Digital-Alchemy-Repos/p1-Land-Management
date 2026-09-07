@@ -1343,3 +1343,84 @@ export const agreementCharge = pgTable(
     ),
   ],
 );
+
+// Mirror of reviewed migration 0014; SQL migrations remain authoritative.
+export const coreFederationAuthorizationCode = pgTable(
+  "core_federation_authorization_code",
+  {
+    id: uuid().primaryKey().notNull(),
+    codeHash: text("code_hash").notNull(),
+    codeChallenge: text("code_challenge").notNull(),
+    clientId: text("client_id").notNull(),
+    redirectUri: text("redirect_uri").notNull(),
+    canonicalUserId: text("canonical_user_id").notNull(),
+    // Deliberately no foreign key: session deletion must revoke a grant while
+    // preserving its lifecycle record until the short retention window ends.
+    canonicalSessionId: text("canonical_session_id").notNull(),
+    ownerAttested: boolean("owner_attested").default(false).notNull(),
+    expiresAt: timestamp("expires_at", {
+      withTimezone: true,
+      mode: "string",
+    }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [
+    unique("core_federation_authorization_code_code_hash_key").on(t.codeHash),
+    index("core_federation_authorization_code_expiry_idx").on(t.expiresAt),
+    foreignKey({
+      columns: [t.canonicalUserId],
+      foreignColumns: [user.id],
+      name: "core_federation_authorization_code_canonical_user_id_fkey",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const coreFederationBrowserRequest = pgTable(
+  "core_federation_browser_request",
+  {
+    id: uuid().primaryKey().notNull(),
+    nonceHash: text("nonce_hash").notNull(),
+    codeChallenge: text("code_challenge").notNull(),
+    clientId: text("client_id").notNull(),
+    redirectUri: text("redirect_uri").notNull(),
+    state: text().notNull(),
+    expiresAt: timestamp("expires_at", {
+      withTimezone: true,
+      mode: "string",
+    }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [
+    unique("core_federation_browser_request_nonce_hash_key").on(t.nonceHash),
+    index("core_federation_browser_request_expiry_idx").on(t.expiresAt),
+  ],
+);
+
+export const coreFederationGrant = pgTable(
+  "core_federation_grant",
+  {
+    id: uuid().primaryKey().notNull(),
+    canonicalUserId: text("canonical_user_id").notNull(),
+    canonicalSessionId: text("canonical_session_id").notNull(),
+    ownerAttested: boolean("owner_attested").default(false).notNull(),
+    expiresAt: timestamp("expires_at", {
+      withTimezone: true,
+      mode: "string",
+    }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [
+    index("core_federation_grant_expiry_idx").on(t.expiresAt),
+    foreignKey({
+      columns: [t.canonicalUserId],
+      foreignColumns: [user.id],
+      name: "core_federation_grant_canonical_user_id_fkey",
+    }).onDelete("cascade"),
+  ],
+);

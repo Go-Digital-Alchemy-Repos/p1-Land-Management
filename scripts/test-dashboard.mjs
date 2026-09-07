@@ -46,7 +46,17 @@ try {
   };
   // Do not inherit any real provider credentials into a synthetic test run.
   for (const name of Object.keys(env))
-    if (/^(MAILGUN_|TWILIO_|QBO_|S3_)/.test(name)) delete env[name];
+    if (/^(MAILGUN_|TWILIO_|QBO_|S3_|CORE_FEDERATION_)/.test(name))
+      delete env[name];
+  Object.assign(env, {
+    CORE_FEDERATION_ENABLED: "true",
+    CORE_FEDERATION_CLIENT_ID: "p1-core-test-client",
+    CORE_FEDERATION_CLIENT_SECRET_CURRENT:
+      randomBytes(32).toString("base64url"),
+    CORE_FEDERATION_REDIRECT_URI:
+      "https://core.example.test/api/auth/federation/callback",
+    CORE_FEDERATION_TEST_ALLOW_INSECURE_ORIGIN: "true",
+  });
   let ready = false;
   for (let i = 0; i < 30; i++) {
     try {
@@ -103,6 +113,7 @@ try {
       "src/dashboard/assessments.test.ts",
       "src/dashboard/schedule.test.ts",
       "src/dashboard/owner-recovery.test.ts",
+      "src/dashboard/core-federation.test.ts",
       "src/dashboard/work-readiness.test.ts",
       "../p1-dashboard/tests/schedule-dates.test.ts",
       "../p1-dashboard/tests/dashboard-contract.test.ts",
