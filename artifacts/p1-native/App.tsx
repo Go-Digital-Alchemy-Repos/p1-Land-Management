@@ -1,3 +1,4 @@
+import { withDownloadedChecklist } from "./src/core/checklist";
 import { logoutAccount } from "./src/core/logout";
 import { AuthRequestFailure } from "./src/core/auth";
 import {
@@ -637,10 +638,16 @@ export function Application({ services }: { services: ApplicationServices }) {
                     </Text>
                     {action("Open " + row.title, async () => {
                       try {
+                        const current = await transport.request<WorkOrder>(
+                          "/api/v1/work-orders/" + row.id,
+                        );
                         setSelected(
-                          await transport.request<WorkOrder>(
-                            "/api/v1/work-orders/" + row.id,
-                          ),
+                          vault.current
+                            ? withDownloadedChecklist(
+                                current,
+                                await vault.current.downloaded(),
+                              )
+                            : current,
                         );
                       } catch (error) {
                         if (error instanceof RequestFailure || !vault.current)

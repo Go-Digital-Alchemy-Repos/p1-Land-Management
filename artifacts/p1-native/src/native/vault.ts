@@ -1,3 +1,4 @@
+import { applyChecklist } from "../core/checklist";
 import { obtainDatabaseKey } from "../core/key-policy";
 import * as SQLite from "expo-sqlite";
 import * as SecureStore from "expo-secure-store";
@@ -141,7 +142,7 @@ async function createVault(
     async download(work: WorkOrder[]) {
       await transaction(async (tx) => {
         const pending = await tx.getAllAsync<{ payload: string }>(
-          "SELECT payload FROM operations",
+          "SELECT payload FROM operations ORDER BY seq",
         );
         const photos = await tx.getAllAsync<{ manifest: string }>(
           "SELECT manifest FROM photos",
@@ -164,7 +165,13 @@ async function createVault(
           );
         await tx.runAsync(
           "INSERT OR REPLACE INTO metadata(key,value) VALUES('day',?)",
-          JSON.stringify(work),
+          JSON.stringify(
+            pending.reduce(
+              (snapshot, row) =>
+                applyChecklist(snapshot, JSON.parse(row.payload)),
+              work,
+            ),
+          ),
         );
       });
     },
@@ -193,6 +200,17 @@ async function createVault(
           operation.id,
           payload,
         );
+        // Event and optimistic snapshot commit together; failed writes roll back both.
+        if (!old && operation.kind === "checklist") {
+          const row = await tx.getFirstAsync<{ value: string }>(
+            "SELECT value FROM metadata WHERE key='day'",
+          );
+          if (row)
+            await tx.runAsync(
+              "UPDATE metadata SET value=? WHERE key='day'",
+              JSON.stringify(applyChecklist(JSON.parse(row.value), operation)),
+            );
+        }
       });
     },
     async pending() {
