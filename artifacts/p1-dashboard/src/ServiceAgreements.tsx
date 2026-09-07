@@ -21,15 +21,32 @@ import "./service-agreements.css";
 export function ServiceAgreements({
   role,
   userId,
+  selectedAgreementId,
+  onSelect,
 }: {
   role: string;
   userId?: string;
+  selectedAgreementId?: string;
+  onSelect?: (id: string) => void;
 }) {
   return (
-    <AgreementWorkspace key={`${userId || "session"}:${role}`} role={role} />
+    <AgreementWorkspace
+      key={`${userId || "session"}:${role}`}
+      role={role}
+      selectedAgreementId={selectedAgreementId}
+      onSelect={onSelect}
+    />
   );
 }
-function AgreementWorkspace({ role }: { role: string }) {
+function AgreementWorkspace({
+  role,
+  selectedAgreementId,
+  onSelect,
+}: {
+  role: string;
+  selectedAgreementId?: string;
+  onSelect?: (id: string) => void;
+}) {
   const mounted = useRef(true);
   useEffect(() => {
     mounted.current = true;
@@ -121,6 +138,11 @@ function AgreementWorkspace({ role }: { role: string }) {
       pending.current = false;
     };
   }, [role]);
+  useEffect(() => {
+    if (selectedAgreementId && selectedAgreementId !== selected?.id && !busy) {
+      void open(selectedAgreementId);
+    }
+  }, [selectedAgreementId, selected?.id, busy]);
   async function open(id: string) {
     if (pending.current || childPending.current) return;
     pending.current = true;
@@ -211,7 +233,7 @@ function AgreementWorkspace({ role }: { role: string }) {
                     key={row.id}
                     disabled={busy || childBusy}
                     aria-pressed={selected?.id === row.id}
-                    onClick={() => void open(row.id)}
+                    onClick={() => (onSelect ? onSelect(row.id) : void open(row.id))}
                   >
                     <strong>{row.title}</strong>
                     <span>
@@ -252,11 +274,11 @@ function AgreementWorkspace({ role }: { role: string }) {
                 <AgreementQueue
                   properties={properties}
                   revision={queueRevision}
-                  onOpen={(id) => void open(id)}
+                  onOpen={(id) => (onSelect ? onSelect(id) : void open(id))}
                 />
                 <AgreementPreparationQueue
                   revision={queueRevision}
-                  onOpen={(id) => void open(id)}
+                  onOpen={(id) => (onSelect ? onSelect(id) : void open(id))}
                 />
               </>
             )}

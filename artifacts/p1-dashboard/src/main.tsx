@@ -30,6 +30,7 @@ import {
   ShieldCheck,
   Plug,
   SlidersHorizontal,
+  ChevronDown,
 } from "lucide-react";
 import {
   getMyWorkOrders,
@@ -40,6 +41,19 @@ import {
 import * as offline from "./offline";
 import "./style.css";
 import { ServiceAgreements } from "./ServiceAgreements";
+import {
+  canAccessRoute,
+  DASHBOARD_PAGES,
+  defaultRouteForRole,
+  NAVIGATION_GROUPS,
+  pathForRoute,
+  routeFromPath,
+  type DashboardPageRoute,
+  type DashboardRoute,
+  type NavigationGroup,
+  type RecordRoute,
+  type SettingsSection,
+} from "./dashboard-routes";
 const auth = createAuthClient({ plugins: [twoFactorClient()] });
 async function api(path: string, body?: unknown, method: "POST" | "PATCH" = "POST") {
   const r = await fetch("/api/v1" + path, {
@@ -59,45 +73,37 @@ type Person = {
   twoFactorEnabled: boolean;
   mfaRequired?: boolean;
 };
-type NavItem = {
-  view: string;
-  label: string;
-  path: string;
+type NavItem = DashboardPageRoute & {
   icon: typeof LayoutDashboard;
-  settingsSection?: SettingsSection;
 };
-type SettingsSection = "people" | "security" | "integrations" | "preferences";
-const nav: NavItem[] = [
-  { view: "Overview", label: "Overview", path: "/", icon: LayoutDashboard },
-  { view: "Properties", label: "Properties", path: "/properties", icon: MapPin },
-  { view: "Clients", label: "Clients", path: "/clients", icon: Users },
-  { view: "Schedule", label: "Schedule", path: "/schedule", icon: CalendarDays },
-  { view: "My Day", label: "My day", path: "/my-day", icon: ClipboardList },
-  { view: "Sales", label: "Sales", path: "/sales", icon: FileText },
-  { view: "Agreements", label: "Agreements", path: "/agreements", icon: FileText },
-  { view: "Billing", label: "Billing", path: "/billing", icon: Wallet },
-  { view: "Requests", label: "Requests", path: "/requests", icon: MessageSquare },
-  { view: "Recurring", label: "Recurring", path: "/recurring", icon: RefreshCw },
-  { view: "Projects", label: "Projects", path: "/projects", icon: ClipboardList },
-  { view: "Inspections", label: "Inspections", path: "/inspections", icon: CheckCircle2 },
-  { view: "Expenses", label: "Expenses", path: "/expenses", icon: Wallet },
-  { view: "Settings", label: "People & access", path: "/settings/people", icon: Users, settingsSection: "people" },
-  { view: "Settings", label: "Security", path: "/settings/security", icon: ShieldCheck, settingsSection: "security" },
-  { view: "Settings", label: "Integrations", path: "/settings/integrations", icon: Plug, settingsSection: "integrations" },
-  { view: "Settings", label: "Preferences", path: "/settings/preferences", icon: SlidersHorizontal, settingsSection: "preferences" },
-];
-const navGroups: Array<{ label: string; views: readonly string[] }> = [
-  { label: "Workspace", views: ["Overview", "Properties", "Clients", "Schedule", "My Day"] },
-  { label: "Operations", views: ["Requests", "Recurring", "Projects", "Inspections"] },
-  { label: "Revenue", views: ["Sales", "Agreements", "Billing", "Expenses"] },
-  { label: "Settings", views: ["settings"] },
-];
-function routeFromLocation(): Pick<NavItem, "view" | "settingsSection"> {
-  const pathname = location.pathname.replace(/\/+$/, "") || "/";
-  const match = nav.find((item) => item.path === pathname);
-  return match
-    ? { view: match.view, settingsSection: match.settingsSection }
-    : { view: "Overview" };
+const icons: Record<DashboardPageRoute["view"] | "Settings:security" | "Settings:integrations" | "Settings:preferences", typeof LayoutDashboard> = {
+  Overview: LayoutDashboard,
+  Properties: MapPin,
+  Clients: Users,
+  Schedule: CalendarDays,
+  "My Day": ClipboardList,
+  Sales: FileText,
+  Agreements: FileText,
+  Billing: Wallet,
+  Requests: MessageSquare,
+  Recurring: RefreshCw,
+  Projects: ClipboardList,
+  Inspections: CheckCircle2,
+  Expenses: Wallet,
+  Settings: Users,
+  "Settings:security": ShieldCheck,
+  "Settings:integrations": Plug,
+  "Settings:preferences": SlidersHorizontal,
+};
+const nav: NavItem[] = DASHBOARD_PAGES.map((page) => ({
+  ...page,
+  icon:
+    page.settingsSection && page.settingsSection !== "people"
+      ? icons[`Settings:${page.settingsSection}` as keyof typeof icons]
+      : icons[page.view],
+}));
+function routeFromLocation() {
+  return routeFromPath(location.pathname);
 }
 const date = (v: string) =>
   v
@@ -125,7 +131,10 @@ function operatingDate(value: string | Date) {
 }
 function App() {
   const initialRoute = routeFromLocation();
+  const initialPage =
+    initialRoute.kind === "page" ? initialRoute.page : defaultRouteForRole(null).page;
   const focusedWorkId = useRef<string | null>(null);
+  const recordOpenAttempted = useRef<string | null>(null);
   const [fieldDay, setFieldDay] = useState(() => operatingDate(new Date()));
   const [downloadedAt, setDownloadedAt] = useState<string | null>(null);
   const [persistentStorage, setPersistentStorage] = useState(false);
@@ -137,10 +146,14 @@ function App() {
     [loading, setLoading] = useState(true),
     [error, setError] = useState(""),
     [notice, setNotice] = useState(""),
-    [view, setViewState] = useState(initialRoute.view),
+    [view, setViewState] = useState(initialPage.view),
     [settingsSection, setSettingsSection] = useState<SettingsSection>(
-      initialRoute.settingsSection || "people",
+      initialPage.settingsSection || "people",
     ),
+    [recordRoute, setRecordRoute] = useState<RecordRoute | undefined>(
+      initialRoute.kind === "page" ? initialRoute.record : undefined,
+    ),
+    [routeMissing, setRouteMissing] = useState(initialRoute.kind === "not-found"),
     [data, setData] = useState<any>({}),
     [form, setForm] = useState<string | null>(null),
     [selected, setSelected] = useState<any>(null),
@@ -149,19 +162,35 @@ function App() {
     [menu, setMenu] = useState(false);
   const [authMode, setAuthMode] = useState("login"),
     [mfa, setMfa] = useState<any>(null);
-  const navigate = (nextView: string, section?: SettingsSection) => {
+  const applyRoute = (
+    route: Extract<DashboardRoute, { kind: "page" }>,
+    historyMode: "push" | "replace" | "none" = "push",
+  ) => {
+    setRouteMissing(false);
+    setViewState(route.page.view);
+    setSettingsSection(route.page.settingsSection || "people");
+    setRecordRoute(route.record);
+    const path = pathForRoute(route);
+    if (historyMode === "push" && location.pathname !== path) {
+      history.pushState(route.record ? { p1DashboardRecord: true } : null, "", path);
+    }
+    if (historyMode === "replace" && location.pathname !== path) {
+      history.replaceState(null, "", path);
+    }
+  };
+  const navigate = (nextView: DashboardPageRoute["view"], section?: SettingsSection) => {
     const destination = nav.find(
       (item) =>
         item.view === nextView &&
         (nextView !== "Settings" || item.settingsSection === (section || "people")),
     );
     if (!destination) return;
-    setViewState(destination.view);
-    if (destination.settingsSection) setSettingsSection(destination.settingsSection);
-    if (location.pathname !== destination.path)
-      history.pushState(null, "", destination.path);
+    applyRoute({ kind: "page", page: destination });
   };
-  const setView = (nextView: string) => navigate(nextView);
+  const setView = (nextView: DashboardPageRoute["view"]) => navigate(nextView);
+  const navigateRecord = (page: DashboardPageRoute, record: RecordRoute) => {
+    applyRoute({ kind: "page", page, record });
+  };
   async function session() {
     try {
       const [b, p] = await Promise.all([
@@ -216,8 +245,12 @@ function App() {
   useEffect(() => {
     const onPopState = () => {
       const next = routeFromLocation();
-      setViewState(next.view);
-      setSettingsSection(next.settingsSection || "people");
+      if (next.kind === "not-found") {
+        setRouteMissing(true);
+        setRecordRoute(undefined);
+      } else {
+        applyRoute(next, "none");
+      }
       setMenu(false);
       setForm(null);
     };
@@ -470,7 +503,7 @@ function App() {
     controls()[0]?.focus();
     const key = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        setForm(null);
+        closeForm();
         return;
       }
       if (event.key === "Tab") {
@@ -696,41 +729,131 @@ function App() {
     setSelected(row);
     setForm(name);
   };
+  const propertyPage = nav.find((item) => item.view === "Properties")!;
+  const schedulePage = nav.find((item) => item.view === "Schedule")!;
+  const myDayPage = nav.find((item) => item.view === "My Day")!;
+  const agreementPage = nav.find((item) => item.view === "Agreements")!;
+  const openPropertyTimeline = async (property: any, updateRoute = true) => {
+    await run(async () => {
+      const timeline = await api("/properties/" + property.id + "/timeline");
+      setSelected({ property, timeline });
+      setForm("timeline");
+      if (updateRoute) {
+        navigateRecord(propertyPage, { kind: "property", id: property.id });
+      }
+    });
+  };
+  const openWorkOrder = async (
+    id: string,
+    page = view === "My Day" ? myDayPage : schedulePage,
+    updateRoute = true,
+  ) => {
+    await run(async () => {
+      const detail = await api("/work-orders/" + id);
+      focusedWorkId.current = id;
+      setData((old: any) => ({
+        ...old,
+        work: [detail, ...(old.work || []).filter((w: any) => w.id !== id)],
+      }));
+      if (updateRoute) {
+        navigateRecord(page, { kind: "work-order", id });
+      }
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => {
+          const target = document.getElementById("work-" + id);
+          target?.scrollIntoView({
+            behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+              ? "auto"
+              : "smooth",
+            block: "center",
+          });
+          target?.focus({ preventScroll: true });
+        }),
+      );
+    });
+  };
+  const closeForm = () => {
+    if (form === "timeline" && recordRoute?.kind === "property") {
+      if (history.state?.p1DashboardRecord) {
+        history.back();
+      } else {
+        applyRoute({ kind: "page", page: propertyPage }, "replace");
+        setForm(null);
+      }
+      return;
+    }
+    setForm(null);
+  };
   const staff = Boolean(
       person && person.role !== "client" && person.role !== "crew",
     ),
     manager = ["owner", "manager"].includes(person?.role || ""),
     ops = ["owner", "manager", "dispatch"].includes(person?.role || "");
-  const allowedNav = nav.filter(({ view: n, settingsSection }) =>
-    person?.role === "crew"
-      ? ["My Day", "Properties"].includes(n)
-      : person?.role === "client"
-        ? [
-            "Overview",
-            "Properties",
-            "Schedule",
-            "Sales",
-            "Billing",
-            "Requests",
-            "Inspections",
-          ].includes(n)
-        : n === "Agreements"
-          ? ["owner", "manager", "finance", "dispatch"].includes(person?.role || "")
-          : ["Recurring", "Projects", "Inspections"].includes(n)
-          ? ops
-          : n === "Expenses"
-            ? ["owner", "manager", "finance"].includes(person?.role || "")
-            : settingsSection
-              ? manager
-              : n === "Billing"
-                ? ["owner", "manager", "finance"].includes(person?.role || "")
-                : n === "Sales"
-                  ? ["owner", "manager", "sales"].includes(person?.role || "")
-                : true,
+  const allowedNav = nav.filter((item) =>
+    canAccessRoute({ kind: "page", page: item }, person?.role),
   );
+  const activePage = nav.find(
+    (item) =>
+      item.view === view &&
+      (item.view !== "Settings" || item.settingsSection === settingsSection),
+  );
+  const locationRoute = routeFromLocation();
+  const routeForbidden =
+    Boolean(person?.role) &&
+    locationRoute.kind === "page" &&
+    !canAccessRoute(locationRoute, person?.role);
+  const routeUnavailable = routeMissing || routeForbidden;
+  const [expandedGroups, setExpandedGroups] = useState<Set<NavigationGroup>>(
+    () => new Set(["Workspace"]),
+  );
+  useEffect(() => {
+    if (!routeUnavailable && activePage) {
+      setExpandedGroups((current) =>
+        current.has(activePage.group)
+          ? current
+          : new Set([...current, activePage.group]),
+      );
+    }
+  }, [activePage, routeUnavailable]);
+  useEffect(() => {
+    const current = routeFromLocation();
+    if (
+      person?.role &&
+      current.kind === "page" &&
+      !canAccessRoute(current, person.role)
+    ) {
+      applyRoute(defaultRouteForRole(person.role), "replace");
+      setNotice("That area is not available for this workspace role.");
+    }
+  }, [person?.role, view, settingsSection, recordRoute?.id]);
   const activeNav = (item: NavItem) =>
+    !routeUnavailable &&
     view === item.view &&
     (item.view !== "Settings" || settingsSection === item.settingsSection);
+  useEffect(() => {
+    if (!recordRoute) {
+      recordOpenAttempted.current = null;
+      return;
+    }
+    const key = `${recordRoute.kind}:${recordRoute.id}`;
+    if (recordOpenAttempted.current === key) return;
+    if (recordRoute.kind === "property") {
+      if (!Array.isArray(data.properties)) return;
+      recordOpenAttempted.current = key;
+      const property = data.properties.find((item: any) => item.id === recordRoute.id);
+      if (property) void openPropertyTimeline(property, false);
+      else setNotice("That property is no longer available in this workspace.");
+      return;
+    }
+    if (recordRoute.kind === "work-order") {
+      recordOpenAttempted.current = key;
+      void openWorkOrder(
+        recordRoute.id,
+        view === "My Day" ? myDayPage : schedulePage,
+        false,
+      );
+    }
+  }, [recordRoute?.kind, recordRoute?.id, data.properties, view]);
   if (loading) return <div className="loading">Loading P1 Operations…</div>;
   if (!person)
     return (
@@ -922,37 +1045,52 @@ function App() {
             LAND & PROPERTY<small>OPERATIONS WORKSPACE</small>
           </div>
         </div>
-        <nav>
-          {navGroups.map((group) => {
-            const entries = allowedNav.filter((item) =>
-              group.views.includes(
-                item.settingsSection ? "settings" : item.view,
-              ),
-            );
+        <nav aria-label="Dashboard navigation">
+          {NAVIGATION_GROUPS.map((group) => {
+            const entries = allowedNav.filter((item) => item.group === group);
             if (!entries.length) return null;
+            const expanded = expandedGroups.has(group);
+            const groupId = `nav-group-${group.toLowerCase()}`;
             return (
-              <section className="nav-group" key={group.label} aria-label={group.label}>
-                <p className="nav-caption">{group.label}</p>
-                {entries.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <button
-                      key={item.path}
-                      className={activeNav(item) ? "active" : ""}
-                      aria-current={activeNav(item) ? "page" : undefined}
-                      onClick={() => {
-                        navigate(item.view, item.settingsSection);
-                        setMenu(false);
-                      }}
-                    >
-                      <Icon size={19} />
-                      {item.label}
-                      {item.view === "Requests" && data.requests?.length > 0 && (
-                        <b>{data.requests.length}</b>
-                      )}
-                    </button>
-                  );
-                })}
+              <section className="nav-group" key={group} aria-label={group}>
+                <button
+                  className="nav-group-trigger"
+                  aria-expanded={expanded}
+                  aria-controls={groupId}
+                  onClick={() =>
+                    setExpandedGroups((current) => {
+                      const next = new Set(current);
+                      if (next.has(group)) next.delete(group);
+                      else next.add(group);
+                      return next;
+                    })
+                  }
+                >
+                  <span>{group}</span>
+                  <ChevronDown size={15} aria-hidden="true" />
+                </button>
+                <div id={groupId} className="nav-group-items" hidden={!expanded}>
+                  {entries.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <button
+                        key={item.path}
+                        className={activeNav(item) ? "active" : ""}
+                        aria-current={activeNav(item) ? "page" : undefined}
+                        onClick={() => {
+                          navigate(item.view, item.settingsSection);
+                          setMenu(false);
+                        }}
+                      >
+                        <Icon size={19} />
+                        {item.label}
+                        {item.view === "Requests" && data.requests?.length > 0 && (
+                          <b>{data.requests.length}</b>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
               </section>
             );
           })}
@@ -1002,14 +1140,18 @@ function App() {
             <div>
               <p className="eyebrow">P1 · PROPERTY OPERATIONS</p>
               <h1>
-                {view === "Overview"
+                {routeUnavailable
+                  ? "Page unavailable"
+                  : view === "Overview"
                   ? "A clear view of the day."
                   : view === "Settings"
                     ? nav.find((item) => item.settingsSection === settingsSection)?.label
                     : view}
               </h1>
               <p className="muted">
-                {view === "Overview"
+                {routeUnavailable
+                  ? "This link does not match an available dashboard destination."
+                  : view === "Overview"
                   ? "Your properties, people, and next priorities."
                   : view === "My Day"
                     ? "Your assignments and field notes, wherever work takes you."
@@ -1018,7 +1160,7 @@ function App() {
                       : "Keep the details connected to the work."}
               </p>
             </div>
-            <div className="heading-actions">
+            {!routeUnavailable && <div className="heading-actions">
               {view === "Clients" && staff && (
                 <button className="primary" onClick={() => openForm("client")}>
                   <Plus size={17} /> Add client
@@ -1068,7 +1210,7 @@ function App() {
                   <Plus size={17} /> Request service
                 </button>
               )}
-            </div>
+            </div>}
           </div>
           {error && (
             <div role="alert" className="error">
@@ -1080,8 +1222,34 @@ function App() {
               {notice}
             </div>
           )}
+          {routeUnavailable ? (
+            <section className="panel route-unavailable" aria-labelledby="route-unavailable-title">
+              <div className="panel-heading">
+                <h2 id="route-unavailable-title">This dashboard link is unavailable</h2>
+              </div>
+              <div className="panel-body">
+                <p className="muted">
+                  {routeForbidden
+                    ? "This area is not available for your workspace role. Your account permissions and data have not changed."
+                    : "Check the link or return to your workspace. Your account permissions and data have not changed."}
+                </p>
+                <button onClick={() => navigate(defaultRouteForRole(person.role).page.view)}>
+                  Return to workspace
+                </button>
+              </div>
+            </section>
+          ) : <>
           {view === "Agreements" && (
-            <ServiceAgreements role={person.role} userId={person.id} />
+            <ServiceAgreements
+              role={person.role}
+              userId={person.id}
+              selectedAgreementId={
+                recordRoute?.kind === "agreement" ? recordRoute.id : undefined
+              }
+              onSelect={(id) =>
+                navigateRecord(agreementPage, { kind: "agreement", id })
+              }
+            />
           )}
           {view === "Overview" && (
             <>
@@ -1144,6 +1312,12 @@ function App() {
                         <span className={"badge " + w.status}>
                           {w.status.replaceAll("_", " ")}
                         </span>
+                        <button
+                          className="quiet-action"
+                          onClick={() => void openWorkOrder(w.id, schedulePage)}
+                        >
+                          Open work order
+                        </button>
                       </div>
                     ))
                   ) : (
@@ -1178,17 +1352,7 @@ function App() {
                 </div>
                 <PropertyCards
                   properties={data.properties || []}
-                  onOpen={async (p) => {
-                    await run(async () => {
-                      setSelected({
-                        property: p,
-                        timeline: await api(
-                          "/properties/" + p.id + "/timeline",
-                        ),
-                      });
-                      setForm("timeline");
-                    });
-                  }}
+                  onOpen={(property) => void openPropertyTimeline(property)}
                 />
               </section>
             </>
@@ -1197,15 +1361,7 @@ function App() {
             <section className="panel">
               <PropertyCards
                 properties={data.properties || []}
-                onOpen={async (p) => {
-                  await run(async () => {
-                    setSelected({
-                      property: p,
-                      timeline: await api("/properties/" + p.id + "/timeline"),
-                    });
-                    setForm("timeline");
-                  });
-                }}
+                onOpen={(property) => void openPropertyTimeline(property)}
               />
             </section>
           )}
@@ -1315,31 +1471,7 @@ function App() {
                   staff={data.staff || []}
                   canManage={ops}
                   onSelect={(id) => {
-                    void run(async () => {
-                      const detail = await api("/work-orders/" + id);
-                      focusedWorkId.current = id;
-                      setData((old: any) => ({
-                        ...old,
-                        work: [
-                          detail,
-                          ...(old.work || []).filter((w: any) => w.id !== id),
-                        ],
-                      }));
-                      requestAnimationFrame(() =>
-                        requestAnimationFrame(() => {
-                          const target = document.getElementById("work-" + id);
-                          target?.scrollIntoView({
-                            behavior: window.matchMedia(
-                              "(prefers-reduced-motion: reduce)",
-                            ).matches
-                              ? "auto"
-                              : "smooth",
-                            block: "center",
-                          });
-                          target?.focus({ preventScroll: true });
-                        }),
-                      );
-                    });
+                    void openWorkOrder(id, schedulePage);
                   }}
                 />
               )}
@@ -2003,6 +2135,7 @@ function App() {
               </div>
             </section>
           )}
+          </>}
           <footer className="footer">
             P1 LAND & PROPERTY MANAGEMENT <span>Built for the work ahead.</span>
           </footer>
@@ -2032,7 +2165,7 @@ function App() {
                       ? "Book assessment"
                       : "Add " + form}
               </h2>
-              <button onClick={() => setForm(null)} aria-label="Close dialog">
+              <button onClick={closeForm} aria-label="Close dialog">
                 ✕
               </button>
             </div>

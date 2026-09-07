@@ -59,6 +59,7 @@
         // The ordinary work list deliberately omits the selected job.
         return Response.json([]);
       };
+      history.replaceState(null, "", "/schedule");
       await import("/src/main.tsx");
     </script>
   </body>
