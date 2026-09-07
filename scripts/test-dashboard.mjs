@@ -102,6 +102,7 @@ try {
       "src/dashboard/schedule.test.ts",
       "src/dashboard/owner-recovery.test.ts",
       "../p1-dashboard/tests/schedule-dates.test.ts",
+      "../p1-dashboard/tests/dashboard-contract.test.ts",
       "src/dashboard/integration.test.ts",
     ],
     { cwd, env },

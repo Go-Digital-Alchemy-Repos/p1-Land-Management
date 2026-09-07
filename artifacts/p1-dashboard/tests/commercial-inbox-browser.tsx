@@ -34,7 +34,11 @@ async function pause(id: string) {
 }
 let calls = 0,
   conflict = true;
-async function request(path: string, body?: any, method?: string) {
+async function request(
+  path: string,
+  body?: any,
+  method?: string,
+): Promise<any> {
   if (body !== undefined) {
     document.getElementById("patch-count")!.textContent =
       "PATCH requests: " + ++patchCount;
@@ -81,6 +85,20 @@ async function request(path: string, body?: any, method?: string) {
 createRoot(document.getElementById("root")!).render(
   <CommercialInbox
     staff={[{ id: "manager", name: "Synthetic Manager", role: "manager" }]}
-    request={request}
+    api={{
+      list: (params) =>
+        request(
+          "/commercial-inquiries?" +
+            new URLSearchParams(
+              Object.entries(params || {}).map(([key, value]) => [
+                key,
+                String(value),
+              ]),
+            ),
+        ),
+      get: (id) => request("/commercial-inquiries/" + id),
+      update: (id, body) =>
+        request("/commercial-inquiries/" + id + "/follow-up", body, "PATCH"),
+    }}
   />,
 );

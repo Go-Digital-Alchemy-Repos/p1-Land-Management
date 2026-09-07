@@ -5,9 +5,8 @@
  * Shared field, scheduling and commercial inbox contract. Other office routes remain documented in docs/dashboard/API.md.
  * OpenAPI spec version: 0.1.0
  */
-import type { FieldSyncResponseResultsItemStatus } from './fieldSyncResponseResultsItemStatus';
 
-export type FieldSyncResponseResultsItem = {
-  id: string;
-  status: FieldSyncResponseResultsItemStatus;
-};
+/**
+ * Validated version1 Core intake event. Business content remains untrusted.
+ */
+export type CommercialInquiryDetailRawIntake = { [key: string]: unknown };

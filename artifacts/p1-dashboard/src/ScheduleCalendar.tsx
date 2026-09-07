@@ -1,3 +1,4 @@
+import type { getSchedule } from "@workspace/api-client-react/dashboard";
 import { useEffect, useState } from "react";
 import {
   scheduleDate,
@@ -6,16 +7,9 @@ import {
   scheduleTime,
 } from "./schedule-dates";
 import "./schedule-calendar.css";
-export type ScheduledWork = {
-  id: string;
-  title: string;
-  property_name: string;
-  scheduled_at: string | null;
-  assigned_to?: string | null;
-  status: string;
-  version?: number;
-  scope?: string;
-};
+export type ScheduledWork = Awaited<
+  ReturnType<typeof getSchedule>
+>["items"][number];
 export function ScheduleCalendar({
   work,
   staff,

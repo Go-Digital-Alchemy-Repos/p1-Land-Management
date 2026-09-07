@@ -1428,7 +1428,7 @@ function App() {
           )}
           {view === "Sales" && (
             <>
-              {["owner", "manager", "sales"].includes(person.role || "") && <CommercialInbox staff={data.staff || []} request={api} />}
+              {["owner", "manager", "sales"].includes(person.role || "") && <CommercialInbox staff={data.staff || []} />}
               <section className="panel">
                 <div className="panel-heading">
                   <h2>Estimates</h2>

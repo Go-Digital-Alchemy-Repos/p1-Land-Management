@@ -3,7 +3,7 @@
   "info": {
     "title": "P1Dashboard",
     "version": "0.1.0",
-    "description": "Initial shared field-client contract. Additional office routes are documented in docs/dashboard/API.md."
+    "description": "Shared field, scheduling and commercial inbox contract. Other office routes remain documented in docs/dashboard/API.md."
   },
   "servers": [
     {
@@ -122,6 +122,581 @@
           },
           "409": {
             "description": "Record changed or operation conflict"
+          }
+        }
+      }
+    },
+    "/commercial-inquiries": {
+      "get": {
+        "operationId": "listCommercialInquiries",
+        "description": "Owner/manager/sales only. Cursor is bound to filters; discard it when filters change. Recent-first created_at/id ordering preserves microseconds.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommercialInquiryPage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or cursor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Role or owner assurance required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Record absent or private",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Stale version or state conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardError"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200,
+              "default": 50
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 1024,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "new",
+                "contacted",
+                "qualified",
+                "proposal",
+                "won",
+                "lost"
+              ]
+            }
+          },
+          {
+            "name": "ownerId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "description": "Active owner ID or unassigned"
+            }
+          },
+          {
+            "name": "overdue",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "/commercial-inquiries/{id}": {
+      "get": {
+        "operationId": "getCommercialInquiry",
+        "description": "Owner/manager/sales only. No operational identity or access is provisioned.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommercialInquiryDetail"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or cursor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Role or owner assurance required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Record absent or private",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Stale version or state conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardError"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    },
+    "/commercial-inquiries/{id}/follow-up": {
+      "patch": {
+        "operationId": "updateCommercialFollowUp",
+        "description": "Owner/manager/sales only. Optimistic version required; reload detail/list after success.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommercialInquiry"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or cursor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Role or owner assurance required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Record absent or private",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Stale version or state conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardError"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommercialFollowUp"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/schedule": {
+      "get": {
+        "operationId": "getSchedule",
+        "description": "Up to32 inclusive New York dates. Pages contain100 items. Crew assigned work only; clients granted accounts only. Unscheduled mode is forbidden to clients.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SchedulePage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or cursor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Role or owner assurance required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Record absent or private",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Stale version or state conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardError"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "through",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "unscheduled",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ],
+              "default": "false"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 400
+            }
+          }
+        ]
+      }
+    },
+    "/work-orders/{id}": {
+      "get": {
+        "operationId": "getScheduledWork",
+        "description": "Direct role-filtered detail. Private or missing records return404.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkOrder"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or cursor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Role or owner assurance required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Record absent or private",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Stale version or state conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardError"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    },
+    "/work-orders/{id}/reschedule": {
+      "post": {
+        "operationId": "rescheduleWork",
+        "description": "Owner/manager/dispatch only. Draft/scheduled/delayed state and current version required. Recurrence identity stays unchanged.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkVersion"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or cursor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Role or owner assurance required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Record absent or private",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Stale version or state conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardError"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RescheduleWork"
+              }
+            }
           }
         }
       }
@@ -262,6 +837,12 @@
           },
           "published": {
             "type": "boolean"
+          },
+          "assigned_to": {
+            "type": [
+              "string",
+              "null"
+            ]
           }
         },
         "required": [
@@ -270,7 +851,8 @@
           "property_name",
           "title",
           "status"
-        ]
+        ],
+        "description": "Authorized work projection. Clients receive only identity, property name, title, scheduled_at and public status; operational fields are absent, not null placeholders."
       },
       "FieldSyncResponse": {
         "type": "object",
@@ -301,6 +883,342 @@
         },
         "required": [
           "results"
+        ]
+      },
+      "DashboardError": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "error"
+        ]
+      },
+      "CommercialInquiry": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "email": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "phone": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "reported_company_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "reported_property_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "contact_title": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "property_type": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "acreage_description": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "project_stage": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "service_timing": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "owner_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "next_action": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "new",
+              "contacted",
+              "qualified",
+              "proposal",
+              "won",
+              "lost"
+            ]
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "services": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "next_action_due_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "last_activity_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "name",
+          "location",
+          "description",
+          "email",
+          "phone",
+          "reported_company_name",
+          "reported_property_name",
+          "contact_title",
+          "property_type",
+          "acreage_description",
+          "project_stage",
+          "service_timing",
+          "owner_id",
+          "next_action",
+          "id",
+          "status",
+          "version",
+          "services",
+          "next_action_due_at",
+          "created_at",
+          "last_activity_at"
+        ]
+      },
+      "CommercialInquiryReceipt": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CommercialInquiry"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "submission_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "received_at": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "required": [
+              "submission_id",
+              "received_at"
+            ]
+          }
+        ]
+      },
+      "CommercialInquiryDetail": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CommercialInquiryReceipt"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "raw_intake": {
+                "type": "object",
+                "additionalProperties": true,
+                "description": "Validated version1 Core intake event. Business content remains untrusted."
+              }
+            },
+            "required": [
+              "raw_intake"
+            ]
+          }
+        ]
+      },
+      "CommercialInquiryPage": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CommercialInquiryReceipt"
+            }
+          },
+          "nextCursor": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "items",
+          "nextCursor"
+        ]
+      },
+      "CommercialFollowUp": {
+        "type": "object",
+        "properties": {
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "ownerId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "nextAction": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "nextActionDueAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "new",
+              "contacted",
+              "qualified",
+              "proposal",
+              "won",
+              "lost"
+            ]
+          }
+        },
+        "required": [
+          "expectedVersion",
+          "ownerId",
+          "nextAction",
+          "nextActionDueAt",
+          "status"
+        ],
+        "additionalProperties": false
+      },
+      "SchedulePage": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WorkOrder"
+            }
+          },
+          "nextCursor": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "items",
+          "nextCursor"
+        ]
+      },
+      "RescheduleWork": {
+        "type": "object",
+        "properties": {
+          "scheduledAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "assignedTo": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "description": "Omit to retain assignment; null explicitly unassigns."
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "scheduledAt",
+          "version",
+          "reason"
+        ]
+      },
+      "WorkVersion": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "id",
+          "version"
         ]
       }
     }

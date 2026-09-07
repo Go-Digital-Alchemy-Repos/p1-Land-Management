@@ -1,3 +1,8 @@
+import {
+  listCommercialInquiries,
+  getCommercialInquiry,
+  updateCommercialFollowUp,
+} from "@workspace/api-client-react/dashboard";
 import { useEffect, useRef, useState } from "react";
 import "./commercial-inbox.css";
 const statuses = [
@@ -9,34 +14,21 @@ const statuses = [
   "lost",
 ] as const;
 type Staff = { id: string; name: string; role: string };
-type Inquiry = {
-  id: string;
-  name: string;
-  email: string | null;
-  phone: string | null;
-  location: string;
-  description: string;
-  status: string;
-  version: number;
-  reported_company_name: string | null;
-  reported_property_name: string | null;
-  contact_title: string | null;
-  property_type: string | null;
-  acreage_description: string | null;
-  project_stage: string | null;
-  service_timing: string | null;
-  services: string[];
-  owner_id: string | null;
-  next_action: string | null;
-  next_action_due_at: string | null;
-  received_at: string;
-  submission_id: string;
+type Inquiry = Awaited<ReturnType<typeof getCommercialInquiry>>;
+type InquiryRow = Awaited<
+  ReturnType<typeof listCommercialInquiries>
+>["items"][number];
+type Filters = NonNullable<Parameters<typeof listCommercialInquiries>[0]>;
+export type CommercialInboxApi = {
+  list: typeof listCommercialInquiries;
+  get: typeof getCommercialInquiry;
+  update: typeof updateCommercialFollowUp;
 };
-type Request = (
-  path: string,
-  body?: unknown,
-  method?: "POST" | "PATCH",
-) => Promise<any>;
+const defaultApi: CommercialInboxApi = {
+  list: listCommercialInquiries,
+  get: getCommercialInquiry,
+  update: updateCommercialFollowUp,
+};
 const dateInput = (value: string | null) => {
   if (!value) return "";
   const date = new Date(value);
@@ -46,15 +38,15 @@ const dateInput = (value: string | null) => {
 };
 export function CommercialInbox({
   staff,
-  request,
+  api = defaultApi,
 }: {
   staff: Staff[];
-  request: Request;
+  api?: CommercialInboxApi;
 }) {
-  const [status, setStatus] = useState(""),
+  const [status, setStatus] = useState<Filters["status"] | "">(""),
     [owner, setOwner] = useState(""),
     [overdue, setOverdue] = useState(false);
-  const [rows, setRows] = useState<Inquiry[]>([]),
+  const [rows, setRows] = useState<InquiryRow[]>([]),
     [cursor, setCursor] = useState<string | null>(null);
   const [selected, setSelected] = useState<Inquiry | null>(null),
     [error, setError] = useState("");
@@ -72,13 +64,14 @@ export function CommercialInbox({
   const owners = staff.filter((person) =>
     ["owner", "manager", "sales"].includes(person.role),
   );
-  function query(next?: string) {
-    const params = new URLSearchParams({ limit: "50" });
-    if (status) params.set("status", status);
-    if (owner) params.set("ownerId", owner);
-    if (overdue) params.set("overdue", "true");
-    if (next) params.set("cursor", next);
-    return "/commercial-inquiries?" + params;
+  function query(next?: string): Filters {
+    return {
+      limit: 50,
+      ...(status ? { status } : {}),
+      ...(owner ? { ownerId: owner } : {}),
+      ...(overdue ? { overdue: "true" as const } : {}),
+      ...(next ? { cursor: next } : {}),
+    };
   }
   useEffect(() => {
     const current = ++generation.current;
@@ -86,7 +79,8 @@ export function CommercialInbox({
     setCursor(null);
     setLoading(true);
     setError("");
-    request(query())
+    api
+      .list(query())
       .then((page) => {
         if (current === generation.current) {
           setRows(page.items);
@@ -102,7 +96,7 @@ export function CommercialInbox({
     return () => {
       generation.current++;
     };
-  }, [status, owner, overdue, revision, request]);
+  }, [status, owner, overdue, revision, api]);
   useEffect(
     () => () => {
       detailGeneration.current++;
@@ -115,12 +109,12 @@ export function CommercialInbox({
     setLoading(true);
     setError("");
     try {
-      const page = await request(query(cursor));
+      const page = await api.list(query(cursor));
       if (current === generation.current) {
         setRows((old) => [
           ...old,
           ...page.items.filter(
-            (item: Inquiry) => !old.some((row) => row.id === item.id),
+            (item: InquiryRow) => !old.some((row) => row.id === item.id),
           ),
         ]);
         setCursor(page.nextCursor);
@@ -138,7 +132,7 @@ export function CommercialInbox({
     const current = ++detailGeneration.current;
     setError("");
     try {
-      const detail = await request("/commercial-inquiries/" + id);
+      const detail = await api.get(id);
       if (current === detailGeneration.current) {
         setSelected(detail);
         setDetailRevision((v) => v + 1);
@@ -166,18 +160,14 @@ export function CommercialInbox({
     setError("");
     try {
       const due = String(data.get("due") || "");
-      await request(
-        "/commercial-inquiries/" + id + "/follow-up",
-        {
-          expectedVersion: selected.version,
-          ownerId: data.get("owner") || null,
-          status: data.get("status"),
-          nextAction: data.get("action"),
-          nextActionDueAt: due ? new Date(due).toISOString() : null,
-        },
-        "PATCH",
-      );
-      const fresh = await request("/commercial-inquiries/" + id);
+      await api.update(id, {
+        expectedVersion: selected.version,
+        ownerId: String(data.get("owner") || "") || null,
+        status: String(data.get("status")) as NonNullable<Filters["status"]>,
+        nextAction: String(data.get("action") || ""),
+        nextActionDueAt: due ? new Date(due).toISOString() : null,
+      });
+      const fresh = await api.get(id);
       if (current === detailGeneration.current) {
         setSelected(fresh);
         setDetailRevision((v) => v + 1);
@@ -215,7 +205,12 @@ export function CommercialInbox({
       <div className="commercial-filters">
         <label>
           Status
-          <select value={status} onChange={(e) => setStatus(e.target.value)}>
+          <select
+            value={status}
+            onChange={(e) =>
+              setStatus(e.target.value as Filters["status"] | "")
+            }
+          >
             <option value="">All statuses</option>
             {statuses.map((s) => (
               <option key={s}>{s}</option>

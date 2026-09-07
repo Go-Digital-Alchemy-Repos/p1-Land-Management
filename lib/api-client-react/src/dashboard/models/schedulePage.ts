@@ -5,9 +5,10 @@
  * Shared field, scheduling and commercial inbox contract. Other office routes remain documented in docs/dashboard/API.md.
  * OpenAPI spec version: 0.1.0
  */
-import type { FieldSyncResponseResultsItemStatus } from './fieldSyncResponseResultsItemStatus';
+import type { WorkOrder } from './workOrder';
 
-export type FieldSyncResponseResultsItem = {
-  id: string;
-  status: FieldSyncResponseResultsItemStatus;
-};
+export interface SchedulePage {
+  items: WorkOrder[];
+  /** @nullable */
+  nextCursor: string | null;
+}

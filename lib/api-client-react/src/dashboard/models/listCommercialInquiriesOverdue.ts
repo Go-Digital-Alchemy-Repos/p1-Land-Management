@@ -6,13 +6,9 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export type FieldOperationKind = typeof FieldOperationKind[keyof typeof FieldOperationKind];
+export type ListCommercialInquiriesOverdue = typeof ListCommercialInquiriesOverdue[keyof typeof ListCommercialInquiriesOverdue];
 
 
-export const FieldOperationKind = {
-  note: 'note',
-  issue: 'issue',
-  time: 'time',
-  checklist: 'checklist',
-  complete: 'complete',
+export const ListCommercialInquiriesOverdue = {
+  true: 'true',
 } as const;

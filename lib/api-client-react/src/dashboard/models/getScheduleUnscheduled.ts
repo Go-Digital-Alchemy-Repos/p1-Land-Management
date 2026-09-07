@@ -6,13 +6,10 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export type FieldOperationKind = typeof FieldOperationKind[keyof typeof FieldOperationKind];
+export type GetScheduleUnscheduled = typeof GetScheduleUnscheduled[keyof typeof GetScheduleUnscheduled];
 
 
-export const FieldOperationKind = {
-  note: 'note',
-  issue: 'issue',
-  time: 'time',
-  checklist: 'checklist',
-  complete: 'complete',
+export const GetScheduleUnscheduled = {
+  true: 'true',
+  false: 'false',
 } as const;
