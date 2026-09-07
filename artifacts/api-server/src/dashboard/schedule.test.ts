@@ -201,7 +201,9 @@ test(
         { headers },
       );
       assert.equal(read.status, 200, role + " read");
-      const payload = await read.json();
+      const payload = (await read.json()) as {
+        items: Record<string, unknown>[];
+      };
       if (role === "client") assert.equal("scope" in payload.items[0], false);
       const edit = await fetch(
         base + "/api/v1/work-orders/" + target + "/reschedule",
