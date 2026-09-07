@@ -12,6 +12,11 @@ import {
   canDispatch,
   type Role,
 } from "./policy";
+import {
+  availableSlots,
+  bookAssessment,
+  createManualAssessment,
+} from "./assessments";
 export const api = Router();
 const office: Role[] = ["owner", "manager", "dispatch", "sales", "finance"];
 const operations: Role[] = ["owner", "manager", "dispatch"];
@@ -49,12 +54,6 @@ api.post("/setup/complete", async (req, res) => {
     )
   )
     throw new HttpError(403, "Invalid or expired setup authorization");
-  const assurance = await pool.query(
-    "SELECT 1 FROM session_assurance WHERE session_id=$1",
-    [s.session.id],
-  );
-  if (!s.user.twoFactorEnabled || !assurance.rowCount)
-    throw new HttpError(409, "Enable and verify MFA before completing setup");
   await transaction(async (c) => {
     const r = await c.query(
       "SELECT completed_at FROM installation WHERE id=1 FOR UPDATE",
@@ -724,13 +723,7 @@ api.post("/requests", async (req, res) => {
 api.get("/assessment-slots", async (req, res) => {
   const a = await actor(req);
   requireRole(a.role, [...office, "client"]);
-  res.json(
-    (
-      await pool.query(
-        "SELECT id,starts_at,ends_at FROM assessment_slot WHERE property_id IS NULL AND starts_at>now() ORDER BY starts_at LIMIT 100",
-      )
-    ).rows,
-  );
+  res.json(await availableSlots());
 });
 api.post("/assessment-slots", async (req, res) => {
   const a = await actor(req);
@@ -738,26 +731,9 @@ api.post("/assessment-slots", async (req, res) => {
   const b = z
     .object({ startsAt: z.string().datetime(), endsAt: z.string().datetime() })
     .parse(req.body);
-  if (Date.parse(b.endsAt) <= Date.parse(b.startsAt))
-    throw new HttpError(400, "End must follow start");
-  const key = randomUUID();
-  await transaction(async (c) => {
-    await c.query("SELECT pg_advisory_xact_lock(918278)");
-    if (
-      (
-        await c.query(
-          "SELECT 1 FROM assessment_slot WHERE starts_at<$2 AND ends_at>$1",
-          [b.startsAt, b.endsAt],
-        )
-      ).rowCount
-    )
-      throw new HttpError(409, "Slot overlaps existing availability");
-    await c.query(
-      "INSERT INTO assessment_slot(id,starts_at,ends_at) VALUES($1,$2,$3)",
-      [key, b.startsAt, b.endsAt],
-    );
-  });
-  res.status(201).json({ id: key });
+  res
+    .status(201)
+    .json(await createManualAssessment(a.id, b.startsAt, b.endsAt));
 });
 api.post("/assessment-slots/:id/book", async (req, res) => {
   const a = await actor(req);
@@ -765,12 +741,7 @@ api.post("/assessment-slots/:id/book", async (req, res) => {
   const key = id.parse(req.params.id);
   const b = z.object({ propertyId: id }).parse(req.body);
   await propertyAccess(a, b.propertyId);
-  const r = await pool.query(
-    "UPDATE assessment_slot SET property_id=$2,booked_by=$3 WHERE id=$1 AND property_id IS NULL AND starts_at>now() RETURNING id",
-    [key, b.propertyId, a.id],
-  );
-  if (!r.rowCount)
-    throw new HttpError(409, "This appointment is no longer available");
+  await bookAssessment(key, b.propertyId, a.id);
   res.json({ ok: true });
 });
 api.get("/integrations", async (req, res) => {

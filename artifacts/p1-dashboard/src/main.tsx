@@ -1,3 +1,4 @@
+import { AssessmentAvailability } from "./AssessmentAvailability";
 import { ClientContacts } from "./ClientContacts";
 import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
@@ -1333,6 +1334,9 @@ function App() {
                   />
                 )}
               </section>
+              {view === "Schedule" && ops && (
+                <AssessmentAvailability request={api} onChange={refresh} />
+              )}
               {view === "Schedule" && (
                 <section className="panel">
                   <div className="panel-heading">

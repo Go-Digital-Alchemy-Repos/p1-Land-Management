@@ -1,4 +1,4 @@
-// Generated from dashboard SQL migrations 0001–0008; empty-string defaults corrected after introspection.
+// Generated from dashboard SQL migrations 0001–0009; empty-string defaults corrected after introspection.
 import {
   pgTable,
   text,
@@ -350,6 +350,10 @@ export const assessmentSlot = pgTable(
     }).notNull(),
     propertyId: uuid("property_id"),
     bookedBy: text("booked_by"),
+    managed: boolean().default(false).notNull(),
+    cancelled: boolean().default(false).notNull(),
+    bufferBefore: integer("buffer_before").default(0).notNull(),
+    bufferAfter: integer("buffer_after").default(0).notNull(),
   },
   (table) => [
     foreignKey({
@@ -362,6 +366,9 @@ export const assessmentSlot = pgTable(
       foreignColumns: [user.id],
       name: "assessment_slot_booked_by_fkey",
     }),
+    index("assessment_slot_available")
+      .on(table.startsAt)
+      .where(sql`${table.propertyId} IS NULL AND ${table.cancelled}=false`),
     unique("assessment_slot_starts_at_key").on(table.startsAt),
     check("assessment_slot_check", sql`ends_at > starts_at`),
   ],
@@ -1026,5 +1033,51 @@ export const clientAccess = pgTable(
       columns: [table.userId, table.clientId],
       name: "client_access_pkey",
     }),
+  ],
+);
+
+export const assessmentAvailability = pgTable(
+  "assessment_availability",
+  {
+    id: boolean().primaryKey().default(true).notNull(),
+    version: integer().default(1).notNull(),
+    durationMinutes: integer("duration_minutes").notNull(),
+    bufferBefore: integer("buffer_before").notNull(),
+    bufferAfter: integer("buffer_after").notNull(),
+    windows: jsonb().default([]).notNull(),
+  },
+  (table) => [
+    check("assessment_availability_id_check", sql`${table.id}`),
+    check(
+      "assessment_availability_duration_minutes_check",
+      sql`${table.durationMinutes} BETWEEN 15 AND 240`,
+    ),
+    check(
+      "assessment_availability_buffer_before_check",
+      sql`${table.bufferBefore} BETWEEN 0 AND 120`,
+    ),
+    check(
+      "assessment_availability_buffer_after_check",
+      sql`${table.bufferAfter} BETWEEN 0 AND 120`,
+    ),
+  ],
+);
+export const assessmentBlackout = pgTable(
+  "assessment_blackout",
+  {
+    id: uuid().primaryKey().notNull(),
+    startsAt: timestamp("starts_at", {
+      withTimezone: true,
+      mode: "string",
+    }).notNull(),
+    endsAt: timestamp("ends_at", {
+      withTimezone: true,
+      mode: "string",
+    }).notNull(),
+    reason: text().notNull(),
+    archived: boolean().default(false).notNull(),
+  },
+  (table) => [
+    check("assessment_blackout_check", sql`${table.endsAt}>${table.startsAt}`),
   ],
 );
