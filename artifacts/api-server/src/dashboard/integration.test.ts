@@ -324,6 +324,17 @@ test(
     assert.equal(props.length, 1);
     assert.equal(props[0].id, pa);
     assert.equal(props[0].access_instructions, undefined);
+    r = await customer("/api/v1/requests", {
+      propertyId: pa,
+      description: "Please inspect the north drive.",
+    });
+    assert.equal(r.status, 201);
+    const clientRequests = (await customer("/api/v1/requests")).data;
+    assert.equal(clientRequests.length, 1);
+    assert.equal(clientRequests[0].description, "Please inspect the north drive.");
+    assert.equal(clientRequests[0].user_id, undefined);
+    const officeRequests = (await owner("/api/v1/requests")).data;
+    assert.equal(officeRequests.find((request: any) => request.id === r.data.id).user_id, customerId);
     assert.equal(
       (await customer("/api/v1/properties/" + pb + "/timeline")).status,
       404,

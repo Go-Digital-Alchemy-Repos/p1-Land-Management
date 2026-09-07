@@ -24,6 +24,10 @@ Migration 0015 adds the client version and primary-contact detail columns withou
 
 Billing creation requires `operationId` (UUID), `propertyId`, `estimateId`, `title`, integer `amountCents`, and `kind` (service/deposit/progress/final). Reuse the same operation ID on an identical retry. Different payload reuse returns 409; a new financial intent requires a new operation ID. The transaction stores actor, canonical validated-payload fingerprint and resulting draft ID. This does not automatically send an invoice or collect payment.
 
+## Client service requests
+
+`GET /requests` is available to office and client roles. Clients receive requests for properties they can access, but the server omits the internal submitting user ID; office readers retain the operational submitter identity. `POST /requests` requires a client-accessible or operational property and creates a new request only. Status changes and work-order conversion require the separately approved service-request workflow contract.
+
 ## Inspection report publication
 
 `GET /inspections` is available to owner, manager, dispatch, and client accounts. Office roles receive operational inspections for active properties. A client receives only explicitly published inspections belonging to a client-accessible operational property; its response omits the submitting staff user ID. `POST /inspections/:id/publish` requires owner or manager, locks the active-property inspection, and records `inspection.published` in audit history the first time it becomes client-visible. Repeating publication is safe and does not create another audit event. Publishing does not alter a work order, file, invoice, payment, notification, or underlying property condition data.

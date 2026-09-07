@@ -821,10 +821,14 @@ api.post("/billing", async (req, res) => {
 api.get("/requests", async (req, res) => {
   const a = await actor(req);
   requireRole(a.role, [...office, "client"]);
+  const fields =
+    a.role === "client"
+      ? "r.id,r.property_id,r.description,r.status,r.created_at,p.name AS property_name"
+      : "r.*,p.name AS property_name";
   res.json(
     (
       await pool.query(
-        `SELECT r.*,p.name AS property_name FROM service_request r JOIN property p ON p.id=r.property_id AND p.lifecycle='operational' ${a.role === "client" ? "WHERE EXISTS(SELECT 1 FROM client_access ca WHERE ca.client_id=p.client_id AND ca.user_id=$1)" : ""} ORDER BY r.created_at DESC`,
+        `SELECT ${fields} FROM service_request r JOIN property p ON p.id=r.property_id AND p.lifecycle='operational' ${a.role === "client" ? "WHERE EXISTS(SELECT 1 FROM client_access ca WHERE ca.client_id=p.client_id AND ca.user_id=$1)" : ""} ORDER BY r.created_at DESC`,
         a.role === "client" ? [a.id] : [],
       )
     ).rows,
