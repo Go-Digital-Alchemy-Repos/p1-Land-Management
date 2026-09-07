@@ -185,6 +185,12 @@ Before staging release, the 20-test dashboard suite, eight agreement domain/sche
 
 Staging recurrence rehearsal: a uniquely named synthetic recurring service was first attached to a default non-operational property. The worker correctly generated no work. After changing only that fixture property to `operational`, the deployed worker generated exactly one `draft` work order for its current New York occurrence date. The recurrence, work order, property and client were then removed in one database transaction; follow-up counts for all four fixture types were zero. This validates deployed lifecycle filtering, occurrence generation and idempotent source linkage. It does not validate crew dispatch, field completion, billing, provider delivery or customer data.
 
+## Owner MFA hardening staging — September 7
+
+Fresh staging database backup `e1beebe7-bad9-4f4f-b949-b8088c152f46` completed before web deployment `159dbfd6-0b47-4153-9fc7-299d67595efe` reached SUCCESS from the `81c2d3c` source package. The preceding staging deployment `be9c3949-9913-475e-b643-f2cd09f6a877` applied `0017_owner_mfa_required.sql`; the final deployment preserved that ledger and starts normally.
+
+The security correction prevents an owner from disabling the MFA requirement for an owner profile through either policy endpoint, while retaining an owner’s ability to manage other active accounts. The complete local browser/API integration suite exercises bootstrap, factor enrollment, current-session assurance and the rejected self-disable request; API and dashboard type checks plus the production dashboard build passed. Live staging health returned `200` with `no-store`, and anonymous policy access returned `401` with `no-store`. No staging owner exists for a real browser MFA journey, so that remains an explicit acceptance gate. This is not a production application deployment.
+
 ## Production owner MFA enforcement — September 7
 
 Live read-only verification found that the consumed owner setup had created the owner account without an MFA requirement or enrolled factor, which did not meet the approved bootstrap policy. Production currently remains on the reviewed `0013` source line, whereas staging has `0014`–`0017`; promoting the latest package solely for this policy correction would have released federation, onboarding and agreement changes outside their production acceptance boundary. A pre-change production logical recovery checkpoint restored successfully into a disposable PostgreSQL18 instance with 13 migrations and 48 public tables.
