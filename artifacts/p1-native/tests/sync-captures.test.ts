@@ -19,8 +19,9 @@ function fixture(ids = ["photo-A", "photo-B"]) {
       return operations;
     },
     steps: {
-      photos: async () =>
-        ids.filter((id) => pending.has(id)).map((id) => ({ id })),
+      photoIds: async () => ids.filter((id) => pending.has(id)),
+      loadPhoto: async (id: string): Promise<{ id: string } | null> =>
+        pending.has(id) ? { id } : null,
       upload: async (photo: { id: string }): Promise<unknown> => {
         sent.push(photo.id);
         return { id: photo.id, status: "accepted" };
@@ -168,4 +169,91 @@ test("operation delivery failure preserves successful photo receipts; auth failu
     throw new RequestFailure(401);
   };
   await assert.rejects(syncCaptures(denied.steps), RequestFailure);
+});
+
+test("ID snapshot excludes later captures and loads one row only after prior attempt finishes", async () => {
+  const ids = ["photo-A", "photo-B"],
+    f = fixture(ids),
+    loads: string[] = [],
+    events: string[] = [];
+  let release!: (value: unknown) => void;
+  f.steps.photoIds = async () => ids;
+  f.steps.loadPhoto = async (id) => {
+    loads.push(id);
+    events.push("load:" + id);
+    return { id };
+  };
+  f.steps.upload = async (photo) => {
+    events.push("upload:" + photo.id);
+    if (photo.id === "photo-A")
+      return new Promise((resolve) => {
+        release = resolve;
+      });
+    return { id: photo.id, status: "accepted" };
+  };
+  const ack = f.steps.acknowledgePhoto;
+  f.steps.acknowledgePhoto = async (id) => {
+    await ack(id);
+    events.push("ack:" + id);
+  };
+  const running = syncCaptures(f.steps);
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.deepEqual(loads, ["photo-A"]);
+  ids.push("later-photo");
+  f.pending.add("later-photo");
+  release({ id: "photo-A", status: "accepted" });
+  await running;
+  assert.deepEqual(loads, ["photo-A", "photo-B"]);
+  assert.deepEqual(events, [
+    "load:photo-A",
+    "upload:photo-A",
+    "ack:photo-A",
+    "load:photo-B",
+    "upload:photo-B",
+    "ack:photo-B",
+  ]);
+  assert.deepEqual([...f.pending], ["later-photo"]);
+});
+test("missing, mismatched and failed per-photo loads stay unconfirmed while other work progresses", async () => {
+  const f = fixture(["missing", "mismatch", "read-failed", "good"]);
+  f.steps.loadPhoto = async (id) => {
+    if (id === "missing") return null;
+    if (id === "mismatch") return { id: "different" };
+    if (id === "read-failed") throw Error("Synthetic read failure");
+    return { id };
+  };
+  assert.deepEqual(await syncCaptures(f.steps), {
+    photosAcknowledged: 1,
+    photoFailures: 3,
+    operationsProcessed: true,
+  });
+  assert.deepEqual(f.sent, ["good"]);
+  assert.deepEqual([...f.pending], ["missing", "mismatch", "read-failed"]);
+});
+test("binding change during single-photo loading aborts before upload; auth load failure is not swallowed", async () => {
+  const f = fixture();
+  let active = true,
+    release!: (value: { id: string }) => void;
+  f.steps.assertCurrent = () => {
+    if (!active) throw new SessionChanged();
+  };
+  f.steps.loadPhoto = async () =>
+    new Promise((resolve) => {
+      release = resolve;
+    });
+  const running = syncCaptures(f.steps);
+  await new Promise((resolve) => setImmediate(resolve));
+  active = false;
+  release({ id: "photo-A" });
+  await assert.rejects(running, SessionChanged);
+  assert.deepEqual(f.sent, []);
+  assert.deepEqual(f.acks, []);
+  assert.equal(f.operationCalls, 0);
+  const denied = fixture();
+  denied.steps.loadPhoto = async () => {
+    throw new RequestFailure(403);
+  };
+  await assert.rejects(syncCaptures(denied.steps), RequestFailure);
+  assert.deepEqual(denied.sent, []);
+  assert.equal(denied.operationCalls, 0);
 });

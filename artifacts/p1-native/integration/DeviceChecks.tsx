@@ -66,10 +66,12 @@ export default function DeviceChecks() {
           throw new Error("cleartext temporary remains after commit");
         await vault.close();
         vault = await openVault(origin, account);
-        const photos = await vault.photos();
+        const photoIds = await vault.pendingPhotoIds();
+        const photo = await vault.loadPendingPhoto(photoId);
         if (
-          photos.length !== 1 ||
-          Array.from(photos[0].bytes).join(",") !== Array.from(bytes).join(",")
+          photoIds.length !== 1 ||
+          !photo ||
+          Array.from(photo.bytes).join(",") !== Array.from(bytes).join(",")
         )
           throw new Error("photo bytes changed across reopen");
         await vault.acknowledgePhoto(photoId);

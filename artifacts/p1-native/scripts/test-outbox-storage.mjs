@@ -122,6 +122,44 @@ assert.equal(
   ),
   false,
 );
+// Photo sync enumerates metadata once and loads exactly one requested row.
+globalThis.outboxQueries = [];
+const photoIds = await a.pendingPhotoIds();
+assert.equal(photoIds.length, 3);
+assert.equal(
+  globalThis.outboxQueries.some((sql) => /\bbytes\b/.test(sql)),
+  false,
+);
+const laterId = id(999);
+db.prepare("INSERT INTO photos(id,manifest,bytes) VALUES(?,?,?)").run(
+  laterId,
+  JSON.stringify({
+    id: laterId,
+    workOrderId: id(900),
+    capturedAt: at,
+    classification: "general",
+  }),
+  Buffer.alloc(512 * 1024, 7),
+);
+assert.equal(photoIds.includes(laterId), false);
+globalThis.outboxQueries = [];
+for (const photoId of photoIds) {
+  const photo = await a.loadPendingPhoto(photoId);
+  assert.equal(photo.id, photoId);
+  assert.equal(photo.bytes.length, 512 * 1024);
+}
+assert.equal(globalThis.outboxQueries.length, 3);
+assert.ok(
+  globalThis.outboxQueries.every((sql) =>
+    sql.includes("WHERE id=? AND state='pending' LIMIT 1"),
+  ),
+);
+assert.ok(!(await a.loadPendingPhoto("missing-photo")));
+assert.ok(!(await b.loadPendingPhoto(photoIds[0])));
+assert.ok((await a.pendingPhotoIds()).includes(laterId));
+console.log(
+  "PASS photo loading: ID listing has no BLOB projection; each requested row uses parameterized LIMIT1; later capture excluded from original snapshot; missing and other-account rows absent.",
+);
 await a.close();
 await b.close();
 db.close();
@@ -135,6 +173,12 @@ writeFileSync(
       metadataOnly: true,
       otherAccountEmpty: true,
       readOnlyCountsPreserved: true,
+      photoLoading: {
+        listingReadsBytes: false,
+        maximumRowsPerLoad: 1,
+        laterCaptureExcluded: true,
+        otherAccountReadDenied: true,
+      },
       limits:
         "Real SQLite; SecureStore/cipher adapters mocked, no native encryption claim",
     },

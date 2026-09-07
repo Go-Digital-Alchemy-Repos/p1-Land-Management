@@ -5,7 +5,8 @@ export type CaptureSyncResult = {
 };
 /** Independent delivery failures never discard captures or bypass identity locks. */
 export async function syncCaptures<Photo extends { id: string }>(steps: {
-  photos(): Promise<Photo[]>;
+  photoIds(): Promise<string[]>;
+  loadPhoto(id: string): Promise<Photo | null>;
   upload(photo: Photo): Promise<unknown>;
   acknowledgePhoto(id: string): Promise<void>;
   operations(): Promise<void>;
@@ -18,10 +19,15 @@ export async function syncCaptures<Photo extends { id: string }>(steps: {
     operationsProcessed: false,
   };
   steps.assertCurrent();
-  const photos = await steps.photos();
-  for (const photo of photos) {
+  const photoIds = [...(await steps.photoIds())];
+  for (const id of photoIds) {
     steps.assertCurrent();
     try {
+      // No prefetch: each BLOB becomes eligible for collection before the next load.
+      const photo = await steps.loadPhoto(id);
+      steps.assertCurrent();
+      if (!photo || photo.id !== id)
+        throw new Error("Saved photo could not be loaded for this attempt.");
       const receipt = await steps.upload(photo);
       steps.assertCurrent();
       if (

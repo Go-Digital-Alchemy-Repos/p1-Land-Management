@@ -347,7 +347,8 @@ export function Application({ services }: { services: ApplicationServices }) {
       vault.require(origin, current.accountId);
     };
     const result = await syncCaptures({
-      photos: () => current.photos(),
+      photoIds: () => current.pendingPhotoIds(),
+      loadPhoto: (id) => current.loadPendingPhoto(id),
       upload: async (photo) => {
         const m = JSON.parse(photo.manifest);
         return transport.request<PhotoUploadReceipt>(

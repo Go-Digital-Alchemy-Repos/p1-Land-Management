@@ -74,9 +74,13 @@ function resource(accountId: string): Vault {
     },
     recordResults: async () => recordUse("ack"),
     stagePhoto: async () => recordUse("photo"),
-    photos: async () => {
+    pendingPhotoIds: async () => {
       recordUse("photos");
       return [];
+    },
+    loadPendingPhoto: async () => {
+      recordUse("load-photo");
+      return null;
     },
     acknowledgePhoto: async () => recordUse("photo-ack"),
     destroy: async () => {

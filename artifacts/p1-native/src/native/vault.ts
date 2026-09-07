@@ -323,13 +323,20 @@ async function createVault(
       // Committed ciphertext is authoritative before temporary cleartext is removed.
       temporary.delete();
     },
-    async photos() {
-      return db.getAllAsync<{
+    async pendingPhotoIds(): Promise<string[]> {
+      const rows = await db.getAllAsync<{ id: string }>(
+        "SELECT id FROM photos WHERE state='pending' ORDER BY seq",
+      );
+      return rows.map((row) => row.id);
+    },
+    async loadPendingPhoto(id: string) {
+      return db.getFirstAsync<{
         id: string;
         manifest: string;
         bytes: Uint8Array;
       }>(
-        "SELECT id,manifest,bytes FROM photos WHERE state='pending' ORDER BY seq",
+        "SELECT id,manifest,bytes FROM photos WHERE id=? AND state='pending' LIMIT 1",
+        id,
       );
     },
     async acknowledgePhoto(id: string) {
