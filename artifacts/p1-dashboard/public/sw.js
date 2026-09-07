@@ -10,7 +10,7 @@ self.addEventListener("install", (event) =>
       const assets = [
         ...html.matchAll(/(?:src|href)=["'](\/assets\/[^"']+)["']/g),
       ].map((m) => m[1]);
-      await cache.addAll(["/icon.svg", "/icon-maskable.svg", "/manifest.webmanifest", ...assets]);
+      await cache.addAll(["/icon.svg", "/icon-maskable.svg", "/apple-touch-icon.png", "/manifest.webmanifest", ...assets]);
     })(),
   ),
 );
@@ -37,7 +37,7 @@ self.addEventListener("fetch", (event) => {
     return;
   if (event.request.mode === "navigate")
     event.respondWith(fetch(event.request).catch(() => caches.match("/")));
-  else if (url.pathname.startsWith("/assets/") || ["/icon.svg", "/icon-maskable.svg", "/manifest.webmanifest"].includes(url.pathname))
+  else if (url.pathname.startsWith("/assets/") || ["/icon.svg", "/icon-maskable.svg", "/apple-touch-icon.png", "/manifest.webmanifest"].includes(url.pathname))
     event.respondWith(
       caches.open(CACHE).then(async (cache) => {
         const saved = await cache.match(event.request);
