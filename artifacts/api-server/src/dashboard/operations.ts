@@ -206,10 +206,11 @@ operationsApi.post("/inspections", async (req, res) => {
               "not_assessed",
             ]),
             note: z.string().max(5000),
-          }),
+          }).strict(),
         )
         .max(100),
     })
+    .strict()
     .parse(req.body);
   await propertyAccess(a, b.propertyId);
   const key = randomUUID();

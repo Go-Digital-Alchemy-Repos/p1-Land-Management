@@ -455,6 +455,42 @@ test(
       (await customer("/api/v1/properties/" + pa + "/timeline")).data.length,
       0,
     );
+    assert.equal(
+      (
+        await owner("/api/v1/inspections", {
+          propertyId: pa,
+          title: "Invalid report",
+          findings: [],
+          unexpected: true,
+        })
+      ).status,
+      400,
+    );
+    assert.equal(
+      (
+        await owner("/api/v1/inspections", {
+          propertyId: pa,
+          title: "Invalid nested report",
+          findings: [
+            {
+              label: "North field",
+              condition: "monitor",
+              note: "",
+              unexpected: true,
+            },
+          ],
+        })
+      ).status,
+      400,
+    );
+    assert.equal(
+      (
+        await pool.query("SELECT count(*) FROM inspection WHERE property_id=$1", [
+          pa,
+        ])
+      ).rows[0].count,
+      "0",
+    );
     const inspection = (
       await owner("/api/v1/inspections", {
         propertyId: pa,
