@@ -14,6 +14,8 @@ export interface DashboardMe {
   /** @nullable */
   twoFactorEnabled?: boolean | null;
   mfaRequired: boolean;
+  /** @deprecated Compatibility alias for mfaRequired. */
+  ownerMfaRequired: boolean;
   /** @nullable */
   role: DashboardMeRole;
 }

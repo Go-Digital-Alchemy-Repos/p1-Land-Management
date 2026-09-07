@@ -83,12 +83,19 @@ api.get("/me", async (req, res) => {
     "SELECT role,active,mfa_required,EXISTS(SELECT 1 FROM session_assurance WHERE session_id=$2) AS assured FROM staff_profile WHERE user_id=$1",
     [s.user.id, s.session.id],
   );
+  const mfaRequired = !!(
+    p.rows[0]?.active &&
+    p.rows[0].mfa_required &&
+    (!s.user.twoFactorEnabled || !p.rows[0].assured)
+  );
   res.json({
     id: s.user.id,
     name: s.user.name,
     email: s.user.email,
     twoFactorEnabled: s.user.twoFactorEnabled,
-    mfaRequired: !!(p.rows[0]?.active && p.rows[0].mfa_required && (!s.user.twoFactorEnabled || !p.rows[0].assured)),
+    mfaRequired,
+    // Deprecated compatibility alias for existing native clients.
+    ownerMfaRequired: mfaRequired,
     role: p.rows[0]?.active ? p.rows[0].role : null,
   });
 });

@@ -2272,6 +2272,7 @@
           "name",
           "email",
           "mfaRequired",
+          "ownerMfaRequired",
           "role"
         ],
         "properties": {
@@ -2292,6 +2293,11 @@
           },
           "mfaRequired": {
             "type": "boolean"
+          },
+          "ownerMfaRequired": {
+            "type": "boolean",
+            "deprecated": true,
+            "description": "Deprecated compatibility alias for mfaRequired."
           },
           "role": {
             "type": [

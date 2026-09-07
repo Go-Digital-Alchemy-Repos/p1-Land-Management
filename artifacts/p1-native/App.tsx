@@ -523,6 +523,7 @@ export function Application({ services }: { services: ApplicationServices }) {
                     name: entry.displayName,
                     email: "",
                     role: "crew",
+                    mfaRequired: false,
                     ownerMfaRequired: false,
                   });
                   setOffline(true);
