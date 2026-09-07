@@ -51,16 +51,17 @@ try {
   };
   const cwd = resolve("artifacts/api-server");
   for (const args of [
-    ["exec", "tsx", "src/dashboard/migrate.ts"],
-    ["exec", "tsx", "src/dashboard/migrate.ts"],
-    ["exec", "tsx", "--test", "src/dashboard/commercial-ingress.test.ts"],
+    ["--import", "tsx", "src/dashboard/migrate.ts"],
+    ["--import", "tsx", "src/dashboard/migrate.ts"],
+    ["--import", "tsx", "--test", "src/dashboard/commercial-ingress.test.ts"],
+    ["--import", "tsx", "--test", "src/dashboard/files-retry.test.ts"],
   ]) {
-    const result = spawnSync("pnpm", args, { cwd, env, stdio: "inherit" });
+    const result = spawnSync(process.execPath, args, { cwd, env, stdio: "inherit" });
     if (result.status !== 0)
       throw Error("Commercial regression command failed");
   }
   console.log(
-    "PASS isolated commercial migrations/replay and receiver regressions; no live provider",
+    "PASS isolated commercial migrations/replay, receiver and upload regressions; no live provider",
   );
 } finally {
   if (created) run("docker", ["rm", "-f", name], { stdio: "ignore" });
