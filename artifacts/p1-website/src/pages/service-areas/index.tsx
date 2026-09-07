@@ -155,6 +155,8 @@ export default function ServiceAreasIndex() {
                   <img
                     src={unionCountyImg}
                     alt="Equestrian pasture and fencing on a horse farm in Union County, NC"
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>
@@ -179,6 +181,8 @@ export default function ServiceAreasIndex() {
                   <img
                     src={lancasterCountyImg}
                     alt="Heavy equipment performing sitework on a development site in Lancaster County, SC"
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>
@@ -203,6 +207,8 @@ export default function ServiceAreasIndex() {
                   <img
                     src={yorkCountyImg}
                     alt="Lakeside lawn maintenance on a Lake Wylie waterfront estate in York County, SC"
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>

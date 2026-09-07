@@ -149,6 +149,8 @@ export default function CharlotteRegionNC() {
                 <img
                   src={unionCountyImg}
                   alt="Equestrian pasture and fencing on a horse farm in Union County, NC"
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
               </div>

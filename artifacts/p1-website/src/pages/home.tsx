@@ -115,7 +115,7 @@ export default function Home() {
       {/* HERO */}
       <section className="relative overflow-hidden bg-navy-deep">
         <div className="absolute inset-0">
-          <img src={heroImg} alt="Heavy equipment shaping large acreage" className="h-full w-full object-cover" style={{ opacity: 0.5 }} />
+          <img src={heroImg} alt="Heavy equipment shaping large acreage" fetchPriority="high" decoding="async" className="h-full w-full object-cover" style={{ opacity: 0.5 }} />
         </div>
         <div
           className="absolute inset-0"
@@ -209,7 +209,7 @@ export default function Home() {
                 onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "0 1px 0 hsl(215 30% 15% / 0.04)"; }}
               >
                 <div className="relative h-52 overflow-hidden">
-                  <img src={s.img} alt={s.title} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                  <img src={s.img} alt={s.title} loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
                   <div className="absolute inset-0" style={{ background: "linear-gradient(to top, hsl(215 50% 11% / 0.55), transparent 55%)" }} />
                   <span className="absolute left-4 top-4 flex h-9 w-9 items-center justify-center rounded-[3px] font-sans text-xs font-bold tabular-nums text-primary backdrop-blur" style={{ background: "hsl(40 22% 97% / 0.92)" }}>
                     {s.n}
@@ -241,7 +241,7 @@ export default function Home() {
               <div className="absolute -left-4 -top-4 h-full w-full rounded-[4px] bg-primary" style={{ opacity: 0.9 }} />
               <div className="absolute -bottom-5 -right-5 h-28 w-28 rounded-[4px] bg-clay" />
               <div className="relative overflow-hidden rounded-[4px] border-4 border-white" style={{ boxShadow: "0 40px 70px -34px hsl(215 45% 15%)" }}>
-                <img src={featureImg} alt="Grading for new construction" className="h-[420px] w-full object-cover" />
+                <img src={featureImg} alt="Grading for new construction" loading="lazy" decoding="async" className="h-[420px] w-full object-cover" />
               </div>
               <div className="absolute -bottom-6 left-8 z-10 rounded-[3px] bg-navy px-5 py-4 text-white" style={{ boxShadow: "0 20px 40px -18px hsl(215 45% 15%)" }}>
                 <div className="font-sans text-3xl font-black leading-none text-tan">Site Prep</div>
@@ -334,7 +334,7 @@ export default function Home() {
               <div className="relative">
                 <div className="absolute -left-3 -top-3 h-full w-full rounded-[4px] bg-clay" style={{ opacity: 0.9 }} />
                 <div className="relative overflow-hidden rounded-[4px] border-4 border-white" style={{ boxShadow: "0 30px 60px -28px hsl(215 45% 15%)" }}>
-                  <img src={testimonialImg} alt="Illustrative commercial property" className="h-[340px] w-full object-cover" />
+                  <img src={testimonialImg} alt="Illustrative commercial property" loading="lazy" decoding="async" className="h-[340px] w-full object-cover" />
                 </div>
               </div>
             </div>

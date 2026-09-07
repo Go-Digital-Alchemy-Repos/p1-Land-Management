@@ -12,6 +12,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "check:faq": "node scripts/validate-faq-schema.mjs",
     "check:layout": "node scripts/check-layout.mjs",
+    "check:media": "node scripts/check-image-loading.mjs",
     "optimize:images": "node scripts/optimize-images.mjs",
     "check:images": "node scripts/image-budget.mjs",
     "check:server": "node --test server/*.test.mjs"

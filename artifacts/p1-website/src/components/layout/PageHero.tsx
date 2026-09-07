@@ -30,7 +30,7 @@ export function PageHero({ eyebrow, title, subtitle, image, imageAlt = "", child
     <section className="relative overflow-hidden bg-navy-deep">
       {image && (
         <div className="absolute inset-0">
-          <img src={image} alt={imageAlt} className="h-full w-full object-cover" style={{ opacity: 0.5 }} />
+          <img src={image} alt={imageAlt} fetchPriority="high" decoding="async" className="h-full w-full object-cover" style={{ opacity: 0.5 }} />
         </div>
       )}
       <div

@@ -153,6 +153,8 @@ export default function UpstateSC() {
                 <img
                   src={lancasterCountyImg}
                   alt="Heavy equipment performing sitework on a development site in Lancaster County, SC"
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
               </div>
