@@ -21,3 +21,22 @@ Evidence: `/tmp/p1-core-1869384-{full,type,build,docker}.log`, `/tmp/p1-core-186
 Authenticated CMS inventory defines36 editable components across35 routes. Eight have published snapshots. The other27 page components plus shared `home/site-chrome` return draftRevision0 and publishedRevision null. Their public CMS endpoint404 means no stored publication; the website currently renders matching manifest defaults at revision0. Thus unchanged404 responses establish parity only, not completed content import.
 
 The exact Core defaults match the currently deployed public03ba5b8 manifest defaults for all36 components. `/tmp/p1-core-1869384-publication-inventory.json` records exact keys, revisions, field counts and both default hashes. Initial publication of the28 eligible components remains a separate reviewed staging action. Existing eight publications must not be overwritten. Source/config migration of the retained railway.toml is also deferred; Railway reports its deprecation deadline as December1,2026.
+
+## Authorized completion of the missing staging publications
+
+The Orchestrator approved initial publication after the gap above was verified. A fresh scoped Core staging PostgreSQL custom dump was captured before mutations:191247 bytes, SHA-256 `9d2d442aa6fa61438eb4b20d7ea974088ba3a074c77c68de91a4cb33d4eb490d`, captured `2026-09-07T10:30:54.870018Z`, private local file `/tmp/p1-core-before-initial-publication.dump`. PostgreSQL18 `pg_restore --list` read its catalog successfully. This is backup capture/catalog validation, not a new restore rehearsal; prior staging restore evidence remains separate.
+
+Frozen proposal SHA-256 `f29541c6ffa50d5b3aa2640af53bb763a02aa0f478c7075ad6a1959e31a389c5`; exact36-component inventory SHA-256 `38a4beb3f575bd96d45fccc30a9cd4b209dc7f7309d4298db5b3e55332ce61f9`. Files: `/tmp/p1-cms-initial-publication-proposal.md` and `/tmp/p1-core-1869384-publication-inventory.json`.
+
+From10:31:46–10:32:20Z, the retained authenticated CMS API initialized exactly28 previously unpublished components. Each was re-read and required draftRevision0, null publication and exact approved default hash, then saved with expectedRevision0 and published using its returned revision. Each ended at publishedRevision2. All mutations completed without conflict or blind retry. The eight existing publications were excluded and retained their exact revisions/content hashes.
+
+Post-initialization verification passed:
+
+- All36 anonymous component endpoints return200 with expected content and publication revisions.
+- All35 crawler HTML documents are byte-identical after removing only the serialized hydration-state script; their page publication revisions match Core, and shared globalRevision is2.
+- All35 sitemap lastmod dates exactly match their page publication timestamps.
+- No private preview markers, aggregateRating or ratingValue appeared.
+- Existing sparse published records retain the supported default-field merge; no existing record was rewritten to fill those fields.
+- Representative revision history records show actor-attributed draft-save1 and publish2. A subsequent optional bulk history read hit the existing429 rate limit; no limits were weakened and no mutations were retried.
+
+Execution receipts: `/tmp/p1-cms-initial-publication-execution.json`. Final36-component/35-page evidence: `/tmp/p1-cms-initial-publication-verification.json`; sitemap: `/tmp/p1-cms-initial-publication-sitemap.xml`. The confirmed missing-publication gap is now closed in staging. Production initialization and broader full-editor acceptance remain separate gates. No production publication or deployment was performed.
