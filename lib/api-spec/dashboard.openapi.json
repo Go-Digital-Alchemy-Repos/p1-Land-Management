@@ -876,6 +876,108 @@
         }
       }
     },
+    "/assessment-availability": {
+      "get": {
+        "operationId": "getAssessmentAvailability",
+        "description": "Returns the office-managed assessment configuration, active blackout dates, and the America/New_York operating timezone. Owner, manager, and dispatch roles only.",
+        "responses": {
+          "200": { "description": "Current configuration", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AssessmentAvailability" } } } },
+          "401": { "description": "Verified session required" },
+          "403": { "description": "Owner, manager, or dispatch role required" }
+        }
+      },
+      "post": {
+        "operationId": "saveAssessmentAvailability",
+        "description": "Updates the configured weekly assessment windows using an optimistic version. Saving cancels unbooked future generated slots; booked appointments are retained.",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AssessmentAvailabilityUpdate" } } } },
+        "responses": {
+          "200": { "description": "Updated configuration", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AssessmentAvailabilityConfiguration" } } } },
+          "400": { "description": "Invalid or overlapping weekly window" },
+          "401": { "description": "Verified session required" },
+          "403": { "description": "Owner, manager, or dispatch role required" },
+          "409": { "description": "Availability changed; reload before saving" }
+        }
+      }
+    },
+    "/assessment-availability/generate": {
+      "post": {
+        "operationId": "generateAssessmentAvailability",
+        "description": "Generates slots from configured weekly availability for one through 90 calendar days. Existing bookings, blackouts, daylight-saving transitions, and travel buffers are preserved.",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/GenerateAssessmentAvailability" } } } },
+        "responses": {
+          "200": { "description": "Generation result", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/GeneratedAssessmentAvailability" } } } },
+          "400": { "description": "Invalid date range or a range outside one through 90 days" },
+          "401": { "description": "Verified session required" },
+          "403": { "description": "Owner, manager, or dispatch role required" }
+        }
+      }
+    },
+    "/assessment-availability/blackouts": {
+      "post": {
+        "operationId": "createAssessmentBlackout",
+        "description": "Adds an office blackout. It cannot overlap a booked assessment, including configured travel buffers.",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateAssessmentBlackout" } } } },
+        "responses": {
+          "201": { "description": "Blackout created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreatedResource" } } } },
+          "400": { "description": "Invalid blackout interval" },
+          "401": { "description": "Verified session required" },
+          "403": { "description": "Owner, manager, or dispatch role required" },
+          "409": { "description": "Blackout overlaps a booked assessment" }
+        }
+      }
+    },
+    "/assessment-availability/blackouts/{id}/archive": {
+      "post": {
+        "operationId": "archiveAssessmentBlackout",
+        "description": "Archives an active assessment blackout. It does not restore cancelled slots automatically.",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "responses": {
+          "200": { "description": "Blackout archived", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/OperationReceipt" } } } },
+          "401": { "description": "Verified session required" },
+          "403": { "description": "Owner, manager, or dispatch role required" },
+          "404": { "description": "Active blackout not found" }
+        }
+      }
+    },
+    "/assessment-slots": {
+      "get": {
+        "operationId": "listAvailableAssessmentSlots",
+        "description": "Returns up to 100 future, unbooked slots outside active blackouts. Office roles and invited clients may read availability; clients still need office confirmation for non-assessment services.",
+        "responses": {
+          "200": { "description": "Available assessment slots", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/AssessmentSlot" } } } } },
+          "401": { "description": "Verified session required" },
+          "403": { "description": "Business role required" }
+        }
+      },
+      "post": {
+        "operationId": "createManualAssessmentSlot",
+        "description": "Creates a future manual assessment appointment, subject to blackout and buffered-slot collision checks. Owner, manager, and dispatch roles only.",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateManualAssessmentSlot" } } } },
+        "responses": {
+          "201": { "description": "Slot created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreatedResource" } } } },
+          "400": { "description": "Invalid or non-future appointment interval" },
+          "401": { "description": "Verified session required" },
+          "403": { "description": "Owner, manager, or dispatch role required" },
+          "409": { "description": "Slot overlaps availability, a blackout, or another appointment" }
+        }
+      }
+    },
+    "/assessment-slots/{id}/book": {
+      "post": {
+        "operationId": "bookAssessmentSlot",
+        "description": "Atomically reserves an available assessment slot for an accessible operational property. Repeated racing attempts result in one success and a conflict response; the booking does not create a work order or invoice.",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/BookAssessmentSlot" } } } },
+        "responses": {
+          "200": { "description": "Slot booked", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/OperationReceipt" } } } },
+          "400": { "description": "Invalid slot or property identifier" },
+          "401": { "description": "Verified session required" },
+          "403": { "description": "Business role required" },
+          "404": { "description": "Accessible operational property not found" },
+          "409": { "description": "Appointment is no longer available" }
+        }
+      }
+    },
     "/requests": {
       "get": {
         "operationId": "listServiceRequests",
@@ -2705,6 +2807,114 @@
             "type": "string",
             "format": "uuid"
           }
+        }
+      },
+      "OperationReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["ok"],
+        "properties": {
+          "ok": { "type": "boolean", "enum": [true] }
+        }
+      },
+      "AssessmentAvailabilityWindow": {
+        "type": "object",
+        "required": ["day", "start", "end"],
+        "properties": {
+          "day": { "type": "integer", "minimum": 0, "maximum": 6, "description": "Day of week, where 0 is Sunday and 6 is Saturday." },
+          "start": { "type": "string", "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$" },
+          "end": { "type": "string", "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$" }
+        }
+      },
+      "AssessmentAvailabilityConfiguration": {
+        "type": "object",
+        "required": ["id", "version", "duration_minutes", "buffer_before", "buffer_after", "windows"],
+        "properties": {
+          "id": { "type": "boolean", "enum": [true] },
+          "version": { "type": "integer", "minimum": 1 },
+          "duration_minutes": { "type": "integer", "minimum": 15, "maximum": 240 },
+          "buffer_before": { "type": "integer", "minimum": 0, "maximum": 120 },
+          "buffer_after": { "type": "integer", "minimum": 0, "maximum": 120 },
+          "windows": { "type": "array", "maxItems": 14, "items": { "$ref": "#/components/schemas/AssessmentAvailabilityWindow" } }
+        }
+      },
+      "AssessmentBlackout": {
+        "type": "object",
+        "required": ["id", "starts_at", "ends_at", "reason", "archived"],
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "starts_at": { "type": "string", "format": "date-time" },
+          "ends_at": { "type": "string", "format": "date-time" },
+          "reason": { "type": "string", "minLength": 1, "maxLength": 500 },
+          "archived": { "type": "boolean" }
+        }
+      },
+      "AssessmentAvailability": {
+        "type": "object",
+        "required": ["config", "blackouts", "timeZone"],
+        "properties": {
+          "config": { "$ref": "#/components/schemas/AssessmentAvailabilityConfiguration" },
+          "blackouts": { "type": "array", "items": { "$ref": "#/components/schemas/AssessmentBlackout" } },
+          "timeZone": { "type": "string", "enum": ["America/New_York"] }
+        }
+      },
+      "AssessmentAvailabilityUpdate": {
+        "type": "object",
+        "required": ["version", "durationMinutes", "bufferBefore", "bufferAfter", "windows"],
+        "properties": {
+          "version": { "type": "integer", "minimum": 1 },
+          "durationMinutes": { "type": "integer", "minimum": 15, "maximum": 240 },
+          "bufferBefore": { "type": "integer", "minimum": 0, "maximum": 120 },
+          "bufferAfter": { "type": "integer", "minimum": 0, "maximum": 120 },
+          "windows": { "type": "array", "maxItems": 14, "items": { "$ref": "#/components/schemas/AssessmentAvailabilityWindow" } }
+        }
+      },
+      "GenerateAssessmentAvailability": {
+        "type": "object",
+        "required": ["from", "through"],
+        "properties": {
+          "from": { "type": "string", "format": "date" },
+          "through": { "type": "string", "format": "date" }
+        }
+      },
+      "GeneratedAssessmentAvailability": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["created"],
+        "properties": { "created": { "type": "integer", "minimum": 0 } }
+      },
+      "CreateAssessmentBlackout": {
+        "type": "object",
+        "required": ["startsAt", "endsAt", "reason"],
+        "properties": {
+          "startsAt": { "type": "string", "format": "date-time" },
+          "endsAt": { "type": "string", "format": "date-time" },
+          "reason": { "type": "string", "minLength": 1, "maxLength": 500 }
+        }
+      },
+      "AssessmentSlot": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "starts_at", "ends_at"],
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "starts_at": { "type": "string", "format": "date-time" },
+          "ends_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "CreateManualAssessmentSlot": {
+        "type": "object",
+        "required": ["startsAt", "endsAt"],
+        "properties": {
+          "startsAt": { "type": "string", "format": "date-time" },
+          "endsAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "BookAssessmentSlot": {
+        "type": "object",
+        "required": ["propertyId"],
+        "properties": {
+          "propertyId": { "type": "string", "format": "uuid" }
         }
       },
       "CreateServiceRequest": {

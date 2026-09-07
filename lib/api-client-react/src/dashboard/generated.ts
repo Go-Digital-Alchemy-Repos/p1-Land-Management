@@ -29,14 +29,21 @@ import type {
   AgreementPreparationRetryReceipt,
   AgreementRecurrenceOption,
   AgreementVersion,
+  AssessmentAvailability,
+  AssessmentAvailabilityConfiguration,
+  AssessmentAvailabilityUpdate,
+  AssessmentSlot,
   BillingDraft,
+  BookAssessmentSlot,
   CancelServiceAgreement,
   CommercialFollowUp,
   CommercialInquiry,
   CommercialInquiryDetail,
   CommercialInquiryPage,
+  CreateAssessmentBlackout,
   CreateBillingDraft,
   CreateInspectionReport,
+  CreateManualAssessmentSlot,
   CreateServiceAgreement,
   CreateServiceRequest,
   CreatedResource,
@@ -44,6 +51,8 @@ import type {
   DashboardProperty,
   EditServiceAgreement,
   FieldSyncResponse,
+  GenerateAssessmentAvailability,
+  GeneratedAssessmentAvailability,
   GetScheduleParams,
   GetSetupStatus200,
   InspectionReport,
@@ -53,6 +62,7 @@ import type {
   ListAgreementPreparationJobsParams,
   ListCommercialInquiriesParams,
   ListServiceAgreementsParams,
+  OperationReceipt,
   PhotoUploadReceipt,
   PropertyFile,
   PropertyTimelineEvent,
@@ -395,6 +405,204 @@ export const getDashboardMe = async ( options?: RequestInit): Promise<DashboardM
     method: 'GET'
 
 
+  }
+);}
+
+
+
+export const getGetAssessmentAvailabilityUrl = () => {
+
+
+
+
+  return `/api/v1/assessment-availability`
+}
+
+/**
+ * Returns the office-managed assessment configuration, active blackout dates, and the America/New_York operating timezone. Owner, manager, and dispatch roles only.
+ */
+export const getAssessmentAvailability = async ( options?: RequestInit): Promise<AssessmentAvailability> => {
+
+  return customFetch<AssessmentAvailability>(getGetAssessmentAvailabilityUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getSaveAssessmentAvailabilityUrl = () => {
+
+
+
+
+  return `/api/v1/assessment-availability`
+}
+
+/**
+ * Updates the configured weekly assessment windows using an optimistic version. Saving cancels unbooked future generated slots; booked appointments are retained.
+ */
+export const saveAssessmentAvailability = async (assessmentAvailabilityUpdate: AssessmentAvailabilityUpdate, options?: RequestInit): Promise<AssessmentAvailabilityConfiguration> => {
+
+  return customFetch<AssessmentAvailabilityConfiguration>(getSaveAssessmentAvailabilityUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      assessmentAvailabilityUpdate,)
+  }
+);}
+
+
+
+export const getGenerateAssessmentAvailabilityUrl = () => {
+
+
+
+
+  return `/api/v1/assessment-availability/generate`
+}
+
+/**
+ * Generates slots from configured weekly availability for one through 90 calendar days. Existing bookings, blackouts, daylight-saving transitions, and travel buffers are preserved.
+ */
+export const generateAssessmentAvailability = async (generateAssessmentAvailability: GenerateAssessmentAvailability, options?: RequestInit): Promise<GeneratedAssessmentAvailability> => {
+
+  return customFetch<GeneratedAssessmentAvailability>(getGenerateAssessmentAvailabilityUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      generateAssessmentAvailability,)
+  }
+);}
+
+
+
+export const getCreateAssessmentBlackoutUrl = () => {
+
+
+
+
+  return `/api/v1/assessment-availability/blackouts`
+}
+
+/**
+ * Adds an office blackout. It cannot overlap a booked assessment, including configured travel buffers.
+ */
+export const createAssessmentBlackout = async (createAssessmentBlackout: CreateAssessmentBlackout, options?: RequestInit): Promise<CreatedResource> => {
+
+  return customFetch<CreatedResource>(getCreateAssessmentBlackoutUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createAssessmentBlackout,)
+  }
+);}
+
+
+
+export const getArchiveAssessmentBlackoutUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/assessment-availability/blackouts/${id}/archive`
+}
+
+/**
+ * Archives an active assessment blackout. It does not restore cancelled slots automatically.
+ */
+export const archiveAssessmentBlackout = async (id: string, options?: RequestInit): Promise<OperationReceipt> => {
+
+  return customFetch<OperationReceipt>(getArchiveAssessmentBlackoutUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+export const getListAvailableAssessmentSlotsUrl = () => {
+
+
+
+
+  return `/api/v1/assessment-slots`
+}
+
+/**
+ * Returns up to 100 future, unbooked slots outside active blackouts. Office roles and invited clients may read availability; clients still need office confirmation for non-assessment services.
+ */
+export const listAvailableAssessmentSlots = async ( options?: RequestInit): Promise<AssessmentSlot[]> => {
+
+  return customFetch<AssessmentSlot[]>(getListAvailableAssessmentSlotsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateManualAssessmentSlotUrl = () => {
+
+
+
+
+  return `/api/v1/assessment-slots`
+}
+
+/**
+ * Creates a future manual assessment appointment, subject to blackout and buffered-slot collision checks. Owner, manager, and dispatch roles only.
+ */
+export const createManualAssessmentSlot = async (createManualAssessmentSlot: CreateManualAssessmentSlot, options?: RequestInit): Promise<CreatedResource> => {
+
+  return customFetch<CreatedResource>(getCreateManualAssessmentSlotUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createManualAssessmentSlot,)
+  }
+);}
+
+
+
+export const getBookAssessmentSlotUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/assessment-slots/${id}/book`
+}
+
+/**
+ * Atomically reserves an available assessment slot for an accessible operational property. Repeated racing attempts result in one success and a conflict response; the booking does not create a work order or invoice.
+ */
+export const bookAssessmentSlot = async (id: string,
+    bookAssessmentSlot: BookAssessmentSlot, options?: RequestInit): Promise<OperationReceipt> => {
+
+  return customFetch<OperationReceipt>(getBookAssessmentSlotUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      bookAssessmentSlot,)
   }
 );}
 
