@@ -18,6 +18,13 @@ assert.match(pageHero, /src=\{image\}[\s\S]*?fetchPriority="high"[\s\S]*?decodin
 const finalCta = source("src/components/layout/FinalCTA.tsx");
 assert.match(finalCta, /src=\{ctaImg\}[\s\S]*?loading="lazy"[\s\S]*?decoding="async"/, "footer CTA imagery must defer");
 
+const responsiveImages = source("src/lib/responsive-images.ts");
+assert.match(responsiveImages, /optimized\/\*\*\/\*\.webp/, "responsive image lookup must use WebP assets only");
+assert.doesNotMatch(responsiveImages, /avif/i, "responsive image lookup must not package AVIF assets");
+
+const optimizer = source("scripts/optimize-images.mjs");
+assert.match(optimizer, /for \(const format of \['webp'\]\)/, "image optimizer must generate WebP variants only");
+
 const commercial = source("src/pages/commercial.tsx");
 assert.match(commercial, /src=\{hero\}[\s\S]*?fetchPriority="high"[\s\S]*?decoding="async"/, "commercial hero must retain high loading priority");
 assert.match(commercial, /src=\{water\}[\s\S]*?loading="lazy"[\s\S]*?decoding="async"/, "commercial supporting image must defer");

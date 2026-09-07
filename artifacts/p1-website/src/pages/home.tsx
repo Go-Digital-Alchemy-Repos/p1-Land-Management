@@ -132,7 +132,7 @@ export default function Home() {
               <Kicker onDark>The Land Specialists</Kicker>
             </div>
             <h1 className="max-w-3xl font-display text-[clamp(2.6rem,6.4vw,5.4rem)] font-light leading-[0.98] tracking-[-0.02em] text-white">
-              Your first impressions{" "}
+              Your first impression{" "}
               <em className="font-semibold not-italic text-tan" style={{ fontStyle: "italic" }}>
                 start at the curb.
               </em>

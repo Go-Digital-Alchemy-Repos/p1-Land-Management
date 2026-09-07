@@ -1,6 +1,6 @@
 import manifest from "@/assets/image-manifest.json";
 
-const urls = import.meta.glob<string>("../assets/optimized/**/*.{webp,avif}", {
+const urls = import.meta.glob<string>("../assets/optimized/**/*.webp", {
   eager: true,
   query: "?url",
   import: "default",
@@ -19,17 +19,5 @@ export function responsiveImageProps(src: unknown, sizes = "(max-width: 767px) 1
     width: image.width,
     height: image.height,
     decoding: "async" as const,
-  };
-}
-
-/** Use on a <source type="image/avif"> inside <picture> when explicitly supported. */
-export function avifImageSource(src: string, sizes = "100vw") {
-  const image = images.get(src);
-  if (!image) return undefined;
-  return {
-    type: "image/avif",
-    srcSet: image.variants.filter((variant) => variant.format === "avif")
-      .map((variant) => `${urlFor(variant.path)} ${variant.width}w`).join(", "),
-    sizes,
   };
 }

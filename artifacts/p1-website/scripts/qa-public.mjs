@@ -37,6 +37,13 @@ try {
     }
     const html = readFileSync(resolve(root, `dist/public/${path === '/' ? '' : path.slice(1) + '/'}index.html`), 'utf8');
     assert(!html.includes('GeneralContractor'), `${path}: competing business schema`);
+    for (const image of html.matchAll(/<img\b[^>]*\bsrc="([^"]+)"[^>]*>/g)) {
+      const src = image[1].split('?')[0];
+      assert(!/\.(?:png|jpe?g|avif)$/i.test(src), `${path}: public raster image must use WebP (${src})`);
+    }
+    for (const srcSet of html.matchAll(/\bsrcSet="([^"]+)"/g)) {
+      assert(!/\.(?:png|jpe?g|avif)(?:\s|,|$)/i.test(srcSet[1]), `${path}: responsive image candidates must use WebP`);
+    }
     for (const match of html.matchAll(/<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)) {
       assert(match[0].includes('data-seo-jsonld'), `${path}: schema cleanup marker`);
       JSON.parse(match[1]);
@@ -63,6 +70,7 @@ try {
 const manifestPath = resolve(root, 'dist/public/.vite/manifest.json');
 if (!existsSync(manifestPath)) throw new Error('Build with Vite manifest enabled before measuring JavaScript budgets');
 const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+assert(!Object.values(manifest).some((item) => /\.avif$/i.test(item.file)), 'Public asset manifest must not package AVIF images');
 const entry = Object.keys(manifest).find(key => manifest[key].isEntry);
 assert(entry, 'Manifest entry');
 let worst = { route: '', bytes: 0 };

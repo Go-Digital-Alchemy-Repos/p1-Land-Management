@@ -24,16 +24,16 @@ for (const file of await walk(root)) {
   const metadata = await sharp(input).metadata();
   const variants = [];
   for (const width of widths.filter((value, index) => value <= metadata.width || index === 0)) {
-    for (const format of ['webp', 'avif']) {
+    for (const format of ['webp']) {
       const relative = `optimized/${stem}-${width}.${format}`;
       const output = path.join(root, relative);
       await mkdir(path.dirname(output), { recursive: true });
       const budget = width <= 768 ? 100_000 : 250_000;
-      let quality = format === 'webp' ? 78 : 58;
+      let quality = 78;
       let result;
       do {
         result = await sharp(input).keepXmp().rotate().resize({ width, withoutEnlargement: true })
-          [format]({ quality, effort: format === 'avif' ? 5 : 5 }).toBuffer({ resolveWithObject: true });
+          [format]({ quality, effort: 5 }).toBuffer({ resolveWithObject: true });
         if (result.data.length <= budget || quality <= 35) break;
         quality -= 5;
       } while (true);
