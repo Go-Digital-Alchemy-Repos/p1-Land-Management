@@ -700,6 +700,95 @@
           }
         }
       }
+    },
+    "/work-orders/{id}/readiness": {
+      "post": {
+        "operationId": "updateWorkReadiness",
+        "description": "Owner/manager/dispatch only. Operational property required. Version-locked draft/scheduled/delayed edits; accepted changes clear prior overrides and audit before/after. Unchanged requirements return400. Started/stale work returns409.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadinessResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or cursor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Role or owner assurance required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Record absent or private",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Stale version or state conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardError"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReadinessUpdate"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1220,6 +1309,80 @@
           "id",
           "version"
         ]
+      },
+      "ReadinessItem": {
+        "type": "object",
+        "required": [
+          "label",
+          "done"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          },
+          "done": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ReadinessUpdate": {
+        "type": "object",
+        "required": [
+          "version",
+          "prerequisites",
+          "reason"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "prerequisites": {
+            "type": "array",
+            "maxItems": 50,
+            "items": {
+              "$ref": "#/components/schemas/ReadinessItem"
+            }
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        }
+      },
+      "ReadinessResult": {
+        "type": "object",
+        "required": [
+          "id",
+          "version",
+          "prerequisites",
+          "override_reason"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "prerequisites": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReadinessItem"
+            }
+          },
+          "override_reason": {
+            "type": "null",
+            "description": "Accepted requirement edits clear the previous override."
+          }
+        }
       }
     }
   }

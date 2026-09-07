@@ -1,14 +1,11 @@
+import { updateWorkReadiness } from "@workspace/api-client-react/dashboard";
 import { useState } from "react";
 import "./work-readiness.css";
-export type ReadinessItem = { label: string; done: boolean };
-export type ReadinessUpdate = {
-  version: number;
-  prerequisites: ReadinessItem[];
-  reason: string;
-};
+export type ReadinessUpdate = Parameters<typeof updateWorkReadiness>[1];
+export type ReadinessItem = ReadinessUpdate["prerequisites"][number];
 export function WorkReadiness({
   work,
-  save,
+  save = updateWorkReadiness,
   onChanged,
   online = true,
 }: {
@@ -19,7 +16,7 @@ export function WorkReadiness({
     prerequisites: ReadinessItem[];
     override_reason?: string | null;
   };
-  save: (id: string, input: ReadinessUpdate) => Promise<unknown>;
+  save?: (id: string, input: ReadinessUpdate) => Promise<unknown>;
   onChanged: () => Promise<void>;
   online?: boolean;
 }) {

@@ -1384,7 +1384,7 @@ function App() {
                               </button>
                             )}
                         </div>
-                        {ops && view === "Schedule" && <WorkReadiness key={w.id + ":" + w.version} work={{...w, prerequisites: w.prerequisites || []}} online={isOnline} save={(id, input) => api("/work-orders/" + id + "/readiness", input)} onChanged={refresh} />}
+                        {ops && view === "Schedule" && <WorkReadiness key={w.id + ":" + w.version} work={{...w, prerequisites: w.prerequisites || []}} online={isOnline} onChanged={refresh} />}
                       </article>
                     ))
                 ) : (

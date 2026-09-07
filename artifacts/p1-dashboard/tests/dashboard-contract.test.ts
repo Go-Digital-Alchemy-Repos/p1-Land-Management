@@ -5,6 +5,7 @@ import {
   updateCommercialFollowUp,
   getSchedule,
   rescheduleWork,
+  updateWorkReadiness,
 } from "@workspace/api-client-react/dashboard";
 test("generated dashboard client preserves cursor filters, explicit nulls and conflict errors", async () => {
   const original = globalThis.fetch;
@@ -73,6 +74,21 @@ test("generated dashboard client preserves cursor filters, explicit nulls and co
       reason: "Reassign",
     });
     assert.equal(JSON.parse(String(calls.at(-1)!.init?.body)).assignedTo, null);
+    await updateWorkReadiness("work-id", {
+      version: 4,
+      prerequisites: [{ label: "Equipment: inspection", done: true }],
+      reason: "Inspection completed",
+    });
+    assert.equal(calls.at(-1)!.init?.method, "POST");
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      "/api/v1/work-orders/work-id/readiness",
+    );
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), {
+      version: 4,
+      prerequisites: [{ label: "Equipment: inspection", done: true }],
+      reason: "Inspection completed",
+    });
     fail = true;
     await assert.rejects(
       listCommercialInquiries(),

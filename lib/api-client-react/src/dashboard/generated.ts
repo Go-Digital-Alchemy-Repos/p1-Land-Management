@@ -14,6 +14,8 @@ import type {
   GetScheduleParams,
   GetSetupStatus200,
   ListCommercialInquiriesParams,
+  ReadinessResult,
+  ReadinessUpdate,
   RescheduleWork,
   SchedulePage,
   SyncFieldEventsBody,
@@ -244,6 +246,32 @@ export const rescheduleWork = async (id: string,
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
       rescheduleWork,)
+  }
+);}
+
+
+
+export const getUpdateWorkReadinessUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/work-orders/${id}/readiness`
+}
+
+/**
+ * Owner/manager/dispatch only. Operational property required. Version-locked draft/scheduled/delayed edits; accepted changes clear prior overrides and audit before/after. Unchanged requirements return400. Started/stale work returns409.
+ */
+export const updateWorkReadiness = async (id: string,
+    readinessUpdate: ReadinessUpdate, options?: RequestInit): Promise<ReadinessResult> => {
+
+  return customFetch<ReadinessResult>(getUpdateWorkReadinessUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      readinessUpdate,)
   }
 );}
 
