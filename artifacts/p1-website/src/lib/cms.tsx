@@ -1,4 +1,5 @@
 import { applyPreviewOverlay, type CmsPreviewOverlay } from "./cms-preview";
+import { fieldId, legacyCmsFieldKey } from "./cms-field-identity";
 import React, { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 
 export type CmsValues = Record<string, string>;
@@ -6,11 +7,6 @@ export type CmsSnapshot = { route: string; content: CmsValues; global: CmsValues
 export type CmsField = { path: string; label: string; type: 'text' | 'textarea' | 'image' | 'imageAlt' | 'ctaTarget'; required: boolean; maxLength: number };
 export type CmsCollection = { page: Record<string, { field: CmsField; value: string }>; global: Record<string, { field: CmsField; value: string }> };
 export function routeId(path: string) { return path === '/' ? 'home' : path.replace(/^\/+|\/+$/g, '').replace(/[^a-z0-9]+/g, '-'); }
-export function fieldId(value: string, kind = 'text') {
-  let hash = 2166136261;
-  for (const char of `${kind}:${value}`) hash = Math.imul(hash ^ char.charCodeAt(0), 16777619);
-  return 'f' + (hash >>> 0).toString(36);
-}
 const Context = createContext<{ snapshot: CmsSnapshot; collect?: CmsCollection }>({ snapshot: { route: '/', content: {}, global: {} } });
 export function useCms() { return useContext(Context); }
 export function safeValue(value: unknown, kind: string): value is string {
@@ -20,14 +16,18 @@ export function safeValue(value: unknown, kind: string): value is string {
   return true;
 }
 export function cmsValue(context: ReturnType<typeof useCms>, original: string, kind: CmsField['type'] = 'text', global = false, explicitKey?: string) {
-  const key = explicitKey || fieldId(original, kind === 'imageAlt' ? 'alt' : kind === 'textarea' ? 'text' : kind);
+  const fieldKind = kind === 'imageAlt' ? 'alt' : kind === 'textarea' ? 'text' : kind;
+  const derivedKey = fieldId(original, fieldKind);
+  const key = explicitKey || legacyCmsFieldKey(original, fieldKind) || derivedKey;
   const values = global ? context.snapshot.global : context.snapshot.content;
   if (original.trim() && context.collect) {
     const group = global ? context.collect.global : context.collect.page;
     const label = explicitKey === 'seoTitle' ? 'SEO title' : explicitKey === 'seoDescription' ? 'SEO description' : `${kind === 'ctaTarget' ? 'Link' : kind === 'image' ? 'Image' : kind === 'imageAlt' ? 'Image description' : 'Text'}: ${original.trim().slice(0,95)}`;
     group[key] = { field: { path: key, label, type: kind, required: false, maxLength: kind === 'textarea' ? 12000 : 2000 }, value: original };
   }
-  const value = values[key];
+  // Prefer the canonical (possibly preserved) key; the fallback lets a
+  // preview created by a newer manifest remain visible during a rollout.
+  const value = values[key] ?? values[derivedKey];
   return safeValue(value, kind) ? value : original;
 }
 export function CmsProvider({ snapshot, collect, children }: { snapshot: CmsSnapshot; collect?: CmsCollection; children: ReactNode }) {

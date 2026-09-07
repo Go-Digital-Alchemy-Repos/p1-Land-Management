@@ -1,4 +1,5 @@
-import { cmsValue, fieldId, safeValue, useCms } from "@/lib/cms";
+import { cmsValue, safeValue, useCms } from "@/lib/cms";
+import { cmsFieldKey } from "@/lib/cms-field-identity";
 import { useEffect } from "react";
 import { SITE_URL, BUSINESS_NAME } from "@/lib/site";
 import { collectHead } from "@/lib/ssr-head";
@@ -30,7 +31,7 @@ export function SEO(props: SEOProps) {
   // Reuse editable visible text in structured data without exposing schema internals as fields.
   const translate = (value: unknown): unknown => {
     if (typeof value === "string") {
-      const key = fieldId(value, "text");
+      const key = cmsFieldKey(value, "text");
       const replacement = context.snapshot.content[key] ?? context.snapshot.global[key];
       return safeValue(replacement, "text") ? replacement : value;
     }

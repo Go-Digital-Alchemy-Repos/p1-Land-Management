@@ -17,9 +17,9 @@ const FAQS = [
       "Programs are customized to each site, but typically include turf mowing and edging, tree trimming and canopy management, pond and stormwater retention care, drainage inspection and maintenance, erosion control, seasonal seeding and fertilization, and brush management for undeveloped acreage.",
   },
   {
-    question: "How often will P1 service my commercial property?",
+    question: "How is a commercial maintenance schedule established?",
     answer:
-      "P1 offers weekly, bi-weekly, and monthly commercial maintenance contracts. Every program starts with a free on-site assessment — we walk your land, document what it needs, and build a scope and schedule that fits your property and budget.",
+      "P1 reviews the property, the requested work and operating constraints before proposing an agreed scope and service schedule. Site-assessment availability, access requirements and any fee are confirmed during qualification.",
   },
   {
     question: "Is there a minimum property size for commercial programs?",
@@ -27,9 +27,9 @@ const FAQS = [
       "Yes — P1 focuses on properties 1 acre and larger. We're built for business campuses, industrial sites, HOA common areas, and large commercial landholdings, not small lawns.",
   },
   {
-    question: "Is P1 licensed and insured for commercial work?",
+    question: "How are insurance, licensing and procurement documents handled?",
     answer:
-      "Yes. P1 is licensed and insured for commercial work across Upstate South Carolina and the Charlotte, NC region, and provides single-vendor capability for turf, trees, drainage, ponds, clearing, and reconstruction.",
+      "Ask P1 to provide the current documentation relevant to your project's agreed scope before work is scheduled. Documentation, vendor onboarding requirements and any specialist involvement are confirmed during qualification.",
   },
 ];
 
@@ -73,7 +73,7 @@ export default function CommercialPropertyManagement() {
           
           <FeatureRow heading="Your Commercial Property. Our Full Attention." image={attentionImg} imageAlt="Crew maintaining a large commercial property's grounds">
             <p>
-              A well-maintained commercial property doesn't just look professional — it protects your investment, meets code requirements, and signals to clients and tenants that your business takes the details seriously. P1 Land & Property Management delivers the depth of service that large commercial properties actually require.
+              A well-maintained commercial property supports a professional presentation, protects the work already invested in the site and helps your team identify exterior needs early. P1 Land & Property Management helps large properties define and maintain an agreed exterior-work scope.
             </p>
             <p>
               We work with commercial developers, property managers, business campus owners, HOAs managing significant acreage, industrial facility managers, and private landowners who hold commercial-use land across both our markets.
@@ -109,10 +109,10 @@ export default function CommercialPropertyManagement() {
 
           <FeatureRow heading="Maintenance Schedules That Work for Your Operation" image={scheduleImg} imageAlt="Operator on a commercial maintenance schedule" reverse>
             <p>
-              We offer weekly, bi-weekly, and monthly commercial maintenance contracts. Every program starts with a free on-site property assessment. We walk your land, document what it needs, and build a scope of work and schedule that fits your property and your budget.
+              We review the property, requested work and operating constraints before proposing an agreed scope and service schedule. Site-assessment availability, access requirements and any fee are confirmed during qualification.
             </p>
             <p>
-              No cookie-cutter packages. No upsells you don't need. Just honest maintenance performed by an experienced crew with the right equipment.
+              The work plan identifies priorities, delivery responsibilities and the next review. Confirm the scope, equipment needs and any specialist involvement before work begins.
             </p>
           </FeatureRow>
 
@@ -123,10 +123,10 @@ export default function CommercialPropertyManagement() {
             <ul className="space-y-4">
               {[
                 "1-acre minimum — we're built for large properties, not small lawns",
-                "Single-vendor capability — turf, trees, drainage, ponds, clearing, and reconstruction",
-                "Serving Upstate SC and Charlotte NC — two markets, one reliable team",
-                "Licensed and insured for commercial work",
-                "Free on-site property assessments"
+                "A coordinated exterior-work scope, defined for your property",
+                "Upstate SC and Charlotte NC serviceability reviewed during qualification",
+                "Project-relevant insurance, licensing and procurement documentation reviewed on request",
+                "Site-assessment availability and terms confirmed during qualification"
               ].map((item, i) => (
                 <li key={i} className="flex items-center gap-3 text-lg text-secondary/80 font-medium">
                   <div className="w-2 h-2 rounded-full bg-primary" />
