@@ -141,8 +141,19 @@
 }
 .agreement-editor button,
 .agreement-detail button,
-.agreement-queue button {
+.agreement-queue button,
+.agreement-preparation-queue textarea {
   min-height: 42px;
+}
+.agreement-preparation-queue label {
+  display: grid;
+  gap: 6px;
+  margin: 12px 0;
+}
+.agreement-preparation-queue textarea {
+  width: 100%;
+  min-height: 92px;
+  box-sizing: border-box;
 }
 @media (max-width: 760px) {
   .agreement-columns,

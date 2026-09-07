@@ -16,6 +16,7 @@ import {
 import { AgreementEditor } from "./AgreementEditor";
 import { AgreementDetail } from "./AgreementDetail";
 import { AgreementQueue } from "./AgreementQueue";
+import { AgreementPreparationQueue } from "./AgreementPreparationQueue";
 import "./service-agreements.css";
 export function ServiceAgreements({
   role,
@@ -247,11 +248,17 @@ function AgreementWorkspace({ role }: { role: string }) {
               )}
             </div>
             {financial && (
-              <AgreementQueue
-                properties={properties}
-                revision={queueRevision}
-                onOpen={(id) => void open(id)}
-              />
+              <>
+                <AgreementQueue
+                  properties={properties}
+                  revision={queueRevision}
+                  onOpen={(id) => void open(id)}
+                />
+                <AgreementPreparationQueue
+                  revision={queueRevision}
+                  onOpen={(id) => void open(id)}
+                />
+              </>
             )}
           </>
         )}
