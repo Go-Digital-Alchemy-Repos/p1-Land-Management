@@ -1,6 +1,6 @@
-# Service agreement workspace — staging validation
+# Service agreement workspace — validated production release
 
-The staff workspace, shared contracts and API/navigation mounts were reviewed in `04ef3ad` and integrated with reviewed per-user MFA in `58d2180`. The combined runtime reached staging and passed real API/browser workflow checks. Production remains on the previously verified migration0011 release; agreement production release is not accepted.
+The staff workspace, shared contracts and API/navigation mounts were reviewed in `04ef3ad` and integrated with reviewed per-user MFA in `58d2180`. The combined runtime reached staging and passed real API/browser workflow checks. The reviewed combined runtime has now reached production as exact `b97a372`; see DEPLOYMENT.md for verified web/worker identities, the corrected pre-release ledger baseline and bounded acceptance scope. Full financial-loop and pilot acceptance remain incomplete.
 
 ## Staff workflow
 
@@ -24,7 +24,7 @@ Current evidence: 15 synthetic browser checks with zero JavaScript errors; two m
 
 ## Remaining acceptance
 
-Production promotion remains subject to final staging acceptance and review. Scheduled preparation, correction/resolution of cancellation review items, client publication and the QuickBooks/pilot loop remain unfinished. A populated two-database recovery rehearsal now covers agreement records and receipts (see RECOVERY.md); Railway volume/object and full application restoration remain unverified. Synthetic browser fixtures do not replace physical-device or production-provider testing.
+The bounded production release is accepted; remaining capability and pilot gates are listed below. Scheduled preparation, correction/resolution of cancellation review items, client publication and the QuickBooks/pilot loop remain unfinished. A populated two-database recovery rehearsal now covers agreement records and receipts (see RECOVERY.md); Railway volume/object and full application restoration remain unverified. Synthetic browser fixtures do not replace physical-device or production-provider testing.
 
 ## Staging hold evidence — September 7
 
@@ -42,4 +42,8 @@ The run discovered unreachable Settings at1280×720 because the fixed sidebar ha
 
 Expanded live acceptance subsequently passed22 checks with zero browser errors. Full scoped agreement, period, charge, draft and manager-audit snapshots were byte-equivalent as parsed JSON before and after both activation and charge previews. A successor was created through the UI using a separate approved estimate. Final fixture readback: two agreements, one charge, one billing draft, zero posted invoices. Cleanup completed as above. Current report: `/tmp/p1-agreement-live-report.json`; readback: `/tmp/p1-agreement-live-db-readback.txt`.
 
-The reviewed sidebar correction and local QR/recovery controls subsequently passed live staging acceptance in exact `b97a372` (deployment `40f9cffa-53cf-46a8-bd26-b2ccb8f8459c`). Settings pointer and keyboard access now pass at1280×720 and390×844. Fourteen narrow live checks also verified QR encoding, recovery export content and the client MFA flow. See DEPLOYMENT.md for exact scope and limitations. The22 agreement checks above ran against58d2180; no agreement-domain change was introduced by the later UI candidate. Production acceptance is still pending.
+The reviewed sidebar correction and local QR/recovery controls subsequently passed live staging acceptance in exact `b97a372` (deployment `40f9cffa-53cf-46a8-bd26-b2ccb8f8459c`). Settings pointer and keyboard access now pass at1280×720 and390×844. Fourteen narrow live checks also verified QR encoding, recovery export content and the client MFA flow. See DEPLOYMENT.md for exact scope and limitations. The22 agreement checks above ran against58d2180; no agreement-domain change was introduced by the later UI candidate. The subsequent production evidence below supersedes that staging checkpoint.
+
+## Production release evidence
+
+Exactb97a372 reached successful production web/worker deployments with runtime source and13-checksum ledger verification. Thirteen narrow production UI/read-policy checks passed; synthetic sessions were removed and profiles disabled. No production agreement/billing fixtures or customer communications were created. The full22-check agreement mutation flow remains staging evidence, while production verifies the mounted workspace and role boundaries. DEPLOYMENT.md records account continuity, backup and rollback details; this does not complete scheduled preparation, correction handling, client publication or provider/pilot acceptance.
