@@ -1,5 +1,5 @@
 import { requireOperationalChild, requireOperationalProperty, operationalChildQuery } from "./operational-property";
-import { Router, raw, type Request, type Response } from "express";
+import { Router, raw, type Request, type Response, type NextFunction } from "express";
 import sharp from "sharp";
 import {
   S3Client,
@@ -50,7 +50,7 @@ function validImage(bytes: Buffer, mime: string) {
 }
 filesApi.post(
   "/files/:id",
-  async (req, res, next) => {
+  async (req: Request, res: Response, next: NextFunction) => {
     const a = await actor(req);
     requireRole(a.role, ["owner", "manager", "dispatch", "crew"]);
     const propertyId = z.string().uuid().parse(req.headers["x-p1-property"]);
@@ -60,7 +60,7 @@ filesApi.post(
     if (!work || work.property_id !== propertyId || (a.role === "crew" && (work.assigned_to !== a.id || ["cancelled","skipped","reviewed"].includes(work.status)))) throw new HttpError(403, "Work assignment is not accessible");
     next();
   },
-  async (req, res) => {
+  async (req: Request, res: Response) => {
     if (activeUploads >= uploadLimit) throw new HttpError(429, "Uploads are busy; retry shortly");
     activeUploads++;
     try {
@@ -74,6 +74,13 @@ filesApi.post(
       // Do not release this slot when a client disconnects while decode/storage remains active.
       await processUpload(req,res);
     } finally { activeUploads--; }
+  },
+  (error: unknown, _req: Request, res: Response, next: NextFunction) => {
+    if (error && typeof error === "object" && "type" in error && error.type === "entity.too.large") {
+      res.status(413).json({ error: "Image exceeds the 15 MiB upload limit" });
+      return;
+    }
+    next(error);
   },
 );
 async function processUpload(req: Request, res: Response) {
@@ -128,7 +135,9 @@ async function processUpload(req: Request, res: Response) {
     ).rows[0];
     if (
       existing &&
-      (existing.user_id !== a.id || existing.object_key !== objectKey)
+      (existing.user_id !== a.id || existing.object_key !== objectKey ||
+        existing.property_id !== propertyId || existing.work_order_id !== workId ||
+        existing.classification !== classification)
     )
       throw new HttpError(409, "Photo operation ID conflict");
     if (existing?.status === "ready") {
@@ -153,11 +162,13 @@ async function processUpload(req: Request, res: Response) {
       );
       const stored = (
         await c.query(
-          "SELECT object_key,user_id FROM file_record WHERE id=$1 FOR UPDATE",
+          "SELECT object_key,user_id,property_id,work_order_id,classification FROM file_record WHERE id=$1 FOR UPDATE",
           [key],
         )
       ).rows[0];
-      if (stored.object_key !== objectKey || stored.user_id !== a.id)
+      if (stored.object_key !== objectKey || stored.user_id !== a.id ||
+        stored.property_id !== propertyId || stored.work_order_id !== workId ||
+        stored.classification !== classification)
         throw new HttpError(409, "Photo operation ID conflict");
     });
     await storage().send(
