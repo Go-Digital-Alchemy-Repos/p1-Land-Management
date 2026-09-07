@@ -154,6 +154,7 @@ export default function CommercialPropertyManagement() {
         </div>
       </section>
 
+      <section className="container mx-auto px-5 py-12"><h2 className="text-2xl font-bold">Looking for a connected exterior site plan?</h2><p className="mt-4 text-muted-foreground">Explore how grounds, drainage, land and corrective work can fit an agreed commercial property scope.</p><a href="/commercial" className="mt-5 inline-block font-bold text-primary underline">Commercial Site Management & Site Assessment</a></section>
       <FinalCTA />
     </Layout>
   );

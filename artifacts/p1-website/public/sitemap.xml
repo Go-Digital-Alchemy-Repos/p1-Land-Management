@@ -11,6 +11,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://www.p1landmanagement.com/commercial</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://www.p1landmanagement.com/contact</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>

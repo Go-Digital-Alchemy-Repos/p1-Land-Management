@@ -6,7 +6,7 @@
     "displayName": "P1 Land & Property Management",
     "source": {
       "repository": "https://github.com/Go-Digital-Alchemy-Repos/p1-Land-Management.git",
-      "revision": "5303da0113a86c6d569712af92e69fb43fb16148"
+      "revision": "046a3a31bd68f98046ad16debab9d3ac31939c2d"
     },
     "owners": [
       {
@@ -63,6 +63,21 @@
       "componentRef": "src/pages/about.tsx",
       "editableRegions": [
         "about",
+        "global"
+      ],
+      "lockedBehaviors": [
+        "routing",
+        "validation",
+        "accessibility"
+      ]
+    },
+    {
+      "id": "commercial",
+      "path": "/commercial",
+      "owner": "site",
+      "componentRef": "src/pages/commercial.tsx",
+      "editableRegions": [
+        "commercial",
         "global"
       ],
       "lockedBehaviors": [
@@ -1527,6 +1542,34 @@
             "maxLength": 2000
           },
           {
+            "path": "fg8si95",
+            "label": "Text: Managing a commercial or industrial property?",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fvdad7b",
+            "label": "Text: Bring grounds, drainage, land and recurring exterior work into one scope discussion.",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f18bzt15",
+            "label": "Text: Explore Commercial Site Management",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f4ap5vh",
+            "label": "Link: /commercial",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
             "path": "f1u1km71",
             "label": "Image: /assets/fine-grading-1280-CWwHPN9f.webp",
             "type": "image",
@@ -1710,6 +1753,10 @@
           "f1u810sm": ".",
           "f1o2isa7": "+1 (704) 221-8928",
           "fatly8t": "request a free estimate online",
+          "fg8si95": "Managing a commercial or industrial property?",
+          "fvdad7b": "Bring grounds, drainage, land and recurring exterior work into one scope discussion.",
+          "f18bzt15": "Explore Commercial Site Management",
+          "f4ap5vh": "/commercial",
           "f1u1km71": "/assets/fine-grading-1280-CWwHPN9f.webp",
           "f5dus4q": "Start the Conversation",
           "f19zqrt0": "Have acreage that needs shaping? Let's walk it together.",
@@ -2103,6 +2150,1040 @@
           "f1w00rmf": "Call P1",
           "f1u26c9a": "tel:+17042218928",
           "f1qryswv": "Get an Estimate"
+        },
+        "lockedBehaviors": [
+          "routing",
+          "form-validation",
+          "authentication",
+          "responsive-layout"
+        ]
+      },
+      {
+        "key": "commercial-content",
+        "version": "1.0.0",
+        "rendererRef": "src/lib/cms-jsx-runtime.ts",
+        "fieldSchemaRef": "src/lib/cms.tsx",
+        "allowedRegions": [
+          "commercial"
+        ],
+        "editableFields": [
+          "heading",
+          "copy",
+          "image",
+          "imageAlt",
+          "ctaTarget"
+        ],
+        "fields": [
+          {
+            "path": "fum15fc",
+            "label": "Text: Skip to main content",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "seoTitle",
+            "label": "SEO title",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "seoDescription",
+            "label": "SEO description",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "seoImage",
+            "label": "Image: /opengraph.jpg",
+            "type": "image",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fj88j4j",
+            "label": "Image: /assets/service-commercial-1280-L65U2NEr.webp",
+            "type": "image",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f11x7kam",
+            "label": "Image description: Illustrative aerial view of maintained commercial grounds",
+            "type": "imageAlt",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1p5vfbn",
+            "label": "Text: Commercial & Industrial / Exterior Site Operations",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f14p59sn",
+            "label": "Text: Complete Exterior Site Management for Large Commercial & Industrial Properties",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f17a2fjj",
+            "label": "Text: One accountable partner for everything outside the building envelope.",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1vi5mg5",
+            "label": "Text: Connect maintenance, corrective work and property improvements within an agreed scope. P1 helps",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1fc34zh",
+            "label": "Text: Request a Site Assessment",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f26jm1m",
+            "label": "Text: Discuss Your Property",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1u26c9a",
+            "label": "Link: tel:+17042218928",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f10sfgd1",
+            "label": "Text: Upstate South Carolina & greater Charlotte · Property location and serviceability confirmed dur",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1igxshz",
+            "label": "Text: Illustrative imagery — not a documented P1 client property.",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fp8i8qg",
+            "label": "Text: One exterior partner",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fyehnd6",
+            "label": "Text: A connected plan for a complex property.",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1bzv3tx",
+            "label": "Text: Grounds, water, land and access affect one another. Bring them into one scope discussion, with ",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1lf7w7b",
+            "label": "Text: Consolidate where practical. Confirm self-performed work, qualified specialist involvement, exc",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1oer9wm",
+            "label": "Text: Grounds & vegetation",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fexd4im",
+            "label": "Text: Water & drainage",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fst68j6",
+            "label": "Text: Land & trees",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fomc6tp",
+            "label": "Text: Roads & access",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1s8afp",
+            "label": "Text: Corrective work",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1q1pc35",
+            "label": "Text: P1 coordination / one agreed work plan",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f9gxh4k",
+            "label": "Text: Defined scope · site priorities · communication · follow-up",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1xw1r2c",
+            "label": "Text: Seven connected capabilities",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fko5hly",
+            "label": "Text: Start with the whole site. Define the work precisely.",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fuimk70",
+            "label": "Text: These groups help organize your assessment. Specific tasks, delivery method and availability ar",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f2emmus",
+            "label": "Text: 0",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fan7ap5",
+            "label": "Text: Grounds & Vegetation Management",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "ftoofzx",
+            "label": "Text: Bring acreage, overgrowth and perimeter vegetation into a practical maintenance plan.",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fij1yrm",
+            "label": "Text: Commercial grounds services",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1xlfu9k",
+            "label": "Link: /services/commercial-property-management",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fjbos4v",
+            "label": "Text: Stormwater & Drainage",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1h53tip",
+            "label": "Text: Discuss drainage correction, ponds and waterway maintenance as connected parts of your property",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1t4wjlj",
+            "label": "Text: Drainage services",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1cn1znt",
+            "label": "Link: /services/drainage",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1yxkxzv",
+            "label": "Text: Grading & Erosion",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f40hqeg",
+            "label": "Text: Address grading, washouts and land restoration with a defined corrective scope.",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f199ki65",
+            "label": "Text: Grading and site preparation",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fgwkxig",
+            "label": "Link: /services/grading-site-preparation",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1avsupu",
+            "label": "Text: Tree & Land Management",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fr5cpnj",
+            "label": "Text: Plan clearing, tree work and brush management around the areas you use and the land you want to",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1i4pidm",
+            "label": "Text: Tree and land services",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f8soebj",
+            "label": "Link: /services/tree-services",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f8vx2mm",
+            "label": "Text: Roads, Access & Exterior Infrastructure",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1ax5ebl",
+            "label": "Text: Discuss site grading, gravel access and exterior improvements in the context of how your proper",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f159y5k3",
+            "label": "Text: Property reconstruction",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1h3mhh4",
+            "label": "Link: /services/property-reconstruction",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f13hjt8",
+            "label": "Text: Emergency & Corrective Response",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "ftm3jme",
+            "label": "Text: Discuss storm debris, damaged ground and corrective work. Availability and scope must be confir",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1y9nwzi",
+            "label": "Text: Corrective property work",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fdwwhxp",
+            "label": "Text: Recurring Site Management",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fwhjsnt",
+            "label": "Text: Build an agreed maintenance schedule with inspection priorities, communication and follow-up ex",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "fz483w9",
+            "label": "Text: Ongoing property management",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fwy4o7t",
+            "label": "Text: Property lifecycle",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "foc9u5l",
+            "label": "Text: Continuity from development to daily operations.",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fdpg9qj",
+            "label": "Text: PHASE 0",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fhgjb4t",
+            "label": "Text: Development / Construction",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1m8bk81",
+            "label": "Text: Discuss clearing, grading, vegetation and corrective site needs alongside construction mileston",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f5a93i7",
+            "label": "Text: Turnover / Establishment",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fgjuuga",
+            "label": "Text: Identify cleanup, establishment and perimeter priorities. Agree the property baseline and respo",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1idxrmn",
+            "label": "Text: Long-Term Operations",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fjmsqbb",
+            "label": "Text: Set a recurring work plan, review developing issues and separate routine maintenance from appro",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fb5qux",
+            "label": "Text: Data centers & complex campuses",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f8dhmb4",
+            "label": "Text: The land outside a secure facility still needs a clear plan.",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fs8o4nc",
+            "label": "Text: Perimeter vegetation, berms, buffer areas and undeveloped acreage sit alongside drainage, ponds",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "fqr6xnt",
+            "label": "Text: Discuss access coordination, work windows, safety expectations, communication and documentation",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1rhk3bl",
+            "label": "Text: Explore pond & waterway maintenance",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fv11gbc",
+            "label": "Link: /services/pond-waterway-management",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1j9al4f",
+            "label": "Image: /assets/service-pond-1280-DHTzyRYV.webp",
+            "type": "image",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f91ex7d",
+            "label": "Image description: Illustrative pond and surrounding grounds showing exterior water-management considerations",
+            "type": "imageAlt",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "flarjqd",
+            "label": "Text: Illustrative imagery — not a P1 project or evidence of data-center experience.",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1kt7gl0",
+            "label": "Text: Perimeter vegetation & buffers",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1k18yz4",
+            "label": "Text: Drainage, erosion & ponds",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f14vjff2",
+            "label": "Text: Service roads & access areas",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fm7csbr",
+            "label": "Text: Restoration & storm cleanup",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1pf40m8",
+            "label": "Text: Site management shaped around your property.",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1mqd111",
+            "label": "Text: Use the assessment to discuss fit for manufacturing and automotive-supplier campuses, distribut",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "fbi8aem",
+            "label": "Text: Define what recurring management means for your site.",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fzisbtn",
+            "label": "Text: Agree inspection areas, priorities and a practical service schedule.",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1fs0lui",
+            "label": "Text: Specify the observations, photos and updates your team needs.",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "flqk792",
+            "label": "Text: Review emerging issues and separate recommendations from approved work.",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f5v90yn",
+            "label": "Text: Confirm corrective scope, responsibility and the next review.",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fljcf95",
+            "label": "Text: Reporting format and response arrangements are defined in the agreement.",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f899tj0",
+            "label": "Text: P1 Commercial Site Assessment",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f19porhb",
+            "label": "Text: A useful starting point before a long-term commitment.",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f3v8qv4",
+            "label": "Text: 1. Share the property",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fhkw9jw",
+            "label": "Text: Tell us where it is, what you need and its current stage. A city or region is enough to start i",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f7xmoin",
+            "label": "Text: 2. Confirm the assessment",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1mfomdz",
+            "label": "Text: Staff reviews fit and confirms availability, access requirements, scope, any fee and a property",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1oghu60",
+            "label": "Text: 3. Agree the next steps",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f13ufa4e",
+            "label": "Text: Discuss a reviewed baseline of observations, priorities and recommended work. The assessment de",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f7jbnho",
+            "label": "Text: Agree the assessment scope, reviewed observations and proposed next steps with P1. Discuss proc",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1xwx13e",
+            "label": "Text: Start the conversation",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1ar2azd",
+            "label": "Text: Tell us about the exterior work, the property and the relationship you are looking for. We will",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f15oz4jr",
+            "label": "Text: (704) 221-8928",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "ffuz26q",
+            "label": "Text: info@p1landmanagement.com",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f10kkf1c",
+            "label": "Link: mailto:info@p1landmanagement.com",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fssacfb",
+            "label": "Text: Review our service areas",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fooltxx",
+            "label": "Link: /service-areas",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f9mzc3q",
+            "label": "Text: Your name",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "ftv8fm4",
+            "label": "Text: (required)",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1rw5p2x",
+            "label": "Text: Company / organization",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f28eagh",
+            "label": "Text: How can we reach you?",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f13csfxj",
+            "label": "Text: Provide an email address or phone number. Both are welcome, but only one is required.",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fbs2q84",
+            "label": "Text: Email",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1685p3c",
+            "label": "Text: Phone",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fszloor",
+            "label": "Text: Property location — address or city / region",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fvdexsb",
+            "label": "Text: What does your site need? (select at least one)",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1f1vhw2",
+            "label": "Text: General site assessment / not sure yet",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1934r99",
+            "label": "Text: Type of need (required)",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1mb4bkl",
+            "label": "Text: Property / project stage (required)",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "futi65p",
+            "label": "Text: Add property details (optional)",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f9jln5u",
+            "label": "Text: Your role / title",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fff3hgk",
+            "label": "Text: Property / project name",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f5f8xd8",
+            "label": "Text: Property type / industry",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fi4l94y",
+            "label": "Text: Approximate acreage — range or unknown is fine",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1iht5pv",
+            "label": "Text: Anything else we should know? (optional)",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fo0l2ym",
+            "label": "Text: Share the need and useful timing. Please do not include access codes, facility-security plans o",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fyp3o60",
+            "label": "Text: Leave this field empty",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1vxk19y",
+            "label": "Text: Your information is used to review and follow up on this inquiry. Staff will confirm assessment",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1azqvfo",
+            "label": "Text: Prefer to talk?",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1w00rmf",
+            "label": "Text: Call P1",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1gkxqyn",
+            "label": "Text: Site Assessment",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          }
+        ],
+        "defaultContent": {
+          "fum15fc": "Skip to main content",
+          "seoTitle": "Commercial & Industrial Site Management | P1 Land Management",
+          "seoDescription": "Coordinate grounds, drainage, land and exterior site needs across your commercial property. Request a P1 Commercial Site Assessment in Upstate SC and greater Charlotte.",
+          "seoImage": "/opengraph.jpg",
+          "fj88j4j": "/assets/service-commercial-1280-L65U2NEr.webp",
+          "f11x7kam": "Illustrative aerial view of maintained commercial grounds",
+          "f1p5vfbn": "Commercial & Industrial / Exterior Site Operations",
+          "f14p59sn": "Complete Exterior Site Management for Large Commercial & Industrial Properties",
+          "f17a2fjj": "One accountable partner for everything outside the building envelope.",
+          "f1vi5mg5": "Connect maintenance, corrective work and property improvements within an agreed scope. P1 helps you plan the exterior work your site needs, with specialist responsibilities identified where appropriate.",
+          "f1fc34zh": "Request a Site Assessment",
+          "f26jm1m": "Discuss Your Property",
+          "f1u26c9a": "tel:+17042218928",
+          "f10sfgd1": "Upstate South Carolina & greater Charlotte · Property location and serviceability confirmed during review",
+          "f1igxshz": "Illustrative imagery — not a documented P1 client property.",
+          "fp8i8qg": "One exterior partner",
+          "fyehnd6": "A connected plan for a complex property.",
+          "f1bzv3tx": "Grounds, water, land and access affect one another. Bring them into one scope discussion, with practical coordination and clear responsibility for the work agreed with P1.",
+          "f1lf7w7b": "Consolidate where practical. Confirm self-performed work, qualified specialist involvement, exclusions and your team’s responsibilities before work begins.",
+          "f1oer9wm": "Grounds & vegetation",
+          "fexd4im": "Water & drainage",
+          "fst68j6": "Land & trees",
+          "fomc6tp": "Roads & access",
+          "f1s8afp": "Corrective work",
+          "f1q1pc35": "P1 coordination / one agreed work plan",
+          "f9gxh4k": "Defined scope · site priorities · communication · follow-up",
+          "f1xw1r2c": "Seven connected capabilities",
+          "fko5hly": "Start with the whole site. Define the work precisely.",
+          "fuimk70": "These groups help organize your assessment. Specific tasks, delivery method and availability are confirmed for each property; they are not a blanket promise of every trade or service.",
+          "f2emmus": "0",
+          "fan7ap5": "Grounds & Vegetation Management",
+          "ftoofzx": "Bring acreage, overgrowth and perimeter vegetation into a practical maintenance plan.",
+          "fij1yrm": "Commercial grounds services",
+          "f1xlfu9k": "/services/commercial-property-management",
+          "fjbos4v": "Stormwater & Drainage",
+          "f1h53tip": "Discuss drainage correction, ponds and waterway maintenance as connected parts of your property.",
+          "f1t4wjlj": "Drainage services",
+          "f1cn1znt": "/services/drainage",
+          "f1yxkxzv": "Grading & Erosion",
+          "f40hqeg": "Address grading, washouts and land restoration with a defined corrective scope.",
+          "f199ki65": "Grading and site preparation",
+          "fgwkxig": "/services/grading-site-preparation",
+          "f1avsupu": "Tree & Land Management",
+          "fr5cpnj": "Plan clearing, tree work and brush management around the areas you use and the land you want to retain.",
+          "f1i4pidm": "Tree and land services",
+          "f8soebj": "/services/tree-services",
+          "f8vx2mm": "Roads, Access & Exterior Infrastructure",
+          "f1ax5ebl": "Discuss site grading, gravel access and exterior improvements in the context of how your property operates.",
+          "f159y5k3": "Property reconstruction",
+          "f1h3mhh4": "/services/property-reconstruction",
+          "f13hjt8": "Emergency & Corrective Response",
+          "ftm3jme": "Discuss storm debris, damaged ground and corrective work. Availability and scope must be confirmed; this form is not emergency dispatch.",
+          "f1y9nwzi": "Corrective property work",
+          "fdwwhxp": "Recurring Site Management",
+          "fwhjsnt": "Build an agreed maintenance schedule with inspection priorities, communication and follow-up expectations defined together.",
+          "fz483w9": "Ongoing property management",
+          "fwy4o7t": "Property lifecycle",
+          "foc9u5l": "Continuity from development to daily operations.",
+          "fdpg9qj": "PHASE 0",
+          "fhgjb4t": "Development / Construction",
+          "f1m8bk81": "Discuss clearing, grading, vegetation and corrective site needs alongside construction milestones. Coordinate scope with the project team.",
+          "f5a93i7": "Turnover / Establishment",
+          "fgjuuga": "Identify cleanup, establishment and perimeter priorities. Agree the property baseline and responsibilities for ongoing care.",
+          "f1idxrmn": "Long-Term Operations",
+          "fjmsqbb": "Set a recurring work plan, review developing issues and separate routine maintenance from approved corrective projects.",
+          "fb5qux": "Data centers & complex campuses",
+          "f8dhmb4": "The land outside a secure facility still needs a clear plan.",
+          "fs8o4nc": "Perimeter vegetation, berms, buffer areas and undeveloped acreage sit alongside drainage, ponds, trees and service roads. Consider those exterior needs together when defining a property scope.",
+          "fqr6xnt": "Discuss access coordination, work windows, safety expectations, communication and documentation with your site team. The agreed plan must fit the customer’s protocols; no security clearance, uptime guarantee or response commitment is implied.",
+          "f1rhk3bl": "Explore pond & waterway maintenance",
+          "fv11gbc": "/services/pond-waterway-management",
+          "f1j9al4f": "/assets/service-pond-1280-DHTzyRYV.webp",
+          "f91ex7d": "Illustrative pond and surrounding grounds showing exterior water-management considerations",
+          "flarjqd": "Illustrative imagery — not a P1 project or evidence of data-center experience.",
+          "f1kt7gl0": "Perimeter vegetation & buffers",
+          "f1k18yz4": "Drainage, erosion & ponds",
+          "f14vjff2": "Service roads & access areas",
+          "fm7csbr": "Restoration & storm cleanup",
+          "f1pf40m8": "Site management shaped around your property.",
+          "f1mqd111": "Use the assessment to discuss fit for manufacturing and automotive-supplier campuses, distribution and logistics centers, industrial parks, biopharmaceutical and corporate campuses, mixed-use developments, utility properties and managed commercial acreage.",
+          "fbi8aem": "Define what recurring management means for your site.",
+          "fzisbtn": "Agree inspection areas, priorities and a practical service schedule.",
+          "f1fs0lui": "Specify the observations, photos and updates your team needs.",
+          "flqk792": "Review emerging issues and separate recommendations from approved work.",
+          "f5v90yn": "Confirm corrective scope, responsibility and the next review.",
+          "fljcf95": "Reporting format and response arrangements are defined in the agreement.",
+          "f899tj0": "P1 Commercial Site Assessment",
+          "f19porhb": "A useful starting point before a long-term commitment.",
+          "f3v8qv4": "1. Share the property",
+          "fhkw9jw": "Tell us where it is, what you need and its current stage. A city or region is enough to start if the address is not yet confirmed.",
+          "f7xmoin": "2. Confirm the assessment",
+          "f1mfomdz": "Staff reviews fit and confirms availability, access requirements, scope, any fee and a property walk. Your inquiry does not reserve a time.",
+          "f1oghu60": "3. Agree the next steps",
+          "f13ufa4e": "Discuss a reviewed baseline of observations, priorities and recommended work. The assessment deliverable and recurring or corrective proposal are agreed with you.",
+          "f7jbnho": "Agree the assessment scope, reviewed observations and proposed next steps with P1. Discuss procurement requirements and supporting evidence privately during qualification.",
+          "f1xwx13e": "Start the conversation",
+          "f1ar2azd": "Tell us about the exterior work, the property and the relationship you are looking for. We will use these details to review the request and discuss the next step.",
+          "f15oz4jr": "(704) 221-8928",
+          "ffuz26q": "info@p1landmanagement.com",
+          "f10kkf1c": "mailto:info@p1landmanagement.com",
+          "fssacfb": "Review our service areas",
+          "fooltxx": "/service-areas",
+          "f9mzc3q": "Your name",
+          "ftv8fm4": " (required)",
+          "f1rw5p2x": "Company / organization",
+          "f28eagh": "How can we reach you?",
+          "f13csfxj": "Provide an email address or phone number. Both are welcome, but only one is required.",
+          "fbs2q84": "Email",
+          "f1685p3c": "Phone",
+          "fszloor": "Property location — address or city / region",
+          "fvdexsb": "What does your site need? (select at least one)",
+          "f1f1vhw2": "General site assessment / not sure yet",
+          "f1934r99": "Type of need (required)",
+          "f1mb4bkl": "Property / project stage (required)",
+          "futi65p": "Add property details (optional)",
+          "f9jln5u": "Your role / title",
+          "fff3hgk": "Property / project name",
+          "f5f8xd8": "Property type / industry",
+          "fi4l94y": "Approximate acreage — range or unknown is fine",
+          "f1iht5pv": "Anything else we should know? (optional)",
+          "fo0l2ym": "Share the need and useful timing. Please do not include access codes, facility-security plans or sensitive documents.",
+          "fyp3o60": "Leave this field empty",
+          "f1vxk19y": "Your information is used to review and follow up on this inquiry. Staff will confirm assessment scope, access, availability and any fee before a property walk.",
+          "f1azqvfo": "Prefer to talk? ",
+          "f1w00rmf": "Call P1",
+          "f1gkxqyn": "Site Assessment"
         },
         "lockedBehaviors": [
           "routing",
@@ -4277,6 +5358,34 @@
             "maxLength": 2000
           },
           {
+            "path": "fmiy0jn",
+            "label": "Text: Looking for a connected exterior site plan?",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fjkia8s",
+            "label": "Text: Explore how grounds, drainage, land and corrective work can fit an agreed commercial property s",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f811gyl",
+            "label": "Text: Commercial Site Management & Site Assessment",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f4ap5vh",
+            "label": "Link: /commercial",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
             "path": "f1u1km71",
             "label": "Image: /assets/fine-grading-1280-CWwHPN9f.webp",
             "type": "image",
@@ -4408,6 +5517,10 @@
           "f9spy6u": "tel:7042218928",
           "fatly8t": "request a free estimate online",
           "fmggb4x": "/contact",
+          "fmiy0jn": "Looking for a connected exterior site plan?",
+          "fjkia8s": "Explore how grounds, drainage, land and corrective work can fit an agreed commercial property scope.",
+          "f811gyl": "Commercial Site Management & Site Assessment",
+          "f4ap5vh": "/commercial",
           "f1u1km71": "/assets/fine-grading-1280-CWwHPN9f.webp",
           "f5dus4q": "Start the Conversation",
           "f19zqrt0": "Have acreage that needs shaping? Let's walk it together.",
@@ -19536,6 +20649,13 @@
             "type": "text",
             "required": false,
             "maxLength": 2000
+          },
+          {
+            "path": "f1fc34zh",
+            "label": "Text: Request a Site Assessment",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
           }
         ],
         "defaultContent": {
@@ -19616,7 +20736,8 @@
           "f1lfba2e": "Sunday: Closed",
           "fhaj07s": "Free Estimate",
           "fms1a4t": "© ",
-          "fmifnt8": " P1 Land & Property Management. Serving Upstate South Carolina & the Charlotte, NC region. All rights reserved."
+          "fmifnt8": " P1 Land & Property Management. Serving Upstate South Carolina & the Charlotte, NC region. All rights reserved.",
+          "f1fc34zh": "Request a Site Assessment"
         },
         "lockedBehaviors": [
           "routing",
@@ -19658,6 +20779,7 @@
       "routeIds": [
         "home",
         "about",
+        "commercial",
         "contact",
         "gallery",
         "testimonials",

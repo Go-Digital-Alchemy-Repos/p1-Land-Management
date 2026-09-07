@@ -27,6 +27,7 @@ const NotFound = page("./pages/not-found.tsx");
 
 const Home = page("./pages/home.tsx");
 const About = page("./pages/about.tsx");
+const Commercial = page("./pages/commercial.tsx");
 const Contact = page("./pages/contact.tsx");
 const Gallery = page("./pages/gallery.tsx");
 const Testimonials = page("./pages/testimonials.tsx");
@@ -69,6 +70,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/about" component={About} />
+      <Route path="/commercial" component={Commercial} />
       <Route path="/contact" component={Contact} />
       <Route path="/gallery" component={Gallery} />
       <Route path="/testimonials" component={Testimonials} />

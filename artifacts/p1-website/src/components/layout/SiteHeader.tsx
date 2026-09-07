@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
@@ -11,10 +11,19 @@ import {
 } from "@/components/ui/dropdown-menu";
 import logo from "@assets/Asset_1_1782329698014.svg";
 
-export function SiteHeader() {
+export function SiteHeader({ assessmentCta = false }: { assessmentCta?: boolean }) {
   const [isOpen, setIsOpen] = useState(false);
+  const focusAssessmentAfterClose = useRef(false);
+  const focusAssessment = () => {
+    const target = document.getElementById("assessment-request");
+    if (!target) return;
+    window.location.hash = "assessment-request";
+    target.focus({ preventScroll: true });
+    target.scrollIntoView({ block: "start" });
+  };
 
   const services = [
+    { name: "Commercial Site Management", href: "/commercial" },
     { name: "Commercial Property Management", href: "/services/commercial-property-management" },
     { name: "Industrial & Agricultural Land", href: "/services/industrial-agricultural" },
     { name: "Land Clearing", href: "/services/land-clearing" },
@@ -78,7 +87,7 @@ export function SiteHeader() {
             (704) 221-8928
           </a>
           <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-6 hidden sm:inline-flex">
-            <Link href="/contact">Get a Free Estimate</Link>
+            {assessmentCta ? <a href="#assessment-request" onClick={(event) => { event.preventDefault(); focusAssessment(); }}>Request a Site Assessment</a> : <Link href="/contact">Get a Free Estimate</Link>}
           </Button>
 
           {/* Mobile Menu */}
@@ -89,7 +98,12 @@ export function SiteHeader() {
                 <span className="sr-only">Toggle Menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent aria-describedby={undefined} side="right" className="w-[300px] sm:w-[400px] overflow-y-auto bg-background">
+            <SheetContent onCloseAutoFocus={(event) => {
+              if (!focusAssessmentAfterClose.current) return;
+              event.preventDefault();
+              focusAssessmentAfterClose.current = false;
+              requestAnimationFrame(focusAssessment);
+            }} aria-describedby={undefined} side="right" className="w-[300px] sm:w-[400px] overflow-y-auto bg-background">
               <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
               <div className="flex flex-col gap-6 py-6">
                 <Link href="/" onClick={() => setIsOpen(false)}>
@@ -123,7 +137,7 @@ export function SiteHeader() {
                     (704) 221-8928
                   </a>
                   <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold">
-                    <Link href="/contact" onClick={() => setIsOpen(false)}>Get a Free Estimate</Link>
+                    {assessmentCta ? <a href="#assessment-request" onClick={(event) => { event.preventDefault(); focusAssessmentAfterClose.current = true; setIsOpen(false); }}>Request a Site Assessment</a> : <Link href="/contact" onClick={() => setIsOpen(false)}>Get a Free Estimate</Link>}
                   </Button>
                 </div>
               </div>

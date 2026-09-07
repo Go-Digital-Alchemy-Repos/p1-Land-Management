@@ -408,6 +408,7 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="container mx-auto px-5 py-12"><div className="border-l-4 border-primary bg-muted p-7"><h2 className="text-2xl font-bold">Managing a commercial or industrial property?</h2><p className="mt-3 text-muted-foreground">Bring grounds, drainage, land and recurring exterior work into one scope discussion.</p><Link href="/commercial" className="mt-5 inline-block font-bold text-primary underline">Explore Commercial Site Management</Link></div></section>
       <FinalCTA />
     </Layout>
   );
