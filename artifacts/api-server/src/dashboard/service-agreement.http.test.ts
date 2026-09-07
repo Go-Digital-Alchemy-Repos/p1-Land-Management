@@ -20,6 +20,8 @@ test(
         "crew",
         "sales",
         "owner",
+        "optional_owner",
+        "required_manager",
       ]) {
         const id = randomUUID(),
           sid = randomUUID(),
@@ -29,8 +31,16 @@ test(
           [id, "Agreement HTTP " + role, id + "@example.test"],
         );
         await pool.query(
-          "INSERT INTO staff_profile(user_id,role) VALUES($1,$2)",
-          [id, role],
+          "INSERT INTO staff_profile(user_id,role,mfa_required) VALUES($1,$2,$3)",
+          [
+            id,
+            role === "optional_owner"
+              ? "owner"
+              : role === "required_manager"
+                ? "manager"
+                : role,
+            ["owner", "required_manager"].includes(role),
+          ],
         );
         await pool.query(
           'INSERT INTO session(id,"userId",token,"expiresAt") VALUES($1,$2,$3,now()+interval \'10 minutes\')',
@@ -67,9 +77,19 @@ test(
           data: z.record(z.string(), z.unknown()).parse(await r.json()),
         };
       }
-      for (const role of ["client", "crew", "sales", "owner"])
+      for (const role of [
+        "client",
+        "crew",
+        "sales",
+        "owner",
+        "required_manager",
+      ])
         assert.equal((await req(role, "/service-agreements")).status, 403);
       assert.equal((await req(undefined, "/service-agreements")).status, 401);
+      assert.equal(
+        (await req("optional_owner", "/service-agreements")).status,
+        200,
+      );
       const client = randomUUID(),
         property = randomUUID(),
         recurrence = randomUUID(),

@@ -4,7 +4,7 @@ Implementation status: **preview deployed at https://dashboard.p1landmanagement.
 
 ## Implemented and locally exercised
 
-- Invitation-gated Better Auth accounts, verified email, session-specific owner MFA, permanently consumed transactional bootstrap, client/crew authorization.
+- Invitation-gated Better Auth accounts, verified email, session assurance, permanently consumed transactional bootstrap, client/crew authorization. The owner subsequently approved per-user MFA requirements controlled by the super admin; that policy is in the combined release candidate, while the last verified production checkpoint retains its earlier owner-MFA rule.
 - Office site/billing/primary contacts with optimistic edits, archival/restoration, audit records and role checks (deployed checkpoint8039f99).
 - Clients, properties, work orders, prerequisites, versioned field submissions, review and explicit publication, assessment-slot collision prevention.
 - Estimate decisions, lead conversion, estimate revisions/change orders, retry-safe billing drafts and cumulative estimate caps.
@@ -14,14 +14,14 @@ Implementation status: **preview deployed at https://dashboard.p1landmanagement.
 
 ## Remaining release work
 
-- Physical iPhone and Android offline/restart/low-storage/interrupted-upload acceptance; installed PWA and private S3 end-to-end tests.
-- Complete contract/renewal management, fixed-monthly/per-visit automatic billing preparation, project phase/prerequisite and progress accounting workflows, equipment readiness UI and crew availability conflict checks and full report publication workflows. Existing simple forms/data structures do not constitute completion of these requirements.
+- Physical iPhone and Android offline/restart/low-storage/interrupted-upload acceptance and installed PWA acceptance. Authenticated staging HTTP/S3 upload, immutable retry and publication isolation passed 23 checks; this does not prove physical-device behavior or object recovery.
+- Complete cancellation/billing correction, fixed-monthly/per-visit automatic draft preparation, project phase/progress accounting workflows, crew availability conflict checks and full report publication workflows. Agreement creation, activation, cancellation, successor creation and explicit charge preparation are reviewed in04ef3ad; combined staging acceptance remains on hold. Equipment/access/materials/permit/deposit readiness editing and override invalidation are reviewed and included in productionbc7d3a6. These bounded features do not establish end-to-end operational acceptance.
 - Assessment weekly windows, configurable duration/travel buffers, blackout management and retry-safe generation are deployed and independently reviewed (checkpoint4079996, migration0009). Multi-assessor allocation and booking-change/cancellation workflows still need product acceptance.
 - Broaden permission/integration coverage. The six original scoped security findings and two follow-ups have independent accepted rechecks; these are not an exhaustive security certification.
 - Full OpenAPI coverage and generation for office routes, component decomposition, accessibility/mobile acceptance, support action queues and operational alerts.
-- Connect Core website inquiry intake durably with deduplication; public marketing intake must not be duplicated.
-- Owner completion of MFA recovery/enrollment (verified identity and completed installation now exist), Intuit sandbox proof and production approval, Twilio registration/consent/callback proof. Mailgun credentials, domain and initial owner-setup delivery are verified.
-- Backup restoration against deployed infrastructure, rollback rehearsal, complete one-crew/invited-client billing pilot. Native Expo implementation follows web acceptance.
+- Complete public gateway/browser inquiry and owner acceptance. The durable Core-to-dashboard backend handoff is verified in staging and for one synthetic production submission with exactly one lead, receipt and audit; public intake must remain one system.
+- Owner onboarding acceptance under the approved per-user MFA policy (including assurance where required), Intuit sandbox proof and production approval, Twilio registration/consent/callback proof. Mailgun credentials, domain and initial owner-setup delivery are verified.
+- Full restoration against deployed infrastructure, application rollback/cutover, object recovery and a complete one-crew/invited-client billing pilot. Populated agreement database restore and retry behavior now have a repeatable synthetic regression; see RECOVERY.md. Native acceptance remains its own post-web milestone.
 
 ## Validation
 
@@ -45,6 +45,6 @@ The [master plan](../MASTER_PLAN.md) and [Commercial / Industrial Sales initiati
 
 Calendar and scheduling follow-up (deployed, reviewed checkpoint1bbe6cd): New York day/week navigation, assignment filters, paginated date-range/backlog loading, versioned rescheduling/assignment edits and direct job detail retrieval beyond the legacy500-record list. Tests exercise every page for client/crew isolation and mounted detail authorization. Phone-width fixture confirms calendar-to-field-action navigation. Crew capacity/duration conflicts and staff availability management remain outstanding.
 
-Property photos follow-up (deployed with scheduling): protected photo gallery, full-image links, manager publication status and explicit per-photo publishing using the reviewed-work guard. Browser fixture verified failed-image feedback and a rejected publication staying private. Real authenticated S3 image delivery and full selective report publication acceptance remain outstanding.
+Property photos follow-up (deployed with scheduling): protected photo gallery, full-image links, manager publication status and explicit per-photo publishing using the reviewed-work guard. Browser fixture verified failed-image feedback and a rejected publication staying private. Real authenticated staging S3 image delivery and publication isolation subsequently passed; full selective report publication and physical-device acceptance remain outstanding.
 
-Commercial inbox and receiver are deployed with migration0010; staging Core-to-dashboard retry/idempotency, phone-only intake and manager follow-up/conflict acceptance passed. Production sender/key activation is coordinated by the website task. Owner recovery6d1e024/345db82 is independently reviewed and deployed; owner assurance remains required and actual owner enrollment still needs completion.
+Commercial inbox and receiver are deployed with migration0010; staging Core-to-dashboard retry/idempotency, phone-only intake and manager follow-up/conflict acceptance passed. Production sender/key activation and a bounded signed backend handoff subsequently passed; see DEPLOYMENT.md. Owner recovery6d1e024/345db82 is independently reviewed and deployed. The newer per-user policy and agreement workspace require the coordinated staging release described in SERVICE_AGREEMENTS_UI.md.

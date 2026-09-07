@@ -23,3 +23,13 @@ Use explicit project/environment/service identifiers from DEPLOYMENT.md. Select 
 7. Record actual restored timestamp, lost interval, restoration duration and smoke-test results. Only these measured results can establish the recovery targets.
 
 Do not claim disaster recovery complete until Railway volume restoration, representative business records, application cutover/rollback, object recovery and alerting have been exercised.
+
+## Populated agreement recovery regression
+
+Run `python3 scripts/test-service-agreement-recovery.py` from the checkout with Docker, Python3, Node and installed workspace dependencies. It creates two disposable PostgreSQL16 containers with loopback-only connections, strips provider variables from fixture processes, uses the real agreement domain services to create/cancel fixed and per-visit charges, dumps the source, and restores the target. Both containers are removed after the run. No live database is used. Artifacts remain in a private temporary directory; its location is recorded in `/tmp/p1-agreement-populated-recovery-path.txt`.
+
+The latest repository runner passed with all 48 public table counts/hashes, constraints and indexes identical after restore. Two agreements, one fixed period, two charges, two billing drafts and eight audit events were populated. Migration replay through0013 and idempotent charge retries left the entire restored snapshot unchanged. Cancellation review queue entries, dispatch financial redaction and client denial were also verified.
+
+Latest evidence: `/var/folders/5q/z8zp8fjx4hn52fnvw00hqts00000gn/T/p1-agreement-populated-recovery-7t90bejm/report.json`. Dump SHA256 `ad6fc4d754652fd4b93fca74707c817ddf6b28db562ae742c0b8c0d580612400`, 113,099 bytes. The report records the base commit and hashes of tested agreement, migration, schema and harness files, including working-tree fixture code. The measured 15.54 seconds is a local synthetic regression duration, not a production restoration-time guarantee.
+
+This closes the populated agreement database-recovery test gap. It does not prove Railway volume restoration, restored login/session assurance, file/object recovery, provider reconciliation, production cutover, retention or missed-backup alerts.

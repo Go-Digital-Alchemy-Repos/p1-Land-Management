@@ -1,6 +1,6 @@
 # Dispatch readiness
 
-Independently reviewed and deployed to staging at checkpoint484f953 with the0011 operational-property dependency. Production release remains pending. No additional migration or authentication-policy changes are introduced.
+Independently reviewed and deployed to staging at checkpoint484f953 with the0011 operational-property dependency; subsequently included in the verified productionbc7d3a6 web/worker promotion. See DEPLOYMENT.md for exact source, deployment and migration receipts. Wider operational/pilot acceptance remains pending. No additional migration or authentication-policy changes are introduced.
 
 `POST /api/v1/work-orders/:id/readiness` accepts `{version,prerequisites:[{label,done}],reason}` for owner, manager and dispatch. Up to50 requirements, trimmed labels1–10000 characters and an audit reason1–1000 characters are accepted. Other roles are denied. The service takes the operational parent lock before locking the work order, preventing prospect records from entering this operational path.
 
