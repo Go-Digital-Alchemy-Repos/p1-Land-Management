@@ -35,6 +35,8 @@ import type {
   CommercialInquiryDetail,
   CommercialInquiryPage,
   CreateServiceAgreement,
+  CreateServiceRequest,
+  CreatedResource,
   DashboardMe,
   DashboardProperty,
   EditServiceAgreement,
@@ -57,6 +59,7 @@ import type {
   ServiceAgreement,
   ServiceAgreementFinancial,
   ServiceAgreementPage,
+  ServiceRequest,
   SyncFieldEventsBody,
   UpdateAccountMfaPolicy,
   UploadFieldPhotoHeaders,
@@ -387,6 +390,55 @@ export const getDashboardMe = async ( options?: RequestInit): Promise<DashboardM
     method: 'GET'
 
 
+  }
+);}
+
+
+
+export const getListServiceRequestsUrl = () => {
+
+
+
+
+  return `/api/v1/requests`
+}
+
+/**
+ * Office roles receive operational service requests with submitting identity. Clients receive requests for accessible properties, but never the internal submitting user ID. This endpoint does not change request status or dispatch work.
+ */
+export const listServiceRequests = async ( options?: RequestInit): Promise<ServiceRequest[]> => {
+
+  return customFetch<ServiceRequest[]>(getListServiceRequestsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateServiceRequestUrl = () => {
+
+
+
+
+  return `/api/v1/requests`
+}
+
+/**
+ * Creates a new request for an operational property the actor may access. It does not automatically dispatch work or change a billing record.
+ */
+export const createServiceRequest = async (createServiceRequest: CreateServiceRequest, options?: RequestInit): Promise<CreatedResource> => {
+
+  return customFetch<CreatedResource>(getCreateServiceRequestUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createServiceRequest,)
   }
 );}
 

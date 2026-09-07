@@ -876,6 +876,71 @@
         }
       }
     },
+    "/requests": {
+      "get": {
+        "operationId": "listServiceRequests",
+        "description": "Office roles receive operational service requests with submitting identity. Clients receive requests for accessible properties, but never the internal submitting user ID. This endpoint does not change request status or dispatch work.",
+        "responses": {
+          "200": {
+            "description": "Authorized service requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ServiceRequest"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Business role or current owner MFA required"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createServiceRequest",
+        "description": "Creates a new request for an operational property the actor may access. It does not automatically dispatch work or change a billing record.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateServiceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Request created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatedResource"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Business role or current owner MFA required"
+          },
+          "404": {
+            "description": "Operational property not accessible"
+          }
+        }
+      }
+    },
     "/properties": {
       "get": {
         "operationId": "listDashboardProperties",
@@ -2594,6 +2659,66 @@
               "client",
               null
             ]
+          }
+        }
+      },
+      "CreatedResource": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "CreateServiceRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["propertyId", "description"],
+        "properties": {
+          "propertyId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          }
+        }
+      },
+      "ServiceRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "property_id", "description", "status", "created_at", "property_name"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "property_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "user_id": {
+            "type": "string",
+            "description": "Operational submitter identity. Omitted from client responses."
+          },
+          "description": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "description": "Current workflow status. Clients must not infer dispatch or billing completion from this value."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "property_name": {
+            "type": "string"
           }
         }
       },
