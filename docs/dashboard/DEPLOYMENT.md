@@ -177,6 +177,8 @@ The release flow must use the allowlisted package, not a Git-source deployment o
 
 Follow-up staging deployment `5c28e8ea-d9cf-4e05-be41-6f72b6994eca` reached SUCCESS after restoring that image-local migration command. It serves the `a685ecf` typed preparation-job contract and the `0f82ede` finance-only preparation action queue; `/api/healthz` returned200/no-store and an agreement deep link served the current `index-CEhP-eZI.js` dashboard bundle. This did not introduce a new migration, deploy the worker or change production, provider configuration, invoices, payments, or customer communications.
 
+Inspection-report follow-up `0698588` deployed to staging web as `0d1b7ad4-514c-44e0-8d29-6eee200c2396`, which reached SUCCESS with `index-C6ZLG7ZF.js` and `/api/healthz`200/no-store. This package adds owner/manager review-and-publish of inspection reports and client-scoped published-report reads; its full synthetic dashboard suite passed20/20 before deployment. It introduced no migration, worker deployment, production change, provider call, invoice action, payment action, or customer communication.
+
 ## Isolated staging worker — September 7
 
 Staging now has a dedicated asynchronous worker, `p1-dashboard-staging-worker` (`966e2f89-10f8-4c9f-a8bb-d42a3451ff03`), matching the separate production-worker topology. It runs in US East with one replica, no public domain, no volume and no pre-deploy migration. The command is `node dist/dashboard/worker.js`; the staged web service remains the only service that runs `node dist/dashboard/migrate.js`.
