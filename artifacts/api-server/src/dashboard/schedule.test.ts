@@ -221,6 +221,30 @@ test(
         items: Record<string, unknown>[];
       };
       if (role === "client") assert.equal("scope" in payload.items[0], false);
+      const detailResponse = await fetch(
+        base + "/api/v1/work-orders/" + beyond500,
+        { headers },
+      );
+      assert.equal(detailResponse.status, 200, role + " direct detail");
+      const detailPayload = (await detailResponse.json()) as Record<
+        string,
+        unknown
+      >;
+      assert.equal(detailPayload.id, beyond500);
+      if (role === "client") {
+        assert.equal("scope" in detailPayload, false);
+        assert.equal("checklist" in detailPayload, false);
+        assert.equal("access_instructions" in detailPayload, false);
+      }
+      const privateResponse = await fetch(
+        base + "/api/v1/work-orders/" + privateId,
+        { headers },
+      );
+      assert.equal(
+        privateResponse.status,
+        role === "manager" ? 200 : 404,
+        role + " other-client detail",
+      );
       const edit = await fetch(
         base + "/api/v1/work-orders/" + target + "/reschedule",
         {
@@ -235,5 +259,9 @@ test(
       );
       assert.equal(edit.status, role === "manager" ? 409 : 403, role + " edit");
     }
+    assert.equal(
+      (await fetch(base + "/api/v1/work-orders/" + beyond500)).status,
+      401,
+    );
   },
 );
