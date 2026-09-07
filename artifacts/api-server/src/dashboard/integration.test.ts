@@ -150,9 +150,9 @@ test(
     );
     r = await owner("/api/v1/setup/complete", { code: "secret" });
     assert.equal(r.status, 201, JSON.stringify(r.data));
-    // Owner setup and business access remain available when the account has not
-    // opted into two-factor authentication.
-    assert.equal((await owner("/api/v1/clients")).status, 200);
+    // Bootstrap makes the owner MFA-required immediately. Authentication
+    // enrollment remains available, but protected business data does not.
+    assert.equal((await owner("/api/v1/clients")).status, 403);
     assert.equal(
       (await staleOwner("/api/v1/setup/complete", { code: "secret" })).status,
       401,

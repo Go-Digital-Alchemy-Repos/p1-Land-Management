@@ -85,7 +85,7 @@ api.post("/setup/complete", async (req, res) => {
     if (r.rows[0]?.completed_at)
       throw new HttpError(409, "Setup is already complete");
     await c.query(
-      "INSERT INTO staff_profile(user_id,role) VALUES($1,'owner')",
+      "INSERT INTO staff_profile(user_id,role,mfa_required) VALUES($1,'owner',true)",
       [s.user.id],
     );
     await c.query(
