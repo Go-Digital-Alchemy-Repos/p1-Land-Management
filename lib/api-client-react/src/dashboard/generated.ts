@@ -58,6 +58,7 @@ import type {
   GetScheduleParams,
   GetSetupStatus200,
   InspectionReport,
+  IntegrationHealth,
   ListAgreementChargeQueueParams,
   ListAgreementChargeReviewsParams,
   ListAgreementChargesParams,
@@ -684,6 +685,30 @@ export const updateClientContact = async (clientId: string,
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
       updateClientContact,)
+  }
+);}
+
+
+
+export const getGetIntegrationHealthUrl = () => {
+
+
+
+
+  return `/api/v1/integrations`
+}
+
+/**
+ * Returns manager-only configuration indicators and the current office action queue. It does not expose provider credentials, trigger provider calls, post invoices, or change delivery state.
+ */
+export const getIntegrationHealth = async ( options?: RequestInit): Promise<IntegrationHealth> => {
+
+  return customFetch<IntegrationHealth>(getGetIntegrationHealthUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
   }
 );}
 

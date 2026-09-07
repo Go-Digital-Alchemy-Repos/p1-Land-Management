@@ -1023,6 +1023,17 @@
         }
       }
     },
+    "/integrations": {
+      "get": {
+        "operationId": "getIntegrationHealth",
+        "description": "Returns manager-only configuration indicators and the current office action queue. It does not expose provider credentials, trigger provider calls, post invoices, or change delivery state.",
+        "responses": {
+          "200": { "description": "Integration and worker health snapshot", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/IntegrationHealth" } } } },
+          "401": { "description": "Verified session required" },
+          "403": { "description": "Owner or manager role required" }
+        }
+      }
+    },
     "/requests": {
       "get": {
         "operationId": "listServiceRequests",
@@ -3001,6 +3012,76 @@
           "kind": { "type": "string", "enum": ["primary", "billing", "site", "other"] },
           "version": { "type": "integer", "minimum": 1 },
           "archived": { "type": "boolean", "default": false }
+        }
+      },
+      "IntegrationConfiguration": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["configured"],
+        "properties": { "configured": { "type": "boolean" } }
+      },
+      "QuickBooksIntegrationConfiguration": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["configured", "status"],
+        "properties": {
+          "configured": { "type": "boolean" },
+          "status": { "type": "string" }
+        }
+      },
+      "IntegrationActionQueueItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "kind", "status", "attempts", "last_error", "created_at"],
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "kind": { "type": "string" },
+          "status": { "type": "string" },
+          "attempts": { "type": "integer", "minimum": 0 },
+          "last_error": { "type": ["string", "null"] },
+          "created_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "AgreementPreparationJobHealth": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["status", "count"],
+        "properties": {
+          "status": { "type": "string" },
+          "count": { "type": "integer", "minimum": 0 }
+        }
+      },
+      "AgreementPreparationScanHealth": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["family", "phase", "last_progress_at", "last_completed_at", "last_error_code"],
+        "properties": {
+          "family": { "type": "string" },
+          "phase": { "type": "string" },
+          "last_progress_at": { "type": ["string", "null"], "format": "date-time" },
+          "last_completed_at": { "type": ["string", "null"], "format": "date-time" },
+          "last_error_code": { "type": ["string", "null"] }
+        }
+      },
+      "AgreementPreparationHealth": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["jobs", "scans"],
+        "properties": {
+          "jobs": { "type": "array", "items": { "$ref": "#/components/schemas/AgreementPreparationJobHealth" } },
+          "scans": { "type": "array", "items": { "$ref": "#/components/schemas/AgreementPreparationScanHealth" } }
+        }
+      },
+      "IntegrationHealth": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["quickbooks", "email", "sms", "jobs", "agreementPreparation"],
+        "properties": {
+          "quickbooks": { "$ref": "#/components/schemas/QuickBooksIntegrationConfiguration" },
+          "email": { "$ref": "#/components/schemas/IntegrationConfiguration" },
+          "sms": { "$ref": "#/components/schemas/IntegrationConfiguration" },
+          "jobs": { "type": "array", "maxItems": 50, "items": { "$ref": "#/components/schemas/IntegrationActionQueueItem" } },
+          "agreementPreparation": { "$ref": "#/components/schemas/AgreementPreparationHealth" }
         }
       },
       "CreateServiceRequest": {
