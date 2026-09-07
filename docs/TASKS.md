@@ -14,7 +14,7 @@ All tasks use branch codex/p1-cms-crm from P1 5303da0 and upstream Core aad2057.
 | P1-OPS | Orchestrator | IN PROGRESS | public server, isolated Railway DB/core service, staging; deployment review next |
 | P1-QA | Orchestrator | IN PROGRESS | 34 routes and21 runtime tests pass; scoped security fixes integrated. Staging found and source fixed an admin redirect loop; redeployment and final live release gates pending. |
 | P1-CONTENT | Strategy task; Orchestrator integration | PLANNED | Strategy/proof brief under docs/strategy; public/CMS implementation follows acceptance of P1-PUBLIC, P1-IMAGES and P1-CMS review gates |
-| P1-COMMERCIAL | Orchestrator + content/Core/dashboard owners | PLANNED | /commercial, assessment offer, durable commercial intake, target-account pursuit; COM-01–07 in [initiative](initiatives/commercial-industrial-sales.md) |
+| P1-COMMERCIAL | Orchestrator + content/Core/dashboard owners | IN PROGRESS | /commercial, assessment offer, durable commercial intake, target-account pursuit; COM-01–07 in [initiative](initiatives/commercial-industrial-sales.md) |
 
 Latest evidence and deployment limits: [implementation-status.md](implementation-status.md). Separate business dashboard candidate undergoing independent review; no pilot acceptance.
 
