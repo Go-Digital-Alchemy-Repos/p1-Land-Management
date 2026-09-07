@@ -53,7 +53,7 @@ const services = [
 ];
 
 const values = [
-  { n: "01", title: "Heavy Equipment Fleet", desc: "Owned dozers, excavators and skid steers — no waiting on rentals, no shortcuts on the hard parts.", icon: Truck },
+  { n: "01", title: "Heavy Equipment Fleet", desc: "Discuss the equipment and access requirements for your grading, clearing, and property maintenance work.", icon: Truck },
   { n: "02", title: "Large-Acreage Expertise", desc: "Built around properties most crews can't handle — farms, estates, HOAs and commercial sites.", icon: Ruler },
   { n: "03", title: "Drainage Engineering", desc: "We read the land's slope and water like a survey, then solve it at the grade level.", icon: Droplets },
   { n: "04", title: "Dependable Scheduling", desc: "Crews that show up, communicate and finish on the timeline we commit to.", icon: CalendarCheck },
@@ -63,7 +63,7 @@ const FAQS = [
   {
     question: "What does P1 Land & Property Management do?",
     answer:
-      "P1 is a full-service land and property management company. We handle land clearing and forestry mulching, fine grading and site preparation, drainage solutions, turf installation and seeding, tree and brush management, pond and waterway management, commercial property management, and complete property reconstruction — all in-house with owned heavy equipment.",
+      "P1 is a full-service land and property management company. We handle land clearing and forestry mulching, fine grading and site preparation, drainage solutions, turf installation and seeding, tree and brush management, pond and waterway management, commercial property management, and complete property reconstruction.",
   },
   {
     question: "Is there a minimum property size for P1's services?",
@@ -83,7 +83,7 @@ const FAQS = [
 ];
 
 const trust = [
-  { label: "Licensed & Insured", icon: ShieldCheck },
+  { label: "Land & Property Care", icon: ShieldCheck },
   { label: "Upstate SC + Charlotte NC", icon: MapPin },
   { label: "1-Acre Minimum", icon: Ruler },
   { label: "Large-Acreage Specialists", icon: Mountain },
@@ -194,7 +194,7 @@ export default function Home() {
               </h2>
             </div>
             <p className="max-w-xs text-[15px] leading-relaxed" style={{ color: "hsl(215 20% 35%)" }}>
-              From the first cut to ongoing care, every service is run in-house with owned equipment and a single point of contact.
+              From the first cut to ongoing care, discuss your property’s needs and coordinate the scope with P1.
             </p>
           </div>
 

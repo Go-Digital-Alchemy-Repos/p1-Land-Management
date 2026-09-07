@@ -1,4 +1,3 @@
-const ClientSitePagesPage = lazy(() => import("@/features/admin/cms/client-site-pages-page"));
 import { BrandingProvider } from "@/components/shared/branding-provider";
 import { CookieConsentBanner } from "@/components/shared/cookie-consent-banner";
 import { ProtectedRoute } from "@/components/shared/protected-route";
@@ -17,6 +16,8 @@ import { subscribeToCookieConsent } from "@/lib/cookie-consent";
 import NotFound from "@/pages/not-found";
 import { DEFAULT_SITE_FEATURES, type SiteFeatures } from "@shared/site-features";
 import { Loader2 } from "lucide-react";
+
+const ClientSitePagesPage = lazy(() => import("@/features/admin/cms/client-site-pages-page"));
 
 const CmsHybridPage = lazy(() =>
   import("@/features/public/cms-hybrid-page").then((module) => ({

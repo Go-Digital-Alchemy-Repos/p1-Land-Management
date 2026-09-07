@@ -806,8 +806,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fygxxrx",
-            "label": "Text: Licensed & Insured",
+            "path": "f1c661rd",
+            "label": "Text: Land & Property Care",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -855,8 +855,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f132ty8b",
-            "label": "Text: From the first cut to ongoing care, every service is run in-house with owned equipment and a si",
+            "path": "f5mk31y",
+            "label": "Text: From the first cut to ongoing care, discuss your property’s needs and coordinate the scope with",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -1282,8 +1282,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fchyiyr",
-            "label": "Text: Owned dozers, excavators and skid steers — no waiting on rentals, no shortcuts on the hard part",
+            "path": "fhtpi9b",
+            "label": "Text: Discuss the equipment and access requirements for your grading, clearing, and property maintena",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -1443,7 +1443,7 @@
             "maxLength": 2000
           },
           {
-            "path": "f1g1ea08",
+            "path": "fmr72ld",
             "label": "Text: P1 is a full-service land and property management company. We handle land clearing and forestry",
             "type": "textarea",
             "required": false,
@@ -1607,14 +1607,14 @@
           "fv11gbc": "/services/pond-waterway-management",
           "f1amwadv": "05",
           "fitsipf": "Ponds & Waterway Management",
-          "fygxxrx": "Licensed & Insured",
+          "f1c661rd": "Land & Property Care",
           "f11c77d4": "Upstate SC + Charlotte NC",
           "f1bqkijr": "1-Acre Minimum",
           "flfguuo": "Large-Acreage Specialists",
           "fhdjdpj": "What We Do",
           "f5kskz3": "A full field of capabilities,",
           "f1k6cbi6": "one accountable crew.",
-          "f132ty8b": "From the first cut to ongoing care, every service is run in-house with owned equipment and a single point of contact.",
+          "f5mk31y": "From the first cut to ongoing care, discuss your property’s needs and coordinate the scope with P1.",
           "fj88j4j": "/assets/service-commercial-1280-L65U2NEr.webp",
           "fd197wc": "Commercial Property Management",
           "f6wtxte": "Scheduled, self-sufficient programs that keep large sites pristine year-round.",
@@ -1675,7 +1675,7 @@
           "f1daxspt": "Owners choose P1 because we bring the equipment, expertise and discipline that big properties demand — and we stand behind every grade we cut.",
           "fvvbhcg": "Discuss Your Project",
           "f1rltir7": "Heavy Equipment Fleet",
-          "fchyiyr": "Owned dozers, excavators and skid steers — no waiting on rentals, no shortcuts on the hard parts.",
+          "fhtpi9b": "Discuss the equipment and access requirements for your grading, clearing, and property maintenance work.",
           "frf7v61": "Large-Acreage Expertise",
           "fgjfb1m": "Built around properties most crews can't handle — farms, estates, HOAs and commercial sites.",
           "fz774hm": "Drainage Engineering",
@@ -1698,7 +1698,7 @@
           "f2vn0sw": "Common Questions",
           "f1edgxzi": "Frequently asked questions.",
           "f1o2eben": "What does P1 Land & Property Management do?",
-          "f1g1ea08": "P1 is a full-service land and property management company. We handle land clearing and forestry mulching, fine grading and site preparation, drainage solutions, turf installation and seeding, tree and brush management, pond and waterway management, commercial property management, and complete property reconstruction — all in-house with owned heavy equipment.",
+          "fmr72ld": "P1 is a full-service land and property management company. We handle land clearing and forestry mulching, fine grading and site preparation, drainage solutions, turf installation and seeding, tree and brush management, pond and waterway management, commercial property management, and complete property reconstruction.",
           "f1m254w": "Is there a minimum property size for P1's services?",
           "f1v91yf7": "Yes. P1 specializes in properties 1 acre and larger — commercial sites, industrial and agricultural land, HOAs, farms, estates, and large residential acreage. That focus lets us bring the heavy equipment and expertise that big properties demand.",
           "f11iczzd": "What areas does P1 Land & Property Management serve?",
@@ -2310,8 +2310,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f12llnua",
-            "label": "Text: Tell us about your project",
+            "path": "f175dl9w",
+            "label": "Text: Tell us about your project *",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -2596,7 +2596,7 @@
           "fjoz08e": "Property Maintenance",
           "f1xtoq0z": "Property Reconstruction",
           "f17aus7e": "Not Sure",
-          "f12llnua": "Tell us about your project",
+          "f175dl9w": "Tell us about your project *",
           "f8fuarg": "We use these details to respond to your project inquiry. Please avoid including sensitive information.",
           "fkvfxmd": "Request My Free Estimate",
           "f1sgmv6u": "Contact Details",
@@ -19454,8 +19454,8 @@
             "maxLength": 2000
           },
           {
-            "path": "ff33ojj",
-            "label": "Text: Project Gallery",
+            "path": "fprbshx",
+            "label": "Text: Service Gallery",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -19605,7 +19605,7 @@
           "fooltxx": "/service-areas",
           "fgf0583": "Company",
           "f1rndlzn": "About Us",
-          "ff33ojj": "Project Gallery",
+          "fprbshx": "Service Gallery",
           "f355d57": "/gallery",
           "ftd7hs7": "Blog & Resources",
           "f18vh367": "/blog",

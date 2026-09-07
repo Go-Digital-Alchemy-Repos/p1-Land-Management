@@ -69,7 +69,7 @@ export function SiteFooter() {
           <h4 className="font-serif text-[11px] font-bold uppercase tracking-[0.2em] text-tan mb-6">Company</h4>
           <ul className="space-y-3 text-sm text-secondary-foreground/70">
             <li><Link href="/about" className="hover:text-primary transition-colors">About Us</Link></li>
-            <li><Link href="/gallery" className="hover:text-primary transition-colors">Project Gallery</Link></li>
+            <li><Link href="/gallery" className="hover:text-primary transition-colors">Service Gallery</Link></li>
             <li><Link href="/testimonials" className="hover:text-primary transition-colors">Working With P1</Link></li>
             <li><Link href="/blog" className="hover:text-primary transition-colors">Blog & Resources</Link></li>
             <li><Link href="/contact" className="hover:text-primary transition-colors">Contact / Free Estimate</Link></li>

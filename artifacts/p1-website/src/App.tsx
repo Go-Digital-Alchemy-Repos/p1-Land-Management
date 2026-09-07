@@ -1,6 +1,19 @@
 import { trackAcquisition } from "@/lib/acquisition";
-import { lazy, Suspense, useEffect, type ComponentType } from "react";
+import { Component, type ReactNode, lazy, Suspense, useEffect, type ComponentType } from "react";
 import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
+class RouteErrorBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() { return { failed: true }; }
+  render() {
+    if (this.state.failed) return <main className="mx-auto max-w-2xl p-8" role="alert">
+      <h1 className="text-3xl">This page couldn’t load</h1>
+      <p className="my-4">Please reload the page to try again.</p>
+      <button className="rounded bg-primary px-5 py-3 font-bold text-primary-foreground" onClick={() => window.location.reload()}>Reload page</button>
+    </main>;
+    return this.props.children;
+  }
+}
+
 // Eager server modules preserve synchronous prerendering; browser routes load on demand.
 const serverPages = import.meta.env.SSR
   ? import.meta.glob<{ default: ComponentType }>("./pages/**/*.tsx", { eager: true })
@@ -127,7 +140,7 @@ function App({ ssrPath }: { ssrPath?: string }) {
           ssrPath={ssrPath}
         >
           <ScrollToTop />
-          <Suspense fallback={<main className="p-12" role="status">Loading page…</main>}><Router /></Suspense>
+          <RouteErrorBoundary><Suspense fallback={<main className="p-12" role="status">Loading page…</main>}><Router /></Suspense></RouteErrorBoundary>
         </WouterRouter>
   );
 }

@@ -89,7 +89,7 @@ export function SiteHeader() {
                 <span className="sr-only">Toggle Menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[300px] sm:w-[400px] overflow-y-auto bg-background">
+            <SheetContent aria-describedby={undefined} side="right" className="w-[300px] sm:w-[400px] overflow-y-auto bg-background">
               <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
               <div className="flex flex-col gap-6 py-6">
                 <Link href="/" onClick={() => setIsOpen(false)}>

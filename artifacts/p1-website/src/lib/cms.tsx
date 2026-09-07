@@ -1,3 +1,4 @@
+import { applyPreviewOverlay, type CmsPreviewOverlay } from "./cms-preview";
 import React, { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 
 export type CmsValues = Record<string, string>;
@@ -30,9 +31,10 @@ export function cmsValue(context: ReturnType<typeof useCms>, original: string, k
   return safeValue(value, kind) ? value : original;
 }
 export function CmsProvider({ snapshot, collect, children }: { snapshot: CmsSnapshot; collect?: CmsCollection; children: ReactNode }) {
-  const [active, setActive] = useState(snapshot);
-  useEffect(() => setActive(snapshot), [snapshot]);
+  const [preview, setPreview] = useState<CmsPreviewOverlay | null>(null);
+  const active = applyPreviewOverlay(snapshot, preview);
   useEffect(() => {
+    setPreview(null);
     if (!new URLSearchParams(location.search).has('cmsPreview') || window.parent === window) return;
     const id = routeId(snapshot.route);
     const componentKey = new URLSearchParams(location.search).get('cmsComponent') || `${id}-content`;
@@ -40,10 +42,10 @@ export function CmsProvider({ snapshot, collect, children }: { snapshot: CmsSnap
     let lastRevision = -1;
     const listener = (event: MessageEvent) => {
       const data = event.data;
-      if (event.origin !== location.origin || event.source !== window.parent || !data || data.type !== 'core-platform:client-site-preview' || data.protocolVersion !== '1.0' || data.clientStackId !== 'p1-land-management' || data.routeId !== routeKey || data.componentKey !== componentKey || !Number.isInteger(data.revision) || data.revision < lastRevision || !data.content || Array.isArray(data.content)) return;
+      if (event.origin !== location.origin || event.source !== window.parent || !data || data.type !== 'core-platform:client-site-preview' || data.protocolVersion !== '1.0' || data.clientStackId !== 'p1-land-management' || data.routeId !== routeKey || data.componentKey !== componentKey || !Number.isInteger(data.revision) || data.revision < 0 || data.revision < lastRevision || !data.content || typeof data.content !== "object" || Array.isArray(data.content)) return;
       const clean = Object.fromEntries(Object.entries(data.content).filter(([k,v]) => /^[a-z][a-zA-Z0-9]*$/.test(k) && typeof v === 'string' && v.length <= 12000));
       lastRevision = data.revision;
-      setActive(previous => ({ ...previous, [componentKey === 'site-chrome' ? 'global' : 'content']: clean }));
+      setPreview({ route: snapshot.route, [componentKey === 'site-chrome' ? 'global' : 'content']: clean });
     };
     window.addEventListener('message', listener);
     window.parent.postMessage({ type: 'core-platform:client-site-preview-ready', protocolVersion: '1.0', clientStackId: 'p1-land-management', routeId: routeKey, componentKey }, location.origin);

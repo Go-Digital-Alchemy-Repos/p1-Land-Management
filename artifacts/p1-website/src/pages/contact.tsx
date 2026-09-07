@@ -1,5 +1,5 @@
 import { acquisitionSource, trackAcquisition } from "@/lib/acquisition";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
@@ -26,6 +26,7 @@ export default function Contact() {
   const [error, setError] = useState("");
   const request = useRef<{ payload: string; key: string } | null>(null);
   const successHeading = useRef<HTMLHeadingElement>(null);
+  useEffect(() => { if (submitted) successHeading.current?.focus(); }, [submitted]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -53,7 +54,6 @@ export default function Contact() {
       if (!response.ok || !receipt?.submissionId) throw new Error("We couldn't confirm your request. Please try again, or call us directly. Your information is still here.");
       setSubmitted(true);
       request.current = null;
-      requestAnimationFrame(() => successHeading.current?.focus());
     } catch (cause) {
       trackAcquisition("form_error");
       setError("We couldn’t confirm your request. Please try again or call us. Your information is still here.");
@@ -110,13 +110,13 @@ export default function Contact() {
                   Prefer to talk now? Call us directly at{" "}
                   <a href={PHONE_HREF} className="font-bold text-primary hover:underline">{PHONE_DISPLAY}</a>.
                 </p>
-                <Button onClick={() => setSubmitted(false)} variant="outline" className="mt-8">Submit Another Request</Button>
+                <Button onClick={() => { formStarted.current = false; setSubmitted(false); }} variant="outline" className="mt-8">Submit Another Request</Button>
               </div>
             ) : (
               <form onFocus={() => { if (!formStarted.current) { formStarted.current = true; trackAcquisition("form_start"); } }} onSubmit={handleSubmit} className="space-y-6 animate-in fade-in duration-500">
                 <div className="space-y-2">
                   <Label htmlFor="name">Your Name *</Label>
-                  <Input id="name" name="name" autoComplete="name" required maxLength={200} className="bg-background" />
+                  <Input id="name" name="name" autoComplete="name" required maxLength={150} className="bg-background" />
                 </div>
                 <div className="hidden" aria-hidden="true">
                   <label htmlFor="website">Leave this empty</label>
@@ -136,12 +136,12 @@ export default function Contact() {
 
                 <div className="space-y-2">
                   <Label htmlFor="company">Company Name</Label>
-                  <Input id="company" name="company" className="bg-background" />
+                  <Input id="company" name="company" maxLength={300} className="bg-background" />
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="address">Property Address / City *</Label>
-                  <Input id="address" name="address" required className="bg-background" />
+                  <Input id="address" name="address" maxLength={500} required className="bg-background" />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -192,8 +192,8 @@ export default function Contact() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="project">Tell us about your project</Label>
-                  <Textarea id="project" name="project" rows={4} className="bg-background resize-y" placeholder="Any specific issues or timeline requirements?" />
+                  <Label htmlFor="project">Tell us about your project *</Label>
+                  <Textarea id="project" name="project" required maxLength={5000} rows={4} className="bg-background resize-y" placeholder="Any specific issues or timeline requirements?" />
                 </div>
 
                 <p className="text-sm text-secondary/80">We use these details to respond to your project inquiry. Please avoid including sensitive information.</p>
