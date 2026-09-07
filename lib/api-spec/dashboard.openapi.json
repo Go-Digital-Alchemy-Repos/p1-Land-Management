@@ -2271,7 +2271,7 @@
           "id",
           "name",
           "email",
-          "ownerMfaRequired",
+          "mfaRequired",
           "role"
         ],
         "properties": {
@@ -2290,7 +2290,7 @@
               "null"
             ]
           },
-          "ownerMfaRequired": {
+          "mfaRequired": {
             "type": "boolean"
           },
           "role": {

@@ -112,7 +112,7 @@ test("generated identity transport preserves nullable role and optional MFA stat
     name: "Fixture",
     email: "fixture@example.test",
     role: null,
-    ownerMfaRequired: false,
+    mfaRequired: false,
   };
   globalThis.fetch = async (input, init) => {
     assert.equal(String(input), "/api/v1/me");
@@ -126,10 +126,10 @@ test("generated identity transport preserves nullable role and optional MFA stat
       ...response,
       role: "owner",
       twoFactorEnabled: null,
-      ownerMfaRequired: true,
+      mfaRequired: true,
     };
     const owner = await getDashboardMe();
-    assert.equal(owner.ownerMfaRequired, true);
+    assert.equal(owner.mfaRequired, true);
     assert.equal(owner.twoFactorEnabled, null);
   } finally {
     globalThis.fetch = original;

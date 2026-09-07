@@ -55,12 +55,6 @@ api.post("/setup/complete", async (req, res) => {
     )
   )
     throw new HttpError(403, "Invalid or expired setup authorization");
-  const assurance = await pool.query(
-    "SELECT 1 FROM session_assurance WHERE session_id=$1",
-    [s.session.id],
-  );
-  if (!s.user.twoFactorEnabled || !assurance.rowCount)
-    throw new HttpError(409, "Enable and verify MFA before completing setup");
   await transaction(async (c) => {
     const r = await c.query(
       "SELECT completed_at FROM installation WHERE id=1 FOR UPDATE",
@@ -86,7 +80,7 @@ api.post("/setup/complete", async (req, res) => {
 api.get("/me", async (req, res) => {
   const s = await identity(req);
   const p = await pool.query(
-    "SELECT role,active,EXISTS(SELECT 1 FROM session_assurance WHERE session_id=$2) AS assured FROM staff_profile WHERE user_id=$1",
+    "SELECT role,active,mfa_required,EXISTS(SELECT 1 FROM session_assurance WHERE session_id=$2) AS assured FROM staff_profile WHERE user_id=$1",
     [s.user.id, s.session.id],
   );
   res.json({
@@ -94,7 +88,7 @@ api.get("/me", async (req, res) => {
     name: s.user.name,
     email: s.user.email,
     twoFactorEnabled: s.user.twoFactorEnabled,
-    ownerMfaRequired: !!(p.rows[0]?.active && p.rows[0].role === "owner" && (!s.user.twoFactorEnabled || !p.rows[0].assured)),
+    mfaRequired: !!(p.rows[0]?.active && p.rows[0].mfa_required && (!s.user.twoFactorEnabled || !p.rows[0].assured)),
     role: p.rows[0]?.active ? p.rows[0].role : null,
   });
 });
@@ -104,10 +98,23 @@ api.get("/staff", async (req, res) => {
   res.json(
     (
       await pool.query(
-        "SELECT u.id,u.name,p.role FROM \"user\" u JOIN staff_profile p ON p.user_id=u.id WHERE p.active=true AND p.role<>'client' ORDER BY u.name",
+        "SELECT u.id,u.name,p.role,p.mfa_required AS \"mfaRequired\" FROM \"user\" u JOIN staff_profile p ON p.user_id=u.id WHERE p.active=true AND p.role<>'client' ORDER BY u.name",
       )
     ).rows,
   );
+});
+api.post("/staff/:id/mfa-requirement", async (req, res) => {
+  const a = await actor(req);
+  requireRole(a.role, ["owner"]);
+  const targetId = z.string().min(1).parse(req.params.id);
+  const required = z.object({ required: z.boolean() }).parse(req.body).required;
+  const result = await pool.query(
+    "UPDATE staff_profile SET mfa_required=$2 WHERE user_id=$1 AND active=true RETURNING user_id,mfa_required",
+    [targetId, required],
+  );
+  if (!result.rowCount) throw new HttpError(404, "Staff member not found");
+  await audit(pool, a.id, "staff.mfa_requirement.updated", targetId);
+  res.json({ id: targetId, mfaRequired: result.rows[0].mfa_required });
 });
 api.post("/invitations", async (req, res) => {
   const a = await actor(req);

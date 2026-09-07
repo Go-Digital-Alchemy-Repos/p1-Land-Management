@@ -27,6 +27,7 @@ import {
   Menu,
   MessageSquare,
   CheckCircle2,
+  ShieldCheck,
 } from "lucide-react";
 import {
   getMyWorkOrders,
@@ -52,7 +53,7 @@ type Person = {
   email: string;
   role: string | null;
   twoFactorEnabled: boolean;
-  ownerMfaRequired?: boolean;
+  mfaRequired?: boolean;
 };
 const nav = [
   ["Overview", LayoutDashboard],
@@ -68,6 +69,7 @@ const nav = [
   ["Projects", ClipboardList],
   ["Inspections", CheckCircle2],
   ["Expenses", Wallet],
+  ["Security", ShieldCheck],
   ["Settings", Settings],
 ] as const;
 const date = (v: string) =>
@@ -154,7 +156,7 @@ function App() {
     };
   }, []);
   async function refresh() {
-    if (!person?.role || (person.role === "owner" && (person.ownerMfaRequired || !person.twoFactorEnabled))) return;
+    if (!person?.role || person.mfaRequired) return;
     setError("");
     try {
       const savedDay = await offline.readDay(person.id);
@@ -747,7 +749,7 @@ function App() {
         </section>
       </main>
     );
-  if (person.role === "owner" && (person.ownerMfaRequired || !person.twoFactorEnabled))
+  if (person.mfaRequired)
     return <OwnerMfaRecovery key={person.id} email={person.email} enabled={person.twoFactorEnabled} actions={auth.twoFactor} onComplete={session} onSignOut={logout} />;
   if (!person.role)
     return (
@@ -766,54 +768,6 @@ function App() {
         {notice && <p className="notice">{notice}</p>}
         {!boot?.initialized ? (
           <>
-            <p>
-              Verify your authenticator before activating the owner account.
-            </p>
-            {!person.twoFactorEnabled && (
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  const b = new FormData(e.currentTarget);
-                  void run(async () => {
-                    const r = await auth.twoFactor.enable({
-                      password: String(b.get("password")),
-                    });
-                    if (r.error) throw new Error(r.error.message);
-                    setMfa(r.data);
-                  });
-                }}
-              >
-                {field("password", "Current password", "password")}
-                <button className="primary">Set up authenticator</button>
-              </form>
-            )}
-            {mfa && (
-              <>
-                <p>Add this key to your authenticator app:</p>
-                <code className="secret">
-                  {new URL(mfa.totpURI).searchParams.get("secret")}
-                </code>
-                <p>Save your recovery codes privately:</p>
-                <pre className="secret">{mfa.backupCodes.join("\n")}</pre>
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    const b = new FormData(e.currentTarget);
-                    void run(async () => {
-                      const r = await auth.twoFactor.verifyTotp({
-                        code: String(b.get("code")),
-                      });
-                      if (r.error) throw new Error(r.error.message);
-                      setMfa(null);
-                      await session();
-                    });
-                  }}
-                >
-                  {field("code", "Authenticator code")}
-                  <button className="primary">Verify authenticator</button>
-                </form>
-              </>
-            )}
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -825,9 +779,7 @@ function App() {
               }}
             >
               {field("code", "Owner setup code")}
-              <button className="primary" disabled={!person.twoFactorEnabled}>
-                Activate owner account
-              </button>
+              <button className="primary">Activate owner account</button>
             </form>
           </>
         ) : (
@@ -1208,8 +1160,8 @@ function App() {
               )}
               {view === "Schedule" && (
                 <ScheduleCalendar
-                    request={api}
-                    onChanged={refresh}
+                  request={api}
+                  onChanged={refresh}
                   work={data.work || []}
                   staff={data.staff || []}
                   canManage={ops}
@@ -1697,6 +1649,86 @@ function App() {
               />
             </section>
           )}
+          {view === "Security" && (
+            <section className="panel">
+              <div className="panel-heading">
+                <h2>Two-factor authentication</h2>
+                <span className="badge">
+                  {person.twoFactorEnabled ? "Enabled" : "Not enabled"}
+                </span>
+              </div>
+              <p className="muted">
+                Protect this account with an authenticator app. It is optional
+                unless a super admin requires it for your account.
+              </p>
+              {!person.twoFactorEnabled && !mfa && (
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    const b = new FormData(e.currentTarget);
+                    void run(async () => {
+                      const r = await auth.twoFactor.enable({
+                        password: String(b.get("password")),
+                      });
+                      if (r.error) throw new Error(r.error.message);
+                      setMfa(r.data);
+                    });
+                  }}
+                >
+                  {field("password", "Current password", "password")}
+                  <button className="primary">Set up authenticator</button>
+                </form>
+              )}
+              {mfa && (
+                <>
+                  <p>Add this key to your authenticator app:</p>
+                  <code className="secret">
+                    {new URL(mfa.totpURI).searchParams.get("secret")}
+                  </code>
+                  <p>Save your recovery codes privately:</p>
+                  <pre className="secret">{mfa.backupCodes.join("\n")}</pre>
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      const b = new FormData(e.currentTarget);
+                      void run(async () => {
+                        const r = await auth.twoFactor.verifyTotp({
+                          code: String(b.get("code")),
+                        });
+                        if (r.error) throw new Error(r.error.message);
+                        setMfa(null);
+                        await session();
+                        setNotice("Two-factor authentication is enabled.");
+                      });
+                    }}
+                  >
+                    {field("code", "Authenticator code")}
+                    <button className="primary">Verify authenticator</button>
+                  </form>
+                </>
+              )}
+              {person.twoFactorEnabled && (
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    const b = new FormData(e.currentTarget);
+                    void run(async () => {
+                      const r = await auth.twoFactor.disable({
+                        password: String(b.get("password")),
+                      });
+                      if (r.error) throw new Error(r.error.message);
+                      setMfa(null);
+                      await session();
+                      setNotice("Two-factor authentication is disabled.");
+                    });
+                  }}
+                >
+                  {field("password", "Current password", "password")}
+                  <button>Disable authenticator</button>
+                </form>
+              )}
+            </section>
+          )}
           {view === "Settings" && (
             <>
               <section className="panel">
@@ -1708,9 +1740,31 @@ function App() {
                 </div>
                 <Table
                   rows={data.staff || []}
-                  columns={["name", "role"]}
+                  columns={["name", "role", "mfaRequired"]}
                   empty="No staff records."
                 />
+                {person.role === "owner" && (data.staff || []).length > 0 && (
+                  <div className="stacked-actions">
+                    <h3>Two-factor requirements</h3>
+                    {(data.staff || []).map((member: any) => (
+                      <div className="row-actions" key={member.id}>
+                        <span>{member.name} — {member.mfaRequired ? "Required" : "Optional"}</span>
+                        <button
+                          onClick={() =>
+                            void run(async () => {
+                              await api(`/staff/${member.id}/mfa-requirement`, {
+                                required: !member.mfaRequired,
+                              });
+                              await refresh();
+                            })
+                          }
+                        >
+                          Make {member.mfaRequired ? "optional" : "required"}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </section>
               <section className="panel">
                 <div className="panel-heading">

@@ -18,7 +18,7 @@ test(
       [uid, "Synthetic recovery", uid + "@example.test"],
     );
     await pool.query(
-      "INSERT INTO staff_profile(user_id,role) VALUES($1,'owner')",
+      "INSERT INTO staff_profile(user_id,role,mfa_required) VALUES($1,'owner',true)",
       [uid],
     );
     await pool.query(
@@ -39,8 +39,8 @@ test(
     async function required(value: boolean) {
       const r = await get("/me");
       assert.equal(r.status, 200);
-      const status = (await r.json()) as { ownerMfaRequired: boolean };
-    assert.equal(status.ownerMfaRequired, value);
+      const status = (await r.json()) as { mfaRequired: boolean };
+      assert.equal(status.mfaRequired, value);
     }
     try {
       await required(true);
@@ -63,6 +63,12 @@ test(
       assert.equal((await get("/clients")).status, 403);
       await pool.query(
         "UPDATE staff_profile SET role='manager' WHERE user_id=$1",
+        [uid],
+      );
+      await required(true);
+      assert.equal((await get("/clients")).status, 403);
+      await pool.query(
+        "UPDATE staff_profile SET mfa_required=false WHERE user_id=$1",
         [uid],
       );
       await required(false);

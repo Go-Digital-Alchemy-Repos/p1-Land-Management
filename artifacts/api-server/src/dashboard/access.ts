@@ -44,13 +44,12 @@ export async function identity(req: Request) {
 export async function actor(req: Request) {
   const s = await identity(req);
   const p = await pool.query(
-    "SELECT role FROM staff_profile WHERE user_id=$1 AND active=true",
-    [s.user.id],
+    "SELECT role,mfa_required,EXISTS(SELECT 1 FROM session_assurance WHERE session_id=$2) AS assured FROM staff_profile WHERE user_id=$1 AND active=true",
+    [s.user.id, s.session.id],
   );
   if (!p.rowCount) throw new HttpError(403, "Complete account activation");
-  const assurance = p.rows[0].role === "owner" ? await pool.query("SELECT 1 FROM session_assurance WHERE session_id=$1", [s.session.id]) : null;
-  if (p.rows[0].role === "owner" && (!s.user.twoFactorEnabled || !assurance?.rowCount))
-    throw new HttpError(403, "Owner MFA enrollment is required");
+  if (p.rows[0].mfa_required && (!s.user.twoFactorEnabled || !p.rows[0].assured))
+    throw new HttpError(403, "Multi-factor authentication is required for this account");
   return { id: s.user.id, name: s.user.name, role: p.rows[0].role as Role };
 }
 export type Actor = Awaited<ReturnType<typeof actor>>;

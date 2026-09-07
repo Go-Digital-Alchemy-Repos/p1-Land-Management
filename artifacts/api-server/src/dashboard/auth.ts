@@ -81,22 +81,6 @@ export const auth = betterAuth({
             message: "A valid owner setup code or invitation is required",
           });
       }
-      // MFA is mandatory for the owner; recovery uses audited operator procedures.
-      if (ctx.path === "/two-factor/disable") {
-        const session = await auth.api.getSession({
-          headers: ctx.headers || new Headers(),
-        });
-        if (session) {
-          const p = await pool.query(
-            "SELECT role FROM staff_profile WHERE user_id=$1",
-            [session.user.id],
-          );
-          if (p.rows[0]?.role === "owner")
-            throw new APIError("FORBIDDEN", {
-              message: "Owner MFA cannot be disabled",
-            });
-        }
-      }
     }),
   },
 });

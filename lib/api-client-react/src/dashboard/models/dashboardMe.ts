@@ -13,7 +13,7 @@ export interface DashboardMe {
   email: string;
   /** @nullable */
   twoFactorEnabled?: boolean | null;
-  ownerMfaRequired: boolean;
+  mfaRequired: boolean;
   /** @nullable */
   role: DashboardMeRole;
 }

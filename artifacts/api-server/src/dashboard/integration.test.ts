@@ -138,6 +138,15 @@ test(
       ).status,
       200,
     );
+    r = await owner("/api/v1/setup/complete", { code: "secret" });
+    assert.equal(r.status, 201, JSON.stringify(r.data));
+    // Owner setup and business access remain available when the account has not
+    // opted into two-factor authentication.
+    assert.equal((await owner("/api/v1/clients")).status, 200);
+    assert.equal(
+      (await staleOwner("/api/v1/setup/complete", { code: "secret" })).status,
+      401,
+    );
     r = await owner("/api/auth/two-factor/enable", { password });
     assert.equal(r.status, 200, JSON.stringify(r.data));
     const secret = new URL(r.data.totpURI).searchParams.get("secret")!;
@@ -176,12 +185,6 @@ test(
       "https://attacker.example",
     );
     assert.equal(forgedOriginBearer.status, 403);
-    assert.equal(
-      (await staleOwner("/api/v1/setup/complete", { code: "secret" })).status,
-      409,
-    );
-    r = await owner("/api/v1/setup/complete", { code: "secret" });
-    assert.equal(r.status, 201, JSON.stringify(r.data));
     const native = await nativeClient("/api/v1/clients", nativeToken, {
       name: "Native session client " + suffix,
     });
@@ -239,6 +242,20 @@ test(
     );
     assert.equal(
       (await customer("/api/v1/invitations/accept", { token })).status,
+      200,
+    );
+    const customerId = (await customer("/api/v1/me")).data.id;
+    assert.equal(
+      (await customer(`/api/v1/staff/${customerId}/mfa-requirement`, { required: true })).status,
+      403,
+    );
+    assert.equal(
+      (await owner(`/api/v1/staff/${customerId}/mfa-requirement`, { required: true })).status,
+      200,
+    );
+    assert.equal((await customer("/api/v1/properties")).status, 403);
+    assert.equal(
+      (await owner(`/api/v1/staff/${customerId}/mfa-requirement`, { required: false })).status,
       200,
     );
     const props = (await customer("/api/v1/properties")).data;

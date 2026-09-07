@@ -19,12 +19,14 @@ export function OwnerMfaRecovery({
   actions,
   onComplete,
   onSignOut,
+  accountLabel = "account",
 }: {
   email: string;
   enabled: boolean;
   actions: OwnerMfaActions;
   onComplete: () => Promise<void>;
   onSignOut: () => Promise<void>;
+  accountLabel?: string;
 }) {
   const [enrollment, setEnrollment] = useState<{
     totpURI: string;
@@ -48,14 +50,13 @@ export function OwnerMfaRecovery({
   return (
     <main className="activation">
       <div className="brand">
-        <img src="/icon.svg" alt="P1" width="48" height="36" /> OWNER ACCOUNT
-        SECURITY
+        <img src="/icon.svg" alt="P1" width="48" height="36" /> ACCOUNT SECURITY
       </div>
       <h1>
-        {enabled ? "Verify your authenticator." : "Secure your owner account."}
+        {enabled ? "Verify your authenticator." : `Secure your ${accountLabel}.`}
       </h1>
       <p>
-        Signed in as {email}. Owner access requires a verified authenticator for
+        Signed in as {email}. This account requires a verified authenticator for
         this session.
       </p>
       {error && (
