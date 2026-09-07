@@ -840,10 +840,14 @@ api.post("/requests", async (req, res) => {
   const b = z.object({ propertyId: id, description: text }).parse(req.body);
   await propertyAccess(a, b.propertyId);
   const key = randomUUID();
-  await operationalQuery(b.propertyId,
-    "INSERT INTO service_request(id,property_id,user_id,description) VALUES($1,$2,$3,$4)",
-    [key, b.propertyId, a.id, b.description],
-  );
+  await transaction(async (c) => {
+    await requireOperationalProperty(c, b.propertyId);
+    await c.query(
+      "INSERT INTO service_request(id,property_id,user_id,description) VALUES($1,$2,$3,$4)",
+      [key, b.propertyId, a.id, b.description],
+    );
+    await audit(c, a.id, "service_request.created", key);
+  });
   res.status(201).json({ id: key });
 });
 api.get("/assessment-slots", async (req, res) => {

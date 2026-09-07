@@ -26,7 +26,7 @@ Billing creation requires `operationId` (UUID), `propertyId`, `estimateId`, `tit
 
 ## Client service requests
 
-`GET /requests` is available to office and client roles. Clients receive requests for properties they can access, but the server omits the internal submitting user ID; office readers retain the operational submitter identity. `POST /requests` requires a client-accessible or operational property and creates a new request only. Status changes and work-order conversion require the separately approved service-request workflow contract.
+`GET /requests` is available to office and client roles. Clients receive requests for properties they can access, but the server omits the internal submitting user ID; office readers retain the operational submitter identity. `POST /requests` requires a client-accessible or operational property and creates a new request only; the insert and `service_request.created` audit event commit together. Status changes and work-order conversion require the separately approved service-request workflow contract.
 
 ## Inspection report publication
 

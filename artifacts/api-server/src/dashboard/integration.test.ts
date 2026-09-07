@@ -336,6 +336,15 @@ test(
     const officeRequests = (await owner("/api/v1/requests")).data;
     assert.equal(officeRequests.find((request: any) => request.id === r.data.id).user_id, customerId);
     assert.equal(
+      (
+        await pool.query(
+          "SELECT count(*) FROM audit_event WHERE action='service_request.created' AND entity_id=$1",
+          [r.data.id],
+        )
+      ).rows[0].count,
+      "1",
+    );
+    assert.equal(
       (await customer("/api/v1/properties/" + pb + "/timeline")).status,
       404,
     );
