@@ -61,3 +61,52 @@ test("mixed conflict acknowledgment retains its conflict classification", async 
   }));
   assert.deepEqual(applied, [{ id: "a", status: "conflict" }]);
 });
+
+test("drains 201 original operations in bounded batches including conflicts", async () => {
+  const saved = Array.from({ length: 201 }, (_, i) => ({ ...event, id: `event-${i}` }));
+  const batches: number[] = [];
+  const recorded: { id: string; status: string }[] = [];
+  let reads = 0;
+  await syncOperations({
+    pending: async () => { reads++; return saved; },
+    recordResults: async rows => { recorded.push(...rows); },
+  }, async batch => {
+    batches.push(batch.length);
+    assert.deepEqual(batch, saved.slice(recorded.length, recorded.length + batch.length));
+    return { results: batch.map(row => ({ id: row.id, status: row.id === "event-1" ? "conflict" : "accepted" })) };
+  });
+  assert.deepEqual(batches, [100, 100, 1]);
+  assert.equal(reads, 1);
+  assert.equal(recorded.length, 201);
+  assert.equal(recorded[1].status, "conflict");
+});
+test("partial acknowledgment persists only confirmed entries and stops later batches", async () => {
+  const saved = Array.from({ length: 101 }, (_, i) => ({ ...event, id: `event-${i}` }));
+  let sends = 0;
+  const recorded: unknown[] = [];
+  await assert.rejects(syncOperations({
+    pending: async () => saved,
+    recordResults: async rows => { recorded.push(...rows); },
+  }, async () => {
+    sends++;
+    return { results: [{ id: "event-0", status: "accepted" }] };
+  }), /incomplete/);
+  assert.equal(sends, 1);
+  assert.deepEqual(recorded, [{ id: "event-0", status: "accepted" }]);
+});
+test("later batch failure preserves earlier receipts and never sends remaining work", async () => {
+  const saved = Array.from({ length: 201 }, (_, i) => ({ ...event, id: `event-${i}` }));
+  let sends = 0;
+  const recorded: unknown[] = [];
+  const denial = new Error("Authorization expired");
+  await assert.rejects(syncOperations({
+    pending: async () => saved,
+    recordResults: async rows => { recorded.push(...rows); },
+  }, async batch => {
+    sends++;
+    if (sends === 2) throw denial;
+    return { results: batch.map(row => ({ id: row.id, status: "accepted" })) };
+  }), error => error === denial);
+  assert.equal(sends, 2);
+  assert.equal(recorded.length, 100);
+});
