@@ -9,19 +9,21 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "react": "catalog:",
-    "react-dom": "catalog:",
-    "lucide-react": "catalog:",
-    "better-auth": "1.7.3",
+    "@workspace/api-client-react": "workspace:*",
     "@workspace/api-zod": "workspace:*",
-    "@workspace/api-client-react": "workspace:*"
+    "better-auth": "1.7.3",
+    "lucide-react": "catalog:",
+    "qrcode": "1.5.4",
+    "react": "catalog:",
+    "react-dom": "catalog:"
   },
   "devDependencies": {
+    "@types/node": "catalog:",
+    "@types/qrcode": "1.5.5",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "@types/node": "catalog:",
     "@vitejs/plugin-react": "catalog:",
-    "vite": "catalog:",
-    "typescript": "~5.9.3"
+    "typescript": "~5.9.3",
+    "vite": "catalog:"
   }
 }

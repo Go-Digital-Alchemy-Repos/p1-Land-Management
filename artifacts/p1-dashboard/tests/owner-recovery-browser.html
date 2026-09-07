@@ -27,6 +27,7 @@
             email: "recovery@example.test",
             role: mode === "manager" ? "manager" : "owner",
             twoFactorEnabled: enabled,
+            mfaRequired: required,
             ownerMfaRequired: required,
           });
         if (path === "/api/auth/two-factor/enable")

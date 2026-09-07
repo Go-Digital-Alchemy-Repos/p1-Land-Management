@@ -725,6 +725,19 @@ textarea {
   padding: 15px;
   display: block;
 }
+.authenticator-qr {
+  display: block;
+  width: min(224px, 100%);
+  height: auto;
+  padding: 12px;
+  background: #f8f7f2;
+}
+.recovery-code-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
 .text-button {
   margin-top: 20px;
 }

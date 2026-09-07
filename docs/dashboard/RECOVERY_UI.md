@@ -1,0 +1,9 @@
+# Authenticator recovery UI
+
+The required-account verification screen supports a locally rendered QR code, the existing manual setup key, recovery-code copy and a text-file download. These controls preserve the reviewed per-account MFA policy; they do not create accounts or bypass verification. The optional Security-page enrollment flow remains a separate presentation.
+
+QR rendering uses pinned MIT-licensed `qrcode` 1.5.4 through its browser canvas implementation. No QR service receives the authenticator URI. Recovery material remains in the account-keyed React component until the user explicitly copies or downloads it. Async QR rendering is cancelled on unmount; successful verification removes the setup UI. Download uses a temporary attached anchor and revokes its object URL after the browser can consume it.
+
+Independent review passed dependency/lock scope, dashboard typecheck/build, actual Chrome local QR rendering, exact synthetic clipboard copy, invalid-code preservation and successful verification cleanup. The browser fixture now supplies both current and legacy MFA status fields. The download initially timed out in tab-only observation because Chrome required its native Save dialog. Root completed that dialog and verified the exact 122-byte synthetic export; no real account credentials were used. Evidence: `/tmp/p1-recovery-qr-review.md`, `/tmp/p1-recovery-qr-review-v2-hashes.json`, `/tmp/p1-recovery-download-root-verification.json`.
+
+This UX follow-up was reviewed separately from staging source `58d2180`; do not claim it is part of that deployed artifact. Safari/mobile scanning, platform-specific clipboard denial and production owner enrollment remain separate acceptance checks. A downloaded recovery file remains under the user's control after the component unmounts.

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import QRCode from "qrcode";
+import { useEffect, useState } from "react";
 type Result<T = unknown> = {
   data?: T | null;
   error?: { message?: string } | null;
@@ -34,7 +35,31 @@ export function OwnerMfaRecovery({
   } | null>(null);
   const [error, setError] = useState(""),
     [busy, setBusy] = useState(false),
-    [recovery, setRecovery] = useState(false);
+    [recovery, setRecovery] = useState(false),
+    [qrCode, setQrCode] = useState(""),
+    [recoveryNotice, setRecoveryNotice] = useState("");
+  useEffect(() => {
+    let active = true;
+    if (!enrollment) {
+      setQrCode("");
+      return;
+    }
+    void QRCode.toDataURL(enrollment.totpURI, {
+      errorCorrectionLevel: "M",
+      margin: 1,
+      width: 224,
+      color: { dark: "#173d31", light: "#f8f7f2" },
+    })
+      .then((dataUrl) => {
+        if (active) setQrCode(dataUrl);
+      })
+      .catch(() => {
+        if (active) setError("Unable to create the QR code. Use the secret below.");
+      });
+    return () => {
+      active = false;
+    };
+  }, [enrollment]);
   async function run(action: () => Promise<void>) {
     if (busy) return;
     setBusy(true);
@@ -46,6 +71,35 @@ export function OwnerMfaRecovery({
     } finally {
       setBusy(false);
     }
+  }
+  async function copyRecoveryCodes(codes: string[]) {
+    try {
+      await navigator.clipboard.writeText(codes.join("\n"));
+      setRecoveryNotice("Recovery codes copied. Paste and store them somewhere private.");
+    } catch {
+      setRecoveryNotice("Select the codes below and copy them manually.");
+    }
+  }
+  function downloadRecoveryCodes(codes: string[]) {
+    const file = new Blob(
+      [
+        "P1 Land & Property Management recovery codes\n",
+        "Keep this file private. Each code can be used once.\n\n",
+        codes.join("\n"),
+        "\n",
+      ],
+      { type: "text/plain;charset=utf-8" },
+    );
+    const url = URL.createObjectURL(file);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "p1-recovery-codes.txt";
+    link.hidden = true;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    // Give the browser time to consume the download before releasing its URL.
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
   return (
     <main className="activation">
@@ -102,12 +156,37 @@ export function OwnerMfaRecovery({
       )}
       {enrollment && (
         <section aria-label="Authenticator enrollment">
-          <p>Add this secret to your authenticator app:</p>
+          <p>Scan this QR code with your authenticator app:</p>
+          {qrCode && (
+            <img
+              className="authenticator-qr"
+              src={qrCode}
+              alt="QR code for adding this P1 account to an authenticator app"
+              width="224"
+              height="224"
+            />
+          )}
+          <p>Or add this secret to your authenticator app:</p>
           <code className="secret">
             {new URL(enrollment.totpURI).searchParams.get("secret")}
           </code>
           <p>Save these recovery codes privately before continuing:</p>
           <pre className="secret">{enrollment.backupCodes.join("\n")}</pre>
+          <div className="recovery-code-actions">
+            <button
+              type="button"
+              onClick={() => void copyRecoveryCodes(enrollment.backupCodes)}
+            >
+              Copy recovery codes
+            </button>
+            <button
+              type="button"
+              onClick={() => downloadRecoveryCodes(enrollment.backupCodes)}
+            >
+              Download text file
+            </button>
+          </div>
+          {recoveryNotice && <p role="status" className="notice">{recoveryNotice}</p>}
         </section>
       )}
       {(enabled || enrollment) && (
