@@ -17,8 +17,12 @@ Build origins and full source revision were set explicitly and verified before u
 
 ## Remaining release and recovery gates
 
-The existing public website remains on its previous release. Shared CMS/dashboard identity, fresh authorized owner access, production commercial sender/receiver keys, end-to-end inquiry delivery, public gateway/cache provisioning, final content/browser checks and production closeout remain unfinished. Do not create an alternate production owner or relax MFA to bypass the pending shared-identity review.
+The existing public website remains on its previous release. Shared CMS/dashboard identity, fresh authorized owner access, activation of configured production commercial sender/receiver keys, end-to-end inquiry delivery, public gateway/cache provisioning, final content/browser checks and production closeout remain unfinished. Do not create an alternate production owner or relax MFA to bypass the pending shared-identity review.
 
 Before connecting the public gateway, verify private routing and same-origin preview/origin rules against this service, deploy matching reviewed public content contracts, and confirm last-valid publication recovery on the production cache volume. Production Core user count0 means administrator acceptance has not happened.
 
 There is no prior P1 Core production application to revert to. If the initial backend needs correction, keep the previous public site active and deploy a reviewed compatible backend correction. Preserve the initialized database and audit history; do not use the empty pre-initialization backup to erase subsequent legitimate records. Once commercial receipts exist, retain their schema and compatible delivery/retry behavior. Object-storage, environment-secret and permission restoration remain separate recovery concerns.
+
+## Commercial configuration prepared, not activated
+
+Fresh production-only signing material was configured with deployment skipped and matching values read back in Core and dashboard. The receiver key map preserved existing entries; Core has a matching key ID, source instance, secret and the dashboard commercial ingress URL/allowed host. No secret is recorded here. This configuration is not evidence of running delivery: activate the reviewed receiver first, redeploy compatible Core, and verify a synthetic durable receipt through the complete production pipeline before public promotion.

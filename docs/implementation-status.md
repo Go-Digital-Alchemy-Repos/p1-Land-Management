@@ -41,3 +41,12 @@ Dedicated P1 database/storage/secrets are separate from original Core, which rem
 The prospect company/contact/property editing UI and assessment-to-proposal-to-onboarding workflow remain in development. Target-account pursuit, remaining operational/financial/reporting and client/crew acceptance, Expo iOS/Android implementation and physical-device validation remain part of the approved master plan. Authentic customer proof and serviceability claims require actual evidence and permission. No separate Portfolio, public customer accounts, payments or membership features are added to the public CMS scope.
 
 Source and release detail: [dashboard deployment](dashboard/DEPLOYMENT.md), [prospect context](dashboard/PROSPECT_CONTEXT.md), [commercial initiative](initiatives/commercial-industrial-sales.md), [task register](TASKS.md). Completed reviewed commits are pushed; uncommitted identity, readiness and prospect UI work is preserved and is not deployed implicitly.
+
+## Reviewed continuation — September 7
+
+- Upload fix `d677df5`: independent frozen-source run passed all seven Express/Sharp/PostgreSQL tests without skips and migrations0001–0011 replay. Oversize returns413; stable retries preserve identity; changed actor/property/work/classification/content returns409, including a forced concurrent insert race. Real storage verification against this new revision remains a release gate.
+- Public form fix `03ba5b8`: named error-summary targets, five independently rerun tests passed. Author browser evidence covers390px keyboard targeting and retained values. This revision is committed/pushed, not deployed.
+- Staging context panel on deployment `2b8a37ed-725d-4597-b27f-137d823e4213` now has actual UI save, preserved unsaved follow-up text and server readback evidence, with no JavaScript errors. Synthetic mutation history was retained; fixture sessions were removed and actors deactivated.
+- Actual unsaved iframe previews passed for commercial, service, location and article pages. Anonymous checks covered35 routes with no private markers; no Save/Publish occurred. This supersedes the earlier commercial visual-preview gap, but is not exhaustive manual preview or screen-reader acceptance.
+- Production commercial signing configuration is readback-verified with deployment skipped; activation and production end-to-end delivery remain pending.
+- Native Android debug compilation succeeded; emulator/runtime, iOS binary and physical-device acceptance remain outstanding. Native work is not yet independently accepted or released.
