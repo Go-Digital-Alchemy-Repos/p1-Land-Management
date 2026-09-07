@@ -20,7 +20,7 @@ Branch: `codex/p1-cms-crm`. Original public baseline: `5303da0`; copied Core sou
 - Exact supplied P1 SVG is used for favicon/compact branding. Blog/Gallery are removed from main navigation; Service Areas is the final bold-blue Services item. Public URLs remain available.
 - Staging admin redirect loop is fixed and live. Public/Core processes run nonroot; persistent last-good CMS cache survived redeployment and an isolated backend-unavailable check. New production volumes still require runtime ownership/provisioning verification.
 - Excluded modules are unavailable through reviewed routes/UI; Events and Careers stay disabled. Private proof is encrypted and excluded from public contracts/settings bypasses. Mobile proof UI now fits390px. No private approval automatically publishes claims or grants image rights.
-- Core scoped tests passed. The earlier full Core suite had601 passes and one inherited fail-closed IPv6 certificate fixture failure; this is not an all-suite-green claim.
+- Core IPv6 certificate validation defect was reproduced with real certificates and fixed in9f5cbec without weakening chain validation. Root independently passed52 focused tests. A full isolated run then reported647 passed,3 failed and26 skipped; the failures concern admin navigation expectations and form-editor QueryClient setup and are assigned for investigation. The full suite is not green.
 
 ## Commercial delivery and recovery
 
