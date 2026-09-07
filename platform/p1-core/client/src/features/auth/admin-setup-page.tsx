@@ -37,12 +37,13 @@ const setupSchema = z
   });
 
 type SetupForm = z.infer<typeof setupSchema>;
+type SetupStatus = { needsSetup: boolean; setupTokenRequired?: boolean };
 
 function LegacyAdminSetupPage() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
 
-  const { data: setupStatus, isLoading: statusLoading } = useQuery<{ needsSetup: boolean }>({
+  const { data: setupStatus, isLoading: statusLoading } = useQuery<SetupStatus>({
     queryKey: ["/api/setup/status"],
   });
 
@@ -52,7 +53,10 @@ function LegacyAdminSetupPage() {
     }
   }, [setupStatus, setLocation]);
 
-  const requiresToken = !!import.meta.env.VITE_SETUP_TOKEN_REQUIRED;
+  // Production setup is protected by a deployment-held authorization code.
+  // Keep the control visible if an older server omits this field so setup
+  // cannot silently submit a request that the server is guaranteed to reject.
+  const requiresToken = setupStatus?.setupTokenRequired !== false;
 
   const form = useForm<SetupForm>({
     resolver: zodResolver(setupSchema),
@@ -95,6 +99,13 @@ function LegacyAdminSetupPage() {
   });
 
   function onSubmit(values: SetupForm) {
+    if (requiresToken && !values.setupToken?.trim()) {
+      form.setError("setupToken", {
+        type: "required",
+        message: "Enter the setup authorization code.",
+      });
+      return;
+    }
     setupMutation.mutate(values);
   }
 
@@ -240,11 +251,13 @@ function LegacyAdminSetupPage() {
                       name="setupToken"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Setup Token</FormLabel>
+                          <FormLabel>Setup Authorization Code</FormLabel>
                           <FormControl>
                             <Input
                               type="password"
-                              placeholder="Enter the setup token"
+                              placeholder="Enter the code from P1 deployment configuration"
+                              autoComplete="one-time-code"
+                              required
                               data-testid="input-setup-token"
                               {...field}
                             />

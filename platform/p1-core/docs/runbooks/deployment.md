@@ -32,7 +32,7 @@
 | `SMTP_USER`                   | Email    | SMTP username                                    |
 | `SMTP_PASS`                   | Email    | SMTP password                                    |
 | `SMTP_FROM`                   | Email    | Default sender address                           |
-| `SETUP_TOKEN`                 | Security | Optional token required for first admin setup    |
+| `SETUP_TOKEN`                 | Security | Required high-entropy authorization code for first admin setup |
 | `CMS_PREVIEW_SECRET`          | CMS      | Optional signing secret for CMS preview links    |
 | `METRICS_ENABLED`             | Metrics  | Set to "true" to enable metrics endpoint         |
 | `METRICS_BEARER_TOKEN`        | Metrics  | Unique 32+ character bearer token for production metrics scrapes |

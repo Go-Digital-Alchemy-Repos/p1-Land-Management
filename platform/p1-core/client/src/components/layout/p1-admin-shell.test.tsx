@@ -42,6 +42,10 @@ describe("P1 administrative authentication shell", () => {
       expect(html).not.toMatch(/href="\/(directory|join|therapist|events|recordings|shop|cart|membership)(?:\/|\")/);
       expect(html).toContain('type="password"');
       expect(html).toContain('type="submit"');
+      if (title === "fresh setup") {
+        expect(html).toContain("Setup Authorization Code");
+        expect(html).toContain('data-testid="input-setup-token"');
+      }
     });
   }
   it("fresh branding fallback points to the P1 symbol through the admin proxy", () => {

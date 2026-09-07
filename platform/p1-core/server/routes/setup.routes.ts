@@ -67,7 +67,12 @@ router.get(
   "/status",
   asyncHandler(async (_req, res) => {
     const adminExists = await hasAdminUser();
-    res.json({ needsSetup: !adminExists });
+    res.json({
+      needsSetup: !adminExists,
+      // This intentionally reports only whether an authorization code is
+      // required; it never exposes the deployment secret itself.
+      setupTokenRequired: !federationEnabled() && Boolean(process.env.SETUP_TOKEN),
+    });
   }),
 );
 
