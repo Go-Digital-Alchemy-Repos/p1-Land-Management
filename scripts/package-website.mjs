@@ -1,9 +1,42 @@
-import { cp, copyFile, mkdir, mkdtemp, writeFile } from "node:fs/promises";
+import { cp, copyFile, mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { basename, join, resolve } from "node:path";
 import { tmpdir } from "node:os";
 
 const root = resolve(import.meta.dirname, "..");
 const destination = await mkdtemp(join(tmpdir(), "p1-public-release-"));
+const prebuilt = process.argv.includes("--prebuilt");
+
+if (prebuilt) {
+  const publicOrigin = process.env.P1_PUBLIC_ORIGIN;
+  if (!publicOrigin) {
+    throw new Error("P1_PUBLIC_ORIGIN is required when packaging a prebuilt public release.");
+  }
+
+  await cp(join(root, "artifacts", "p1-website", "dist"), join(destination, "dist"), {
+    recursive: true,
+  });
+  await cp(join(root, "artifacts", "p1-website", "server"), join(destination, "server"), {
+    recursive: true,
+  });
+  await cp(join(root, "artifacts", "p1-website", "config"), join(destination, "config"), {
+    recursive: true,
+  });
+
+  const manifestPath = join(destination, "config", "client-site-manifest.json");
+  const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
+  manifest.origins.publicSite = publicOrigin;
+  manifest.origins.admin = process.env.P1_ADMIN_ORIGIN || publicOrigin;
+  if (process.env.P1_SOURCE_REVISION) {
+    manifest.client.source.revision = process.env.P1_SOURCE_REVISION;
+  }
+  await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+  await writeFile(
+    join(destination, "Dockerfile"),
+    `FROM node:22-bookworm-slim\nWORKDIR /app\nENV NODE_ENV=production PORT=4173 P1_CONTENT_CACHE_DIR=/app/data/cms\nCOPY --chown=node:node dist ./dist\nCOPY --chown=node:node server ./server\nCOPY --chown=node:node config ./config\nRUN mkdir -p /app/data && chown node:node /app/data\nUSER node\nEXPOSE 4173\nCMD [\"node\", \"server/index.mjs\"]\n`,
+  );
+  console.log(destination);
+  process.exit(0);
+}
 
 for (const name of [
   "Dockerfile",
