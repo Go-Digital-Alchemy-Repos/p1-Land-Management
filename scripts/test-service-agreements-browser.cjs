@@ -120,6 +120,46 @@ const fs = require("fs");
     );
     await p
       .getByRole("button", {
+        name: "Review cancellation impact",
+        exact: true,
+      })
+      .click();
+    await p
+      .getByLabel("Decision", { exact: true })
+      .selectOption("correction_required");
+    await p
+      .getByLabel("Reason for this decision", { exact: true })
+      .fill("Fixture correction review");
+    await p
+      .getByRole("button", { name: "Compare current snapshot", exact: true })
+      .click();
+    await p
+      .getByRole("status")
+      .filter({ hasText: "This decision keeps posting blocked" })
+      .waitFor();
+    check(
+      await p
+        .getByRole("button", { name: "Record immutable decision", exact: true })
+        .isEnabled(),
+      "Correction-required decision can be recorded after comparison",
+    );
+    await p
+      .getByRole("button", { name: "Record immutable decision", exact: true })
+      .click();
+    await p
+      .getByRole("status")
+      .filter({ hasText: "Correction was recorded" })
+      .waitFor();
+    check(
+      (
+        await p
+          .getByRole("region", { name: "Agreement billing action queue" })
+          .innerText()
+      ).includes("correction required"),
+      "Recorded correction remains in the billing queue",
+    );
+    await p
+      .getByRole("button", {
         name: "Create successor with new approval",
         exact: true,
       })
@@ -153,6 +193,19 @@ const fs = require("fs");
     check(
       trace.filter((t) => t.path.endsWith("/charges")).length === 1,
       "One explicit charge",
+    );
+    check(
+      trace.some(
+        (t) =>
+          t.path.endsWith("/review-preview") &&
+          t.body.outcome === "correction_required",
+      ) &&
+        trace.some(
+          (t) =>
+            t.path.endsWith("/reviews") &&
+            t.body.outcome === "correction_required",
+        ),
+      "Correction records only after the zero-write comparison",
     );
     await p.setViewportSize({ width: 390, height: 844 });
     check(
