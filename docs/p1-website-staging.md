@@ -98,3 +98,12 @@ The Orchestrator authorized applying only staging receipt `e2d105f0-f226-43ec-81
 Read-only database inspection afterward corroborated exactly three jobs: original CRM completed, original notification still failed after five attempts, and the new commercial delivery completed. No notification was retriggered. A SQL before-snapshot was not captured; API before/after snapshots and subsequent SQL timestamps/audit support this bounded acceptance. Evidence files: `/tmp/p1-backfill-apply-acceptance.json` and `/tmp/p1-backfill-db-supplement.json`.
 
 The temporary dashboard staging manager was deactivated and all its sessions revoked after acceptance. Its revoked cookie returns401; the user row is retained as the audit actor. Cleanup evidence: `/tmp/p1-commercial-fixture-cleanup.json`. No production account, historical inquiry or outreach was changed. Production Core/public rollout and shared identity remain outstanding.
+
+
+## Paired commercial database restore rehearsal
+
+On September7, fresh independent staging dumps from Core and dashboard PostgreSQL18.6 restored transactionally with `pg_restore --exit-on-error` into separate network-disabled PostgreSQL18.6 containers. Core dump SHA-256 `d410f3b2101b996098716c9900c3e5d3877f121480d0b95705315ff77ec59da0`; dashboard dump SHA-256 `10b0f3ceb20790f4c4fb186ab01c91e7782942d52470820e5b25e3872b5b971c`. Protected0600 dumps reside under0700 `/tmp/p1-stage-restore-6af1354e`; report is `report.json` in that directory.
+
+Core migration0001 and dashboard0010 matched source checksums. The three selected inquiries restored with three CRM records, three completed commercial jobs, preserved notification jobs and two backfill audit entries. Dashboard restored three unique mappings, intake audits and the null phone-only email. Selected source/restore aggregate hashes matched; zero unvalidated constraints or invalid indexes were found. Temporary containers were removed.
+
+These are separate transactional snapshots, not distributed PITR. No live data/configuration was changed. Object storage, encryption/provider secrets, ownership/ACLs, application startup and provider delivery were not restored. This rehearsal predates dashboard0011; a separate restored-copy upgrade and post0011 restore check is in progress.

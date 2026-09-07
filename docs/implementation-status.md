@@ -1,51 +1,43 @@
-# P1 implementation status — 2026-09-07
+# P1 implementation status — September 7, 2026
 
-Branch: `codex/p1-cms-crm`. Public baseline: `5303da0`; copied Core source: `aad2057ca53e0a55a873bcbe9c62a73e267be541`.
+Branch: `codex/p1-cms-crm`. Original public baseline: `5303da0`; copied Core source: `aad2057ca53e0a55a873bcbe9c62a73e267be541`. The [master plan](MASTER_PLAN.md) remains the full scope; a deployed dashboard slice does not complete it.
 
-## Implemented locally; release acceptance pending
+## Current release state
 
-- Public React website renders published CMS content before JavaScript. Thirty-four routes and shared navigation/business content have structured controls (35 components). Preview, revision conflicts, publish and restore are provided by the copied P1 Core.
-- P1 Core is isolated at `platform/p1-core`; excluded applications, integrations, credentials and imported uploads were removed. Fresh database migration creates46 tables; the disabled Careers compatibility relation is documented in its operations guide.
-- Estimate requests are durably accepted and queued for independent CRM and email processing. Browser retries deduplicate by submission; separate projects remain separate leads.
-- Images have responsive WebP/AVIF variants. Initial public JavaScript maximum139.5KiB gzip, below150KiB budget. Actual field Core Web Vitals remain unmeasured.
-- Exact owner-provided P1 Symbol.svg is the public favicon and compact dashboard icon, including fallback branding. No generated replacement artwork.
-- Latest navigation request implemented for desktop and mobile: Blog/Gallery removed from main navigation; Service Areas moved to the final Services item with bold blue styling. Public routes remain available.
+| Workstream | Verified state | Remaining release gate |
+|---|---|---|
+| Public website |35 routes including `/commercial` deployed to staging from `592d70bed8aa297b1f2d1f2a1b65c27abcf7a4c2`; production still serves its previous release | Final staged browser/content acceptance, shared CMS identity, production gateway/cache provisioning and exact-source rollout |
+| Independent P1 Core | Staging `1bbbe2b6-16c3-47b9-a47c-2d5b164998b0` SUCCESS from `bc3f41483b557afaebcd74fec350b11bd3c49acc`; isolated CMS, managed forms, private proof and commercial sender tested | Production deployment, fresh production integration keys and owner/shared-identity acceptance |
+| Business dashboard | Production web `0c02c3e1-ad33-4650-865c-7bb618607119` and worker `9bec9270-89b9-4387-9ced-7c6c65bbdf68` SUCCESS; commercial receiver and owner MFA recovery live | Actual owner recovery/enrollment, subsequent functional releases, provider/device/pilot gates |
+| Shared identity | Better Auth dashboard identity exists; CMS federation task remains waiting on tool approval | Reviewed CMS permission/account mapping, common sign-in, revocation and native acceptance; do not bypass pending approval or required owner MFA |
+| Commercial prospect context | Reviewed `fc302b1` committed and pushed; isolated migrations, role/operational boundaries and conversion protection tested | Editing panel, combined build, staged migration/live checks and post-upgrade restore rehearsal |
+| Dispatch readiness | Independent scoped service/UI review and isolated test passed; integration owned by dashboard task | Commit, combined candidate tests, staging and live acceptance |
 
-## Evidence obtained
+## Website and CMS evidence
 
-- Public build, prerender and34-route quality checks passed after navigation change.
-- Twenty-one server tests cover publication caching/recovery, ETags, draft exclusion, exact HTML/hydration revision, redirects,404s, favicon, dashboard separation, proxy destination isolation and client-IP handling.
-- Real local gateway checks passed for seven page families: private drafts, stale-write409, publication visible in HTML, and historical revision restore through the actual restore endpoint, followed by explicit publication.
-- Real local gateway estimate returned201, duplicate retry returned200 with the same receipt; one CRM lead reached New with website_form source. Worker cadence is30seconds; an initial15second observation window was too short. Email intentionally remains queued without a local provider.
-- Core focused permission/form tests, disposable database tests, fresh production-container migration and non-root runtime passed. Full suite reported601passing with one inherited fail-closed IPv6 certificate fixture failure; this is not an all-tests-pass claim.
-- Scoped independent review found and fixed executable uploaded documents and CRM editor media mutation overreach. Twenty-four focused upload/security tests passed. Separate public proxy credential-forwarding flaw was fixed with a regression test.
-- Public production Docker build passed for linux/amd64 (Railway target); the initial native ARM build exposed intentionally excluded platform binaries in existing workspace overrides. Core production Docker build and UID1000 startup passed. Images must be rebuilt for any subsequent source changes.
-- Dedicated P1 Railway S3 bucket passed a live synthetic write/read/delete roundtrip; only that test object was removed.
+- React renders published CMS content into HTML and hydrates the same revision. Seven existing page families passed draft privacy, conflict409, publish and historical restore checks; `/commercial` additionally passed publication/restore with original content restored at revision6. Visual iframe preview was not exercised in the commercial slice; earlier deterministic preview tests remain separate evidence.
+-35-route build/QA, responsive WebP/AVIF image budgets and initial public JavaScript140.4KiB gzip passed for the staged public candidate. Real-user Core Web Vitals and complete screen-reader acceptance remain unverified.
+- Exact supplied P1 SVG is used for favicon/compact branding. Blog/Gallery are removed from main navigation; Service Areas is the final bold-blue Services item. Public URLs remain available.
+- Staging admin redirect loop is fixed and live. Public/Core processes run nonroot; persistent last-good CMS cache survived redeployment and an isolated backend-unavailable check. New production volumes still require runtime ownership/provisioning verification.
+- Excluded modules are unavailable through reviewed routes/UI; Events and Careers stay disabled. Private proof is encrypted and excluded from public contracts/settings bypasses. Mobile proof UI now fits390px. No private approval automatically publishes claims or grants image rights.
+- Core scoped tests passed. The earlier full Core suite had601 passes and one inherited fail-closed IPv6 certificate fixture failure; this is not an all-suite-green claim.
 
-## Infrastructure and remaining gates
+## Commercial delivery and recovery
 
-Dedicated P1 production resources exist: Core service45646c66-c173-4e23-81ab-64ca4d545bbe, Postgres7913729e-39e9-45a9-ac58-ceb18711a0a6 and bucket3e9a9791-9237-40a6-a45b-cc1d19380256. Core has fresh session/setup secrets and private database/storage settings. The original Core repository, database and deployment are untouched.
+Cross-service staging acceptance verified two new inquiries, including phone-only contact: durable201 receipt, retry200 with the same identity, one Core CRM lead, one completed signed delivery job and one dashboard mapping. Staff follow-up persisted; stale changes returned409. The actual Sales inbox rendered the selected inquiry without JavaScript errors.
 
-Reviewed CMS/public implementation commits are pushed on `codex/p1-cms-crm`; GitHub push receipts are separate from deployment evidence. It has not been deployed to production. Production still serves the prior public release. Remaining gates include full staged browser acceptance, shared CMS/dashboard identity, actual owner setup, end-to-end production delivery and exact-revision deployment/rollback receipts. Staging API acceptance and isolated dump restoration have passed; these do not prove production recovery. Do not mark the approved plan complete from this local evidence.
+A separately approved historical staging receipt produced one missing delivery job; repeat apply reused it. Original form/CRM API snapshots were unchanged, and database timestamps/audit corroborated only the new commercial job. No SQL before-snapshot was captured for that apply. Its original failed email job was not retriggered. Temporary dashboard testing sessions were revoked and the synthetic staff profile deactivated while retaining its audit actor.
 
-Mailgun DNS and P1-scoped SMTP/API credentials are configured; delivery probes were confirmed delivered and existing Google mailbox records were retained. CMS remains at www.p1landmanagement.com/admin. The separately authorized business dashboard uses dashboard.p1landmanagement.com with its own service, database and cookies; its staging preview is not pilot acceptance. Scoped dashboard security reviews passed; each subsequent feature still requires review. Public estimate intake remains authoritative; any downstream business-dashboard lead bridge requires an explicit idempotent delivery contract.
+Fresh Core and dashboard staging backups restored successfully into network-isolated PostgreSQL18.6 containers. Migration0001/0010, three selected commercial receipts/jobs/mappings and audit counts matched their source snapshots. This is database-only recovery of separate snapshots, not distributed point-in-time recovery, restored object storage/secrets/ACLs or application/provider startup. A separate0011 upgrade/restore rehearsal is underway. See [staging evidence](p1-website-staging.md).
 
-## Proxy trust boundary
+## Owner access and deployment boundaries
 
-Railway production uses its validated X-Real-IP edge header, then sends a single reconstructed X-Forwarded-For to the private Core. Local/direct servers ignore supplied forwarding headers. This avoids grouping every visitor under one proxy IP while keeping arbitrary forwarded chains untrusted. Reference: [Railway public networking headers](https://docs.railway.com/networking/public-networking/specs-and-limits). This depends on the public service being accessed through Railway's edge; private project services remain a trusted deployment boundary.
+An active, verified dashboard owner and completed installation were observed after the earlier zero-owner check. The previous password is not recoverable; the login page offers password reset. Required owner MFA remains enforced. The deployed recovery screen guides enrollment/verification without granting business access or manufacturing session assurance. Actual owner completion remains unverified. CMS/dashboard common credentials are required but not live.
 
-## Separate dashboard security recheck
+Dedicated P1 database/storage/secrets are separate from original Core, which remains untouched. Mailgun delivery probes passed and Google mailbox records were retained. Production Core/public promotion is still outstanding; staging email failures were not represented as delivered mail. Production commercial signing keys have not been activated.
 
-The dashboard task's frozen v2 security fixes passed bounded independent review: six original findings and two subsequent edge cases were resolved in reviewed snapshots. Parent independently ran `node scripts/test-dashboard.mjs` against a fresh disposable database:5passed,0failed,0skipped, migration replay passed. Reviewers also executed synthetic pending-upload disconnect and settled-invoice reconciliation checks. Evidence and hashes are in `docs/dashboard/security-recheck-auth-files.md` and `docs/dashboard/security-recheck-api-qbo.md`. This is acceptance of scoped fixes, not full platform, provider, device, production or pilot acceptance. Dashboard task owns its authorized preview release and remaining gates.
+## Scope still required
 
-Dashboard preview receipt verified by Orchestrator: production web `34c4634a-8148-4ffd-a602-80c8558151fe` and worker `28a3cb2b-9c33-45b0-92b6-2c98b7e077e6` both reached Railway SUCCESS. Live dashboard health returned200. Preview source manifest SHA-256 `73b231fbf24132e4db951ca84f2e8f9d2eea12490f2e50c9c53eed228e619be8` matched the delivered file. This is a source-manifest receipt, not a Git-revision deployment claim. This earlier receipt was superseded by the contact/crew release and owner-setup UI fix. Provider activation is complete; actual owner account activation and device/pilot gates remain pending. Public website/CMS release status above is separate and unchanged.
+The prospect company/contact/property editing UI and assessment-to-proposal-to-onboarding workflow remain in development. Target-account pursuit, remaining operational/financial/reporting and client/crew acceptance, Expo iOS/Android implementation and physical-device validation remain part of the approved master plan. Authentic customer proof and serviceability claims require actual evidence and permission. No separate Portfolio, public customer accounts, payments or membership features are added to the public CMS scope.
 
-## Commercial initiative addition
-
-Owner-requested Commercial / Industrial Sales scope is registered in [the master plan](MASTER_PLAN.md) and [detailed initiative](initiatives/commercial-industrial-sales.md), with CMS, domain, assessment, durable handoff and future target-account pursuit phases. Documentation is complete for this planning request; the commercial page and managed inquiry implementation are now in progress; the downstream dashboard bridge and target-account workflows remain unfinished. Owner requested all completed work pushed to GitHub; reviewed preview/code slices are being preserved as a branch checkpoint with unfinished scope explicitly retained. Imported legacy Core screenshots/avatars were excluded from the P1 source; copied fallback layouts now use the supplied P1 icon.
-
-## Latest staging and account setup evidence
-
-[Staging resources/recovery](p1-website-staging.md) and [staged API acceptance](p1-staging-acceptance-2026-09-07.md) record successful seven-family private draft/publish/restore checks, eight excluded routes, one durable receipt/CRM lead despite retry, observable notification retry and dedicated storage checks. Eight deterministic local iframe assertions cover early-preview fetch races and route reset. The staging admin trailing-slash redirect loop is fixed in source; deployment/retest remains pending. Public production has not changed.
-
-The business dashboard owner setup UI is live on production deployment `e5b85356-07f0-4142-9500-10d9e9b2ce66`. Before that fix, a scoped read-only check confirmed no owner account existed; the user had not set a password. Root now opens account creation with the emailed setup code, email verification and required owner MFA. The requested common CMS/dashboard credentials are being implemented by the identity task; they are not yet a live shared sign-in capability. Assessment scheduling is separately reviewed and undergoing exact-source release checks. An unrelated optional-MFA hunk was caught in an archive check before deployment and removed from that release candidate.
+Source and release detail: [dashboard deployment](dashboard/DEPLOYMENT.md), [prospect context](dashboard/PROSPECT_CONTEXT.md), [commercial initiative](initiatives/commercial-industrial-sales.md), [task register](TASKS.md). Completed reviewed commits are pushed; uncommitted identity, readiness and prospect UI work is preserved and is not deployed implicitly.

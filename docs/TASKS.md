@@ -10,11 +10,11 @@ All tasks use branch codex/p1-cms-crm from P1 5303da0 and upstream Core aad2057.
 | P1-IDENTITY | Project Orchestrator | IN PROGRESS | Better Auth signed bearer sessions cover dashboard web and future native clients. Owner explicitly approved the same P1 credentials for CMS and dashboard; SSO task is implementing CMS federation with explicit permission mapping, MFA/revocation and migration/rollback checks. Shared CMS sign-in is not yet live. Native client implementation and physical-device acceptance remain required before pilot. |
 | P1-PUBLIC | Public specialist | REVIEW | public src; contact, proof, SEO, accessibility and bundle checks |
 | P1-IMAGES | Image specialist | REVIEW | image variants/manifest/pipeline; budgets passed, integrated visual QA next |
-| P1-CMS | Orchestrator | INTEGRATION VALIDATION | 35 components; seven-family draft/conflict/publish/restore checks and eight deterministic browser preview assertions passed locally; staging acceptance underway. |
+| P1-CMS | Orchestrator | INTEGRATION VALIDATION | 36 components across35routes; seven-family and commercial publish/restore staging checks passed; final preview/production gates remain. |
 | P1-OPS | Orchestrator | IN PROGRESS | public server, isolated Railway DB/core service, staging; deployment review next |
-| P1-QA | Orchestrator | IN PROGRESS | 34 routes and21 runtime tests pass; scoped security fixes integrated. Staging found and source fixed an admin redirect loop; redeployment and final live release gates pending. |
+| P1-QA | Orchestrator | IN PROGRESS | 35-route staged public QA and scoped runtime/security checks passed; admin redirect fix is live. Final browser/accessibility and production gates remain. |
 | P1-CONTENT | Strategy task; Orchestrator integration | PLANNED | Strategy/proof brief under docs/strategy; public/CMS implementation follows acceptance of P1-PUBLIC, P1-IMAGES and P1-CMS review gates |
-| P1-COMMERCIAL | Orchestrator + content/Core/dashboard owners | IN PROGRESS | /commercial, assessment offer, durable commercial intake, target-account pursuit; COM-01–07 in [initiative](initiatives/commercial-industrial-sales.md) |
+| P1-COMMERCIAL | Orchestrator + content/Core/dashboard owners | IN PROGRESS | Commercial page/intake and signed dashboard handoff passed staging; fc302b1 prospect API reviewed/pushed, editing panel underway; assessment/onboarding and target-account pursuit remain. COM-01–07 in [initiative](initiatives/commercial-industrial-sales.md) |
 
 Latest evidence and deployment limits: [implementation-status.md](implementation-status.md). Separate business dashboard candidate undergoing independent review; no pilot acceptance.
 
