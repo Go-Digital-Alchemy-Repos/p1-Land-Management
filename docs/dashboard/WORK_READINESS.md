@@ -1,6 +1,6 @@
 # Dispatch readiness
 
-Implemented locally, pending independent review and the0011 operational-property dependency. Not deployed. No additional migration or authentication-policy changes are introduced.
+Independently reviewed and deployed to staging at checkpoint484f953 with the0011 operational-property dependency. Production release remains pending. No additional migration or authentication-policy changes are introduced.
 
 `POST /api/v1/work-orders/:id/readiness` accepts `{version,prerequisites:[{label,done}],reason}` for owner, manager and dispatch. Up to50 requirements, trimmed labels1–10000 characters and an audit reason1–1000 characters are accepted. Other roles are denied. The service takes the operational parent lock before locking the work order, preventing prospect records from entering this operational path.
 
@@ -11,3 +11,5 @@ The Schedule job detail shows equipment, access, materials, permit, deposit and 
 Validation: isolated12-test dashboard suite and migration replay passed with the0011 migration/helper supplied; both TypeScript checks and frontend/backend builds passed. Mounted tests exercise owner/manager/dispatch, denied client/crew/sales/finance/anonymous calls, simultaneous200/409 edits, no-op/invalid reason, prospect404, started409 and audit/override invalidation. An initial no-op failure exposed PostgreSQL JSONB key ordering; field-wise equality fixed it and the rerun passed. This readiness-focused candidate does not constitute acceptance of the entire prospect implementation.
 
 Browser fixture `/tests/work-readiness-browser.html` exercises an unmet equipment item, checked draft, recorded override and rejected update. Checkbox/reason remain after the conflict, no save is claimed, and successful fixture submission clears the old override. This is synthetic UI evidence, not a live dispatch/pilot test.
+
+Live staging acceptance passed: a synthetic manager updated an operational job, cleared its old override, received409 for a stale retry, scheduled/started it and received409 for a readiness edit after start. The fixture and its audit entries were removed. See DEPLOYMENT.md for source/deployment/backup evidence.
