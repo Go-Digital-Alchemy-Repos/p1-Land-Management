@@ -48,3 +48,9 @@ On September 7, Railway deployment `bbaa3cad-9488-433a-93d8-fa0f3b03fda2` reache
 The image pipeline now emits responsive WebP variants only and no longer packages unused AVIF variants. Original local PNG/JPEG masters remain solely as source material for the reproducible optimizer; vector logo/favicon assets and the JPEG social-share compatibility image remain outside rendered page imagery. The build fails if rendered public raster images or responsive candidates regress to PNG, JPEG, or AVIF. Image budgets remain within their limits, and the highest initial public JavaScript route is 131.7 KiB gzip.
 
 Live verification fetched all 35 sitemap routes: every rendered raster image URL is WebP, the homepage contains the corrected singular headline “Your first impression start at the curb,” and `/healthz` returns success. This deployment does not change CMS content, Core data, authentication, or outstanding owner-acceptance gates.
+
+## About-page claim qualification — f936fbb
+
+On September 7, Railway deployment `9bf162b1-1dce-44a8-9403-9832ce1f93a6` reached SUCCESS on the production public service from reviewed source `f936fbb9b53bf43b022cc9d14fd9d5cd90acafcc`; Railway reported image digest `sha256:2e123d8dc7e9bb15ba8799e578abf9189687407a9faffe19fdea13ba131ff768`. The bounded artifact retained Dockerfile SHA-256 `56f1f4bbe0b01169f2667b17c69c5afd7875df9ce010e758acf939b2461a294e` and used client-site manifest SHA-256 `5eea0cad669b74e19856d3a312ad9be6c1ea06b0af9739171844061cb0492cf3`.
+
+The About page now describes coordinating the agreed scope with one accountable team rather than promising that customers will never need another provider. It also says assessment availability is confirmed during review. Live `/about` and `/healthz` verification passed, including absence of the replaced broad claims. No CMS records, Core data, authentication, or provider configuration changed.
