@@ -63,3 +63,9 @@ The Orchestrator authorized web then worker promotion. Production webf9572277 an
 
 - Service-agreement backend `d42d926` passed four domain tests, a real-auth HTTP test and migration apply/replay in disposable databases. Independent review verified all 15 file hashes, cancellation charge visibility and replacement double-charge prevention. UI/contracts, router integration, restore rehearsal and staging acceptance remain open; no provider posting or production0012 rollout is implied.
 - Native candidate passes 23 policy tests and TypeScript, with Android emulator storage/network evidence. Final review found logout cleanup failure and a revoked-session race that could retain cached views; fixes and actual Application regressions are assigned before acceptance. Bundled Android offline process-restart verification is also underway. Physical devices, iOS build and operational pilot remain open.
+
+## September 7 — staging publication gap found
+
+Exact Core staging deployment `155bea13-4d3f-44ae-ab8d-59e3862ab9df` at `1869384` is SUCCESS. Root verified all 904 packaged source hashes and the archive; runtime reports the exact revision and UID1000. Readiness/admin responses and unchanged public HTML establish the scoped TLS release checks, not full CMS publication acceptance.
+
+Authenticated CMS inspection found 36 registered route/component pairs: eight published and 28 never published (27 pages plus global site chrome). These components are editable and carry manifest defaults, but their public CMS endpoint returns404 and the public gateway renders default content at revision0. Existing website rendering remains available; complete published-content import is still unfinished. The Core task is enumerating exact default hashes and preparing guarded initial publication of only untouched revision0 components, preserving every existing edit and published revision. No publication mutation has been made for this new finding.
