@@ -1086,6 +1086,589 @@
           }
         }
       }
+    },
+    "/service-agreements": {
+      "get": {
+        "operationId": "listServiceAgreements",
+        "responses": {
+          "200": {
+            "description": "Authorized response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceAgreementPage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Role or owner MFA denied"
+          },
+          "404": {
+            "description": "Record inaccessible"
+          },
+          "409": {
+            "description": "Stale version, eligibility or approved-cap conflict; retain edits for review"
+          }
+        },
+        "parameters": [
+          {
+            "name": "propertyId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 30
+            }
+          }
+        ],
+        "description": "Management/finance financial projection; dispatch scope/dates only. No client, crew or sales access."
+      },
+      "post": {
+        "operationId": "createServiceAgreement",
+        "responses": {
+          "201": {
+            "description": "Authorized response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceAgreementFinancial"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Role or owner MFA denied"
+          },
+          "404": {
+            "description": "Record inaccessible"
+          },
+          "409": {
+            "description": "Stale version, eligibility or approved-cap conflict; retain edits for review"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateServiceAgreement"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/service-agreements/{id}": {
+      "get": {
+        "operationId": "getServiceAgreement",
+        "responses": {
+          "200": {
+            "description": "Authorized response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceAgreement"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Role or owner MFA denied"
+          },
+          "404": {
+            "description": "Record inaccessible"
+          },
+          "409": {
+            "description": "Stale version, eligibility or approved-cap conflict; retain edits for review"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      },
+      "patch": {
+        "operationId": "updateServiceAgreement",
+        "responses": {
+          "200": {
+            "description": "Authorized response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceAgreementFinancial"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Role or owner MFA denied"
+          },
+          "404": {
+            "description": "Record inaccessible"
+          },
+          "409": {
+            "description": "Stale version, eligibility or approved-cap conflict; retain edits for review"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditServiceAgreement"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/service-agreements/{id}/activation-preview": {
+      "post": {
+        "operationId": "previewServiceAgreementActivation",
+        "responses": {
+          "200": {
+            "description": "Authorized response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgreementActivationPreview"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Role or owner MFA denied"
+          },
+          "404": {
+            "description": "Record inaccessible"
+          },
+          "409": {
+            "description": "Stale version, eligibility or approved-cap conflict; retain edits for review"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgreementVersion"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/service-agreements/{id}/activate": {
+      "post": {
+        "operationId": "activateServiceAgreement",
+        "responses": {
+          "200": {
+            "description": "Authorized response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceAgreementFinancial"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Role or owner MFA denied"
+          },
+          "404": {
+            "description": "Record inaccessible"
+          },
+          "409": {
+            "description": "Stale version, eligibility or approved-cap conflict; retain edits for review"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgreementVersion"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/service-agreements/{id}/cancel": {
+      "post": {
+        "operationId": "cancelServiceAgreement",
+        "responses": {
+          "200": {
+            "description": "Authorized response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceAgreementFinancial"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Role or owner MFA denied"
+          },
+          "404": {
+            "description": "Record inaccessible"
+          },
+          "409": {
+            "description": "Stale version, eligibility or approved-cap conflict; retain edits for review"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelServiceAgreement"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/service-agreements/{id}/charge-preview": {
+      "post": {
+        "operationId": "previewAgreementCharge",
+        "responses": {
+          "200": {
+            "description": "Authorized response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgreementChargePreview"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Role or owner MFA denied"
+          },
+          "404": {
+            "description": "Record inaccessible"
+          },
+          "409": {
+            "description": "Stale version, eligibility or approved-cap conflict; retain edits for review"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgreementChargeSource"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/service-agreements/{id}/charges": {
+      "post": {
+        "operationId": "prepareAgreementCharge",
+        "responses": {
+          "200": {
+            "description": "Authorized response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgreementChargeReceipt"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Role or owner MFA denied"
+          },
+          "404": {
+            "description": "Record inaccessible"
+          },
+          "409": {
+            "description": "Stale version, eligibility or approved-cap conflict; retain edits for review"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgreementChargeSource"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agreement-charge-queue": {
+      "get": {
+        "operationId": "listAgreementChargeQueue",
+        "responses": {
+          "200": {
+            "description": "Authorized response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgreementChargeQueue"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Role or owner MFA denied"
+          },
+          "404": {
+            "description": "Record inaccessible"
+          },
+          "409": {
+            "description": "Stale version, eligibility or approved-cap conflict; retain edits for review"
+          }
+        },
+        "parameters": [
+          {
+            "name": "after",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "pattern": "^(period|work|prepared-work):[0-9a-f-]{36}$"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 25
+            }
+          }
+        ],
+        "description": "Management/finance current action queue. Capped, unmatched and prepared cancellation issues remain visible. Recheck eligibility before preparing."
+      }
+    },
+    "/recurring-services": {
+      "get": {
+        "operationId": "listAgreementRecurrences",
+        "responses": {
+          "200": {
+            "description": "Authorized response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AgreementRecurrenceOption"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Role or owner MFA denied"
+          },
+          "404": {
+            "description": "Record inaccessible"
+          },
+          "409": {
+            "description": "Stale version, eligibility or approved-cap conflict; retain edits for review"
+          }
+        }
+      }
+    },
+    "/estimates": {
+      "get": {
+        "operationId": "listAgreementEstimates",
+        "responses": {
+          "200": {
+            "description": "Authorized response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AgreementEstimateOption"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Role or owner MFA denied"
+          },
+          "404": {
+            "description": "Record inaccessible"
+          },
+          "409": {
+            "description": "Stale version, eligibility or approved-cap conflict; retain edits for review"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1875,6 +2458,867 @@
             ]
           }
         }
+      },
+      "ServiceAgreementTerms": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "startsOn": {
+            "type": "string",
+            "format": "date"
+          },
+          "endsOn": {
+            "type": "string",
+            "format": "date"
+          },
+          "billingMode": {
+            "type": "string",
+            "enum": [
+              "fixed_monthly",
+              "per_visit"
+            ]
+          },
+          "unitAmountCents": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 10000000000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "periods": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AgreementPeriodInput"
+            },
+            "maxItems": 120
+          }
+        },
+        "required": [
+          "title",
+          "startsOn",
+          "endsOn",
+          "billingMode",
+          "unitAmountCents",
+          "periods"
+        ],
+        "additionalProperties": false,
+        "description": "Finite term of at most120 calendar months. Monthly periods must exactly partition the term in calendar-month order with explicit partial-period amounts and null unitAmountCents. Per-visit terms require a rate and an empty period list. Server cross-field validation is authoritative."
+      },
+      "ServiceAgreementOperational": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "propertyId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "recurringServiceId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "startsOn": {
+            "type": "string",
+            "format": "date"
+          },
+          "endsOn": {
+            "type": "string",
+            "format": "date"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "active",
+              "cancelled"
+            ]
+          },
+          "scope": {
+            "type": "string"
+          },
+          "cancellationEffectiveOn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "propertyId",
+          "recurringServiceId",
+          "title",
+          "startsOn",
+          "endsOn",
+          "status",
+          "scope",
+          "cancellationEffectiveOn"
+        ],
+        "additionalProperties": false
+      },
+      "ServiceAgreementFinancial": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "propertyId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "recurringServiceId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "startsOn": {
+            "type": "string",
+            "format": "date"
+          },
+          "endsOn": {
+            "type": "string",
+            "format": "date"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "active",
+              "cancelled"
+            ]
+          },
+          "scope": {
+            "type": "string"
+          },
+          "cancellationEffectiveOn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "version": {
+            "type": "integer",
+            "exclusiveMinimum": 0
+          },
+          "estimateId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "estimateRevision": {
+            "type": "integer",
+            "exclusiveMinimum": 0
+          },
+          "predecessorId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "billingMode": {
+            "type": "string",
+            "enum": [
+              "fixed_monthly",
+              "per_visit"
+            ]
+          },
+          "unitAmountCents": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 10000000000
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "activatedOn": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "cancellationReason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "periods": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AgreementPeriod"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "propertyId",
+          "recurringServiceId",
+          "title",
+          "startsOn",
+          "endsOn",
+          "status",
+          "scope",
+          "cancellationEffectiveOn",
+          "version",
+          "estimateId",
+          "estimateRevision",
+          "predecessorId",
+          "billingMode",
+          "unitAmountCents",
+          "activatedOn",
+          "cancellationReason",
+          "periods"
+        ],
+        "additionalProperties": false
+      },
+      "CreateServiceAgreement": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "propertyId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "recurringServiceId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "estimateId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "predecessorId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "terms": {
+            "$ref": "#/components/schemas/ServiceAgreementTerms"
+          }
+        },
+        "required": [
+          "id",
+          "propertyId",
+          "recurringServiceId",
+          "estimateId",
+          "predecessorId",
+          "terms"
+        ],
+        "additionalProperties": false
+      },
+      "EditServiceAgreement": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "integer",
+            "exclusiveMinimum": 0
+          },
+          "terms": {
+            "$ref": "#/components/schemas/ServiceAgreementTerms"
+          }
+        },
+        "required": [
+          "version",
+          "terms"
+        ],
+        "additionalProperties": false
+      },
+      "AgreementVersion": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "integer",
+            "exclusiveMinimum": 0
+          }
+        },
+        "required": [
+          "version"
+        ],
+        "additionalProperties": false
+      },
+      "CancelServiceAgreement": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "integer",
+            "exclusiveMinimum": 0
+          },
+          "effectiveOn": {
+            "type": "string",
+            "format": "date"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "version",
+          "effectiveOn",
+          "reason"
+        ],
+        "additionalProperties": false
+      },
+      "AgreementChargeSource": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "periodStart": {
+                "type": "string",
+                "format": "date"
+              }
+            },
+            "required": [
+              "periodStart"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "workOrderId": {
+                "type": "string",
+                "format": "uuid"
+              }
+            },
+            "required": [
+              "workOrderId"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "AgreementActivationPreview": {
+        "type": "object",
+        "properties": {
+          "agreementId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "integer",
+            "exclusiveMinimum": 0
+          },
+          "startsOn": {
+            "type": "string",
+            "format": "date"
+          },
+          "endsOn": {
+            "type": "string",
+            "format": "date"
+          },
+          "billingMode": {
+            "type": "string",
+            "enum": [
+              "fixed_monthly",
+              "per_visit"
+            ]
+          },
+          "approvedCents": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "billedCents": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "remainingCents": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "plannedCents": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "perVisitCents": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "periods": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AgreementPeriod"
+            }
+          },
+          "canActivate": {
+            "type": "boolean"
+          },
+          "blockedReasons": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "agreementId",
+          "version",
+          "startsOn",
+          "endsOn",
+          "billingMode",
+          "approvedCents",
+          "billedCents",
+          "remainingCents",
+          "plannedCents",
+          "perVisitCents",
+          "periods",
+          "canActivate",
+          "blockedReasons"
+        ],
+        "additionalProperties": false
+      },
+      "AgreementChargePreview": {
+        "type": "object",
+        "properties": {
+          "agreementId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "sourceKey": {
+            "type": "string"
+          },
+          "amountCents": {
+            "type": "integer",
+            "exclusiveMinimum": 0
+          },
+          "alreadyPrepared": {
+            "type": "boolean"
+          },
+          "billingDraftId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "approvedCents": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "billedCents": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "remainingCents": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "agreementId",
+          "sourceKey",
+          "amountCents",
+          "alreadyPrepared",
+          "billingDraftId",
+          "approvedCents",
+          "billedCents",
+          "remainingCents"
+        ],
+        "additionalProperties": false
+      },
+      "AgreementChargeReceipt": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "agreementId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "billingDraftId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "sourceKey": {
+            "type": "string"
+          },
+          "amountCents": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 10000000000
+          }
+        },
+        "required": [
+          "id",
+          "agreementId",
+          "billingDraftId",
+          "sourceKey",
+          "amountCents"
+        ],
+        "additionalProperties": false
+      },
+      "AgreementChargeQueue": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AgreementChargeQueueItem"
+            }
+          },
+          "nextCursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "items",
+          "nextCursor"
+        ],
+        "additionalProperties": false
+      },
+      "AgreementPeriod": {
+        "type": "object",
+        "properties": {
+          "startsOn": {
+            "type": "string",
+            "format": "date"
+          },
+          "endsOn": {
+            "type": "string",
+            "format": "date"
+          },
+          "amountCents": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 10000000000
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "startsOn",
+          "endsOn",
+          "amountCents",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "AgreementPeriodInput": {
+        "type": "object",
+        "properties": {
+          "startsOn": {
+            "type": "string",
+            "format": "date"
+          },
+          "endsOn": {
+            "type": "string",
+            "format": "date"
+          },
+          "amountCents": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 10000000000
+          }
+        },
+        "required": [
+          "startsOn",
+          "endsOn",
+          "amountCents"
+        ],
+        "additionalProperties": false
+      },
+      "AgreementChargeQueueItem": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "propertyId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "agreementId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "periodStart": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "workOrderId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "ready",
+              "review_required",
+              "unmatched",
+              "unavailable"
+            ]
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "amountCents": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "billingDraftId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "key",
+          "propertyId",
+          "agreementId",
+          "periodStart",
+          "workOrderId",
+          "state",
+          "reason",
+          "amountCents",
+          "billingDraftId"
+        ],
+        "additionalProperties": false
+      },
+      "ServiceAgreement": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/ServiceAgreementFinancial"
+          },
+          {
+            "$ref": "#/components/schemas/ServiceAgreementOperational"
+          }
+        ]
+      },
+      "ServiceAgreementPage": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items",
+          "nextCursor"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ServiceAgreement"
+            }
+          },
+          "nextCursor": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "AgreementRecurrenceOption": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "id",
+          "property_id",
+          "title",
+          "billing_mode",
+          "property_name"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "property_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "billing_mode": {
+            "type": "string",
+            "enum": [
+              "fixed_monthly",
+              "per_visit"
+            ]
+          },
+          "property_name": {
+            "type": "string"
+          }
+        },
+        "description": "Selected fields from the existing operational snapshot; other persisted fields may be present."
+      },
+      "AgreementEstimateOption": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "id",
+          "property_id",
+          "title",
+          "scope",
+          "revision",
+          "amount_cents",
+          "status",
+          "property_name"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "property_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "integer"
+          },
+          "amount_cents": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "sent",
+              "approved",
+              "declined"
+            ]
+          },
+          "property_name": {
+            "type": "string"
+          }
+        },
+        "description": "Selected fields from the existing operational snapshot; other persisted fields may be present."
       }
     }
   }

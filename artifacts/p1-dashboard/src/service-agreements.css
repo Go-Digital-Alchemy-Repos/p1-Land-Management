@@ -1,0 +1,166 @@
+.service-agreements {
+  margin-top: 24px;
+}
+.service-agreements .panel-heading {
+  align-items: flex-start;
+  gap: 16px;
+}
+.agreement-workspace {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.agreement-columns {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(0, 2fr);
+  gap: 24px;
+}
+.agreement-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.agreement-list > button {
+  text-align: left;
+  display: grid;
+  gap: 6px;
+  padding: 14px;
+}
+.agreement-list > button[aria-pressed="true"] {
+  outline: 2px solid var(--green, #214e3b);
+}
+.agreement-list small,
+.agreement-list span {
+  font-weight: 400;
+}
+.agreement-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 14px 0;
+}
+.agreement-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.agreement-editor label,
+.agreement-detail label {
+  display: grid;
+  gap: 6px;
+  margin: 12px 0;
+}
+.agreement-editor input,
+.agreement-editor select,
+.agreement-detail input,
+.agreement-detail textarea {
+  width: 100%;
+  box-sizing: border-box;
+}
+.agreement-editor fieldset,
+.agreement-detail fieldset {
+  border: 1px solid #dce3da;
+  border-radius: 10px;
+  padding: 16px;
+  min-width: 0;
+}
+.agreement-periods {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.agreement-periods h4,
+.agreement-periods > p {
+  grid-column: 1/-1;
+  margin-bottom: 0;
+}
+.agreement-plan {
+  background: #f3f6ef;
+  padding: 16px;
+  border: 1px solid #dce3da;
+  border-radius: 10px;
+  margin: 18px 0;
+  overflow-x: auto;
+}
+.agreement-plan dl {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+}
+.agreement-plan dd {
+  margin: 0;
+  font-weight: 600;
+}
+.agreement-detail {
+  min-width: 0;
+  overflow-x: auto;
+}
+.agreement-detail table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+}
+.agreement-detail th,
+.agreement-detail td {
+  text-align: left;
+  padding: 9px;
+  border-bottom: 1px solid #dce3da;
+}
+.agreement-detail caption {
+  text-align: left;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.agreement-scope {
+  white-space: pre-wrap;
+}
+.agreement-queue {
+  margin-top: 28px;
+  border-top: 1px solid #dce3da;
+  padding-top: 20px;
+}
+.agreement-queue ul {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+.agreement-queue li {
+  padding: 16px;
+  border: 1px solid #dce3da;
+  border-radius: 10px;
+}
+.agreement-queue li > span {
+  display: block;
+  margin-top: 5px;
+  text-transform: capitalize;
+}
+.agreement-queue code {
+  overflow-wrap: anywhere;
+}
+.agreement-editor button,
+.agreement-detail button,
+.agreement-queue button {
+  min-height: 42px;
+}
+@media (max-width: 760px) {
+  .agreement-columns,
+  .agreement-grid,
+  .agreement-periods {
+    grid-template-columns: 1fr;
+  }
+  .service-agreements .panel-heading {
+    flex-direction: column;
+  }
+  .agreement-plan dl {
+    grid-template-columns: 1fr;
+  }
+  .agreement-plan dd {
+    margin-bottom: 8px;
+  }
+  .agreement-list {
+    max-height: 320px;
+    overflow-y: auto;
+  }
+}

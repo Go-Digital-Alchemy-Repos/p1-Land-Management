@@ -6,16 +6,29 @@
  * OpenAPI spec version: 0.1.0
  */
 import type {
+  AgreementActivationPreview,
+  AgreementChargePreview,
+  AgreementChargeQueue,
+  AgreementChargeReceipt,
+  AgreementChargeSource,
+  AgreementEstimateOption,
+  AgreementRecurrenceOption,
+  AgreementVersion,
+  CancelServiceAgreement,
   CommercialFollowUp,
   CommercialInquiry,
   CommercialInquiryDetail,
   CommercialInquiryPage,
+  CreateServiceAgreement,
   DashboardMe,
   DashboardProperty,
+  EditServiceAgreement,
   FieldSyncResponse,
   GetScheduleParams,
   GetSetupStatus200,
+  ListAgreementChargeQueueParams,
   ListCommercialInquiriesParams,
+  ListServiceAgreementsParams,
   PhotoUploadReceipt,
   PropertyFile,
   PropertyTimelineEvent,
@@ -23,6 +36,9 @@ import type {
   ReadinessUpdate,
   RescheduleWork,
   SchedulePage,
+  ServiceAgreement,
+  ServiceAgreementFinancial,
+  ServiceAgreementPage,
   SyncFieldEventsBody,
   UploadFieldPhotoHeaders,
   WorkOrder,
@@ -433,6 +449,291 @@ export const uploadFieldPhoto = async (id: string,
     method: 'POST',
     headers: uploadHeaders,
     body: uploadFieldPhotoBody
+  }
+);}
+
+
+
+export const getListServiceAgreementsUrl = (params?: ListServiceAgreementsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/service-agreements?${stringifiedParams}` : `/api/v1/service-agreements`
+}
+
+/**
+ * Management/finance financial projection; dispatch scope/dates only. No client, crew or sales access.
+ */
+export const listServiceAgreements = async (params?: ListServiceAgreementsParams, options?: RequestInit): Promise<ServiceAgreementPage> => {
+
+  return customFetch<ServiceAgreementPage>(getListServiceAgreementsUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateServiceAgreementUrl = () => {
+
+
+
+
+  return `/api/v1/service-agreements`
+}
+
+export const createServiceAgreement = async (createServiceAgreement: CreateServiceAgreement, options?: RequestInit): Promise<ServiceAgreementFinancial> => {
+
+  return customFetch<ServiceAgreementFinancial>(getCreateServiceAgreementUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createServiceAgreement,)
+  }
+);}
+
+
+
+export const getGetServiceAgreementUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/service-agreements/${id}`
+}
+
+export const getServiceAgreement = async (id: string, options?: RequestInit): Promise<ServiceAgreement> => {
+
+  return customFetch<ServiceAgreement>(getGetServiceAgreementUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getUpdateServiceAgreementUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/service-agreements/${id}`
+}
+
+export const updateServiceAgreement = async (id: string,
+    editServiceAgreement: EditServiceAgreement, options?: RequestInit): Promise<ServiceAgreementFinancial> => {
+
+  return customFetch<ServiceAgreementFinancial>(getUpdateServiceAgreementUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      editServiceAgreement,)
+  }
+);}
+
+
+
+export const getPreviewServiceAgreementActivationUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/service-agreements/${id}/activation-preview`
+}
+
+export const previewServiceAgreementActivation = async (id: string,
+    agreementVersion: AgreementVersion, options?: RequestInit): Promise<AgreementActivationPreview> => {
+
+  return customFetch<AgreementActivationPreview>(getPreviewServiceAgreementActivationUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      agreementVersion,)
+  }
+);}
+
+
+
+export const getActivateServiceAgreementUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/service-agreements/${id}/activate`
+}
+
+export const activateServiceAgreement = async (id: string,
+    agreementVersion: AgreementVersion, options?: RequestInit): Promise<ServiceAgreementFinancial> => {
+
+  return customFetch<ServiceAgreementFinancial>(getActivateServiceAgreementUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      agreementVersion,)
+  }
+);}
+
+
+
+export const getCancelServiceAgreementUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/service-agreements/${id}/cancel`
+}
+
+export const cancelServiceAgreement = async (id: string,
+    cancelServiceAgreement: CancelServiceAgreement, options?: RequestInit): Promise<ServiceAgreementFinancial> => {
+
+  return customFetch<ServiceAgreementFinancial>(getCancelServiceAgreementUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      cancelServiceAgreement,)
+  }
+);}
+
+
+
+export const getPreviewAgreementChargeUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/service-agreements/${id}/charge-preview`
+}
+
+export const previewAgreementCharge = async (id: string,
+    agreementChargeSource: AgreementChargeSource, options?: RequestInit): Promise<AgreementChargePreview> => {
+
+  return customFetch<AgreementChargePreview>(getPreviewAgreementChargeUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      agreementChargeSource,)
+  }
+);}
+
+
+
+export const getPrepareAgreementChargeUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/service-agreements/${id}/charges`
+}
+
+export const prepareAgreementCharge = async (id: string,
+    agreementChargeSource: AgreementChargeSource, options?: RequestInit): Promise<AgreementChargeReceipt> => {
+
+  return customFetch<AgreementChargeReceipt>(getPrepareAgreementChargeUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      agreementChargeSource,)
+  }
+);}
+
+
+
+export const getListAgreementChargeQueueUrl = (params?: ListAgreementChargeQueueParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/agreement-charge-queue?${stringifiedParams}` : `/api/v1/agreement-charge-queue`
+}
+
+/**
+ * Management/finance current action queue. Capped, unmatched and prepared cancellation issues remain visible. Recheck eligibility before preparing.
+ */
+export const listAgreementChargeQueue = async (params?: ListAgreementChargeQueueParams, options?: RequestInit): Promise<AgreementChargeQueue> => {
+
+  return customFetch<AgreementChargeQueue>(getListAgreementChargeQueueUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getListAgreementRecurrencesUrl = () => {
+
+
+
+
+  return `/api/v1/recurring-services`
+}
+
+export const listAgreementRecurrences = async ( options?: RequestInit): Promise<AgreementRecurrenceOption[]> => {
+
+  return customFetch<AgreementRecurrenceOption[]>(getListAgreementRecurrencesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getListAgreementEstimatesUrl = () => {
+
+
+
+
+  return `/api/v1/estimates`
+}
+
+export const listAgreementEstimates = async ( options?: RequestInit): Promise<AgreementEstimateOption[]> => {
+
+  return customFetch<AgreementEstimateOption[]>(getListAgreementEstimatesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
   }
 );}
 

@@ -34,6 +34,7 @@ import {
 } from "@workspace/api-client-react/dashboard";
 import * as offline from "./offline";
 import "./style.css";
+import { ServiceAgreements } from "./ServiceAgreements";
 const auth = createAuthClient({ plugins: [twoFactorClient()] });
 async function api(path: string, body?: unknown, method: "POST" | "PATCH" = "POST") {
   const r = await fetch("/api/v1" + path, {
@@ -60,6 +61,7 @@ const nav = [
   ["Schedule", CalendarDays],
   ["My Day", ClipboardList],
   ["Sales", FileText],
+  ["Agreements", FileText],
   ["Billing", Wallet],
   ["Requests", MessageSquare],
   ["Recurring", RefreshCw],
@@ -612,7 +614,9 @@ function App() {
             "Billing",
             "Requests",
           ].includes(n)
-        : ["Recurring", "Projects", "Inspections"].includes(n)
+        : n === "Agreements"
+          ? ["owner", "manager", "finance", "dispatch"].includes(person?.role || "")
+          : ["Recurring", "Projects", "Inspections"].includes(n)
           ? ops
           : n === "Expenses"
             ? ["owner", "manager", "finance"].includes(person?.role || "")
@@ -993,6 +997,9 @@ function App() {
             <div role="status" className="notice">
               {notice}
             </div>
+          )}
+          {view === "Agreements" && (
+            <ServiceAgreements role={person.role} userId={person.id} />
           )}
           {view === "Overview" && (
             <>

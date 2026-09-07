@@ -1,3 +1,4 @@
+import { serviceAgreementApi } from "./service-agreement.routes";
 import { workReadinessApi } from "./work-readiness.routes";
 import { prospectContextApi } from "./prospect-context.routes";
 import { commercialIngress, commercialStaffApi } from "./commercial-ingress";
@@ -74,6 +75,7 @@ app.use(
   api,
   operationsApi,
   workReadinessApi,
+  serviceAgreementApi,
   filesApi,
   qboApi,
   notificationsApi,

@@ -1,6 +1,7 @@
 // Generated from dashboard SQL migrations 0001–0009; empty-string defaults corrected after introspection.
 import {
   pgTable,
+  type AnyPgColumn,
   text,
   timestamp,
   unique,
@@ -154,6 +155,7 @@ export const staffProfile = pgTable(
     userId: text("user_id").primaryKey().notNull(),
     role: text().notNull(),
     active: boolean().default(true).notNull(),
+    mfaRequired: boolean("mfa_required").default(false).notNull(),
   },
   (table) => [
     foreignKey({
@@ -1191,3 +1193,153 @@ export const propertyOrganization = pgTable("property_organization",{
 export const commercialContextOperation = pgTable("commercial_context_operation",{
  id:uuid().primaryKey(),actorId:text("actor_id").notNull().references(()=>user.id),leadId:uuid("lead_id").notNull().references(()=>lead.id),fingerprint:text().notNull(),result:jsonb().notNull(),createdAt:timestamp("created_at",{withTimezone:true,mode:"string"}).defaultNow().notNull(),
 },t=>[check("commercial_context_operation_fingerprint_check",sql`length(fingerprint)=64`)]);
+
+// Mirror of reviewed migration 0012; SQL migrations remain authoritative.
+export const serviceAgreement = pgTable(
+  "service_agreement",
+  {
+    id: uuid().primaryKey(),
+    propertyId: uuid("property_id")
+      .notNull()
+      .references(() => property.id),
+    recurringServiceId: uuid("recurring_service_id")
+      .notNull()
+      .references(() => recurringService.id),
+    estimateId: uuid("estimate_id")
+      .notNull()
+      .references(() => estimate.id),
+    predecessorId: uuid("predecessor_id")
+      .unique()
+      .references((): AnyPgColumn => serviceAgreement.id),
+    title: text().notNull(),
+    startsOn: date("starts_on").notNull(),
+    endsOn: date("ends_on").notNull(),
+    billingMode: text("billing_mode").notNull(),
+    unitAmountCents: bigint("unit_amount_cents", { mode: "number" }),
+    scopeSnapshot: text("scope_snapshot").notNull(),
+    estimateRevision: integer("estimate_revision").notNull(),
+    status: text().default("draft").notNull(),
+    version: integer().default(1).notNull(),
+    createdBy: text("created_by")
+      .notNull()
+      .references(() => user.id),
+    creationFingerprint: text("creation_fingerprint").notNull(),
+    activatedBy: text("activated_by").references(() => user.id),
+    activatedOn: date("activated_on"),
+    activatedAt: timestamp("activated_at", {
+      withTimezone: true,
+      mode: "string",
+    }),
+    cancellationEffectiveOn: date("cancellation_effective_on"),
+    cancellationReason: text("cancellation_reason"),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [
+    index("service_agreement_recurrence_term").on(
+      t.recurringServiceId,
+      t.startsOn,
+      t.endsOn,
+    ),
+    check(
+      "service_agreement_title_check",
+      sql`length(btrim(title)) BETWEEN 1 AND 500`,
+    ),
+    check("service_agreement_check", sql`ends_on>=starts_on`),
+    check(
+      "service_agreement_billing_mode_check",
+      sql`billing_mode IN ('fixed_monthly','per_visit')`,
+    ),
+    check(
+      "service_agreement_estimate_revision_check",
+      sql`estimate_revision>0`,
+    ),
+    check(
+      "service_agreement_status_check",
+      sql`status IN ('draft','active','cancelled')`,
+    ),
+    check("service_agreement_version_check", sql`version>0`),
+    check(
+      "service_agreement_creation_fingerprint_check",
+      sql`length(creation_fingerprint)=64`,
+    ),
+    check(
+      "service_agreement_check1",
+      sql`(billing_mode='per_visit' AND unit_amount_cents IS NOT NULL AND unit_amount_cents BETWEEN 1 AND 10000000000) OR (billing_mode='fixed_monthly' AND unit_amount_cents IS NULL)`,
+    ),
+    check(
+      "service_agreement_check2",
+      sql`(status='draft' AND activated_at IS NULL AND activated_on IS NULL AND activated_by IS NULL) OR (status IN ('active','cancelled') AND activated_at IS NOT NULL AND activated_on IS NOT NULL AND activated_by IS NOT NULL)`,
+    ),
+    check(
+      "service_agreement_check3",
+      sql`(status='cancelled' AND cancellation_effective_on IS NOT NULL AND cancellation_reason IS NOT NULL AND length(btrim(cancellation_reason)) BETWEEN 1 AND 1000) OR (status<>'cancelled' AND cancellation_effective_on IS NULL AND cancellation_reason IS NULL)`,
+    ),
+  ],
+);
+export const fixedChargePeriod = pgTable(
+  "fixed_charge_period",
+  {
+    id: uuid().primaryKey(),
+    agreementId: uuid("agreement_id")
+      .notNull()
+      .references(() => serviceAgreement.id),
+    startsOn: date("starts_on").notNull(),
+    endsOn: date("ends_on").notNull(),
+    amountCents: bigint("amount_cents", { mode: "number" }).notNull(),
+    active: boolean().default(true).notNull(),
+  },
+  (t) => [
+    unique().on(t.agreementId, t.startsOn),
+    unique().on(t.id, t.agreementId),
+    check("fixed_charge_period_check", sql`ends_on>=starts_on`),
+    check(
+      "fixed_charge_period_amount_cents_check",
+      sql`amount_cents BETWEEN 1 AND 10000000000`,
+    ),
+  ],
+);
+export const agreementCharge = pgTable(
+  "agreement_charge",
+  {
+    id: uuid().primaryKey(),
+    agreementId: uuid("agreement_id")
+      .notNull()
+      .references(() => serviceAgreement.id),
+    sourceKey: text("source_key").notNull(),
+    fixedPeriodId: uuid("fixed_period_id").unique(),
+    workOrderId: uuid("work_order_id").references(() => workOrder.id),
+    billingDraftId: uuid("billing_draft_id")
+      .notNull()
+      .unique()
+      .references(() => billingDraft.id),
+    amountCents: bigint("amount_cents", { mode: "number" }).notNull(),
+    preparedBy: text("prepared_by").references(() => user.id),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [
+    unique().on(t.agreementId, t.sourceKey),
+    unique().on(t.agreementId, t.workOrderId),
+    foreignKey({
+      columns: [t.fixedPeriodId, t.agreementId],
+      foreignColumns: [fixedChargePeriod.id, fixedChargePeriod.agreementId],
+    }),
+    uniqueIndex("agreement_charge_work_once")
+      .on(t.workOrderId)
+      .where(sql`work_order_id IS NOT NULL`),
+    check(
+      "agreement_charge_amount_cents_check",
+      sql`amount_cents BETWEEN 1 AND 10000000000`,
+    ),
+    check(
+      "agreement_charge_check",
+      sql`(fixed_period_id IS NOT NULL AND work_order_id IS NULL AND source_key LIKE 'period:%') OR (fixed_period_id IS NULL AND work_order_id IS NOT NULL AND source_key='work:'||work_order_id::text)`,
+    ),
+  ],
+);
