@@ -18,11 +18,17 @@ Billing creation requires `operationId` (UUID), `propertyId`, `estimateId`, `tit
 
 Field submissions require unique operation IDs, target work order, base version, captured timestamp, kind and validated payload. Accepted acknowledgments permit local removal; conflicts remain for review. Reassignment/authorization rejection also leaves the device copy intact. File uploads use their stable operation UUID and immutable content-derived object keys.
 
-## Planned commercial inquiry contract
+## Commercial inquiry contract (implemented, awaiting staging acceptance)
 
-The [commercial initiative](../initiatives/commercial-industrial-sales.md) specifies a proposed versioned server-to-server Core delivery and dashboard inbox receipt, not a currently available endpoint. Complete OpenAPI/Zod design before implementation: source installation/submission identity, payload version/fingerprint, optional contact-channel validation, commercial context, bounded attribution, private attachment references and retry-safe response mapping. Public browsers continue to submit once to the managed Core form. Existing business API/auth and generated-client work remains required.
+Reviewed backend checkpoint66338b0 adds migration0010 and separate raw-body service ingress. Public browsers continue submitting once to Core. The receiver validates the versioned contract, HMAC signature, source/submission identity, fingerprint and bounded payload before durable receipt; browser-authenticated or Origin-bearing ingress is rejected. Exact wire contract and sender retry rules are canonical in `platform/p1-core/docs/contracts/p1-commercial-handoff.md`. No receipt automatically provisions client identities, portal access, properties or QuickBooks records.
 
-Office contacts follow-up (deployed checkpoint8039f99): `/clients/:clientId/contacts` GET/POST and `/clients/:clientId/contacts/:id` POST use the existing contact/client relationship. Every route requires an office role; they do not create login identities or grants. Contact edits require the current integer version; competing edits produce one success and one409. `archived` retains historical records, and every mutation is audited. Migration0008 adds only contact archive/version/index fields. The office contact editor supports create/edit/archive/restore. Dedicated tests passed finance access, anonymous/crew/client denials, cross-client mutation mismatch, concurrent edit409 and retained archived records. Browser fixture verified billing contact creation, archival and restoration. Contact changes never modify accepted estimate or accounting snapshots.
+Staff endpoints under `/api/v1` require owner, manager or sales:
+
+- `GET /commercial-inquiries`: `{items,nextCursor}`, default50/max200. Optional `status`, `ownerId` (user ID or `unassigned`) and `overdue=true`. Cursor is opaque and bound to filters; reset it whenever filters change. Ordering is created_at DESC/id DESC with microsecond precision.
+- `GET /commercial-inquiries/:id`: full lead detail plus submission_id, received_at and raw_intake. Raw intake is untrusted business content and must never be interpreted as HTML or instructions.
+- `PATCH /commercial-inquiries/:id/follow-up`: `{expectedVersion,ownerId:null|string,nextAction,nextActionDueAt:null|ISO,status}`. Status is new/contacted/qualified/proposal/won/lost. Next action is trimmed1–2000 characters. Assign only active owner/manager/sales users. A stale version returns409; success advances version and audit history. Re-fetch detail and first page because the result omits receipt metadata.
+
+The legacy lead list filters commercial inquiries out for dispatch/finance, and operational conversion advances the same optimistic version. See COMMERCIAL_INBOX.md for UI behavior and regression steps. Complete generated OpenAPI coverage remains outstanding; the implemented service schemas are authoritative for current wire validation.
 
 ## Assessment availability (deployed checkpoint4079996)
 
