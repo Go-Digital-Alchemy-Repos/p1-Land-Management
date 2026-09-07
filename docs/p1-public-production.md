@@ -1,6 +1,6 @@
-# Public website production preparation
+# Public website production record
 
-The full CMS gateway migration has not been released. A focused [favicon hotfix](p1-favicon-hotfix.md) is live as deployment `fd023a7a-73ec-4e81-863a-5ce86199d0f1` (patch `79ac680` over the captured original production runtime). It preserves existing page content and Vite preview behavior. The sections below describe the separate full gateway candidate and preparation, not acceptance of that migration.
+The P1 public CMS gateway is live. This document retains the pre-release evidence below and records the subsequent exact-source releases; it is not evidence that the broader project, CMS initialization, shared identity, or owner acceptance is complete.
 
 ## Reviewed candidate
 
@@ -19,7 +19,7 @@ On September7 the Orchestrator set seven reviewed values on production public se
 
 `PORT=8080`, `NODE_ENV=production`, `P1_CORE_ORIGIN=http://p1-core.railway.internal:5000`, `P1_CONTENT_CACHE_DIR=/app/data/cms`, both P1 public/admin origins `https://www.p1landmanagement.com`, and `P1_SOURCE_REVISION=03ba5b800937e32140170e68641d15a7326e786d`. Existing unrelated configuration was retained. No credentials are required in the public artifact.
 
-The next deployment will activate these values. Do not treat preparation as a live gateway. Before upload, select Dockerfile builder/root Dockerfile and `/healthz`, provision a dedicated production `/app/data` volume, and verify mounted cache ownership/writes as UID1000. Existing apex/www domains already target8080. Preserve region/replicas and the previous public deployment for rollback. Shared CMS identity and authorized owner access remain release gates.
+The initial gateway release subsequently activated the reviewed runtime configuration. Later exact-source artifacts embed their reviewed source revision in the packaged client manifest, while the existing service variables, private-network origin, cache volume, domains, region, and replicas remain in place. Shared CMS identity and authorized owner access remain release gates.
 
 After release, verify private Core routing, same-origin preview, published HTML/hydration parity, publication refresh and last-valid cache recovery, all public routes/redirects/metadata, mobile inquiry flow and exact deployed source. Do not roll back or erase durable Core receipts when rolling back public code. The separate production backend synthetic receipt proves delivery processing, not public-form or owner acceptance.
 
@@ -60,3 +60,9 @@ The About page now describes coordinating the agreed scope with one accountable 
 On September 7, exact-source Railway deployment `63c1bf45-2702-4565-860b-259f78a2b4ad` reached SUCCESS from reviewed source `b9681fd8c093465c14e7fdd518183ddaa287d6c1`. It corrects Contact FAQ headings and adds section headings for Services and Gallery card groups without changing their visual presentation. It also replaces the unsupported Services tagline “One contractor. No gaps.” with scope-qualified language.
 
 The public build now verifies the skip link, main landmark, heading order, and image alternatives for every route. Live verification fetched all 35 sitemap routes and passed those landmark and heading checks. An immediately preceding deployment `39f2b714-5935-432d-ad71-8b540adaf0c2` had an abbreviated source-provenance value in its packaged metadata; Railway removed it when the full-hash artifact was uploaded. It introduced no distinct public behavior and is not a rollback candidate. No CMS records, Core data, authentication, or provider configuration changed.
+
+## Gateway malformed-request handling — b6e35dd
+
+On September 7, exact-source Railway deployment `bd566935-a610-40e4-ba22-41dc9ae9a835` reached SUCCESS from reviewed source `b6e35ddb8072805d322a0452dd4d2684aac079b6`, with image digest `sha256:065b94a624ab331d0ada78cc6f7dfe949d86b35aa2df041ae9cb1c994b007993`.
+
+The public gateway now rejects invalid percent-encoded request paths with `400 Bad request` before route normalization or any upstream proxy attempt. Its regression test proves absolute targets, network-path targets, and malformed encodings cannot forward cookies or authorization headers. The public server suite passed 22 tests; TypeScript, the production build, and all 35 route SSR/SEO/CMS checks passed before packaging. Live `/healthz` and homepage checks passed, and malformed UTF-8 path variants return the intended `400` from the deployed gateway. No CMS records, Core data, authentication, or provider configuration changed.
