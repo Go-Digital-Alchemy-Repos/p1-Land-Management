@@ -65,8 +65,8 @@ export default function ServiceAreasIndex() {
       />
 
       {/* MARKETS */}
-      <section className="py-24 px-4 bg-background">
-        <div className="container mx-auto max-w-6xl space-y-16">
+      <section className="py-24 bg-background">
+        <div className="site-shell space-y-16">
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             {/* Upstate SC Market */}
@@ -237,7 +237,7 @@ export default function ServiceAreasIndex() {
         </div>
       </section>
 
-      <aside className="container mx-auto max-w-4xl px-4 pb-12 text-lg">
+      <aside className="site-shell pb-12 text-lg">
         <p><Link href="/services" className="text-primary underline">Compare land management services</Link> or <Link href="/contact" className="text-primary underline">tell us about your property</Link> to discuss scope and availability.</p>
       </aside>
       <FinalCTA />

@@ -65,8 +65,8 @@ export default function CharlotteRegionNC() {
         imageAlt="Land & Property Management in the Charlotte, NC Region"
       />
 
-      <section className="py-24 px-4 bg-background">
-        <div className="container mx-auto max-w-4xl space-y-16">
+      <section className="py-24 bg-background">
+        <div className="site-shell space-y-16">
           
           <FeatureRow heading="Serving the Charlotte Region's Growing Demand for Large-Acreage Property Management" image={charlotteImg} imageAlt="Large-acreage property development in the Charlotte NC region">
             <p>
@@ -180,7 +180,7 @@ export default function CharlotteRegionNC() {
         </div>
       </section>
 
-      <aside className="container mx-auto max-w-4xl px-4 pb-12 text-lg">
+      <aside className="site-shell pb-12 text-lg">
         <p><Link href="/services" className="text-primary underline">Compare land management services</Link> or <Link href="/contact" className="text-primary underline">tell us about your property</Link> to discuss scope and availability.</p>
       </aside>
       <FinalCTA />

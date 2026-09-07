@@ -75,8 +75,8 @@ export default function YorkCountySC() {
         imageAlt="Land Clearing & Property Management in York County, SC"
       />
 
-      <section className="py-24 px-4 bg-background">
-        <div className="container mx-auto max-w-4xl space-y-16">
+      <section className="py-24 bg-background">
+        <div className="site-shell space-y-16">
 
           <FeatureRow heading="Your York County Property Partner" image={featureImg} imageAlt="Lakeside property maintenance on a Lake Wylie waterfront estate in York County, SC">
             <p>
@@ -199,7 +199,7 @@ export default function YorkCountySC() {
         </div>
       </section>
 
-      <aside className="container mx-auto max-w-4xl px-4 pb-12 text-lg">
+      <aside className="site-shell pb-12 text-lg">
         <p><Link href="/services" className="text-primary underline">Compare land management services</Link> or <Link href="/contact" className="text-primary underline">tell us about your property</Link> to discuss scope and availability.</p>
       </aside>
       <FinalCTA />

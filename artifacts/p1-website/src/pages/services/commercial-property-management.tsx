@@ -68,8 +68,8 @@ export default function CommercialPropertyManagement() {
       />
 
       {/* CONTENT SECTIONS */}
-      <section className="py-24 px-4 bg-background">
-        <div className="container mx-auto max-w-4xl space-y-16">
+      <section className="py-24 bg-background">
+        <div className="site-shell space-y-16">
           
           <FeatureRow heading="Your Commercial Property. Our Full Attention." image={attentionImg} imageAlt="Crew maintaining a large commercial property's grounds">
             <p>
@@ -154,7 +154,7 @@ export default function CommercialPropertyManagement() {
         </div>
       </section>
 
-      <section className="container mx-auto px-5 py-12"><h2 className="text-2xl font-bold">Looking for a connected exterior site plan?</h2><p className="mt-4 text-muted-foreground">Explore how grounds, drainage, land and corrective work can fit an agreed commercial property scope.</p><a href="/commercial" className="mt-5 inline-block font-bold text-primary underline">Commercial Site Management & Site Assessment</a></section>
+      <section className="site-shell py-12"><h2 className="text-2xl font-bold">Looking for a connected exterior site plan?</h2><p className="mt-4 text-muted-foreground">Explore how grounds, drainage, land and corrective work can fit an agreed commercial property scope.</p><a href="/commercial" className="mt-5 inline-block font-bold text-primary underline">Commercial Site Management & Site Assessment</a></section>
       <FinalCTA />
     </Layout>
   );

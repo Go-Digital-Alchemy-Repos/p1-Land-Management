@@ -44,8 +44,8 @@ export default function BlogPost() {
         />
 
         {/* POST CONTENT */}
-        <section className="px-4 py-16 bg-background">
-          <div className="container mx-auto max-w-4xl prose prose-lg prose-h2:font-serif prose-h2:text-3xl prose-h2:text-secondary prose-h3:font-serif prose-h3:text-2xl prose-h3:text-secondary prose-p:text-secondary/80 prose-li:text-secondary/80 prose-a:text-primary hover:prose-a:text-primary/80">
+        <section className="py-16 bg-background">
+          <div className="site-shell prose prose-lg prose-h2:font-serif prose-h2:text-3xl prose-h2:text-secondary prose-h3:font-serif prose-h3:text-2xl prose-h3:text-secondary prose-p:text-secondary/80 prose-li:text-secondary/80 prose-a:text-primary hover:prose-a:text-primary/80">
             <p>
               Whether you've acquired raw land you want to put into production, reclaimed overgrown acreage that once was farmed, or inherited a neglected property you want to make productive again, the path from raw or overgrown land to working agricultural acreage follows a specific sequence — and skipping steps in that sequence leads to expensive problems down the road.
             </p>
@@ -125,7 +125,7 @@ export default function BlogPost() {
         </section>
       </article>
 
-      <aside className="container mx-auto max-w-4xl px-4 pb-12 text-lg">
+      <aside className="site-shell pb-12 text-lg">
         <p>Planning work on your land? <Link href="/services/industrial-agricultural" className="text-primary underline">Explore this service</Link> and <Link href="/contact" className="text-primary underline">request a property estimate</Link>.</p>
       </aside>
       <FinalCTA />

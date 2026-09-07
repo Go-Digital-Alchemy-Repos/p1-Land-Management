@@ -67,8 +67,8 @@ export default function IndustrialAgricultural() {
       />
 
       {/* CONTENT SECTIONS */}
-      <section className="py-24 px-4 bg-background">
-        <div className="container mx-auto max-w-4xl space-y-16">
+      <section className="py-24 bg-background">
+        <div className="site-shell space-y-16">
           
           <FeatureRow heading="Land That Works Needs Maintenance That Matches" image={maintenanceImg} imageAlt="Heavy equipment maintaining an industrial and agricultural property">
             <p>

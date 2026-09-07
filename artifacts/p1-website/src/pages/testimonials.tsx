@@ -29,8 +29,8 @@ export default function Testimonials() {
         imageAlt="Illustration of property reconstruction services"
       />
 
-      <section className="py-20 px-4 bg-background">
-        <div className="container mx-auto max-w-3xl space-y-6 text-lg text-secondary">
+      <section className="py-20 bg-background">
+        <div className="site-shell space-y-6 text-lg text-secondary">
           <h2 className="text-3xl">Choose the right approach for your land</h2>
           <p>Clearing, grading, drainage, turf, tree care, and pond management each address different property needs. Tell us about your goals so we can discuss the work involved.</p>
           <p><Link className="text-primary underline" href="/services">Explore our services</Link> or <Link className="text-primary underline" href="/contact">request an estimate</Link>.</p>

@@ -70,8 +70,8 @@ export default function UnionCountyNC() {
         imageAlt="Land Clearing & Property Management in Union County, NC"
       />
 
-      <section className="py-24 px-4 bg-background">
-        <div className="container mx-auto max-w-4xl space-y-16">
+      <section className="py-24 bg-background">
+        <div className="site-shell space-y-16">
 
           <FeatureRow heading="Your Union County Property Partner" image={featureImg} imageAlt="Large-acreage property management in Union County, NC">
             <p>
@@ -184,7 +184,7 @@ export default function UnionCountyNC() {
         </div>
       </section>
 
-      <aside className="container mx-auto max-w-4xl px-4 pb-12 text-lg">
+      <aside className="site-shell pb-12 text-lg">
         <p><Link href="/services" className="text-primary underline">Compare land management services</Link> or <Link href="/contact" className="text-primary underline">tell us about your property</Link> to discuss scope and availability.</p>
       </aside>
       <FinalCTA />

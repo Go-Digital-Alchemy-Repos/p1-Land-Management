@@ -69,8 +69,8 @@ export default function LandClearing() {
       />
 
       {/* CONTENT SECTIONS */}
-      <section className="py-24 px-4 bg-background">
-        <div className="container mx-auto max-w-4xl space-y-16">
+      <section className="py-24 bg-background">
+        <div className="site-shell space-y-16">
           
           <FeatureRow heading="Professional Land Clearing That Prepares Your Property for What's Next" image={preparesImg} imageAlt="Land being cleared and prepared for its next use">
             <p>

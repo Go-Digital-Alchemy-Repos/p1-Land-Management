@@ -71,8 +71,8 @@ export default function GradingSitePreparation() {
       />
 
       {/* CONTENT SECTIONS */}
-      <section className="py-24 px-4 bg-background">
-        <div className="container mx-auto max-w-4xl space-y-16">
+      <section className="py-24 bg-background">
+        <div className="site-shell space-y-16">
           
           <FeatureRow heading="Get Your Land Level — and Keep It That Way" image={levelImg} imageAlt="Motor grader leveling a large dirt site">
             <p>

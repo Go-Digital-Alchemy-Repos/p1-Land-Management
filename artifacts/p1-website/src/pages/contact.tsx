@@ -90,8 +90,8 @@ export default function Contact() {
         subtitle="Tell us about your property and what you need. We'll schedule a time to walk the land and give you a straight, no-obligation estimate. Scheduling depends on your project and availability."
       />
 
-      <section className="py-10 md:py-16 px-4 bg-background">
-        <div className="container mx-auto max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-16">
+      <section className="py-10 md:py-16 bg-background">
+        <div className="site-shell grid grid-cols-1 lg:grid-cols-12 gap-16">
           
           {/* FORM COLUMN */}
           <div className="lg:col-span-7 bg-card border border-border p-8 md:p-12 rounded-xl shadow-lg">
@@ -271,8 +271,8 @@ export default function Contact() {
       </section>
 
       {/* FAQ */}
-      <section className="py-24 px-4 bg-muted border-t border-border">
-        <div className="container mx-auto max-w-4xl space-y-12">
+      <section className="py-24 bg-muted border-t border-border">
+        <div className="site-shell space-y-12">
           <h2 className="text-3xl md:text-4xl font-serif font-bold text-secondary text-center">
             Frequently Asked Questions
           </h2>

@@ -68,8 +68,8 @@ export default function Drainage() {
       />
 
       {/* CONTENT SECTIONS */}
-      <section className="py-24 px-4 bg-background">
-        <div className="container mx-auto max-w-4xl space-y-16">
+      <section className="py-24 bg-background">
+        <div className="site-shell space-y-16">
           
           <FeatureRow heading="Drainage Problems Get Worse. Fix Them Right the First Time." image={drainageFixImg} imageAlt="Drainage system being installed to move water off a property">
             <p>

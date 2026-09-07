@@ -32,8 +32,8 @@ export default function About() {
       />
 
       {/* OUR STORY */}
-      <section className="py-24 px-4 bg-background">
-        <div className="container mx-auto max-w-6xl">
+      <section className="py-24 bg-background">
+        <div className="site-shell">
           <FeatureRow heading="Who We Are" image={whoImg} imageAlt="Experienced P1 land management crew with heavy equipment">
             <p>
               P1 Land & Property Management was founded on a simple idea: that commercial, agricultural, and large residential landowners in the Carolinas deserve a single, capable contractor who can manage the full life of their property — from rough clearing to fine turf, from drainage repair to complete reconstruction.
@@ -52,8 +52,8 @@ export default function About() {
       </section>
 
       {/* WHAT WE DO */}
-      <section className="py-24 px-4 bg-muted border-y border-border">
-        <div className="container mx-auto max-w-5xl">
+      <section className="py-24 bg-muted border-y border-border">
+        <div className="site-shell">
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
             <h2 className="text-3xl md:text-4xl font-serif font-bold text-secondary">
               Full-Service. Full Commitment.
@@ -84,8 +84,8 @@ export default function About() {
       </section>
 
       {/* SERVICE AREAS & CREDENTIALS */}
-      <section className="py-24 px-4 bg-background">
-        <div className="container mx-auto max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-16">
+      <section className="py-24 bg-background">
+        <div className="site-shell grid grid-cols-1 md:grid-cols-2 gap-16">
           <div className="space-y-6">
             <h2 className="text-3xl font-serif font-bold text-secondary border-b border-border pb-4">
               Where We Work

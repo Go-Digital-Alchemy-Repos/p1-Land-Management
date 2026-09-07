@@ -77,8 +77,8 @@ export default function NotFound() {
       </PageHero>
 
       {/* QUICK LINKS */}
-      <section className="py-20 md:py-24 px-4 bg-background">
-        <div className="container mx-auto max-w-5xl space-y-12">
+      <section className="py-20 md:py-24 bg-background">
+        <div className="site-shell space-y-12">
           <div className="text-center space-y-4 max-w-2xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-serif font-bold text-secondary">
               Where Would You Like to Go?
