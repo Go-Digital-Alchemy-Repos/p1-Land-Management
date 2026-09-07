@@ -10,7 +10,9 @@ const property = uid(1),
   id = uid(4),
   period = uid(5),
   draft = uid(6),
-  nextEstimate = uid(7);
+  nextEstimate = uid(7),
+  charge = uid(9),
+  reviewEvent = uid(10);
 let agreement = {
   id,
   propertyId: property,
@@ -39,7 +41,66 @@ let agreement = {
   ],
 };
 let conflict = true,
-  prepared = false;
+  prepared = false,
+  reviewVersion = 0,
+  reviewState = "unreviewed" as
+    | "unreviewed"
+    | "kept_due"
+    | "correction_required"
+    | "stale_review";
+const currentReview = () => ({
+  chargeId: charge,
+  agreementId: agreement.id,
+  reviewVersion,
+  latestReceipt:
+    reviewVersion === 0
+      ? null
+      : {
+          eventId: reviewEvent,
+          chargeId: charge,
+          reviewVersion,
+          outcome:
+            reviewState === "correction_required"
+              ? "correction_required"
+              : "keep_due",
+          recordedAt: "2099-01-01T00:00:00.000Z",
+        },
+  correctionPending: reviewState === "correction_required",
+  cancellationVersion: agreement.version,
+  snapshot: {
+    agreement: {
+      id: agreement.id,
+      version: agreement.version,
+      cancellationDate: agreement.cancellationEffectiveOn,
+      cancellationReason: agreement.cancellationReason,
+    },
+    charge: { id: charge, sourceKey: "period:" + period, amountCents: 1000 },
+    draft: {
+      id: draft,
+      propertyId: property,
+      estimateId: estimate,
+      title: "Grounds maintenance",
+      kind: "service",
+      amountCents: 1000,
+      status: "draft",
+      postingRequestId: null,
+      postingPayloadSha256: null,
+      quickbooksId: null,
+      balanceCents: 1000,
+      ownershipVerified: true,
+    },
+  },
+  snapshotSha256: "a".repeat(64),
+  allowedOutcomes:
+    reviewState === "correction_required"
+      ? ["correction_required"]
+      : ["keep_due", "correction_required"],
+  postingBlockReason:
+    reviewState === "kept_due"
+      ? null
+      : "Review this cancellation-affected charge before posting.",
+  reviewState,
+});
 const trace: { path: string; method: string; body: unknown }[] = [];
 (window as any).agreementTrace = trace;
 const original = window.fetch;
@@ -102,7 +163,7 @@ window.fetch = async (input, options) => {
   else if (path.startsWith("/api/v1/agreement-charge-queue"))
     data = {
       items:
-        agreement.status === "draft"
+        agreement.status === "draft" || reviewState === "kept_due"
           ? []
           : [
               {
@@ -121,6 +182,13 @@ window.fetch = async (input, options) => {
                     : null,
                 amountCents: 1000,
                 billingDraftId: prepared ? draft : null,
+                chargeId: prepared ? charge : undefined,
+                reviewVersion: prepared ? reviewVersion : undefined,
+                reviewState: prepared ? reviewState : undefined,
+                latestReviewReceipt:
+                  prepared && reviewVersion
+                    ? currentReview().latestReceipt
+                    : undefined,
               },
             ],
       nextCursor: null,
@@ -152,10 +220,35 @@ window.fetch = async (input, options) => {
       billedCents: prepared ? 1000 : 0,
       remainingCents: prepared ? 9000 : 10000,
     };
-  else if (path.endsWith("/charges")) {
+  else if (path === "/api/v1/agreement-charges/" + charge + "/review")
+    data = currentReview();
+  else if (path === "/api/v1/agreement-charges/" + charge + "/review-preview") {
+    const current = currentReview();
+    if (
+      body.expectedReviewVersion !== current.reviewVersion ||
+      body.cancellationVersion !== current.cancellationVersion ||
+      body.snapshotSha256 !== current.snapshotSha256
+    )
+      return Response.json({ error: "Snapshot changed" }, { status: 409 });
+    data = {
+      current,
+      wouldResolveSnapshot: body.outcome === "keep_due",
+      postingWouldRemainBlocked: body.outcome === "correction_required",
+    };
+  } else if (path === "/api/v1/agreement-charges/" + charge + "/reviews") {
+    reviewVersion++;
+    reviewState = body.outcome;
+    data = {
+      eventId: reviewEvent,
+      chargeId: charge,
+      reviewVersion,
+      outcome: body.outcome,
+      recordedAt: "2099-01-01T00:00:00.000Z",
+    };
+  } else if (path.endsWith("/charges")) {
     prepared = true;
     data = {
-      id: uid(9),
+      id: charge,
       agreementId: agreement.id,
       sourceKey: "period:2099-01-01",
       amountCents: 1000,
