@@ -248,28 +248,43 @@ test(
       process.env.CORE_FEDERATION_CLIENT_SECRET_PREVIOUS_EXPIRES_AT = new Date(
         Date.now() - 1_000,
       ).toISOString();
+      const rotationApp = express();
+      rotationApp.use(coreFederationIngress);
+      rotationApp.use(
+        (
+          error: unknown,
+          _req: express.Request,
+          res: express.Response,
+          _next: express.NextFunction,
+        ) =>
+          res.status((error as { status?: number }).status || 500).json({
+            error: (error as Error).message,
+          }),
+      );
+      const rotationServer = rotationApp.listen(0, "127.0.0.1");
+      await new Promise<void>((resolve) =>
+        rotationServer.once("listening", resolve),
+      );
+      const rotationBase = `http://127.0.0.1:${(rotationServer.address() as { port: number }).port}/federation/introspect`;
       try {
-        const currentResult = await introspect();
+        const introspectRotation = (authorization: string) =>
+          fetch(rotationBase, {
+            method: "POST",
+            headers: { authorization, "content-type": "application/json" },
+            body: JSON.stringify({
+              grant_id: grant.grantId,
+              purpose: "p1-core-cms-v1",
+            }),
+          });
+        const currentResult = await introspectRotation(clientAuthorization);
         assert.equal(currentResult.status, 401);
         assert.equal(
           ((await currentResult.json()) as { error: string }).error,
           "Federation grant is inactive",
         );
-        const previousResult = await fetch(
-          base + "/api/integrations/core/v1/federation/introspect",
-          {
-            method: "POST",
-            headers: {
-              authorization:
-                "Basic " +
-                Buffer.from(clientId + ":" + expiredSecret).toString("base64"),
-              "content-type": "application/json",
-            },
-            body: JSON.stringify({
-              grant_id: grant.grantId,
-              purpose: "p1-core-cms-v1",
-            }),
-          },
+        const previousResult = await introspectRotation(
+          "Basic " +
+            Buffer.from(clientId + ":" + expiredSecret).toString("base64"),
         );
         assert.equal(previousResult.status, 401);
         assert.equal(
@@ -277,6 +292,9 @@ test(
           "Federation client authentication failed",
         );
       } finally {
+        await new Promise<void>((resolve) =>
+          rotationServer.close(() => resolve()),
+        );
         if (previousSecret === undefined)
           delete process.env.CORE_FEDERATION_CLIENT_SECRET_PREVIOUS;
         else
