@@ -1,3 +1,4 @@
+import { syncCaptures } from "./src/core/sync-captures";
 import { requiresAccountMfa } from "./src/core/mfa-required";
 import { Outbox } from "./src/screens/Outbox";
 import type { OutboxPage, OutboxCursor } from "./src/core/outbox";
@@ -30,7 +31,11 @@ import * as Crypto from "expo-crypto";
 import type { SchedulePage } from "../../lib/api-client-react/src/dashboard/models/schedulePage";
 import type { WorkOrder } from "../../lib/api-client-react/src/dashboard/models/workOrder";
 import type { FieldOperation } from "@workspace/api-zod/dashboard";
-import { BusinessTransport, RequestFailure } from "./src/core/transport";
+import {
+  BusinessTransport,
+  RequestFailure,
+  SessionChanged,
+} from "./src/core/transport";
 import { syncOperations } from "./src/core/sync";
 import { NativeAuth } from "./src/native/auth";
 import { openVault, type Vault } from "./src/native/vault";
@@ -336,37 +341,55 @@ export function Application({ services }: { services: ApplicationServices }) {
   }
   async function sync() {
     await verify();
-    requireBoundVault();
-    if (!vault.current) return;
-    for (const photo of await vault.current.photos()) {
-      const m = JSON.parse(photo.manifest);
-      const ack = await transport.request<PhotoUploadReceipt>(
-        `/api/v1/files/${photo.id}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": m.mime,
-            "x-p1-property": m.propertyId,
-            "x-p1-work": m.workOrderId,
-            "x-p1-classification": m.classification,
+    const current = requireBoundVault();
+    const assertCurrent = () => {
+      if (vault.current !== current) throw new SessionChanged();
+      vault.require(origin, current.accountId);
+    };
+    const result = await syncCaptures({
+      photos: () => current.photos(),
+      upload: async (photo) => {
+        const m = JSON.parse(photo.manifest);
+        return transport.request<PhotoUploadReceipt>(
+          `/api/v1/files/${photo.id}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": m.mime,
+              "x-p1-property": m.propertyId,
+              "x-p1-work": m.workOrderId,
+              "x-p1-classification": m.classification,
+            },
+            body: photo.bytes as unknown as BodyInit,
           },
-          body: photo.bytes as unknown as BodyInit,
-        },
-      );
-      if (ack.id !== photo.id || ack.status !== "accepted")
-        throw new Error("Upload acknowledgment mismatch. Photo remains saved.");
-      await vault.current.acknowledgePhoto(photo.id);
-    }
-    await syncOperations(vault.current, (events) =>
-      transport.request("/api/v1/field/sync", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ events }),
-      }),
+        );
+      },
+      acknowledgePhoto: (id) => current.acknowledgePhoto(id),
+      operations: () =>
+        syncOperations(current, (events) => {
+          assertCurrent();
+          return transport.request("/api/v1/field/sync", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ events }),
+          });
+        }),
+      assertCurrent,
+      isFatal: (error) =>
+        error instanceof SessionChanged ||
+        ((error instanceof RequestFailure ||
+          error instanceof AuthRequestFailure) &&
+          [401, 403].includes(error.status)),
+    });
+    assertCurrent();
+    const remaining = await current.pendingCount();
+    assertCurrent();
+    setPending(remaining);
+    setNotice(
+      `Photos acknowledged: ${result.photosAcknowledged}. ${result.photoFailures ? `Unconfirmed photo attempts: ${result.photoFailures}. ` : ""}${result.operationsProcessed ? "Operation queue processed." : "Operations need retry or office review."} Saved items remaining: ${remaining}.`,
     );
-    setPending(await vault.current.pendingCount());
-    setNotice("Sync finished. Remaining items need retry or office review.");
   }
+
   async function logout() {
     const previous = vault.current;
     await logoutAccount({
