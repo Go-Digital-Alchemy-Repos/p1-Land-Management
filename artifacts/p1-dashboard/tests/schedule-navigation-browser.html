@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Full schedule navigation fixture</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module">
+      const id = "c874f499-00d1-44ea-992c-000000000501";
+      const job = {
+        id,
+        title: "Beyond first 500 — synthetic work",
+        property_id: "c874f499-00d1-44ea-992c-000000000502",
+        property_name: "Synthetic farm",
+        address: "Test only",
+        access_instructions: "Synthetic gate instructions",
+        scope: "Review the north field",
+        scheduled_at: new Date().toISOString(),
+        status: "scheduled",
+        version: 1,
+        checklist: [],
+        prerequisites: [],
+        assigned_to: null,
+      };
+      window.fetch = async (input) => {
+        const url = new URL(
+          typeof input === "string" ? input : input.url,
+          location.origin,
+        );
+        const path = url.pathname;
+        if (path === "/api/v1/me")
+          return Response.json({
+            id: "fixture-manager",
+            name: "Synthetic manager",
+            email: "fixture@example.test",
+            role: "manager",
+            twoFactorEnabled: false,
+          });
+        if (path === "/api/v1/setup")
+          return Response.json({ initialized: true, configured: false });
+        if (path === "/api/v1/schedule")
+          return Response.json({
+            items: url.searchParams.get("unscheduled") === "true" ? [] : [job],
+            nextCursor: null,
+          });
+        if (path === "/api/v1/work-orders/" + id) return Response.json(job);
+        if (path === "/api/v1/assessment-availability")
+          return Response.json({
+            config: {
+              version: 1,
+              duration_minutes: 60,
+              buffer_before: 15,
+              buffer_after: 15,
+              windows: [],
+            },
+            blackouts: [],
+          });
+        // The ordinary work list deliberately omits the selected job.
+        return Response.json([]);
+      };
+      await import("/src/main.tsx");
+    </script>
+  </body>
+</html>

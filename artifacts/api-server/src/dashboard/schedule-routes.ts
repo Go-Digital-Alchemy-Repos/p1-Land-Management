@@ -2,7 +2,7 @@ import { Router } from "express";
 import { z } from "zod";
 import { actor } from "./access";
 import { requireRole } from "./policy";
-import { readSchedule, rescheduleWork } from "./schedule";
+import { readSchedule, rescheduleWork, readScheduledWork } from "./schedule";
 export const scheduleApi = Router();
 scheduleApi.get("/schedule", async (req, res) => {
   res.json(await readSchedule(await actor(req), req.query));
@@ -18,3 +18,12 @@ scheduleApi.post("/work-orders/:id/reschedule", async (req, res) => {
     ),
   );
 });
+
+scheduleApi.get("/work-orders/:id", async (req, res) =>
+  res.json(
+    await readScheduledWork(
+      await actor(req),
+      z.string().uuid().parse(req.params.id),
+    ),
+  ),
+);

@@ -154,3 +154,36 @@ export async function rescheduleWork(
     return r.rows[0];
   });
 }
+
+export async function readScheduledWork(a: Actor, id: string) {
+  const params: unknown[] = [id];
+  let restriction = "";
+  if (a.role === "crew") {
+    params.push(a.id);
+    restriction =
+      " AND w.assigned_to=$2 AND w.status NOT IN ('cancelled','skipped','reviewed')";
+  }
+  if (a.role === "client") {
+    params.push(a.id);
+    restriction =
+      " AND w.status<>'draft' AND EXISTS(SELECT 1 FROM client_access ca WHERE ca.client_id=p.client_id AND ca.user_id=$2)";
+  }
+  const w = (
+    await pool.query(
+      "SELECT w.*,p.name AS property_name,p.address,p.access_instructions FROM work_order w JOIN property p ON p.id=w.property_id WHERE w.id=$1" +
+        restriction,
+      params,
+    )
+  ).rows[0];
+  if (!w) throw new HttpError(404, "Work order not found");
+  return a.role === "client"
+    ? {
+        id: w.id,
+        property_id: w.property_id,
+        property_name: w.property_name,
+        title: w.title,
+        scheduled_at: w.scheduled_at,
+        status: w.status === "completed" ? "in_review" : w.status,
+      }
+    : w;
+}

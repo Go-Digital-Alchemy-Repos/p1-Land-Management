@@ -227,11 +227,11 @@ export function ScheduleCalendar({
             {chosen.property_name} · {chosen.status.replaceAll("_", " ")}
           </p>
           {chosen.scope && <p>{chosen.scope}</p>}
-          {work.some((w) => w.id === chosen.id) && (
+          {
             <button onClick={() => onSelect(chosen.id)}>
               Open existing work details
             </button>
-          )}
+          }
           <button onClick={() => setChosen(null)}>Close visit</button>
           {canManage &&
             request &&

@@ -2,7 +2,7 @@ import { test, after } from "node:test";
 import assert from "node:assert/strict";
 import { randomUUID, createHmac } from "node:crypto";
 import { pool } from "./database";
-import { readSchedule, rescheduleWork } from "./schedule";
+import { readSchedule, rescheduleWork, readScheduledWork } from "./schedule";
 const base = process.env.DASHBOARD_TEST_ORIGIN;
 if (base && !base.startsWith("http://localhost:"))
   throw new Error("Use isolated schedule tests");
@@ -85,16 +85,32 @@ test(
       cursor = page.nextCursor || undefined;
     } while (cursor);
     assert.equal(ids.size, 506);
+    const allowedIds = new Set([...ids].filter((id) => id !== privateId));
+    for (const actor of [who(clientUser, "client"), who(crew, "crew")]) {
+      const actual = new Set<string>();
+      let cursor: string | undefined;
+      do {
+        const page = await readSchedule(actor, { ...query, cursor });
+        for (const row of page.items) {
+          assert.equal(actual.has(row.id), false);
+          actual.add(row.id);
+        }
+        cursor = page.nextCursor || undefined;
+      } while (cursor);
+      assert.deepEqual(actual, allowedIds);
+      await assert.rejects(
+        () => readScheduledWork(actor, privateId),
+        /not found/,
+      );
+    }
+    const beyond500 = [...allowedIds].sort().at(-1)!;
+    const detail = await readScheduledWork(who(crew, "crew"), beyond500);
+    assert.equal(detail.id, beyond500);
+    assert.ok("checklist" in detail);
+    assert.ok("version" in detail);
     assert.equal(
-      (await readSchedule(who(clientUser, "client"), query)).items.some(
-        (w) => w.id === privateId,
-      ),
-      false,
-    );
-    assert.equal(
-      (await readSchedule(who(crew, "crew"), query)).items.some(
-        (w) => w.id === privateId,
-      ),
+      "checklist" in
+        (await readScheduledWork(who(clientUser, "client"), beyond500)),
       false,
     );
     assert.equal(

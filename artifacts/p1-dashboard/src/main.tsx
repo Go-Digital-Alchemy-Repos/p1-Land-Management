@@ -2,7 +2,7 @@ import { PropertyFiles } from "./PropertyFiles";
 import { ScheduleCalendar } from "./ScheduleCalendar";
 import { AssessmentAvailability } from "./AssessmentAvailability";
 import { ClientContacts } from "./ClientContacts";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { createAuthClient } from "better-auth/react";
 import { twoFactorClient } from "better-auth/client/plugins";
@@ -89,6 +89,7 @@ function operatingDate(value: string | Date) {
     .join("-");
 }
 function App() {
+  const focusedWorkId = useRef<string | null>(null);
   const [fieldDay, setFieldDay] = useState(() => operatingDate(new Date()));
   const [downloadedAt, setDownloadedAt] = useState<string | null>(null);
   const [persistentStorage, setPersistentStorage] = useState(false);
@@ -209,7 +210,19 @@ function App() {
         ]),
       );
       const d = Object.fromEntries(values);
-      setData({ ...d, work: d["work-orders"] || [] });
+      let work = d["work-orders"] || [];
+      if (focusedWorkId.current) {
+        try {
+          const detail = await api("/work-orders/" + focusedWorkId.current);
+          work = [detail, ...work.filter((w: any) => w.id !== detail.id)];
+        } catch {
+          focusedWorkId.current = null;
+          setNotice(
+            "Selected work could not be refreshed. Open it again to retry.",
+          );
+        }
+      }
+      setData({ ...d, work });
     } catch (e) {
       setError((e as Error).message);
     }
@@ -269,6 +282,7 @@ function App() {
     await auth.signOut();
     localStorage.removeItem("p1-last-account");
     setPerson(null);
+    focusedWorkId.current = null;
     setData({});
   }
   async function authSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -1187,12 +1201,31 @@ function App() {
                   staff={data.staff || []}
                   canManage={ops}
                   onSelect={(id) => {
-                    const target = document.getElementById("work-" + id);
-                    target?.scrollIntoView({
-                      behavior: "smooth",
-                      block: "center",
+                    void run(async () => {
+                      const detail = await api("/work-orders/" + id);
+                      focusedWorkId.current = id;
+                      setData((old: any) => ({
+                        ...old,
+                        work: [
+                          detail,
+                          ...(old.work || []).filter((w: any) => w.id !== id),
+                        ],
+                      }));
+                      requestAnimationFrame(() =>
+                        requestAnimationFrame(() => {
+                          const target = document.getElementById("work-" + id);
+                          target?.scrollIntoView({
+                            behavior: window.matchMedia(
+                              "(prefers-reduced-motion: reduce)",
+                            ).matches
+                              ? "auto"
+                              : "smooth",
+                            block: "center",
+                          });
+                          target?.focus({ preventScroll: true });
+                        }),
+                      );
                     });
-                    target?.focus({ preventScroll: true });
                   }}
                 />
               )}
