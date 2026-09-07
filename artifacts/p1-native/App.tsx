@@ -13,6 +13,7 @@ import {
 import { AccountVault } from "./src/core/account-vault";
 import type { PhotoUploadReceipt } from "../../lib/api-client-react/src/dashboard/models/photoUploadReceipt";
 import { Properties } from "./src/screens/Properties";
+import { formatPropertyTimestamp } from "./src/screens/property-presentation";
 import { fetch as nativeFetch } from "expo/fetch";
 import type { DashboardMe } from "../../lib/api-client-react/src/dashboard/models/dashboardMe";
 import React, { useEffect, useRef, useState } from "react";
@@ -664,6 +665,14 @@ export function Application({ services }: { services: ApplicationServices }) {
                   <Text>
                     {selected.property_name} · {selected.status}
                   </Text>
+                  {selected.scheduled_at ? (
+                    <Text>
+                      Scheduled · {formatPropertyTimestamp(selected.scheduled_at)}
+                    </Text>
+                  ) : (
+                    <Text>Schedule pending</Text>
+                  )}
+                  {selected.address ? <Text>{selected.address}</Text> : null}
                   <Text>{selected.scope}</Text>
                   {action("Back to work list", async () => setSelected(null))}
                   {person.role === "crew" && (
