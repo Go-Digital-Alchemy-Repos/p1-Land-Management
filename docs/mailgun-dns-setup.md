@@ -16,12 +16,14 @@ Owner authorized Mailgun relaying, system notifications, and related DNS changes
 - CMS: `https://www.p1landmanagement.com/admin`, using the approved gateway/private Core architecture; no separate CMS DNS needed.
 - Business dashboard: `https://dashboard.p1landmanagement.com`, backed by Railway's DNS-only CNAME target. Its `_railway-verify.dashboard` TXT ownership record is also published and both resolve publicly.
 - Railway project: `e83f79dd-d901-4ab1-836b-bdf272b58dc2`; production environment: `6126e9ca-b071-4c41-b7c0-aa945fa37067`.
-- Core service: `45646c66-c173-4e23-81ab-64ca4d545bbe`. Set and read back `SMTP_HOST=smtp.mailgun.org`, `SMTP_PORT=587`, `SMTP_FROM=P1 Land Management <notifications@mg.p1landmanagement.com>` with `--skip-deploys` to coordinate with its active release work.
-- Core still needs `SMTP_USER` and `SMTP_PASS`. Dashboard needs `MAILGUN_API_KEY`, `MAILGUN_DOMAIN=mg.p1landmanagement.com`, and the same sender in `EMAIL_FROM`.
-- Mailgun initially had no SMTP credentials or domain sending API keys. Browser policy requires explicit confirmation at credential creation; Owner confirmation requested. Never store credential values in this document or Git.
+- Core service: `45646c66-c173-4e23-81ab-64ca4d545bbe`. Its `SMTP_HOST`, `SMTP_PORT`, `SMTP_FROM`, `SMTP_USER`, and `SMTP_PASS` variables are configured securely.
+- Dashboard service has `MAILGUN_API_KEY`, `MAILGUN_DOMAIN`, and `EMAIL_FROM`; its worker receives the key through a Railway service-variable reference. Values are never stored in source control.
+- Mailgun has one scoped Core SMTP credential and one domain sending API key for dashboard transactional notifications. Never store credential values in this document or Git.
 
 ## Remaining validation
 
-Create/store approved credentials securely, bind dashboard DNS after target provision, and verify transport/delivery after the owning tasks deploy. DNS readiness alone does not establish application email delivery. No email has been sent as part of this task.
+Core SMTP authenticated with required TLS and sent one authorized, plainly labeled verification message to the owner. Mailgun recorded it as Delivered, with the recipient server returning `2.0.0 OK`.
+
+The dashboard sent its single owner-account setup email and Mailgun recorded Accepted followed by Delivered, also with the recipient server returning `2.0.0 OK`. The message body and setup code were not opened or recorded. The setup is configured on the reviewed preview; completion of the owner password and MFA flows remains with the owner, and production rollout remains governed by the release process.
 
 References: [Mailgun verification](https://documentation.mailgun.com/docs/mailgun/user-manual/domains/domains-verify), [Cloudflare email DNS](https://developers.cloudflare.com/dns/troubleshooting/email-issues/).

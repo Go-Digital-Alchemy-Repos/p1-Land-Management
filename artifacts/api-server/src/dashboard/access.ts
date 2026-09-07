@@ -1,12 +1,42 @@
 import type { Request } from "express";
 import { fromNodeHeaders } from "better-auth/node";
-import { auth } from "./auth";
+import { auth, origin } from "./auth";
 import { pool } from "./database";
 import { HttpError, type Role } from "./policy";
+
+type AuthSession = NonNullable<Awaited<ReturnType<typeof auth.api.getSession>>>;
+
+async function bearerSession(headers: Headers) {
+  if (!headers.get("authorization")?.toLowerCase().startsWith("bearer "))
+    return null;
+
+  // Bearer credentials take strict precedence over cookies. The normal Better
+  // Auth bearer hook leaves an existing cookie intact when token verification
+  // fails, so pass no cookie to avoid a failed native credential falling back
+  // to a browser session.
+  const bearerHeaders = new Headers(headers);
+  bearerHeaders.delete("cookie");
+  const response = await auth.handler(
+    new Request(new URL("/api/auth/get-session", origin), {
+      headers: bearerHeaders,
+    }),
+  );
+  if (!response.ok) return null;
+  return (await response.json()) as AuthSession;
+}
+
+async function sessionFromRequest(req: Request) {
+  const headers = fromNodeHeaders(req.headers);
+  if (headers.get("authorization")?.toLowerCase().startsWith("bearer "))
+    return bearerSession(headers);
+
+  const cookieSession = await auth.api.getSession({ headers });
+  if (cookieSession) return cookieSession;
+  return null;
+}
+
 export async function identity(req: Request) {
-  const s = await auth.api.getSession({
-    headers: fromNodeHeaders(req.headers),
-  });
+  const s = await sessionFromRequest(req);
   if (!s || !s.user.emailVerified)
     throw new HttpError(401, "Sign in with a verified account");
   return s;

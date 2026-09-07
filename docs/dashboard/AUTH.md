@@ -18,4 +18,12 @@ Configure `BOOTSTRAP_OWNER_EMAIL`, SHA-256 `BOOTSTRAP_CODE_HASH` and ISO `BOOTST
 
 Endpoint-specific role lists are authoritative and must be tested. Role-aware UI is convenience, not authorization. All authenticated API responses are uncached; cookies are dashboard-host scoped. File reads authenticate and check property/publication grants. Uploads authenticate and authorize the exact target work order before parsing image bodies, with a four-upload per-process concurrency limit and byte/pixel bounds.
 
+## One P1 operations identity across web and native clients
+
+The dashboard's Better Auth account is the sole identity for the P1 operations web application and its future iOS and Android clients. An invited or bootstrap user therefore creates one verified email/password account; the same credentials sign them in on each supported form factor. Roles, client/property grants, verified-email status, session revocation, and owner MFA are enforced by the dashboard API for every client, rather than copied into a mobile-specific user store.
+
+Native clients sign in through the normal Better Auth email/password endpoint. On a successful sign-in or MFA completion, Better Auth exposes the signed session token in `set-auth-token`; the app stores that token only in the operating system's secure credential store and sends it as `Authorization: Bearer <token>`. The API accepts a bearer request without a browser `Origin` header, but validates the signed token and the normal role/property checks before any protected operation. Browser cookie mutations still require the configured dashboard Origin. Native clients must not persist passwords, send cookies as their primary credential, bypass MFA, or treat a cached offline profile as authorization.
+
+The copied Core CMS is a separate administrator deployment with its own database, roles and legacy authentication. It is not an operations client and is deliberately outside this credential-sharing boundary. Federating or migrating that system into the P1 operations identity requires an approved compatibility, account-linking, migration and rollback plan; it must not be achieved by copying password hashes or sharing session secrets.
+
 Offline revocation cannot instantly erase a disconnected device. Cached material must be limited to assigned work and cleared on completed sign-out; unsynchronized work prevents silent disposal. Additional device/support policy remains a launch prerequisite.

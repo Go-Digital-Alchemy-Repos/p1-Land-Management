@@ -44,9 +44,21 @@ app.use(express.json({ limit: "1mb" }));
 app.use(
   "/api/v1",
   (req, res, next) => {
+    const isNativeBearerRequest = /^Bearer\s+\S+$/i.test(
+      req.headers.authorization || "",
+    );
+    // A browser session must never use the native no-Origin exception. This
+    // prevents an invalid bearer value from falling back to an automatically
+    // attached dashboard cookie and bypassing the browser Origin check.
+    const hasCookie = Boolean(req.headers.cookie?.trim());
     if (
       !["GET", "HEAD", "OPTIONS"].includes(req.method) &&
-      req.headers.origin !== origin
+      req.headers.origin !== origin &&
+      // Bearer tokens are never automatically attached by a browser. A native
+      // request therefore qualifies only when it has no Origin at all and no
+      // cookie; a forged non-dashboard Origin remains rejected. Rejecting all
+      // cookies also covers production's __Secure- cookie-name prefix.
+      (!isNativeBearerRequest || hasCookie || Boolean(req.headers.origin))
     ) {
       res.status(403).json({ error: "Invalid request origin" });
       return;

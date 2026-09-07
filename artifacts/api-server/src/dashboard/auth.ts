@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth";
 import { createAuthMiddleware, APIError } from "better-auth/api";
-import { twoFactor } from "better-auth/plugins";
+import { bearer, twoFactor } from "better-auth/plugins";
 import { randomUUID, createHash } from "node:crypto";
 import { pool } from "./database";
 import { verifyCode } from "./policy";
@@ -36,7 +36,14 @@ export const auth = betterAuth({
   },
   session: { expiresIn: 60 * 60 * 24 * 7, cookieCache: { enabled: false } },
   rateLimit: { enabled: true, window: 60, max: 30 },
-  plugins: [twoFactor({ issuer: "P1 Land & Property Management" })],
+  // Native clients receive a signed session token after the normal email/password
+  // sign-in and present it as `Authorization: Bearer <token>`. Keeping the same
+  // session store as the web app means invitations, verification, revocation and
+  // MFA policy apply equally to every P1 operations client.
+  plugins: [
+    bearer({ requireSignature: true }),
+    twoFactor({ issuer: "P1 Land & Property Management" }),
+  ],
   hooks: {
     after: createAuthMiddleware(async (ctx) => {
       if (!["/two-factor/verify-totp", "/two-factor/verify-backup-code"].includes(ctx.path)) return;
