@@ -60,7 +60,7 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
 
   await t.test('absolute and network-path targets reject without forwarding credentials', async () => {
     const before = upstreamRequests.length;
-    for (const target of [`http://127.0.0.1:${trapPort}/api/secret`, `//127.0.0.1:${trapPort}/api/secret`]) {
+    for (const target of [`http://127.0.0.1:${trapPort}/api/secret`, `//127.0.0.1:${trapPort}/api/secret`, '/%E0%A4%A']) {
       const response = await request(port, target, { Cookie: 'qa_session=private', Authorization: 'Bearer qa-private' });
       assert.equal(response.status, 400);
     }

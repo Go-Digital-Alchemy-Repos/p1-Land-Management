@@ -61,7 +61,9 @@ const server=http.createServer(async(req,res)=>{
     if (!indexableDeployment) res.setHeader('X-Robots-Tag','noindex, nofollow');
     if (!req.url?.startsWith('/') || req.url.startsWith('//')) return send(req,res,400,'Bad request');
     const url=new URL(req.url,'http://localhost');
-    const pathname=decodeURIComponent(url.pathname);
+    let pathname;
+    try { pathname=decodeURIComponent(url.pathname); }
+    catch { return send(req,res,400,'Bad request'); }
     if(pathname.includes('\\')||pathname.includes('\0'))return send(req,res,400,'Bad request');
     res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Referrer-Policy','strict-origin-when-cross-origin');res.setHeader('X-Frame-Options','SAMEORIGIN');
     res.setHeader('Permissions-Policy','camera=(), microphone=(), geolocation=()');
