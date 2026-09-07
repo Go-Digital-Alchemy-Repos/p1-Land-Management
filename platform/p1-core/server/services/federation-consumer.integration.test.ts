@@ -3,6 +3,7 @@ import { migrate } from "drizzle-orm/node-postgres/migrator";
 import { beforeAll, afterAll, it, expect } from "vitest";
 import { createHash, randomUUID } from "node:crypto";
 import { readFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
 import express from "express";
 import cookieParser from "cookie-parser";
 import pg from "pg";
@@ -76,7 +77,9 @@ beforeAll(async () => {
   if (!url) return;
   pool = new pg.Pool({ connectionString: url });
   await migrate(drizzle(pool), {
-    migrationsFolder: new URL("../../p1-migrations", import.meta.url).pathname,
+    migrationsFolder: fileURLToPath(
+      new URL("../../p1-migrations/", import.meta.url),
+    ),
   });
   const provider = express();
   provider.use(express.json());
@@ -146,8 +149,10 @@ beforeAll(async () => {
 }, 30000);
 afterAll(async () => {
   if (!url) return;
-  await new Promise<void>((r) => coreServer.close(() => r()));
-  await new Promise<void>((r) => providerServer.close(() => r()));
+  if (coreServer)
+    await new Promise<void>((r) => coreServer.close(() => r()));
+  if (providerServer)
+    await new Promise<void>((r) => providerServer.close(() => r()));
   await (await import("../db")).pool.end();
   await pool.end();
   for (const k of envNames) {
@@ -280,7 +285,9 @@ it.skipIf(!url)(
       Number((await pool.query("SELECT count(*) FROM p1_federation_audit")).rows[0].count),
     ).toBeGreaterThan(5);
     await migrate(drizzle(pool), {
-      migrationsFolder: new URL("../../p1-migrations", import.meta.url).pathname,
+      migrationsFolder: fileURLToPath(
+        new URL("../../p1-migrations/", import.meta.url),
+      ),
     });
     expect(Number((await pool.query("SELECT count(*) FROM p1_identity_link")).rows[0].count)).toBe(
       2,
