@@ -11,6 +11,7 @@
     "serve": "node server/index.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "check:faq": "node scripts/validate-faq-schema.mjs",
+    "check:layout": "node scripts/check-layout.mjs",
     "optimize:images": "node scripts/optimize-images.mjs",
     "check:images": "node scripts/image-budget.mjs",
     "check:server": "node --test server/*.test.mjs"
