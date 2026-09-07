@@ -15,6 +15,7 @@ artifact = pathlib.Path(tempfile.mkdtemp(prefix="p1-agreement-populated-recovery
 os.chmod(artifact, 0o700)
 source_paths = (
     list((source / "artifacts/api-server/src/dashboard").glob("service-agreement*.ts"))
+    + list((source / "artifacts/api-server/src/dashboard").glob("agreement-review*.ts"))
     + list((source / "artifacts/api-server/migrations/dashboard").glob("*.sql"))
     + [
         source / "lib/db/src/dashboard/schema.ts",
@@ -221,6 +222,7 @@ try:
                 "service_agreement",
                 "fixed_charge_period",
                 "agreement_charge",
+                "agreement_charge_review_event",
                 "billing_draft",
                 "audit_event",
             ]

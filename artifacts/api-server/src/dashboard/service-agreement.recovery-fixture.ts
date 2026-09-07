@@ -10,6 +10,11 @@ import {
 import { prepareAgreementCharge } from "./service-agreement.billing";
 import { readServiceAgreement } from "./service-agreement.read";
 import { listAgreementChargeQueue } from "./service-agreement.queue";
+import {
+  listAgreementCharges,
+  readAgreementChargeReview,
+  recordAgreementChargeReview,
+} from "./agreement-review.service";
 const url = new URL(process.env.DASHBOARD_DATABASE_URL!);
 assert.equal(url.hostname, "127.0.0.1");
 assert.ok(["/recovery_source", "/recovery_target"].includes(url.pathname));
@@ -86,7 +91,19 @@ try {
         effectiveOn: today,
         reason: "Synthetic recovery cancellation",
       });
-      records.push({ id, source, receipt });
+      const current = await readAgreementChargeReview(actor, receipt.id);
+      const outcome =
+        mode === "fixed_monthly" ? "keep_due" : "correction_required";
+      const review = await recordAgreementChargeReview(actor, receipt.id, {
+        operationId: randomUUID(),
+        expectedReviewVersion: current.reviewVersion,
+        cancellationVersion: current.cancellationVersion,
+        snapshotSha256: current.snapshotSha256,
+        outcome,
+        reason: "Synthetic recovery " + outcome,
+      });
+      assert.ok(review.created);
+      records.push({ id, source, receipt, outcome, review: review.receipt });
     }
     writeFileSync(context, JSON.stringify({ actor, property, records }), {
       mode: 0o600,
@@ -110,12 +127,25 @@ try {
         readServiceAgreement({ ...actor, role: "client" }, record.id),
         /Access denied/,
       );
+      const charges = await listAgreementCharges(actor, record.id, {});
+      assert.equal(charges.items.length, 1);
+      assert.equal(
+        charges.items[0].latestReceipt?.eventId,
+        record.review.eventId,
+      );
+      assert.equal(
+        charges.items[0].reviewState,
+        record.outcome === "keep_due" ? "kept_due" : "correction_required",
+      );
     }
     const queue = await listAgreementChargeQueue(actor, {});
-    assert.equal(queue.items.length, 2);
+    assert.equal(queue.items.length, 1);
     assert.ok(
       queue.items.every(
-        (i) => i.billingDraftId && i.state === "review_required",
+        (i) =>
+          i.billingDraftId &&
+          i.state === "review_required" &&
+          i.reviewState === "correction_required",
       ),
     );
     const counts = (
@@ -125,7 +155,7 @@ try {
     ).rows[0];
     assert.deepEqual(counts, { charges: 2, drafts: 2, posted: 0 });
     console.log(
-      "Restored source retries return original receipts; cancellation queue and role isolation preserved",
+      "Restored charge receipts, immutable review history, correction queue and role isolation preserved",
     );
   }
 } finally {
