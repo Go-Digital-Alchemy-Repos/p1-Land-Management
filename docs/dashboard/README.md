@@ -12,6 +12,12 @@ Implementation status: **preview deployed at https://dashboard.p1landmanagement.
 - Responsive role-aware web UI, supplied P1 symbol, private image upload pipeline, IndexedDB day downloads and operation/photo queues.
 - QuickBooks OAuth/import/posting/reconciliation and Twilio adapters are implemented but **not verified against real providers**. Mailgun owner-setup delivery is verified; broader notification retry/delivery workflows still need acceptance.
 
+## Navigation and deep links
+
+The dashboard uses browser-history-aware paths for its primary workspaces: `/`, `/properties`, `/clients`, `/schedule`, `/my-day`, `/sales`, `/agreements`, `/billing`, `/requests`, `/recurring`, `/projects`, `/inspections` and `/expenses`. Settings is deliberately divided into stable, shareable destinations: `/settings/people`, `/settings/security`, `/settings/integrations` and `/settings/preferences`.
+
+The sidebar groups those destinations into Workspace, Operations, Revenue and Settings. A role never receives a navigation link it cannot use, and a direct path is still authorized by the API after it loads. Browser Back and Forward restore the selected destination; links do not encode resource records, mutable form state, credentials, MFA material or provider return values.
+
 ## Remaining release work
 
 - Physical iPhone and Android offline/restart/low-storage/interrupted-upload acceptance and installed PWA acceptance. Authenticated staging HTTP/S3 upload, immutable retry and publication isolation passed 23 checks; this does not prove physical-device behavior or object recovery.

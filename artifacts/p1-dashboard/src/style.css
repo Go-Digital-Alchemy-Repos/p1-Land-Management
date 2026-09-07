@@ -151,11 +151,19 @@ small {
   font-size: 9px;
   letter-spacing: 1.5px;
   color: #9cb09e;
-  margin: 45px 13px 14px;
+  margin: 27px 13px 10px;
 }
 .sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.nav-group {
   display: grid;
   gap: 5px;
+}
+.nav-group:first-child .nav-caption {
+  margin-top: 38px;
 }
 .sidebar nav button {
   border: 0;
@@ -164,6 +172,8 @@ small {
   color: #bfcfc1;
   padding: 13px 14px;
   font-size: 13px;
+  min-height: 44px;
+  border-radius: 8px;
 }
 .sidebar nav button.active {
   background: #dfe8bd;
@@ -324,6 +334,57 @@ small {
 }
 .panel-heading h2 {
   margin: 0;
+}
+.panel > .muted,
+.panel > form {
+  margin: 0;
+  padding: 22px 24px;
+}
+.panel > form > label:last-of-type {
+  margin-bottom: 0;
+}
+.panel > form > .primary,
+.panel > form > button {
+  margin-top: 4px;
+}
+.stacked-actions {
+  display: grid;
+  gap: 12px;
+  padding: 22px 24px 24px;
+}
+.stacked-actions h3 {
+  margin: 0;
+}
+.stacked-actions .row-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px;
+  border: 1px solid #e1e5d9;
+  border-radius: 8px;
+}
+.settings-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  padding: 24px;
+}
+.settings-summary > div {
+  border: 1px solid #e1e5d9;
+  border-radius: 8px;
+  padding: 18px;
+}
+.settings-summary strong {
+  display: block;
+  margin-top: 6px;
+  font-size: 15px;
+}
+.settings-summary p {
+  margin: 9px 0 0;
+  color: #627160;
+  font-size: 12px;
+  line-height: 1.55;
 }
 .panel-heading button {
   font-size: 11px;
@@ -925,6 +986,17 @@ textarea {
   .property-grid {
     grid-template-columns: 1fr;
     padding: 17px;
+  }
+  .settings-summary {
+    grid-template-columns: 1fr;
+    padding: 17px;
+  }
+  .stacked-actions {
+    padding: 18px;
+  }
+  .stacked-actions .row-actions {
+    align-items: flex-start;
+    flex-direction: column;
   }
   .auth-page {
     display: block;

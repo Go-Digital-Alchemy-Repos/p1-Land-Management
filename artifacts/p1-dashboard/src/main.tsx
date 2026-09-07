@@ -18,7 +18,6 @@ import {
   ClipboardList,
   FileText,
   Wallet,
-  Settings,
   LogOut,
   Download,
   RefreshCw,
@@ -29,6 +28,8 @@ import {
   MessageSquare,
   CheckCircle2,
   ShieldCheck,
+  Plug,
+  SlidersHorizontal,
 } from "lucide-react";
 import {
   getMyWorkOrders,
@@ -58,23 +59,46 @@ type Person = {
   twoFactorEnabled: boolean;
   mfaRequired?: boolean;
 };
-const nav = [
-  ["Overview", LayoutDashboard],
-  ["Properties", MapPin],
-  ["Clients", Users],
-  ["Schedule", CalendarDays],
-  ["My Day", ClipboardList],
-  ["Sales", FileText],
-  ["Agreements", FileText],
-  ["Billing", Wallet],
-  ["Requests", MessageSquare],
-  ["Recurring", RefreshCw],
-  ["Projects", ClipboardList],
-  ["Inspections", CheckCircle2],
-  ["Expenses", Wallet],
-  ["Security", ShieldCheck],
-  ["Settings", Settings],
-] as const;
+type NavItem = {
+  view: string;
+  label: string;
+  path: string;
+  icon: typeof LayoutDashboard;
+  settingsSection?: SettingsSection;
+};
+type SettingsSection = "people" | "security" | "integrations" | "preferences";
+const nav: NavItem[] = [
+  { view: "Overview", label: "Overview", path: "/", icon: LayoutDashboard },
+  { view: "Properties", label: "Properties", path: "/properties", icon: MapPin },
+  { view: "Clients", label: "Clients", path: "/clients", icon: Users },
+  { view: "Schedule", label: "Schedule", path: "/schedule", icon: CalendarDays },
+  { view: "My Day", label: "My day", path: "/my-day", icon: ClipboardList },
+  { view: "Sales", label: "Sales", path: "/sales", icon: FileText },
+  { view: "Agreements", label: "Agreements", path: "/agreements", icon: FileText },
+  { view: "Billing", label: "Billing", path: "/billing", icon: Wallet },
+  { view: "Requests", label: "Requests", path: "/requests", icon: MessageSquare },
+  { view: "Recurring", label: "Recurring", path: "/recurring", icon: RefreshCw },
+  { view: "Projects", label: "Projects", path: "/projects", icon: ClipboardList },
+  { view: "Inspections", label: "Inspections", path: "/inspections", icon: CheckCircle2 },
+  { view: "Expenses", label: "Expenses", path: "/expenses", icon: Wallet },
+  { view: "Settings", label: "People & access", path: "/settings/people", icon: Users, settingsSection: "people" },
+  { view: "Settings", label: "Security", path: "/settings/security", icon: ShieldCheck, settingsSection: "security" },
+  { view: "Settings", label: "Integrations", path: "/settings/integrations", icon: Plug, settingsSection: "integrations" },
+  { view: "Settings", label: "Preferences", path: "/settings/preferences", icon: SlidersHorizontal, settingsSection: "preferences" },
+];
+const navGroups: Array<{ label: string; views: readonly string[] }> = [
+  { label: "Workspace", views: ["Overview", "Properties", "Clients", "Schedule", "My Day"] },
+  { label: "Operations", views: ["Requests", "Recurring", "Projects", "Inspections"] },
+  { label: "Revenue", views: ["Sales", "Agreements", "Billing", "Expenses"] },
+  { label: "Settings", views: ["settings"] },
+];
+function routeFromLocation(): Pick<NavItem, "view" | "settingsSection"> {
+  const pathname = location.pathname.replace(/\/+$/, "") || "/";
+  const match = nav.find((item) => item.path === pathname);
+  return match
+    ? { view: match.view, settingsSection: match.settingsSection }
+    : { view: "Overview" };
+}
 const date = (v: string) =>
   v
     ? new Date(v).toLocaleString("en-US", {
@@ -100,6 +124,7 @@ function operatingDate(value: string | Date) {
     .join("-");
 }
 function App() {
+  const initialRoute = routeFromLocation();
   const focusedWorkId = useRef<string | null>(null);
   const [fieldDay, setFieldDay] = useState(() => operatingDate(new Date()));
   const [downloadedAt, setDownloadedAt] = useState<string | null>(null);
@@ -112,7 +137,10 @@ function App() {
     [loading, setLoading] = useState(true),
     [error, setError] = useState(""),
     [notice, setNotice] = useState(""),
-    [view, setView] = useState("Overview"),
+    [view, setViewState] = useState(initialRoute.view),
+    [settingsSection, setSettingsSection] = useState<SettingsSection>(
+      initialRoute.settingsSection || "people",
+    ),
     [data, setData] = useState<any>({}),
     [form, setForm] = useState<string | null>(null),
     [selected, setSelected] = useState<any>(null),
@@ -121,6 +149,19 @@ function App() {
     [menu, setMenu] = useState(false);
   const [authMode, setAuthMode] = useState("login"),
     [mfa, setMfa] = useState<any>(null);
+  const navigate = (nextView: string, section?: SettingsSection) => {
+    const destination = nav.find(
+      (item) =>
+        item.view === nextView &&
+        (nextView !== "Settings" || item.settingsSection === (section || "people")),
+    );
+    if (!destination) return;
+    setViewState(destination.view);
+    if (destination.settingsSection) setSettingsSection(destination.settingsSection);
+    if (location.pathname !== destination.path)
+      history.pushState(null, "", destination.path);
+  };
+  const setView = (nextView: string) => navigate(nextView);
   async function session() {
     try {
       const [b, p] = await Promise.all([
@@ -171,6 +212,17 @@ function App() {
       window.removeEventListener("online", on);
       window.removeEventListener("offline", on);
     };
+  }, []);
+  useEffect(() => {
+    const onPopState = () => {
+      const next = routeFromLocation();
+      setViewState(next.view);
+      setSettingsSection(next.settingsSection || "people");
+      setMenu(false);
+      setForm(null);
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
   }, []);
   async function refresh() {
     if (!person?.role || person.mfaRequired) return;
@@ -649,7 +701,7 @@ function App() {
     ),
     manager = ["owner", "manager"].includes(person?.role || ""),
     ops = ["owner", "manager", "dispatch"].includes(person?.role || "");
-  const allowedNav = nav.filter(([n]) =>
+  const allowedNav = nav.filter(({ view: n, settingsSection }) =>
     person?.role === "crew"
       ? ["My Day", "Properties"].includes(n)
       : person?.role === "client"
@@ -668,14 +720,17 @@ function App() {
           ? ops
           : n === "Expenses"
             ? ["owner", "manager", "finance"].includes(person?.role || "")
-            : n === "Settings"
+            : settingsSection
               ? manager
               : n === "Billing"
                 ? ["owner", "manager", "finance"].includes(person?.role || "")
                 : n === "Sales"
                   ? ["owner", "manager", "sales"].includes(person?.role || "")
-                  : true,
+                : true,
   );
+  const activeNav = (item: NavItem) =>
+    view === item.view &&
+    (item.view !== "Settings" || settingsSection === item.settingsSection);
   if (loading) return <div className="loading">Loading P1 Operations…</div>;
   if (!person)
     return (
@@ -867,24 +922,40 @@ function App() {
             LAND & PROPERTY<small>OPERATIONS WORKSPACE</small>
           </div>
         </div>
-        <p className="nav-caption">WORKSPACE</p>
         <nav>
-          {allowedNav.map(([n, Icon]) => (
-            <button
-              key={n}
-              className={view === n ? "active" : ""}
-              onClick={() => {
-                setView(n);
-                setMenu(false);
-              }}
-            >
-              <Icon size={19} />
-              {n}
-              {n === "Requests" && data.requests?.length > 0 && (
-                <b>{data.requests.length}</b>
-              )}
-            </button>
-          ))}
+          {navGroups.map((group) => {
+            const entries = allowedNav.filter((item) =>
+              group.views.includes(
+                item.settingsSection ? "settings" : item.view,
+              ),
+            );
+            if (!entries.length) return null;
+            return (
+              <section className="nav-group" key={group.label} aria-label={group.label}>
+                <p className="nav-caption">{group.label}</p>
+                {entries.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <button
+                      key={item.path}
+                      className={activeNav(item) ? "active" : ""}
+                      aria-current={activeNav(item) ? "page" : undefined}
+                      onClick={() => {
+                        navigate(item.view, item.settingsSection);
+                        setMenu(false);
+                      }}
+                    >
+                      <Icon size={19} />
+                      {item.label}
+                      {item.view === "Requests" && data.requests?.length > 0 && (
+                        <b>{data.requests.length}</b>
+                      )}
+                    </button>
+                  );
+                })}
+              </section>
+            );
+          })}
         </nav>
         <div className="sidebar-bottom">
           <div className="season">
@@ -908,7 +979,12 @@ function App() {
             <Menu />
           </button>
           <div>
-            Workspace <span>/</span> <strong>{view}</strong>
+            Workspace <span>/</span>{" "}
+            <strong>
+              {view === "Settings"
+                ? nav.find((item) => item.settingsSection === settingsSection)?.label
+                : view}
+            </strong>
           </div>
           <div className="user">
             <span className={isOnline ? "connection" : "connection offline"}>
@@ -925,13 +1001,21 @@ function App() {
           <div className="page-heading">
             <div>
               <p className="eyebrow">P1 · PROPERTY OPERATIONS</p>
-              <h1>{view === "Overview" ? "A clear view of the day." : view}</h1>
+              <h1>
+                {view === "Overview"
+                  ? "A clear view of the day."
+                  : view === "Settings"
+                    ? nav.find((item) => item.settingsSection === settingsSection)?.label
+                    : view}
+              </h1>
               <p className="muted">
                 {view === "Overview"
                   ? "Your properties, people, and next priorities."
                   : view === "My Day"
                     ? "Your assignments and field notes, wherever work takes you."
-                    : "Keep the details connected to the work."}
+                    : view === "Settings"
+                      ? "Control access, account security, connections and workspace defaults."
+                      : "Keep the details connected to the work."}
               </p>
             </div>
             <div className="heading-actions">
@@ -1717,7 +1801,7 @@ function App() {
               />
             </section>
           )}
-          {view === "Security" && (
+          {view === "Settings" && settingsSection === "security" && (
             <section className="panel">
               <div className="panel-heading">
                 <h2>Two-factor authentication</h2>
@@ -1797,8 +1881,7 @@ function App() {
               )}
             </section>
           )}
-          {view === "Settings" && (
-            <>
+          {view === "Settings" && settingsSection === "people" && (
               <section className="panel">
                 <div className="panel-heading">
                   <h2>People & access</h2>
@@ -1842,6 +1925,8 @@ function App() {
                   </div>
                 )}
               </section>
+          )}
+          {view === "Settings" && settingsSection === "integrations" && (
               <section className="panel">
                 <div className="panel-heading">
                   <h2>Integrations</h2>
@@ -1893,7 +1978,30 @@ function App() {
                   empty="No pending delivery jobs."
                 />
               </section>
-            </>
+          )}
+          {view === "Settings" && settingsSection === "preferences" && (
+            <section className="panel settings-preferences">
+              <div className="panel-heading">
+                <h2>Workspace preferences</h2>
+              </div>
+              <div className="settings-summary">
+                <div>
+                  <small>Operating time zone</small>
+                  <strong>America/New_York</strong>
+                  <p>Schedules and availability use the P1 operating time zone.</p>
+                </div>
+                <div>
+                  <small>Workspace role</small>
+                  <strong>{person.role}</strong>
+                  <p>Available navigation and actions reflect this role and current account assurance.</p>
+                </div>
+                <div>
+                  <small>Connection</small>
+                  <strong>{isOnline ? "Online" : "Offline workspace"}</strong>
+                  <p>Offline field work synchronizes only after your identity and connection are verified.</p>
+                </div>
+              </div>
+            </section>
           )}
           <footer className="footer">
             P1 LAND & PROPERTY MANAGEMENT <span>Built for the work ahead.</span>
