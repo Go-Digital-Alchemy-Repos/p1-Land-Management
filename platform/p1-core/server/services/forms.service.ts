@@ -1,3 +1,4 @@
+import { p1CommercialAssessmentSchema } from "./p1-commercial-assessment";
 import { p1EstimateSchema } from "./p1-estimate";
 import type { CmsForm, CmsFormField, CmsFormEffectPayload } from "@shared/schema";
 import { storage } from "../storage";
@@ -232,6 +233,16 @@ function validateSubmissionData(form: CmsForm, data: unknown) {
     const { website: _website, ...values } = parsed.data;
     return values;
   }
+  if (form.slug === "p1-commercial-assessment") {
+    const parsed = p1CommercialAssessmentSchema.safeParse(data);
+    if (!parsed.success)
+      throw new AppError(
+        "Please check your site assessment fields and provide an email address or phone number.",
+        400,
+      );
+    const { website: _website, ...values } = parsed.data;
+    return values;
+  }
   const input = data as Record<string, unknown>;
   const validated: Record<string, unknown> = {};
 
@@ -367,7 +378,10 @@ async function buildFormEffects(form: CmsForm, data: Record<string, unknown>, ba
   }
   if (settings.notifyAdmins && (!settings.storeAsContactMessage || hasContact)) {
     let users = await storage.users.getFormNotificationUsers(form.id);
-    if ((hasContact || form.slug === "p1-estimate") && !users.some((user) => user.email)) {
+    if (
+      (hasContact || form.slug === "p1-estimate" || form.slug === "p1-commercial-assessment") &&
+      !users.some((user) => user.email)
+    ) {
       users = await storage.users.getUsersByRole("admin");
     }
     const recipients = [

@@ -30,6 +30,7 @@ vi.mock("../utils/logger", () => ({
 }));
 import { db, pool } from "../db";
 import { runMigrations } from "../migrate";
+import { p1CommercialAssessmentSchema } from "../services/p1-commercial-assessment";
 import { FormsStorage } from "./forms.storage";
 import { ContactStorage } from "./contact.storage";
 import { CrmStorage } from "./crm.storage";
@@ -93,14 +94,72 @@ describe.skipIf(!testUrl)("managed form outbox disposable PostgreSQL", () => {
     const first = await accepted("project-a");
     const second = await accepted("project-b");
     const base = { name: "Same person", email: "person@example.test", source: "website_form" };
-    const one = await crm.createOrUpdateInboundLead({ ...base, formSubmissionId: first.submission.id, message: "Project A" });
-    const two = await crm.createOrUpdateInboundLead({ ...base, formSubmissionId: second.submission.id, message: "Project B" });
-    const replay = await crm.createOrUpdateInboundLead({ ...base, formSubmissionId: first.submission.id, message: "Retry" });
+    const one = await crm.createOrUpdateInboundLead({
+      ...base,
+      formSubmissionId: first.submission.id,
+      message: "Project A",
+    });
+    const two = await crm.createOrUpdateInboundLead({
+      ...base,
+      formSubmissionId: second.submission.id,
+      message: "Project B",
+    });
+    const replay = await crm.createOrUpdateInboundLead({
+      ...base,
+      formSubmissionId: first.submission.id,
+      message: "Retry",
+    });
     expect(one.lead.id).not.toBe(two.lead.id);
     expect(replay.lead.id).toBe(one.lead.id);
     expect(replay.duplicate).toBe(true);
     expect(await count("crm_leads")).toBe(2);
     expect(await count("crm_lead_notes")).toBe(0);
+  });
+  it("keeps phone-only commercial projects distinct while browser and CRM retries share a receipt", async () => {
+    const data = p1CommercialAssessmentSchema.parse({
+      inquiryType: "commercial_site_assessment",
+      name: "Pat",
+      company: "Example",
+      phone: "7045550100",
+      address: "York County",
+      services: ["general_site_assessment"],
+      projectStage: "unknown",
+      serviceTiming: "both",
+    });
+    const accept = (key: string, propertyName: string) =>
+      forms.createSubmissionWithEffects(
+        { formId, data: { ...data, propertyName }, idempotencyKey: key },
+        [{ kind: "crm_intake", formName: "Commercial" }],
+      );
+    const [first, retry] = await Promise.all([
+      accept("commercial-a", "Site A"),
+      accept("commercial-a", "Site A"),
+    ]);
+    const second = await accept("commercial-b", "Site B");
+    expect(first.submission.id).toBe(retry.submission.id);
+    expect(first.submission.id).not.toBe(second.submission.id);
+    const create = (submission: typeof first.submission) =>
+      crm.createOrUpdateInboundLead({
+        name: data.name,
+        phone: data.phone,
+        email: null,
+        source: "website_form",
+        formSubmissionId: submission.id,
+        formData: submission.data,
+      });
+    const lead = await create(first.submission);
+    const replay = await create(first.submission);
+    await create(second.submission);
+    expect(replay.lead.id).toBe(lead.lead.id);
+    expect(lead.lead).toMatchObject({ email: null, stage: "new", source: "website_form" });
+    expect(lead.lead.formData).toMatchObject({
+      inquiryType: "commercial_site_assessment",
+      propertyName: "Site A",
+      serviceTiming: "both",
+    });
+    expect(await count("cms_form_submissions")).toBe(2);
+    expect(await count("cms_form_effect_jobs")).toBe(2);
+    expect(await count("crm_leads")).toBe(2);
   });
   it("atomically accepts concurrent duplicates and preserves the original effects", async () => {
     const results = await Promise.all(Array.from({ length: 8 }, () => accepted()));

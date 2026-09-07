@@ -47,21 +47,82 @@ function settings(overrides: Partial<CmsFormSettings>): CmsFormSettings {
 
 type ManagedSystemForm = InsertCmsForm;
 
-const SYSTEM_FORMS: ManagedSystemForm[] = [{
-  name: "P1 Estimate Request", slug: "p1-estimate", description: "Qualified property service inquiries", kind: "contact", isSystem: true, isActive: true,
-  fields: [
-    field("name", "name", "Name", "text", { required: true }),
-    field("email", "email", "Email", "email", { required: true }),
-    field("phone", "phone", "Phone", "text"),
-    field("company", "company", "Company", "text"),
-    field("address", "address", "Property location", "text", { required: true }),
-    field("acreage", "acreage", "Approximate acreage", "text"),
-    field("propertyType", "propertyType", "Property type", "text"),
-    field("services", "services", "Services", "checkbox"),
-    field("message", "message", "Project details", "textarea", { required: true }),
-  ],
-  settings: settings({ submitButtonText: "Request an estimate", successMessage: "Your estimate request has been received.", createCrmLead: true, notifyAdmins: true }),
-}];
+const SYSTEM_FORMS: ManagedSystemForm[] = [
+  {
+    name: "P1 Estimate Request",
+    slug: "p1-estimate",
+    description: "Qualified property service inquiries",
+    kind: "contact",
+    isSystem: true,
+    isActive: true,
+    fields: [
+      field("name", "name", "Name", "text", { required: true }),
+      field("email", "email", "Email", "email", { required: true }),
+      field("phone", "phone", "Phone", "text"),
+      field("company", "company", "Company", "text"),
+      field("address", "address", "Property location", "text", { required: true }),
+      field("acreage", "acreage", "Approximate acreage", "text"),
+      field("propertyType", "propertyType", "Property type", "text"),
+      field("services", "services", "Services", "checkbox"),
+      field("message", "message", "Project details", "textarea", { required: true }),
+    ],
+    settings: settings({
+      submitButtonText: "Request an estimate",
+      successMessage: "Your estimate request has been received.",
+      createCrmLead: true,
+      notifyAdmins: true,
+    }),
+  },
+  {
+    name: "P1 Commercial Site Assessment",
+    slug: "p1-commercial-assessment",
+    description: "Commercial property assessment inquiries; staff confirms scope and availability",
+    kind: "contact",
+    isSystem: true,
+    isActive: true,
+    fields: [
+      field("inquiryType", "inquiryType", "Inquiry type", "hidden", {
+        required: true,
+        config: { defaultValue: "commercial_site_assessment" },
+      }),
+      field("name", "name", "Name", "text", { required: true }),
+      field("company", "company", "Company", "text", { required: true }),
+      field("email", "email", "Email", "email", { helpText: "Provide email or phone" }),
+      field("phone", "phone", "Phone", "text", { helpText: "Provide email or phone" }),
+      field("title", "title", "Job title", "text"),
+      field("propertyName", "propertyName", "Property or project name", "text"),
+      field("address", "address", "Property location or city/region", "text", { required: true }),
+      field("propertyType", "propertyType", "Property type or industry", "text"),
+      field("acreage", "acreage", "Acreage, range or unknown", "text"),
+      field("services", "services", "Services or assessment need", "checkbox", { required: true }),
+      field("projectStage", "projectStage", "Project stage", "select", {
+        required: true,
+        options: [
+          { label: "Development / Construction", value: "development_construction" },
+          { label: "Turnover / Establishment", value: "turnover_establishment" },
+          { label: "Long-Term Operations", value: "long_term_operations" },
+          { label: "Not yet known", value: "unknown" },
+        ],
+      }),
+      field("serviceTiming", "serviceTiming", "Immediate or recurring need", "select", {
+        required: true,
+        options: [
+          { label: "Immediate", value: "immediate" },
+          { label: "Recurring", value: "recurring" },
+          { label: "Both", value: "both" },
+        ],
+      }),
+      field("message", "message", "Additional project details", "textarea"),
+    ],
+    settings: settings({
+      submitButtonText: "Request a Site Assessment",
+      successMessage:
+        "Your site assessment request has been received. P1 will follow up to discuss scope, availability and next steps.",
+      createCrmLead: true,
+      notifyAdmins: true,
+    }),
+  },
+];
 
 export async function ensureSystemForms() {
   logger.app.info("Ensuring system forms");
