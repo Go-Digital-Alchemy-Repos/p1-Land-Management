@@ -23,9 +23,9 @@ export function BrandingProvider({ children }: { children: React.ReactNode }) {
       }
       const payload = await response.json();
       return {
-        frontendLogoUrl: payload?.frontendLogoUrl ?? null,
-        faviconUrl: payload?.faviconUrl ?? null,
-        companyName: payload?.companyName ?? null,
+        frontendLogoUrl: payload?.frontendLogoUrl ?? DEFAULT_BRANDING_SETTINGS.frontendLogoUrl,
+        faviconUrl: payload?.faviconUrl ?? DEFAULT_BRANDING_SETTINGS.faviconUrl,
+        companyName: payload?.companyName ?? DEFAULT_BRANDING_SETTINGS.companyName,
         companyAddress: payload?.companyAddress ?? null,
         companyPhoneNumbers: payload?.companyPhoneNumbers ?? null,
         companyGoogleBusinessUrl: payload?.companyGoogleBusinessUrl ?? null,
@@ -275,7 +275,7 @@ export function BrandingProvider({ children }: { children: React.ReactNode }) {
   ]);
 
   useEffect(() => {
-    const faviconHref = branding.faviconUrl || "/p1-symbol.svg";
+    const faviconHref = branding.faviconUrl || "/admin/p1-symbol.svg";
     let faviconEl = document.head.querySelector<HTMLLinkElement>('link[rel="icon"]');
 
     if (!faviconEl) {

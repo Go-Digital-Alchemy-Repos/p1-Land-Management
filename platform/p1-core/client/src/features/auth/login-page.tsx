@@ -76,7 +76,7 @@ export default function LoginPage() {
               Welcome Back
             </h1>
             <p className="text-muted-foreground mt-2" data-testid="text-login-subtitle">
-              Sign in to your Core Platform account
+              Sign in to P1 Land &amp; Property Management
             </p>
           </div>
 
@@ -151,13 +151,6 @@ export default function LoginPage() {
                   </Button>
                 </form>
               </Form>
-
-              <div
-                className="mt-4 text-center text-sm text-muted-foreground"
-                data-testid="text-applications-notice"
-              >
-                Applications are currently closed.
-              </div>
             </CardContent>
           </Card>
 

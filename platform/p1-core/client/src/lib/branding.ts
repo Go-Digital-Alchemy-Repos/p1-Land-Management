@@ -190,9 +190,9 @@ export const BRANDING_SERIF_FONT_OPTIONS = BRANDING_FONT_OPTIONS.filter(
 );
 
 export const DEFAULT_BRANDING_SETTINGS: BrandingSettings = {
-  frontendLogoUrl: null,
-  faviconUrl: null,
-  companyName: null,
+  frontendLogoUrl: "/admin/p1-symbol.svg",
+  faviconUrl: "/admin/p1-symbol.svg",
+  companyName: "P1 Land & Property Management",
   companyAddress: null,
   companyPhoneNumbers: null,
   companyGoogleBusinessUrl: null,
