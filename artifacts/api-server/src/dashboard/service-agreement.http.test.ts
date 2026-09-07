@@ -254,7 +254,8 @@ test(
         1000,
       );
       const reviewFixtureData = await reviewFixture();
-      const reviewSession = randomUUID(), reviewToken = randomUUID();
+      const reviewSession = randomUUID(),
+        reviewToken = randomUUID();
       await pool.query(
         'INSERT INTO session(id,"userId",token,"expiresAt") VALUES($1,$2,$3,now()+interval \'10 minutes\')',
         [reviewSession, reviewFixtureData.a.id, reviewToken],
@@ -340,7 +341,9 @@ test(
       );
       const history = await req(
         "review_manager",
-        "/agreement-charges/" + reviewFixtureData.charge.id + "/reviews?limit=1",
+        "/agreement-charges/" +
+          reviewFixtureData.charge.id +
+          "/reviews?limit=1",
       );
       assert.equal(history.status, 200);
       assert.equal((history.data.items as unknown[]).length, 1);

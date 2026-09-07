@@ -24,6 +24,12 @@ Migration 0015 adds the client version and primary-contact detail columns withou
 
 Billing creation requires `operationId` (UUID), `propertyId`, `estimateId`, `title`, integer `amountCents`, and `kind` (service/deposit/progress/final). Reuse the same operation ID on an identical retry. Different payload reuse returns 409; a new financial intent requires a new operation ID. The transaction stores actor, canonical validated-payload fingerprint and resulting draft ID. This does not automatically send an invoice or collect payment.
 
+## Cancellation-review implementation candidate (unmerged)
+
+The isolated agreement correction candidate extends the generated OpenAPI contract with `GET /agreement-charges/:id/review`, `POST /agreement-charges/:id/review-preview`, `POST /agreement-charges/:id/reviews`, `GET /agreement-charges/:id/reviews`, and `GET /service-agreements/:id/charges`. They require an owner, manager or finance actor and always return `Cache-Control: no-store`. Preview writes nothing. The record operation requires a UUID operation ID and returns a historical receipt on an identical retry; a changed reuse or stale snapshot returns 409.
+
+The server builds and hashes the cancellation, charge and full billing-draft snapshot. `keep_due` is valid only for that exact snapshot; `correction_required` is sticky. Neither result posts, changes the invoice amount, creates a credit, releases an approved cap, sends an invoice or records a payment. See [AGREEMENT_CORRECTION_PROPOSAL.md](AGREEMENT_CORRECTION_PROPOSAL.md) for the precise contract. This candidate is not deployed.
+
 Field submissions require unique operation IDs, target work order, base version, captured timestamp, kind and validated payload. Accepted acknowledgments permit local removal; conflicts remain for review. Reassignment/authorization rejection also leaves the device copy intact. File uploads use their stable operation UUID and immutable content-derived object keys.
 
 ## Commercial inquiry contract (implemented and staging accepted)

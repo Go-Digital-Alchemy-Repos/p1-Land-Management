@@ -396,12 +396,16 @@ export function AgreementQueue({
             <dt>Draft status</dt>
             <dd>{cancellationReview.snapshot.draft.status}</dd>
             <dt>Draft amount</dt>
-            <dd>{agreementMoney(cancellationReview.snapshot.draft.amountCents)}</dd>
+            <dd>
+              {agreementMoney(cancellationReview.snapshot.draft.amountCents)}
+            </dd>
             <dt>Current balance</dt>
             <dd>
               {cancellationReview.snapshot.draft.balanceCents === null
                 ? "Not available"
-                : agreementMoney(cancellationReview.snapshot.draft.balanceCents)}
+                : agreementMoney(
+                    cancellationReview.snapshot.draft.balanceCents,
+                  )}
             </dd>
             <dt>Decision state</dt>
             <dd>{cancellationReview.reviewState.replaceAll("_", " ")}</dd>

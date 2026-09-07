@@ -32,6 +32,14 @@ All paths are under `/api/v1` once reviewed and mounted. Current router is expor
 
 Queue entries are a current snapshot; preparation always rechecks authorization and eligibility. UUID cursors are stable identities, not chronological ordering. A prepared cancellation review remains visible until a future reviewed correction workflow resolves it; no automatic accounting reversal is implied.
 
+## Cancellation-review candidate (unmerged)
+
+The isolated correction candidate gives owner, manager and finance an explicit review path for a prepared charge affected by a cancellation. Dispatch, sales, crew and client users receive no endpoint or UI access. `keep_due` records a reason for the exact server-built cancellation and financial snapshot. `correction_required` is sticky and blocks a new posting intent. A balance, status, ownership or other reviewed financial change makes a keep-due decision stale and returns it to review.
+
+The candidate adds read, zero-write preview, immutable-record and history endpoints beneath `/agreement-charges/:chargeId`, plus a keyset-paginated `/service-agreements/:agreementId/charges` history. An operation UUID returns the same historical receipt only for an identical retry. No endpoint adjusts cents, creates a credit, releases the approved cap, supersedes a draft, posts an invoice, sends a message or collects a payment.
+
+The posting boundary derives the agreement charge before the normal billing-draft lock. An unresolved or correction-required cancellation charge fails before QuickBooks is called. A separate future accounting-resolution design must define replacement drafts, cap treatment and QuickBooks reconciliation before it changes that rule. See [AGREEMENT_CORRECTION_PROPOSAL.md](AGREEMENT_CORRECTION_PROPOSAL.md) for the candidate contract, lock order and rollout boundary.
+
 ## Validation and remaining scope
 
 `scripts/test-service-agreements.mjs` uses a disposable PostgreSQL instance and applies/replays migrations. Tests cover explicit monthly periods, per-visit inputs, lifecycle/version/overlap rules, financial-field omission for dispatch, previews without writes, concurrent source/cap protection, fixed charges despite paused visits, cancellation history, rescheduled occurrence membership and queue visibility/pagination.

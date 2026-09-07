@@ -1,6 +1,14 @@
 # Agreement cancellation review — proposal
 
-Status: proposed, not an approved schema or API change. Existing cancellation records preserve charges, but the action queue currently has no way to record a financial review outcome. This proposal adds a review record without changing posted accounting history.
+Status: the policy is approved and an isolated implementation candidate is ready for project-orchestrator review. It is not merged or deployed. Existing cancellation records preserve charges, but the action queue currently has no way to record a financial review outcome. This proposal adds a review record without changing posted accounting history.
+
+## Isolated implementation candidate
+
+The candidate adds an append-only `agreement_charge_review_event` migration, strict server contracts, OpenAPI-generated dashboard methods, an office queue decision panel and posting-boundary protection. The migration file is currently numbered `0016_agreement_charge_review.sql` in the isolated branch because the working source has a reserved numbering gap; the Project Orchestrator must reconcile the final migration number with concurrent work before integration. It is additive and has not been applied to Railway.
+
+The queue exposes a cancellation-affected prepared charge only while it is unreviewed, stale or correction-required. A matching keep-due decision removes it from the action queue but keeps it discoverable through the new paginated agreement charge history. The UI fetches a server-built snapshot, requires a reason, runs a zero-write comparison, and only then records an immutable decision. It explains that this does not post, send, credit, edit or collect a payment.
+
+The candidate uses the posting guard before a QuickBooks posting intent is created. Real PostgreSQL tests cover unresolved and correction-required cases making zero provider calls, as well as one allowed keep-due post followed by an idempotent retry that makes no second call. The disposable populated-recovery regression seeds both a keep-due and correction-required event and verifies that the full records survive dump/restore and replay. These are local candidate results, not staging, provider or production acceptance.
 
 ## Decisions and boundaries
 
