@@ -15,4 +15,5 @@ export const PropertyTimelineEventKind = {
   time: 'time',
   checklist: 'checklist',
   complete: 'complete',
+  inspection: 'inspection',
 } as const;

@@ -470,6 +470,16 @@ test(
         note: "Drainage inspection recommended after rain.",
       },
     ]);
+    const propertyHistory = (
+      await customer("/api/v1/properties/" + pa + "/timeline")
+    ).data;
+    const publishedInspection = propertyHistory.find(
+      (entry: any) => entry.kind === "inspection",
+    );
+    assert.ok(publishedInspection);
+    assert.equal(publishedInspection.title, "Seasonal property review");
+    assert.equal(publishedInspection.published, true);
+    assert.equal(publishedInspection.payload.findings.length, 1);
     assert.equal(
       (
         await pool.query(
@@ -681,7 +691,7 @@ test(
     );
     assert.equal(
       (await customer("/api/v1/properties/" + pa + "/timeline")).data.length,
-      2,
+      3,
     );
     const recurring = randomUUID();
     await pool.query(

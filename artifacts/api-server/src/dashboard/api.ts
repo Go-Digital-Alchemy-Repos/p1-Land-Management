@@ -620,11 +620,28 @@ api.get("/properties/:id/timeline", async (req, res) => {
   const a = await actor(req);
   const key = id.parse(req.params.id);
   await propertyAccess(a, key);
-  const rows = await pool.query(
+  const fieldRows = await pool.query(
     `SELECT f.id,f.kind,f.payload,f.conflict,f.published,f.captured_at,w.title FROM field_event f JOIN work_order w ON w.id=f.work_order_id WHERE w.property_id=$1 ${a.role === "client" ? "AND f.published=true AND w.published=true" : a.role === "crew" ? "AND w.assigned_to=$2" : ""} ORDER BY f.captured_at DESC LIMIT 200`,
     a.role === "crew" ? [key, a.id] : [key],
   );
-  res.json(rows.rows);
+  const inspectionRows =
+    a.role === "crew"
+      ? []
+      : (
+          await pool.query(
+            `SELECT i.id,'inspection' AS kind,jsonb_build_object('findings',i.findings) AS payload,false AS conflict,i.published,i.created_at AS captured_at,i.title FROM inspection i WHERE i.property_id=$1 ${a.role === "client" ? "AND i.published=true" : ""} ORDER BY i.created_at DESC LIMIT 200`,
+            [key],
+          )
+        ).rows;
+  res.json(
+    [...fieldRows.rows, ...inspectionRows]
+      .sort(
+        (left, right) =>
+          new Date(right.captured_at).getTime() -
+          new Date(left.captured_at).getTime(),
+      )
+      .slice(0, 200),
+  );
 });
 api.get("/leads", async (req, res) => {
   const a = await actor(req);

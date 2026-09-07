@@ -425,7 +425,7 @@ export const getGetPropertyTimelineUrl = (id: string,) => {
 }
 
 /**
- * Latest 200 captured field events; clients require both event and work publication. Crew sees assigned work only.
+ * Latest 200 captured field events and inspection reports. Clients require field/work publication and receive only published inspections. Crew sees assigned work only.
  */
 export const getPropertyTimeline = async (id: string, options?: RequestInit): Promise<PropertyTimelineEvent[]> => {
 

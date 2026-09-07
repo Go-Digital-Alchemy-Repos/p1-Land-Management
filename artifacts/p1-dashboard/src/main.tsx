@@ -1992,7 +1992,9 @@ function App() {
                         {e.conflict ? " · needs review" : ""}
                       </span>
                       <p>
-                        {e.payload.text || e.payload.action || "Work recorded"}
+                        {e.kind === "inspection"
+                          ? `${Array.isArray(e.payload.findings) ? e.payload.findings.length : 0} inspection observation${Array.isArray(e.payload.findings) && e.payload.findings.length === 1 ? "" : "s"}`
+                          : e.payload.text || e.payload.action || "Work recorded"}
                       </p>
                       <small>
                         {date(e.captured_at)} · {e.title}

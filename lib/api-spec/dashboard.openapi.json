@@ -909,7 +909,7 @@
     "/properties/{id}/timeline": {
       "get": {
         "operationId": "getPropertyTimeline",
-        "description": "Latest 200 captured field events; clients require both event and work publication. Crew sees assigned work only.",
+        "description": "Latest 200 captured field events and inspection reports. Clients require field/work publication and receive only published inspections. Crew sees assigned work only.",
         "responses": {
           "200": {
             "description": "Authorized snapshot",
@@ -2643,7 +2643,7 @@
             "format": "uuid"
           },
           "kind": {
-            "enum": ["note", "issue", "time", "checklist", "complete"],
+            "enum": ["note", "issue", "time", "checklist", "complete", "inspection"],
             "type": "string"
           },
           "payload": {

@@ -26,7 +26,9 @@ Billing creation requires `operationId` (UUID), `propertyId`, `estimateId`, `tit
 
 ## Inspection report publication
 
-`GET /inspections` is available to owner, manager, dispatch, and client accounts. Office roles receive operational inspections for active properties. A client receives only explicitly published inspections belonging to a client-accessible operational property; its response omits the submitting staff user ID. `POST /inspections/:id/publish` requires owner or manager, locks the active-property inspection, and records `inspection.published` in audit history the first time it becomes client-visible. Repeating publication is safe and does not create another audit event. Publishing does not alter a work order, file, invoice, payment, notification, or property condition history.
+`GET /inspections` is available to owner, manager, dispatch, and client accounts. Office roles receive operational inspections for active properties. A client receives only explicitly published inspections belonging to a client-accessible operational property; its response omits the submitting staff user ID. `POST /inspections/:id/publish` requires owner or manager, locks the active-property inspection, and records `inspection.published` in audit history the first time it becomes client-visible. Repeating publication is safe and does not create another audit event. Publishing does not alter a work order, file, invoice, payment, notification, or underlying property condition data.
+
+`GET /properties/:id/timeline` combines the latest 200 field events and inspection reports in chronological order. Clients see inspection entries only after explicit publication; crew still see only their assigned field work and do not receive inspection entries. Timeline inspection payloads retain report findings and are a historical view, not an inferred property-health score.
 
 ## Cancellation-review implementation candidate (unmerged)
 
