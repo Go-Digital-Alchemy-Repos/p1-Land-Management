@@ -2,6 +2,8 @@
 
 Status: partial rehearsal only. The target remains no more than 24 hours of server data loss and restoration within one business day. Offline work not yet synchronized exists only on the field device and is outside server backup coverage.
 
+On September 7, the current dashboard-staging PostgreSQL service was streamed as a logical dump into a disposable local PostgreSQL 18 restore. The restore completed successfully with all 16 dashboard migrations through `0016_agreement_charge_review.sql`, 52 public tables, and the `service_agreement`, `agreement_charge_review_event`, and `outbox` tables present. No business records were inspected or retained; the disposable database was stopped after structural verification. This is current logical schema/restore evidence only. It does not prove Railway volume recovery, object-store recovery, the restoration-time objective, application cutover, or reconciliation of accounting activity that may occur after a database backup.
+
 ## Verified evidence (2026-09-07)
 
 A read-only custom-format `pg_dump` from Railway dashboard staging, carried over Railway SSH without exposing a public database port, restored into a new disposable PostgreSQL 17 container using `pg_restore --no-owner --no-acl --exit-on-error`. Verification found eight applied migrations and both contact version/archive columns. The source had zero clients; no business-data recovery is proven. The 71,557-byte archive stayed in process memory and the temporary container was removed after validation. Total measured dump/restore/verification time was 4.03 seconds; this is not an application recovery-time measurement.
