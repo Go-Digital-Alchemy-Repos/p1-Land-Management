@@ -43,11 +43,17 @@ async function updateMfaRequirement(
   required: boolean,
 ) {
   return transaction(async (c) => {
+    const current = await c.query(
+      "SELECT role FROM staff_profile WHERE user_id=$1 AND active=true FOR UPDATE",
+      [targetId],
+    );
+    if (!current.rowCount) throw new HttpError(404, "Account not found");
+    if (current.rows[0].role === "owner" && !required)
+      throw new HttpError(409, "Multi-factor authentication is required for owners");
     const result = await c.query(
-      "UPDATE staff_profile SET mfa_required=$2 WHERE user_id=$1 AND active=true RETURNING user_id,mfa_required",
+      "UPDATE staff_profile SET mfa_required=$2 WHERE user_id=$1 RETURNING user_id,mfa_required",
       [targetId, required],
     );
-    if (!result.rowCount) throw new HttpError(404, "Account not found");
     await audit(c, actorId, "account.mfa_requirement.updated", targetId);
     return { id: targetId, mfaRequired: result.rows[0].mfa_required };
   });

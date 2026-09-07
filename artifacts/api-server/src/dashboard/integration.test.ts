@@ -378,14 +378,20 @@ test(
     );
     r = await owner("/api/auth/two-factor/verify-totp", { code: totp(secret) });
     assert.equal(r.status, 200, JSON.stringify(r.data));
+    // Ownership is permanently MFA-required. A verified owner may manage
+    // another account's policy, but cannot use that policy endpoint to weaken
+    // their own current or future session requirements.
     assert.equal(
       (
         await owner(`/api/v1/account-mfa-policies/${ownerId}`, {
           required: false,
         })
       ).status,
-      200,
+      409,
     );
+    r = await owner("/api/v1/me");
+    assert.equal(r.data.mfaRequired, false);
+    assert.equal(r.data.ownerMfaRequired, false);
     const work = (
       await owner("/api/v1/work-orders", { propertyId: pa, title: "Mow" })
     ).data.id;
