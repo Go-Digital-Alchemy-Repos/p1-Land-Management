@@ -1,3 +1,4 @@
+import { CommercialInbox } from "./CommercialInbox";
 import { PropertyFiles } from "./PropertyFiles";
 import { ScheduleCalendar } from "./ScheduleCalendar";
 import { AssessmentAvailability } from "./AssessmentAvailability";
@@ -32,9 +33,9 @@ import {
 import * as offline from "./offline";
 import "./style.css";
 const auth = createAuthClient({ plugins: [twoFactorClient()] });
-async function api(path: string, body?: unknown) {
+async function api(path: string, body?: unknown, method: "POST" | "PATCH" = "POST") {
   const r = await fetch("/api/v1" + path, {
-    method: body === undefined ? "GET" : "POST",
+    method: body === undefined ? "GET" : method,
     headers: body === undefined ? {} : { "Content-Type": "application/json" },
     body: body === undefined ? undefined : JSON.stringify(body),
   });
@@ -1423,6 +1424,7 @@ function App() {
           )}
           {view === "Sales" && (
             <>
+              {["owner", "manager", "sales"].includes(person.role || "") && <CommercialInbox staff={data.staff || []} request={api} />}
               <section className="panel">
                 <div className="panel-heading">
                   <h2>Estimates</h2>
