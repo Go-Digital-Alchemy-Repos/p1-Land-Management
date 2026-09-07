@@ -1,3 +1,4 @@
+import { FederationPanel, useFederationStatus } from "./federation-panel";
 import { useEffect } from "react";
 import { useLocation } from "wouter";
 import { useForm } from "react-hook-form";
@@ -37,7 +38,7 @@ const setupSchema = z
 
 type SetupForm = z.infer<typeof setupSchema>;
 
-export default function AdminSetupPage() {
+function LegacyAdminSetupPage() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
 
@@ -275,4 +276,11 @@ export default function AdminSetupPage() {
       </div>
     </PageLayout>
   );
+}
+
+export default function AdminSetupPage(){
+ const status=useFederationStatus();
+ if(status.isLoading)return <p role="status">Loading sign-in options…</p>;
+ if(status.error)return <p role="alert">Sign-in options are temporarily unavailable. Refresh to try again.</p>;
+ return status.data?.enabled ? <FederationPanel setup/> : <LegacyAdminSetupPage/>;
 }

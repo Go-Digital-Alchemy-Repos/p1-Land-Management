@@ -1,3 +1,4 @@
+import { federationEnabled } from "../services/federation-client";
 import { Router } from "express";
 import { z } from "zod";
 import { storage } from "../storage/index";
@@ -82,6 +83,7 @@ router.post(
   "/admin",
   validateBody(setupAdminSchema),
   asyncHandler(async (req, res) => {
+    if (federationEnabled()) { res.status(403).json({message:"Use federated owner setup"}); return; }
     const expectedToken = process.env.SETUP_TOKEN;
     if (expectedToken) {
       const providedToken = req.body.setupToken || req.get("x-setup-token");

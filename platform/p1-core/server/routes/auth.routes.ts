@@ -1,3 +1,7 @@
+import { federationEnabled } from "../services/federation-client";
+import { FEDERATION_COOKIE, federationConsumer, hasFederationHistory, updateUnlinkedPassword } from "../services/federation-runtime";
+import { pool } from "../db";
+import { digest } from "../services/federation-consumer";
 import { getBaseUrl } from "../utils/route-helpers";
 import { Router } from "express";
 import { z } from "zod";
@@ -43,6 +47,7 @@ router.post(
   loginLimiter,
   validateBody(loginSchema),
   asyncHandler(async (req, res) => {
+    if (federationEnabled()) { res.status(403).json({message:"Use Dashboard sign-in or explicit account linking"}); return; }
     const { email, password } = req.body;
 
     const user = await storage.users.getUserByEmail(email);
@@ -51,6 +56,7 @@ router.post(
       return;
     }
 
+    if (await hasFederationHistory(user.id)) { res.status(403).json({message:"Use P1 Dashboard to sign in"}); return; }
     const valid = await comparePassword(password, user.password);
     if (!valid) {
       res.status(401).json({ message: "Invalid email or password" });
@@ -73,10 +79,13 @@ router.post(
   }),
 );
 
-router.post("/logout", (_req, res) => {
+router.post("/logout", asyncHandler(async (req, res) => {
+  const token=req.cookies?.[FEDERATION_COOKIE];
+  if(typeof token === "string") await pool.query("DELETE FROM p1_federation_session WHERE token_hash=$1",[digest(token)]);
+  res.clearCookie(FEDERATION_COOKIE,{path:"/api"});
   clearTokenCookie(res);
   res.json({ message: "Logged out" });
-});
+}));
 
 router.get(
   "/me",
@@ -98,7 +107,7 @@ router.post(
   asyncHandler(async (req, res) => {
     const { email } = req.body;
     const user = await storage.users.getUserByEmail(email);
-    if (user) {
+    if (user && !federationEnabled() && !await hasFederationHistory(user.id)) {
       const resetToken = await storage.passwordResets.createToken(user.id);
       const baseUrl = getBaseUrl(req);
       const resetUrl = `${baseUrl}/admin/reset-password?token=${resetToken.token}`;
@@ -130,8 +139,9 @@ router.post(
       return;
     }
 
+    if (federationEnabled() || await hasFederationHistory(resetToken.userId)) { res.status(403).json({message:"Use P1 Dashboard password recovery"}); return; }
     const hashed = await hashPassword(password);
-    await storage.users.updateUser(resetToken.userId, { password: hashed });
+    await updateUnlinkedPassword(resetToken.userId, hashed);
     await storage.passwordResets.markUsed(resetToken.id);
 
     res.json({ message: "Password reset successfully. You can now log in." });
@@ -186,6 +196,7 @@ router.put(
   authenticateToken,
   validateBody(changePasswordSchema),
   asyncHandler(async (req, res) => {
+    if (federationEnabled() || await hasFederationHistory(req.user!.id)) { res.status(403).json({message:"Use P1 Dashboard password settings"}); return; }
     const { currentPassword, newPassword } = req.body;
 
     const valid = await comparePassword(currentPassword, req.user!.password);
@@ -195,7 +206,7 @@ router.put(
     }
 
     const hashed = await hashPassword(newPassword);
-    await storage.users.updateUser(req.user!.id, { password: hashed });
+    await updateUnlinkedPassword(req.user!.id, hashed);
 
     res.json({ message: "Password changed successfully" });
   }),

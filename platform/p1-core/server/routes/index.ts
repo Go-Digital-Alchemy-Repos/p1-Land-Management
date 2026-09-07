@@ -1,6 +1,7 @@
 import p1AnalyticsRoutes from "./p1-analytics.routes";
 import type { Express, Request, Response, NextFunction } from "express";
 import { logger } from "../utils/logger";
+import federationRoutes from "./federation.routes";
 import authRoutes from "./auth.routes";
 import adminRoutes from "./admin/index";
 import settingsRoutes from "./settings.routes";
@@ -41,6 +42,7 @@ export function registerApiRoutes(app: Express) {
   );
   app.use("/api/p1", p1AnalyticsRoutes);
   app.use("/r2", r2PublicRoutes);
+  app.use("/api/auth/federation", federationRoutes);
   app.use("/api/auth", authRoutes);
   app.use("/api/admin", adminRoutes);
   app.use("/api/admin", settingsRoutes);

@@ -5,7 +5,7 @@ import { storage } from "../storage";
 import { paramString } from "../utils/params";
 import { PUBLIC_MENU_LOCATIONS, type CmsMenu, type PublicMenuLocation } from "@shared/schema";
 import { verifyCmsPreviewToken } from "../utils/cms-preview-token";
-import { optionalAuth } from "../middleware/auth";
+import { optionalAuth, authenticateToken, requireAdminPermission } from "../middleware/auth";
 import { sanitizePublicCmsContent } from "../utils/sanitize-rich-html";
 
 const router = Router();
@@ -39,6 +39,8 @@ router.get(
 
 router.get(
   "/pages/preview/:id",
+  authenticateToken,
+  requireAdminPermission("content"),
   asyncHandler(async (req, res) => {
     const id = paramString(req.params.id);
     const token = typeof req.query.token === "string" ? req.query.token : null;

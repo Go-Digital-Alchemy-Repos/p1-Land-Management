@@ -16,6 +16,7 @@ vi.mock("@/hooks/use-toast", () => ({ useToast: () => ({ toast: vi.fn() }) }));
 
 function renderPage(Page: React.ComponentType, path: string) {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false, staleTime: Infinity } } });
+  queryClient.setQueryData(["/api/auth/federation/status"], {enabled:false});
   queryClient.setQueryData(["/api/setup/status"], { needsSetup: true });
   queryClient.setQueryData(["/api/seo/global"], null);
   const container = document.createElement("div");

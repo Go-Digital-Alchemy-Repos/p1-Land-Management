@@ -1,3 +1,5 @@
+// This legacy-role fixture has no linked identities; federation HTTP coverage uses the real database separately.
+vi.mock("../../services/federation-runtime", () => ({ FEDERATION_COOKIE:"p1_federation_session", hasFederationHistory:async()=>false, federationConsumer:vi.fn() }));
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import express from "express";
 import cookieParser from "cookie-parser";

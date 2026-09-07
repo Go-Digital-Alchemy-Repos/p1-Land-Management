@@ -1,3 +1,5 @@
+import { federationEnabled, FederationError } from "../services/federation-client";
+import { FEDERATION_COOKIE, federationConsumer, hasFederationHistory } from "../services/federation-runtime";
 import type { Request, Response, NextFunction, RequestHandler } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -112,6 +114,17 @@ export const authenticateToken: RequestHandler = async (
   res: Response,
   next: NextFunction,
 ) => {
+  if (federationEnabled() || req.cookies?.[FEDERATION_COOKIE]) {
+    try {
+      if (!federationEnabled()) throw new FederationError(401, "federation_disabled");
+      const id = await federationConsumer().authenticate(req.cookies?.[FEDERATION_COOKIE]);
+      const { storage } = await import("../storage/index");
+      const user = await storage.users.getUser(id);
+      if (!user || user.isSuspended || !["admin", "editor"].includes(user.role)) throw new FederationError(403, "federation_local_access_denied");
+      req.user = user; next();
+    } catch (e) { res.status(e instanceof FederationError ? e.status : 503).json({message:e instanceof FederationError ? e.code : "federation_unavailable"}); }
+    return;
+  }
   const token = req.cookies?.[COOKIE_NAME];
   if (!token) {
     res.status(401).json({ message: "Unauthorized" });
@@ -122,7 +135,7 @@ export const authenticateToken: RequestHandler = async (
     const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
     const { storage } = await import("../storage/index");
     const user = await storage.users.getUser(decoded.userId);
-    if (!user || user.isSuspended || !hasCurrentSessionVersion(decoded, user)) {
+    if (!user || user.isSuspended || !hasCurrentSessionVersion(decoded, user) || await hasFederationHistory(user.id)) {
       res.status(401).json({ message: "Unauthorized" });
       return;
     }
@@ -138,6 +151,8 @@ export const optionalAuth: RequestHandler = async (
   _res: Response,
   next: NextFunction,
 ) => {
+  // Public optional auth never performs privileged draft reads during outage.
+  if (federationEnabled() || req.cookies?.[FEDERATION_COOKIE]) { next(); return; }
   const token = req.cookies?.[COOKIE_NAME];
   if (!token) {
     next();
@@ -147,7 +162,7 @@ export const optionalAuth: RequestHandler = async (
     const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
     const { storage } = await import("../storage/index");
     const user = await storage.users.getUser(decoded.userId);
-    if (user && !user.isSuspended && hasCurrentSessionVersion(decoded, user)) {
+    if (user && !user.isSuspended && hasCurrentSessionVersion(decoded, user) && !await hasFederationHistory(user.id)) {
       req.user = user;
     }
   } catch {

@@ -14,6 +14,9 @@ const { mockGetUser } = vi.hoisted(() => ({
   mockGetUser: vi.fn(),
 }));
 
+vi.mock("../services/federation-runtime", () => ({
+  FEDERATION_COOKIE: "p1_federation_session", hasFederationHistory: vi.fn(async () => false), federationConsumer: vi.fn(),
+}));
 vi.mock("../storage/index", () => ({
   storage: {
     users: {
