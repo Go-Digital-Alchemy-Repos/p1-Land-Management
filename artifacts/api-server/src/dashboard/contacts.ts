@@ -5,6 +5,7 @@ export type ContactInput = {
   name: string;
   email: string | null;
   phone: string | null;
+  position?: string | null;
   kind: "site" | "billing" | "primary" | "other";
 };
 export async function listContacts(clientId: string) {
@@ -14,7 +15,7 @@ export async function listContacts(clientId: string) {
   if (!client.rowCount) throw new HttpError(404, "Client not found");
   return (
     await pool.query(
-      "SELECT id,client_id,name,email,phone,kind,archived,version FROM contact WHERE client_id=$1 ORDER BY archived,name",
+      "SELECT id,client_id,name,first_name,last_name,email,phone,position,kind,archived,version FROM contact WHERE client_id=$1 ORDER BY archived,name",
       [clientId],
     )
   ).rows;
@@ -34,7 +35,7 @@ export async function saveContact(
     const id = existing?.id || randomUUID();
     if (existing) {
       const changed = await c.query(
-        "UPDATE contact SET name=$3,email=$4,phone=$5,kind=$6,archived=$7,version=version+1 WHERE id=$1 AND client_id=$2 AND version=$8 RETURNING id",
+        "UPDATE contact SET name=$3,email=$4,phone=$5,kind=$6,archived=$7,position=$8,version=version+1 WHERE id=$1 AND client_id=$2 AND version=$9 RETURNING id",
         [
           id,
           clientId,
@@ -43,6 +44,7 @@ export async function saveContact(
           input.phone,
           input.kind,
           existing.archived,
+          input.position,
           existing.version,
         ],
       );
@@ -53,8 +55,16 @@ export async function saveContact(
         );
     } else
       await c.query(
-        "INSERT INTO contact(id,client_id,name,email,phone,kind) VALUES($1,$2,$3,$4,$5,$6)",
-        [id, clientId, input.name, input.email, input.phone, input.kind],
+        "INSERT INTO contact(id,client_id,name,email,phone,position,kind) VALUES($1,$2,$3,$4,$5,$6,$7)",
+        [
+          id,
+          clientId,
+          input.name,
+          input.email,
+          input.phone,
+          input.position,
+          input.kind,
+        ],
       );
     await c.query(
       "INSERT INTO audit_event(id,user_id,action,entity_id) VALUES($1,$2,$3,$4)",
@@ -65,6 +75,11 @@ export async function saveContact(
         id,
       ],
     );
-    return (await c.query("SELECT id,client_id,name,email,phone,kind,archived,version FROM contact WHERE id=$1", [id])).rows[0];
+    return (
+      await c.query(
+        "SELECT id,client_id,name,first_name,last_name,email,phone,position,kind,archived,version FROM contact WHERE id=$1",
+        [id],
+      )
+    ).rows[0];
   });
 }

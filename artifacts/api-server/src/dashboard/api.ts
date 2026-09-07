@@ -18,12 +18,20 @@ import {
   bookAssessment,
   createManualAssessment,
 } from "./assessments";
+import { onboardClient, updateClient } from "./client-onboarding";
 export const api = Router();
 const office: Role[] = ["owner", "manager", "dispatch", "sales", "finance"];
 const operations: Role[] = ["owner", "manager", "dispatch"];
 const managers: Role[] = ["owner", "manager"];
 const id = z.string().uuid();
 const text = z.string().trim().min(1).max(10000);
+const primaryContact = z.object({
+  firstName: z.string().trim().min(1).max(100),
+  lastName: z.string().trim().min(1).max(100),
+  email: z.string().trim().email().max(254),
+  position: z.string().trim().min(1).max(200),
+  phone: z.string().trim().min(1).max(50),
+});
 const audit = async (c: any, user: string, action: string, entity: string) =>
   c.query(
     "INSERT INTO audit_event(id,user_id,action,entity_id) VALUES($1,$2,$3,$4)",
@@ -240,7 +248,7 @@ api.get("/clients", async (req, res) => {
       await pool.query(
         a.role === "client"
           ? "SELECT c.id,c.name FROM client c JOIN client_access ca ON ca.client_id=c.id WHERE ca.user_id=$1"
-          : "SELECT * FROM client WHERE archived=false ORDER BY name",
+          : "SELECT c.*,p.name AS primary_contact_name,p.first_name AS primary_contact_first_name,p.last_name AS primary_contact_last_name,p.email AS primary_contact_email,p.phone AS primary_contact_phone,p.position AS primary_contact_position FROM client c LEFT JOIN LATERAL (SELECT name,first_name,last_name,email,phone,position FROM contact WHERE client_id=c.id AND kind='primary' AND archived=false ORDER BY name LIMIT 1) p ON true WHERE c.archived=false ORDER BY c.name",
         a.role === "client" ? [a.id] : [],
       )
     ).rows,
@@ -254,8 +262,26 @@ api.post("/clients", async (req, res) => {
       name: text,
       email: z.string().email().optional(),
       phone: z.string().max(50).optional(),
+      address: text.optional(),
+      primaryContact: primaryContact.optional(),
     })
     .parse(req.body);
+  if (b.primaryContact) {
+    if (!b.address || !b.phone?.trim())
+      throw new HttpError(
+        400,
+        "Business address and phone are required for client onboarding",
+      );
+    res.status(201).json(
+      await onboardClient(a.id, {
+        name: b.name,
+        address: b.address,
+        phone: b.phone,
+        primaryContact: b.primaryContact,
+      }),
+    );
+    return;
+  }
   const key = randomUUID();
   await transaction(async (c) => {
     await c.query(
@@ -265,6 +291,21 @@ api.post("/clients", async (req, res) => {
     await audit(c, a.id, "client.created", key);
   });
   res.status(201).json({ id: key });
+});
+api.post("/clients/:id", async (req, res) => {
+  const a = await actor(req);
+  requireRole(a.role, office);
+  const b = z
+    .object({
+      name: text,
+      address: text,
+      phone: z.string().trim().min(1).max(50),
+      email: z.string().trim().email().max(254).nullable().default(null),
+      version: z.number().int().positive(),
+      primaryContact,
+    })
+    .parse(req.body);
+  res.json(await updateClient(a.id, id.parse(req.params.id), b));
 });
 api.get("/properties", async (req, res) => {
   const a = await actor(req);

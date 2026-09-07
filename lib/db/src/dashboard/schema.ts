@@ -180,6 +180,7 @@ export const client = pgTable(
     billingAddress: text("billing_address"),
     quickbooksId: text("quickbooks_id"),
     archived: boolean().default(false).notNull(),
+    version: integer().default(1).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
       .defaultNow()
       .notNull(),
@@ -193,8 +194,11 @@ export const contact = pgTable(
     id: uuid().primaryKey().notNull(),
     clientId: uuid("client_id"),
     name: text().notNull(),
+    firstName: text("first_name"),
+    lastName: text("last_name"),
     email: text(),
     phone: text(),
+    position: text(),
     kind: text().default("site").notNull(),
     reviewedBy: text("reviewed_by").references(()=>user.id),
     reviewedAt: timestamp("reviewed_at",{withTimezone:true,mode:"string"}),

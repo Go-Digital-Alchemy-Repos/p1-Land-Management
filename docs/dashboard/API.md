@@ -14,6 +14,14 @@
 | Media                 | POST /files/:id with image body, x-p1-property, x-p1-work, x-p1-classification; protected content/publication routes in files.ts             |
 | Communications        | Notification, delivery and consent routes in notifications.ts                                                                                |
 
+## Client onboarding and maintenance
+
+Office roles (owner, manager, dispatch, sales and finance) create a client with `POST /clients`. The dashboard onboarding flow submits a business name, address and phone plus a required primary contact: first name, last name, email, position and phone. The server creates the client and primary contact in one transaction and records audit events for both, so a partial client is never retained when contact creation fails.
+
+`GET /clients` exposes the business details and the active primary contact only to office roles; client-role responses remain minimized to their own ID and name. `POST /clients/:id` updates the business and primary contact together. It requires the client `version`; stale submissions return 409 rather than overwriting another user's edit. When an older client has no primary contact, this edit creates one. Additional site, billing and other contacts remain managed through `GET`/`POST /clients/:clientId/contacts` and `POST /clients/:clientId/contacts/:id`, all with the same office-role check and contact version handling.
+
+Migration 0015 adds the client version and primary-contact detail columns without removing existing data. The legacy minimal client-create payload remains supported for compatibility with existing internal integrations, but the dashboard uses the complete onboarding payload.
+
 Billing creation requires `operationId` (UUID), `propertyId`, `estimateId`, `title`, integer `amountCents`, and `kind` (service/deposit/progress/final). Reuse the same operation ID on an identical retry. Different payload reuse returns 409; a new financial intent requires a new operation ID. The transaction stores actor, canonical validated-payload fingerprint and resulting draft ID. This does not automatically send an invoice or collect payment.
 
 Field submissions require unique operation IDs, target work order, base version, captured timestamp, kind and validated payload. Accepted acknowledgments permit local removal; conflicts remain for review. Reassignment/authorization rejection also leaves the device copy intact. File uploads use their stable operation UUID and immutable content-derived object keys.

@@ -345,6 +345,13 @@ small {
 .schedule-row > div {
   flex: 1;
 }
+.schedule-row .row-actions {
+  display: flex;
+  flex: none;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
 .schedule-row strong {
   font-size: 13px;
 }
@@ -767,6 +774,16 @@ textarea {
 }
 .modal form > .primary {
   width: 100%;
+}
+.modal fieldset {
+  margin: 18px 0;
+  padding: 14px;
+  border: 1px solid #ccd6df;
+  border-radius: 8px;
+}
+.modal legend {
+  padding: 0 6px;
+  font-weight: 650;
 }
 .modal > .panel-heading {
   position: sticky;

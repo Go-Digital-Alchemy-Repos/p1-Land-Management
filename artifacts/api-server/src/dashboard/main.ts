@@ -2,6 +2,7 @@ import { serviceAgreementApi } from "./service-agreement.routes";
 import { workReadinessApi } from "./work-readiness.routes";
 import { prospectContextApi } from "./prospect-context.routes";
 import { commercialIngress, commercialStaffApi } from "./commercial-ingress";
+import { contactsApi } from "./contact-routes";
 import {
   coreFederationApi,
   coreFederationIngress,
@@ -87,6 +88,7 @@ app.use(
   coreFederationApi,
   prospectContextApi,
   commercialStaffApi,
+  contactsApi,
   api,
   operationsApi,
   workReadinessApi,

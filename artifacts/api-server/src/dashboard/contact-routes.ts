@@ -9,6 +9,7 @@ const input = z.object({
   name: z.string().trim().min(1).max(200),
   email: z.string().trim().email().max(254).nullable().default(null),
   phone: z.string().trim().max(50).nullable().default(null),
+  position: z.string().trim().max(200).nullable().default(null),
   kind: z.enum(["primary", "billing", "site", "other"]),
 });
 contactsApi.use("/clients/:clientId/contacts", async (req, _res, next) => {

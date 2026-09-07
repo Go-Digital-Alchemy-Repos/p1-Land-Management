@@ -111,6 +111,7 @@ try {
       "--test",
       "src/dashboard/policy.test.ts",
       "src/dashboard/contacts.test.ts",
+      "src/dashboard/client-onboarding.test.ts",
       "src/dashboard/assessments.test.ts",
       "src/dashboard/schedule.test.ts",
       "src/dashboard/owner-recovery.test.ts",

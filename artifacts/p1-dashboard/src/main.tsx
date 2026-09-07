@@ -499,8 +499,30 @@ function App() {
       if (form === "client")
         await api("/clients", {
           name: b.name,
-          ...(b.email ? { email: b.email } : {}),
-          ...(b.phone ? { phone: b.phone } : {}),
+          address: b.address,
+          phone: b.phone,
+          primaryContact: {
+            firstName: b.primaryFirstName,
+            lastName: b.primaryLastName,
+            email: b.primaryEmail,
+            position: b.primaryPosition,
+            phone: b.primaryPhone,
+          },
+        });
+      if (form === "edit-client")
+        await api("/clients/" + selected.id, {
+          name: b.name,
+          address: b.address,
+          phone: b.phone,
+          email: selected.email || null,
+          version: Number(selected.version),
+          primaryContact: {
+            firstName: b.primaryFirstName,
+            lastName: b.primaryLastName,
+            email: b.primaryEmail,
+            position: b.primaryPosition,
+            phone: b.primaryPhone,
+          },
         });
       if (form === "property")
         await api("/properties", {
@@ -1107,13 +1129,32 @@ function App() {
                   <div>
                     <strong>{client.name}</strong>
                     <small>
-                      {[client.email, client.phone].filter(Boolean).join(" · ")}
+                      {[client.billing_address, client.phone]
+                        .filter(Boolean)
+                        .join(" · ")}
                     </small>
+                    {client.primary_contact_name && (
+                      <small>
+                        {[
+                          client.primary_contact_name,
+                          client.primary_contact_position,
+                          client.primary_contact_email,
+                          client.primary_contact_phone,
+                        ]
+                          .filter(Boolean)
+                          .join(" · ")}
+                      </small>
+                    )}
                   </div>
                   {staff && (
-                    <button onClick={() => openForm("contacts", client)}>
-                      Manage contacts
-                    </button>
+                    <div className="row-actions">
+                      <button onClick={() => openForm("edit-client", client)}>
+                        Edit client
+                      </button>
+                      <button onClick={() => openForm("contacts", client)}>
+                        Manage contacts
+                      </button>
+                    </div>
                   )}
                 </div>
               ))}
@@ -1867,6 +1908,10 @@ function App() {
               <h2>
                 {form === "timeline"
                   ? selected.property.name
+                  : form === "client"
+                    ? "Add client"
+                    : form === "edit-client"
+                      ? "Edit client"
                   : form === "field"
                     ? "Record field work"
                     : form === "book"
@@ -2101,9 +2146,98 @@ function App() {
                 )}
                 {form === "client" && (
                   <>
-                    {field("name", "Client name")}
-                    {field("email", "Email", "email", false)}
-                    {field("phone", "Phone", "tel", false)}
+                    {field("name", "Business name")}
+                    {field("address", "Business address")}
+                    {field("phone", "Business phone", "tel")}
+                    <fieldset>
+                      <legend>Primary contact</legend>
+                      {field("primaryFirstName", "First name")}
+                      {field("primaryLastName", "Last name")}
+                      {field("primaryEmail", "Email", "email")}
+                      {field("primaryPosition", "Position")}
+                      {field("primaryPhone", "Phone", "tel")}
+                    </fieldset>
+                  </>
+                )}
+                {form === "edit-client" && (
+                  <>
+                    <label>
+                      Business name
+                      <input name="name" required defaultValue={selected.name} />
+                    </label>
+                    <label>
+                      Business address
+                      <input
+                        name="address"
+                        required
+                        defaultValue={selected.billing_address || ""}
+                      />
+                    </label>
+                    <label>
+                      Business phone
+                      <input
+                        name="phone"
+                        type="tel"
+                        required
+                        defaultValue={selected.phone || ""}
+                      />
+                    </label>
+                    <fieldset>
+                      <legend>Primary contact</legend>
+                      <label>
+                        First name
+                        <input
+                          name="primaryFirstName"
+                          required
+                          defaultValue={
+                            selected.primary_contact_first_name ||
+                            selected.primary_contact_name?.split(" ")[0] ||
+                            ""
+                          }
+                        />
+                      </label>
+                      <label>
+                        Last name
+                        <input
+                          name="primaryLastName"
+                          required
+                          defaultValue={
+                            selected.primary_contact_last_name ||
+                            selected.primary_contact_name
+                              ?.split(" ")
+                              .slice(1)
+                              .join(" ") ||
+                            ""
+                          }
+                        />
+                      </label>
+                      <label>
+                        Email
+                        <input
+                          name="primaryEmail"
+                          type="email"
+                          required
+                          defaultValue={selected.primary_contact_email || ""}
+                        />
+                      </label>
+                      <label>
+                        Position
+                        <input
+                          name="primaryPosition"
+                          required
+                          defaultValue={selected.primary_contact_position || ""}
+                        />
+                      </label>
+                      <label>
+                        Phone
+                        <input
+                          name="primaryPhone"
+                          type="tel"
+                          required
+                          defaultValue={selected.primary_contact_phone || ""}
+                        />
+                      </label>
+                    </fieldset>
                   </>
                 )}
                 {form === "property" && (

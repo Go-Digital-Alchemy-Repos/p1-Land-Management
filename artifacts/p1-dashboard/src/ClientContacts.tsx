@@ -4,6 +4,7 @@ type Contact = {
   name: string;
   email: string | null;
   phone: string | null;
+  position: string | null;
   kind: "site" | "billing" | "primary" | "other";
   version: number;
   archived: boolean;
@@ -12,9 +13,16 @@ type Input = {
   name: string;
   email: string;
   phone: string;
+  position: string;
   kind: Contact["kind"];
 };
-const empty: Input = { name: "", email: "", phone: "", kind: "site" };
+const empty: Input = {
+  name: "",
+  email: "",
+  phone: "",
+  position: "",
+  kind: "site",
+};
 export function ClientContacts({
   client,
   request,
@@ -52,6 +60,7 @@ export function ClientContacts({
         ...draft,
         email: draft.email.trim() || null,
         phone: draft.phone.trim() || null,
+        position: draft.position.trim() || null,
         ...(editing ? { version: editing.version, archived } : {}),
       });
       setDraft(empty);
@@ -69,6 +78,7 @@ export function ClientContacts({
       name: contact.name,
       email: contact.email || "",
       phone: contact.phone || "",
+      position: contact.position || "",
       kind: contact.kind,
     });
     setError("");
@@ -94,7 +104,9 @@ export function ClientContacts({
                 {contact.archived ? " · archived" : ""}
               </small>
               <small>
-                {[contact.email, contact.phone].filter(Boolean).join(" · ") ||
+                {[contact.position, contact.email, contact.phone]
+                  .filter(Boolean)
+                  .join(" · ") ||
                   "No contact details recorded"}
               </small>
             </div>
@@ -119,6 +131,14 @@ export function ClientContacts({
             maxLength={200}
             value={draft.name}
             onChange={(e) => setDraft({ ...draft, name: e.target.value })}
+          />
+        </label>
+        <label>
+          Position
+          <input
+            maxLength={200}
+            value={draft.position}
+            onChange={(e) => setDraft({ ...draft, position: e.target.value })}
           />
         </label>
         <label>
