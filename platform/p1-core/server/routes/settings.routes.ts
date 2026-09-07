@@ -1,3 +1,4 @@
+import { isPrivateProofSetting } from "@shared/p1-private-proof";
 import { getBaseUrl } from "../utils/route-helpers";
 import { CRM_PIPELINE_SETTING_KEY } from "@shared/crm-pipeline-settings";
 import { Router, type NextFunction, type Request, type Response } from "express";
@@ -71,6 +72,7 @@ router.get(
     const grouped: Record<string, Record<string, { value: string; isSecret: boolean }>> = {};
 
     for (const s of settings) {
+      if (isPrivateProofSetting(s.key, s.category)) continue;
       if (_req.user?.role !== "admin" && s.category !== "branding") continue;
       if (!grouped[s.category]) grouped[s.category] = {};
       grouped[s.category][s.key] = {
@@ -103,6 +105,14 @@ router.put(
       return res
         .status(400)
         .json({ message: "Use /api/admin/crm/settings/pipeline to update pipeline settings" });
+    const existingPrivate = (await storage.settings.getAllSettings()).find(
+      (s) => s.key === data.key,
+    );
+    if (
+      isPrivateProofSetting(data.key, data.category) ||
+      isPrivateProofSetting(existingPrivate?.key, existingPrivate?.category)
+    )
+      return res.status(403).json({ message: "Use the private proof editor" });
     if (req.user?.role !== "admin") {
       const existing = (await storage.settings.getAllSettings()).find(
         (setting) => setting.key === data.key,
@@ -117,7 +127,6 @@ router.put(
       data.category,
       data.isSecret,
     );
-
 
     if (data.category === "cloudflare_r2") {
       r2Service.resetClient();
@@ -188,6 +197,11 @@ router.delete(
       return res
         .status(400)
         .json({ message: "Use /api/admin/crm/settings/pipeline to restore pipeline defaults" });
+    const existing = (await storage.settings.getAllSettings()).find(
+      (s) => s.key === paramString(req.params.key),
+    );
+    if (isPrivateProofSetting(paramString(req.params.key), existing?.category))
+      return res.status(403).json({ message: "Use the private proof editor" });
     await storage.settings.deleteSetting(paramString(req.params.key));
     res.json({ message: "Setting deleted" });
   }),

@@ -17,6 +17,7 @@ import NotFound from "@/pages/not-found";
 import { DEFAULT_SITE_FEATURES, type SiteFeatures } from "@shared/site-features";
 import { Loader2 } from "lucide-react";
 
+const PrivateProofPage = lazy(() => import("@/features/admin/cms/private-proof-page"));
 const ClientSitePagesPage = lazy(() => import("@/features/admin/cms/client-site-pages-page"));
 
 const CmsHybridPage = lazy(() =>
@@ -266,6 +267,11 @@ function Router() {
         <Route path="/admin/cms/website/:routeId/:componentKey">
           <ProtectedRoute roles={["admin", "editor"]} adminPermissions={["content"]}>
             {siteFeatures.cmsEnabled ? <ClientSiteContentEditorPage /> : <NotFound />}
+          </ProtectedRoute>
+        </Route>
+        <Route path="/admin/cms/private-proof">
+          <ProtectedRoute roles={["admin", "editor"]} adminPermissions={["content"]}>
+            {siteFeatures.cmsEnabled ? <PrivateProofPage /> : <NotFound />}
           </ProtectedRoute>
         </Route>
         <Route path="/admin/cms/website">

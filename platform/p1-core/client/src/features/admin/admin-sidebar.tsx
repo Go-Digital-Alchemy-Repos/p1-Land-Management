@@ -141,6 +141,12 @@ export function buildNavGroups(
               ...(siteFeatures.cmsEnabled
                 ? [
                     {
+                      title: "Private proof",
+                      href: "/admin/cms/private-proof",
+                      icon: Globe,
+                      iconColor: "text-violet-600",
+                    } satisfies NavItem,
+                    {
                       title: "P1 Website",
                       href: "/admin/cms/website",
                       icon: Globe,

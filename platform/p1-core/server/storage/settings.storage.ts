@@ -165,6 +165,43 @@ export class SettingsStorage {
     return keys.map((key) => byKey.get(key)!);
   }
 
+  async readPrivateJson(key: string, category: string): Promise<unknown> {
+    const [row] = await this.database
+      .select()
+      .from(systemSettings)
+      .where(eq(systemSettings.key, key));
+    if (!row) return null;
+    if (!row.isSecret || row.category !== category)
+      throw new Error("Private setting boundary violation");
+    return JSON.parse(decrypt(row.value, key));
+  }
+
+  /** Encrypted private JSON: lock covers absent rows too; readers never use stale cache. */
+  async updatePrivateJson<T>(
+    key: string,
+    category: string,
+    update: (current: unknown) => T,
+  ): Promise<T> {
+    const result = await this.database.transaction(async (tx) => {
+      await tx.execute(sql`SELECT pg_advisory_xact_lock(hashtext(${key}))`);
+      const [row] = await tx.select().from(systemSettings).where(eq(systemSettings.key, key));
+      if (row && (!row.isSecret || row.category !== category))
+        throw new Error("Private setting boundary violation");
+      const result = update(row ? JSON.parse(decrypt(row.value, key)) : null);
+      const value = encrypt(JSON.stringify(result));
+      await tx
+        .insert(systemSettings)
+        .values({ key, category, value, isSecret: true })
+        .onConflictDoUpdate({
+          target: systemSettings.key,
+          set: { value, category, isSecret: true, updatedAt: new Date() },
+        });
+      return result;
+    });
+    this.invalidateAll();
+    return result;
+  }
+
   async deleteSetting(key: string): Promise<void> {
     await this.database.delete(systemSettings).where(eq(systemSettings.key, key));
     this.invalidateAll();
