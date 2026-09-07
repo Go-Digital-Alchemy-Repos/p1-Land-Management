@@ -75,3 +75,12 @@ Commercial bridge commit `66338b0459e26e4f61e583dbb68eaa5b49528ed8` is independe
 
 
 Proof mobile follow-up: the initial507px capture occurred during the sidebar transition. The settled page still overflowed to405px at a390px viewport because of the category selector. A page-only style correction constrains fields, wraps actions/history and leaves shared sidebar behavior unchanged. Isolated production assets tested against staging API now measure390px document width at390px for both narrow desktop and touch, and1440px at1440px desktop; keyboard category-to-input focus and mobile drawer open/Escape-close passed. Parent inspected the mobile screenshot. The correction is reviewed locally and awaits the next Core rollout.
+
+
+## Cross-service commercial staging candidate
+
+Dashboard receiver `e1912029-71bd-4a4f-949f-3cbc871f471d` reached SUCCESS from reviewed90307d3/66338b0; migration0010, role restrictions, health and assets were verified. Core sender/backfill/mobile proof deployment `1bbbe2b6-16c3-47b9-a47c-2d5b164998b0` reached SUCCESS from exact `bc3f41483b557afaebcd74fec350b11bd3c49acc`, with904 source files verified. The public website remains592d70b. Core pre-migration backup `6312d29f-a540-4308-a424-ee36af1abdae` is listed.
+
+Fresh staging-only HMAC key and source instance were configured in each service with deploys suppressed, then read back in memory to verify exact sender/receiver equality. No production configuration or provider/session secret was reused. Core sends only to the explicitly allowed dashboard staging host. Cross-service inquiry/delivery/follow-up acceptance is underway; historical recovery remains preview-only until its synthetic receipt hashes are reviewed.
+
+Owner login recovery6d1e024 plus test typing345db82 separately passed independent disposable tests and review. The change exposes enrollment/current-session assurance status and guides recovery while retaining the existing access guard; it does not change roles, bootstrap, account data or required MFA. Its production deployment is tracked by the dashboard task. This is separate from the unfinished shared CMS/dashboard identity work.
