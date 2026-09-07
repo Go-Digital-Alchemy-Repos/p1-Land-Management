@@ -247,6 +247,7 @@ export function AgreementQueue({
           : "Correction was recorded. Posting remains blocked until finance resolves it in QuickBooks and records a new review.",
       );
       setCancellationPreview(null);
+      setCancellationReview(null);
       if (receipt.outcome === "keep_due") {
         setItems((rows) => rows.filter((row) => row.key !== selected.key));
       } else {
@@ -453,7 +454,7 @@ export function AgreementQueue({
             {cancellationPreview && (
               <button
                 className="primary"
-                disabled={busy || !cancellationPreview.wouldResolveSnapshot}
+                disabled={busy}
                 onClick={() => void recordCancellationReview()}
               >
                 Record immutable decision
