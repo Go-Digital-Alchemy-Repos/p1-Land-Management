@@ -10,7 +10,14 @@ export type OutboxItem = OutboxCursor & {
   state: OutboxState;
   label: string;
   summary: string;
+  detail: OutboxDetail;
 };
+export type OutboxDetail =
+  | { kind: "text"; label: "Saved note" | "Saved issue"; text: string }
+  | { kind: "time"; action: "start" | "stop" | "break" | "travel" }
+  | { kind: "checklist"; items: { label: string; done: boolean }[] }
+  | { kind: "complete" }
+  | { kind: "photo"; classification: string };
 export type OutboxPage = {
   items: OutboxItem[];
   nextCursor: OutboxCursor | null;
@@ -46,30 +53,47 @@ export function outboxItem(record: OutboxRecord): OutboxItem {
       state: record.state,
       label: "Photo",
       summary: "Saved photo · " + record.photo.classification,
+      detail: { kind: "photo", classification: record.photo.classification },
     };
   const event = record.operation;
-  let label: string, summary: string;
+  let label: string, summary: string, detail: OutboxDetail;
   switch (event.kind) {
     case "note":
       label = "Note";
       summary = excerpt(event.payload.text || "");
+      detail = {
+        kind: "text",
+        label: "Saved note",
+        text: event.payload.text || "",
+      };
       break;
     case "issue":
       label = "Issue";
       summary = excerpt(event.payload.text || "");
+      detail = {
+        kind: "text",
+        label: "Saved issue",
+        text: event.payload.text || "",
+      };
       break;
     case "time":
       label = "Time entry";
       summary = "Recorded action: " + event.payload.action;
+      detail = { kind: "time", action: event.payload.action! };
       break;
     case "checklist":
       label = "Checklist";
       summary = `${event.payload.items?.filter((item) => item.done).length || 0} of ${event.payload.items?.length || 0} items checked`;
+      detail = {
+        kind: "checklist",
+        items: (event.payload.items || []).map((item) => ({ ...item })),
+      };
       break;
     case "complete":
       label = "Completion request";
       summary =
         "Submitted locally for office review; acceptance is not yet confirmed.";
+      detail = { kind: "complete" };
       break;
   }
   return {
@@ -80,6 +104,7 @@ export function outboxItem(record: OutboxRecord): OutboxItem {
     state: record.state,
     label,
     summary,
+    detail,
   };
 }
 export function validateOutboxCursor(cursor: OutboxCursor | null) {

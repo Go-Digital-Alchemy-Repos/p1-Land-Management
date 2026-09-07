@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import type { OutboxPage } from "../core/outbox";
+import type { OutboxItem, OutboxPage } from "../core/outbox";
 /** Read-only retained captures; all loading and identity guards stay with Application. */
 export function Outbox({
   page,
@@ -19,6 +19,45 @@ export function Outbox({
   onRefresh(): void;
   onClose(): void;
 }) {
+  const [selected, setSelected] = useState<OutboxItem | null>(null);
+  useEffect(() => {
+    setSelected((current) =>
+      current &&
+      !page.items.some(
+        (item) => item.id === current.id && item.kind === current.kind,
+      )
+        ? null
+        : current,
+    );
+  }, [page.items]);
+
+  if (selected)
+    return (
+      <View style={s.panel}>
+        <Text accessibilityRole="header" style={s.heading}>
+          {selected.detail.kind === "text"
+            ? selected.detail.label
+            : `${selected.label} details`}
+        </Text>
+        <Text>
+          {selected.state === "conflict"
+            ? "Needs office review. This capture remains protected on this device."
+            : "Pending server acceptance. This capture remains protected on this device."}
+        </Text>
+        <Text selectable>Capture ID: {selected.id}</Text>
+        <Text selectable>Work order: {selected.targetId}</Text>
+        <Text>Captured: {new Date(selected.capturedAt).toLocaleString()}</Text>
+        <SavedDetail item={selected} />
+        <View style={s.control}>
+          <OutboxControl
+            title="Back to saved outbox"
+            onPress={() => setSelected(null)}
+            disabled={busy}
+          />
+        </View>
+      </View>
+    );
+
   return (
     <View style={s.panel}>
       <Text accessibilityRole="header" style={s.heading}>
@@ -57,6 +96,11 @@ export function Outbox({
           <Text selectable>Work order: {item.targetId}</Text>
           <Text>Captured: {new Date(item.capturedAt).toLocaleString()}</Text>
           <Text>{item.summary}</Text>
+          <OutboxControl
+            title={`Open saved ${item.label.toLowerCase()}`}
+            onPress={() => setSelected(item)}
+            disabled={busy}
+          />
         </View>
       ))}
       <Text>
@@ -82,6 +126,48 @@ export function Outbox({
       </View>
     </View>
   );
+}
+
+function SavedDetail({ item }: { item: OutboxItem }) {
+  switch (item.detail.kind) {
+    case "text":
+      return (
+        <>
+          <Text style={s.label}>{item.detail.label}</Text>
+          <Text selectable>{item.detail.text || "No text was recorded."}</Text>
+        </>
+      );
+    case "time":
+      return <Text>Recorded action: {item.detail.action}</Text>;
+    case "checklist":
+      return (
+        <>
+          <Text style={s.label}>Saved checklist</Text>
+          {item.detail.items.map((entry, index) => (
+            <Text key={`${entry.label}:${index}`}>
+              {entry.done ? "Checked" : "Unchecked"} · {entry.label}
+            </Text>
+          ))}
+          {!item.detail.items.length ? (
+            <Text>No checklist entries.</Text>
+          ) : null}
+        </>
+      );
+    case "complete":
+      return (
+        <Text>
+          Completion was saved locally for office review. It has not been
+          accepted, billed, or published.
+        </Text>
+      );
+    case "photo":
+      return (
+        <Text>
+          Saved {item.detail.classification} photo. Image bytes remain in
+          private device storage and are not previewed here.
+        </Text>
+      );
+  }
 }
 const s = StyleSheet.create({
   touch: {

@@ -54,8 +54,49 @@ test("outbox preserves durable identity/state and summarizes all supported captu
     } as never,
   });
   assert.equal(photo.label, "Photo");
+  assert.deepEqual(photo.detail, { kind: "photo", classification: "general" });
   assert.equal(JSON.stringify(photo).includes("SECRET"), false);
   assert.equal(JSON.stringify(photo).includes("NEVER SHOW"), false);
+});
+test("outbox keeps the typed saved-entry detail without serializing raw payload", () => {
+  const item = outboxItem({
+    kind: "operation",
+    state: "pending",
+    operation: {
+      ...base,
+      kind: "note",
+      payload: { text: "Exact retained field note" },
+    } as never,
+  });
+  assert.deepEqual(item.detail, {
+    kind: "text",
+    label: "Saved note",
+    text: "Exact retained field note",
+  });
+  assert.equal("payload" in item, false);
+  assert.equal(item.summary, "Exact retained field note");
+});
+test("outbox preserves supported time and checklist details", () => {
+  const time = outboxItem({
+    kind: "operation",
+    state: "pending",
+    operation: { ...base, kind: "time", payload: { action: "travel" } } as never,
+  });
+  const checklist = outboxItem({
+    kind: "operation",
+    state: "conflict",
+    operation: {
+      ...base,
+      id: "checklist-operation",
+      kind: "checklist",
+      payload: { items: [{ label: "Gate checked", done: true }] },
+    } as never,
+  });
+  assert.deepEqual(time.detail, { kind: "time", action: "travel" });
+  assert.deepEqual(checklist.detail, {
+    kind: "checklist",
+    items: [{ label: "Gate checked", done: true }],
+  });
 });
 test("large note summaries and pages stay bounded; unsupported states and malformed cursors fail closed", () => {
   const item = outboxItem({
