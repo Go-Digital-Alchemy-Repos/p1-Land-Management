@@ -2,7 +2,16 @@ import { readFile, writeFile, mkdir, rename, unlink } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
 import path from 'node:path';
 
-export function createContentStore({ manifest, origin, cacheDir, timeout = 1800, ttl = 5000, fetcher = fetch }) {
+// Reserve half of Core's 300-request / 15-minute per-IP budget for routine
+// content reads from the single public server. Publication explicitly invalidates
+// this cache, so editors do not wait for the periodic fallback refresh.
+export function defaultContentTtl(manifest) {
+  const components = Math.max(1, manifest.puck.editableComponents.length);
+  const refreshesPerWindow = Math.max(1, Math.floor(150 / components));
+  return Math.max(5000, Math.ceil(15 * 60 * 1000 / refreshesPerWindow));
+}
+
+export function createContentStore({ manifest, origin, cacheDir, timeout = 1800, ttl = defaultContentTtl(manifest), fetcher = fetch }) {
   const cache = new Map();
   const pending = new Map();
   let generation = 0;

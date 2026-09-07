@@ -108,3 +108,29 @@ test('unconditional 304 and invalid persisted JSON degrade to seed safely', asyn
   const store = createContentStore({ manifest, cacheDir, origin: 'https://core.example', fetcher: async () => new Response(null, { status: 304 }) });
   const snapshot = await store.snapshot('/'); assert.equal(snapshot.revision, 0); assert.equal(snapshot.content.title, 'Original');
 });
+
+
+test('all 35 routes stay within the routine Core read budget while publishing refreshes immediately', async t => {
+  t.mock.timers.enable({ apis: ['Date'], now: 1_000_000 });
+  const routes = Array.from({ length: 35 }, (_, i) => ({ path: `/page-${i}`, id: `page-${i}` }));
+  const full = { routes, puck: { editableComponents: [...routes.map(r => definition(`${r.id}-content`)), definition('site-chrome')] } };
+  let calls = 0, revision = 1;
+  const store = createContentStore({ manifest: full, origin: 'https://core.example', fetcher: async url => {
+    calls++;
+    const routeId = new URL(url).pathname.split('/').at(-2);
+    return reply(url, { routeId, revision, content: { title: `Revision ${revision}` } });
+  } });
+  // Frequent visits to every route share the same private-network source IP.
+  for (let elapsed = 0; elapsed < 15 * 60 * 1000; elapsed += 5000) {
+    t.mock.timers.setTime(1_000_000 + elapsed);
+    await Promise.all(routes.map(route => store.snapshot(route.path)));
+  }
+  assert.equal(calls, 144); // 36 components, four refresh rounds.
+  revision = 2;
+  store.invalidate();
+  const published = await store.snapshot('/page-0');
+  assert.equal(published.revision, 2);
+  assert.equal(published.globalRevision, 2);
+  assert.equal(published.content.title, 'Revision 2');
+  assert.equal(calls, 146);
+});
