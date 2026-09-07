@@ -1,0 +1,42 @@
+.work-readiness {
+  margin-top: 1rem;
+  border-top: 1px solid #dde2d8;
+  padding-top: 1rem;
+}
+.work-readiness form,
+.readiness-add {
+  display: grid;
+  gap: 0.75rem;
+}
+.work-readiness label {
+  display: grid;
+  gap: 0.35rem;
+}
+.readiness-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: center;
+}
+.readiness-item label {
+  display: flex;
+  align-items: center;
+  overflow-wrap: anywhere;
+}
+.readiness-item input {
+  width: auto;
+  flex-shrink: 0;
+}
+.readiness-add {
+  grid-template-columns: 1fr 2fr;
+  align-items: end;
+}
+.readiness-add button {
+  grid-column: 1/-1;
+  justify-self: start;
+}
+@media (max-width: 600px) {
+  .readiness-add {
+    grid-template-columns: 1fr;
+  }
+}

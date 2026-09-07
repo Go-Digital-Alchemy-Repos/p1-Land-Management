@@ -1,3 +1,4 @@
+import { workReadinessApi } from "./work-readiness.routes";
 import { prospectContextApi } from "./prospect-context.routes";
 import { commercialIngress, commercialStaffApi } from "./commercial-ingress";
 import express from "express";
@@ -72,6 +73,7 @@ app.use(
   commercialStaffApi,
   api,
   operationsApi,
+  workReadinessApi,
   filesApi,
   qboApi,
   notificationsApi,

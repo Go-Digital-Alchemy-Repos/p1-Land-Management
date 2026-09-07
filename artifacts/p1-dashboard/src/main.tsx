@@ -1,3 +1,4 @@
+import { WorkReadiness } from "./WorkReadiness";
 import { OwnerMfaRecovery } from "./OwnerMfaRecovery";
 import { CommercialInbox } from "./CommercialInbox";
 import { PropertyFiles } from "./PropertyFiles";
@@ -1383,6 +1384,7 @@ function App() {
                               </button>
                             )}
                         </div>
+                        {ops && view === "Schedule" && <WorkReadiness key={w.id + ":" + w.version} work={{...w, prerequisites: w.prerequisites || []}} online={isOnline} save={(id, input) => api("/work-orders/" + id + "/readiness", input)} onChanged={refresh} />}
                       </article>
                     ))
                 ) : (
