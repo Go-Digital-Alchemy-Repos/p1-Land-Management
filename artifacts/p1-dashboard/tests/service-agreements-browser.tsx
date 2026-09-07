@@ -43,6 +43,8 @@ let agreement = {
 let conflict = true,
   prepared = false,
   reviewVersion = 0,
+  recordedOperationId: string | null = null,
+  loseFirstReviewResponse = true,
   reviewState = "unreviewed" as
     | "unreviewed"
     | "kept_due"
@@ -236,8 +238,20 @@ window.fetch = async (input, options) => {
       postingWouldRemainBlocked: body.outcome === "correction_required",
     };
   } else if (path === "/api/v1/agreement-charges/" + charge + "/reviews") {
-    reviewVersion++;
-    reviewState = body.outcome;
+    if (recordedOperationId && body.operationId !== recordedOperationId)
+      return Response.json({ error: "Operation ID changed" }, { status: 409 });
+    if (!recordedOperationId) {
+      recordedOperationId = body.operationId;
+      reviewVersion++;
+      reviewState = body.outcome;
+      if (loseFirstReviewResponse) {
+        loseFirstReviewResponse = false;
+        return Response.json(
+          { error: "Synthetic response loss after persistence" },
+          { status: 503 },
+        );
+      }
+    }
     data = {
       eventId: reviewEvent,
       chargeId: charge,

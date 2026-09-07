@@ -38,6 +38,7 @@ export function AgreementQueue({
       "keep_due" | "correction_required"
     >("keep_due"),
     [reviewReason, setReviewReason] = useState(""),
+    [reviewOperationId, setReviewOperationId] = useState<string | null>(null),
     [message, setMessage] = useState("");
   const pending = useRef(false),
     generation = useRef(0);
@@ -77,6 +78,7 @@ export function AgreementQueue({
     setSelected(null);
     setCancellationReview(null);
     setCancellationPreview(null);
+    setReviewOperationId(null);
     void load();
     return () => {
       generation.current++;
@@ -172,6 +174,7 @@ export function AgreementQueue({
           : "correction_required",
       );
       setReviewReason("");
+      setReviewOperationId(null);
     } catch (e) {
       if (n === generation.current) setError((e as Error).message);
     } finally {
@@ -235,10 +238,12 @@ export function AgreementQueue({
     setBusy(true);
     setError("");
     const n = ++generation.current;
+    const operationId = reviewOperationId || crypto.randomUUID();
+    if (!reviewOperationId) setReviewOperationId(operationId);
     try {
       const receipt = await recordAgreementChargeReview(selected.chargeId, {
         ...reviewInput(cancellationReview),
-        operationId: crypto.randomUUID(),
+        operationId,
       });
       if (n !== generation.current) return;
       setMessage(
@@ -248,6 +253,7 @@ export function AgreementQueue({
       );
       setCancellationPreview(null);
       setCancellationReview(null);
+      setReviewOperationId(null);
       if (receipt.outcome === "keep_due") {
         setItems((rows) => rows.filter((row) => row.key !== selected.key));
       } else {
@@ -421,6 +427,7 @@ export function AgreementQueue({
                   event.target.value as "keep_due" | "correction_required",
                 );
                 setCancellationPreview(null);
+                setReviewOperationId(null);
               }}
             >
               {cancellationReview.allowedOutcomes.map((outcome) => (
@@ -441,6 +448,7 @@ export function AgreementQueue({
               onChange={(event) => {
                 setReviewReason(event.target.value);
                 setCancellationPreview(null);
+                setReviewOperationId(null);
               }}
             />
           </label>
