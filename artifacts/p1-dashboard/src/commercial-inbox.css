@@ -1,3 +1,9 @@
+.commercial-inbox {
+  padding: 1rem;
+}
+.commercial-inbox .commercial-summary {
+  justify-items: start;
+}
 .commercial-filters {
   display: flex;
   flex-wrap: wrap;

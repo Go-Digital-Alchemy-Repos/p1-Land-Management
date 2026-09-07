@@ -17,10 +17,28 @@ const first = {
   email: "example@example.test",
   phone: null,
 };
+const controls = document.createElement("div");
+controls.innerHTML = `<label><input id="delay-detail" type="checkbox">Delay detail responses</label><label><input id="delay-save" type="checkbox">Delay save responses</label><button id="release">Release pending response</button><output id="patch-count">PATCH requests: 0</output>`;
+document.body.prepend(controls);
+let release: (() => void) | undefined,
+  patchCount = 0;
+document.getElementById("release")!.onclick = () => {
+  release?.();
+  release = undefined;
+};
+async function pause(id: string) {
+  if ((document.getElementById(id) as HTMLInputElement).checked)
+    await new Promise<void>((resolve) => {
+      release = resolve;
+    });
+}
 let calls = 0,
   conflict = true;
 async function request(path: string, body?: any, method?: string) {
   if (body !== undefined) {
+    document.getElementById("patch-count")!.textContent =
+      "PATCH requests: " + ++patchCount;
+    await pause("delay-save");
     if (method !== "PATCH") throw new Error("Expected PATCH");
     if (conflict) {
       conflict = false;
@@ -32,9 +50,17 @@ async function request(path: string, body?: any, method?: string) {
     first.next_action = body.nextAction;
     return { ...first };
   }
-  if (path === "/commercial-inquiries/first") return { ...first };
-  if (path === "/commercial-inquiries/second")
-    return { ...first, id: "second", reported_company_name: "Second Company" };
+  if (
+    ["/commercial-inquiries/first", "/commercial-inquiries/second"].includes(
+      path,
+    )
+  ) {
+    const result = path.endsWith("/first")
+      ? { ...first }
+      : { ...first, id: "second", reported_company_name: "Second Company" };
+    await pause("delay-detail");
+    return result;
+  }
   const query = new URL(path, "https://example.test").searchParams;
   if (query.has("status") && query.has("cursor"))
     throw new Error("Old cursor survived filter change");

@@ -60,8 +60,13 @@ export function CommercialInbox({
     [error, setError] = useState("");
   const [loading, setLoading] = useState(false),
     [saving, setSaving] = useState(false),
+    [detailLoading, setDetailLoading] = useState(false),
     [revision, setRevision] = useState(0),
     [detailRevision, setDetailRevision] = useState(0);
+  const detailElement = useRef<HTMLElement>(null);
+  // Synchronous gate prevents detail loads and saves overlapping before React renders.
+  const interactionBusy = useRef(false);
+  const detailsBusy = saving || detailLoading;
   const generation = useRef(0),
     detailGeneration = useRef(0);
   const owners = staff.filter((person) =>
@@ -127,6 +132,9 @@ export function CommercialInbox({
     }
   }
   async function select(id: string) {
+    if (interactionBusy.current) return;
+    interactionBusy.current = true;
+    setDetailLoading(true);
     const current = ++detailGeneration.current;
     setError("");
     try {
@@ -134,13 +142,24 @@ export function CommercialInbox({
       if (current === detailGeneration.current) {
         setSelected(detail);
         setDetailRevision((v) => v + 1);
+        requestAnimationFrame(() => {
+          if (current === detailGeneration.current) {
+            detailElement.current?.focus({ preventScroll: true });
+            detailElement.current?.scrollIntoView({ block: "nearest" });
+          }
+        });
       }
     } catch (e) {
       if (current === detailGeneration.current) setError((e as Error).message);
+    } finally {
+      interactionBusy.current = false;
+      if (current === detailGeneration.current) setDetailLoading(false);
     }
   }
   async function save(form: HTMLFormElement) {
-    if (!selected || saving) return;
+    if (!selected || interactionBusy.current) return;
+    interactionBusy.current = true;
+    const current = ++detailGeneration.current;
     const data = new FormData(form),
       id = selected.id;
     setSaving(true);
@@ -159,16 +178,20 @@ export function CommercialInbox({
         "PATCH",
       );
       const fresh = await request("/commercial-inquiries/" + id);
-      setSelected(fresh);
-      setDetailRevision((v) => v + 1);
-      setRevision((v) => v + 1);
+      if (current === detailGeneration.current) {
+        setSelected(fresh);
+        setDetailRevision((v) => v + 1);
+        setRevision((v) => v + 1);
+      }
     } catch (e) {
-      setError(
-        (e as Error).message +
-          ". Refresh the inquiry to confirm its current state before retrying.",
-      );
+      if (current === detailGeneration.current)
+        setError(
+          (e as Error).message +
+            ". Refresh the inquiry to confirm its current state before retrying.",
+        );
     } finally {
-      setSaving(false);
+      interactionBusy.current = false;
+      if (current === detailGeneration.current) setSaving(false);
     }
   }
   return (
@@ -220,6 +243,7 @@ export function CommercialInbox({
           Overdue follow-ups only
         </label>
       </div>
+      {detailLoading && <p role="status">Loading inquiry details…</p>}
       {error && (
         <p className="error" role="alert">
           {error}
@@ -232,7 +256,7 @@ export function CommercialInbox({
               key={row.id}
               className="commercial-summary"
               aria-pressed={selected?.id === row.id}
-              disabled={saving}
+              disabled={detailsBusy}
               onClick={() => void select(row.id)}
             >
               <strong>{row.reported_company_name || row.name}</strong>
@@ -261,7 +285,11 @@ export function CommercialInbox({
           )}
         </div>
         {selected ? (
-          <article aria-label="Selected commercial inquiry">
+          <article
+            ref={detailElement}
+            tabIndex={-1}
+            aria-label="Selected commercial inquiry"
+          >
             <h3>{selected.reported_company_name || selected.name}</h3>
             <p>
               {selected.name}
@@ -301,7 +329,7 @@ export function CommercialInbox({
                 <select
                   name="owner"
                   defaultValue={selected.owner_id || ""}
-                  disabled={saving}
+                  disabled={detailsBusy}
                 >
                   <option value="">Unassigned</option>
                   {selected.owner_id &&
@@ -322,7 +350,7 @@ export function CommercialInbox({
                 <select
                   name="status"
                   defaultValue={selected.status}
-                  disabled={saving}
+                  disabled={detailsBusy}
                 >
                   {statuses.map((s) => (
                     <option key={s}>{s}</option>
@@ -336,7 +364,7 @@ export function CommercialInbox({
                   required
                   maxLength={2000}
                   defaultValue={selected.next_action || ""}
-                  disabled={saving}
+                  disabled={detailsBusy}
                 />
               </label>
               <label>
@@ -345,15 +373,15 @@ export function CommercialInbox({
                   name="due"
                   type="datetime-local"
                   defaultValue={dateInput(selected.next_action_due_at)}
-                  disabled={saving}
+                  disabled={detailsBusy}
                 />
               </label>
-              <button className="primary" disabled={saving}>
+              <button className="primary" disabled={detailsBusy}>
                 {saving ? "Saving…" : "Save follow-up"}
               </button>
               <button
                 type="button"
-                disabled={saving}
+                disabled={detailsBusy}
                 onClick={() => void select(selected.id)}
               >
                 Reload inquiry and discard draft
