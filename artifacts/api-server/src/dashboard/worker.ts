@@ -2,6 +2,10 @@ import { pool, transaction } from "./database";
 import { generateRecurring } from "./recurrence";
 import { reconcileQuickBooks } from "./quickbooks";
 import { deliverSms } from "./notifications";
+import {
+  runAgreementPreparationOnce,
+  scanAgreementPreparation,
+} from "./agreement-preparation";
 let stopping = false;
 process.on("SIGTERM", () => {
   stopping = true;
@@ -48,7 +52,8 @@ async function deliver(job: {
   return ((await response.json()) as { id: string }).id;
 }
 let lastRecurring = 0,
-  lastReconcile = 0;
+  lastReconcile = 0,
+  lastPreparationScan = 0;
 try {
   console.info(JSON.stringify({ event: "worker.started" }));
   while (!stopping) {
@@ -66,12 +71,24 @@ try {
         );
       lastRecurring = Date.now();
     }
+    if (Date.now() - lastPreparationScan > 60000) {
+      const scheduled = await scanAgreementPreparation();
+      if (scheduled)
+        console.info(
+          JSON.stringify({ event: "agreement_preparation.scheduled", count: scheduled }),
+        );
+      lastPreparationScan = Date.now();
+    }
+    if (await runAgreementPreparationOnce()) {
+      console.info(JSON.stringify({ event: "agreement_preparation.completed" }));
+      continue;
+    }
     const job = await transaction(async (c) => {
       await c.query(
-        "UPDATE outbox SET status='failed',last_error='Delivery outcome unknown after worker interruption; review before retry' WHERE status='processing' AND locked_at<now()-interval '5 minutes'",
+        "UPDATE outbox SET status='failed',last_error='Delivery outcome unknown after worker interruption; review before retry' WHERE kind<>'agreement.prepare_charge' AND status='processing' AND locked_at<now()-interval '5 minutes'",
       );
       const r = await c.query(
-        "SELECT * FROM outbox WHERE status='pending' AND available_at<=now() ORDER BY created_at FOR UPDATE SKIP LOCKED LIMIT 1",
+        "SELECT * FROM outbox WHERE kind<>'agreement.prepare_charge' AND status='pending' AND available_at<=now() ORDER BY created_at FOR UPDATE SKIP LOCKED LIMIT 1",
       );
       if (!r.rowCount) return null;
       await c.query(

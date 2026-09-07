@@ -19,6 +19,7 @@ import {
   createManualAssessment,
 } from "./assessments";
 import { onboardClient, updateClient } from "./client-onboarding";
+import { agreementPreparationHealth } from "./agreement-preparation";
 export const api = Router();
 const office: Role[] = ["owner", "manager", "dispatch", "sales", "finance"];
 const operations: Role[] = ["owner", "manager", "dispatch"];
@@ -874,5 +875,6 @@ api.get("/integrations", async (req, res) => {
       ),
     },
     jobs: r.rows,
+    agreementPreparation: await agreementPreparationHealth(),
   });
 });

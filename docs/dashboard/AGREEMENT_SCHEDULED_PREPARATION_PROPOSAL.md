@@ -1,6 +1,8 @@
-# Scheduled agreement draft preparation — implementation outline
+# Scheduled agreement draft preparation — implementation and rollout contract
 
-Current evidence: worker.ts only dispatches email, SMS and QuickBooks reconciliation jobs; it separately generates recurring work orders. service-agreement.billing.ts currently requires a staff Actor. The agreement queue lists due sources but does not enqueue scheduled preparation. Automatic recurring billing drafts therefore remain unimplemented.
+**Implementation status — September 7, 2026:** source migration `0018_agreement_preparation.sql`, the durable scanner, worker claim fencing, local draft preparation, financial retry controls, and office discovery endpoints are implemented on the dashboard branch. The isolated agreement suite replays the migration and verifies fixed and reviewed-visit preparation, stable deduplication, staff-versus-worker attribution, retry after an eligibility change, and draft-only output. This capability has not been deployed to production. Staging deployment and recovery rehearsal remain required before release approval.
+
+Prior state: the worker only dispatched email, SMS, QuickBooks reconciliation, and recurring-work generation; agreement billing required a staff actor. Migration `0018` replaces that gap with a dedicated local preparation path.
 
 The approved product allows automatic draft preparation while requiring staff review before posting. Schedule only due fixed periods and reviewed eligible per-visit work. Fixed monthly billing remains independent of paused/skipped visit generation. Partial cancellation, unmatched work, missing prerequisites for billing and exhausted approved caps remain explicit office review items.
 
@@ -14,7 +16,7 @@ Worker source selection must paginate beyond blocked items so one unmatched/capp
 
 Required tests: two concurrent schedulers and workers; crash before/after draft commit; stale cancellation or agreement changes; fixed billing during paused visits; reviewed-only per-visit eligibility; original occurrence versus rescheduled date; cap races with manual project billing; retry exhaustion/action visibility; and recovered outbox redelivery after database restore. Extend the populated recovery fixture with a pending and an acknowledged preparation job.
 
-Root decisions before implementation: outbox uniqueness representation and event lifecycle, explicit worker principal/audit representation, and eligibility-conflict queue integration. This is a proposal only; no worker/schema/API changes were made.
+The implementation uses the proposed outbox uniqueness, explicit worker audit attribution, and failed-job action handling. The remaining rollout decisions are staging behavior, operator workflow review, and production release approval.
 
 ## Concrete additive schema and attribution proposal
 
@@ -45,9 +47,9 @@ A later eligible state must not lose work because a permanent-failure dedup row 
 
 Scheduler selection scans pages of due source identities and uses `INSERT ... ON CONFLICT(dedup_key) DO NOTHING`. Blocked sources cannot monopolize a fixed first page. Proposal: persist a scan cursor per scan cycle, finish the cycle before restarting, and bound each transaction by page size. The concrete cursor storage, bounded scan and operational health contracts are specified below for review.
 
-## Approval still required
+## Release approval still required
 
-Review the exact preparation attribution column/check, job-row-first lock order, atomic acknowledgment, retry classification and scanner cursor representation before implementation. No automatic posting, invoice sending, payments or customer publication is introduced. This document is a contract proposal, not an implemented capability.
+Review the exact preparation attribution column/check, job-row-first lock order, atomic acknowledgment, retry classification and scanner cursor representation before production release. No automatic posting, invoice sending, payments or customer publication is introduced.
 
 ## Durable scan cycles — concrete contract
 
@@ -154,4 +156,4 @@ Add actual database tests for two scanner replicas, process restart at each page
 
 Automatic preparation remains local operational draft work. A database restore may precede a later accounting event that still exists in QuickBooks; run reconciliation and resolve ambiguities before staff posting resumes. No worker auto-posts to compensate for restored state. Physical-device, Railway volume/object restoration and full recovery targets remain separate acceptance requirements.
 
-These additions resolve the proposal's previously unspecified cursor, retry and health contracts for review. They are not approved schema/API changes until the Project Orchestrator accepts them. Migration numbering follows the separately reserved0014 identity and0015 correction migrations.
+These additions resolve the prior cursor, retry, and health contracts. Migration numbering follows the existing identity, correction, and MFA migrations. Staging validation and Project Orchestrator release acceptance remain open.

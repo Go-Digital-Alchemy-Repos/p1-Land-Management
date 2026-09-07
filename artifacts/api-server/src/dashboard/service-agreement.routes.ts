@@ -21,6 +21,12 @@ import {
   previewAgreementCharge,
 } from "./service-agreement.billing";
 import {
+  listAgreementPreparationJobs,
+  readAgreementPreparationJob,
+  previewAgreementPreparationRetry,
+  retryAgreementPreparation,
+} from "./agreement-preparation";
+import {
   readServiceAgreement,
   listServiceAgreements,
 } from "./service-agreement.read";
@@ -102,6 +108,20 @@ serviceAgreementApi.post(
 serviceAgreementApi.get("/agreement-charge-queue", async (req, res) =>
   res.json(await listAgreementChargeQueue(await actor(req), req.query)),
 );
+
+serviceAgreementApi.get("/agreement-preparation-jobs", async (req, res) =>
+  res.json(await listAgreementPreparationJobs(await actor(req), req.query)),
+);
+serviceAgreementApi.get("/agreement-preparation-jobs/:id", async (req, res) =>
+  res.json(await readAgreementPreparationJob(await actor(req), id.parse(req.params.id))),
+);
+serviceAgreementApi.post("/agreement-preparation-jobs/:id/retry-preview", async (req, res) =>
+  res.json(await previewAgreementPreparationRetry(await actor(req), id.parse(req.params.id), req.body)),
+);
+serviceAgreementApi.post("/agreement-preparation-jobs/:id/retries", async (req, res) => {
+  const result = await retryAgreementPreparation(await actor(req), id.parse(req.params.id), req.body);
+  res.status(result.created ? 201 : 200).json(result);
+});
 
 serviceAgreementApi.get("/agreement-charges/:id/review", async (req, res) =>
   res.json(

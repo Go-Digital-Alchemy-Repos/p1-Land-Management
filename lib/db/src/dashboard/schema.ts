@@ -1341,6 +1341,7 @@ export const serviceAgreement = pgTable(
       t.startsOn,
       t.endsOn,
     ),
+    index("service_agreement_scan_order").on(t.createdAt, t.id),
     check(
       "service_agreement_title_check",
       sql`length(btrim(title)) BETWEEN 1 AND 500`,
@@ -1415,6 +1416,7 @@ export const agreementCharge = pgTable(
       .references(() => billingDraft.id),
     amountCents: bigint("amount_cents", { mode: "number" }).notNull(),
     preparedBy: text("prepared_by").references(() => user.id),
+    preparedJobId: uuid("prepared_job_id").references(() => outbox.id),
     createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
       .defaultNow()
       .notNull(),
@@ -1434,6 +1436,9 @@ export const agreementCharge = pgTable(
     uniqueIndex("agreement_charge_work_once")
       .on(t.workOrderId)
       .where(sql`work_order_id IS NOT NULL`),
+    uniqueIndex("agreement_charge_job_once")
+      .on(t.preparedJobId)
+      .where(sql`prepared_job_id IS NOT NULL`),
     check(
       "agreement_charge_amount_cents_check",
       sql`amount_cents BETWEEN 1 AND 10000000000`,
@@ -1441,6 +1446,10 @@ export const agreementCharge = pgTable(
     check(
       "agreement_charge_check",
       sql`(fixed_period_id IS NOT NULL AND work_order_id IS NULL AND source_key LIKE 'period:%') OR (fixed_period_id IS NULL AND work_order_id IS NOT NULL AND source_key='work:'||work_order_id::text)`,
+    ),
+    check(
+      "agreement_charge_preparation_actor",
+      sql`prepared_by IS NULL OR prepared_job_id IS NULL`,
     ),
   ],
 );

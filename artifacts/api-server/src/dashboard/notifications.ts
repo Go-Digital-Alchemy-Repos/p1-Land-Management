@@ -104,7 +104,7 @@ notificationsApi.post("/delivery-jobs/:id/retry", async (req, res) => {
   const key = z.string().uuid().parse(req.params.id);
   await transaction(async (c) => {
     const r = await c.query(
-      "UPDATE outbox SET status='pending',available_at=now(),last_error=NULL WHERE id=$1 AND status='failed' RETURNING id",
+      "UPDATE outbox SET status='pending',available_at=now(),last_error=NULL WHERE id=$1 AND kind<>'agreement.prepare_charge' AND status='failed' RETURNING id",
       [key],
     );
     if (!r.rowCount) throw new HttpError(409, "Job is not awaiting a retry");

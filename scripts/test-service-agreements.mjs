@@ -73,6 +73,7 @@ try {
       "src/dashboard/service-agreement.billing.test.ts",
       "src/dashboard/agreement-review.test.ts",
     ],
+    ["exec", "tsx", "--test", "src/dashboard/agreement-preparation.test.ts"],
   ]) {
     const result = spawnSync(
       process.execPath,
