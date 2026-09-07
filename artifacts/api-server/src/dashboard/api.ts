@@ -9,6 +9,7 @@ import {
   requireRole,
   verifyCode,
   transition,
+  canDispatch,
   type Role,
 } from "./policy";
 export const api = Router();
@@ -48,7 +49,10 @@ api.post("/setup/complete", async (req, res) => {
     )
   )
     throw new HttpError(403, "Invalid or expired setup authorization");
-  const assurance = await pool.query("SELECT 1 FROM session_assurance WHERE session_id=$1", [s.session.id]);
+  const assurance = await pool.query(
+    "SELECT 1 FROM session_assurance WHERE session_id=$1",
+    [s.session.id],
+  );
   if (!s.user.twoFactorEnabled || !assurance.rowCount)
     throw new HttpError(409, "Enable and verify MFA before completing setup");
   await transaction(async (c) => {
@@ -65,7 +69,10 @@ api.post("/setup/complete", async (req, res) => {
       "UPDATE installation SET owner_id=$1,completed_at=now() WHERE id=1",
       [s.user.id],
     );
-    await c.query('DELETE FROM session WHERE "userId"=$1 AND id<>$2', [s.user.id, s.session.id]);
+    await c.query('DELETE FROM session WHERE "userId"=$1 AND id<>$2', [
+      s.user.id,
+      s.session.id,
+    ]);
     await audit(c, s.user.id, "installation.completed", s.user.id);
   });
   res.status(201).json({ ok: true });
@@ -429,7 +436,11 @@ api.post("/field/sync", async (req, res) => {
       }
       const conflict =
         w.version !== e.baseVersion ||
-        ["cancelled", "skipped", "reviewed"].includes(w.status);
+        ["cancelled", "skipped", "reviewed"].includes(w.status) ||
+        (e.kind === "time" &&
+          e.payload.action === "start" &&
+          (!["scheduled", "in_progress"].includes(w.status) ||
+            !canDispatch(w.prerequisites, w.override_reason)));
       await c.query(
         "INSERT INTO field_event(id,work_order_id,user_id,kind,payload,base_version,conflict,captured_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
         [
@@ -450,7 +461,8 @@ api.post("/field/sync", async (req, res) => {
         );
       if (e.kind === "checklist" && !conflict) {
         if (
-          !e.payload.items || e.payload.items.length !== w.checklist.length ||
+          !e.payload.items ||
+          e.payload.items.length !== w.checklist.length ||
           !e.payload.items.every(
             (item, index) => item.label === w.checklist[index].label,
           )
@@ -471,6 +483,19 @@ api.post("/field/sync", async (req, res) => {
             409,
             "Complete the job checklist before submitting completion",
           );
+      }
+      if (
+        e.kind === "time" &&
+        e.payload.action === "start" &&
+        !conflict &&
+        w.status === "scheduled"
+      ) {
+        // Field start preserves the downloaded assignment version so subsequent offline
+        // notes/checklists/completion can synchronize against that same assignment.
+        await c.query(
+          "UPDATE work_order SET status='in_progress' WHERE id=$1",
+          [w.id],
+        );
       }
       if (e.kind === "complete" && !conflict)
         await c.query(
@@ -626,12 +651,21 @@ api.post("/billing", async (req, res) => {
       kind: z.enum(["service", "deposit", "progress", "final"]),
     })
     .parse(req.body);
-  const fingerprint = createHash("sha256").update(JSON.stringify(b)).digest("hex");
+  const fingerprint = createHash("sha256")
+    .update(JSON.stringify(b))
+    .digest("hex");
   const key = await transaction(async (c) => {
-    await c.query("SELECT pg_advisory_xact_lock(hashtextextended($1,0))", ["billing:" + b.operationId]);
-    const previous = (await c.query("SELECT * FROM billing_operation WHERE id=$1", [b.operationId])).rows[0];
+    await c.query("SELECT pg_advisory_xact_lock(hashtextextended($1,0))", [
+      "billing:" + b.operationId,
+    ]);
+    const previous = (
+      await c.query("SELECT * FROM billing_operation WHERE id=$1", [
+        b.operationId,
+      ])
+    ).rows[0];
     if (previous) {
-      if (previous.user_id !== a.id || previous.fingerprint !== fingerprint) throw new HttpError(409, "Billing operation ID conflict");
+      if (previous.user_id !== a.id || previous.fingerprint !== fingerprint)
+        throw new HttpError(409, "Billing operation ID conflict");
       return previous.draft_id;
     }
     const key = randomUUID();
@@ -654,7 +688,10 @@ api.post("/billing", async (req, res) => {
       "INSERT INTO billing_draft(id,property_id,estimate_id,title,amount_cents,kind) VALUES($1,$2,$3,$4,$5,$6)",
       [key, b.propertyId, b.estimateId, b.title, b.amountCents, b.kind],
     );
-    await c.query("INSERT INTO billing_operation(id,user_id,fingerprint,draft_id) VALUES($1,$2,$3,$4)", [b.operationId,a.id,fingerprint,key]);
+    await c.query(
+      "INSERT INTO billing_operation(id,user_id,fingerprint,draft_id) VALUES($1,$2,$3,$4)",
+      [b.operationId, a.id, fingerprint, key],
+    );
     await audit(c, a.id, "billing.created", key);
     return key;
   });

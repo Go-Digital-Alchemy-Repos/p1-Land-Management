@@ -1,3 +1,4 @@
+import { ClientContacts } from "./ClientContacts";
 import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { createAuthClient } from "better-auth/react";
@@ -73,7 +74,21 @@ const money = (v: number | string) =>
   new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(
     Number(v) / 100,
   );
+function operatingDate(value: string | Date) {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date(value));
+  return ["year", "month", "day"]
+    .map((type) => parts.find((part) => part.type === type)?.value)
+    .join("-");
+}
 function App() {
+  const [fieldDay, setFieldDay] = useState(() => operatingDate(new Date()));
+  const [downloadedAt, setDownloadedAt] = useState<string | null>(null);
+  const [persistentStorage, setPersistentStorage] = useState(false);
   const [billingOperationId, setBillingOperationId] = useState(() =>
     crypto.randomUUID(),
   );
@@ -132,6 +147,9 @@ function App() {
     if (!person?.role) return;
     setError("");
     try {
+      const savedDay = await offline.readDay(person.id);
+      setDownloadedAt(savedDay?.savedAt || null);
+      setPersistentStorage((await offline.storageStatus()).persistent);
       setCount(
         (await offline.pending(person.id)).length +
           (await offline.pendingPhotos(person.id)).length,
@@ -279,7 +297,10 @@ function App() {
         return;
       }
       if (authMode === "totp" || authMode === "recovery") {
-        const r = authMode === "recovery" ? await auth.twoFactor.verifyBackupCode({code: values.totp}) : await auth.twoFactor.verifyTotp({ code: values.totp });
+        const r =
+          authMode === "recovery"
+            ? await auth.twoFactor.verifyBackupCode({ code: values.totp })
+            : await auth.twoFactor.verifyTotp({ code: values.totp });
         if (r.error) throw new Error(r.error.message);
         await session();
         return;
@@ -599,7 +620,7 @@ function App() {
           <h2>
             {authMode === "signup"
               ? "Create your account"
-              : ["totp","recovery"].includes(authMode)
+              : ["totp", "recovery"].includes(authMode)
                 ? "Verify your sign-in"
                 : authMode === "reset"
                   ? "Reset password"
@@ -609,7 +630,9 @@ function App() {
           </h2>
           <p className="muted">
             {boot && !boot.initialized
-              ? boot.configured ? "First-time setup is available to the designated owner." : "Owner setup is awaiting configuration. Account creation is currently unavailable."
+              ? boot.configured
+                ? "First-time setup is available to the designated owner."
+                : "Owner setup is awaiting configuration. Account creation is currently unavailable."
               : "Sign in to your property operations workspace."}
           </p>
           {error && (
@@ -632,13 +655,29 @@ function App() {
               (boot?.initialized
                 ? field("invitation", "Invitation token", "text", false)
                 : field("code", "Owner setup code"))}
-            {["totp","recovery"].includes(authMode) && field("totp", authMode === "recovery" ? "Recovery code" : "Authenticator code")}
+            {["totp", "recovery"].includes(authMode) &&
+              field(
+                "totp",
+                authMode === "recovery"
+                  ? "Recovery code"
+                  : "Authenticator code",
+              )}
             <button className="primary" type="submit">
               Continue <ArrowUpRight size={17} />
             </button>
           </form>
           <div className="auth-links">
-            {["totp","recovery"].includes(authMode) && <button onClick={() => setAuthMode(authMode === "totp" ? "recovery" : "totp")}>{authMode === "totp" ? "Use a recovery code" : "Use authenticator"}</button>}
+            {["totp", "recovery"].includes(authMode) && (
+              <button
+                onClick={() =>
+                  setAuthMode(authMode === "totp" ? "recovery" : "totp")
+                }
+              >
+                {authMode === "totp"
+                  ? "Use a recovery code"
+                  : "Use authenticator"}
+              </button>
+            )}
             <button
               onClick={() =>
                 setAuthMode(authMode === "login" ? "signup" : "login")
@@ -1035,11 +1074,26 @@ function App() {
           )}
           {view === "Clients" && (
             <section className="panel">
-              <Table
-                rows={data.clients || []}
-                columns={["name", "email", "phone"]}
-                empty="No clients yet. Add your first client to get started."
-              />
+              {(data.clients || []).map((client: any) => (
+                <div className="schedule-row" key={client.id}>
+                  <div>
+                    <strong>{client.name}</strong>
+                    <small>
+                      {[client.email, client.phone].filter(Boolean).join(" · ")}
+                    </small>
+                  </div>
+                  {staff && (
+                    <button onClick={() => openForm("contacts", client)}>
+                      Manage contacts
+                    </button>
+                  )}
+                </div>
+              ))}
+              {!data.clients?.length && (
+                <p className="empty">
+                  No clients yet. Add your first client to get started.
+                </p>
+              )}
             </section>
           )}
           {["Schedule", "My Day"].includes(view) && (
@@ -1049,16 +1103,41 @@ function App() {
                   <div>
                     <strong>{count} pending field entries</strong>
                     <small>
-                      {data.savedAt
-                        ? "Downloaded " + date(data.savedAt)
+                      {downloadedAt
+                        ? "Downloaded " + date(downloadedAt)
                         : "Download assignments before leaving cell coverage."}
                     </small>
                   </div>
+                  <label>
+                    Work date
+                    <input
+                      type="date"
+                      value={fieldDay}
+                      onChange={(event) => setFieldDay(event.target.value)}
+                    />
+                  </label>
+                  <small>
+                    {persistentStorage
+                      ? "Persistent storage granted"
+                      : "Browser storage may be cleared by this device"}
+                  </small>
                   <button
                     disabled={!isOnline}
                     onClick={() =>
                       void run(async () => {
-                        await offline.saveDay(person.id, data.work || []);
+                        await offline.saveDay(
+                          person.id,
+                          (data.work || []).filter(
+                            (work: any) =>
+                              work.scheduled_at &&
+                              operatingDate(work.scheduled_at) === fieldDay,
+                          ),
+                        );
+                        const saved = await offline.readDay(person.id);
+                        setDownloadedAt(saved?.savedAt || null);
+                        setPersistentStorage(
+                          (await offline.storageStatus()).persistent,
+                        );
                         setNotice(
                           "Assignments saved for offline use on this device.",
                         );
@@ -1073,103 +1152,158 @@ function App() {
                 </div>
               )}
               <section className="panel">
-                {data.work?.length ? (
-                  data.work.map((w: any) => (
-                    <article className="work-card" key={w.id}>
-                      <div>
-                        <span className={"badge " + w.status}>
-                          {w.status.replaceAll("_", " ")}
-                        </span>
-                        <h2>{w.title}</h2>
-                        <p>
-                          {w.property_name} · {date(w.scheduled_at)}
-                        </p>
-                        <p className="muted">{w.scope}</p>
-                        {person.role !== "client" && (
-                          <p className="access">
-                            {w.access_instructions ||
-                              "No access instructions recorded."}
+                {data.work?.some(
+                  (work: any) =>
+                    view !== "My Day" ||
+                    (work.scheduled_at &&
+                      operatingDate(work.scheduled_at) === fieldDay),
+                ) ? (
+                  data.work
+                    .filter(
+                      (work: any) =>
+                        view !== "My Day" ||
+                        (work.scheduled_at &&
+                          operatingDate(work.scheduled_at) === fieldDay),
+                    )
+                    .map((w: any) => (
+                      <article className="work-card" key={w.id}>
+                        <div>
+                          <span className={"badge " + w.status}>
+                            {w.status.replaceAll("_", " ")}
+                          </span>
+                          <h2>{w.title}</h2>
+                          <p>
+                            {w.property_name} · {date(w.scheduled_at)}
                           </p>
-                        )}
-                      </div>
-                      <div className="work-actions">
-                        {(ops || person.role === "crew") && (
-                          <>
-                            <button onClick={() => openForm("field", w)}>
-                              Add field entry
-                            </button>
-                            <button onClick={() => openForm("photo", w)}>
-                              Capture photo
-                            </button>
-                          </>
-                        )}
-                        {ops &&
-                          (
-                            {
-                              draft: "scheduled",
-                              scheduled: "in_progress",
-                              in_progress: "completed",
-                              completed: manager ? "reviewed" : null,
-                              delayed: "scheduled",
-                            } as any
-                          )[w.status] && (
-                            <button
-                              disabled={!isOnline}
-                              onClick={() =>
-                                void run(async () => {
-                                  await api(
-                                    "/work-orders/" + w.id + "/status",
-                                    {
-                                      status: (
-                                        {
-                                          draft: "scheduled",
-                                          scheduled: "in_progress",
-                                          in_progress: "completed",
-                                          completed: "reviewed",
-                                          delayed: "scheduled",
-                                        } as any
-                                      )[w.status],
-                                      version: w.version,
-                                    },
-                                  );
-                                  await refresh();
-                                })
-                              }
-                            >
-                              {
-                                (
-                                  {
-                                    draft: "Schedule",
-                                    scheduled: "Start work",
-                                    in_progress: "Complete",
-                                    completed: "Review completion",
-                                    delayed: "Reschedule",
-                                  } as any
-                                )[w.status]
-                              }
-                            </button>
+                          <p className="muted">{w.scope}</p>
+                          {person.role !== "client" && (
+                            <p className="access">
+                              {w.access_instructions ||
+                                "No access instructions recorded."}
+                            </p>
                           )}
-                        {manager && w.status === "reviewed" && !w.published && (
-                          <button
-                            onClick={() =>
-                              void run(async () => {
-                                await api(
-                                  "/work-orders/" + w.id + "/publish",
-                                  {},
-                                );
-                                await refresh();
-                              })
-                            }
-                          >
-                            Publish report
-                          </button>
-                        )}
-                      </div>
-                    </article>
-                  ))
+                        </div>
+                        <div className="work-actions">
+                          {(ops || person.role === "crew") && (
+                            <>
+                              {view === "My Day" &&
+                                w.status === "scheduled" && (
+                                  <button
+                                    onClick={() =>
+                                      void run(async () => {
+                                        const pending = await offline.pending(
+                                          person.id,
+                                        );
+                                        if (
+                                          !pending.some(
+                                            (event) =>
+                                              event.workOrderId === w.id &&
+                                              event.kind === "time" &&
+                                              event.payload.action === "start",
+                                          )
+                                        ) {
+                                          await offline.enqueue(person.id, {
+                                            id: crypto.randomUUID(),
+                                            workOrderId: w.id,
+                                            baseVersion: w.version,
+                                            kind: "time",
+                                            payload: { action: "start" },
+                                            capturedAt:
+                                              new Date().toISOString(),
+                                          });
+                                        }
+                                        setNotice(
+                                          "Work start saved on this device. Sync Now sends it with your field entries.",
+                                        );
+                                        await refresh();
+                                      })
+                                    }
+                                  >
+                                    Start work
+                                  </button>
+                                )}
+                              <button onClick={() => openForm("field", w)}>
+                                Add field entry
+                              </button>
+                              <button onClick={() => openForm("photo", w)}>
+                                Capture photo
+                              </button>
+                            </>
+                          )}
+                          {ops &&
+                            view !== "My Day" &&
+                            (
+                              {
+                                draft: "scheduled",
+                                scheduled: "in_progress",
+                                in_progress: "completed",
+                                completed: manager ? "reviewed" : null,
+                                delayed: "scheduled",
+                              } as any
+                            )[w.status] && (
+                              <button
+                                disabled={!isOnline}
+                                onClick={() =>
+                                  void run(async () => {
+                                    await api(
+                                      "/work-orders/" + w.id + "/status",
+                                      {
+                                        status: (
+                                          {
+                                            draft: "scheduled",
+                                            scheduled: "in_progress",
+                                            in_progress: "completed",
+                                            completed: "reviewed",
+                                            delayed: "scheduled",
+                                          } as any
+                                        )[w.status],
+                                        version: w.version,
+                                      },
+                                    );
+                                    await refresh();
+                                  })
+                                }
+                              >
+                                {
+                                  (
+                                    {
+                                      draft: "Schedule",
+                                      scheduled: "Start work",
+                                      in_progress: "Complete",
+                                      completed: "Review completion",
+                                      delayed: "Reschedule",
+                                    } as any
+                                  )[w.status]
+                                }
+                              </button>
+                            )}
+                          {manager &&
+                            w.status === "reviewed" &&
+                            !w.published && (
+                              <button
+                                onClick={() =>
+                                  void run(async () => {
+                                    await api(
+                                      "/work-orders/" + w.id + "/publish",
+                                      {},
+                                    );
+                                    await refresh();
+                                  })
+                                }
+                              >
+                                Publish report
+                              </button>
+                            )}
+                        </div>
+                      </article>
+                    ))
                 ) : (
                   <Empty
-                    title="No work orders yet"
+                    title={
+                      view === "My Day"
+                        ? "No work scheduled for this date"
+                        : "No work orders yet"
+                    }
                     text="Scheduled assignments will appear here."
                   />
                 )}
@@ -1285,8 +1419,28 @@ function App() {
                       <Plus size={16} /> Add inquiry
                     </button>
                   </div>
-                  {(data.leads || []).map((lead: any) => <div className="schedule-row" key={lead.id}><div><strong>{lead.name}</strong><small>{lead.location} · {lead.description}</small></div><span className="badge">{lead.status}</span>{!lead.converted_property_id && ["owner","manager","sales"].includes(person.role || "") && <button onClick={() => openForm("convert",lead)}>Convert inquiry</button>}</div>)}
-                  {!data.leads?.length && <p className="empty">No inquiries recorded.</p>}
+                  {(data.leads || []).map((lead: any) => (
+                    <div className="schedule-row" key={lead.id}>
+                      <div>
+                        <strong>{lead.name}</strong>
+                        <small>
+                          {lead.location} · {lead.description}
+                        </small>
+                      </div>
+                      <span className="badge">{lead.status}</span>
+                      {!lead.converted_property_id &&
+                        ["owner", "manager", "sales"].includes(
+                          person.role || "",
+                        ) && (
+                          <button onClick={() => openForm("convert", lead)}>
+                            Convert inquiry
+                          </button>
+                        )}
+                    </div>
+                  ))}
+                  {!data.leads?.length && (
+                    <p className="empty">No inquiries recorded.</p>
+                  )}
                 </section>
               )}
             </>
@@ -1322,7 +1476,12 @@ function App() {
                   </div>
                   <strong>{money(b.amount_cents)}</strong>
                   <span className="badge">{b.status}</span>
-                  {staff && b.status === "posted" && !b.ownership_verified && <small role="status">Accounting customer needs reconciliation · hidden from client</small>}
+                  {staff && b.status === "posted" && !b.ownership_verified && (
+                    <small role="status">
+                      Accounting customer needs reconciliation · hidden from
+                      client
+                    </small>
+                  )}
                   {staff && b.status !== "posted" && (
                     <button
                       onClick={() =>
@@ -1342,13 +1501,38 @@ function App() {
                   )}
                 </div>
               ))}
-              {(data["quickbooks/invoices"] || []).map((invoice:any) => <div className="schedule-row" key={"qbo-"+invoice.id}><div><strong>Invoice {invoice.document_number || invoice.id}</strong><small>{invoice.client_name}</small>{staff && !invoice.ownership_verified && <small>Customer mapping needs review · hidden from client</small>}</div><strong>{money(invoice.balance_cents)} outstanding</strong>{invoice.payment_url && invoice.ownership_verified && <a href={invoice.payment_url} target="_blank" rel="noreferrer">Pay invoice</a>}</div>)}
-              {!data.billing?.length && !data["quickbooks/invoices"]?.length && (
-                <Empty
-                  title="Billing, connected to the work"
-                  text="Approved estimates provide the basis for deposits, progress billing, and final balances."
-                />
-              )}
+              {(data["quickbooks/invoices"] || []).map((invoice: any) => (
+                <div className="schedule-row" key={"qbo-" + invoice.id}>
+                  <div>
+                    <strong>
+                      Invoice {invoice.document_number || invoice.id}
+                    </strong>
+                    <small>{invoice.client_name}</small>
+                    {staff && !invoice.ownership_verified && (
+                      <small>
+                        Customer mapping needs review · hidden from client
+                      </small>
+                    )}
+                  </div>
+                  <strong>{money(invoice.balance_cents)} outstanding</strong>
+                  {invoice.payment_url && invoice.ownership_verified && (
+                    <a
+                      href={invoice.payment_url}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Pay invoice
+                    </a>
+                  )}
+                </div>
+              ))}
+              {!data.billing?.length &&
+                !data["quickbooks/invoices"]?.length && (
+                  <Empty
+                    title="Billing, connected to the work"
+                    text="Approved estimates provide the basis for deposits, progress billing, and final balances."
+                  />
+                )}
             </section>
           )}
           {view === "Recurring" && (
@@ -1514,7 +1698,9 @@ function App() {
                 {error}
               </p>
             )}
-            {form === "import" ? (
+            {form === "contacts" ? (
+              <ClientContacts client={selected} request={api} />
+            ) : form === "import" ? (
               <div className="import-preview">
                 <p>
                   {selected.customers.length} customers ·{" "}

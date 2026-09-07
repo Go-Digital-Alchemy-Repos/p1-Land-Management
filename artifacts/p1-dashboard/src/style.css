@@ -977,3 +977,20 @@ textarea {
   border-radius: 4px;
   flex-shrink: 0;
 }
+
+.contact-list {
+  list-style: none;
+  padding: 0;
+}
+.contact-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid #ddd;
+  padding: 12px 0;
+}
+.contact-list small {
+  display: block;
+  overflow-wrap: anywhere;
+}

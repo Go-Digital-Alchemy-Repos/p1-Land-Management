@@ -97,6 +97,7 @@ try {
       "tsx",
       "--test",
       "src/dashboard/policy.test.ts",
+      "src/dashboard/contacts.test.ts",
       "src/dashboard/integration.test.ts",
     ],
     { cwd, env },

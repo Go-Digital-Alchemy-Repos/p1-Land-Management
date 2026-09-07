@@ -5,21 +5,22 @@ Implementation status: **preview deployed at https://dashboard.p1landmanagement.
 ## Implemented and locally exercised
 
 - Invitation-gated Better Auth accounts, verified email, session-specific owner MFA, permanently consumed transactional bootstrap, client/crew authorization.
+- Office site/billing/primary contacts with optimistic edits, archival/restoration, audit records and role checks (follow-up implemented; deployment pending).
 - Clients, properties, work orders, prerequisites, versioned field submissions, review and explicit publication, assessment-slot collision prevention.
 - Estimate decisions, lead conversion, estimate revisions/change orders, retry-safe billing drafts and cumulative estimate caps.
 - Recurring occurrence generation with month-end anchoring, pauses, independent billing-mode metadata, and New York daylight-saving conversion.
 - Responsive role-aware web UI, supplied P1 symbol, private image upload pipeline, IndexedDB day downloads and operation/photo queues.
-- QuickBooks OAuth/import/posting/reconciliation and Mailgun/Twilio adapters are implemented but **not verified against real providers**.
+- QuickBooks OAuth/import/posting/reconciliation and Twilio adapters are implemented but **not verified against real providers**. Mailgun owner-setup delivery is verified; broader notification retry/delivery workflows still need acceptance.
 
 ## Remaining release work
 
 - Physical iPhone and Android offline/restart/low-storage/interrupted-upload acceptance; installed PWA and private S3 end-to-end tests.
-- Complete contract/renewal management, fixed-monthly/per-visit automatic billing preparation, project phase/prerequisite and progress accounting workflows, equipment readiness UI, usable schedule day/week interactions, contact management and full report publication workflows. Existing simple forms/data structures do not constitute completion of these requirements.
+- Complete contract/renewal management, fixed-monthly/per-visit automatic billing preparation, project phase/prerequisite and progress accounting workflows, equipment readiness UI, usable schedule day/week interactions and full report publication workflows. Existing simple forms/data structures do not constitute completion of these requirements.
 - Assessment availability currently uses explicit slots. Configurable availability rules, blackout generation, travel buffers and duration management still need implementation.
 - Broaden permission/integration coverage. The six original scoped security findings and two follow-ups have independent accepted rechecks; these are not an exhaustive security certification.
 - Full OpenAPI coverage and generation for office routes, component decomposition, accessibility/mobile acceptance, support action queues and operational alerts.
 - Connect Core website inquiry intake durably with deduplication; public marketing intake must not be duplicated.
-- Owner email/setup delivery, Mailgun credentials/domain delivery proof, Intuit sandbox proof and production approval, Twilio registration/consent/callback proof.
+- Owner completion of password/MFA setup, Intuit sandbox proof and production approval, Twilio registration/consent/callback proof. Mailgun credentials, domain and initial owner-setup delivery are verified.
 - Backup restoration against deployed infrastructure, rollback rehearsal, complete one-crew/invited-client billing pilot. Native Expo implementation follows web acceptance.
 
 ## Validation

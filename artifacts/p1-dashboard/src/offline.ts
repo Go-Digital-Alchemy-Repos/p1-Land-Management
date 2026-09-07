@@ -31,7 +31,13 @@ async function operation<T>(
     };
     tx.onerror = () => {
       db.close();
-      reject(tx.error);
+      reject(
+        tx.error?.name === "QuotaExceededError"
+          ? new Error(
+              "Device storage is full. This item was not saved. Free space and retry.",
+            )
+          : tx.error,
+      );
     };
     tx.onabort = () => {
       db.close();
@@ -39,8 +45,52 @@ async function operation<T>(
     };
   });
 }
-export async function saveDay(userId: string, data: unknown) {
-  await navigator.storage?.persist?.();
+export async function storageStatus() {
+  const estimate = await navigator.storage?.estimate?.().catch(() => undefined);
+  const persistent = await navigator.storage?.persisted?.().catch(() => false);
+  return {
+    persistent: Boolean(persistent),
+    availableBytes:
+      estimate?.quota === undefined
+        ? null
+        : Math.max(0, estimate.quota - (estimate.usage || 0)),
+  };
+}
+async function reserveSpace(bytes: number) {
+  const { availableBytes } = await storageStatus();
+  if (availableBytes !== null && availableBytes < bytes + 2 * 1024 * 1024)
+    throw new Error(
+      "Device storage is nearly full. Free space and retry; existing unsynchronized work is retained.",
+    );
+}
+export async function saveDay(
+  userId: string,
+  data: { id: string; version: number }[],
+) {
+  const queued = await pending(userId);
+  if (
+    queued.some(
+      (event) =>
+        !data.some(
+          (work) =>
+            work.id === event.workOrderId && work.version === event.baseVersion,
+        ),
+    )
+  )
+    throw new Error(
+      "Synchronize or resolve pending work before replacing changed downloaded assignments.",
+    );
+  const queuedPhotos = await pendingPhotos(userId);
+  if (
+    queuedPhotos.some(
+      (photo) => !data.some((work) => work.id === photo.workOrderId),
+    )
+  )
+    throw new Error(
+      "Synchronize pending photos before replacing their downloaded assignments.",
+    );
+  await reserveSpace(new Blob([JSON.stringify(data)]).size);
+  await navigator.storage?.persist?.().catch(() => false);
   await operation(userId, "snapshot", "readwrite", (s) =>
     s.put({ data, savedAt: new Date().toISOString() }, "day"),
   );
@@ -54,6 +104,7 @@ export function readDay(userId: string) {
   );
 }
 export async function enqueue(userId: string, event: FieldOperation) {
+  await reserveSpace(new Blob([JSON.stringify(event)]).size);
   await operation(userId, "operations", "readwrite", (s) => s.add(event));
 }
 export async function pending(userId: string) {
@@ -88,6 +139,7 @@ export type PhotoOperation = {
   blob: Blob;
 };
 export async function savePhoto(userId: string, photo: PhotoOperation) {
+  await reserveSpace(photo.blob.size);
   await operation(userId, "photos", "readwrite", (s) => s.add(photo));
 }
 export function pendingPhotos(userId: string) {

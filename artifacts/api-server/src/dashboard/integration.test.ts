@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { createHmac, randomUUID } from "node:crypto";
 import { pool, transaction } from "./database";
 import { refreshInvoiceOwnership, bindQuickBooksRealm } from "./quickbooks";
-import {generateRecurring} from "./recurrence";
+import { generateRecurring } from "./recurrence";
 const base = process.env.DASHBOARD_TEST_ORIGIN;
 if (base && !base.startsWith("http://localhost:"))
   throw new Error("Integration tests require an explicitly local test server");
@@ -48,8 +48,45 @@ function client() {
     } catch {
       data = raw;
     }
-    return { status: r.status, data };
+    return {
+      status: r.status,
+      data,
+      authToken: r.headers.get("set-auth-token"),
+      cookie: [...jar].map(([name, value]) => `${name}=${value}`).join("; "),
+    };
   };
+}
+async function nativeClient(
+  path: string,
+  token: string,
+  body?: unknown,
+  cookie?: string,
+  requestOrigin?: string,
+) {
+  const r = await fetch(base + path, {
+    method: body === undefined ? "GET" : "POST",
+    headers: {
+      authorization: `Bearer ${token}`,
+      ...(body === undefined ? {} : { "Content-Type": "application/json" }),
+      ...(cookie ? { cookie } : {}),
+      ...(requestOrigin ? { origin: requestOrigin } : {}),
+    },
+    body: body === undefined ? undefined : JSON.stringify(body),
+  });
+  const raw = await r.text();
+  let data: any;
+  try {
+    data = JSON.parse(raw);
+  } catch {
+    data = raw;
+  }
+  return { status: r.status, data };
+}
+function sessionTokenFromCookie(cookie: string) {
+  const token = cookie.match(
+    /(?:^|;\s*)p1-dashboard\.session_token=([^;]+)/,
+  )?.[1];
+  return token ? decodeURIComponent(token) : null;
 }
 after(async () => {
   await pool.end();
@@ -92,20 +129,68 @@ test(
     assert.equal(r.status, 200, JSON.stringify(r.data));
     assert.equal((await owner("/api/v1/clients")).status, 403);
     const staleOwner = client();
-    assert.equal((await staleOwner("/api/auth/sign-in/email", {email:ownerEmail,password})).status,200);
+    assert.equal(
+      (
+        await staleOwner("/api/auth/sign-in/email", {
+          email: ownerEmail,
+          password,
+        })
+      ).status,
+      200,
+    );
     r = await owner("/api/auth/two-factor/enable", { password });
     assert.equal(r.status, 200, JSON.stringify(r.data));
     const secret = new URL(r.data.totpURI).searchParams.get("secret")!;
     r = await owner("/api/auth/two-factor/verify-totp", { code: totp(secret) });
     assert.equal(r.status, 200, JSON.stringify(r.data));
-    assert.equal((await staleOwner("/api/v1/setup/complete", {code:"secret"})).status,409);
+    const nativeToken = r.authToken;
+    assert.ok(
+      nativeToken,
+      "MFA verification must yield a native session token",
+    );
+    const invalidBearerWithCookie = await nativeClient(
+      "/api/v1/clients",
+      "invalid-token",
+      { name: "Must retain browser Origin protection" },
+      r.cookie,
+    );
+    assert.equal(invalidBearerWithCookie.status, 403);
+    const prefixedCookieBearer = await nativeClient(
+      "/api/v1/clients",
+      nativeToken,
+      { name: "Secure-prefixed cookie must not use native transport" },
+      "__Secure-p1-dashboard.session_token=synthetic",
+    );
+    assert.equal(prefixedCookieBearer.status, 403);
+    const invalidNativeBearer = await nativeClient(
+      "/api/v1/clients",
+      "invalid-token",
+      { name: "Invalid native bearer" },
+    );
+    assert.equal(invalidNativeBearer.status, 401);
+    const forgedOriginBearer = await nativeClient(
+      "/api/v1/clients",
+      nativeToken,
+      { name: "Forged Origin bearer" },
+      undefined,
+      "https://attacker.example",
+    );
+    assert.equal(forgedOriginBearer.status, 403);
+    assert.equal(
+      (await staleOwner("/api/v1/setup/complete", { code: "secret" })).status,
+      409,
+    );
     r = await owner("/api/v1/setup/complete", { code: "secret" });
     assert.equal(r.status, 201, JSON.stringify(r.data));
+    const native = await nativeClient("/api/v1/clients", nativeToken, {
+      name: "Native session client " + suffix,
+    });
+    assert.equal(native.status, 201, JSON.stringify(native.data));
     assert.equal(
       (await owner("/api/v1/setup/complete", { code: "secret" })).status,
       409,
     );
-    assert.equal((await staleOwner("/api/v1/clients")).status,401);
+    assert.equal((await staleOwner("/api/v1/clients")).status, 401);
     const ca = (await owner("/api/v1/clients", { name: "Client A " + suffix }))
       .data.id;
     const cb = (await owner("/api/v1/clients", { name: "Client B " + suffix }))
@@ -272,44 +357,187 @@ test(
       ).status,
       409,
     );
-    const billingIntent = {operationId:randomUUID(),propertyId:pa,estimateId:est,title:"Progress",kind:"progress",amountCents:1000};
-    const retries = await Promise.all([owner("/api/v1/billing",billingIntent),owner("/api/v1/billing",billingIntent)]);
-    assert.deepEqual(retries.map(x=>x.status),[201,201]);
-    assert.equal(retries[0].data.id,retries[1].data.id);
-    assert.equal((await owner("/api/v1/billing",{...billingIntent,amountCents:1200})).status,409);
-    await pool.query("UPDATE client SET quickbooks_id=$2 WHERE id=$1",[ca,"qa"]);
-    await pool.query("UPDATE client SET quickbooks_id=$2 WHERE id=$1",[cb,"qb"]);
-    await pool.query("INSERT INTO external_invoice(id,client_id,total_cents,balance_cents,ownership_verified) VALUES('qi',$1,100,100,true)",[ca]);
-    await refreshInvoiceOwnership({Id:"qi",CustomerRef:{value:"qb"},TotalAmt:1,Balance:1});
-    assert.equal((await customer("/api/v1/quickbooks/invoices")).data.length,0);
-    assert.equal((await pool.query("SELECT client_id FROM external_invoice WHERE id='qi'")).rows[0].client_id,cb);
-    await refreshInvoiceOwnership({Id:"qi",CustomerRef:{value:"unknown"},TotalAmt:1,Balance:1});
-    assert.equal((await pool.query("SELECT ownership_verified FROM external_invoice WHERE id='qi'")).rows[0].ownership_verified,false);
+    const billingIntent = {
+      operationId: randomUUID(),
+      propertyId: pa,
+      estimateId: est,
+      title: "Progress",
+      kind: "progress",
+      amountCents: 1000,
+    };
+    const retries = await Promise.all([
+      owner("/api/v1/billing", billingIntent),
+      owner("/api/v1/billing", billingIntent),
+    ]);
+    assert.deepEqual(
+      retries.map((x) => x.status),
+      [201, 201],
+    );
+    assert.equal(retries[0].data.id, retries[1].data.id);
+    assert.equal(
+      (await owner("/api/v1/billing", { ...billingIntent, amountCents: 1200 }))
+        .status,
+      409,
+    );
+    await pool.query("UPDATE client SET quickbooks_id=$2 WHERE id=$1", [
+      ca,
+      "qa",
+    ]);
+    await pool.query("UPDATE client SET quickbooks_id=$2 WHERE id=$1", [
+      cb,
+      "qb",
+    ]);
+    await pool.query(
+      "INSERT INTO external_invoice(id,client_id,total_cents,balance_cents,ownership_verified) VALUES('qi',$1,100,100,true)",
+      [ca],
+    );
+    await refreshInvoiceOwnership({
+      Id: "qi",
+      CustomerRef: { value: "qb" },
+      TotalAmt: 1,
+      Balance: 1,
+    });
+    assert.equal(
+      (await customer("/api/v1/quickbooks/invoices")).data.length,
+      0,
+    );
+    assert.equal(
+      (await pool.query("SELECT client_id FROM external_invoice WHERE id='qi'"))
+        .rows[0].client_id,
+      cb,
+    );
+    await refreshInvoiceOwnership({
+      Id: "qi",
+      CustomerRef: { value: "unknown" },
+      TotalAmt: 1,
+      Balance: 1,
+    });
+    assert.equal(
+      (
+        await pool.query(
+          "SELECT ownership_verified FROM external_invoice WHERE id='qi'",
+        )
+      ).rows[0].ownership_verified,
+      false,
+    );
     // Locally originated billing must remain attached to the operational client, but hidden on mismatch.
-    await pool.query("UPDATE billing_draft SET status='posted',quickbooks_id='qi',ownership_verified=true WHERE id=$1",[retries[0].data.id]);
-    await refreshInvoiceOwnership({Id:"qi",CustomerRef:{value:"qb"},TotalAmt:1,Balance:1});
-    assert.equal((await customer("/api/v1/billing")).data.length,0);
+    await pool.query(
+      "UPDATE billing_draft SET status='posted',quickbooks_id='qi',ownership_verified=true WHERE id=$1",
+      [retries[0].data.id],
+    );
+    await refreshInvoiceOwnership({
+      Id: "qi",
+      CustomerRef: { value: "qb" },
+      TotalAmt: 1,
+      Balance: 1,
+    });
+    assert.equal((await customer("/api/v1/billing")).data.length, 0);
     process.env.INTEGRATION_ENCRYPTION_KEY = "ab".repeat(32);
-    const connections = await Promise.allSettled(["123", "456"].map(realm => transaction(c => bindQuickBooksRealm(c,realm,async()=>({access_token:"synthetic-"+realm,refresh_token:"synthetic",expires_in:3600})))));
-    assert.equal(connections.filter(x=>x.status==="fulfilled").length,1);
-    assert.equal(connections.filter(x=>x.status==="rejected").length,1);
-    assert.equal((await pool.query("SELECT count(*) FROM integration_connection")).rows[0].count,"1");
-    const anonymous = await fetch(base+"/api/v1/files/"+randomUUID(),{method:"POST",headers:{origin:base!,"content-type":"image/png"},body:"invalid image"});
-    assert.equal(anonymous.status,401);
-    assert.equal((await owner('/api/v1/work-orders/'+work+'/status',{status:'in_progress',version:2})).status,200);
-    const completion={id:randomUUID(),workOrderId:work,baseVersion:3,kind:'complete',payload:{text:'Completed'},capturedAt:new Date().toISOString()};
-    assert.equal((await owner('/api/v1/field/sync',{events:[completion]})).data.results[0].status,'accepted');
-    assert.equal((await owner('/api/v1/work-orders/'+work+'/status',{status:'reviewed',version:4})).status,200);
-    assert.equal((await customer('/api/v1/work-orders/'+work+'/publish',{})).status,403);
-    assert.equal((await owner('/api/v1/work-orders/'+work+'/publish',{})).status,200);
-    assert.equal((await customer('/api/v1/properties/'+pa+'/timeline')).data.length,2);
-    const recurring=randomUUID();await pool.query("INSERT INTO recurring_service(id,property_id,title,cadence,interval_count,next_date,local_time,billing_mode,anchor_day) VALUES($1,$2,'Month end','monthly',1,'2026-01-31','08:00','per_visit',31)",[recurring,pa]);
-    await generateRecurring();await generateRecurring();
-    assert.equal((await pool.query('SELECT next_date::text FROM recurring_service WHERE id=$1',[recurring])).rows[0].next_date,'2026-03-31');
+    const connections = await Promise.allSettled(
+      ["123", "456"].map((realm) =>
+        transaction((c) =>
+          bindQuickBooksRealm(c, realm, async () => ({
+            access_token: "synthetic-" + realm,
+            refresh_token: "synthetic",
+            expires_in: 3600,
+          })),
+        ),
+      ),
+    );
+    assert.equal(connections.filter((x) => x.status === "fulfilled").length, 1);
+    assert.equal(connections.filter((x) => x.status === "rejected").length, 1);
+    assert.equal(
+      (await pool.query("SELECT count(*) FROM integration_connection")).rows[0]
+        .count,
+      "1",
+    );
+    const anonymous = await fetch(base + "/api/v1/files/" + randomUUID(), {
+      method: "POST",
+      headers: { origin: base!, "content-type": "image/png" },
+      body: "invalid image",
+    });
+    assert.equal(anonymous.status, 401);
+    assert.equal(
+      (
+        await owner("/api/v1/work-orders/" + work + "/status", {
+          status: "in_progress",
+          version: 2,
+        })
+      ).status,
+      200,
+    );
+    const completion = {
+      id: randomUUID(),
+      workOrderId: work,
+      baseVersion: 3,
+      kind: "complete",
+      payload: { text: "Completed" },
+      capturedAt: new Date().toISOString(),
+    };
+    assert.equal(
+      (await owner("/api/v1/field/sync", { events: [completion] })).data
+        .results[0].status,
+      "accepted",
+    );
+    assert.equal(
+      (
+        await owner("/api/v1/work-orders/" + work + "/status", {
+          status: "reviewed",
+          version: 4,
+        })
+      ).status,
+      200,
+    );
+    assert.equal(
+      (await customer("/api/v1/work-orders/" + work + "/publish", {})).status,
+      403,
+    );
+    assert.equal(
+      (await owner("/api/v1/work-orders/" + work + "/publish", {})).status,
+      200,
+    );
+    assert.equal(
+      (await customer("/api/v1/properties/" + pa + "/timeline")).data.length,
+      2,
+    );
+    const recurring = randomUUID();
+    await pool.query(
+      "INSERT INTO recurring_service(id,property_id,title,cadence,interval_count,next_date,local_time,billing_mode,anchor_day) VALUES($1,$2,'Month end','monthly',1,'2026-01-31','08:00','per_visit',31)",
+      [recurring, pa],
+    );
     await generateRecurring();
-    const occurrences=(await pool.query("SELECT occurrence_date::text,extract(hour from scheduled_at AT TIME ZONE 'UTC')::int AS hour FROM work_order WHERE recurring_service_id=$1 ORDER BY occurrence_date",[recurring])).rows;
-    assert.equal(occurrences[0].hour,13);assert.equal(occurrences[2].hour,12);
-    await pool.query('UPDATE recurring_service SET paused=true WHERE id=$1',[recurring]);await generateRecurring();assert.equal((await pool.query('SELECT count(*) FROM work_order WHERE recurring_service_id=$1',[recurring])).rows[0].count,'3');
+    await generateRecurring();
+    assert.equal(
+      (
+        await pool.query(
+          "SELECT next_date::text FROM recurring_service WHERE id=$1",
+          [recurring],
+        )
+      ).rows[0].next_date,
+      "2026-03-31",
+    );
+    await generateRecurring();
+    const occurrences = (
+      await pool.query(
+        "SELECT occurrence_date::text,extract(hour from scheduled_at AT TIME ZONE 'UTC')::int AS hour FROM work_order WHERE recurring_service_id=$1 ORDER BY occurrence_date",
+        [recurring],
+      )
+    ).rows;
+    assert.equal(occurrences[0].hour, 13);
+    assert.equal(occurrences[2].hour, 12);
+    await pool.query("UPDATE recurring_service SET paused=true WHERE id=$1", [
+      recurring,
+    ]);
+    await generateRecurring();
+    assert.equal(
+      (
+        await pool.query(
+          "SELECT count(*) FROM work_order WHERE recurring_service_id=$1",
+          [recurring],
+        )
+      ).rows[0].count,
+      "3",
+    );
     const startsAt = new Date(Date.now() + 86400000).toISOString();
     const endsAt = new Date(Date.now() + 90000000).toISOString();
     const slot = (await owner("/api/v1/assessment-slots", { startsAt, endsAt }))
@@ -324,12 +552,141 @@ test(
     ]);
     assert.deepEqual(bookings.map((x) => x.status).sort(), [200, 409]);
     const crewId = (await customer("/api/v1/me")).data.id;
-    await pool.query("UPDATE staff_profile SET role='crew' WHERE user_id=$1",[crewId]);
-    await pool.query("UPDATE work_order SET assigned_to=$2 WHERE id=$1",[work,crewId]);
-    const active = (await owner("/api/v1/work-orders",{propertyId:pa,title:"Active crew job",assignedTo:crewId})).data.id;
-    const uploadHeaders={"content-type":"image/png","x-p1-property":pa,"x-p1-work":work};
-    assert.equal((await customer("/api/v1/files/"+randomUUID(),"invalid image",uploadHeaders)).status,403);
-    assert.equal((await customer("/api/v1/files/"+randomUUID(),"invalid image",{...uploadHeaders,"x-p1-work":active})).status,400);
+    await pool.query("UPDATE staff_profile SET role='crew' WHERE user_id=$1", [
+      crewId,
+    ]);
+    await pool.query("UPDATE work_order SET assigned_to=$2 WHERE id=$1", [
+      work,
+      crewId,
+    ]);
+    const active = (
+      await owner("/api/v1/work-orders", {
+        propertyId: pa,
+        title: "Active crew job",
+        assignedTo: crewId,
+        checklist: [{ label: "Inspect gates", done: false }],
+      })
+    ).data.id;
+    const uploadHeaders = {
+      "content-type": "image/png",
+      "x-p1-property": pa,
+      "x-p1-work": work,
+    };
+    assert.equal(
+      (
+        await customer(
+          "/api/v1/files/" + randomUUID(),
+          "invalid image",
+          uploadHeaders,
+        )
+      ).status,
+      403,
+    );
+    assert.equal(
+      (
+        await customer("/api/v1/files/" + randomUUID(), "invalid image", {
+          ...uploadHeaders,
+          "x-p1-work": active,
+        })
+      ).status,
+      400,
+    );
 
+    // A crew member can perform the entire downloaded workflow without office starting it.
+    assert.equal(
+      (
+        await owner("/api/v1/work-orders/" + active + "/status", {
+          status: "scheduled",
+          version: 1,
+        })
+      ).status,
+      200,
+    );
+    const capturedAt = new Date().toISOString();
+    const start = {
+      id: randomUUID(),
+      workOrderId: active,
+      baseVersion: 2,
+      kind: "time",
+      payload: { action: "start" },
+      capturedAt,
+    };
+    const checklist = {
+      id: randomUUID(),
+      workOrderId: active,
+      baseVersion: 2,
+      kind: "checklist",
+      payload: { items: [{ label: "Inspect gates", done: true }] },
+      capturedAt,
+    };
+    const complete = {
+      id: randomUUID(),
+      workOrderId: active,
+      baseVersion: 2,
+      kind: "complete",
+      payload: { text: "Done offline" },
+      capturedAt,
+    };
+    const completedDay = await customer("/api/v1/field/sync", {
+      events: [start, checklist, complete],
+    });
+    assert.equal(completedDay.status, 200);
+    assert.deepEqual(
+      completedDay.data.results.map((x: any) => x.status),
+      ["accepted", "accepted", "accepted"],
+    );
+    const completedRow = (
+      await pool.query("SELECT status,version FROM work_order WHERE id=$1", [
+        active,
+      ])
+    ).rows[0];
+    assert.equal(completedRow.status, "completed");
+    assert.equal(completedRow.version, 3);
+    assert.deepEqual(
+      (
+        await customer("/api/v1/field/sync", {
+          events: [start, checklist, complete],
+        })
+      ).data.results.map((x: any) => x.status),
+      ["accepted", "accepted", "accepted"],
+    );
+    const draftWork = (
+      await owner("/api/v1/work-orders", {
+        propertyId: pa,
+        title: "Not dispatched",
+        assignedTo: crewId,
+      })
+    ).data.id;
+    const blockedStart = await customer("/api/v1/field/sync", {
+      events: [
+        { ...start, id: randomUUID(), workOrderId: draftWork, baseVersion: 1 },
+      ],
+    });
+    assert.equal(blockedStart.data.results[0].status, "conflict");
+    assert.equal(
+      (
+        await pool.query("SELECT status FROM work_order WHERE id=$1", [
+          draftWork,
+        ])
+      ).rows[0].status,
+      "draft",
+    );
+    const revokedSession = await customer("/api/auth/sign-in/email", {
+      email,
+      password,
+    });
+    const revokedToken =
+      revokedSession.authToken || sessionTokenFromCookie(revokedSession.cookie);
+    assert.ok(revokedToken, "Sign-in must issue a signed session token");
+    const deleted = await pool.query("DELETE FROM session WHERE token=$1", [
+      revokedToken.split(".")[0],
+    ]);
+    assert.equal(deleted.rowCount, 1, "The native session must be revocable");
+    const revokedBearer = await nativeClient(
+      "/api/v1/field/sync",
+      revokedToken,
+      { events: [] },
+    );
+    assert.equal(revokedBearer.status, 401);
   },
 );

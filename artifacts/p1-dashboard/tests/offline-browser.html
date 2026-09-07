@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  /><title>P1 offline storage checks</title>
+  <style>
+    body {
+      font: 16px system-ui;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+    button {
+      padding: 12px;
+    }
+    li {
+      margin: 12px 0;
+    }
+    .fail {
+      color: #a00;
+    }
+    .pass {
+      color: #075;
+    }
+    pre {
+      white-space: pre-wrap;
+    }
+  </style>
+  <h1>P1 offline storage checks</h1>
+  <p>
+    Uses a disposable synthetic account in this browser. No server, customer, or
+    provider requests.
+  </p>
+  <button id="run">Run storage checks</button>
+  <p id="status" role="status">Ready</p>
+  <ol id="results"></ol>
+  <script type="module">
+    import * as store from "/src/offline.ts";
+    const run = document.querySelector("#run"),
+      status = document.querySelector("#status"),
+      results = document.querySelector("#results");
+    run.addEventListener("click", async () => {
+      run.disabled = true;
+      results.replaceChildren();
+      const account = "test-" + crypto.randomUUID();
+      const check = (condition, message) => {
+        if (!condition) throw new Error(message);
+        const item = document.createElement("li");
+        item.className = "pass";
+        item.textContent = message;
+        results.append(item);
+      };
+      const rejects = async (fn, message) => {
+        let rejected = false;
+        try {
+          await fn();
+        } catch {
+          rejected = true;
+        }
+        check(rejected, message);
+      };
+      try {
+        status.textContent = "Running";
+        const work = {
+          id: crypto.randomUUID(),
+          version: 2,
+          title: "Synthetic assignment",
+        };
+        await store.saveDay(account, [work]);
+        const day = await store.readDay(account);
+        check(
+          day.data[0].title === work.title && Boolean(day.savedAt),
+          "Downloaded instructions persist after database close/reopen",
+        );
+        const event = {
+          id: crypto.randomUUID(),
+          workOrderId: work.id,
+          baseVersion: 2,
+          kind: "time",
+          payload: { action: "start" },
+          capturedAt: new Date().toISOString(),
+        };
+        await store.enqueue(account, event);
+        check(
+          (await store.pending(account))[0].id === event.id,
+          "Field entry persists until acknowledged",
+        );
+        await rejects(
+          () => store.enqueue(account, event),
+          "Duplicate local operation ID cannot overwrite saved work",
+        );
+        await rejects(
+          () => store.saveDay(account, [{ ...work, version: 3 }]),
+          "Changed assignment cannot replace pending downloaded work",
+        );
+        await rejects(
+          () => store.saveDay(account, []),
+          "Missing assignment cannot discard pending work",
+        );
+        check(
+          (await store.readDay(account)).data[0].version === 2,
+          "Rejected download preserves original assignment version",
+        );
+        check(
+          (await store.pending("different-" + account)).length === 0,
+          "Other account cannot read this account queue",
+        );
+        await store.clearAccount("different-" + account);
+        await store.acknowledge(account, event.id);
+        check(
+          (await store.pending(account)).length === 0,
+          "Server acknowledgment clears only the acknowledged operation",
+        );
+        const photo = {
+          id: crypto.randomUUID(),
+          workOrderId: work.id,
+          propertyId: crypto.randomUUID(),
+          classification: "before",
+          blob: new Blob(["synthetic photo"], { type: "image/png" }),
+        };
+        await store.savePhoto(account, photo);
+        check(
+          (await (await store.pendingPhotos(account))[0].blob.text()) ===
+            "synthetic photo",
+          "Photo blob survives database close/reopen",
+        );
+        await rejects(
+          () => store.saveDay(account, []),
+          "Pending photo protects its downloaded assignment",
+        );
+        await store.acknowledgePhoto(account, photo.id);
+        check(
+          (await store.pendingPhotos(account)).length === 0,
+          "Photo acknowledgment clears its pending entry",
+        );
+        await store.clearAccount(account);
+        check(
+          (await store.readDay(account)) === undefined,
+          "Completed sign-out storage cleanup removes the snapshot",
+        );
+        status.textContent = "PASS: all offline storage checks completed";
+      } catch (error) {
+        status.className = "fail";
+        status.textContent = "FAIL: " + error.message;
+      } finally {
+        await store.clearAccount(account);
+        run.disabled = false;
+      }
+    });
+  </script>
+</html>

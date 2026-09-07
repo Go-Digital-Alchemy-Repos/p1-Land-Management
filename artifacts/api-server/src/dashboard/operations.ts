@@ -4,7 +4,9 @@ import { randomUUID } from "node:crypto";
 import { pool, transaction } from "./database";
 import { actor, propertyAccess } from "./access";
 import { requireRole, HttpError } from "./policy";
+import { contactsApi } from "./contact-routes";
 export const operationsApi = Router();
+operationsApi.use(contactsApi);
 const id = z.string().uuid(),
   text = z.string().trim().min(1).max(10000);
 operationsApi.get("/recurring-services", async (req, res) => {

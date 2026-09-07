@@ -1,6 +1,6 @@
 # API contracts
 
-Same-origin `/api/v1` endpoints use verified Better Auth sessions. Mutations require the configured dashboard Origin. Errors use HTTP status and an error message; callers must preserve pending operations on failure.
+`/api/v1` endpoints use verified Better Auth sessions. Browser cookie mutations require the configured dashboard Origin. Future iOS/Android clients use the same account's signed bearer session token in `Authorization`; a valid bearer request is allowed without a browser Origin and is still subject to the same verified-email, MFA, role and property authorization checks. Errors use HTTP status and an error message; callers must preserve pending operations on failure.
 
 `lib/api-spec/dashboard.openapi.json` currently specifies setup status, work-order reads and field synchronization. `pnpm --filter @workspace/api-spec codegen:dashboard` generates the isolated dashboard fetch client. The UI consumes its field methods. Other routes currently validate with Zod at the server and still require full OpenAPI coverage.
 
@@ -21,3 +21,5 @@ Field submissions require unique operation IDs, target work order, base version,
 ## Planned commercial inquiry contract
 
 The [commercial initiative](../initiatives/commercial-industrial-sales.md) specifies a proposed versioned server-to-server Core delivery and dashboard inbox receipt, not a currently available endpoint. Complete OpenAPI/Zod design before implementation: source installation/submission identity, payload version/fingerprint, optional contact-channel validation, commercial context, bounded attribution, private attachment references and retry-safe response mapping. Public browsers continue to submit once to the managed Core form. Existing business API/auth and generated-client work remains required.
+
+Office contacts follow-up (not yet deployed): `/clients/:clientId/contacts` GET/POST and `/clients/:clientId/contacts/:id` POST use the existing contact/client relationship. Every route requires an office role; they do not create login identities or grants. Contact edits require the current integer version; competing edits produce one success and one409. `archived` retains historical records, and every mutation is audited. Migration0008 adds only contact archive/version/index fields. The office contact editor supports create/edit/archive/restore. Dedicated tests passed finance access, anonymous/crew/client denials, cross-client mutation mismatch, concurrent edit409 and retained archived records. Browser fixture verified billing contact creation, archival and restoration. Contact changes never modify accepted estimate or accounting snapshots.

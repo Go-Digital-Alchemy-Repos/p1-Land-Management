@@ -1,4 +1,4 @@
-// Generated from dashboard SQL migrations 0001–0007; empty-string defaults corrected after introspection.
+// Generated from dashboard SQL migrations 0001–0008; empty-string defaults corrected after introspection.
 import {
   pgTable,
   text,
@@ -194,8 +194,13 @@ export const contact = pgTable(
     email: text(),
     phone: text(),
     kind: text().default("site").notNull(),
+    archived: boolean().default(false).notNull(),
+    version: integer().default(1).notNull(),
   },
   (table) => [
+    index("contact_client_active_idx")
+      .on(table.clientId)
+      .where(sql`${table.archived} = false`),
     foreignKey({
       columns: [table.clientId],
       foreignColumns: [client.id],
