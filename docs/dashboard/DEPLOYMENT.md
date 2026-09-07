@@ -167,6 +167,14 @@ Keep0012/0013 and all agreement, audit and identity records during application r
 
 Core/public marketing services, their domains and provider configuration were not changed by this release. The Project Orchestrator accepted this bounded release after reviewing the source, staging and production receipts and independently rechecking live health, deep-link serving and anonymous API denial. Broader project completion remains open.
 
+## Durable agreement preparation staging — September 7
+
+Commit `ed20808` adds migration `0018_agreement_preparation.sql`, persisted fixed-agreement and reviewed-work scan state, durable outbox jobs, worker attribution, retry history, office recovery endpoints, and worker-only draft preparation. The isolated agreement suite replayed the complete migration ledger and passed fixed-period and reviewed-visit preparation, stable deduplication, manual-attribution preservation, and eligibility-change retry coverage. The dashboard synthetic suite passed 20/20; API and dashboard type checks and production builds passed.
+
+The documented allowlisted package flow (`node scripts/package-dashboard.mjs`) deployed staging web `803ded4d-b2bf-4e26-93e8-88804c724208` and private worker `4a3911b2-9f0d-4d5f-94c5-5a88513367ed`, both SUCCESS. Health returned 200/no-store and the staging migration ledger contains `0018_agreement_preparation.sql`. A synthetic fixed-period job was inserted only in staging, completed by the deployed worker, and verified as one sent job with `prepared_job_id`, one draft billing record, and no QuickBooks ID. All fixture records, job metadata, audit records, draft, agreement, property, client, and temporary user were removed; follow-up counts were zero. No production deployment, invoice posting, invoice sending, payment action, customer communication, or provider call occurred.
+
+The release flow must use the allowlisted package, not a Git-source deployment of the whole repository: the root `railway.json` is the marketing-site Docker configuration and does not build the dashboard image. Both staging services were returned to source-disconnected, service-configured deployment after this verification.
+
 ## Isolated staging worker — September 7
 
 Staging now has a dedicated asynchronous worker, `p1-dashboard-staging-worker` (`966e2f89-10f8-4c9f-a8bb-d42a3451ff03`), matching the separate production-worker topology. It runs in US East with one replica, no public domain, no volume and no pre-deploy migration. The command is `node dist/dashboard/worker.js`; the staged web service remains the only service that runs `node dist/dashboard/migrate.js`.
