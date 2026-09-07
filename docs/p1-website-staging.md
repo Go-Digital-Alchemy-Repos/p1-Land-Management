@@ -20,6 +20,8 @@ Gateway port is8080; Core port is5000. The public server references the Core ser
 
 ## Observed deployment evidence
 
+- Public staging deployment `e31a5b20-9611-4610-be4e-d8ee9f04bc48` reached SUCCESS from a bounded 34MB runtime package built from reviewed source `b390e55a1fe4c9f66735778fe3dc4fa4e1df411d`. The package manifest records the staging origin and that exact source revision; it contains only the generated public runtime, server and CMS contract, avoiding Railway's failed large-workspace snapshot phase. Live checks confirmed `/healthz` no-store, `/favicon.ico` `image/x-icon`, crawler-visible commercial and York County HTML, 35 sitemap URLs, the requested main-navigation arrangement, staging noindex headers and a genuine unknown-route 404. Production remains unchanged.
+
 - PostgreSQL deployment `8b3e0614-5539-49fa-be4d-191f676bbde5`: terminal SUCCESS.
 - Core deployment `60426fc2-19f0-4274-b94f-2b395578a7c8`: terminal SUCCESS and `/api/health/ready` passed. Source `0f3f1a9e623d846b395b28138e2d030810f92156` from immutable Git archive.
 - Public upload first exceeded Railway request size. Root deployment filters now omit copied Core except the shared manifest helper, and duplicate mockup imagery. Original source assets remain in Git. Public deployment `dbf739b9-3aef-4e68-9fa5-5fa93bc51835` was queued successfully from immutable source `6bdc0ab` after removing duplicate mockup imagery; no public staging acceptance is claimed yet. Core source remains `0f3f1a9` during this staging check; later differences are dashboard setup and deployment packaging, not Core application changes. Before production, record both complete source IDs and verify packaged manifest parity.
