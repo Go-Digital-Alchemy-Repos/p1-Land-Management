@@ -39,7 +39,8 @@ test(
     async function required(value: boolean) {
       const r = await get("/me");
       assert.equal(r.status, 200);
-      assert.equal((await r.json()).ownerMfaRequired, value);
+      const status = (await r.json()) as { ownerMfaRequired: boolean };
+    assert.equal(status.ownerMfaRequired, value);
     }
     try {
       await required(true);
