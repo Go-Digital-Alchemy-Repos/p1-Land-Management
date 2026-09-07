@@ -99,6 +99,7 @@ try {
       "src/dashboard/policy.test.ts",
       "src/dashboard/contacts.test.ts",
       "src/dashboard/assessments.test.ts",
+      "src/dashboard/schedule.test.ts",
       "../p1-dashboard/tests/schedule-dates.test.ts",
       "src/dashboard/integration.test.ts",
     ],

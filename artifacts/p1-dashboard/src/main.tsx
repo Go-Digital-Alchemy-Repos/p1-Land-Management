@@ -1180,6 +1180,8 @@ function App() {
               )}
               {view === "Schedule" && (
                 <ScheduleCalendar
+                    request={api}
+                    onChanged={refresh}
                   work={data.work || []}
                   staff={data.staff || []}
                   canManage={ops}

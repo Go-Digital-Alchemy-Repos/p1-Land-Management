@@ -6,7 +6,9 @@ import { actor, propertyAccess } from "./access";
 import { requireRole, HttpError } from "./policy";
 import { contactsApi } from "./contact-routes";
 import { assessmentApi } from "./assessment-routes";
+import { scheduleApi } from "./schedule-routes";
 export const operationsApi = Router();
+operationsApi.use(scheduleApi);
 operationsApi.use(assessmentApi);
 operationsApi.use(contactsApi);
 const id = z.string().uuid(),
@@ -67,37 +69,6 @@ operationsApi.post("/recurring-services/:id/pause", async (req, res) => {
     id.parse(req.params.id),
     b.paused,
   ]);
-  res.json({ ok: true });
-});
-operationsApi.post("/work-orders/:id/reschedule", async (req, res) => {
-  const a = await actor(req);
-  requireRole(a.role, ["owner", "manager", "dispatch"]);
-  const b = z
-    .object({
-      scheduledAt: z.string().datetime(),
-      assignedTo: z.string().optional(),
-      version: z.number().int().positive(),
-      reason: text,
-    })
-    .parse(req.body);
-  await transaction(async (c) => {
-    const result = await c.query(
-      "UPDATE work_order SET scheduled_at=$2,assigned_to=COALESCE($3,assigned_to),version=version+1 WHERE id=$1 AND version=$4 AND status NOT IN ('reviewed','cancelled','skipped') RETURNING id",
-      [id.parse(req.params.id), b.scheduledAt, b.assignedTo || null, b.version],
-    );
-    if (!result.rowCount)
-      throw new HttpError(409, "Work order changed or cannot be rescheduled");
-    await c.query(
-      "INSERT INTO audit_event(id,user_id,action,entity_id,details) VALUES($1,$2,$3,$4,$5)",
-      [
-        randomUUID(),
-        a.id,
-        "work.rescheduled",
-        req.params.id,
-        { reason: b.reason },
-      ],
-    );
-  });
   res.json({ ok: true });
 });
 operationsApi.get("/properties/:id/areas", async (req, res) => {
