@@ -138,6 +138,8 @@ small {
   background: #183d32;
   color: #dbe4d7;
   height: 100dvh;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
   padding: 31px 19px;
   display: flex;
   flex-direction: column;
