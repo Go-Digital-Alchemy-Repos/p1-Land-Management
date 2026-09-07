@@ -50,3 +50,11 @@ Source and release detail: [dashboard deployment](dashboard/DEPLOYMENT.md), [pro
 - Actual unsaved iframe previews passed for commercial, service, location and article pages. Anonymous checks covered35 routes with no private markers; no Save/Publish occurred. This supersedes the earlier commercial visual-preview gap, but is not exhaustive manual preview or screen-reader acceptance.
 - Production commercial signing configuration is readback-verified with deployment skipped; activation and production end-to-end delivery remain pending.
 - Native Android debug compilation succeeded; emulator/runtime, iOS binary and physical-device acceptance remain outstanding. Native work is not yet independently accepted or released.
+
+## Production dashboard promotion authorized
+
+Exact source `bc7d3a6b80b25cd1b60c00bc6aed9387f3ca02ed` passed staging deployment `65d4cfd0-0226-4c59-b035-13417632006b` and23 live image/access checks, including unsigned S3 denial, changed retry metadata409 and oversized image413. Root verified all198 source-file hashes against manifestSHA256 `c51f59823019e0c7e747520900976f0e19e3fd4404ab277841594f528ab14c40`; unfinished0012 is absent.
+
+Production dashboard database volume instance `93dda803-1db8-4dad-9f19-c909b4765e69` was verified against production environment and database service. Backup `799a7253-70be-4d98-ab8a-62d1861d26cb`, named `p1-before-reviewed-bc7d3a6`, was created and listed at2026-09-07T09:53:12.265Z. This is a recovery checkpoint, not a restored Railway snapshot claim.
+
+The Orchestrator authorized web then worker promotion. Terminal production deployment results and runtime/migration acceptance remain pending. Once0011 prospects exist, rollback must retain operational-property guards and commercial privacy. Shared-login changes remain excluded; Core sender activation and production cross-service receipt verification follow receiver acceptance.
