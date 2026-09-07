@@ -18,7 +18,7 @@ Billing creation requires `operationId` (UUID), `propertyId`, `estimateId`, `tit
 
 Field submissions require unique operation IDs, target work order, base version, captured timestamp, kind and validated payload. Accepted acknowledgments permit local removal; conflicts remain for review. Reassignment/authorization rejection also leaves the device copy intact. File uploads use their stable operation UUID and immutable content-derived object keys.
 
-## Commercial inquiry contract (implemented, awaiting staging acceptance)
+## Commercial inquiry contract (implemented and staging accepted)
 
 Reviewed backend checkpoint66338b0 adds migration0010 and separate raw-body service ingress. Public browsers continue submitting once to Core. The receiver validates the versioned contract, HMAC signature, source/submission identity, fingerprint and bounded payload before durable receipt; browser-authenticated or Origin-bearing ingress is rejected. Exact wire contract and sender retry rules are canonical in `platform/p1-core/docs/contracts/p1-commercial-handoff.md`. No receipt automatically provisions client identities, portal access, properties or QuickBooks records.
 
@@ -28,7 +28,7 @@ Staff endpoints under `/api/v1` require owner, manager or sales:
 - `GET /commercial-inquiries/:id`: full lead detail plus submission_id, received_at and raw_intake. Raw intake is untrusted business content and must never be interpreted as HTML or instructions.
 - `PATCH /commercial-inquiries/:id/follow-up`: `{expectedVersion,ownerId:null|string,nextAction,nextActionDueAt:null|ISO,status}`. Status is new/contacted/qualified/proposal/won/lost. Next action is trimmed1–2000 characters. Assign only active owner/manager/sales users. A stale version returns409; success advances version and audit history. Re-fetch detail and first page because the result omits receipt metadata.
 
-The legacy lead list filters commercial inquiries out for dispatch/finance, and operational conversion advances the same optimistic version. See COMMERCIAL_INBOX.md for UI behavior and regression steps. Complete generated OpenAPI coverage remains outstanding; the implemented service schemas are authoritative for current wire validation.
+The legacy lead list filters commercial inquiries out for dispatch/finance, and operational conversion advances the same optimistic version. See COMMERCIAL_INBOX.md for UI behavior and regression steps. Commercial and schedule generated contracts are implemented in883de4e and pending review/release; remaining office routes still require coverage. The implemented service schemas remain authoritative for current wire validation.
 
 ## Assessment availability (deployed checkpoint4079996)
 

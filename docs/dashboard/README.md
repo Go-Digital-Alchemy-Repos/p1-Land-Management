@@ -20,7 +20,7 @@ Implementation status: **preview deployed at https://dashboard.p1landmanagement.
 - Broaden permission/integration coverage. The six original scoped security findings and two follow-ups have independent accepted rechecks; these are not an exhaustive security certification.
 - Full OpenAPI coverage and generation for office routes, component decomposition, accessibility/mobile acceptance, support action queues and operational alerts.
 - Connect Core website inquiry intake durably with deduplication; public marketing intake must not be duplicated.
-- Owner completion of password/MFA setup, Intuit sandbox proof and production approval, Twilio registration/consent/callback proof. Mailgun credentials, domain and initial owner-setup delivery are verified.
+- Owner completion of MFA recovery/enrollment (verified identity and completed installation now exist), Intuit sandbox proof and production approval, Twilio registration/consent/callback proof. Mailgun credentials, domain and initial owner-setup delivery are verified.
 - Backup restoration against deployed infrastructure, rollback rehearsal, complete one-crew/invited-client billing pilot. Native Expo implementation follows web acceptance.
 
 ## Validation
@@ -46,3 +46,5 @@ The [master plan](../MASTER_PLAN.md) and [Commercial / Industrial Sales initiati
 Calendar and scheduling follow-up (deployed, reviewed checkpoint1bbe6cd): New York day/week navigation, assignment filters, paginated date-range/backlog loading, versioned rescheduling/assignment edits and direct job detail retrieval beyond the legacy500-record list. Tests exercise every page for client/crew isolation and mounted detail authorization. Phone-width fixture confirms calendar-to-field-action navigation. Crew capacity/duration conflicts and staff availability management remain outstanding.
 
 Property photos follow-up (deployed with scheduling): protected photo gallery, full-image links, manager publication status and explicit per-photo publishing using the reviewed-work guard. Browser fixture verified failed-image feedback and a rejected publication staying private. Real authenticated S3 image delivery and full selective report publication acceptance remain outstanding.
+
+Commercial inbox and receiver are deployed with migration0010; staging Core-to-dashboard retry/idempotency, phone-only intake and manager follow-up/conflict acceptance passed. Production sender/key activation is coordinated by the website task. Owner recovery6d1e024/345db82 is independently reviewed and deployed; owner assurance remains required and actual owner enrollment still needs completion.
