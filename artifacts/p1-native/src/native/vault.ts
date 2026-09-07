@@ -1,3 +1,11 @@
+import {
+  outboxItem,
+  validateOutboxCursor,
+  OUTBOX_PAGE_SIZE,
+  type OutboxCursor,
+  type OutboxPage,
+  type OutboxState,
+} from "../core/outbox";
 import { applyChecklist } from "../core/checklist";
 import { obtainDatabaseKey } from "../core/key-policy";
 import * as SQLite from "expo-sqlite";
@@ -180,6 +188,67 @@ async function createVault(
         "SELECT value FROM metadata WHERE key='day'",
       );
       return row ? JSON.parse(row.value) : [];
+    },
+    async outbox(cursor: OutboxCursor | null = null): Promise<OutboxPage> {
+      validateOutboxCursor(cursor);
+      const totals = await db.getFirstAsync<{
+        total: number;
+        pending: number;
+        conflicts: number;
+      }>(
+        `SELECT count(*) total, coalesce(sum(state='pending'),0) pending, coalesce(sum(state='conflict'),0) conflicts
+         FROM (SELECT state FROM operations UNION ALL SELECT state FROM photos)`,
+      );
+      const rows = await db.getAllAsync<{
+        kind: "operation" | "photo";
+        id: string;
+        encoded: string;
+        state: OutboxState;
+        capturedAt: string;
+      }>(
+        `WITH captures AS (
+          SELECT 'operation' kind,id,payload encoded,state,json_extract(payload,'$.capturedAt') capturedAt FROM operations
+          UNION ALL
+          SELECT 'photo' kind,id,manifest encoded,state,json_extract(manifest,'$.capturedAt') capturedAt FROM photos
+        ) SELECT kind,id,encoded,state,capturedAt FROM captures
+          ${cursor ? "WHERE (capturedAt,id,kind) > (?,?,?)" : ""}
+          ORDER BY capturedAt,id,kind LIMIT ?`,
+        ...(cursor
+          ? [cursor.capturedAt, cursor.id, cursor.kind, OUTBOX_PAGE_SIZE + 1]
+          : [OUTBOX_PAGE_SIZE + 1]),
+      );
+      const visible = rows.slice(0, OUTBOX_PAGE_SIZE);
+      const items = visible.map((row) => {
+        const decoded = JSON.parse(row.encoded);
+        if (decoded.id !== row.id)
+          throw new Error(
+            "Saved capture identity is inconsistent. Contact the office before syncing.",
+          );
+        if (row.kind === "operation")
+          return outboxItem({
+            kind: "operation",
+            state: row.state,
+            operation: fieldEventSchema.parse(decoded),
+          });
+        if (
+          typeof decoded.workOrderId !== "string" ||
+          typeof decoded.capturedAt !== "string" ||
+          typeof decoded.classification !== "string"
+        )
+          throw new Error(
+            "Saved photo metadata is invalid. Contact the office.",
+          );
+        return outboxItem({ kind: "photo", state: row.state, photo: decoded });
+      });
+      const last = visible.at(-1);
+      return {
+        ...totals!,
+        items,
+        nextCursor:
+          rows.length > OUTBOX_PAGE_SIZE && last
+            ? { capturedAt: last.capturedAt, id: last.id, kind: last.kind }
+            : null,
+      };
     },
     async pendingCount() {
       return (await db.getFirstAsync<{ n: number }>(

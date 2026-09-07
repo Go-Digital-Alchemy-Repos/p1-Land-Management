@@ -1,3 +1,6 @@
+import { requiresAccountMfa } from "./src/core/mfa-required";
+import { Outbox } from "./src/screens/Outbox";
+import type { OutboxPage, OutboxCursor } from "./src/core/outbox";
 import { withDownloadedChecklist } from "./src/core/checklist";
 import { logoutAccount } from "./src/core/logout";
 import { AuthRequestFailure } from "./src/core/auth";
@@ -59,6 +62,10 @@ export function Application({ services }: { services: ApplicationServices }) {
     forgetCrew: forgetOffline,
   } = services.offlineStore || { rememberCrew, recallCrew, forgetCrew };
   const [offline, setOffline] = useState(false);
+  const [outbox, setOutbox] = useState<OutboxPage | null>(null);
+  const [outboxCursors, setOutboxCursors] = useState<(OutboxCursor | null)[]>([
+    null,
+  ]);
   const [person, setPerson] = useState<DashboardMe | null>(null),
     [email, setEmail] = useState(""),
     [password, setPassword] = useState(""),
@@ -88,6 +95,8 @@ export function Application({ services }: { services: ApplicationServices }) {
     busyRef = useRef(false);
   async function detachVault() {
     const close = vault.detach();
+    setOutbox(null);
+    setOutboxCursors([null]);
     setWork([]);
     setSelected(null);
     setPending(0);
@@ -98,6 +107,29 @@ export function Application({ services }: { services: ApplicationServices }) {
     if (!person || person.role !== "crew")
       throw new Error("Protected work is locked for this account.");
     return vault.require(origin, person.id);
+  }
+  async function loadOutbox(cursors: (OutboxCursor | null)[] = [null]) {
+    const current = requireBoundVault();
+    async function checkOffline() {
+      if (!offline) return;
+      try {
+        await recallOffline(origin, auth.getToken()!);
+      } catch (error) {
+        transport.bind(null);
+        setPerson(null);
+        setOffline(false);
+        await detachVault();
+        throw error;
+      }
+    }
+    await checkOffline();
+    const page = await current.outbox(cursors.at(-1)!);
+    await checkOffline();
+    // Ignore a native read finishing after a forced account/expiry lock.
+    if (vault.current !== current) return;
+    vault.require(origin, current.accountId);
+    setOutbox(page);
+    setOutboxCursors(cursors);
   }
   async function run(action: () => Promise<void>) {
     if (busyRef.current) return;
@@ -145,7 +177,7 @@ export function Application({ services }: { services: ApplicationServices }) {
     transport.bind({ accountId: person?.id || "identity-check", token });
     const current = await transport.request<DashboardMe>("/api/v1/me");
     if (!current.role) throw new RequestFailure(403);
-    if (current.ownerMfaRequired) {
+    if (requiresAccountMfa(current)) {
       transport.bind(null);
       setPerson(null);
       setOffline(false);
@@ -160,7 +192,7 @@ export function Application({ services }: { services: ApplicationServices }) {
         );
       setEnrollment(true);
       throw new Error(
-        "Verify owner MFA for this session before loading business data.",
+        "Verify account MFA for this session before loading business data.",
       );
     }
     setEnrollment(false);
@@ -402,7 +434,7 @@ export function Application({ services }: { services: ApplicationServices }) {
           {!person && enrollment ? (
             <View>
               <Text accessibilityRole="header" style={s.heading}>
-                Owner verification
+                Account verification
               </Text>
               <Text>
                 Use your existing authenticator or recovery code. If you have
@@ -572,7 +604,34 @@ export function Application({ services }: { services: ApplicationServices }) {
                       "Downloaded work. Refresh online to verify current assignments.",
                     );
                   })}
-                  {action(`Sync now · ${pending} pending`, sync)}
+                  {action(`Sync now · ${pending} pending`, async () => {
+                    await sync();
+                    setOutbox(null);
+                    setOutboxCursors([null]);
+                  })}
+                  {action("View saved outbox", () => loadOutbox())}
+                  {outbox && (
+                    <Outbox
+                      page={outbox}
+                      busy={busy}
+                      hasPrevious={outboxCursors.length > 1}
+                      onRefresh={() => void run(() => loadOutbox())}
+                      onNext={() =>
+                        void run(() =>
+                          outbox.nextCursor
+                            ? loadOutbox([...outboxCursors, outbox.nextCursor])
+                            : Promise.resolve(),
+                        )
+                      }
+                      onPrevious={() =>
+                        void run(() => loadOutbox(outboxCursors.slice(0, -1)))
+                      }
+                      onClose={() => {
+                        setOutbox(null);
+                        setOutboxCursors([null]);
+                      }}
+                    />
+                  )}
                 </>
               )}
               {selected ? (

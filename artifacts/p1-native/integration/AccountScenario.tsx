@@ -44,6 +44,16 @@ function resource(accountId: string): Vault {
       throw new Error("A resource accessed after MFA lock");
   };
   return {
+    outbox: async () => {
+      recordUse("outbox");
+      return {
+        items: [],
+        nextCursor: null,
+        total: 0,
+        pending: 0,
+        conflicts: 0,
+      };
+    },
     scope: accountId,
     origin,
     accountId,
