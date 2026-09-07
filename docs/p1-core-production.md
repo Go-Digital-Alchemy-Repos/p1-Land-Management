@@ -17,13 +17,13 @@ Build origins and full source revision were set explicitly and verified before u
 
 ## Remaining release and recovery gates
 
-The existing public website remains on its previous release. Shared CMS/dashboard identity, fresh authorized owner access, activation of configured production commercial sender/receiver keys, end-to-end inquiry delivery, public gateway/cache provisioning, final content/browser checks and production closeout remain unfinished. Do not create an alternate production owner or relax MFA to bypass the pending shared-identity review.
+The existing public website remains on its previous release. Shared CMS/dashboard identity, fresh authorized owner access, production public-form delivery acceptance, public gateway/cache provisioning, final content/browser checks and production closeout remain unfinished. Do not create an alternate production owner or relax MFA to bypass the pending shared-identity review.
 
 Before connecting the public gateway, verify private routing and same-origin preview/origin rules against this service, deploy matching reviewed public content contracts, and confirm last-valid publication recovery on the production cache volume. Production Core user count0 means administrator acceptance has not happened.
 
 There is no prior P1 Core production application to revert to. If the initial backend needs correction, keep the previous public site active and deploy a reviewed compatible backend correction. Preserve the initialized database and audit history; do not use the empty pre-initialization backup to erase subsequent legitimate records. Once commercial receipts exist, retain their schema and compatible delivery/retry behavior. Object-storage, environment-secret and permission restoration remain separate recovery concerns.
 
-## Commercial configuration prepared, not activated
+## Commercial configuration preparation (subsequently activated below)
 
 Fresh production-only signing material was configured with deployment skipped and matching values read back in Core and dashboard. The receiver key map preserved existing entries; Core has a matching key ID, source instance, secret and the dashboard commercial ingress URL/allowed host. No secret is recorded here. This configuration is not evidence of running delivery: activate the reviewed receiver first, redeploy compatible Core, and verify a synthetic durable receipt through the complete production pipeline before public promotion.
 
@@ -33,4 +33,4 @@ Deployment `ce12b993-2403-46c1-b7af-c23efe565982` reached SUCCESS using the same
 
 A synthetic phone-only request through the production Core managed-form HTTP endpoint returned201; an identical retry returned200 with receipt `f2eec0b8-2e9e-4d08-8aaa-833cc6c9474d`. Core CRM lead `27d3d1eb-007b-43ee-9ce9-1b54ac5d6d91` is `new`, source `website_form`, emailNULL. Both CRM and signed dashboard delivery jobs completed on their first attempt; job `11925e3c-82e0-45c4-8b7e-ae834a77378a` recorded validated dashboard acknowledgement for lead `9e921cf6-5b66-44c8-86b6-89884d71892f`. Evidence: `/tmp/p1-production-commercial-probe.json`.
 
-The preflight verified zero Core users and disabled Mailchimp before submission; there were no notification effects or emails. The labelled synthetic records remain as release evidence. This verifies backend durable acceptance and processing, not production public-form UI, staff sign-in, email delivery or shared CMS identity. Independent dashboard database readback is the next check. Do not treat the existing public website as migrated by this backend result.
+The preflight verified zero Core users and disabled Mailchimp before submission; there were no notification effects or emails. The labelled synthetic records remain as release evidence. This verifies backend durable acceptance and processing, not production public-form UI, staff sign-in, email delivery or shared CMS identity. Independent dashboard database readback confirmed one lead, one receipt and one intake audit, New status, website_form source, phone-only contact and preserved project details. Root also queried the joined receipt/lead independently. Do not treat the existing public website as migrated by this backend result.
