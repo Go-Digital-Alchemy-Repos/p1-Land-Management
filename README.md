@@ -2,19 +2,20 @@
 
 Marketing site and supporting workspace for P1 Land & Property Management.
 
-Project scope and current delivery state: [Master plan](docs/MASTER_PLAN.md), [task register](docs/TASKS.md), [implementation evidence](docs/implementation-status.md), and [business dashboard preview/remaining work](docs/dashboard/README.md). The [commercial sales initiative](docs/initiatives/commercial-industrial-sales.md) is planned, not yet implemented.
+Project scope and current delivery state: [Master plan](docs/MASTER_PLAN.md), [task register](docs/TASKS.md), [implementation evidence](docs/implementation-status.md), and [business dashboard preview/remaining work](docs/dashboard/README.md). The [commercial sales initiative](docs/initiatives/commercial-industrial-sales.md) has a staged public page and a production-tested CRM delivery path; the full sales and property-onboarding lifecycle remains in progress.
 
 ## Applications and release status
 
 - `artifacts/p1-website` - React marketing site with published CMS server rendering; current implementation is awaiting production release.
 - `platform/p1-core` - P1-owned CMS/CRM copy, separate build/database, proxied at `/admin` and `/api`.
-- `artifacts/p1-dashboard` and `artifacts/api-server/src/dashboard` - business web/worker preview, separate service/database; unfinished scope is recorded in its README.
+- `artifacts/p1-dashboard` and `artifacts/api-server/src/dashboard` - deployed business web/worker, separate service/database; remaining functionality and pilot acceptance are recorded in its README.
+- `artifacts/p1-native` - Expo iOS/Android implementation under review, with a separate dependency workspace; native build and device acceptance are tracked separately from the web dashboard.
 - `artifacts/mockup-sandbox` - local design/mockup sandbox used during website iteration.
 - `lib/api-spec`, `lib/api-client-react`, `lib/api-zod`, `lib/db` - shared API/schema/client packages.
 
 ## Local Setup
 
-Use pnpm through Corepack or the pinned pnpm version:
+Use pnpm through Corepack or the pinned pnpm version. The root install excludes the native application; install its separate frozen lockfile from `artifacts/p1-native` when working on native code:
 
 ```sh
 npx --yes pnpm@11.19.0 install --frozen-lockfile

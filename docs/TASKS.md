@@ -6,17 +6,20 @@ All tasks use branch codex/p1-cms-crm from P1 5303da0 and upstream Core aad2057.
 
 | ID | Owner | Status | Surface / next gate |
 |---|---|---|---|
-| P1-CORE | Backend specialist | INTEGRATION VALIDATION | Isolated copy and migrations implemented; staging Core healthy, synthetic gateway admin login and module exclusion checks passed; full staged content/forms acceptance underway. |
-| P1-IDENTITY | Project Orchestrator | IN PROGRESS | Better Auth signed bearer sessions cover dashboard web and future native clients. Owner explicitly approved the same P1 credentials for CMS and dashboard; SSO task is implementing CMS federation with explicit permission mapping, MFA/revocation and migration/rollback checks. Shared CMS sign-in is not yet live. Native client implementation and physical-device acceptance remain required before pilot. |
-| P1-PUBLIC | Public specialist | REVIEW | public src; contact, proof, SEO, accessibility and bundle checks |
+| P1-CORE | Backend specialist | INTEGRATION VALIDATION | Isolated copy and migrations implemented; staging Core healthy, synthetic gateway admin login and module exclusion checks passed; staged content/forms checks and production synthetic CRM/dashboard delivery passed; owner/shared-login and public promotion remain. |
+| P1-IDENTITY | Project Orchestrator | IN PROGRESS | Better Auth signed bearer sessions cover dashboard web and future native clients. Owner explicitly approved the same P1 credentials for CMS and dashboard; SSO task is waiting on an existing tool approval for its work; CMS federation still requires implementation with explicit permission mapping, MFA/revocation and migration/rollback checks. Shared CMS sign-in is not yet live. Native client implementation and physical-device acceptance remain required before pilot. |
+| P1-PUBLIC | Public specialist | STAGING ACCEPTED | Reviewed03ba5b8 live on staging:35 routes, asset parity, mobile error flow and CMS preservation passed; production artifact/gateway/owner release gates remain. |
 | P1-IMAGES | Image specialist | REVIEW | image variants/manifest/pipeline; budgets passed, integrated visual QA next |
 | P1-CMS | Orchestrator | INTEGRATION VALIDATION | 36 components across35routes; seven-family and commercial publish/restore staging checks passed; final preview/production gates remain. |
 | P1-OPS | Orchestrator | IN PROGRESS | public server, isolated Railway DB/core service, staging; deployment review next |
 | P1-QA | Orchestrator | IN PROGRESS | 35-route staged public QA and scoped runtime/security checks passed; admin redirect fix is live. Final browser/accessibility and production gates remain. |
 | P1-CONTENT | Strategy task; Orchestrator integration | PLANNED | Strategy/proof brief under docs/strategy; public/CMS implementation follows acceptance of P1-PUBLIC, P1-IMAGES and P1-CMS review gates |
-| P1-COMMERCIAL | Orchestrator + content/Core/dashboard owners | IN PROGRESS | Commercial page/intake and signed dashboard handoff passed staging; fc302b1 prospect API reviewed/pushed, editing panel underway; assessment/onboarding and target-account pursuit remain. COM-01–07 in [initiative](initiatives/commercial-industrial-sales.md) |
+| P1-COMMERCIAL | Orchestrator + content/Core/dashboard owners | IN PROGRESS | Commercial page/intake and signed dashboard handoff passed staging; fc302b1 prospect API reviewed/pushed, editing panel accepted on staging and deployed in reviewedbc7 dashboard; production delivery/readback passed; assessment/onboarding and target-account pursuit remain. COM-01–07 in [initiative](initiatives/commercial-industrial-sales.md) |
 
-Latest evidence and deployment limits: [implementation-status.md](implementation-status.md). Separate business dashboard candidate undergoing independent review; no pilot acceptance.
+| P1-NATIVE | Native specialist; independent review | IN PROGRESS | Android build/emulator storage/account-transition checks and18 logic tests passed; offline restart implementation, iOS build, physical devices and pilot remain. |
+| P1-AGREEMENTS | Dashboard task; independent review | IMPLEMENTED, UNMOUNTED | Operational recurring terms and reviewed charge preparation under review;0012 remains outside deployments. |
+
+Latest evidence and deployment limits: [implementation-status.md](implementation-status.md). Business dashboardbc7 is deployed; later service-agreement work remains under independent review. No full pilot acceptance.
 
 ## P1-CONTENT scope and integration gate
 
