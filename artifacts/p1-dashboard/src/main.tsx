@@ -31,7 +31,9 @@ import {
 } from "lucide-react";
 import {
   getMyWorkOrders,
+  listAccountMfaPolicies,
   syncFieldEvents,
+  updateAccountMfaPolicy,
 } from "@workspace/api-client-react/dashboard";
 import * as offline from "./offline";
 import "./style.css";
@@ -205,6 +207,7 @@ function App() {
                   : []),
                 "requests",
                 "staff",
+                ...(person.role === "owner" ? ["account-mfa-policies"] : []),
                 "leads",
                 "assessment-slots",
                 ...(["owner", "manager", "dispatch"].includes(person.role)
@@ -214,7 +217,11 @@ function App() {
       const values = await Promise.all(
         [...new Set(paths)].map(async (p) => [
           p,
-          p === "work-orders" ? await getMyWorkOrders() : await api("/" + p),
+          p === "work-orders"
+            ? await getMyWorkOrders()
+            : p === "account-mfa-policies"
+              ? await listAccountMfaPolicies()
+              : await api("/" + p),
         ]),
       );
       const d = Object.fromEntries(values);
@@ -1743,19 +1750,27 @@ function App() {
                   columns={["name", "role", "mfaRequired"]}
                   empty="No staff records."
                 />
-                {person.role === "owner" && (data.staff || []).length > 0 && (
+                {person.role === "owner" &&
+                  (data["account-mfa-policies"] || []).length > 0 && (
                   <div className="stacked-actions">
-                    <h3>Two-factor requirements</h3>
-                    {(data.staff || []).map((member: any) => (
+                    <h3>Two-factor requirements for every account</h3>
+                    {(data["account-mfa-policies"] || []).map((member: any) => (
                       <div className="row-actions" key={member.id}>
-                        <span>{member.name} — {member.mfaRequired ? "Required" : "Optional"}</span>
+                        <span>
+                          {member.name} · {member.role} · {member.email} —{" "}
+                          {member.mfaRequired ? "Required" : "Optional"}
+                        </span>
                         <button
                           onClick={() =>
                             void run(async () => {
-                              await api(`/staff/${member.id}/mfa-requirement`, {
+                              await updateAccountMfaPolicy(member.id, {
                                 required: !member.mfaRequired,
                               });
-                              await refresh();
+                              // When an owner applies the requirement to their
+                              // own unassured session, immediately re-read the
+                              // policy so the enrollment gate replaces settings.
+                              if (member.id === person.id) await session();
+                              else await refresh();
                             })
                           }
                         >

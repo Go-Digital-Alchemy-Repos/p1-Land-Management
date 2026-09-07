@@ -20,6 +20,16 @@ function totp(secret: string) {
   const i = h[19] & 15;
   return String((h.readUInt32BE(i) & 0x7fffffff) % 1000000).padStart(6, "0");
 }
+async function waitForProfileLock() {
+  for (let attempt = 0; attempt < 100; attempt++) {
+    const waiting = await pool.query(
+      "SELECT 1 FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock' AND query LIKE '%FROM staff_profile WHERE user_id=$1%' LIMIT 1",
+    );
+    if (waiting.rowCount) return;
+    await new Promise((resolve) => setTimeout(resolve, 10));
+  }
+  throw new Error("Timed out waiting for the factor-policy lock");
+}
 function client() {
   const jar = new Map<string, string>();
   return async (
@@ -246,16 +256,68 @@ test(
     );
     const customerId = (await customer("/api/v1/me")).data.id;
     assert.equal(
-      (await customer(`/api/v1/staff/${customerId}/mfa-requirement`, { required: true })).status,
+      (await customer("/api/v1/account-mfa-policies")).status,
       403,
     );
     assert.equal(
-      (await owner(`/api/v1/staff/${customerId}/mfa-requirement`, { required: true })).status,
+      (
+        await customer(`/api/v1/account-mfa-policies/${customerId}`, {
+          required: true,
+        })
+      ).status,
+      403,
+    );
+    r = await owner("/api/v1/account-mfa-policies");
+    assert.equal(r.status, 200);
+    assert.equal(r.data.some((account: any) => account.id === customerId), true);
+    assert.equal(
+      (
+        await owner(`/api/v1/account-mfa-policies/${customerId}`, {
+          required: true,
+        })
+      ).status,
       200,
     );
+    r = await customer("/api/v1/me");
+    assert.equal(r.data.mfaRequired, true);
+    assert.equal(r.data.ownerMfaRequired, true);
+    // A required but not-yet-enrolled account may still begin its first factor
+    // enrollment; it cannot load protected data first.
+    assert.equal(
+      (await customer("/api/auth/two-factor/enable", { password })).status,
+      200,
+    );
+    // A queued reset must re-read the factor state after acquiring the policy
+    // lock. This simulates a factor enrollment completing while the queued
+    // request still holds the user snapshot from before enrollment.
+    const enrollmentLock = await pool.connect();
+    let queuedFactorRead: ReturnType<typeof customer> | undefined;
+    try {
+      await enrollmentLock.query("BEGIN");
+      await enrollmentLock.query(
+        "SELECT 1 FROM staff_profile WHERE user_id=$1 FOR UPDATE",
+        [customerId],
+      );
+      queuedFactorRead = customer("/api/auth/two-factor/get-totp-uri", {
+        password,
+      });
+      await waitForProfileLock();
+      await pool.query('UPDATE "user" SET "twoFactorEnabled"=true WHERE id=$1', [
+        customerId,
+      ]);
+      await enrollmentLock.query("ROLLBACK");
+      assert.equal((await queuedFactorRead).status, 403);
+    } finally {
+      await enrollmentLock.query("ROLLBACK").catch(() => undefined);
+      enrollmentLock.release();
+    }
     assert.equal((await customer("/api/v1/properties")).status, 403);
     assert.equal(
-      (await owner(`/api/v1/staff/${customerId}/mfa-requirement`, { required: false })).status,
+      (
+        await owner(`/api/v1/account-mfa-policies/${customerId}`, {
+          required: false,
+        })
+      ).status,
       200,
     );
     const props = (await customer("/api/v1/properties")).data;
@@ -269,6 +331,60 @@ test(
     assert.equal(
       (await customer("/api/v1/clients", { name: "Unauthorized" })).status,
       403,
+    );
+    // Requiring MFA for the current owner must take effect on the same session.
+    // Remove that session's assurance to reproduce the stale-session factor
+    // reset attack: password-only disable, backup-code replacement and URI
+    // retrieval must all fail until the existing factor is verified.
+    const ownerId = (await owner("/api/v1/me")).data.id;
+    assert.equal(
+      (
+        await owner(`/api/v1/account-mfa-policies/${ownerId}`, {
+          required: true,
+        })
+      ).status,
+      200,
+    );
+    await pool.query(
+      'DELETE FROM session_assurance WHERE session_id IN (SELECT id FROM session WHERE "userId"=$1)',
+      [ownerId],
+    );
+    r = await owner("/api/v1/me");
+    assert.equal(r.data.mfaRequired, true);
+    assert.equal(r.data.ownerMfaRequired, true);
+    assert.equal(
+      (await owner("/api/auth/two-factor/disable", { password })).status,
+      403,
+    );
+    assert.equal(
+      (
+        await owner("/api/auth/two-factor/generate-backup-codes", {
+          password,
+        })
+      ).status,
+      403,
+    );
+    assert.equal(
+      (await owner("/api/auth/two-factor/get-totp-uri", { password })).status,
+      403,
+    );
+    assert.equal(
+      (
+        await nativeClient("/api/auth/two-factor/get-totp-uri", nativeToken, {
+          password,
+        })
+      ).status,
+      403,
+    );
+    r = await owner("/api/auth/two-factor/verify-totp", { code: totp(secret) });
+    assert.equal(r.status, 200, JSON.stringify(r.data));
+    assert.equal(
+      (
+        await owner(`/api/v1/account-mfa-policies/${ownerId}`, {
+          required: false,
+        })
+      ).status,
+      200,
     );
     const work = (
       await owner("/api/v1/work-orders", { propertyId: pa, title: "Mow" })

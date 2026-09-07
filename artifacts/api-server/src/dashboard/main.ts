@@ -5,7 +5,12 @@ import { commercialIngress, commercialStaffApi } from "./commercial-ingress";
 import express from "express";
 import { toNodeHandler } from "better-auth/node";
 import { resolve } from "node:path";
-import { auth, origin } from "./auth";
+import {
+  auth,
+  closeFactorResetLockPool,
+  origin,
+  withFactorResetLockScope,
+} from "./auth";
 import { api } from "./api";
 import { operationsApi } from "./operations";
 import { filesApi } from "./files";
@@ -42,7 +47,10 @@ app.get("/api/healthz", async (_req, res, next) => {
     next(e);
   }
 });
-app.all("/api/auth/*splat", toNodeHandler(auth));
+const authHandler = toNodeHandler(auth);
+app.all("/api/auth/*splat", (req, res, next) => {
+  void withFactorResetLockScope(() => authHandler(req, res)).catch(next);
+});
 app.use("/api/webhooks", qboWebhook, smsWebhook);
 app.use("/api/integrations/core/v1", commercialIngress);
 app.use(express.json({ limit: "1mb" }));
@@ -143,10 +151,12 @@ const server = app.listen(Number(process.env.PORT || 4180), "0.0.0.0", () =>
 server.on("error", (error) => {
   console.error(error.message);
   process.exitCode = 1;
-  void pool.end();
+  void Promise.all([pool.end(), closeFactorResetLockPool()]);
 });
 process.on("SIGTERM", () =>
   server.close(() => {
-    void pool.end().then(() => process.exit(0));
+    void Promise.all([pool.end(), closeFactorResetLockPool()]).then(() =>
+      process.exit(0),
+    );
   }),
 );

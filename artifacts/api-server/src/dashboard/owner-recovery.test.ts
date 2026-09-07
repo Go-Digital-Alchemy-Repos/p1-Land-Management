@@ -7,7 +7,7 @@ if (base && !base.startsWith("http://localhost:"))
   throw new Error("Isolated test origin required");
 after(() => pool.end());
 test(
-  "owner recovery status reflects enrollment and this session's assurance without weakening access",
+  "required account MFA applies to every active role and reports both identity aliases",
   { skip: !base },
   async () => {
     const uid = randomUUID(),
@@ -39,8 +39,12 @@ test(
     async function required(value: boolean) {
       const r = await get("/me");
       assert.equal(r.status, 200);
-      const status = (await r.json()) as { mfaRequired: boolean };
+      const status = (await r.json()) as {
+        mfaRequired: boolean;
+        ownerMfaRequired: boolean;
+      };
       assert.equal(status.mfaRequired, value);
+      assert.equal(status.ownerMfaRequired, value);
     }
     try {
       await required(true);
@@ -61,12 +65,13 @@ test(
       ]);
       await required(true);
       assert.equal((await get("/clients")).status, 403);
-      await pool.query(
-        "UPDATE staff_profile SET role='manager' WHERE user_id=$1",
-        [uid],
-      );
-      await required(true);
-      assert.equal((await get("/clients")).status, 403);
+      for (const role of ["manager", "crew", "client"]) {
+        await pool.query("UPDATE staff_profile SET role=$2 WHERE user_id=$1", [
+          uid,
+          role,
+        ]);
+        await required(true);
+      }
       await pool.query(
         "UPDATE staff_profile SET mfa_required=false WHERE user_id=$1",
         [uid],

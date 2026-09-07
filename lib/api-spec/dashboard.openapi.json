@@ -790,6 +790,81 @@
         }
       }
     },
+    "/account-mfa-policies": {
+      "get": {
+        "operationId": "listAccountMfaPolicies",
+        "description": "Owner-only list of every active dashboard account, including client accounts, and its configured MFA requirement.",
+        "responses": {
+          "200": {
+            "description": "Active account MFA policies",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AccountMfaPolicy"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or unverified session"
+          },
+          "403": {
+            "description": "Owner role required"
+          }
+        }
+      }
+    },
+    "/account-mfa-policies/{id}": {
+      "post": {
+        "operationId": "updateAccountMfaPolicy",
+        "description": "Owner-only update of an active account's configured MFA requirement. The update and audit record are atomic.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAccountMfaPolicy"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated account MFA policy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountMfaPolicyUpdate"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or unverified session"
+          },
+          "403": {
+            "description": "Owner role required or current account MFA is not assured"
+          },
+          "404": {
+            "description": "Active account not found"
+          }
+        }
+      }
+    },
     "/me": {
       "get": {
         "operationId": "getDashboardMe",
@@ -2261,6 +2336,72 @@
           "override_reason": {
             "type": "null",
             "description": "Accepted requirement edits clear the previous override."
+          }
+        }
+      },
+      "AccountMfaPolicy": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name",
+          "email",
+          "role",
+          "mfaRequired"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "owner",
+              "manager",
+              "dispatch",
+              "sales",
+              "finance",
+              "crew",
+              "client"
+            ]
+          },
+          "mfaRequired": {
+            "type": "boolean",
+            "description": "Whether this account is required to complete MFA before protected dashboard access."
+          }
+        }
+      },
+      "AccountMfaPolicyUpdate": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "mfaRequired"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "mfaRequired": {
+            "type": "boolean"
+          }
+        }
+      },
+      "UpdateAccountMfaPolicy": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "required"
+        ],
+        "properties": {
+          "required": {
+            "type": "boolean"
           }
         }
       },

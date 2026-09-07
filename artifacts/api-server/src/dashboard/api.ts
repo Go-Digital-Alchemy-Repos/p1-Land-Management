@@ -29,6 +29,21 @@ const audit = async (c: any, user: string, action: string, entity: string) =>
     "INSERT INTO audit_event(id,user_id,action,entity_id) VALUES($1,$2,$3,$4)",
     [randomUUID(), user, action, entity],
   );
+async function updateMfaRequirement(
+  actorId: string,
+  targetId: string,
+  required: boolean,
+) {
+  return transaction(async (c) => {
+    const result = await c.query(
+      "UPDATE staff_profile SET mfa_required=$2 WHERE user_id=$1 AND active=true RETURNING user_id,mfa_required",
+      [targetId, required],
+    );
+    if (!result.rowCount) throw new HttpError(404, "Account not found");
+    await audit(c, actorId, "account.mfa_requirement.updated", targetId);
+    return { id: targetId, mfaRequired: result.rows[0].mfa_required };
+  });
+}
 api.get("/setup", async (_req, res) => {
   const r = await pool.query(
     "SELECT completed_at FROM installation WHERE id=1",
@@ -110,18 +125,32 @@ api.get("/staff", async (req, res) => {
     ).rows,
   );
 });
+api.get("/account-mfa-policies", async (req, res) => {
+  const a = await actor(req);
+  requireRole(a.role, ["owner"]);
+  res.json(
+    (
+      await pool.query(
+        "SELECT u.id,u.name,u.email,p.role,p.mfa_required AS \"mfaRequired\" FROM \"user\" u JOIN staff_profile p ON p.user_id=u.id WHERE p.active=true ORDER BY u.name,u.email",
+      )
+    ).rows,
+  );
+});
+api.post("/account-mfa-policies/:id", async (req, res) => {
+  const a = await actor(req);
+  requireRole(a.role, ["owner"]);
+  const targetId = z.string().min(1).parse(req.params.id);
+  const required = z.object({ required: z.boolean() }).parse(req.body).required;
+  res.json(await updateMfaRequirement(a.id, targetId, required));
+});
+// Kept for existing dashboard clients while they migrate to the all-account,
+// owner-only policy endpoint above.
 api.post("/staff/:id/mfa-requirement", async (req, res) => {
   const a = await actor(req);
   requireRole(a.role, ["owner"]);
   const targetId = z.string().min(1).parse(req.params.id);
   const required = z.object({ required: z.boolean() }).parse(req.body).required;
-  const result = await pool.query(
-    "UPDATE staff_profile SET mfa_required=$2 WHERE user_id=$1 AND active=true RETURNING user_id,mfa_required",
-    [targetId, required],
-  );
-  if (!result.rowCount) throw new HttpError(404, "Staff member not found");
-  await audit(pool, a.id, "staff.mfa_requirement.updated", targetId);
-  res.json({ id: targetId, mfaRequired: result.rows[0].mfa_required });
+  res.json(await updateMfaRequirement(a.id, targetId, required));
 });
 api.post("/invitations", async (req, res) => {
   const a = await actor(req);

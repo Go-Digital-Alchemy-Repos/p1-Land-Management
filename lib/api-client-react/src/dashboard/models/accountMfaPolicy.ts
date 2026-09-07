@@ -5,20 +5,13 @@
  * Shared field, scheduling and commercial inbox contract. Other office routes remain documented in docs/dashboard/API.md.
  * OpenAPI spec version: 0.1.0
  */
-import type { DashboardMeRole } from './dashboardMeRole';
+import type { AccountMfaPolicyRole } from './accountMfaPolicyRole';
 
-export interface DashboardMe {
+export interface AccountMfaPolicy {
   id: string;
   name: string;
   email: string;
-  /** @nullable */
-  twoFactorEnabled?: boolean | null;
+  role: AccountMfaPolicyRole;
+  /** Whether this account is required to complete MFA before protected dashboard access. */
   mfaRequired: boolean;
-  /**
-     * Deprecated compatibility alias for mfaRequired.
-     * @deprecated
-     */
-  ownerMfaRequired: boolean;
-  /** @nullable */
-  role: DashboardMeRole;
 }

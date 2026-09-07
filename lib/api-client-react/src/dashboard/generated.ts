@@ -6,6 +6,8 @@
  * OpenAPI spec version: 0.1.0
  */
 import type {
+  AccountMfaPolicy,
+  AccountMfaPolicyUpdate,
   AgreementActivationPreview,
   AgreementChargePreview,
   AgreementChargeQueue,
@@ -40,6 +42,7 @@ import type {
   ServiceAgreementFinancial,
   ServiceAgreementPage,
   SyncFieldEventsBody,
+  UpdateAccountMfaPolicy,
   UploadFieldPhotoHeaders,
   WorkOrder,
   WorkVersion
@@ -294,6 +297,56 @@ export const updateWorkReadiness = async (id: string,
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
       readinessUpdate,)
+  }
+);}
+
+
+
+export const getListAccountMfaPoliciesUrl = () => {
+
+
+
+
+  return `/api/v1/account-mfa-policies`
+}
+
+/**
+ * Owner-only list of every active dashboard account, including client accounts, and its configured MFA requirement.
+ */
+export const listAccountMfaPolicies = async ( options?: RequestInit): Promise<AccountMfaPolicy[]> => {
+
+  return customFetch<AccountMfaPolicy[]>(getListAccountMfaPoliciesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getUpdateAccountMfaPolicyUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/account-mfa-policies/${id}`
+}
+
+/**
+ * Owner-only update of an active account's configured MFA requirement. The update and audit record are atomic.
+ */
+export const updateAccountMfaPolicy = async (id: string,
+    updateAccountMfaPolicy: UpdateAccountMfaPolicy, options?: RequestInit): Promise<AccountMfaPolicyUpdate> => {
+
+  return customFetch<AccountMfaPolicyUpdate>(getUpdateAccountMfaPolicyUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      updateAccountMfaPolicy,)
   }
 );}
 
