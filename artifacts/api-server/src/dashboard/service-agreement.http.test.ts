@@ -253,6 +253,72 @@ test(
         ),
         1000,
       );
+      const preparationJob = randomUUID();
+      await pool.query(
+        "INSERT INTO outbox(id,kind,payload,status,last_error,dedup_key) VALUES($1::uuid,'agreement.prepare_charge',$2,'failed','Synthetic eligibility review','agreement.prepare_charge:http:'||($1::uuid)::text)",
+        [
+          preparationJob,
+          { version: 1, agreementId: id, source: { periodStart: today } },
+        ],
+      );
+      await pool.query(
+        "INSERT INTO agreement_preparation_job(job_id,failure_code) VALUES($1,'eligibility_changed')",
+        [preparationJob],
+      );
+      const preparationList = await req(
+        "finance",
+        "/agreement-preparation-jobs?status=failed",
+      );
+      assert.equal(preparationList.status, 200);
+      assert.ok(
+        Array.isArray(preparationList.data.items) &&
+          preparationList.data.items.some(
+            (job: any) => job.jobId === preparationJob,
+          ),
+      );
+      assert.equal(
+        (
+          await req("dispatch", "/agreement-preparation-jobs?status=failed")
+        ).status,
+        403,
+      );
+      assert.equal(
+        (
+          await req(undefined, "/agreement-preparation-jobs?status=failed")
+        ).status,
+        401,
+      );
+      const beforeRetryPreview = Number(
+        (
+          await pool.query(
+            "SELECT count(*) AS n FROM agreement_preparation_retry_event WHERE job_id=$1",
+            [preparationJob],
+          )
+        ).rows[0].n,
+      );
+      assert.equal(
+        (
+          await req("finance", "/agreement-preparation-jobs/" + preparationJob + "/retry-preview", { expectedRevision: 1 })
+        ).status,
+        200,
+      );
+      assert.equal(
+        Number(
+          (
+            await pool.query(
+              "SELECT count(*) AS n FROM agreement_preparation_retry_event WHERE job_id=$1",
+              [preparationJob],
+            )
+          ).rows[0].n,
+        ),
+        beforeRetryPreview,
+      );
+      assert.equal(
+        (
+          await req("manager", "/delivery-jobs/" + preparationJob + "/retry", {})
+        ).status,
+        409,
+      );
       const reviewFixtureData = await reviewFixture();
       const reviewSession = randomUUID(),
         reviewToken = randomUUID();
