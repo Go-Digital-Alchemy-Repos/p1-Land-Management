@@ -106,7 +106,13 @@ On September7, fresh independent staging dumps from Core and dashboard PostgreSQ
 
 Core migration0001 and dashboard0010 matched source checksums. The three selected inquiries restored with three CRM records, three completed commercial jobs, preserved notification jobs and two backfill audit entries. Dashboard restored three unique mappings, intake audits and the null phone-only email. Selected source/restore aggregate hashes matched; zero unvalidated constraints or invalid indexes were found. Temporary containers were removed.
 
-These are separate transactional snapshots, not distributed PITR. No live data/configuration was changed. Object storage, encryption/provider secrets, ownership/ACLs, application startup and provider delivery were not restored. This rehearsal predates dashboard0011; a separate restored-copy upgrade and post0011 restore check is in progress.
+These are separate transactional snapshots, not distributed PITR. No live data/configuration was changed. Object storage, encryption/provider secrets, ownership/ACLs, application startup and provider delivery were not restored. This rehearsal predates dashboard0011; the separate restored-copy upgrade and post0011 restore check below subsequently passed.
 
 
 Production Core build preflight reverified all904 files in the immutablebc3f414 context against Git blobs with no extras. The dedicated production Core service was missing explicit build source/origin metadata; `P1_PUBLIC_ORIGIN`, `P1_ADMIN_ORIGIN` and `P1_SOURCE_REVISION` were set to the P1 production origin and fullbc3f414 revision with deploys suppressed, then read back for exact equality. This did not deploy Core, change the public website or activate commercial signing keys. Runtime/private-network, backup and release acceptance gates remain.
+
+## Completed restored-copy0011 rehearsal
+
+Report `/tmp/p1-upgrade0011-994e1f57/report.json` verifies reviewedfc302b1 migration0011 SHA256 `d6d25d1b840abf2e04c3b85716cb26e5e1413f4001707211474bf58d9df25808`, existing ledger checksums and preservation of three leads, three receipts and four audits. Staging had no operational properties, so a clearly synthetic pre-upgrade property verified retention of its UUID/client link. Five invalid relational fixtures were rejected.
+
+The post-upgrade98,913-byte dump SHA256 `2e1f4ad3996c0c15a24e5a1a2e2b9462eb6595856ec594c9c6d21aa122d62169` restored into a second network-disabled container with relationships and eleven migration ledger entries preserved. Both disposable containers were removed. This is SQL recovery evidence, excluding app workers, live authorization, object storage, credentials and grants. After prospects exist, rollback must retain0011-compatible guarded readers; do not revert to unrestricted earlier readers or erase prospect history.
