@@ -100,6 +100,7 @@ try {
       "src/dashboard/contacts.test.ts",
       "src/dashboard/assessments.test.ts",
       "src/dashboard/schedule.test.ts",
+      "src/dashboard/owner-recovery.test.ts",
       "../p1-dashboard/tests/schedule-dates.test.ts",
       "src/dashboard/integration.test.ts",
     ],

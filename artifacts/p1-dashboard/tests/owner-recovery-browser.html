@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Owner recovery full App fixture</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module">
+      const mode =
+        new URLSearchParams(location.search).get("mode") || "disabled";
+      let enabled = mode !== "disabled",
+        required = !["assured", "manager"].includes(mode);
+      window.fetch = async (input, init) => {
+        const url = new URL(
+            input instanceof Request ? input.url : String(input),
+            location.origin,
+          ),
+          path = url.pathname;
+        if (path === "/api/v1/setup")
+          return Response.json({ initialized: true, configured: false });
+        if (path === "/api/v1/me")
+          return Response.json({
+            id: "synthetic-recovery",
+            name: "Synthetic owner",
+            email: "recovery@example.test",
+            role: mode === "manager" ? "manager" : "owner",
+            twoFactorEnabled: enabled,
+            ownerMfaRequired: required,
+          });
+        if (path === "/api/auth/two-factor/enable")
+          return Response.json({
+            method: "totp",
+            totpURI: "otpauth://totp/Synthetic?secret=JBSWY3DPEHPK3PXP",
+            backupCodes: ["synthetic-recovery-code"],
+          });
+        if (path.includes("/api/auth/two-factor/verify-")) {
+          const body = JSON.parse(init?.body || "{}");
+          if (body.code !== "123456")
+            return Response.json(
+              { message: "Synthetic invalid verification code" },
+              { status: 400 },
+            );
+          enabled = true;
+          required = false;
+          return Response.json({
+            token: "synthetic-session",
+            user: { id: "synthetic-recovery" },
+          });
+        }
+        if (required && path.startsWith("/api/v1/"))
+          throw new Error("Protected data requested before owner verification");
+        return Response.json([]);
+      };
+      await import("/src/main.tsx");
+    </script>
+  </body>
+</html>

@@ -1,3 +1,4 @@
+import { OwnerMfaRecovery } from "./OwnerMfaRecovery";
 import { CommercialInbox } from "./CommercialInbox";
 import { PropertyFiles } from "./PropertyFiles";
 import { ScheduleCalendar } from "./ScheduleCalendar";
@@ -49,6 +50,7 @@ type Person = {
   email: string;
   role: string | null;
   twoFactorEnabled: boolean;
+  ownerMfaRequired?: boolean;
 };
 const nav = [
   ["Overview", LayoutDashboard],
@@ -149,7 +151,7 @@ function App() {
     };
   }, []);
   async function refresh() {
-    if (!person?.role) return;
+    if (!person?.role || (person.role === "owner" && (person.ownerMfaRequired || !person.twoFactorEnabled))) return;
     setError("");
     try {
       const savedDay = await offline.readDay(person.id);
@@ -740,6 +742,8 @@ function App() {
         </section>
       </main>
     );
+  if (person.role === "owner" && (person.ownerMfaRequired || !person.twoFactorEnabled))
+    return <OwnerMfaRecovery key={person.id} email={person.email} enabled={person.twoFactorEnabled} actions={auth.twoFactor} onComplete={session} onSignOut={logout} />;
   if (!person.role)
     return (
       <main className="activation">

@@ -85,14 +85,15 @@ api.post("/setup/complete", async (req, res) => {
 api.get("/me", async (req, res) => {
   const s = await identity(req);
   const p = await pool.query(
-    "SELECT role,active FROM staff_profile WHERE user_id=$1",
-    [s.user.id],
+    "SELECT role,active,EXISTS(SELECT 1 FROM session_assurance WHERE session_id=$2) AS assured FROM staff_profile WHERE user_id=$1",
+    [s.user.id, s.session.id],
   );
   res.json({
     id: s.user.id,
     name: s.user.name,
     email: s.user.email,
     twoFactorEnabled: s.user.twoFactorEnabled,
+    ownerMfaRequired: !!(p.rows[0]?.active && p.rows[0].role === "owner" && (!s.user.twoFactorEnabled || !p.rows[0].assured)),
     role: p.rows[0]?.active ? p.rows[0].role : null,
   });
 });
