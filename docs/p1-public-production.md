@@ -1,6 +1,6 @@
 # Public website production preparation
 
-The existing production website has not been replaced. This page records a reviewed candidate and preparation, not public release acceptance.
+The full CMS gateway migration has not been released. A focused [favicon hotfix](p1-favicon-hotfix.md) is live as deployment `fd023a7a-73ec-4e81-863a-5ce86199d0f1` (patch `79ac680` over the captured original production runtime). It preserves existing page content and Vite preview behavior. The sections below describe the separate full gateway candidate and preparation, not acceptance of that migration.
 
 ## Reviewed candidate
 
