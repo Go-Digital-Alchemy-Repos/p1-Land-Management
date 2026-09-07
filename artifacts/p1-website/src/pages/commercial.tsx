@@ -4,7 +4,7 @@ import { Layout } from '@/components/layout/Layout';
 import { SEO } from '@/components/seo';
 import { PHONE_DISPLAY, PHONE_HREF, EMAIL } from '@/lib/site';
 import { acquisitionSource, trackAcquisition } from '@/lib/acquisition';
-import { commercialPayload, commercialErrors, inquiryAttempt, sendCommercialInquiry } from '@/lib/commercial-inquiry';
+import { commercialPayload, commercialErrors, commercialErrorSummary, inquiryAttempt, sendCommercialInquiry } from '@/lib/commercial-inquiry';
 import hero from '@/assets/service-commercial.png';
 import water from '@/assets/service-pond.png';
 
@@ -57,7 +57,7 @@ function AssessmentForm() {
   return <form onSubmit={submit} noValidate onFocus={() => { if (!started.current) { started.current = true; trackAcquisition('form_start'); } }} className="space-y-7 rounded-sm border border-slate-300 bg-white p-5 md:p-9" aria-busy={busy}>
     {(failure || Object.keys(errors).length > 0) && <div ref={outcome} tabIndex={-1} role="alert" className="border-l-4 border-red-800 bg-red-50 p-4 text-red-900">
       {failure || 'Please review the highlighted fields. Your entries have been kept.'}
-      {Object.keys(errors).length > 0 && <ul className="mt-2 list-disc pl-5">{Object.entries(errors).map(([key, message]) => <li key={key}><a href={`#commercial-${key}`} className="underline">{message}</a></li>)}</ul>}
+      {Object.keys(errors).length > 0 && <ul className="mt-2 list-disc pl-5">{Object.entries(errors).map(([key, message]) => <li key={key}><a href={`#commercial-${key}`} className="underline">{commercialErrorSummary(key, message)}</a></li>)}</ul>}
     </div>}
     <div className="grid gap-6 sm:grid-cols-2">{input('name', 'Your name', 'text', true, 'name', 150)}{input('company', 'Company / organization', 'text', true, 'organization', 300)}</div>
     <fieldset><legend className="font-semibold">How can we reach you?</legend><p id="contact-channel-help" className="mt-1 text-sm text-slate-600">Provide an email address or phone number. Both are welcome, but only one is required.</p>

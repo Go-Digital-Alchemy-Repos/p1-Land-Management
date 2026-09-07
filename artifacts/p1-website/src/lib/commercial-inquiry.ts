@@ -24,6 +24,15 @@ export function commercialErrors(payload: CommercialPayload): Record<string, str
   if (!payload.services.length) errors.services = 'Select at least one need, or choose General site assessment.';
   return errors;
 }
+const errorFieldNames: Record<string, string> = {
+  name: 'Your name', company: 'Company / organization',
+  address: 'Property location — address or city / region',
+  projectStage: 'Property / project stage', serviceTiming: 'Type of need',
+  email: 'Email', phone: 'Phone', services: 'What does your site need?',
+};
+export function commercialErrorSummary(field: string, message: string): string {
+  return `${errorFieldNames[field] || field}: ${message}`;
+}
 /** A changed project is a new request; retries of the unchanged request reuse its key. */
 export function inquiryAttempt(previous: { payload: string; key: string } | null, payload: CommercialPayload, newKey: () => string) {
   const serialized = JSON.stringify(payload);

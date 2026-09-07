@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { stripTypeScriptTypes } from 'node:module';
 const compiled = stripTypeScriptTypes(readFileSync(new URL('../src/lib/commercial-inquiry.ts', import.meta.url), 'utf8'));
-const { commercialPayload, commercialErrors, inquiryAttempt, sendCommercialInquiry } = await import(`data:text/javascript;base64,${Buffer.from(compiled).toString('base64')}`);
+const { commercialPayload, commercialErrors, commercialErrorSummary, inquiryAttempt, sendCommercialInquiry } = await import(`data:text/javascript;base64,${Buffer.from(compiled).toString('base64')}`);
 const form = () => { const data = new FormData(); Object.entries({ name: 'Test Buyer', company: 'Example', address: 'York County, SC', phone: '(704) 555-0123', projectStage: 'unknown', serviceTiming: 'both', services: 'general_site_assessment' }).forEach(([k,v]) => data.append(k,v)); return data; };
 test('phone-only and email-only intake; optional details stay blank', () => {
   const data = form(); const payload = commercialPayload(data, {}); assert.deepEqual(commercialErrors(payload), {}); assert.equal(payload.inquiryType, 'commercial_site_assessment'); assert.equal(payload.email, '');
@@ -23,4 +23,20 @@ test('one POST and durable receipt required; duplicate receipt accepted', async 
   const transport = async (url, options) => { calls++; assert.equal(url,'/api/forms/p1-commercial-assessment/submit'); assert.equal(options.headers['Idempotency-Key'],'stable'); return new Response(JSON.stringify({submissionId:'receipt-1'}),{status:200}); };
   assert.equal(await sendCommercialInquiry(attempt,transport),'receipt-1'); assert.equal(calls,1);
   for (const [status,body] of [[201,{}],[500,{submissionId:'no'}],[202,{submissionId:'no'}],[429,{}]]) await assert.rejects(sendCommercialInquiry(attempt, async()=>new Response(JSON.stringify(body),{status})));
+});
+
+test('every validation summary names its target field, including channel and service errors', () => {
+  const errors = commercialErrors(commercialPayload(new FormData(), {}));
+  const expected = {
+    name: 'Your name', company: 'Company / organization',
+    address: 'Property location — address or city / region',
+    projectStage: 'Property / project stage', serviceTiming: 'Type of need',
+    email: 'Email', services: 'What does your site need?',
+  };
+  assert.deepEqual(Object.keys(errors).sort(), Object.keys(expected).sort());
+  for (const [key, label] of Object.entries(expected))
+    assert.equal(commercialErrorSummary(key, errors[key]), `${label}: ${errors[key]}`);
+  const data = form(); data.set('phone', 'broken');
+  const invalidPhone = commercialErrors(commercialPayload(data, {}));
+  assert.equal(commercialErrorSummary('phone', invalidPhone.phone), 'Phone: Enter a phone number with 7–15 digits.');
 });
