@@ -1570,6 +1570,21 @@
       }
     },
     "/service-agreements/{id}/charges": {
+      "get": {
+        "operationId": "listAgreementCharges",
+        "parameters": [
+          {"name":"id","in":"path","required":true,"schema":{"type":"string","format":"uuid"}},
+          {"name":"after","in":"query","schema":{"type":"string"}},
+          {"name":"limit","in":"query","schema":{"type":"integer","minimum":1,"maximum":100,"default":25}}
+        ],
+        "responses": {
+          "200": {"description":"Prepared-charge history","content":{"application/json":{"schema":{"$ref":"#/components/schemas/AgreementChargeHistory"}}}},
+          "400": {"description":"Invalid cursor"},
+          "401": {"description":"Verified session required"},
+          "403": {"description":"Financial role denied"},
+          "404": {"description":"Agreement inaccessible"}
+        }
+      },
       "post": {
         "operationId": "prepareAgreementCharge",
         "responses": {
@@ -1620,6 +1635,34 @@
             }
           }
         }
+      }
+    },
+    "/agreement-charges/{id}/review": {
+      "get": {
+        "operationId": "getAgreementChargeReview",
+        "parameters": [{"name":"id","in":"path","required":true,"schema":{"type":"string","format":"uuid"}}],
+        "responses": {"200":{"description":"Current review state","content":{"application/json":{"schema":{"$ref":"#/components/schemas/AgreementChargeReview"}}}},"400":{"description":"Invalid request"},"401":{"description":"Verified session required"},"403":{"description":"Financial role denied"},"404":{"description":"Charge inaccessible"},"409":{"description":"Financial record requires review"}}
+      }
+    },
+    "/agreement-charges/{id}/review-preview": {
+      "post": {
+        "operationId": "previewAgreementChargeReview",
+        "parameters": [{"name":"id","in":"path","required":true,"schema":{"type":"string","format":"uuid"}}],
+        "requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/AgreementChargeReviewInput"}}}},
+        "responses":{"200":{"description":"Zero-write review comparison","content":{"application/json":{"schema":{"$ref":"#/components/schemas/AgreementChargeReviewPreview"}}}},"400":{"description":"Invalid request"},"401":{"description":"Verified session required"},"403":{"description":"Financial role denied"},"404":{"description":"Charge inaccessible"},"409":{"description":"Snapshot or review changed"}}
+      }
+    },
+    "/agreement-charges/{id}/reviews": {
+      "get": {
+        "operationId": "listAgreementChargeReviews",
+        "parameters": [{"name":"id","in":"path","required":true,"schema":{"type":"string","format":"uuid"}},{"name":"afterVersion","in":"query","schema":{"type":"integer","minimum":0,"default":0}},{"name":"limit","in":"query","schema":{"type":"integer","minimum":1,"maximum":100,"default":25}}],
+        "responses":{"200":{"description":"Immutable review history","content":{"application/json":{"schema":{"$ref":"#/components/schemas/AgreementChargeReviewHistory"}}}},"400":{"description":"Invalid request"},"401":{"description":"Verified session required"},"403":{"description":"Financial role denied"},"404":{"description":"Charge inaccessible"}}
+      },
+      "post": {
+        "operationId": "recordAgreementChargeReview",
+        "parameters": [{"name":"id","in":"path","required":true,"schema":{"type":"string","format":"uuid"}}],
+        "requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/AgreementChargeReviewRecordInput"}}}},
+        "responses":{"201":{"description":"New immutable receipt","content":{"application/json":{"schema":{"$ref":"#/components/schemas/AgreementChargeReviewReceipt"}}}},"200":{"description":"Idempotent historical receipt","content":{"application/json":{"schema":{"$ref":"#/components/schemas/AgreementChargeReviewReceipt"}}}},"400":{"description":"Invalid request"},"401":{"description":"Verified session required"},"403":{"description":"Financial role denied"},"404":{"description":"Charge inaccessible"},"409":{"description":"Snapshot, review or operation changed"}}
       }
     },
     "/agreement-charge-queue": {
@@ -3169,6 +3212,167 @@
         ],
         "additionalProperties": false
       },
+      "AgreementChargeReviewInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["expectedReviewVersion", "cancellationVersion", "snapshotSha256", "outcome", "reason"],
+        "properties": {
+          "expectedReviewVersion": {"type": "integer", "minimum": 0},
+          "cancellationVersion": {"type": "integer", "minimum": 1},
+          "snapshotSha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "outcome": {"type": "string", "enum": ["keep_due", "correction_required"]},
+          "reason": {"type": "string", "minLength": 1, "maxLength": 2000}
+        }
+      },
+      "AgreementChargeReviewRecordInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["operationId", "expectedReviewVersion", "cancellationVersion", "snapshotSha256", "outcome", "reason"],
+        "properties": {
+          "operationId": {"type": "string", "format": "uuid"},
+          "expectedReviewVersion": {"type": "integer", "minimum": 0},
+          "cancellationVersion": {"type": "integer", "minimum": 1},
+          "snapshotSha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "outcome": {"type": "string", "enum": ["keep_due", "correction_required"]},
+          "reason": {"type": "string", "minLength": 1, "maxLength": 2000}
+        }
+      },
+      "AgreementChargeReviewReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["eventId", "chargeId", "reviewVersion", "outcome", "recordedAt"],
+        "properties": {
+          "eventId": {"type": "string", "format": "uuid"},
+          "chargeId": {"type": "string", "format": "uuid"},
+          "reviewVersion": {"type": "integer", "minimum": 1},
+          "outcome": {"type": "string", "enum": ["keep_due", "correction_required"]},
+          "recordedAt": {"type": "string", "format": "date-time"}
+        }
+      },
+      "AgreementChargeFinancialSnapshot": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["agreement", "charge", "draft"],
+        "properties": {
+          "agreement": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "version", "cancellationDate", "cancellationReason"],
+            "properties": {
+              "id": {"type": "string", "format": "uuid"},
+              "version": {"type": "integer", "minimum": 1},
+              "cancellationDate": {"type": ["string", "null"], "format": "date"},
+              "cancellationReason": {"type": ["string", "null"]}
+            }
+          },
+          "charge": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "sourceKey", "amountCents"],
+            "properties": {
+              "id": {"type": "string", "format": "uuid"},
+              "sourceKey": {"type": "string"},
+              "amountCents": {"type": "integer", "minimum": 0}
+            }
+          },
+          "draft": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "propertyId", "estimateId", "title", "kind", "amountCents", "status", "postingRequestId", "postingPayloadSha256", "quickbooksId", "balanceCents", "ownershipVerified"],
+            "properties": {
+              "id": {"type": "string", "format": "uuid"},
+              "propertyId": {"type": "string", "format": "uuid"},
+              "estimateId": {"type": ["string", "null"], "format": "uuid"},
+              "title": {"type": "string"},
+              "kind": {"type": "string"},
+              "amountCents": {"type": "integer", "minimum": 0},
+              "status": {"type": "string"},
+              "postingRequestId": {"type": ["string", "null"], "format": "uuid"},
+              "postingPayloadSha256": {"type": ["string", "null"]},
+              "quickbooksId": {"type": ["string", "null"]},
+              "balanceCents": {"type": ["integer", "null"], "minimum": 0},
+              "ownershipVerified": {"type": "boolean"}
+            }
+          }
+        }
+      },
+      "AgreementChargeReview": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["chargeId", "agreementId", "reviewVersion", "latestReceipt", "correctionPending", "cancellationVersion", "snapshot", "snapshotSha256", "allowedOutcomes", "postingBlockReason", "reviewState"],
+        "properties": {
+          "chargeId": {"type": "string", "format": "uuid"},
+          "agreementId": {"type": "string", "format": "uuid"},
+          "reviewVersion": {"type": "integer", "minimum": 0},
+          "latestReceipt": {"anyOf": [{"$ref": "#/components/schemas/AgreementChargeReviewReceipt"}, {"type": "null"}]},
+          "correctionPending": {"type": "boolean"},
+          "cancellationVersion": {"type": "integer", "minimum": 1},
+          "snapshot": {"$ref": "#/components/schemas/AgreementChargeFinancialSnapshot"},
+          "snapshotSha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "allowedOutcomes": {"type": "array", "items": {"type": "string", "enum": ["keep_due", "correction_required"]}},
+          "postingBlockReason": {"type": ["string", "null"]},
+          "reviewState": {"type": "string", "enum": ["unreviewed", "kept_due", "correction_required", "stale_review"]}
+        }
+      },
+      "AgreementChargeReviewPreview": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["current", "wouldResolveSnapshot", "postingWouldRemainBlocked"],
+        "properties": {
+          "current": {"$ref": "#/components/schemas/AgreementChargeReview"},
+          "wouldResolveSnapshot": {"type": "boolean"},
+          "postingWouldRemainBlocked": {"type": "boolean"}
+        }
+      },
+      "AgreementChargeReviewHistoryEvent": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["eventId", "chargeId", "reviewVersion", "outcome", "recordedAt", "reason", "reviewerId", "snapshot"],
+        "properties": {
+          "eventId": {"type": "string", "format": "uuid"},
+          "chargeId": {"type": "string", "format": "uuid"},
+          "reviewVersion": {"type": "integer", "minimum": 1},
+          "outcome": {"type": "string", "enum": ["keep_due", "correction_required"]},
+          "recordedAt": {"type": "string", "format": "date-time"},
+          "reason": {"type": "string"},
+          "reviewerId": {"type": "string", "format": "uuid"},
+          "snapshot": {"$ref": "#/components/schemas/AgreementChargeFinancialSnapshot"}
+        }
+      },
+      "AgreementChargeReviewHistory": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["items", "nextVersion"],
+        "properties": {
+          "items": {"type": "array", "items": {"$ref": "#/components/schemas/AgreementChargeReviewHistoryEvent"}},
+          "nextVersion": {"type": ["integer", "null"], "minimum": 1}
+        }
+      },
+      "AgreementChargeHistoryItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["chargeId", "agreementId", "sourceKey", "createdAt", "amountCents", "billingDraftId", "reviewVersion", "reviewState", "latestReceipt"],
+        "properties": {
+          "chargeId": {"type": "string", "format": "uuid"},
+          "agreementId": {"type": "string", "format": "uuid"},
+          "sourceKey": {"type": "string"},
+          "createdAt": {"type": "string", "format": "date-time"},
+          "amountCents": {"type": "integer", "minimum": 0},
+          "billingDraftId": {"type": "string", "format": "uuid"},
+          "reviewVersion": {"type": "integer", "minimum": 0},
+          "reviewState": {"type": "string", "enum": ["unreviewed", "kept_due", "correction_required", "stale_review"]},
+          "latestReceipt": {"anyOf": [{"$ref": "#/components/schemas/AgreementChargeReviewReceipt"}, {"type": "null"}]}
+        }
+      },
+      "AgreementChargeHistory": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["items", "nextCursor"],
+        "properties": {
+          "items": {"type": "array", "items": {"$ref": "#/components/schemas/AgreementChargeHistoryItem"}},
+          "nextCursor": {"type": ["string", "null"]}
+        }
+      },
       "AgreementChargeQueue": {
         "type": "object",
         "properties": {
@@ -3331,6 +3535,26 @@
                 "type": "null"
               }
             ]
+          },
+          "chargeId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reviewVersion": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "reviewState": {
+            "type": "string",
+            "enum": [
+              "unreviewed",
+              "kept_due",
+              "correction_required",
+              "stale_review"
+            ]
+          },
+          "latestReviewReceipt": {
+            "$ref": "#/components/schemas/AgreementChargeReviewReceipt"
           }
         },
         "required": [

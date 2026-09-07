@@ -3,6 +3,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { createHmac, randomUUID } from "node:crypto";
 import { pool } from "./database";
+import { reviewFixture } from "./agreement-review.fixture";
 const base = process.env.DASHBOARD_TEST_ORIGIN;
 if (base && !base.startsWith("http://localhost:"))
   throw Error("Agreement HTTP tests require local isolated server");
@@ -252,6 +253,103 @@ test(
         ),
         1000,
       );
+      const reviewFixtureData = await reviewFixture();
+      const reviewSession = randomUUID(), reviewToken = randomUUID();
+      await pool.query(
+        'INSERT INTO session(id,"userId",token,"expiresAt") VALUES($1,$2,$3,now()+interval \'10 minutes\')',
+        [reviewSession, reviewFixtureData.a.id, reviewToken],
+      );
+      cookies.review_manager =
+        "p1-dashboard.session_token=" +
+        encodeURIComponent(
+          reviewToken +
+            "." +
+            createHmac("sha256", process.env.BETTER_AUTH_SECRET!)
+              .update(reviewToken)
+              .digest("base64"),
+        );
+      assert.equal(
+        (
+          await req(
+            "dispatch",
+            "/agreement-charges/" + reviewFixtureData.charge.id + "/review",
+          )
+        ).status,
+        403,
+      );
+      const current = (
+        await req(
+          "review_manager",
+          "/agreement-charges/" + reviewFixtureData.charge.id + "/review",
+        )
+      ).data as any;
+      assert.equal(current.reviewState, "unreviewed");
+      const beforeReviewPreview = Number(
+        (
+          await pool.query(
+            "SELECT count(*) AS n FROM agreement_charge_review_event WHERE charge_id=$1",
+            [reviewFixtureData.charge.id],
+          )
+        ).rows[0].n,
+      );
+      const reviewInput = {
+        expectedReviewVersion: current.reviewVersion,
+        cancellationVersion: current.cancellationVersion,
+        snapshotSha256: current.snapshotSha256,
+        outcome: "keep_due",
+        reason: "HTTP finance review",
+      };
+      const reviewPreview = await req(
+        "review_manager",
+        "/agreement-charges/" + reviewFixtureData.charge.id + "/review-preview",
+        reviewInput,
+      );
+      assert.equal(reviewPreview.status, 200);
+      assert.equal(reviewPreview.data.wouldResolveSnapshot, true);
+      assert.equal(
+        Number(
+          (
+            await pool.query(
+              "SELECT count(*) AS n FROM agreement_charge_review_event WHERE charge_id=$1",
+              [reviewFixtureData.charge.id],
+            )
+          ).rows[0].n,
+        ),
+        beforeReviewPreview,
+      );
+      const operationId = randomUUID();
+      assert.equal(
+        (
+          await req(
+            "review_manager",
+            "/agreement-charges/" + reviewFixtureData.charge.id + "/reviews",
+            { ...reviewInput, operationId },
+          )
+        ).status,
+        201,
+      );
+      assert.equal(
+        (
+          await req(
+            "review_manager",
+            "/agreement-charges/" + reviewFixtureData.charge.id + "/reviews",
+            { ...reviewInput, operationId },
+          )
+        ).status,
+        200,
+      );
+      const history = await req(
+        "review_manager",
+        "/agreement-charges/" + reviewFixtureData.charge.id + "/reviews?limit=1",
+      );
+      assert.equal(history.status, 200);
+      assert.equal((history.data.items as unknown[]).length, 1);
+      const chargeHistory = await req(
+        "review_manager",
+        "/service-agreements/" + reviewFixtureData.agreementId + "/charges",
+      );
+      assert.equal(chargeHistory.status, 200);
+      assert.equal((chargeHistory.data.items as unknown[]).length, 1);
     } finally {
       await pool.end();
     }

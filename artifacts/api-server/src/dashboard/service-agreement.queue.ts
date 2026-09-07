@@ -1,3 +1,5 @@
+import { reviewState, reviewReceipt } from "./agreement-review.contract";
+import { readAgreementChargeReview } from "./agreement-review.service";
 import { z } from "zod";
 import type { Actor } from "./access";
 import { pool } from "./database";
@@ -23,6 +25,10 @@ const item = z
     reason: z.string().nullable(),
     amountCents: z.number().int().positive().nullable(),
     billingDraftId: z.string().uuid().nullable(),
+    chargeId: z.string().uuid().optional(),
+    reviewVersion: z.number().int().min(0).optional(),
+    reviewState: reviewState.optional(),
+    latestReviewReceipt: reviewReceipt.nullable().optional(),
   })
   .strict();
 export const agreementQueuePage = z
@@ -85,9 +91,29 @@ export async function listAgreementChargeQueue(a: Actor, input: unknown) {
           ? { periodStart: row.period_start }
           : { workOrderId: row.work_order_id },
       );
+      let reviewFields = {};
+      if (row.prepared_cancellation && preview.billingDraftId) {
+        const charge = (
+          await pool.query(
+            "SELECT id FROM agreement_charge WHERE billing_draft_id=$1",
+            [preview.billingDraftId],
+          )
+        ).rows[0];
+        if (!charge)
+          throw new HttpError(409, "Prepared charge receipt is missing");
+        const review = await readAgreementChargeReview(a, charge.id);
+        if (review.reviewState === "kept_due") continue;
+        reviewFields = {
+          chargeId: charge.id,
+          reviewVersion: review.reviewVersion,
+          reviewState: review.reviewState,
+          latestReviewReceipt: review.latestReceipt,
+        };
+      }
       entries.push(
         item.parse({
           ...base,
+          ...reviewFields,
           state: row.prepared_cancellation ? "review_required" : "ready",
           reason: row.prepared_cancellation
             ? "A prepared charge is affected by cancellation. Existing draft or posted history is preserved; explicit financial review is required."

@@ -71,6 +71,7 @@ try {
       "src/dashboard/service-agreement.test.ts",
       "src/dashboard/service-agreement.contract.test.ts",
       "src/dashboard/service-agreement.billing.test.ts",
+      "src/dashboard/agreement-review.test.ts",
     ],
   ]) {
     const result = spawnSync(
