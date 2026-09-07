@@ -6,7 +6,7 @@
     "displayName": "P1 Land & Property Management",
     "source": {
       "repository": "https://github.com/Go-Digital-Alchemy-Repos/p1-Land-Management.git",
-      "revision": "8f7578473d9d96d1d238163dbfe73814b5b69150"
+      "revision": "a8e608ae08e1f93b72b6efa98d26c8f9fd50cabf"
     },
     "owners": [
       {
@@ -5065,7 +5065,7 @@
           },
           {
             "path": "fxavif",
-            "label": "Text: A well-maintained commercial property doesn't just look professional — it protects your investm",
+            "label": "Text: A well-maintained commercial property supports a professional presentation, protects the work a",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -5177,14 +5177,14 @@
           },
           {
             "path": "fjq0g7j",
-            "label": "Text: We offer weekly, bi-weekly, and monthly commercial maintenance contracts. Every program starts ",
+            "label": "Text: We review the property, requested work and operating constraints before proposing an agreed sco",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
           },
           {
             "path": "f1kn99ts",
-            "label": "Text: No cookie-cutter packages. No upsells you don't need. Just honest maintenance performed by an e",
+            "label": "Text: The work plan identifies priorities, delivery responsibilities and the next review. Confirm the",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -5219,28 +5219,28 @@
           },
           {
             "path": "fg5y74s",
-            "label": "Text: Single-vendor capability — turf, trees, drainage, ponds, clearing, and reconstruction",
+            "label": "Text: A coordinated exterior-work scope, defined for your property",
             "type": "text",
             "required": false,
             "maxLength": 2000
           },
           {
             "path": "f1sz1s82",
-            "label": "Text: Serving Upstate SC and Charlotte NC — two markets, one reliable team",
+            "label": "Text: Upstate SC and Charlotte NC serviceability reviewed during qualification",
             "type": "text",
             "required": false,
             "maxLength": 2000
           },
           {
             "path": "f1cjfg7a",
-            "label": "Text: Licensed and insured for commercial work",
+            "label": "Text: Project-relevant insurance, licensing and procurement documentation reviewed on request",
             "type": "text",
             "required": false,
             "maxLength": 2000
           },
           {
             "path": "f2f8aux",
-            "label": "Text: Free on-site property assessments",
+            "label": "Text: Site-assessment availability and terms confirmed during qualification",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -5268,14 +5268,14 @@
           },
           {
             "path": "fa7rbfc",
-            "label": "Text: How often will P1 service my commercial property?",
+            "label": "Text: How is a commercial maintenance schedule established?",
             "type": "text",
             "required": false,
             "maxLength": 2000
           },
           {
             "path": "f1dhnb5v",
-            "label": "Text: P1 offers weekly, bi-weekly, and monthly commercial maintenance contracts. Every program starts",
+            "label": "Text: P1 reviews the property, the requested work and operating constraints before proposing an agree",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -5296,14 +5296,14 @@
           },
           {
             "path": "f19nok1s",
-            "label": "Text: Is P1 licensed and insured for commercial work?",
+            "label": "Text: How are insurance, licensing and procurement documents handled?",
             "type": "text",
             "required": false,
             "maxLength": 2000
           },
           {
             "path": "f1niaye8",
-            "label": "Text: Yes. P1 is licensed and insured for commercial work across Upstate South Carolina and the Charl",
+            "label": "Text: Ask P1 to provide the current documentation relevant to your project's agreed scope before work",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -5475,7 +5475,7 @@
           "f1amwadv": "05",
           "fitsipf": "Ponds & Waterway Management",
           "f1l5dbf": "Your Commercial Property. Our Full Attention.",
-          "fxavif": "A well-maintained commercial property doesn't just look professional — it protects your investment, meets code requirements, and signals to clients and tenants that your business takes the details seriously. P1 Land & Property Management delivers the depth of service that large commercial properties actually require.",
+          "fxavif": "A well-maintained commercial property supports a professional presentation, protects the work already invested in the site and helps your team identify exterior needs early. P1 Land & Property Management helps large properties define and maintain an agreed exterior-work scope.",
           "fd41nr8": "We work with commercial developers, property managers, business campus owners, HOAs managing significant acreage, industrial facility managers, and private landowners who hold commercial-use land across both our markets.",
           "f1rnw6st": "/assets/commercial-attention-1280-Co4nd32i.webp",
           "f16meay5": "Crew maintaining a large commercial property's grounds",
@@ -5491,25 +5491,25 @@
           "f6xo0zg": "Site grading corrections and drainage improvements as needed",
           "fi3uqa2": "Waterway and ditch clearing and maintenance",
           "fb1chiu": "Maintenance Schedules That Work for Your Operation",
-          "fjq0g7j": "We offer weekly, bi-weekly, and monthly commercial maintenance contracts. Every program starts with a free on-site property assessment. We walk your land, document what it needs, and build a scope of work and schedule that fits your property and your budget.",
-          "f1kn99ts": "No cookie-cutter packages. No upsells you don't need. Just honest maintenance performed by an experienced crew with the right equipment.",
+          "fjq0g7j": "We review the property, requested work and operating constraints before proposing an agreed scope and service schedule. Site-assessment availability, access requirements and any fee are confirmed during qualification.",
+          "f1kn99ts": "The work plan identifies priorities, delivery responsibilities and the next review. Confirm the scope, equipment needs and any specialist involvement before work begins.",
           "f157slfe": "/assets/commercial-schedule-1280-CUdE2wYY.webp",
           "fls4tou": "Operator on a commercial maintenance schedule",
           "fib8e3s": "Why Commercial Clients Choose P1",
           "f1kz260x": "1-acre minimum — we're built for large properties, not small lawns",
-          "fg5y74s": "Single-vendor capability — turf, trees, drainage, ponds, clearing, and reconstruction",
-          "f1sz1s82": "Serving Upstate SC and Charlotte NC — two markets, one reliable team",
-          "f1cjfg7a": "Licensed and insured for commercial work",
-          "f2f8aux": "Free on-site property assessments",
+          "fg5y74s": "A coordinated exterior-work scope, defined for your property",
+          "f1sz1s82": "Upstate SC and Charlotte NC serviceability reviewed during qualification",
+          "f1cjfg7a": "Project-relevant insurance, licensing and procurement documentation reviewed on request",
+          "f2f8aux": "Site-assessment availability and terms confirmed during qualification",
           "fca31o3": "Commercial Property Management FAQs",
           "f18976qt": "What's included in a P1 commercial maintenance program?",
           "f1fogsmf": "Programs are customized to each site, but typically include turf mowing and edging, tree trimming and canopy management, pond and stormwater retention care, drainage inspection and maintenance, erosion control, seasonal seeding and fertilization, and brush management for undeveloped acreage.",
-          "fa7rbfc": "How often will P1 service my commercial property?",
-          "f1dhnb5v": "P1 offers weekly, bi-weekly, and monthly commercial maintenance contracts. Every program starts with a free on-site assessment — we walk your land, document what it needs, and build a scope and schedule that fits your property and budget.",
+          "fa7rbfc": "How is a commercial maintenance schedule established?",
+          "f1dhnb5v": "P1 reviews the property, the requested work and operating constraints before proposing an agreed scope and service schedule. Site-assessment availability, access requirements and any fee are confirmed during qualification.",
           "f1t8uht0": "Is there a minimum property size for commercial programs?",
           "f1vuewvy": "Yes — P1 focuses on properties 1 acre and larger. We're built for business campuses, industrial sites, HOA common areas, and large commercial landholdings, not small lawns.",
-          "f19nok1s": "Is P1 licensed and insured for commercial work?",
-          "f1niaye8": "Yes. P1 is licensed and insured for commercial work across Upstate South Carolina and the Charlotte, NC region, and provides single-vendor capability for turf, trees, drainage, ponds, clearing, and reconstruction.",
+          "f19nok1s": "How are insurance, licensing and procurement documents handled?",
+          "f1niaye8": "Ask P1 to provide the current documentation relevant to your project's agreed scope before work is scheduled. Documentation, vendor onboarding requirements and any specialist involvement are confirmed during qualification.",
           "f3quld0": "Call ",
           "fr6htqz": " or ",
           "f5ixdf9": " to discuss your commercial property.",
