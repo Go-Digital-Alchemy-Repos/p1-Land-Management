@@ -128,11 +128,25 @@ function App() {
       ]);
       setBoot(b);
       setPerson(p);
-      if (p)
+      if (p) {
+        const federation = new URLSearchParams(location.search).get(
+          "federation",
+        );
+        if (federation === "1" && !p.mfaRequired) {
+          const response = await fetch("/api/v1/federation/resume", {
+            method: "POST",
+          });
+          const continuation = await response.json();
+          if (!response.ok)
+            throw new Error(continuation.error || "Unable to continue sign-in");
+          location.assign(continuation.redirect);
+          return;
+        }
         localStorage.setItem(
           "p1-last-account",
           JSON.stringify({ id: p.id, name: p.name, role: p.role }),
         );
+      }
     } catch (e) {
       const cached = localStorage.getItem("p1-last-account");
       if (!navigator.onLine && cached) {

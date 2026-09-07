@@ -2,6 +2,12 @@ import { serviceAgreementApi } from "./service-agreement.routes";
 import { workReadinessApi } from "./work-readiness.routes";
 import { prospectContextApi } from "./prospect-context.routes";
 import { commercialIngress, commercialStaffApi } from "./commercial-ingress";
+import {
+  coreFederationApi,
+  coreFederationIngress,
+  startCoreFederationRetention,
+  stopCoreFederationRetention,
+} from "./core-federation";
 import express from "express";
 import { toNodeHandler } from "better-auth/node";
 import { resolve } from "node:path";
@@ -52,7 +58,7 @@ app.all("/api/auth/*splat", (req, res, next) => {
   void withFactorResetLockScope(() => authHandler(req, res)).catch(next);
 });
 app.use("/api/webhooks", qboWebhook, smsWebhook);
-app.use("/api/integrations/core/v1", commercialIngress);
+app.use("/api/integrations/core/v1", commercialIngress, coreFederationIngress);
 app.use(express.json({ limit: "1mb" }));
 app.use(
   "/api/v1",
@@ -78,6 +84,7 @@ app.use(
     }
     next();
   },
+  coreFederationApi,
   prospectContextApi,
   commercialStaffApi,
   api,
@@ -148,6 +155,7 @@ app.use(
 const server = app.listen(Number(process.env.PORT || 4180), "0.0.0.0", () =>
   console.log("P1 dashboard listening"),
 );
+startCoreFederationRetention();
 server.on("error", (error) => {
   console.error(error.message);
   process.exitCode = 1;
@@ -155,6 +163,7 @@ server.on("error", (error) => {
 });
 process.on("SIGTERM", () =>
   server.close(() => {
+    stopCoreFederationRetention();
     void Promise.all([pool.end(), closeFactorResetLockPool()]).then(() =>
       process.exit(0),
     );
