@@ -14,13 +14,23 @@ class RouteErrorBoundary extends Component<{ children: ReactNode }, { failed: bo
   }
 }
 
-// Eager server modules preserve synchronous prerendering; browser routes load on demand.
-const serverPages = import.meta.env.SSR
-  ? import.meta.glob<{ default: ComponentType }>("./pages/**/*.tsx", { eager: true })
-  : {};
-const browserPages = import.meta.env.SSR ? {} : import.meta.glob<{ default: ComponentType }>("./pages/**/*.tsx");
+// Vite evaluates both import.glob calls before it removes an SSR branch. One
+// glob with an SSR-dependent eager flag preserves synchronous prerendering on
+// the server while allowing every browser route to remain a separate chunk.
+type PageModule = { default: ComponentType };
+type PageLoader = () => Promise<PageModule>;
+const pageModules = import.meta.glob<PageModule>("./pages/**/*.tsx", {
+  // Vite replaces this with a literal before processing the glob. Its public
+  // type overloads model only literal source syntax, so keep that limitation
+  // at this boundary rather than widening the page-loader contract.
+  eager: import.meta.env.SSR as never,
+}) as Record<string, PageModule | PageLoader>;
 function page(path: string): ComponentType {
-  return import.meta.env.SSR ? serverPages[path].default : lazy(browserPages[path]);
+  const module = pageModules[path];
+  if (!module) throw new Error(`Missing public page module: ${path}`);
+  return import.meta.env.SSR
+    ? (module as PageModule).default
+    : lazy(module as PageLoader);
 }
 
 const NotFound = page("./pages/not-found.tsx");
