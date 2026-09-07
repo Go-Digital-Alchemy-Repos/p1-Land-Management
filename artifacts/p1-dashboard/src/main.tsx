@@ -5,6 +5,7 @@ import { PropertyFiles } from "./PropertyFiles";
 import { ScheduleCalendar } from "./ScheduleCalendar";
 import { AssessmentAvailability } from "./AssessmentAvailability";
 import { ClientContacts } from "./ClientContacts";
+import { InspectionReports } from "./InspectionReports";
 import React, { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { createAuthClient } from "better-auth/react";
@@ -200,6 +201,7 @@ function App() {
                 "quickbooks/invoices",
                 "requests",
                 "assessment-slots",
+                "inspections",
               ]
             : [
                 "work-orders",
@@ -658,6 +660,7 @@ function App() {
             "Sales",
             "Billing",
             "Requests",
+            "Inspections",
           ].includes(n)
         : n === "Agreements"
           ? ["owner", "manager", "finance", "dispatch"].includes(person?.role || "")
@@ -1676,13 +1679,16 @@ function App() {
             </section>
           )}
           {view === "Inspections" && (
-            <section className="panel">
-              <Table
-                rows={data.inspections || []}
-                columns={["title", "property_name", "created_at"]}
-                empty="No inspections yet."
-              />
-            </section>
+            <InspectionReports
+              inspections={data.inspections || []}
+              canPublish={manager}
+              onPublish={(id) =>
+                void run(async () => {
+                  await api("/inspections/" + id + "/publish", {});
+                  await refresh();
+                })
+              }
+            />
           )}
           {view === "Expenses" && (
             <section className="panel">

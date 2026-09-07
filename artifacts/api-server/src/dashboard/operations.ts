@@ -175,11 +175,15 @@ operationsApi.post("/expenses", async (req, res) => {
 });
 operationsApi.get("/inspections", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, ["owner", "manager", "dispatch"]);
+  requireRole(a.role, ["owner", "manager", "dispatch", "client"]);
+  const clientView = a.role === "client";
   res.json(
     (
       await pool.query(
-        "SELECT i.*,p.name AS property_name FROM inspection i JOIN property p ON p.id=i.property_id AND p.lifecycle='operational' ORDER BY i.created_at DESC",
+        clientView
+          ? "SELECT i.id,i.property_id,i.title,i.findings,i.published,i.created_at,p.name AS property_name FROM inspection i JOIN property p ON p.id=i.property_id AND p.lifecycle='operational' WHERE i.published=true AND EXISTS(SELECT 1 FROM client_access ca WHERE ca.client_id=p.client_id AND ca.user_id=$1) ORDER BY i.created_at DESC"
+          : "SELECT i.*,p.name AS property_name FROM inspection i JOIN property p ON p.id=i.property_id AND p.lifecycle='operational' ORDER BY i.created_at DESC",
+        clientView ? [a.id] : [],
       )
     ).rows,
   );
@@ -214,4 +218,25 @@ operationsApi.post("/inspections", async (req, res) => {
     [key, b.propertyId, a.id, b.title, JSON.stringify(b.findings)],
   );
   res.status(201).json({ id: key });
+});
+operationsApi.post("/inspections/:id/publish", async (req, res) => {
+  const a = await actor(req);
+  requireRole(a.role, ["owner", "manager"]);
+  const key = id.parse(req.params.id);
+  await transaction(async (c) => {
+    const inspection = (
+      await c.query(
+        "SELECT i.published FROM inspection i JOIN property p ON p.id=i.property_id AND p.lifecycle='operational' WHERE i.id=$1 FOR UPDATE OF i",
+        [key],
+      )
+    ).rows[0];
+    if (!inspection) throw new HttpError(404, "Inspection not found");
+    if (inspection.published) return;
+    await c.query("UPDATE inspection SET published=true WHERE id=$1", [key]);
+    await c.query(
+      "INSERT INTO audit_event(id,user_id,action,entity_id) VALUES($1,$2,'inspection.published',$3)",
+      [randomUUID(), a.id, key],
+    );
+  });
+  res.json({ ok: true });
 });

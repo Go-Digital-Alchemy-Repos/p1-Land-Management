@@ -435,6 +435,50 @@ test(
       (await customer("/api/v1/properties/" + pa + "/timeline")).data.length,
       0,
     );
+    const inspection = (
+      await owner("/api/v1/inspections", {
+        propertyId: pa,
+        title: "Seasonal property review",
+        findings: [
+          {
+            label: "North field",
+            condition: "monitor",
+            note: "Drainage inspection recommended after rain.",
+          },
+        ],
+      })
+    ).data.id;
+    assert.equal((await customer("/api/v1/inspections")).data.length, 0);
+    assert.equal(
+      (await customer("/api/v1/inspections/" + inspection + "/publish", {}))
+        .status,
+      403,
+    );
+    assert.equal(
+      (await owner("/api/v1/inspections/" + inspection + "/publish", {}))
+        .status,
+      200,
+    );
+    const reports = (await customer("/api/v1/inspections")).data;
+    assert.equal(reports.length, 1);
+    assert.equal(reports[0].id, inspection);
+    assert.equal(reports[0].user_id, undefined);
+    assert.deepEqual(reports[0].findings, [
+      {
+        label: "North field",
+        condition: "monitor",
+        note: "Drainage inspection recommended after rain.",
+      },
+    ]);
+    assert.equal(
+      (
+        await pool.query(
+          "SELECT count(*) FROM audit_event WHERE action='inspection.published' AND entity_id=$1",
+          [inspection],
+        )
+      ).rows[0].count,
+      "1",
+    );
     const est = (
       await owner("/api/v1/estimates", {
         propertyId: pa,

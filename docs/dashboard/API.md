@@ -24,6 +24,10 @@ Migration 0015 adds the client version and primary-contact detail columns withou
 
 Billing creation requires `operationId` (UUID), `propertyId`, `estimateId`, `title`, integer `amountCents`, and `kind` (service/deposit/progress/final). Reuse the same operation ID on an identical retry. Different payload reuse returns 409; a new financial intent requires a new operation ID. The transaction stores actor, canonical validated-payload fingerprint and resulting draft ID. This does not automatically send an invoice or collect payment.
 
+## Inspection report publication
+
+`GET /inspections` is available to owner, manager, dispatch, and client accounts. Office roles receive operational inspections for active properties. A client receives only explicitly published inspections belonging to a client-accessible operational property; its response omits the submitting staff user ID. `POST /inspections/:id/publish` requires owner or manager, locks the active-property inspection, and records `inspection.published` in audit history the first time it becomes client-visible. Repeating publication is safe and does not create another audit event. Publishing does not alter a work order, file, invoice, payment, notification, or property condition history.
+
 ## Cancellation-review implementation candidate (unmerged)
 
 The isolated agreement correction candidate extends the generated OpenAPI contract with `GET /agreement-charges/:id/review`, `POST /agreement-charges/:id/review-preview`, `POST /agreement-charges/:id/reviews`, `GET /agreement-charges/:id/reviews`, and `GET /service-agreements/:id/charges`. They require an owner, manager or finance actor and always return `Cache-Control: no-store`. Preview writes nothing. The record operation requires a UUID operation ID and returns a historical receipt on an identical retry; a changed reuse or stale snapshot returns 409.

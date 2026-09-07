@@ -1026,3 +1026,30 @@ textarea {
   display: block;
   overflow-wrap: anywhere;
 }
+ .inspection-report-list {
+  display: grid;
+  gap: 16px;
+}
+.inspection-report {
+  border: 1px solid #dce3da;
+  border-radius: 10px;
+  padding: 16px;
+}
+.inspection-report .panel-heading {
+  align-items: flex-start;
+  gap: 16px;
+}
+.inspection-report h3,
+.inspection-report p {
+  margin-top: 0;
+}
+.inspection-finding {
+  border-top: 1px solid #dce3da;
+  margin-top: 12px;
+  padding-top: 12px;
+}
+.inspection-finding > span {
+  display: block;
+  margin-top: 4px;
+  text-transform: capitalize;
+}
