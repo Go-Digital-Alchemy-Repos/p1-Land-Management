@@ -54,7 +54,7 @@ export default function PrivateProofPage() {
   const record = inventory?.records[index];
   return (
     <AdminSidebar>
-      <main className="max-w-4xl space-y-5 p-6">
+      <main className="min-w-0 w-full max-w-4xl space-y-5 p-4 sm:p-6">
         <h1 className="text-2xl font-semibold">Private commercial proof</h1>
         <p>
           Unverified placeholders for internal review. No files, notes, excerpts or approvals here
@@ -66,10 +66,10 @@ export default function PrivateProofPage() {
           <p>Loading inventory…</p>
         ) : (
           <>
-            <label className="block">
+            <label className="grid min-w-0 gap-2 sm:flex sm:items-center">
               Category
               <select
-                className="ml-3 rounded border p-2"
+                className="min-w-0 w-full max-w-full rounded border p-2 sm:w-auto"
                 value={index}
                 disabled={dirty || busy}
                 onChange={(e) => setIndex(Number(e.target.value))}
@@ -86,18 +86,18 @@ export default function PrivateProofPage() {
               {inventory!.revision}
             </p>
             <form
-              className="grid gap-4"
+              className="grid min-w-0 gap-4"
               onSubmit={(e) => {
                 e.preventDefault();
                 void action("save");
               }}
             >
               {(Object.keys(labels) as Array<keyof ProofDraft>).map((key) => (
-                <label className="grid gap-1" key={key}>
+                <label className="grid min-w-0 gap-1" key={key}>
                   {labels[key]}
                   {key === "permission" || key === "delivery" ? (
                     <select
-                      className="rounded border p-2"
+                      className="min-w-0 max-w-full rounded border p-2"
                       disabled={busy}
                       value={record.draft[key]}
                       onChange={(e) => {
@@ -121,7 +121,7 @@ export default function PrivateProofPage() {
                     </select>
                   ) : (
                     <input
-                      className="rounded border p-2"
+                      className="min-w-0 max-w-full rounded border p-2"
                       disabled={busy}
                       type={key.endsWith("Date") ? "date" : "text"}
                       maxLength={key === "sourceUrl" ? 1000 : 2000}
@@ -146,16 +146,16 @@ export default function PrivateProofPage() {
               </button>
             </form>
             {user?.role === "admin" && (
-              <div className="flex gap-3">
+              <div className="flex flex-wrap gap-3">
                 <button
-                  className="rounded border p-2"
+                  className="min-w-0 max-w-full rounded border p-2"
                   disabled={busy || dirty}
                   onClick={() => void action("approve")}
                 >
                   Approve evidence privately
                 </button>
                 <button
-                  className="rounded border p-2"
+                  className="min-w-0 max-w-full rounded border p-2"
                   disabled={busy || dirty}
                   onClick={() => void action("revoke")}
                 >
@@ -164,7 +164,7 @@ export default function PrivateProofPage() {
               </div>
             )}
             <button
-              className="rounded border p-2"
+              className="min-w-0 max-w-full rounded border p-2"
               disabled={busy}
               onClick={async () => {
                 if (
@@ -182,7 +182,7 @@ export default function PrivateProofPage() {
             >
               Reload latest inventory
             </button>
-            <details>
+            <details className="min-w-0 break-words">
               <summary>Review history ({inventory!.history.length})</summary>
               <ul>
                 {inventory!.history
