@@ -7,6 +7,7 @@ All tasks use branch codex/p1-cms-crm from P1 5303da0 and upstream Core aad2057.
 | ID | Owner | Status | Surface / next gate |
 |---|---|---|---|
 | P1-CORE | Backend specialist | INTEGRATION VALIDATION | Isolated copy and migrations implemented; auth/forms/CRM/container tests pass; deployed verification pending |
+| P1-IDENTITY | Project Orchestrator | IN PROGRESS | Business-platform identity is shared by dashboard web and future native clients through Better Auth signed bearer sessions; Core CMS remains explicitly isolated pending an approved federation/migration plan. Native client implementation and physical-device acceptance remain required before pilot. |
 | P1-PUBLIC | Public specialist | REVIEW | public src; contact, proof, SEO, accessibility and bundle checks |
 | P1-IMAGES | Image specialist | REVIEW | image variants/manifest/pipeline; budgets passed, integrated visual QA next |
 | P1-CMS | Orchestrator | INTEGRATION VALIDATION | 35 components; seven-family private draft/conflict/publish/HTML checks passed; preview UI/revision restore endpoint pending |
@@ -31,3 +32,7 @@ Registered 2026-09-07 from strategy task `01a07a5b-2a83-7810-bcd7-b9fa65f847d6`.
 After the three prerequisite review gates are accepted, reconcile the delivered strategy/proof inventory with the approved site routes, claim evidence and CMS contracts. Assign bounded public/CMS edits through existing owners, preserve layout and URLs, and record any additional route/schema proposal before implementation. Acceptance requires verified claims and permissions, content/metadata parity, preview/publish checks and no regression in the existing technical budgets.
 
 Brief integration notes: the proposed `project_story` fields are an editorial/schema proposal, not an accepted contract change yet. The monthly content/repurposing cadence is planning guidance, not a scheduled automation or permission to send email/social posts. Broader core-market classifications, including Lancaster, require serviceability evidence before new local claims. The brief now includes a market-source register dated September 7, 2026, with official/developer sources and a Colliers market report. Source presence is recorded; the Orchestrator has not independently revalidated those external claims. Time-sensitive development, permit, investment and policy statements require revalidation before publication. The delivered document is not itself evidence of P1 project experience or customer permission.
+
+## Ongoing project coordination
+
+Owner requested continued management of all P1 tasks until completion and successful deployment. Active task heartbeat `p1-project-completion-coordination` checks every15minutes, discovers new P1 tasks, resumes concrete authorized work, reconciles shared contracts, reviews/pushes completed code and verifies exact-source deployment/live evidence. Unchanged state stays quiet. Original Core isolation and permission/evidence gates remain intact. The heartbeat is paused only after all approved scope and acceptance gates are completed; missing provider activation does not pause unrelated engineering.
