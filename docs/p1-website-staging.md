@@ -60,3 +60,10 @@ Deployed-container verification confirms `client.source.revision` equals `592d70
 
 
 Commercial acceptance completed: the browser inquiry also has exactly one Forms record and one CRM lead with preserved details. The new `commercial/commercial-content` CMS entry was editable; a draft SEO marker stayed absent from public HTML until publication, then became crawler-visible. Historical restore plus publication returned the original content at published revision6. P1-only login branding and absence of excluded navigation were checked in the browser. The configured staging preview URL and authenticated draft API passed; visual iframe preview was not exercised in this slice. Staging SMTP remains unconfigured, and an existing failed notification job was observed rather than counted as delivered email. This receipt does not establish dashboard bridge or shared-identity acceptance.
+
+
+## Private proof staging rollout
+
+Core deployment `ecf124ec-ef6b-4f59-b924-2036ed0d7a1a` reached terminal SUCCESS from immutable commit `781a47e47da48df2ed969ad0bb583d6e09838520`. The standalone Core context matched all896 Git files. Exact-source TypeScript and six focused HTTP/UI proof tests passed. The first local Linux/AMD64 emulated production build failed inside esbuild's Go runtime after typecheck/client compilation; no source workaround was applied. Railway's native production build completed successfully. Public remains on592d70b; this backend-only change does not modify public source or content manifests.
+
+Staging volume backup `3f730cc2-5208-46e8-86f9-49afb2ca0c6c` was listed before live proof-editor acceptance. This release adds no database migration; rollback uses Core deployment593fa19b and retains the encrypted private setting/audit record. Private proof API/UI live acceptance is underway. No public evidence or customer claim is approved or published by this rollout.

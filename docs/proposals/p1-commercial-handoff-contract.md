@@ -113,7 +113,7 @@ Core success receipt continues while dashboard is unavailable. Dashboard cannot 
 
 ## Migration and rollout coordination
 
-Observed dashboard migrations currently end at `0009_assessment_availability.sql`; schedule work is active. **Tentative only:** `0010_commercial_intake.sql` for inbox/key metadata/lead compatibility, followed by a separately allocated prospect-relations migration. Do not claim either filename until Orchestrator/schedule owner reserves it. Update `lib/db/src/dashboard/schema.ts` and migration replay evidence together; no generated snapshot overwrite of another owner's work.
+Observed dashboard migrations currently end at `0009_assessment_availability.sql`; schedule work is active. **Reserved by the Orchestrator and dashboard owner:** `0010_commercial_intake.sql` for inbox/key metadata/lead compatibility, followed by a separately allocated prospect-relations migration. Update `lib/db/src/dashboard/schema.ts` and migration replay evidence together; no generated snapshot overwrite of another owner's work.
 
 Core currently has `p1-migrations/0000_p1_foundation.sql`. Reusing the effect payload union needs no destructive table change. A new per-job accepted-result table or column should be assigned the next migration only after coordinating with the SSO migration owner. Suggested `commercial_handoff_result(job_id PK FK cms_form_effect_jobs, dashboard_lead_id UUID, received_at, response_version)` avoids embedding mutable receipt results into the immutable outbound event. Completion and result storage commit together after a validated response from the authenticated destination. A stale worker token may not mark another worker's claim complete.
 
@@ -130,3 +130,12 @@ No automatic deletion until owner-approved retention rules exist. Recommend sepa
 5. Explicit company/contact/site reuse and operation-key retries; prospect-only contacts remain private; no client/user/access/QBO creation by intake.
 6. Assigned commercial queue and overdue/next-action UI, failed-delivery recovery with audited retry; public form still makes one request and reports durable receipt only.
 7. Staging synthetic inquiry through Core→dashboard and original project details verified, followed by backup/restore rehearsal and exact deployed revisions. No real outreach/provider subscription required.
+
+
+## Implementation review decisions — September 7
+
+Core migration `0001_commercial_handoff.sql` is reserved for frozen delivery bytes and validated delivery results; SSO must use0002 or later after coordination. The immutable inquiry snapshot is committed with acceptance. Exact wire bytes freeze under the active delivery claim before first send, allowing missing deployment credentials to leave a recoverable job instead of rejecting the public inquiry. Retries reuse those bytes; a changed source identity fails explicitly.
+
+The dashboard commercial list uses `{items,nextCursor}`, default50/max200, opaque filter-bound cursors, and `created_at DESC,id DESC` ordering with PostgreSQL microsecond precision. Filters include status, owner (including unassigned), and overdue follow-up. Filters reset pagination. The Core job monitor must also make older failed and pending jobs reachable rather than silently truncate at200.
+
+Independent review requires commercial-role restrictions through every route, including the legacy general lead list; dispatch and finance retain ordinary-lead access without receiving restricted commercial inquiry fields. Existing conversion must increment the commercial lead version and activity timestamp so stale follow-up writes cannot overwrite conversion. Both findings require mounted authorization/conflict regressions before deployment. No automatic client/account/access creation is introduced by intake.
