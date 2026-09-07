@@ -1,3 +1,4 @@
+import { requireOperationalChild } from "./operational-property";
 import { Router } from "express";
 import { randomUUID } from "node:crypto";
 import { z } from "zod";
@@ -24,6 +25,10 @@ salesApi.post("/leads/:id/convert", async (req, res) => {
         clientId: lead.converted_client_id,
         propertyId: lead.converted_property_id,
       };
+    if (
+      lead.inquiry_type === "commercial_site_assessment" &&
+      (lead.organization_id || lead.contact_id || lead.property_id)
+    ) throw new HttpError(409,"Prospect onboarding is not enabled yet");
     if (lead.inquiry_type === "commercial_site_assessment" && !lead.email)
       throw new HttpError(409, "Record a verified contact email before converting this commercial inquiry");
     let clientId = b.clientId;
@@ -64,6 +69,7 @@ salesApi.post("/estimates/:id/revise", async (req, res) => {
     })
     .parse(req.body);
   const result = await transaction(async (c) => {
+    await requireOperationalChild(c,"estimate",key);
     const e = (
       await c.query("SELECT * FROM estimate WHERE id=$1 FOR UPDATE", [key])
     ).rows[0];
@@ -110,6 +116,7 @@ salesApi.post("/estimates/:id/change-order", async (req, res) => {
     .parse(req.body);
   const next = randomUUID();
   await transaction(async (c) => {
+    await requireOperationalChild(c,"estimate",key);
     const e = (
       await c.query(
         "SELECT property_id FROM estimate WHERE id=$1 AND status='approved' FOR UPDATE",

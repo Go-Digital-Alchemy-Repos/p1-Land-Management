@@ -1,3 +1,4 @@
+import { requireOperationalChild, requireOperationalProperty, operationalChildQuery } from "./operational-property";
 import { Router, raw, type Request, type Response } from "express";
 import sharp from "sharp";
 import {
@@ -135,6 +136,7 @@ async function processUpload(req: Request, res: Response) {
       return;
     }
     await transaction(async (c) => {
+      await requireOperationalProperty(c,propertyId);
       await c.query(
         "INSERT INTO file_record(id,property_id,work_order_id,user_id,object_key,name,mime,bytes,classification) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT(id) DO NOTHING",
         [
@@ -167,7 +169,7 @@ async function processUpload(req: Request, res: Response) {
         Metadata: { classification },
       }),
     );
-    await pool.query("UPDATE file_record SET status='ready' WHERE id=$1", [
+    await operationalChildQuery("file_record",key,"UPDATE file_record SET status='ready' WHERE id=$1", [
       key,
     ]);
     res.status(201).json({ id: key, status: "accepted" });
@@ -219,8 +221,9 @@ filesApi.post("/files/:id/publish", async (req, res) => {
   requireRole(a.role, ["owner", "manager"]);
   const key = z.string().uuid().parse(req.params.id);
   await transaction(async (c) => {
+    await requireOperationalChild(c,"file_record",key);
     const r = await c.query(
-      "UPDATE file_record f SET published=true FROM work_order w WHERE f.id=$1 AND f.work_order_id=w.id AND w.status='reviewed' AND f.status='ready' RETURNING f.id",
+      "UPDATE file_record f SET published=true FROM work_order w WHERE f.id=$1 AND f.work_order_id=w.id AND w.property_id=f.property_id AND w.status='reviewed' AND f.status='ready' RETURNING f.id",
       [key],
     );
     if (!r.rowCount)

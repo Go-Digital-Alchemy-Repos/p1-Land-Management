@@ -14,7 +14,7 @@ export async function listContacts(clientId: string) {
   if (!client.rowCount) throw new HttpError(404, "Client not found");
   return (
     await pool.query(
-      "SELECT * FROM contact WHERE client_id=$1 ORDER BY archived,name",
+      "SELECT id,client_id,name,email,phone,kind,archived,version FROM contact WHERE client_id=$1 ORDER BY archived,name",
       [clientId],
     )
   ).rows;
@@ -65,6 +65,6 @@ export async function saveContact(
         id,
       ],
     );
-    return (await c.query("SELECT * FROM contact WHERE id=$1", [id])).rows[0];
+    return (await c.query("SELECT id,client_id,name,email,phone,kind,archived,version FROM contact WHERE id=$1", [id])).rows[0];
   });
 }

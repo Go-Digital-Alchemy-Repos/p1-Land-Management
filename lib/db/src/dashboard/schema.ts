@@ -189,15 +189,19 @@ export const contact = pgTable(
   "contact",
   {
     id: uuid().primaryKey().notNull(),
-    clientId: uuid("client_id").notNull(),
+    clientId: uuid("client_id"),
     name: text().notNull(),
     email: text(),
     phone: text(),
     kind: text().default("site").notNull(),
+    reviewedBy: text("reviewed_by").references(()=>user.id),
+    reviewedAt: timestamp("reviewed_at",{withTimezone:true,mode:"string"}),
+    channelSource: text("channel_source"),
     archived: boolean().default(false).notNull(),
     version: integer().default(1).notNull(),
   },
   (table) => [
+    check("contact_prospect_channel",sql`client_id IS NOT NULL OR NULLIF(btrim(email),'') IS NOT NULL OR NULLIF(btrim(phone),'') IS NOT NULL`),
     index("contact_client_active_idx")
       .on(table.clientId)
       .where(sql`${table.archived} = false`),
@@ -213,10 +217,14 @@ export const property = pgTable(
   "property",
   {
     id: uuid().primaryKey().notNull(),
-    clientId: uuid("client_id").notNull(),
+    clientId: uuid("client_id"),
     name: text().notNull(),
     address: text().notNull(),
     acreage: numeric(),
+    lifecycle: text().default("operational").notNull(),
+    version: integer().default(1).notNull(),
+    locationPrecision: text("location_precision"),
+    salesOwnerId: text("sales_owner_id").references(()=>user.id),
     accessInstructions: text("access_instructions").default("").notNull(),
     notes: text().default("").notNull(),
     archived: boolean().default(false).notNull(),
@@ -225,6 +233,9 @@ export const property = pgTable(
       .notNull(),
   },
   (table) => [
+    check("property_lifecycle_client",sql`(lifecycle='prospect' AND client_id IS NULL) OR (lifecycle='operational' AND client_id IS NOT NULL)`),
+    check("property_location_precision",sql`location_precision IS NULL OR location_precision IN ('region','approximate','confirmed')`),
+    index("property_lifecycle_active").on(table.lifecycle,table.archived,table.id),
     index("property_client_id_idx").using(
       "btree",
       table.clientId.asc().nullsLast().op("uuid_ops"),
@@ -882,6 +893,9 @@ export const lead = pgTable(
       .defaultNow()
       .notNull(),
     version: integer().default(1).notNull(),
+    organizationId: uuid("organization_id").references(()=>businessOrganization.id),
+    contactId: uuid("contact_id").references(()=>contact.id),
+    propertyId: uuid("property_id").references(()=>property.id),
     convertedClientId: uuid("converted_client_id"),
     convertedPropertyId: uuid("converted_property_id"),
   },
@@ -1161,3 +1175,19 @@ export const commercialIntakeReceipt = pgTable(
     ),
   ],
 );
+
+
+export const businessOrganization = pgTable("business_organization",{
+ id:uuid().primaryKey(),displayName:text("display_name").notNull(),legalName:text("legal_name"),clientId:uuid("client_id").unique().references(()=>client.id),
+ ownerId:text("owner_id").notNull().references(()=>user.id),archived:boolean().default(false).notNull(),version:integer().default(1).notNull(),
+ createdAt:timestamp("created_at",{withTimezone:true,mode:"string"}).defaultNow().notNull(),updatedAt:timestamp("updated_at",{withTimezone:true,mode:"string"}).defaultNow().notNull(),
+});
+export const organizationContact = pgTable("organization_contact",{
+ organizationId:uuid("organization_id").notNull().references(()=>businessOrganization.id),contactId:uuid("contact_id").notNull().references(()=>contact.id),role:text().notNull(),title:text(),source:text().notNull(),version:integer().default(1).notNull(),
+},t=>[primaryKey({columns:[t.organizationId,t.contactId,t.role]}),index("organization_contact_contact").on(t.contactId),check("organization_contact_role_check",sql`role IN ('requester','site_manager','facilities','procurement','owner_representative','other')`)]);
+export const propertyOrganization = pgTable("property_organization",{
+ propertyId:uuid("property_id").notNull().references(()=>property.id),organizationId:uuid("organization_id").notNull().references(()=>businessOrganization.id),role:text().notNull(),source:text().notNull(),reviewedAt:timestamp("reviewed_at",{withTimezone:true,mode:"string"}).defaultNow().notNull(),
+},t=>[primaryKey({columns:[t.propertyId,t.organizationId,t.role]}),index("property_organization_organization").on(t.organizationId),check("property_organization_role_check",sql`role IN ('reported_owner','operator','manager','developer','prospective_customer','other')`)]);
+export const commercialContextOperation = pgTable("commercial_context_operation",{
+ id:uuid().primaryKey(),actorId:text("actor_id").notNull().references(()=>user.id),leadId:uuid("lead_id").notNull().references(()=>lead.id),fingerprint:text().notNull(),result:jsonb().notNull(),createdAt:timestamp("created_at",{withTimezone:true,mode:"string"}).defaultNow().notNull(),
+},t=>[check("commercial_context_operation_fingerprint_check",sql`length(fingerprint)=64`)]);

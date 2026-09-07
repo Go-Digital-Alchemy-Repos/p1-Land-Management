@@ -1,3 +1,4 @@
+import { requireOperationalProperty } from "./operational-property";
 import { randomUUID } from "node:crypto";
 import { z } from "zod";
 import { pool, transaction } from "./database";
@@ -147,6 +148,7 @@ export async function bookAssessment(
 ) {
   return transaction(async (c) => {
     await c.query("SELECT pg_advisory_xact_lock(918278)");
+    await requireOperationalProperty(c,propertyId);
     const r = await c.query(
       "UPDATE assessment_slot s SET property_id=$2,booked_by=$3 WHERE s.id=$1 AND s.property_id IS NULL AND s.cancelled=false AND s.starts_at>now() AND NOT EXISTS(SELECT 1 FROM assessment_blackout b WHERE b.archived=false AND b.starts_at<s.ends_at+s.buffer_after*interval '1 minute' AND b.ends_at>s.starts_at-s.buffer_before*interval '1 minute') RETURNING id",
       [id, propertyId, userId],

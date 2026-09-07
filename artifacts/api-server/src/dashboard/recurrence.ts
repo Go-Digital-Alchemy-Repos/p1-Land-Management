@@ -2,8 +2,11 @@ import { transaction } from "./database";
 import { randomUUID } from "node:crypto";
 export async function generateRecurring() {
   return transaction(async (c) => {
+    const candidates=(await c.query("SELECT r.id,r.property_id FROM recurring_service r JOIN property p ON p.id=r.property_id AND p.lifecycle='operational' WHERE r.paused=false AND r.next_date<=((now() AT TIME ZONE 'America/New_York')::date+14) ORDER BY r.next_date,r.id LIMIT 50")).rows;
+    if(!candidates.length)return;
+    await c.query("SELECT id FROM property WHERE id=ANY($1::uuid[]) AND lifecycle='operational' ORDER BY id FOR SHARE",[candidates.map(r=>r.property_id)]);
     const services = await c.query(
-      "SELECT *,next_date::text AS occurrence FROM recurring_service WHERE paused=false AND next_date<=((now() AT TIME ZONE 'America/New_York')::date+14) ORDER BY next_date FOR UPDATE SKIP LOCKED LIMIT 50",
+      "SELECT *,next_date::text AS occurrence FROM recurring_service WHERE id=ANY($1::uuid[]) AND EXISTS(SELECT 1 FROM property p WHERE p.id=recurring_service.property_id AND p.lifecycle='operational') AND paused=false AND next_date<=((now() AT TIME ZONE 'America/New_York')::date+14) ORDER BY next_date,id FOR UPDATE SKIP LOCKED LIMIT 50",[candidates.map(r=>r.id)]
     );
     for (const s of services.rows) {
       await c.query(

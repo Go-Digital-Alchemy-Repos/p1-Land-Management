@@ -1,3 +1,4 @@
+import { prospectContextApi } from "./prospect-context.routes";
 import { commercialIngress, commercialStaffApi } from "./commercial-ingress";
 import express from "express";
 import { toNodeHandler } from "better-auth/node";
@@ -67,6 +68,7 @@ app.use(
     }
     next();
   },
+  prospectContextApi,
   commercialStaffApi,
   api,
   operationsApi,

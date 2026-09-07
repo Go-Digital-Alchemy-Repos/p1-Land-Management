@@ -55,6 +55,7 @@ export async function actor(req: Request) {
 }
 export type Actor = Awaited<ReturnType<typeof actor>>;
 export async function propertyAccess(a: Actor, id: string) {
+  if (!(await pool.query("SELECT id FROM property WHERE id=$1 AND lifecycle='operational' AND client_id IS NOT NULL",[id])).rowCount) throw new HttpError(404,"Property not found");
   if (a.role === "client") {
     const r = await pool.query(
       "SELECT 1 FROM property p JOIN client_access ca ON ca.client_id=p.client_id WHERE p.id=$1 AND ca.user_id=$2",

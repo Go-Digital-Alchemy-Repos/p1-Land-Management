@@ -1,3 +1,4 @@
+import { requireOperationalProperty, requireOperationalChild, operationalQuery } from "./operational-property";
 import { Router } from "express";
 import { fieldEventSchema } from "@workspace/api-zod/dashboard";
 import { z } from "zod";
@@ -224,7 +225,7 @@ api.post("/clients", async (req, res) => {
 });
 api.get("/properties", async (req, res) => {
   const a = await actor(req);
-  let sql = "SELECT p.* FROM property p WHERE p.archived=false";
+  let sql = "SELECT p.id,p.client_id,p.name,p.address,p.acreage,p.access_instructions,p.notes,p.archived,p.created_at FROM property p WHERE p.archived=false AND p.lifecycle='operational'";
   const args: string[] = [];
   if (a.role === "client") {
     sql +=
@@ -283,7 +284,7 @@ api.post("/properties", async (req, res) => {
 api.get("/work-orders", async (req, res) => {
   const a = await actor(req);
   let sql =
-    "SELECT w.*,p.name AS property_name,p.address,p.access_instructions FROM work_order w JOIN property p ON p.id=w.property_id";
+    "SELECT w.*,p.name AS property_name,p.address,p.access_instructions FROM work_order w JOIN property p ON p.id=w.property_id AND p.lifecycle='operational'";
   const args: string[] = [];
   if (a.role === "crew") {
     sql +=
@@ -339,6 +340,7 @@ api.post("/work-orders", async (req, res) => {
   await propertyAccess(a, b.propertyId);
   const key = randomUUID();
   await transaction(async (c) => {
+    await requireOperationalProperty(c,b.propertyId);
     await c.query(
       "INSERT INTO work_order(id,property_id,title,scope,assigned_to,scheduled_at,checklist,prerequisites) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
       [
@@ -369,6 +371,7 @@ api.post("/work-orders/:id/status", async (req, res) => {
     .parse(req.body);
   if (b.overrideReason) requireRole(a.role, managers);
   await transaction(async (c) => {
+    await requireOperationalChild(c,"work_order",key);
     const w = (
       await c.query("SELECT * FROM work_order WHERE id=$1 FOR UPDATE", [key])
     ).rows[0];
@@ -395,6 +398,7 @@ api.post("/work-orders/:id/publish", async (req, res) => {
   requireRole(a.role, managers);
   const key = id.parse(req.params.id);
   await transaction(async (c) => {
+    await requireOperationalChild(c,"work_order",key);
     const w = (
       await c.query("SELECT status FROM work_order WHERE id=$1 FOR UPDATE", [
         key,
@@ -418,6 +422,7 @@ api.post("/field/sync", async (req, res) => {
   const results = [];
   for (const e of events) {
     const result = await transaction(async (c) => {
+      await requireOperationalChild(c,"work_order",e.workOrderId);
       const w = (
         await c.query("SELECT * FROM work_order WHERE id=$1 FOR UPDATE", [
           e.workOrderId,
@@ -572,7 +577,7 @@ api.get("/estimates", async (req, res) => {
   res.json(
     (
       await pool.query(
-        `SELECT e.*,p.name AS property_name FROM estimate e JOIN property p ON p.id=e.property_id ${a.role === "client" ? "WHERE e.status<>'draft' AND EXISTS(SELECT 1 FROM client_access ca WHERE ca.client_id=p.client_id AND ca.user_id=$1)" : ""} ORDER BY e.created_at DESC`,
+        `SELECT e.*,p.name AS property_name FROM estimate e JOIN property p ON p.id=e.property_id AND p.lifecycle='operational' ${a.role === "client" ? "WHERE e.status<>'draft' AND EXISTS(SELECT 1 FROM client_access ca WHERE ca.client_id=p.client_id AND ca.user_id=$1)" : ""} ORDER BY e.created_at DESC`,
         a.role === "client" ? [a.id] : [],
       )
     ).rows,
@@ -590,7 +595,7 @@ api.post("/estimates", async (req, res) => {
     })
     .parse(req.body);
   const key = randomUUID();
-  await pool.query(
+  await operationalQuery(b.propertyId,
     "INSERT INTO estimate(id,property_id,title,scope,amount_cents) VALUES($1,$2,$3,$4,$5)",
     [key, b.propertyId, b.title, b.scope, b.amountCents],
   );
@@ -606,6 +611,7 @@ api.post("/estimates/:id/decision", async (req, res) => {
     })
     .parse(req.body);
   await transaction(async (c) => {
+    await requireOperationalChild(c,"estimate",key);
     const e = (
       await c.query("SELECT * FROM estimate WHERE id=$1 FOR UPDATE", [key])
     ).rows[0];
@@ -638,7 +644,7 @@ api.get("/billing", async (req, res) => {
   res.json(
     (
       await pool.query(
-        `SELECT b.*,p.name AS property_name FROM billing_draft b JOIN property p ON p.id=b.property_id ${a.role === "client" ? "WHERE b.status='posted' AND b.ownership_verified=true AND EXISTS(SELECT 1 FROM client_access ca WHERE ca.client_id=p.client_id AND ca.user_id=$1)" : ""} ORDER BY b.created_at DESC`,
+        `SELECT b.*,p.name AS property_name FROM billing_draft b JOIN property p ON p.id=b.property_id AND p.lifecycle='operational' ${a.role === "client" ? "WHERE b.status='posted' AND b.ownership_verified=true AND EXISTS(SELECT 1 FROM client_access ca WHERE ca.client_id=p.client_id AND ca.user_id=$1)" : ""} ORDER BY b.created_at DESC`,
         a.role === "client" ? [a.id] : [],
       )
     ).rows,
@@ -674,6 +680,7 @@ api.post("/billing", async (req, res) => {
         throw new HttpError(409, "Billing operation ID conflict");
       return previous.draft_id;
     }
+    await requireOperationalProperty(c,b.propertyId);
     const key = randomUUID();
     const e = (
       await c.query(
@@ -709,7 +716,7 @@ api.get("/requests", async (req, res) => {
   res.json(
     (
       await pool.query(
-        `SELECT r.*,p.name AS property_name FROM service_request r JOIN property p ON p.id=r.property_id ${a.role === "client" ? "WHERE EXISTS(SELECT 1 FROM client_access ca WHERE ca.client_id=p.client_id AND ca.user_id=$1)" : ""} ORDER BY r.created_at DESC`,
+        `SELECT r.*,p.name AS property_name FROM service_request r JOIN property p ON p.id=r.property_id AND p.lifecycle='operational' ${a.role === "client" ? "WHERE EXISTS(SELECT 1 FROM client_access ca WHERE ca.client_id=p.client_id AND ca.user_id=$1)" : ""} ORDER BY r.created_at DESC`,
         a.role === "client" ? [a.id] : [],
       )
     ).rows,
@@ -721,7 +728,7 @@ api.post("/requests", async (req, res) => {
   const b = z.object({ propertyId: id, description: text }).parse(req.body);
   await propertyAccess(a, b.propertyId);
   const key = randomUUID();
-  await pool.query(
+  await operationalQuery(b.propertyId,
     "INSERT INTO service_request(id,property_id,user_id,description) VALUES($1,$2,$3,$4)",
     [key, b.propertyId, a.id, b.description],
   );

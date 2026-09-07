@@ -1,3 +1,4 @@
+import { operationalQuery, operationalChildQuery } from "./operational-property";
 import { Router } from "express";
 import { z } from "zod";
 import { randomUUID } from "node:crypto";
@@ -19,7 +20,7 @@ operationsApi.get("/recurring-services", async (req, res) => {
   res.json(
     (
       await pool.query(
-        "SELECT r.*,p.name AS property_name FROM recurring_service r JOIN property p ON p.id=r.property_id ORDER BY r.next_date",
+        "SELECT r.*,p.name AS property_name FROM recurring_service r JOIN property p ON p.id=r.property_id AND p.lifecycle='operational' ORDER BY r.next_date",
       )
     ).rows,
   );
@@ -44,7 +45,7 @@ operationsApi.post("/recurring-services", async (req, res) => {
     })
     .parse(req.body);
   const key = randomUUID();
-  await pool.query(
+  await operationalQuery(b.propertyId,
     "INSERT INTO recurring_service(id,property_id,title,scope,cadence,interval_count,next_date,local_time,assigned_to,billing_mode,anchor_day) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,extract(day from $7::date))",
     [
       key,
@@ -65,7 +66,7 @@ operationsApi.post("/recurring-services/:id/pause", async (req, res) => {
   const a = await actor(req);
   requireRole(a.role, ["owner", "manager", "dispatch"]);
   const b = z.object({ paused: z.boolean() }).parse(req.body);
-  await pool.query("UPDATE recurring_service SET paused=$2 WHERE id=$1", [
+  await operationalChildQuery("recurring_service",id.parse(req.params.id),"UPDATE recurring_service SET paused=$2 WHERE id=$1", [
     id.parse(req.params.id),
     b.paused,
   ]);
@@ -96,7 +97,7 @@ operationsApi.post("/properties/:id/areas", async (req, res) => {
     })
     .parse(req.body);
   const area = randomUUID();
-  await pool.query(
+  await operationalQuery(key,
     "INSERT INTO property_area(id,property_id,name,description,acreage) VALUES($1,$2,$3,$4,$5)",
     [area, key, b.name, b.description, b.acreage ?? null],
   );
@@ -108,7 +109,7 @@ operationsApi.get("/projects", async (req, res) => {
   res.json(
     (
       await pool.query(
-        "SELECT j.*,p.name AS property_name FROM project j JOIN property p ON p.id=j.property_id ORDER BY j.created_at DESC",
+        "SELECT j.*,p.name AS property_name FROM project j JOIN property p ON p.id=j.property_id AND p.lifecycle='operational' ORDER BY j.created_at DESC",
       )
     ).rows,
   );
@@ -128,7 +129,7 @@ operationsApi.post("/projects", async (req, res) => {
     })
     .parse(req.body);
   const key = randomUUID();
-  await pool.query(
+  await operationalQuery(b.propertyId,
     "INSERT INTO project(id,property_id,name,scope,phases) VALUES($1,$2,$3,$4,$5)",
     [key, b.propertyId, b.name, b.scope, JSON.stringify(b.phases)],
   );
@@ -140,7 +141,7 @@ operationsApi.get("/expenses", async (req, res) => {
   res.json(
     (
       await pool.query(
-        "SELECT e.*,p.name AS property_name FROM expense e JOIN property p ON p.id=e.property_id ORDER BY incurred_on DESC",
+        "SELECT e.*,p.name AS property_name FROM expense e JOIN property p ON p.id=e.property_id AND p.lifecycle='operational' ORDER BY incurred_on DESC",
       )
     ).rows,
   );
@@ -158,7 +159,7 @@ operationsApi.post("/expenses", async (req, res) => {
     })
     .parse(req.body);
   const key = randomUUID();
-  await pool.query(
+  await operationalQuery(b.propertyId,
     "INSERT INTO expense(id,property_id,amount_cents,category,description,incurred_on,created_by) VALUES($1,$2,$3,$4,$5,$6,$7)",
     [
       key,
@@ -178,7 +179,7 @@ operationsApi.get("/inspections", async (req, res) => {
   res.json(
     (
       await pool.query(
-        "SELECT i.*,p.name AS property_name FROM inspection i JOIN property p ON p.id=i.property_id ORDER BY i.created_at DESC",
+        "SELECT i.*,p.name AS property_name FROM inspection i JOIN property p ON p.id=i.property_id AND p.lifecycle='operational' ORDER BY i.created_at DESC",
       )
     ).rows,
   );
@@ -208,7 +209,7 @@ operationsApi.post("/inspections", async (req, res) => {
     .parse(req.body);
   await propertyAccess(a, b.propertyId);
   const key = randomUUID();
-  await pool.query(
+  await operationalQuery(b.propertyId,
     "INSERT INTO inspection(id,property_id,user_id,title,findings) VALUES($1,$2,$3,$4,$5)",
     [key, b.propertyId, a.id, b.title, JSON.stringify(b.findings)],
   );

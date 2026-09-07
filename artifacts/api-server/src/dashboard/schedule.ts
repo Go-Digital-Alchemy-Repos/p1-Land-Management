@@ -1,3 +1,4 @@
+import { requireOperationalChild } from "./operational-property";
 import { randomUUID } from "node:crypto";
 import { z } from "zod";
 import { pool, transaction } from "./database";
@@ -66,7 +67,7 @@ export async function readSchedule(a: Actor, input: unknown) {
   }
   const rows = (
     await pool.query(
-      `SELECT w.*,to_char(w.scheduled_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS cursor_at,p.name AS property_name FROM work_order w JOIN property p ON p.id=w.property_id WHERE ${conditions.join(" AND ")} ORDER BY ${unscheduled ? "w.id" : "w.scheduled_at,w.id"} LIMIT 101`,
+      `SELECT w.*,to_char(w.scheduled_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS cursor_at,p.name AS property_name FROM work_order w JOIN property p ON p.id=w.property_id AND p.lifecycle='operational' WHERE ${conditions.join(" AND ")} ORDER BY ${unscheduled ? "w.id" : "w.scheduled_at,w.id"} LIMIT 101`,
       values,
     )
   ).rows;
@@ -110,6 +111,7 @@ export async function rescheduleWork(
 ) {
   const b = rescheduleInput.parse(input);
   return transaction(async (c) => {
+    await requireOperationalChild(c,"work_order",id);
     const w = (
       await c.query("SELECT * FROM work_order WHERE id=$1 FOR UPDATE", [id])
     ).rows[0];
@@ -170,7 +172,7 @@ export async function readScheduledWork(a: Actor, id: string) {
   }
   const w = (
     await pool.query(
-      "SELECT w.*,p.name AS property_name,p.address,p.access_instructions FROM work_order w JOIN property p ON p.id=w.property_id WHERE w.id=$1" +
+      "SELECT w.*,p.name AS property_name,p.address,p.access_instructions FROM work_order w JOIN property p ON p.id=w.property_id AND p.lifecycle='operational' WHERE w.id=$1" +
         restriction,
       params,
     )

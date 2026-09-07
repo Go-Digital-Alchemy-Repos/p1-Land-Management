@@ -1,3 +1,4 @@
+import { requireOperationalChild } from "./operational-property";
 import type { PoolClient } from "pg";
 import { Router, raw } from "express";
 import { z } from "zod";
@@ -326,9 +327,10 @@ qboApi.post("/billing/:id/post", async (req, res) => {
   if (!item)
     throw new HttpError(503, "A QuickBooks service item mapping is required");
   const draft = await transaction(async (c) => {
+    await requireOperationalChild(c,"billing_draft",key);
     const b = (
       await c.query(
-        "SELECT b.*,c.quickbooks_id AS customer FROM billing_draft b JOIN property p ON p.id=b.property_id JOIN client c ON c.id=p.client_id WHERE b.id=$1 FOR UPDATE OF b",
+        "SELECT b.*,c.quickbooks_id AS customer FROM billing_draft b JOIN property p ON p.id=b.property_id AND p.lifecycle='operational' JOIN client c ON c.id=p.client_id WHERE b.id=$1 FOR UPDATE OF b",
         [key],
       )
     ).rows[0];
@@ -397,7 +399,7 @@ export async function refreshInvoiceOwnership(i: any) {
   await transaction(async (c) => {
     const mapped = (await c.query("SELECT id FROM client WHERE quickbooks_id=$1", [i.CustomerRef?.value || ""])).rows[0];
     await c.query("UPDATE external_invoice SET client_id=COALESCE($2,client_id),ownership_verified=$3,total_cents=$4,balance_cents=$5,payment_url=$6,updated_at=now() WHERE id=$1", [i.Id,mapped?.id || null,Boolean(mapped),Math.round(i.TotalAmt*100),Math.round(i.Balance*100),mapped ? paymentLink(i.InvoiceLink) : null]);
-    await c.query("UPDATE billing_draft b SET ownership_verified=COALESCE(p.client_id=$2::uuid,false),balance_cents=$3,payment_url=CASE WHEN p.client_id=$2::uuid THEN $4 ELSE NULL END FROM property p WHERE b.property_id=p.id AND b.quickbooks_id=$1", [i.Id,mapped?.id || null,Math.round(i.Balance*100),paymentLink(i.InvoiceLink)]);
+    await c.query("UPDATE billing_draft b SET ownership_verified=COALESCE(p.lifecycle='operational' AND p.client_id=$2::uuid,false),balance_cents=$3,payment_url=CASE WHEN p.lifecycle='operational' AND p.client_id=$2::uuid THEN $4 ELSE NULL END FROM property p WHERE b.property_id=p.id AND b.quickbooks_id=$1", [i.Id,mapped?.id || null,Math.round(i.Balance*100),paymentLink(i.InvoiceLink)]);
   });
 }
 export async function reconcileQuickBooks() {
