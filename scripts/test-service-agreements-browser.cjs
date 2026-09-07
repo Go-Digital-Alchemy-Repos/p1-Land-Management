@@ -147,6 +147,13 @@ const fs = require("fs");
       .getByRole("button", { name: "Record immutable decision", exact: true })
       .click();
     await p
+      .getByRole("alert")
+      .filter({ hasText: "Synthetic response loss" })
+      .waitFor();
+    await p
+      .getByRole("button", { name: "Record immutable decision", exact: true })
+      .click();
+    await p
       .getByRole("status")
       .filter({ hasText: "Correction was recorded" })
       .waitFor();
@@ -206,6 +213,12 @@ const fs = require("fs");
             t.body.outcome === "correction_required",
         ),
       "Correction records only after the zero-write comparison",
+    );
+    const reviewWrites = trace.filter((t) => t.path.endsWith("/reviews"));
+    check(
+      reviewWrites.length === 2 &&
+        reviewWrites[0].body.operationId === reviewWrites[1].body.operationId,
+      "Ambiguous record retry preserves the same operation ID",
     );
     await p.setViewportSize({ width: 390, height: 844 });
     check(
