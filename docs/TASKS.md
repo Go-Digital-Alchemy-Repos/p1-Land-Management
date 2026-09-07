@@ -15,7 +15,6 @@ All tasks use branch codex/p1-cms-crm from P1 5303da0 and upstream Core aad2057.
 | P1-QA | Orchestrator | IN PROGRESS | 35-route staged public QA and scoped runtime/security checks passed; admin redirect fix is live. Final browser/accessibility and production gates remain. |
 | P1-CONTENT | Strategy task; Orchestrator integration | PLANNED | Strategy/proof brief under docs/strategy; public/CMS implementation follows acceptance of P1-PUBLIC, P1-IMAGES and P1-CMS review gates |
 | P1-COMMERCIAL | Orchestrator + content/Core/dashboard owners | IN PROGRESS | Commercial page/intake and signed dashboard handoff passed staging; fc302b1 prospect API reviewed/pushed, editing panel accepted on staging and deployed in reviewedbc7 dashboard; production delivery/readback passed; assessment/onboarding and target-account pursuit remain. COM-01–07 in [initiative](initiatives/commercial-industrial-sales.md) |
-
 | P1-NATIVE | Native specialist; independent review | IN PROGRESS | Android build/emulator storage/account-transition checks and18 logic tests passed; offline restart implementation, iOS build, physical devices and pilot remain. |
 | P1-AGREEMENTS | Dashboard task; independent review | IMPLEMENTED, UNMOUNTED | Operational recurring terms and reviewed charge preparation under review;0012 remains outside deployments. |
 
