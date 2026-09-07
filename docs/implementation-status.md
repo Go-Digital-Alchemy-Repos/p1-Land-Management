@@ -13,6 +13,12 @@ Branch: `codex/p1-cms-crm`. Original public baseline: `5303da0`; copied Core sou
 | Commercial prospect context | Reviewed `fc302b1` committed and pushed; isolated migrations, role/operational boundaries and conversion protection tested | Reviewed panel7ef0ae2 and migration0011 passed staging UI/API and restored-copy checks; production promotion and full assessment/onboarding remain |
 | Dispatch readiness | Reviewed484f953 passed combined tests and staging readiness update/conflict/start checks | Production promotion and wider operational acceptance |
 
+## September 7 — paired federation staging release
+
+Dashboard staging web `2cc65a61-5886-4eeb-ae5d-374c0138b4a4` reached SUCCESS from the frozen `9b84067` artifact, applying additive migrations `0014_core_federation`, `0015_client_onboarding`, and `0016_agreement_charge_review`. Core staging `8298ec17-eb4c-4e85-967e-6f9a66158ab5` reached SUCCESS from `f219835`; its subsequent configuration restart `78fa0eca-840e-4df7-bfaa-73ecf514ea32` also passed readiness. Fresh staging database backups `927006f7-92e3-4bcf-8973-9b93d2a54117` (dashboard) and `3aea8f30-62fa-46fa-8be9-a9e506b9038c` (Core) are listed with completed storage sizes before activation.
+
+Both services use a newly generated staging-only confidential-client secret and the exact staging callback. Core reports federation enabled, Core readiness and dashboard health return 200, and the browser handoff returns a 302 to Dashboard's exact `/api/v1/federation/authorize` endpoint with S256 PKCE, the registered callback and the required purpose. The credentialed token/introspection paths remain under `/api/integrations/core/v1/federation/*` as frozen by the contract. Staging Dashboard has no configured owner bootstrap, so no real Dashboard session, identity link, MFA/revocation/outage or preview browser acceptance has occurred. Production services, data and credentials remain unchanged.
+
 ## Website and CMS evidence
 
 - React renders published CMS content into HTML and hydrates the same revision. Seven existing page families passed draft privacy, conflict409, publish and historical restore checks; `/commercial` additionally passed publication/restore with original content restored at revision6. Actual unsaved iframe previews subsequently passed commercial, service, location and article checks, with no private markers across35 anonymous routes.
