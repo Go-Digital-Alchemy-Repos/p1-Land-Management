@@ -11,4 +11,6 @@ try:
  env=dict(os.environ,P1_FEDERATION_TEST_DATABASE_URL='postgresql://postgres:synthetic-only@127.0.0.1:'+port+'/federation')
  r=subprocess.run(['./node_modules/.bin/vitest','run','server/services/federation-bootstrap-proof.test.ts','server/services/federation-client.test.ts','server/services/federation-consumer.integration.test.ts'],cwd=root,env=env,stdout=open('/tmp/p1-federation-consumer-tests.log','w'),stderr=subprocess.STDOUT)
  print('Focused synthetic suite exit',r.returncode)
+ if r.returncode:
+  raise SystemExit(r.returncode)
 finally: subprocess.run(['docker','rm','-f',name],capture_output=True)
