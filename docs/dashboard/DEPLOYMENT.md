@@ -187,6 +187,8 @@ Audited service-request follow-up `8ed92be` deployed to staging web as `5f0a95df
 
 PWA install-metadata follow-up `599a79b` deployed to staging web as `01505876-e478-497d-a0e2-a662b7056d47`, which reached SUCCESS. It adds an opaque, square, maskable P1 SVG icon to the manifest, retains the general SVG icon, adds compatible Apple standalone metadata, and precaches both icons in the versioned shell. The PWA SVG validates, the dashboard type check/build and synthetic 20-test suite passed before release. Live manifest and service worker checks confirmed the maskable icon and new cache key; `/api/healthz` returned200/no-store. It does not prove physical iPhone or Android installation, camera, storage, offline or synchronization behavior.
 
+Safari touch-icon follow-up `dd485e7` deployed to staging web as `94535b39-2394-436a-9dad-482ee5cd1d8e`, which reached SUCCESS. It adds an explicit 180×180 PNG `apple-touch-icon` link, rendered faithfully from the same square P1 artwork, and includes it in the versioned shell cache. Dashboard type check/build and the synthetic 20-test suite passed before release. The live root HTML link, downloaded PNG dimensions and SHA-256, service-worker cache entry, and `/api/healthz`200/no-store were verified. This does not prove physical iPhone installation or field workflow behavior.
+
 ## Isolated staging worker — September 7
 
 Staging now has a dedicated asynchronous worker, `p1-dashboard-staging-worker` (`966e2f89-10f8-4c9f-a8bb-d42a3451ff03`), matching the separate production-worker topology. It runs in US East with one replica, no public domain, no volume and no pre-deploy migration. The command is `node dist/dashboard/worker.js`; the staged web service remains the only service that runs `node dist/dashboard/migrate.js`.
