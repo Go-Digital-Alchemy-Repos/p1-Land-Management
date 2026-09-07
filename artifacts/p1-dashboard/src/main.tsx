@@ -1,3 +1,4 @@
+import { PropertyFiles } from "./PropertyFiles";
 import { ScheduleCalendar } from "./ScheduleCalendar";
 import { AssessmentAvailability } from "./AssessmentAvailability";
 import { ClientContacts } from "./ClientContacts";
@@ -1796,6 +1797,11 @@ function App() {
               </div>
             ) : form === "timeline" ? (
               <>
+                <PropertyFiles
+                  propertyId={selected.property.id}
+                  canPublish={manager}
+                  request={api}
+                />
                 {selected.timeline.length ? (
                   selected.timeline.map((e: any) => (
                     <div className="timeline-row" key={e.id}>

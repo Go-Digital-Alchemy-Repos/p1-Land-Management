@@ -1,0 +1,35 @@
+.property-photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(230px, 100%), 1fr));
+  gap: 16px;
+}
+.property-photo {
+  border: 1px solid #dfe5dc;
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+}
+.property-photo h4 {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.property-photo img {
+  width: 100%;
+  height: 190px;
+  object-fit: contain;
+  background: #eef1eb;
+  border-radius: 6px;
+}
+.property-photo small {
+  color: #526355;
+}
+.property-photo a {
+  font-weight: 600;
+}
+.property-photo button {
+  white-space: normal;
+  text-align: left;
+}
