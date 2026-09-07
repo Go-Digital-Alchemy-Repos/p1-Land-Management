@@ -13,6 +13,7 @@ Railway project: `e83f79dd-d901-4ab1-836b-bdf272b58dc2` (p1-Land-Management).
 | Private bucket                       | 85f53342-3f1e-4552-ad78-2dc686951479 |
 | Staging environment                  | 039000ad-9deb-448d-b340-ab84fc74ecd5 |
 | Staging web                          | 586fc0ae-a3e3-4520-8c6e-b4c64bd6f7a0 |
+| Staging worker                       | 966e2f89-10f8-4c9f-a8bb-d42a3451ff03 |
 | Staging DB (Postgres-x2kH)           | ad0db535-0f4d-4f5f-88eb-7e7522af8db9 |
 
 Production URL: https://dashboard.p1landmanagement.com. Cloudflare DNS task owns its CNAME/TXT. Staging URL: https://p1-dashboard-staging-dashboard-staging.up.railway.app. Marketing website/Core resources must not be modified by dashboard deployment.
@@ -165,3 +166,11 @@ Evidence: `/tmp/p1-b97-production-backup.json`, `/tmp/p1-b97-production-smoke.js
 Keep0012/0013 and all agreement, audit and identity records during application rollback. Never reopen first-owner setup or reverse MFA policy rows as a rollback shortcut. The prior production web deployment was2ea82bfd (image `sha256:f1fbc28f14166b68765dec4694b927023c3d7ad724cc6c8b02a7cb86e7929857`); the prior worker was3e979b6e (image `sha256:f11b84cdc18e7e51af9858d1a52ac7473240fa877e742e754f78cccefe4c558e`). These are captured recovery identities, not automatic rollback approval: the previous web has older MFA handlers, so assess the incident and authentication implications before restoring that image. Prefer a reviewed forward correction when reverting would reintroduce a known defect. Any approved application rollback must preserve the additive ledger, use explicit production service IDs and repeat health, authentication-boundary and worker-startup checks. Restoring the database snapshot is a separate recovery action requiring consideration of data written since the backup; it is not part of ordinary application rollback.
 
 Core/public marketing services, their domains and provider configuration were not changed by this release. The Project Orchestrator accepted this bounded release after reviewing the source, staging and production receipts and independently rechecking live health, deep-link serving and anonymous API denial. Broader project completion remains open.
+
+## Isolated staging worker — September 7
+
+Staging now has a dedicated asynchronous worker, `p1-dashboard-staging-worker` (`966e2f89-10f8-4c9f-a8bb-d42a3451ff03`), matching the separate production-worker topology. It runs in US East with one replica, no public domain, no volume and no pre-deploy migration. The command is `node dist/dashboard/worker.js`; the staged web service remains the only service that runs `node dist/dashboard/migrate.js`.
+
+The worker uses the dashboard Dockerfile and references the existing staging database, Better Auth secret, integration encryption key and configured provider settings through Railway service-variable references. No credentials were copied into deployment source or documentation. The initial image deployment `5cd7b2b4-a891-4839-afd6-1d1d9e47f4d3` built successfully but crashed because Better Auth is initialized by the worker's module graph. Adding the missing secret reference triggered deployment `c86678b6-3121-4fb3-bf25-27fac0fc1adc`, which reached SUCCESS with one running replica; inspected startup logs show the container starting and no application error.
+
+This proves worker topology, database connectivity at startup and sustained process availability. It does not prove real-provider delivery, scheduled reconciliation against QuickBooks, recurring-work behavior with customer data, or notification delivery. Those remain part of the integration and pilot acceptance gates.
