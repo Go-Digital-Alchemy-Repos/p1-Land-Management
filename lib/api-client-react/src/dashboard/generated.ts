@@ -10,6 +10,7 @@ import type {
   CommercialInquiry,
   CommercialInquiryDetail,
   CommercialInquiryPage,
+  DashboardMe,
   FieldSyncResponse,
   GetScheduleParams,
   GetSetupStatus200,
@@ -272,6 +273,30 @@ export const updateWorkReadiness = async (id: string,
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
       readinessUpdate,)
+  }
+);}
+
+
+
+export const getGetDashboardMeUrl = () => {
+
+
+
+
+  return `/api/v1/me`
+}
+
+/**
+ * Verified identity and active business role. Does not grant session assurance or bypass owner MFA. Inactive or missing business profiles return role null.
+ */
+export const getDashboardMe = async ( options?: RequestInit): Promise<DashboardMe> => {
+
+  return customFetch<DashboardMe>(getGetDashboardMeUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
   }
 );}
 

@@ -789,6 +789,27 @@
           }
         }
       }
+    },
+    "/me": {
+      "get": {
+        "operationId": "getDashboardMe",
+        "description": "Verified identity and active business role. Does not grant session assurance or bypass owner MFA. Inactive or missing business profiles return role null.",
+        "responses": {
+          "200": {
+            "description": "Verified session identity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardMe"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or unverified session"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1381,6 +1402,53 @@
           "override_reason": {
             "type": "null",
             "description": "Accepted requirement edits clear the previous override."
+          }
+        }
+      },
+      "DashboardMe": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name",
+          "email",
+          "ownerMfaRequired",
+          "role"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "twoFactorEnabled": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "ownerMfaRequired": {
+            "type": "boolean"
+          },
+          "role": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "owner",
+              "manager",
+              "dispatch",
+              "sales",
+              "finance",
+              "crew",
+              "client",
+              null
+            ]
           }
         }
       }

@@ -15,6 +15,8 @@ export * from './commercialInquiryPage';
 export * from './commercialInquiryReceipt';
 export * from './commercialInquiryStatus';
 export * from './dashboardError';
+export * from './dashboardMe';
+export * from './dashboardMeRole';
 export * from './fieldOperation';
 export * from './fieldOperationKind';
 export * from './fieldOperationPayload';

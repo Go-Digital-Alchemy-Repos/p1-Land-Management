@@ -102,3 +102,36 @@ test("generated dashboard client preserves cursor filters, explicit nulls and co
     globalThis.fetch = original;
   }
 });
+
+test("generated identity transport preserves nullable role and optional MFA state without granting assurance", async () => {
+  const { getDashboardMe } =
+    await import("@workspace/api-client-react/dashboard");
+  const original = globalThis.fetch;
+  let response: Record<string, unknown> = {
+    id: "inactive",
+    name: "Fixture",
+    email: "fixture@example.test",
+    role: null,
+    ownerMfaRequired: false,
+  };
+  globalThis.fetch = async (input, init) => {
+    assert.equal(String(input), "/api/v1/me");
+    assert.equal(init?.method, "GET");
+    assert.equal(init?.body, undefined);
+    return Response.json(response);
+  };
+  try {
+    assert.deepEqual(await getDashboardMe(), response);
+    response = {
+      ...response,
+      role: "owner",
+      twoFactorEnabled: null,
+      ownerMfaRequired: true,
+    };
+    const owner = await getDashboardMe();
+    assert.equal(owner.ownerMfaRequired, true);
+    assert.equal(owner.twoFactorEnabled, null);
+  } finally {
+    globalThis.fetch = original;
+  }
+});
