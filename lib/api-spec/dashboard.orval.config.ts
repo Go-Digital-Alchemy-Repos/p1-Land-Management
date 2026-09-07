@@ -1,2 +1,23 @@
-import {defineConfig} from 'orval';
-export default defineConfig({dashboard:{input:'./dashboard.openapi.json',output:{target:'../api-client-react/src/dashboard/generated.ts',schemas:'../api-client-react/src/dashboard/models',client:'fetch',mode:'split',baseUrl:'/api/v1',clean:true,override:{fetch:{includeHttpResponseReturnType:false},mutator:{path:'../api-client-react/src/custom-fetch.ts',name:'customFetch'}}}}});
+import { defineConfig } from "orval";
+export default defineConfig({
+  dashboard: {
+    hooks: { afterAllFilesWrite: "node fix-dashboard-binary.mjs" },
+    input: "./dashboard.openapi.json",
+    output: {
+      target: "../api-client-react/src/dashboard/generated.ts",
+      schemas: "../api-client-react/src/dashboard/models",
+      client: "fetch",
+      mode: "split",
+      baseUrl: "/api/v1",
+      clean: true,
+      headers: true,
+      override: {
+        fetch: { includeHttpResponseReturnType: false },
+        mutator: {
+          path: "../api-client-react/src/custom-fetch.ts",
+          name: "customFetch",
+        },
+      },
+    },
+  },
+});

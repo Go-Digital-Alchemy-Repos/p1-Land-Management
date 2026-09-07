@@ -922,6 +922,170 @@
           }
         ]
       }
+    },
+    "/files/{id}/content": {
+      "get": {
+        "operationId": "getPrivateFileContent",
+        "description": "Authorized private image bytes; never a storage URL. Requires property grants and publication or crew assignment. Response is uncached.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Private image bytes",
+            "content": {
+              "image/webp": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified identity required"
+          },
+          "403": {
+            "description": "Business role or current owner MFA required"
+          },
+          "404": {
+            "description": "File not accessible"
+          },
+          "503": {
+            "description": "Storage unavailable"
+          }
+        }
+      }
+    },
+    "/files/{id}": {
+      "post": {
+        "operationId": "uploadFieldPhoto",
+        "description": "Raw image bytes (not multipart or JSON). Keep operation ID, original bytes, property, work and classification unchanged on retry. Never publishes content. Supports exact image/jpeg, image/png or image/webp Content-Type.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "x-p1-property",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "x-p1-work",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "x-p1-classification",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "before",
+                "during",
+                "after",
+                "issue",
+                "general"
+              ]
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "image/jpeg": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "image/png": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "image/webp": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Previously accepted operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhotoUploadReceipt"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Uploaded image accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhotoUploadReceipt"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid image or metadata"
+          },
+          "401": {
+            "description": "Verified identity required"
+          },
+          "403": {
+            "description": "Upload role or assignment denied"
+          },
+          "404": {
+            "description": "Property inaccessible"
+          },
+          "409": {
+            "description": "Operation conflict"
+          },
+          "429": {
+            "description": "Concurrent upload limit; retry unchanged"
+          },
+          "503": {
+            "description": "Storage unavailable"
+          },
+          "413": {
+            "description": "Image exceeds 15 MiB upload limit"
+          },
+          "500": {
+            "description": "Unexpected processing or storage failure; retain the same operation and bytes for a controlled retry"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1691,6 +1855,26 @@
           "created_at"
         ],
         "additionalProperties": false
+      },
+      "PhotoUploadReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "accepted"
+            ]
+          }
+        }
       }
     }
   }

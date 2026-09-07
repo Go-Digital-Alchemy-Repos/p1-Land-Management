@@ -193,3 +193,65 @@ test("generated property reads preserve role-minimized snapshots and unknown his
     globalThis.fetch = original;
   }
 });
+
+test("generated binary upload preserves exact bytes, typed target headers and native auth headers", async () => {
+  const { uploadFieldPhoto, getPrivateFileContent } =
+    await import("@workspace/api-client-react/dashboard");
+  const original = globalThis.fetch;
+  const bytes = new Uint8Array([137, 80, 78, 71, 0, 255, 3]);
+  const blob = new Blob([bytes], { type: "image/png" });
+  let calls = 0;
+  globalThis.fetch = async (input, init) => {
+    calls++;
+    assert.equal(
+      new Headers(init?.headers).get("Authorization"),
+      "Bearer synthetic-test-token",
+    );
+    if (String(input).endsWith("/content"))
+      return new Response(blob, { headers: { "Content-Type": "image/png" } });
+    assert.equal(init?.method, "POST");
+    assert.equal(init?.body, blob);
+    assert.deepEqual(
+      new Uint8Array(await (init?.body as Blob).arrayBuffer()),
+      bytes,
+    );
+    const h = new Headers(init?.headers);
+    assert.equal(h.get("Content-Type"), "image/png");
+    assert.equal(h.get("x-p1-property"), "property");
+    assert.equal(h.get("x-p1-work"), "work");
+    assert.equal(h.get("x-p1-classification"), "before");
+    return Response.json({ id: "photo", status: "accepted" }, { status: 201 });
+  };
+  const options = {
+    headers: new Headers({ Authorization: "Bearer synthetic-test-token" }),
+  };
+  try {
+    assert.deepEqual(
+      await uploadFieldPhoto(
+        "photo",
+        blob,
+        {
+          "x-p1-property": "property",
+          "x-p1-work": "work",
+          "x-p1-classification": "before",
+        },
+        options,
+      ),
+      { id: "photo", status: "accepted" },
+    );
+    const downloaded = await getPrivateFileContent("photo", options);
+    assert.deepEqual(new Uint8Array(await downloaded.arrayBuffer()), bytes);
+    await assert.rejects(
+      uploadFieldPhoto(
+        "photo",
+        new Blob([bytes]),
+        { "x-p1-property": "property", "x-p1-work": "work" },
+        options,
+      ),
+      /must declare/,
+    );
+    assert.equal(calls, 2);
+  } finally {
+    globalThis.fetch = original;
+  }
+});

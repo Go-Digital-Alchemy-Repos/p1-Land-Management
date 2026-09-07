@@ -16,6 +16,7 @@ import type {
   GetScheduleParams,
   GetSetupStatus200,
   ListCommercialInquiriesParams,
+  PhotoUploadReceipt,
   PropertyFile,
   PropertyTimelineEvent,
   ReadinessResult,
@@ -23,6 +24,7 @@ import type {
   RescheduleWork,
   SchedulePage,
   SyncFieldEventsBody,
+  UploadFieldPhotoHeaders,
   WorkOrder,
   WorkVersion
 } from './models';
@@ -372,6 +374,65 @@ export const listPropertyFiles = async (id: string, options?: RequestInit): Prom
     method: 'GET'
 
 
+  }
+);}
+
+
+
+export const getGetPrivateFileContentUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/files/${id}/content`
+}
+
+/**
+ * Authorized private image bytes; never a storage URL. Requires property grants and publication or crew assignment. Response is uncached.
+ */
+export const getPrivateFileContent = async (id: string, options?: RequestInit): Promise<Blob> => {
+
+  return customFetch<Blob>(getGetPrivateFileContentUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getUploadFieldPhotoUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/files/${id}`
+}
+
+/**
+ * Raw image bytes (not multipart or JSON). Keep operation ID, original bytes, property, work and classification unchanged on retry. Never publishes content. Supports exact image/jpeg, image/png or image/webp Content-Type.
+ */
+export const uploadFieldPhoto = async (id: string,
+    uploadFieldPhotoBody: Blob,
+    headers: UploadFieldPhotoHeaders, options?: RequestInit): Promise<PhotoUploadReceipt> => {
+
+
+  const uploadHeaders = new Headers(options?.headers);
+  const mime = uploadHeaders.get('Content-Type') || uploadFieldPhotoBody.type;
+  if (!['image/jpeg', 'image/png', 'image/webp'].includes(mime))
+    throw new TypeError('Photo Blob or Content-Type must declare JPEG, PNG, or WebP');
+  uploadHeaders.set('Content-Type', mime);
+  for (const [key, value] of Object.entries(headers))
+    if (value !== undefined) uploadHeaders.set(key, value);
+
+  return customFetch<PhotoUploadReceipt>(getUploadFieldPhotoUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: uploadHeaders,
+    body: uploadFieldPhotoBody
   }
 );}
 
