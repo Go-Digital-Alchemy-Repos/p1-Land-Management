@@ -1,6 +1,6 @@
 # Service agreements — implementation candidate
 
-Status: local, unmounted candidate under independent review. Migration0012 has not been applied to staging or production. This document describes the current API/domain candidate, not a completed billing feature or an accepted customer contract.
+Status: independently reviewed backend committed as `d42d926`; staff UI and contract integration remain in progress. Migration0012 has not been applied to staging or production. This document describes the current API/domain candidate, not a completed billing feature or an accepted customer contract.
 
 ## Ownership and lifecycle
 
@@ -36,6 +36,14 @@ Queue entries are a current snapshot; preparation always rechecks authorization 
 
 `scripts/test-service-agreements.mjs` uses a disposable PostgreSQL instance and applies/replays migrations. Tests cover explicit monthly periods, per-visit inputs, lifecycle/version/overlap rules, financial-field omission for dispatch, previews without writes, concurrent source/cap protection, fixed charges despite paused visits, cancellation history, rescheduled occurrence membership and queue visibility/pagination.
 
-Still required before acceptance: independent review, finalized shared/OpenAPI and Drizzle contracts, actual HTTP authorization tests, staff agreement/preview/queue UI, full renewal/change-order/partial-cancellation correction UX, scheduled preparation and failed/unmatched action handling, migration restore rehearsal, staging live acceptance, QBO sandbox billing/reconciliation and pilot acceptance. Client agreement publication requires its own approved projection and existing property grants. No complete financial loop is claimed by the local domain tests.
+Still required before full feature acceptance: finalized shared/OpenAPI and Drizzle contracts, integrated HTTP authorization regression coverage, staff agreement/preview/queue UI, full renewal/change-order/partial-cancellation correction UX, scheduled preparation and failed/unmatched action handling, populated agreement recovery coverage, staging live acceptance, QBO sandbox billing/reconciliation and pilot acceptance. Client agreement publication requires its own approved projection and existing property grants. No complete financial loop is claimed by the local domain tests.
 
 An isolated application snapshot based on committed bc7d3a6 authentication temporarily mounts the candidate router for HTTP tests. The real middleware test passes manager/finance/dispatch projections; rejects client/crew/sales, anonymous and unassured-owner access; proves previews make no billing writes; and races manual progress billing against agreement preparation on one approved cap. The candidate path is recorded locally at `/tmp/p1-agreement-http-candidate.txt`. This test-only mount has not changed the shared application router.
+
+## Reviewed database recovery evidence — September 7
+
+The exact `d42d926` migration0012 (SHA256 `a54bd386424076c067ea6c562fc0537fc77a409d630422aee1d9168bfe92e06f`) was applied to a disposable restored staging snapshot already upgraded through0011. All 44 existing table row counts and canonical row hashes were unchanged. A new custom-format dump was restored into a second isolated PostgreSQL18 container; all table hashes, 64 agreement constraints and the global work-order charge unique index matched. Both containers used network `none`, ran no application workers and were removed.
+
+Evidence: `/tmp/p1-agreement-restore-44d6dd29/report.json`. Post-upgrade dump SHA256 `78bf6795283de80cec7457b0bebc374e40906d3e8201852d9445d2e511bf2b6c` (115,240 bytes). This is database-only recovery evidence; new agreement tables were empty in the staging snapshot. Populated agreement behavior is covered separately by four domain tests and a real-auth HTTP test; populated recovery, application boot, object storage, grants, providers and live release remain distinct gates. The rehearsal checked SQL transaction/advisory-lock and ledger checksums; the Node migration runner apply/replay was exercised separately in the independent domain suite.
+
+Do not roll back by dropping agreement tables or billing receipts. Use a compatible application correction and preserve charge history; a pre-migration database restore requires an explicit recovery decision accounting for writes accepted after the backup.
