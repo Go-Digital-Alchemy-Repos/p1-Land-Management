@@ -1,3 +1,4 @@
+import type { CommercialInquiry, CommercialIntakeResult } from "../commercial-intake-contract";
 import { sql } from "drizzle-orm";
 import {
   pgTable,
@@ -198,6 +199,7 @@ export type InsertCmsFormSubmission = z.infer<typeof insertCmsFormSubmissionSche
 export type CmsFormSubmission = typeof cmsFormSubmissions.$inferSelect;
 
 export type CmsFormEffectPayload =
+  | { kind: "commercial_dashboard_intake"; inquiry: CommercialInquiry }
   | { kind: "crm_intake"; formName: string }
   | { kind: "contact_message" }
   | { kind: "mailchimp_sync"; email: string; firstName: string; lastName: string; tag: string }
@@ -221,6 +223,8 @@ export const cmsFormEffectJobs = pgTable(
       .references(() => cmsFormSubmissions.id, { onDelete: "cascade" }),
     deduplicationKey: text("deduplication_key").notNull(),
     payload: jsonb("payload").$type<CmsFormEffectPayload>().notNull(),
+    deliveryPayload: text("delivery_payload"),
+    deliveryResult: jsonb("delivery_result").$type<CommercialIntakeResult>(),
     status: text("status")
       .$type<"queued" | "processing" | "completed" | "skipped" | "failed">()
       .notNull()

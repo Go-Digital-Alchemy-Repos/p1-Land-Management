@@ -1,3 +1,4 @@
+import { CommercialHandoffError, deliverCommercialHandoff } from "./commercial-handoff.service";
 import { startStoppableWorker } from "../utils/runtime-lifecycle";
 import { type CmsFormEffectJob } from "@shared/schema";
 import { storage } from "../storage";
@@ -12,6 +13,10 @@ async function applyJob(job: CmsFormEffectJob, clock: () => Date) {
   const token = job.processingToken;
   if (!token) throw new Error("form_effect_claim_missing");
   const payload = job.payload;
+  if (payload.kind === "commercial_dashboard_intake") {
+    const result = await deliverCommercialHandoff(job);
+    return storage.forms.completeEffectJob(job.id, token, "completed", clock, undefined, result);
+  }
   if (payload.kind === "crm_intake" && !(await isSiteFeatureEnabled("crmEnabled"))) {
     throw new Error("crm_feature_disabled");
   }
@@ -86,8 +91,11 @@ export async function runFormEffectJobs(
     if (!job) break;
     try {
       if (await applyJob(job, clock)) completed += 1;
-    } catch {
-      const updated = await storage.forms.retryEffectJob(job, clock());
+    } catch (error) {
+      const updated =
+        error instanceof CommercialHandoffError
+          ? await storage.forms.retryEffectJob(job, clock(), error.message)
+          : await storage.forms.retryEffectJob(job, clock());
       if (updated?.status === "failed") failed += 1;
       else if (updated) retried += 1;
       logger.app.warn("Managed form effect delivery failed", {

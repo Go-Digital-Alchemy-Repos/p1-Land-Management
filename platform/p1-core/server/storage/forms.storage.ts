@@ -1,3 +1,8 @@
+import { z } from "zod";
+import {
+  commercialIntakeEventSchema,
+  type CommercialIntakeResult,
+} from "../../shared/commercial-intake-contract";
 import { randomUUID } from "node:crypto";
 import { and, desc, eq, sql } from "drizzle-orm";
 import { db } from "../db";
@@ -223,6 +228,7 @@ export class FormsStorage {
       tx: Parameters<Parameters<typeof db.transaction>[0]>[0],
       submission: CmsFormSubmission,
     ) => Promise<void>,
+    deliveryResult?: CommercialIntakeResult,
   ): Promise<boolean> {
     return db.transaction(async (tx) => {
       const [job] = await tx
@@ -250,6 +256,7 @@ export class FormsStorage {
         .update(cmsFormEffectJobs)
         .set({
           status: outcome,
+          ...(deliveryResult ? { deliveryResult } : {}),
           completedAt: now,
           processingToken: null,
           failedAt: null,
@@ -261,7 +268,11 @@ export class FormsStorage {
     });
   }
 
-  async retryEffectJob(job: CmsFormEffectJob, now = new Date()) {
+  async retryEffectJob(
+    job: CmsFormEffectJob,
+    now = new Date(),
+    errorCode = "effect_delivery_failed",
+  ) {
     const failed = job.attemptCount >= 5;
     const nextAttemptAt = new Date(
       now.getTime() + Math.min(30_000 * 2 ** Math.max(job.attemptCount - 1, 0), 30 * 60_000),
@@ -274,7 +285,7 @@ export class FormsStorage {
         nextAttemptAt,
         processingToken: null,
         failedAt: failed ? now : null,
-        lastErrorCode: "effect_delivery_failed",
+        lastErrorCode: errorCode,
         updatedAt: now,
       })
       .where(
@@ -286,6 +297,114 @@ export class FormsStorage {
       )
       .returning();
     return updated;
+  }
+
+  async freezeCommercialDelivery(jobId: string, token: string, sourceInstanceId: string) {
+    return db.transaction(async (tx) => {
+      const [job] = await tx
+        .select()
+        .from(cmsFormEffectJobs)
+        .where(
+          and(
+            eq(cmsFormEffectJobs.id, jobId),
+            eq(cmsFormEffectJobs.processingToken, token),
+            eq(cmsFormEffectJobs.status, "processing"),
+          ),
+        )
+        .for("update");
+      if (!job || job.payload.kind !== "commercial_dashboard_intake")
+        throw new Error("commercial_claim_lost");
+      if (job.deliveryPayload) return job.deliveryPayload;
+      const [submission] = await tx
+        .select()
+        .from(cmsFormSubmissions)
+        .where(eq(cmsFormSubmissions.id, job.submissionId));
+      if (!submission?.createdAt) throw new Error("commercial_submission_unavailable");
+      const event = commercialIntakeEventSchema.parse({
+        eventType: "p1.commercial_inquiry.accepted",
+        schemaVersion: 1,
+        eventId: job.id,
+        source: "p1-core",
+        sourceInstanceId,
+        submissionId: submission.id,
+        acceptedAt: submission.createdAt.toISOString(),
+        formSlug: "p1-commercial-assessment",
+        inquiry: job.payload.inquiry,
+      });
+      const frozen = JSON.stringify(event);
+      await tx
+        .update(cmsFormEffectJobs)
+        .set({ deliveryPayload: frozen })
+        .where(eq(cmsFormEffectJobs.id, job.id));
+      return frozen;
+    });
+  }
+
+  async listDeliveryJobs(input: unknown = {}) {
+    const query = z
+      .object({
+        limit: z.coerce.number().int().min(1).max(200).default(50),
+        status: z.enum(["actionable", "completed", "all"]).default("actionable"),
+        cursor: z
+          .string()
+          .regex(/^[A-Za-z0-9_-]+$/)
+          .max(1024)
+          .optional(),
+      })
+      .strict()
+      .parse(input);
+    let cursor: { time: string; id: string; status: string } | undefined;
+    if (query.cursor) {
+      cursor = z
+        .object({
+          time: z.string().datetime({ precision: 6 }),
+          id: z.string().uuid(),
+          status: z.literal(query.status),
+        })
+        .strict()
+        .parse(JSON.parse(Buffer.from(query.cursor, "base64url").toString("utf8")));
+    }
+    const commercial = sql`${cmsFormEffectJobs.payload}->>'kind' = 'commercial_dashboard_intake'`;
+    const scope =
+      query.status === "completed"
+        ? sql`(${commercial} AND ${cmsFormEffectJobs.status} = 'completed')`
+        : query.status === "actionable"
+          ? sql`(${cmsFormEffectJobs.status} = 'failed' OR (${commercial} AND ${cmsFormEffectJobs.status} IN ('queued','processing')))`
+          : sql`(${cmsFormEffectJobs.status} = 'failed' OR ${commercial})`;
+    const rows = await db
+      .select({
+        id: cmsFormEffectJobs.id,
+        submissionId: cmsFormEffectJobs.submissionId,
+        kind: sql<string>`${cmsFormEffectJobs.payload}->>'kind'`,
+        status: cmsFormEffectJobs.status,
+        attemptCount: cmsFormEffectJobs.attemptCount,
+        failedAt: cmsFormEffectJobs.failedAt,
+        lastErrorCode: cmsFormEffectJobs.lastErrorCode,
+        nextAttemptAt: cmsFormEffectJobs.nextAttemptAt,
+        createdAt: cmsFormEffectJobs.createdAt,
+        deliveryResult: cmsFormEffectJobs.deliveryResult,
+        cursorTime: sql<string>`to_char(${cmsFormEffectJobs.createdAt} AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"')`,
+      })
+      .from(cmsFormEffectJobs)
+      .where(
+        and(
+          scope,
+          cursor
+            ? sql`(${cmsFormEffectJobs.createdAt}, ${cmsFormEffectJobs.id}) < (${cursor.time}::timestamptz, ${cursor.id}::varchar)`
+            : undefined,
+        ),
+      )
+      .orderBy(desc(cmsFormEffectJobs.createdAt), desc(cmsFormEffectJobs.id))
+      .limit(query.limit + 1);
+    const page = rows.slice(0, query.limit),
+      last = page.at(-1);
+    const nextCursor =
+      rows.length > query.limit && last
+        ? Buffer.from(
+            JSON.stringify({ time: last.cursorTime, id: last.id, status: query.status }),
+          ).toString("base64url")
+        : null;
+    return { items: page.map(({ cursorTime: _, ...row }) => row), nextCursor };
   }
 
   async listFailedEffectJobs() {

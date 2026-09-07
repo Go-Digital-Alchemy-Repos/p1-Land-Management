@@ -87,6 +87,25 @@ describe("form effect worker", () => {
     );
     expect(mocks.contact).toHaveBeenCalledWith(submission.data, tx);
   });
+  it("keeps commercial acceptance recoverable when signing configuration is missing", async () => {
+    const original = process.env.COMMERCIAL_HANDOFF_SECRET_HEX;
+    delete process.env.COMMERCIAL_HANDOFF_SECRET_HEX;
+    try {
+      mocks.claim.mockResolvedValueOnce(
+        job("bridge", { kind: "commercial_dashboard_intake", inquiry: {} }),
+      );
+      expect(await runFormEffectJobs()).toEqual({ completed: 0, retried: 1, failed: 0 });
+      expect(mocks.retry).toHaveBeenCalledWith(
+        expect.objectContaining({ id: "bridge" }),
+        expect.any(Date),
+        "commercial_handoff_unconfigured",
+      );
+      expect(mocks.complete).not.toHaveBeenCalled();
+    } finally {
+      if (original === undefined) delete process.env.COMMERCIAL_HANDOFF_SECRET_HEX;
+      else process.env.COMMERCIAL_HANDOFF_SECRET_HEX = original;
+    }
+  });
   it("preserves disabled CRM intake for retry without writing or silently skipping", async () => {
     mocks.enabled.mockResolvedValue(false);
     mocks.claim.mockResolvedValueOnce(job("crm", { kind: "crm_intake", formName: "Lead" }));

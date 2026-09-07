@@ -533,7 +533,7 @@ api.get("/leads", async (req, res) => {
   const a = await actor(req);
   requireRole(a.role, office);
   res.json(
-    (await pool.query("SELECT * FROM lead ORDER BY created_at DESC LIMIT 200"))
+    (await pool.query("SELECT * FROM lead WHERE ($1::boolean OR inquiry_type IS DISTINCT FROM 'commercial_site_assessment') ORDER BY created_at DESC LIMIT 200", [["owner", "manager", "sales"].includes(a.role)]))
       .rows,
   );
 });

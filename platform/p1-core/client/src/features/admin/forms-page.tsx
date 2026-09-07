@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ElementType } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import {
   type CmsForm,
   type CmsFormField,
@@ -694,12 +694,34 @@ export default function AdminFormsPage() {
 }
 
 function FailedDeliveries() {
-  const { data: jobs = [], isError } = useQuery<
-    Array<{ id: string; attemptCount: number; failedAt: string; lastErrorCode: string }>
-  >({
-    queryKey: ["/api/admin/form-delivery-jobs"],
+  const [status, setStatus] = useState("actionable");
+  type DeliveryPage = {
+    items: Array<{
+      id: string;
+      submissionId: string;
+      kind: string;
+      status: string;
+      attemptCount: number;
+      createdAt: string;
+      lastErrorCode: string | null;
+      deliveryResult: { leadId: string } | null;
+    }>;
+    nextCursor: string | null;
+  };
+  const query = useInfiniteQuery({
+    queryKey: ["/api/admin/form-delivery-jobs", status],
+    initialPageParam: null as string | null,
+    queryFn: async ({ pageParam }): Promise<DeliveryPage> => {
+      const params = new URLSearchParams({ status, limit: "50" });
+      if (pageParam) params.set("cursor", pageParam);
+      const response = await apiRequest("GET", `/api/admin/form-delivery-jobs?${params}`);
+      return response.json();
+    },
+    getNextPageParam: (last: DeliveryPage) => last.nextCursor ?? undefined,
     refetchInterval: 30_000,
   });
+  const jobs = query.data?.pages.flatMap((page) => page.items) ?? [];
+  const isError = query.isError;
   const retry = useMutation({
     mutationFn: (id: string) => apiRequest("POST", `/api/admin/form-delivery-jobs/${id}/retry`),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/admin/form-delivery-jobs"] }),
@@ -709,26 +731,47 @@ function FailedDeliveries() {
       <CardHeader>
         <CardTitle>Lead delivery monitoring</CardTitle>
         <CardDescription>
-          Accepted inquiries remain stored while CRM and notification jobs retry.
+          Accepted inquiries remain stored while dashboard, CRM and notification jobs retry.
+          Commercial handoff status appears here until delivered.
         </CardDescription>
       </CardHeader>
       <CardContent>
+        <label>
+          Delivery status{" "}
+          <select value={status} onChange={(event) => setStatus(event.target.value)}>
+            <option value="actionable">Pending and failed</option>
+            <option value="completed">Completed commercial handoffs</option>
+            <option value="all">All monitored deliveries</option>
+          </select>
+        </label>
+        <p>{jobs.length} deliveries shown, newest first.</p>
         {isError ? (
           <p role="alert">Delivery status could not be loaded.</p>
         ) : jobs.length === 0 ? (
-          <p>No failed delivery jobs.</p>
+          <p>No commercial handoffs or failed delivery jobs.</p>
         ) : (
           jobs.map((job) => (
             <div key={job.id} className="flex items-center justify-between gap-4 py-2">
               <span>
-                Job {job.id.slice(0, 8)} · {job.attemptCount} attempts ·{" "}
-                {new Date(job.failedAt).toLocaleString()}
+                {job.kind} · {job.status} · Receipt {job.submissionId.slice(0, 8)} ·{" "}
+                {job.attemptCount} attempts · {new Date(job.createdAt).toLocaleString()}
+                {job.lastErrorCode ? ` · ${job.lastErrorCode}` : ""}
+                {job.deliveryResult
+                  ? ` · Dashboard lead ${job.deliveryResult.leadId.slice(0, 8)}`
+                  : ""}
               </span>
-              <Button disabled={retry.isPending} onClick={() => retry.mutate(job.id)}>
-                Retry delivery
-              </Button>
+              {job.status === "failed" && (
+                <Button disabled={retry.isPending} onClick={() => retry.mutate(job.id)}>
+                  Retry delivery
+                </Button>
+              )}
             </div>
           ))
+        )}
+        {query.hasNextPage && (
+          <Button disabled={query.isFetchingNextPage} onClick={() => query.fetchNextPage()}>
+            Load more deliveries
+          </Button>
         )}
         {retry.isError && <p role="alert">Retry failed. Refresh and try again.</p>}
       </CardContent>

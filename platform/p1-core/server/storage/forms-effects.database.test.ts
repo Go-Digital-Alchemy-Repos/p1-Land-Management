@@ -67,6 +67,43 @@ describe.skipIf(!testUrl)("managed form outbox disposable PostgreSQL", () => {
   beforeAll(async () => {
     await runMigrations();
   }, 60_000);
+  it("paginates all pending/failed deliveries beyond 200 without timestamp rounding", async () => {
+    const fixture = await forms.create({
+      name: "Pagination",
+      slug: "pagination",
+      fields: [],
+      settings: {},
+      kind: "custom",
+      isActive: true,
+    });
+    const submission = await forms.createSubmissionWithEffects(
+      { formId: fixture.id, data: payload, idempotencyKey: "pages" },
+      [effect],
+    );
+    await pool.query(
+      "UPDATE cms_form_effect_jobs SET status='failed',created_at='2026-09-07T08:00:00.123455Z'",
+    );
+    await pool.query(
+      "INSERT INTO cms_form_effect_jobs(id,submission_id,deduplication_key,payload,status,created_at) SELECT gen_random_uuid(),$1,'page-'||n,'{\"kind\":\"commercial_dashboard_intake\"}'::jsonb,'queued','2026-09-07T08:00:00.123456Z' FROM generate_series(1,205) n",
+      [submission.submission.id],
+    );
+    const seen = new Set<string>();
+    let cursor: string | null = null;
+    do {
+      const page = await forms.listDeliveryJobs({ limit: 47, ...(cursor ? { cursor } : {}) });
+      for (const row of page.items) {
+        expect(seen.has(row.id)).toBe(false);
+        seen.add(row.id);
+      }
+      cursor = page.nextCursor;
+    } while (cursor);
+    expect(seen.size).toBe(206);
+    const first = await forms.listDeliveryJobs({ limit: 1 });
+    await expect(
+      forms.listDeliveryJobs({ cursor: first.nextCursor, status: "completed" }),
+    ).rejects.toThrow();
+    expect((await forms.listDeliveryJobs({ status: "completed" })).items).toHaveLength(0);
+  });
   beforeEach(async () => {
     await pool.query("TRUNCATE cms_forms, contact_messages, crm_leads CASCADE");
     const form = await forms.create({
@@ -160,6 +197,87 @@ describe.skipIf(!testUrl)("managed form outbox disposable PostgreSQL", () => {
     expect(await count("cms_form_submissions")).toBe(2);
     expect(await count("cms_form_effect_jobs")).toBe(2);
     expect(await count("crm_leads")).toBe(2);
+  });
+  it("freezes commercial delivery identity once and commits acknowledgement with the active claim", async () => {
+    const inquiry = {
+      inquiryType: "commercial_site_assessment" as const,
+      name: "Pat",
+      company: "Example",
+      email: null,
+      phone: "7045550100",
+      title: null,
+      propertyName: null,
+      address: "Region",
+      propertyType: null,
+      acreage: null,
+      services: ["general_site_assessment"],
+      projectStage: "unknown" as const,
+      serviceTiming: "both" as const,
+      message: null,
+      attribution: {},
+    };
+    await forms.createSubmissionWithEffects(
+      { formId, data: inquiry, idempotencyKey: "bridge-one" },
+      [{ kind: "commercial_dashboard_intake", inquiry }],
+    );
+    const claimed = (await forms.claimNextEffectJob(await readyTime()))!;
+    const source = "e3c6e038-97e6-4e72-889b-9d32ef5f122a";
+    const frozen = await forms.freezeCommercialDelivery(
+      claimed.id,
+      claimed.processingToken!,
+      source,
+    );
+    expect(
+      await forms.freezeCommercialDelivery(
+        claimed.id,
+        claimed.processingToken!,
+        "9a52a5b0-5773-4718-bd07-5084957f1d85",
+      ),
+    ).toBe(frozen);
+    const event = JSON.parse(frozen);
+    expect(event).toMatchObject({
+      sourceInstanceId: source,
+      eventId: claimed.id,
+      submissionId: claimed.submissionId,
+      inquiry,
+    });
+    const result = {
+      schemaVersion: 1 as const,
+      eventId: claimed.id,
+      submissionId: claimed.submissionId,
+      leadId: "8c004f66-9858-49e7-8bfe-d4a9a55bcda7",
+      receivedAt: new Date().toISOString(),
+      duplicate: false,
+    };
+    expect(
+      await forms.completeEffectJob(
+        claimed.id,
+        "wrong-token",
+        "completed",
+        () => new Date(),
+        undefined,
+        result,
+      ),
+    ).toBe(false);
+    expect(
+      await forms.completeEffectJob(
+        claimed.id,
+        claimed.processingToken!,
+        "completed",
+        () => new Date(),
+        undefined,
+        result,
+      ),
+    ).toBe(true);
+    const row = (
+      await pool.query(
+        "SELECT delivery_payload,delivery_result,status FROM cms_form_effect_jobs WHERE id=$1",
+        [claimed.id],
+      )
+    ).rows[0];
+    expect(row.delivery_payload).toBe(frozen);
+    expect(row.delivery_result).toEqual(result);
+    expect(row.status).toBe("completed");
   });
   it("atomically accepts concurrent duplicates and preserves the original effects", async () => {
     const results = await Promise.all(Array.from({ length: 8 }, () => accepted()));

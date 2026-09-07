@@ -1,3 +1,4 @@
+import { commercialIngress, commercialStaffApi } from "./commercial-ingress";
 import express from "express";
 import { toNodeHandler } from "better-auth/node";
 import { resolve } from "node:path";
@@ -40,6 +41,7 @@ app.get("/api/healthz", async (_req, res, next) => {
 });
 app.all("/api/auth/*splat", toNodeHandler(auth));
 app.use("/api/webhooks", qboWebhook, smsWebhook);
+app.use("/api/integrations/core/v1", commercialIngress);
 app.use(express.json({ limit: "1mb" }));
 app.use(
   "/api/v1",
@@ -65,6 +67,7 @@ app.use(
     }
     next();
   },
+  commercialStaffApi,
   api,
   operationsApi,
   filesApi,

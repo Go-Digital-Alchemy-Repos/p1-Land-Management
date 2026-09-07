@@ -6,14 +6,31 @@ import { paramString } from "../../utils/params";
 
 const router = Router();
 
-router.get("/form-delivery-jobs", asyncHandler(async (_req, res) => {
-  res.json(await storage.forms.listFailedEffectJobs());
-}));
-router.post("/form-delivery-jobs/:id/retry", asyncHandler(async (req, res) => {
-  const job = await storage.forms.requeueFailedEffectJob(paramString(req.params.id));
-  if (!job) return res.status(404).json({ message: "Failed job not found" });
-  res.json(job);
-}));
+router.get(
+  "/form-delivery-jobs",
+  asyncHandler(async (req, res) => {
+    try {
+      res.json(await storage.forms.listDeliveryJobs(req.query));
+    } catch (error) {
+      if (error instanceof SyntaxError || (error instanceof Error && error.name === "ZodError"))
+        return res.status(400).json({ message: "Invalid delivery query or cursor" });
+      throw error;
+    }
+  }),
+);
+router.post(
+  "/form-delivery-jobs/:id/retry",
+  asyncHandler(async (req, res) => {
+    const job = await storage.forms.requeueFailedEffectJob(paramString(req.params.id));
+    if (!job) return res.status(404).json({ message: "Failed job not found" });
+    await storage.activity.log(
+      req.user!.id,
+      "form_delivery_retry",
+      `Retried form delivery ${job.id}`,
+    );
+    res.json(job);
+  }),
+);
 
 router.get(
   "/forms",

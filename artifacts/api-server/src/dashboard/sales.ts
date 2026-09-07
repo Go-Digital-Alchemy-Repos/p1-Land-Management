@@ -24,6 +24,8 @@ salesApi.post("/leads/:id/convert", async (req, res) => {
         clientId: lead.converted_client_id,
         propertyId: lead.converted_property_id,
       };
+    if (lead.inquiry_type === "commercial_site_assessment" && !lead.email)
+      throw new HttpError(409, "Record a verified contact email before converting this commercial inquiry");
     let clientId = b.clientId;
     if (!clientId) {
       clientId = randomUUID();
@@ -38,7 +40,7 @@ salesApi.post("/leads/:id/convert", async (req, res) => {
       [propertyId, clientId, b.propertyName, b.address],
     );
     await c.query(
-      "UPDATE lead SET converted_client_id=$2,converted_property_id=$3,status='qualified' WHERE id=$1",
+      "UPDATE lead SET converted_client_id=$2,converted_property_id=$3,status='qualified',version=version+1,last_activity_at=now() WHERE id=$1",
       [key, clientId, propertyId],
     );
     await c.query(

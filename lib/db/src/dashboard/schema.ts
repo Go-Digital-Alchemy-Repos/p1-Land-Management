@@ -847,7 +847,7 @@ export const lead = pgTable(
   {
     id: uuid().primaryKey().notNull(),
     name: text().notNull(),
-    email: text().notNull(),
+    email: text(),
     phone: text(),
     location: text().notNull(),
     description: text().notNull(),
@@ -856,10 +856,45 @@ export const lead = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
       .defaultNow()
       .notNull(),
+    inquiryType: text("inquiry_type"),
+    reportedCompanyName: text("reported_company_name"),
+    contactTitle: text("contact_title"),
+    reportedPropertyName: text("reported_property_name"),
+    propertyType: text("property_type"),
+    acreageDescription: text("acreage_description"),
+    projectStage: text("project_stage"),
+    serviceTiming: text("service_timing"),
+    services: text()
+      .array()
+      .default(sql`'{}'::text[]`)
+      .notNull(),
+    attribution: jsonb().default({}).notNull(),
+    ownerId: text("owner_id").references(() => user.id),
+    nextAction: text("next_action"),
+    nextActionDueAt: timestamp("next_action_due_at", {
+      withTimezone: true,
+      mode: "string",
+    }),
+    lastActivityAt: timestamp("last_activity_at", {
+      withTimezone: true,
+      mode: "string",
+    })
+      .defaultNow()
+      .notNull(),
+    version: integer().default(1).notNull(),
     convertedClientId: uuid("converted_client_id"),
     convertedPropertyId: uuid("converted_property_id"),
   },
   (table) => [
+    index("lead_commercial_followup").on(
+      table.inquiryType,
+      table.ownerId,
+      table.nextActionDueAt,
+    ),
+    check(
+      "lead_commercial_channel",
+      sql`inquiry_type IS DISTINCT FROM 'commercial_site_assessment' OR (NULLIF(btrim(email),'') IS NOT NULL OR NULLIF(btrim(phone),'') IS NOT NULL)`,
+    ),
     foreignKey({
       columns: [table.convertedClientId],
       foreignColumns: [client.id],
@@ -1079,5 +1114,50 @@ export const assessmentBlackout = pgTable(
   },
   (table) => [
     check("assessment_blackout_check", sql`${table.endsAt}>${table.startsAt}`),
+  ],
+);
+
+export const integrationIngressKey = pgTable("integration_ingress_key", {
+  keyId: text("key_id").primaryKey(),
+  sourceInstanceId: uuid("source_instance_id").notNull(),
+  enabled: boolean().default(true).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
+    .defaultNow()
+    .notNull(),
+  revokedAt: timestamp("revoked_at", { withTimezone: true, mode: "string" }),
+});
+export const commercialIntakeReceipt = pgTable(
+  "commercial_intake_receipt",
+  {
+    id: uuid().primaryKey(),
+    sourceInstanceId: uuid("source_instance_id").notNull(),
+    submissionId: uuid("submission_id").notNull(),
+    eventId: uuid("event_id").notNull(),
+    schemaVersion: integer("schema_version").notNull(),
+    payloadSha256: text("payload_sha256").notNull(),
+    acceptedAt: timestamp("accepted_at", {
+      withTimezone: true,
+      mode: "string",
+    }).notNull(),
+    receivedAt: timestamp("received_at", { withTimezone: true, mode: "string" })
+      .defaultNow()
+      .notNull(),
+    leadId: uuid("lead_id")
+      .notNull()
+      .unique()
+      .references(() => lead.id),
+    rawIntake: jsonb("raw_intake").notNull(),
+  },
+  (table) => [
+    unique().on(table.sourceInstanceId, table.eventId),
+    unique().on(table.sourceInstanceId, table.submissionId),
+    check(
+      "commercial_intake_receipt_schema_version_check",
+      sql`schema_version=1`,
+    ),
+    check(
+      "commercial_intake_receipt_payload_sha256_check",
+      sql`length(payload_sha256)=64`,
+    ),
   ],
 );
