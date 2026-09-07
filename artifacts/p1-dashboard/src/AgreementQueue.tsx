@@ -1,13 +1,18 @@
 import type {
   AgreementChargeQueueItem,
   AgreementChargePreview,
+  AgreementChargeReview,
+  AgreementChargeReviewPreview,
   DashboardProperty,
 } from "../../../lib/api-client-react/src/dashboard/models";
 import { useEffect, useRef, useState } from "react";
 import {
   listAgreementChargeQueue,
+  getAgreementChargeReview,
+  previewAgreementChargeReview,
   previewAgreementCharge,
   prepareAgreementCharge,
+  recordAgreementChargeReview,
 } from "@workspace/api-client-react/dashboard";
 import { agreementMoney } from "./agreement-ui";
 export function AgreementQueue({
@@ -25,6 +30,14 @@ export function AgreementQueue({
     [error, setError] = useState(""),
     [selected, setSelected] = useState<AgreementChargeQueueItem | null>(null),
     [preview, setPreview] = useState<AgreementChargePreview | null>(null),
+    [cancellationReview, setCancellationReview] =
+      useState<AgreementChargeReview | null>(null),
+    [cancellationPreview, setCancellationPreview] =
+      useState<AgreementChargeReviewPreview | null>(null),
+    [reviewOutcome, setReviewOutcome] = useState<
+      "keep_due" | "correction_required"
+    >("keep_due"),
+    [reviewReason, setReviewReason] = useState(""),
     [message, setMessage] = useState("");
   const pending = useRef(false),
     generation = useRef(0);
@@ -62,6 +75,8 @@ export function AgreementQueue({
   useEffect(() => {
     setPreview(null);
     setSelected(null);
+    setCancellationReview(null);
+    setCancellationPreview(null);
     void load();
     return () => {
       generation.current++;
@@ -137,6 +152,126 @@ export function AgreementQueue({
       }
     }
   }
+  async function openCancellationReview(row: AgreementChargeQueueItem) {
+    if (pending.current || !row.chargeId) return;
+    pending.current = true;
+    setBusy(true);
+    setError("");
+    setMessage("");
+    setSelected(row);
+    setPreview(null);
+    setCancellationPreview(null);
+    const n = ++generation.current;
+    try {
+      const current = await getAgreementChargeReview(row.chargeId);
+      if (n !== generation.current) return;
+      setCancellationReview(current);
+      setReviewOutcome(
+        current.allowedOutcomes.includes("keep_due")
+          ? "keep_due"
+          : "correction_required",
+      );
+      setReviewReason("");
+    } catch (e) {
+      if (n === generation.current) setError((e as Error).message);
+    } finally {
+      if (n === generation.current) {
+        pending.current = false;
+        setBusy(false);
+      }
+    }
+  }
+  function reviewInput(current: AgreementChargeReview) {
+    return {
+      expectedReviewVersion: current.reviewVersion,
+      cancellationVersion: current.cancellationVersion,
+      snapshotSha256: current.snapshotSha256,
+      outcome: reviewOutcome,
+      reason: reviewReason.trim(),
+    };
+  }
+  async function previewCancellationReview() {
+    if (
+      pending.current ||
+      !cancellationReview ||
+      !reviewReason.trim() ||
+      !selected?.chargeId
+    )
+      return;
+    pending.current = true;
+    setBusy(true);
+    setError("");
+    const n = ++generation.current;
+    try {
+      const result = await previewAgreementChargeReview(
+        selected.chargeId,
+        reviewInput(cancellationReview),
+      );
+      if (n === generation.current) {
+        setCancellationPreview(result);
+        setCancellationReview(result.current);
+      }
+    } catch (e) {
+      if (n === generation.current) {
+        setCancellationPreview(null);
+        setError((e as Error).message);
+      }
+    } finally {
+      if (n === generation.current) {
+        pending.current = false;
+        setBusy(false);
+      }
+    }
+  }
+  async function recordCancellationReview() {
+    if (
+      pending.current ||
+      !cancellationReview ||
+      !cancellationPreview ||
+      !selected?.chargeId
+    )
+      return;
+    pending.current = true;
+    setBusy(true);
+    setError("");
+    const n = ++generation.current;
+    try {
+      const receipt = await recordAgreementChargeReview(selected.chargeId, {
+        ...reviewInput(cancellationReview),
+        operationId: crypto.randomUUID(),
+      });
+      if (n !== generation.current) return;
+      setMessage(
+        receipt.outcome === "keep_due"
+          ? "The current cancellation snapshot was kept due. The draft remains subject to ordinary billing review."
+          : "Correction was recorded. Posting remains blocked until finance resolves it in QuickBooks and records a new review.",
+      );
+      setCancellationPreview(null);
+      if (receipt.outcome === "keep_due") {
+        setItems((rows) => rows.filter((row) => row.key !== selected.key));
+      } else {
+        setItems((rows) =>
+          rows.map((row) =>
+            row.key === selected.key
+              ? {
+                  ...row,
+                  reviewVersion: receipt.reviewVersion,
+                  reviewState: "correction_required",
+                  latestReviewReceipt: receipt,
+                }
+              : row,
+          ),
+        );
+      }
+    } catch (e) {
+      if (n === generation.current) setError((e as Error).message);
+    } finally {
+      if (n === generation.current) {
+        pending.current = false;
+        setBusy(false);
+      }
+    }
+  }
   return (
     <section
       className="agreement-queue"
@@ -196,6 +331,14 @@ export function AgreementQueue({
                   Review charge eligibility
                 </button>
               )}
+              {row.chargeId && row.state === "review_required" && (
+                <button
+                  disabled={busy}
+                  onClick={() => void openCancellationReview(row)}
+                >
+                  Review cancellation impact
+                </button>
+              )}
             </div>
           </li>
         ))}
@@ -236,6 +379,89 @@ export function AgreementQueue({
             >
               Prepare billing draft
             </button>
+          )}
+        </section>
+      )}
+      {cancellationReview && selected?.chargeId && (
+        <section
+          className="agreement-plan"
+          aria-label="Cancellation impact review"
+        >
+          <h4>Cancellation impact review</h4>
+          <p>
+            This records a finance decision against the current draft snapshot.
+            It does not post, credit, amend, send, or collect a payment.
+          </p>
+          <dl>
+            <dt>Draft status</dt>
+            <dd>{cancellationReview.snapshot.draft.status}</dd>
+            <dt>Draft amount</dt>
+            <dd>{agreementMoney(cancellationReview.snapshot.draft.amountCents)}</dd>
+            <dt>Current balance</dt>
+            <dd>
+              {cancellationReview.snapshot.draft.balanceCents === null
+                ? "Not available"
+                : agreementMoney(cancellationReview.snapshot.draft.balanceCents)}
+            </dd>
+            <dt>Decision state</dt>
+            <dd>{cancellationReview.reviewState.replaceAll("_", " ")}</dd>
+          </dl>
+          <label>
+            Decision
+            <select
+              value={reviewOutcome}
+              disabled={busy}
+              onChange={(event) => {
+                setReviewOutcome(
+                  event.target.value as "keep_due" | "correction_required",
+                );
+                setCancellationPreview(null);
+              }}
+            >
+              {cancellationReview.allowedOutcomes.map((outcome) => (
+                <option key={outcome} value={outcome}>
+                  {outcome === "keep_due"
+                    ? "Keep this draft due"
+                    : "Correction required"}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            Reason for this decision
+            <textarea
+              value={reviewReason}
+              maxLength={2000}
+              disabled={busy}
+              onChange={(event) => {
+                setReviewReason(event.target.value);
+                setCancellationPreview(null);
+              }}
+            />
+          </label>
+          <div className="agreement-actions">
+            <button
+              disabled={busy || !reviewReason.trim()}
+              onClick={() => void previewCancellationReview()}
+            >
+              Compare current snapshot
+            </button>
+            {cancellationPreview && (
+              <button
+                className="primary"
+                disabled={busy || !cancellationPreview.wouldResolveSnapshot}
+                onClick={() => void recordCancellationReview()}
+              >
+                Record immutable decision
+              </button>
+            )}
+          </div>
+          {cancellationPreview && (
+            <p role="status">
+              {cancellationPreview.postingWouldRemainBlocked
+                ? "This decision keeps posting blocked."
+                : "This exact snapshot may proceed through the existing billing-review workflow; posting is still a separate action."}
+            </p>
           )}
         </section>
       )}

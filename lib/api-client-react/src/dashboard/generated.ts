@@ -9,9 +9,16 @@ import type {
   AccountMfaPolicy,
   AccountMfaPolicyUpdate,
   AgreementActivationPreview,
+  AgreementChargeHistory,
   AgreementChargePreview,
   AgreementChargeQueue,
   AgreementChargeReceipt,
+  AgreementChargeReview,
+  AgreementChargeReviewHistory,
+  AgreementChargeReviewInput,
+  AgreementChargeReviewPreview,
+  AgreementChargeReviewReceipt,
+  AgreementChargeReviewRecordInput,
   AgreementChargeSource,
   AgreementEstimateOption,
   AgreementRecurrenceOption,
@@ -29,6 +36,8 @@ import type {
   GetScheduleParams,
   GetSetupStatus200,
   ListAgreementChargeQueueParams,
+  ListAgreementChargeReviewsParams,
+  ListAgreementChargesParams,
   ListCommercialInquiriesParams,
   ListServiceAgreementsParams,
   PhotoUploadReceipt,
@@ -696,6 +705,36 @@ export const previewAgreementCharge = async (id: string,
 
 
 
+export const getListAgreementChargesUrl = (id: string,
+    params?: ListAgreementChargesParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/service-agreements/${id}/charges?${stringifiedParams}` : `/api/v1/service-agreements/${id}/charges`
+}
+
+export const listAgreementCharges = async (id: string,
+    params?: ListAgreementChargesParams, options?: RequestInit): Promise<AgreementChargeHistory> => {
+
+  return customFetch<AgreementChargeHistory>(getListAgreementChargesUrl(id,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
 export const getPrepareAgreementChargeUrl = (id: string,) => {
 
 
@@ -714,6 +753,103 @@ export const prepareAgreementCharge = async (id: string,
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
       agreementChargeSource,)
+  }
+);}
+
+
+
+export const getGetAgreementChargeReviewUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/agreement-charges/${id}/review`
+}
+
+export const getAgreementChargeReview = async (id: string, options?: RequestInit): Promise<AgreementChargeReview> => {
+
+  return customFetch<AgreementChargeReview>(getGetAgreementChargeReviewUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getPreviewAgreementChargeReviewUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/agreement-charges/${id}/review-preview`
+}
+
+export const previewAgreementChargeReview = async (id: string,
+    agreementChargeReviewInput: AgreementChargeReviewInput, options?: RequestInit): Promise<AgreementChargeReviewPreview> => {
+
+  return customFetch<AgreementChargeReviewPreview>(getPreviewAgreementChargeReviewUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      agreementChargeReviewInput,)
+  }
+);}
+
+
+
+export const getListAgreementChargeReviewsUrl = (id: string,
+    params?: ListAgreementChargeReviewsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/agreement-charges/${id}/reviews?${stringifiedParams}` : `/api/v1/agreement-charges/${id}/reviews`
+}
+
+export const listAgreementChargeReviews = async (id: string,
+    params?: ListAgreementChargeReviewsParams, options?: RequestInit): Promise<AgreementChargeReviewHistory> => {
+
+  return customFetch<AgreementChargeReviewHistory>(getListAgreementChargeReviewsUrl(id,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getRecordAgreementChargeReviewUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/agreement-charges/${id}/reviews`
+}
+
+export const recordAgreementChargeReview = async (id: string,
+    agreementChargeReviewRecordInput: AgreementChargeReviewRecordInput, options?: RequestInit): Promise<AgreementChargeReviewReceipt> => {
+
+  return customFetch<AgreementChargeReviewReceipt>(getRecordAgreementChargeReviewUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      agreementChargeReviewRecordInput,)
   }
 );}
 

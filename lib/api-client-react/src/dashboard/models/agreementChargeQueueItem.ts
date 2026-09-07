@@ -5,7 +5,9 @@
  * Shared field, scheduling and commercial inbox contract. Other office routes remain documented in docs/dashboard/API.md.
  * OpenAPI spec version: 0.1.0
  */
+import type { AgreementChargeQueueItemReviewState } from './agreementChargeQueueItemReviewState';
 import type { AgreementChargeQueueItemState } from './agreementChargeQueueItemState';
+import type { AgreementChargeReviewReceipt } from './agreementChargeReviewReceipt';
 
 export interface AgreementChargeQueueItem {
   key: string;
@@ -17,4 +19,9 @@ export interface AgreementChargeQueueItem {
   reason: string | null;
   amountCents: number | null;
   billingDraftId: string | null;
+  chargeId?: string;
+  /** @minimum 0 */
+  reviewVersion?: number;
+  reviewState?: AgreementChargeQueueItemReviewState;
+  latestReviewReceipt?: AgreementChargeReviewReceipt;
 }

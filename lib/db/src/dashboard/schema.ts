@@ -1330,6 +1330,7 @@ export const agreementCharge = pgTable(
       columns: [t.fixedPeriodId, t.agreementId],
       foreignColumns: [fixedChargePeriod.id, fixedChargePeriod.agreementId],
     }),
+    index("agreement_charge_history").on(t.agreementId, t.createdAt.desc(), t.id.desc()),
     uniqueIndex("agreement_charge_work_once")
       .on(t.workOrderId)
       .where(sql`work_order_id IS NOT NULL`),
@@ -1422,5 +1423,59 @@ export const coreFederationGrant = pgTable(
       foreignColumns: [user.id],
       name: "core_federation_grant_canonical_user_id_fkey",
     }).onDelete("cascade"),
+  ],
+);
+
+export const agreementChargeReviewEvent = pgTable(
+  "agreement_charge_review_event",
+  {
+    id: uuid().primaryKey(),
+    chargeId: uuid("charge_id")
+      .notNull()
+      .references(() => agreementCharge.id),
+    reviewVersion: integer("review_version").notNull(),
+    outcome: text().notNull(),
+    cancellationVersion: integer("cancellation_version").notNull(),
+    snapshot: jsonb().notNull(),
+    snapshotSha256: text("snapshot_sha256").notNull(),
+    requestSha256: text("request_sha256").notNull(),
+    reason: text().notNull(),
+    actorId: text("actor_id")
+      .notNull()
+      .references(() => user.id),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    unique().on(table.chargeId, table.reviewVersion),
+    check(
+      "agreement_charge_review_event_review_version_check",
+      sql`review_version>0`,
+    ),
+    check(
+      "agreement_charge_review_event_outcome_check",
+      sql`outcome IN ('keep_due','correction_required')`,
+    ),
+    check(
+      "agreement_charge_review_event_cancellation_version_check",
+      sql`cancellation_version>0`,
+    ),
+    check(
+      "agreement_charge_review_event_snapshot_check",
+      sql`jsonb_typeof(snapshot)='object'`,
+    ),
+    check(
+      "agreement_charge_review_event_snapshot_sha256_check",
+      sql`snapshot_sha256 ~ '^[0-9a-f]{64}$'`,
+    ),
+    check(
+      "agreement_charge_review_event_request_sha256_check",
+      sql`request_sha256 ~ '^[0-9a-f]{64}$'`,
+    ),
+    check(
+      "agreement_charge_review_event_reason_check",
+      sql`length(btrim(reason)) BETWEEN 1 AND 2000`,
+    ),
   ],
 );

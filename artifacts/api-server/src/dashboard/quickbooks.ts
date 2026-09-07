@@ -1,3 +1,4 @@
+import { guardAgreementPosting } from "./agreement-review.persistence";
 import { requireOperationalChild } from "./operational-property";
 import type { PoolClient } from "pg";
 import { Router, raw } from "express";
@@ -171,25 +172,37 @@ qboApi.get("/quickbooks/callback", async (req, res) => {
     );
     if (!r.rowCount)
       throw new HttpError(403, "Invalid or expired authorization state");
-    await bindQuickBooksRealm(c, b.realmId, () => exchange({grant_type:"authorization_code",code:b.code,redirect_uri:config().redirect}));
+    await bindQuickBooksRealm(c, b.realmId, () =>
+      exchange({
+        grant_type: "authorization_code",
+        code: b.code,
+        redirect_uri: config().redirect,
+      }),
+    );
   });
   res.redirect("/");
 });
-export async function bindQuickBooksRealm(c: PoolClient, realmId: string, tokens: () => Promise<z.infer<typeof tokenSchema>>) {
-    await c.query("SELECT pg_advisory_xact_lock(hashtextextended('quickbooks-connection',0))");
-    const old = await c.query(
-      "SELECT realm_id FROM integration_connection WHERE provider='quickbooks'",
+export async function bindQuickBooksRealm(
+  c: PoolClient,
+  realmId: string,
+  tokens: () => Promise<z.infer<typeof tokenSchema>>,
+) {
+  await c.query(
+    "SELECT pg_advisory_xact_lock(hashtextextended('quickbooks-connection',0))",
+  );
+  const old = await c.query(
+    "SELECT realm_id FROM integration_connection WHERE provider='quickbooks'",
+  );
+  if (old.rowCount && old.rows[0].realm_id !== realmId)
+    throw new HttpError(
+      409,
+      "This dashboard is already connected to another QuickBooks company",
     );
-    if (old.rowCount && old.rows[0].realm_id !== realmId)
-      throw new HttpError(
-        409,
-        "This dashboard is already connected to another QuickBooks company",
-      );
-    const t = await tokens();
-    await c.query(
-      "INSERT INTO integration_connection(provider,realm_id,credentials_encrypted) VALUES('quickbooks',$1,$2) ON CONFLICT(provider) DO UPDATE SET credentials_encrypted=EXCLUDED.credentials_encrypted,updated_at=now()",
-      [realmId, seal(t)],
-    );
+  const t = await tokens();
+  await c.query(
+    "INSERT INTO integration_connection(provider,realm_id,credentials_encrypted) VALUES('quickbooks',$1,$2) ON CONFLICT(provider) DO UPDATE SET credentials_encrypted=EXCLUDED.credentials_encrypted,updated_at=now()",
+    [realmId, seal(t)],
+  );
 }
 async function queryAll(entity: "Customer" | "Invoice", filter = "") {
   const rows: any[] = [];
@@ -286,7 +299,11 @@ qboApi.post("/quickbooks/import", async (req, res) => {
           invoice.CustomerRef.value,
         ])
       ).rows[0];
-      if (!mapped) await c.query("UPDATE external_invoice SET ownership_verified=false,payment_url=NULL WHERE id=$1", [invoice.Id]);
+      if (!mapped)
+        await c.query(
+          "UPDATE external_invoice SET ownership_verified=false,payment_url=NULL WHERE id=$1",
+          [invoice.Id],
+        );
       if (mapped)
         await c.query(
           "INSERT INTO external_invoice(id,client_id,document_number,total_cents,balance_cents,due_date,payment_url,ownership_verified) VALUES($1,$2,$3,$4,$5,$6,$7,true) ON CONFLICT(id) DO UPDATE SET client_id=EXCLUDED.client_id,document_number=EXCLUDED.document_number,ownership_verified=true,total_cents=EXCLUDED.total_cents,balance_cents=EXCLUDED.balance_cents,due_date=EXCLUDED.due_date,payment_url=EXCLUDED.payment_url,updated_at=now()",
@@ -319,15 +336,16 @@ qboApi.get("/quickbooks/invoices", async (req, res) => {
     ).rows,
   );
 });
-qboApi.post("/billing/:id/post", async (req, res) => {
-  const a = await actor(req);
+export async function postBillingDraft(
+  a: Awaited<ReturnType<typeof actor>>,
+  key: string,
+  item: string,
+  postInvoice: typeof qbo = qbo,
+) {
   requireRole(a.role, ["owner", "manager", "finance"]);
-  const key = z.string().uuid().parse(req.params.id);
-  const item = process.env.QBO_SERVICE_ITEM_ID;
-  if (!item)
-    throw new HttpError(503, "A QuickBooks service item mapping is required");
   const draft = await transaction(async (c) => {
-    await requireOperationalChild(c,"billing_draft",key);
+    await guardAgreementPosting(c, key);
+    await requireOperationalChild(c, "billing_draft", key);
     const b = (
       await c.query(
         "SELECT b.*,c.quickbooks_id AS customer FROM billing_draft b JOIN property p ON p.id=b.property_id AND p.lifecycle='operational' JOIN client c ON c.id=p.client_id WHERE b.id=$1 FOR UPDATE OF b",
@@ -362,11 +380,10 @@ qboApi.post("/billing/:id/post", async (req, res) => {
     return { ...b, posting_request_id: requestId, posting_payload: payload };
   });
   if (draft.status === "posted") {
-    res.json({ id: key, status: "posted" });
-    return;
+    return { id: key, status: "posted" as const };
   }
   try {
-    const response = await qbo(
+    const response = await postInvoice(
       "invoice?requestid=" + draft.posting_request_id,
       draft.posting_payload,
     );
@@ -385,7 +402,7 @@ qboApi.post("/billing/:id/post", async (req, res) => {
         paymentLink(invoice.InvoiceLink),
       ],
     );
-    res.json({ id: key, status: "posted" });
+    return { id: key, status: "posted" as const };
   } catch (e) {
     await pool.query(
       "UPDATE billing_draft SET status='failed' WHERE id=$1 AND status<>'posted'",
@@ -393,13 +410,43 @@ qboApi.post("/billing/:id/post", async (req, res) => {
     );
     throw e;
   }
+}
+qboApi.post("/billing/:id/post", async (req, res) => {
+  const a = await actor(req);
+  const key = z.string().uuid().parse(req.params.id);
+  const item = process.env.QBO_SERVICE_ITEM_ID;
+  if (!item)
+    throw new HttpError(503, "A QuickBooks service item mapping is required");
+  res.json(await postBillingDraft(a, key, item));
 });
 // Every imported refresh revalidates accounting ownership before any client can see it.
 export async function refreshInvoiceOwnership(i: any) {
   await transaction(async (c) => {
-    const mapped = (await c.query("SELECT id FROM client WHERE quickbooks_id=$1", [i.CustomerRef?.value || ""])).rows[0];
-    await c.query("UPDATE external_invoice SET client_id=COALESCE($2,client_id),ownership_verified=$3,total_cents=$4,balance_cents=$5,payment_url=$6,updated_at=now() WHERE id=$1", [i.Id,mapped?.id || null,Boolean(mapped),Math.round(i.TotalAmt*100),Math.round(i.Balance*100),mapped ? paymentLink(i.InvoiceLink) : null]);
-    await c.query("UPDATE billing_draft b SET ownership_verified=COALESCE(p.lifecycle='operational' AND p.client_id=$2::uuid,false),balance_cents=$3,payment_url=CASE WHEN p.lifecycle='operational' AND p.client_id=$2::uuid THEN $4 ELSE NULL END FROM property p WHERE b.property_id=p.id AND b.quickbooks_id=$1", [i.Id,mapped?.id || null,Math.round(i.Balance*100),paymentLink(i.InvoiceLink)]);
+    const mapped = (
+      await c.query("SELECT id FROM client WHERE quickbooks_id=$1", [
+        i.CustomerRef?.value || "",
+      ])
+    ).rows[0];
+    await c.query(
+      "UPDATE external_invoice SET client_id=COALESCE($2,client_id),ownership_verified=$3,total_cents=$4,balance_cents=$5,payment_url=$6,updated_at=now() WHERE id=$1",
+      [
+        i.Id,
+        mapped?.id || null,
+        Boolean(mapped),
+        Math.round(i.TotalAmt * 100),
+        Math.round(i.Balance * 100),
+        mapped ? paymentLink(i.InvoiceLink) : null,
+      ],
+    );
+    await c.query(
+      "UPDATE billing_draft b SET ownership_verified=COALESCE(p.lifecycle='operational' AND p.client_id=$2::uuid,false),balance_cents=$3,payment_url=CASE WHEN p.lifecycle='operational' AND p.client_id=$2::uuid THEN $4 ELSE NULL END FROM property p WHERE b.property_id=p.id AND b.quickbooks_id=$1",
+      [
+        i.Id,
+        mapped?.id || null,
+        Math.round(i.Balance * 100),
+        paymentLink(i.InvoiceLink),
+      ],
+    );
   });
 }
 export async function reconcileQuickBooks() {
@@ -419,7 +466,6 @@ export async function reconcileQuickBooks() {
     const i = result.Invoice;
     if (!i) throw new Error("QuickBooks invoice unavailable");
     await refreshInvoiceOwnership(i);
-
   }
 }
 export const qboWebhook = Router();

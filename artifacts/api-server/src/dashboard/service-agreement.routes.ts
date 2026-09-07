@@ -1,3 +1,10 @@
+import {
+  readAgreementChargeReview,
+  previewAgreementChargeReview,
+  recordAgreementChargeReview,
+  listAgreementChargeReviews,
+  listAgreementCharges,
+} from "./agreement-review.service";
 import { listAgreementChargeQueue } from "./service-agreement.queue";
 import { previewServiceAgreementActivation } from "./service-agreement.activation";
 import { Router } from "express";
@@ -94,4 +101,47 @@ serviceAgreementApi.post(
 
 serviceAgreementApi.get("/agreement-charge-queue", async (req, res) =>
   res.json(await listAgreementChargeQueue(await actor(req), req.query)),
+);
+
+serviceAgreementApi.get("/agreement-charges/:id/review", async (req, res) =>
+  res.json(
+    await readAgreementChargeReview(await actor(req), id.parse(req.params.id)),
+  ),
+);
+serviceAgreementApi.post(
+  "/agreement-charges/:id/review-preview",
+  async (req, res) =>
+    res.json(
+      await previewAgreementChargeReview(
+        await actor(req),
+        id.parse(req.params.id),
+        req.body,
+      ),
+    ),
+);
+serviceAgreementApi.post("/agreement-charges/:id/reviews", async (req, res) => {
+  const result = await recordAgreementChargeReview(
+    await actor(req),
+    id.parse(req.params.id),
+    req.body,
+  );
+  res.status(result.created ? 201 : 200).json(result.receipt);
+});
+serviceAgreementApi.get("/agreement-charges/:id/reviews", async (req, res) =>
+  res.json(
+    await listAgreementChargeReviews(
+      await actor(req),
+      id.parse(req.params.id),
+      req.query,
+    ),
+  ),
+);
+serviceAgreementApi.get("/service-agreements/:id/charges", async (req, res) =>
+  res.json(
+    await listAgreementCharges(
+      await actor(req),
+      id.parse(req.params.id),
+      req.query,
+    ),
+  ),
 );

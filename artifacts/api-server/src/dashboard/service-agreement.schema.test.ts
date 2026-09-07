@@ -5,6 +5,7 @@ import {
   serviceAgreement,
   fixedChargePeriod,
   agreementCharge,
+  agreementChargeReviewEvent,
 } from "@workspace/db/dashboard-schema";
 import { pool } from "./database";
 const enabled = Boolean(process.env.AGREEMENT_TEST_DATABASE_URL);
@@ -21,6 +22,7 @@ test(
         serviceAgreement,
         fixedChargePeriod,
         agreementCharge,
+        agreementChargeReviewEvent,
       ]) {
         const config = getTableConfig(table);
         const columns = (
@@ -44,6 +46,7 @@ test(
           );
           const types: Record<string, string> = {
             uuid: "uuid",
+            jsonb: "jsonb",
             text: "text",
             integer: "int4",
             bigint: "int8",
