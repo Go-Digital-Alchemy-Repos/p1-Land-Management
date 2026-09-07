@@ -51,13 +51,16 @@ function configuration(): FederationConfig {
         previousSecretExpiresAt,
       ) ||
       !Number.isFinite(expiresAt) ||
-      expiresAt <= Date.now() ||
       expiresAt > Date.now() + 24 * 60 * 60 * 1000
     )
       throw new Error(
         "Core federation secret rotation is not configured safely",
       );
-    clientSecrets.push(previousClientSecret);
+    // A stale previous-secret environment value must never take the current
+    // confidential client down after the bounded overlap ends. It is simply
+    // no longer an accepted verifier; malformed rotation configuration still
+    // fails closed above.
+    if (expiresAt > Date.now()) clientSecrets.push(previousClientSecret);
   }
   const issuer = process.env.DASHBOARD_ORIGIN || "";
   let parsedIssuer: URL;
@@ -66,9 +69,22 @@ function configuration(): FederationConfig {
   } catch {
     throw new Error("Dashboard federation issuer is invalid");
   }
+  const testFlag =
+    process.env.CORE_FEDERATION_TEST_ALLOW_INSECURE_ORIGIN === "true";
+  const loopbackIssuer = new Set([
+    "localhost",
+    "127.0.0.1",
+    "::1",
+    "[::1]",
+  ]).has(parsedIssuer.hostname);
+  const localTestIssuer =
+    process.env.NODE_ENV === "test" &&
+    testFlag &&
+    parsedIssuer.protocol === "http:" &&
+    loopbackIssuer;
   if (
-    (parsedIssuer.protocol !== "https:" &&
-      process.env.CORE_FEDERATION_TEST_ALLOW_INSECURE_ORIGIN !== "true") ||
+    (testFlag && !localTestIssuer) ||
+    (parsedIssuer.protocol !== "https:" && !localTestIssuer) ||
     parsedIssuer.username ||
     parsedIssuer.password ||
     parsedIssuer.search ||

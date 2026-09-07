@@ -38,6 +38,7 @@ try {
       "postgresql://postgres:p1-test-only@" + mapping + "/dashboard",
     DASHBOARD_ORIGIN: "http://localhost:" + port,
     DASHBOARD_TEST_ORIGIN: "http://localhost:" + port,
+    NODE_ENV: "test",
     PORT: String(port),
     BETTER_AUTH_SECRET: randomBytes(32).toString("hex"),
     BOOTSTRAP_OWNER_EMAIL: "owner@example.test",
