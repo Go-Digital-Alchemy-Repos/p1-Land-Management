@@ -16,7 +16,7 @@ Implementation status: **preview deployed at https://dashboard.p1landmanagement.
 
 - Physical iPhone and Android offline/restart/low-storage/interrupted-upload acceptance; installed PWA and private S3 end-to-end tests.
 - Complete contract/renewal management, fixed-monthly/per-visit automatic billing preparation, project phase/prerequisite and progress accounting workflows, equipment readiness UI, usable schedule day/week interactions and full report publication workflows. Existing simple forms/data structures do not constitute completion of these requirements.
-- Assessment weekly windows, configurable duration/travel buffers, blackout management and retry-safe generation are implemented locally (migration0009); independent review and deployment pending. Multi-assessor allocation and booking-change/cancellation workflows still need product acceptance.
+- Assessment weekly windows, configurable duration/travel buffers, blackout management and retry-safe generation are deployed and independently reviewed (checkpoint4079996, migration0009). Multi-assessor allocation and booking-change/cancellation workflows still need product acceptance.
 - Broaden permission/integration coverage. The six original scoped security findings and two follow-ups have independent accepted rechecks; these are not an exhaustive security certification.
 - Full OpenAPI coverage and generation for office routes, component decomposition, accessibility/mobile acceptance, support action queues and operational alerts.
 - Connect Core website inquiry intake durably with deduplication; public marketing intake must not be duplicated.
