@@ -1388,6 +1388,426 @@
         }
       }
     },
+    "/projects/{projectId}/phases": {
+      "get": {
+        "operationId": "listProjectPhases",
+        "description": "Lists normalized phases for an operational project. Office roles receive the operational model. Clients receive explicitly published summaries only; crew receive phases tied to active assigned work only.",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Authorized project phases",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProjectPhase"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Role or account-MFA requirement denied"
+          },
+          "404": {
+            "description": "Operational project phase not found or not accessible"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createProjectPhase",
+        "description": "Owner or manager only. Creates an additive normalized project phase without replacing legacy project history. It does not dispatch work, publish client material, post billing, or call providers.",
+        "parameters": [
+          {
+            "name": "projectId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProjectPhase"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created phase receipt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectPhaseCreateReceipt"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Role or account-MFA requirement denied"
+          },
+          "404": {
+            "description": "Operational project phase not found or not accessible"
+          },
+          "409": {
+            "description": "Phase position is already in use"
+          }
+        }
+      }
+    },
+    "/project-phases/{id}": {
+      "get": {
+        "operationId": "getProjectPhase",
+        "description": "Returns one phase with the same office, client-publication, and crew-assignment boundaries as the phase list.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Authorized project phase",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectPhase"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Role or account-MFA requirement denied"
+          },
+          "404": {
+            "description": "Operational project phase not found or not accessible"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateProjectPhase",
+        "description": "Owner or manager only. Replaces editable phase details with optimistic versioning and a required reason. Accepted, cancelled, and archived phases cannot be edited.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProjectPhase"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated phase receipt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectPhaseReceipt"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Role or account-MFA requirement denied"
+          },
+          "404": {
+            "description": "Operational project phase not found or not accessible"
+          },
+          "409": {
+            "description": "Stale version or historical phase cannot be edited"
+          }
+        }
+      }
+    },
+    "/project-phases/{id}/transitions": {
+      "post": {
+        "operationId": "transitionProjectPhase",
+        "description": "Owner or manager only. Applies a validated phase lifecycle transition with an explicit reason. Unmet prerequisites require a recorded override for ready/in-progress states; acceptance requires linked work to be reviewed, cancelled, or skipped.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectPhaseTransition"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Transition receipt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectPhaseTransitionReceipt"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Role or account-MFA requirement denied"
+          },
+          "404": {
+            "description": "Operational project phase not found or not accessible"
+          },
+          "409": {
+            "description": "Version conflict, invalid lifecycle transition, unmet prerequisite, or unresolved linked work"
+          }
+        }
+      }
+    },
+    "/project-phases/{id}/publish": {
+      "post": {
+        "operationId": "publishProjectPhase",
+        "description": "Owner or manager only. Publishes a client-safe summary for manager-review or accepted work. It does not alter crew work, files, billing, or payments.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectPhasePublication"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Published phase receipt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectPhaseReceipt"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Role or account-MFA requirement denied"
+          },
+          "404": {
+            "description": "Operational project phase not found or not accessible"
+          },
+          "409": {
+            "description": "Version conflict or phase material is not eligible for publication"
+          }
+        }
+      }
+    },
+    "/project-phases/{id}/history": {
+      "get": {
+        "operationId": "getProjectPhaseHistory",
+        "description": "Office-only append-only phase history. Clients and crew cannot read the event ledger.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Phase event history",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProjectPhaseEvent"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Role or account-MFA requirement denied"
+          },
+          "404": {
+            "description": "Operational project phase not found or not accessible"
+          }
+        }
+      }
+    },
+    "/project-phases/{id}/billing-intents": {
+      "get": {
+        "operationId": "listProjectPhaseBillingIntents",
+        "description": "Owner, manager, or finance only. Lists existing phase billing intents and associated dashboard drafts. QuickBooks remains the accounting system of record.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Phase billing intents",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProjectPhaseBillingIntent"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Role or account-MFA requirement denied"
+          },
+          "404": {
+            "description": "Operational project phase not found or not accessible"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createProjectPhaseBillingIntent",
+        "description": "Owner, manager, or finance only. Creates exactly one idempotent dashboard billing draft for an accepted phase and approved estimate. It never posts, sends, charges, credits, or records a QuickBooks payment.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectPhaseBillingIntentInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Previously created billing-intent receipt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectPhaseBillingIntentReceipt"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Created billing-intent receipt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectPhaseBillingIntentReceipt"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Role or account-MFA requirement denied"
+          },
+          "404": {
+            "description": "Operational project phase not found or not accessible"
+          },
+          "409": {
+            "description": "Operation ID conflict, stale phase, unapproved estimate, or estimate-cap conflict"
+          }
+        }
+      }
+    },
     "/inspections": {
       "get": {
         "operationId": "listInspectionReports",
@@ -3385,6 +3805,610 @@
           "sms": { "$ref": "#/components/schemas/IntegrationConfiguration" },
           "jobs": { "type": "array", "maxItems": 50, "items": { "$ref": "#/components/schemas/IntegrationActionQueueItem" } },
           "agreementPreparation": { "$ref": "#/components/schemas/AgreementPreparationHealth" }
+        }
+      },
+      "ProjectPhasePrerequisite": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "label",
+          "done"
+        ],
+        "properties": {
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "done": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ProjectPhase": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "project_id",
+          "position",
+          "title",
+          "status",
+          "project_name",
+          "property_name"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "project_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "position": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "title": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "string",
+            "description": "Operational/crew-only scope; omitted from client publications."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "planned",
+              "ready",
+              "in_progress",
+              "manager_review",
+              "accepted",
+              "blocked",
+              "cancelled",
+              "archived"
+            ]
+          },
+          "planned_start": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "planned_end": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "actual_start": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "actual_end": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "prerequisites": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProjectPhasePrerequisite"
+            },
+            "description": "Operational/crew-only prerequisites; omitted from client publications."
+          },
+          "override_reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Operational override record; omitted from client/crew projections."
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Optimistic concurrency version; omitted from client/crew projections."
+          },
+          "published_summary": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Client-visible only after explicit publication."
+          },
+          "published_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "project_name": {
+            "type": "string"
+          },
+          "property_name": {
+            "type": "string"
+          }
+        }
+      },
+      "ProjectPhaseDetails": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "title"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "scope": {
+            "type": "string",
+            "maxLength": 10000,
+            "default": ""
+          },
+          "plannedStart": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "plannedEnd": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "prerequisites": {
+            "type": "array",
+            "maxItems": 100,
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ProjectPhasePrerequisite"
+            }
+          }
+        }
+      },
+      "CreateProjectPhase": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "title"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "scope": {
+            "type": "string",
+            "maxLength": 10000,
+            "default": ""
+          },
+          "plannedStart": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "plannedEnd": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "prerequisites": {
+            "type": "array",
+            "maxItems": 100,
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ProjectPhasePrerequisite"
+            }
+          },
+          "position": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000
+          }
+        }
+      },
+      "UpdateProjectPhase": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "title",
+          "expectedVersion",
+          "reason"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "scope": {
+            "type": "string",
+            "maxLength": 10000,
+            "default": ""
+          },
+          "plannedStart": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "plannedEnd": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          "prerequisites": {
+            "type": "array",
+            "maxItems": 100,
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ProjectPhasePrerequisite"
+            }
+          },
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          }
+        }
+      },
+      "ProjectPhaseCreateReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "version",
+          "position"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "position": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "ProjectPhaseReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "version"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "ProjectPhaseTransition": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expectedVersion",
+          "status",
+          "reason"
+        ],
+        "properties": {
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "planned",
+              "ready",
+              "in_progress",
+              "manager_review",
+              "accepted",
+              "blocked",
+              "cancelled",
+              "archived"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          },
+          "overrideReason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          }
+        }
+      },
+      "ProjectPhaseTransitionReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "status",
+          "version"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "planned",
+              "ready",
+              "in_progress",
+              "manager_review",
+              "accepted",
+              "blocked",
+              "cancelled",
+              "archived"
+            ]
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "ProjectPhasePublication": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expectedVersion",
+          "summary"
+        ],
+        "properties": {
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          }
+        }
+      },
+      "ProjectPhaseEvent": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "phase_id",
+          "actor_id",
+          "event_type",
+          "prior_version",
+          "resulting_version",
+          "details",
+          "created_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "phase_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "actor_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "event_type": {
+            "type": "string",
+            "enum": [
+              "created",
+              "updated",
+              "transitioned",
+              "published",
+              "billing_intent_created"
+            ]
+          },
+          "prior_version": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1
+          },
+          "resulting_version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "from_status": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "to_status": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "details": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ProjectPhaseBillingIntentInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "operationId",
+          "expectedPhaseVersion",
+          "estimateId",
+          "title",
+          "amountCents",
+          "kind"
+        ],
+        "properties": {
+          "operationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "expectedPhaseVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "estimateId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          },
+          "amountCents": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000000000
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "deposit",
+              "progress",
+              "final"
+            ]
+          }
+        }
+      },
+      "ProjectPhaseBillingIntent": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "operation_id",
+          "expected_phase_version",
+          "kind",
+          "created_at",
+          "billing_draft_id",
+          "title",
+          "amount_cents",
+          "status",
+          "quickbooks_id"
+        ],
+        "properties": {
+          "operation_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "expected_phase_version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "deposit",
+              "progress",
+              "final"
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "billing_draft_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "amount_cents": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "approved",
+              "posted",
+              "failed"
+            ]
+          },
+          "quickbooks_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "ProjectPhaseBillingIntentReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "operationId",
+          "created"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "operationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "created": {
+            "type": "boolean"
+          }
         }
       },
       "ServiceRequestLifecycle": {

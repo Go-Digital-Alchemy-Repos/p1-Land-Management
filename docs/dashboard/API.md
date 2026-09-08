@@ -2,7 +2,7 @@
 
 `/api/v1` endpoints use verified Better Auth sessions. Browser cookie mutations require the configured dashboard Origin. Future iOS/Android clients use the same account's signed bearer session token in `Authorization`; a valid bearer request is allowed without a browser Origin and is still subject to the same verified-email, MFA, role and property authorization checks. Errors use HTTP status and an error message; callers must preserve pending operations on failure.
 
-`lib/api-spec/dashboard.openapi.json` specifies selected shared dashboard contracts, including setup/identity, client contacts, field work, assessment availability and booking, integration health, property reads, the service-request lifecycle, scheduling, commercial intake, agreement work and binary photos. `pnpm --filter @workspace/api-spec codegen:dashboard` generates the isolated dashboard fetch client. The UI consumes its field methods. Other routes currently validate with Zod at the server and still require full OpenAPI coverage.
+`lib/api-spec/dashboard.openapi.json` specifies selected shared dashboard contracts, including setup/identity, client contacts, field work, assessment availability and booking, integration health, property reads, project-phase and service-request lifecycles, scheduling, commercial intake, agreement work and binary photos. `pnpm --filter @workspace/api-spec codegen:dashboard` generates the isolated dashboard fetch client. The UI consumes its field methods. Other routes currently validate with Zod at the server and still require full OpenAPI coverage.
 
 | Domain                | Routes beneath /api/v1                                                                                                                       |
 | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -26,13 +26,15 @@ Migration 0015 adds the client version and primary-contact detail columns withou
 
 Billing creation requires `operationId` (UUID), `propertyId`, `estimateId`, `title`, integer `amountCents`, and `kind` (service/deposit/progress/final). Reuse the same operation ID on an identical retry. Different payload reuse returns 409; a new financial intent requires a new operation ID. The transaction stores actor, canonical validated-payload fingerprint and resulting draft ID. This does not automatically send an invoice or collect payment.
 
-## Project phases (candidate migration 0020)
+## Project phases (deployed migration 0020)
 
 `POST /projects/:projectId/phases` requires owner or manager and creates an additive normalized phase while preserving the legacy JSON `project.phases` value. An explicit occupied `position` returns409. Owner/manager edits use `PATCH /project-phases/:id` with `expectedVersion` and a required reason. Terminal accepted, cancelled and archived records reject edits.
 
 `POST /project-phases/:id/transitions` requires the current version, target state and a reason. The server validates lifecycle transitions, blocks ready/in-progress states with unmet prerequisites unless an explicit override reason is recorded, and requires all linked work to be reviewed/cancelled/skipped before acceptance. `GET /project-phases/:id/history` returns the append-only event history only to office roles. Client reads are restricted to explicitly published projections; crew reads are restricted to phases with active assigned work.
 
 `POST /project-phases/:id/publish` is an owner/manager action for manager-review or accepted work and records a client-safe summary only. `POST /project-phases/:id/billing-intents` is owner/manager/finance-only. It requires an accepted phase, approved estimate, current phase version and UUID operation ID. The server stores one immutable intent and one draft billing record on an identical retry, enforces the estimate cap, and returns409 for a changed operation replay. It never posts to QuickBooks, sends an invoice, creates a payment link, records a payment, or publishes crew material.
+
+The phase list/detail, create/update, transition, publication, history, and billing-intent endpoints are generated from the shared OpenAPI contract. The generated types keep client publications and crew assignment views minimized; office-only event history and billing-intent records remain server-authorized.
 
 ## Client service requests (deployed migration 0021)
 

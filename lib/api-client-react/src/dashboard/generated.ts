@@ -48,6 +48,7 @@ import type {
   CreateClientNote,
   CreateInspectionReport,
   CreateManualAssessmentSlot,
+  CreateProjectPhase,
   CreateServiceAgreement,
   CreateServiceRequest,
   CreatedResource,
@@ -69,6 +70,16 @@ import type {
   ListServiceAgreementsParams,
   OperationReceipt,
   PhotoUploadReceipt,
+  ProjectPhase,
+  ProjectPhaseBillingIntent,
+  ProjectPhaseBillingIntentInput,
+  ProjectPhaseBillingIntentReceipt,
+  ProjectPhaseCreateReceipt,
+  ProjectPhaseEvent,
+  ProjectPhasePublication,
+  ProjectPhaseReceipt,
+  ProjectPhaseTransition,
+  ProjectPhaseTransitionReceipt,
   PropertyFile,
   PropertyTimelineEvent,
   PropertyWorkspace,
@@ -92,6 +103,7 @@ import type {
   SyncFieldEventsBody,
   UpdateAccountMfaPolicy,
   UpdateClientContact,
+  UpdateProjectPhase,
   UploadFieldPhotoHeaders,
   WorkOrder,
   WorkVersion
@@ -969,6 +981,232 @@ export const convertServiceRequest = async (id: string,
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
       serviceRequestConversion,)
+  }
+);}
+
+
+
+export const getListProjectPhasesUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/v1/projects/${projectId}/phases`
+}
+
+/**
+ * Lists normalized phases for an operational project. Office roles receive the operational model. Clients receive explicitly published summaries only; crew receive phases tied to active assigned work only.
+ */
+export const listProjectPhases = async (projectId: string, options?: RequestInit): Promise<ProjectPhase[]> => {
+
+  return customFetch<ProjectPhase[]>(getListProjectPhasesUrl(projectId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateProjectPhaseUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/v1/projects/${projectId}/phases`
+}
+
+/**
+ * Owner or manager only. Creates an additive normalized project phase without replacing legacy project history. It does not dispatch work, publish client material, post billing, or call providers.
+ */
+export const createProjectPhase = async (projectId: string,
+    createProjectPhase: CreateProjectPhase, options?: RequestInit): Promise<ProjectPhaseCreateReceipt> => {
+
+  return customFetch<ProjectPhaseCreateReceipt>(getCreateProjectPhaseUrl(projectId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createProjectPhase,)
+  }
+);}
+
+
+
+export const getGetProjectPhaseUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/project-phases/${id}`
+}
+
+/**
+ * Returns one phase with the same office, client-publication, and crew-assignment boundaries as the phase list.
+ */
+export const getProjectPhase = async (id: string, options?: RequestInit): Promise<ProjectPhase> => {
+
+  return customFetch<ProjectPhase>(getGetProjectPhaseUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getUpdateProjectPhaseUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/project-phases/${id}`
+}
+
+/**
+ * Owner or manager only. Replaces editable phase details with optimistic versioning and a required reason. Accepted, cancelled, and archived phases cannot be edited.
+ */
+export const updateProjectPhase = async (id: string,
+    updateProjectPhase: UpdateProjectPhase, options?: RequestInit): Promise<ProjectPhaseReceipt> => {
+
+  return customFetch<ProjectPhaseReceipt>(getUpdateProjectPhaseUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      updateProjectPhase,)
+  }
+);}
+
+
+
+export const getTransitionProjectPhaseUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/project-phases/${id}/transitions`
+}
+
+/**
+ * Owner or manager only. Applies a validated phase lifecycle transition with an explicit reason. Unmet prerequisites require a recorded override for ready/in-progress states; acceptance requires linked work to be reviewed, cancelled, or skipped.
+ */
+export const transitionProjectPhase = async (id: string,
+    projectPhaseTransition: ProjectPhaseTransition, options?: RequestInit): Promise<ProjectPhaseTransitionReceipt> => {
+
+  return customFetch<ProjectPhaseTransitionReceipt>(getTransitionProjectPhaseUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      projectPhaseTransition,)
+  }
+);}
+
+
+
+export const getPublishProjectPhaseUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/project-phases/${id}/publish`
+}
+
+/**
+ * Owner or manager only. Publishes a client-safe summary for manager-review or accepted work. It does not alter crew work, files, billing, or payments.
+ */
+export const publishProjectPhase = async (id: string,
+    projectPhasePublication: ProjectPhasePublication, options?: RequestInit): Promise<ProjectPhaseReceipt> => {
+
+  return customFetch<ProjectPhaseReceipt>(getPublishProjectPhaseUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      projectPhasePublication,)
+  }
+);}
+
+
+
+export const getGetProjectPhaseHistoryUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/project-phases/${id}/history`
+}
+
+/**
+ * Office-only append-only phase history. Clients and crew cannot read the event ledger.
+ */
+export const getProjectPhaseHistory = async (id: string, options?: RequestInit): Promise<ProjectPhaseEvent[]> => {
+
+  return customFetch<ProjectPhaseEvent[]>(getGetProjectPhaseHistoryUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getListProjectPhaseBillingIntentsUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/project-phases/${id}/billing-intents`
+}
+
+/**
+ * Owner, manager, or finance only. Lists existing phase billing intents and associated dashboard drafts. QuickBooks remains the accounting system of record.
+ */
+export const listProjectPhaseBillingIntents = async (id: string, options?: RequestInit): Promise<ProjectPhaseBillingIntent[]> => {
+
+  return customFetch<ProjectPhaseBillingIntent[]>(getListProjectPhaseBillingIntentsUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateProjectPhaseBillingIntentUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/project-phases/${id}/billing-intents`
+}
+
+/**
+ * Owner, manager, or finance only. Creates exactly one idempotent dashboard billing draft for an accepted phase and approved estimate. It never posts, sends, charges, credits, or records a QuickBooks payment.
+ */
+export const createProjectPhaseBillingIntent = async (id: string,
+    projectPhaseBillingIntentInput: ProjectPhaseBillingIntentInput, options?: RequestInit): Promise<ProjectPhaseBillingIntentReceipt> => {
+
+  return customFetch<ProjectPhaseBillingIntentReceipt>(getCreateProjectPhaseBillingIntentUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      projectPhaseBillingIntentInput,)
   }
 );}
 
