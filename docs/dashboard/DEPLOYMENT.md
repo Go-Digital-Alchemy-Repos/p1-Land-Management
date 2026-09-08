@@ -30,7 +30,7 @@ Verify deployment status, health, setup behavior, TLS, authenticated no-store he
 
 ## Service-request lifecycle release
 
-Local validation passed dashboard/API type checks, the dashboard production build, and the disposable PostgreSQL suite (25 tests) with migration replay. Production dashboard web deployment `1defa5c9-89b0-4d27-8c6b-4b596e6e7fa9`, labeled `Release service-request lifecycle d387571`, reached `SUCCESS` after its migration predeploy. The running worker remained `SUCCESS` at `01232cf4-e9d5-4958-a448-4f86aa7c7cfb`.
+Local validation passed dashboard/API type checks, the dashboard production build, and the disposable PostgreSQL suite (25 tests) with migration replay. Production dashboard web deployment `1defa5c9-89b0-4d27-8c6b-4b596e6e7fa9`, labeled `Release service-request lifecycle d387571`, reached `SUCCESS` after its migration predeploy. The final combined source, `253a83b7495dcd79d6a29a410f741aa5090db586`, then reached `SUCCESS` as dashboard web deployment `d1b99ad9-f798-4e12-8d7e-7558d7f30dce` (image `sha256:f3b4f0826e404e009635a95b2b7587606efc43664c2ef0a8c8e4b7560218244e`) and the matching allowlisted worker deployment `b25da4f2-556d-49b9-8d48-f07bce7d6284` (image `sha256:9fb03256012304a491438497ffbd38520bac222b370c47e2ed77c95893b55b8a`). The worker startup log emitted `worker.started` without an application error.
 
 After deployment, `https://dashboard.p1landmanagement.com/api/healthz` returned `200` with `Cache-Control: no-store`, HSTS, CSP, frame denial, and noindex headers. Anonymous `GET /api/v1/service-requests` returned `401` with `no-store`. No authenticated production request, conversion, or business data was created; invited-client and pilot acceptance remain required.
 
