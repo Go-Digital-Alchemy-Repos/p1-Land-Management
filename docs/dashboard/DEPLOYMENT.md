@@ -24,9 +24,11 @@ Web start: `node dist/dashboard/main.js`; predeploy: `node dist/dashboard/migrat
 
 Verify deployment status, health, setup behavior, TLS, authenticated no-store headers, deep links, static assets, provider redirects, uploads and webhook signatures before declaring release. Inspect logs without printing credentials or customer content. Roll back application deployment through Railway to the previously verified image; retain additive schema changes. Rehearse compatibility before production data is present.
 
-Production dashboard DB volume backup schedule has DAILY/WEEKLY/MONTHLY enabled. Provider schedule retention is **not a guarantee of 30 daily recovery points**; confirm/implement the proposed 30-day retention before acceptance. A synthetic local pg_dump/restore succeeded previously (6 migrations, 2 properties, 2 field events); this is not a deployed restore rehearsal. Initial targets remain <=24 hours server data loss and restoration within one business day. Backup failure alerts, provider disconnection alerts and operational support ownership still need verification.
+Production dashboard DB volume backups retain six daily, 27 weekly and 89 monthly recovery points, and Railway point-in-time recovery is active; see [RECOVERY.md](RECOVERY.md) for the verified limits. This is not a guarantee of 30 daily recovery points. A synthetic local pg_dump/restore succeeded previously (6 migrations, 2 properties, 2 field events); this is not a deployed restore rehearsal. Initial targets remain <=24 hours server data loss and restoration within one business day. Backup failure alerts, provider disconnection alerts and operational support ownership still need verification.
 
 Owner authorized setup costs without another cost approval step. A source-backed assumption estimate is in [COSTS.md](COSTS.md); actual measured usage remains to be recorded from provider billing. Messaging, storage/egress, backups and QuickBooks subscription/payment eligibility are separate expenses.
+
+Use [PILOT_ACCEPTANCE.md](PILOT_ACCEPTANCE.md) for the required owner, integration, field-device and one-crew/invited-client launch evidence.
 
 ## Integrated production release (b5fd35d)
 
