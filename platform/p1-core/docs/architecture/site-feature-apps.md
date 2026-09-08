@@ -12,6 +12,8 @@ The public gateway and the P1 Core API must return an unavailable response for e
 
 P1’s CMS builder and public renderer do not offer Directory, Portfolio, or Membership blocks. These excluded blocks and the Membership access-rule editor are removed from the P1 client bundle; ordinary CMS pages, galleries, blog posts, managed forms, and CRM intake remain available.
 
+P1 does not ship Core Platform sample CMS or Career seed commands. P1 content is created through the retained CMS and imported P1 contracts, so an operator cannot seed Core-branded pages, portfolio, directory, shop, or example jobs into the P1 boundary.
+
 ## Configuration
 
 Feature app settings live in the `system_configuration` settings category:

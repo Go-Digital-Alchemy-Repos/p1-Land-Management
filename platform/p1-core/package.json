@@ -20,7 +20,6 @@
     "site:contract:verify": "tsx server/scripts/verify-client-site-contract.ts",
     "pilot:contract:verify": "tsx server/scripts/verify-client-pilot-contract.ts",
     "migration:intake:validate": "tsx server/scripts/validate-client-migration-intake.ts",
-    "seed:careers": "tsx server/scripts/seed-careers.ts",
     "seed:events": "NODE_ENV=production tsx server/scripts/seed-events.ts",
     "lint": "eslint client/src server shared",
     "format": "prettier --check client/src server shared",
