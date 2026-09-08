@@ -3,6 +3,7 @@ import Map, { Marker, NavigationControl, type MapRef } from "react-map-gl/maplib
 import "maplibre-gl/dist/maplibre-gl.css";
 import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import { MapPin } from "lucide-react";
+import { propertyCoordinates } from "./property-coordinates";
 
 const MAP_STYLE_URL = "https://tiles.openfreemap.org/styles/positron";
 const P1_REGION: [number, number] = [34.95, -80.78];
@@ -15,17 +16,6 @@ type PropertyPoint = {
   longitude?: number | string | null;
 };
 
-function hasCoordinates(property: PropertyPoint) {
-  const latitude = Number(property.latitude);
-  const longitude = Number(property.longitude);
-  return (
-    Number.isFinite(latitude) &&
-    Math.abs(latitude) <= 90 &&
-    Number.isFinite(longitude) &&
-    Math.abs(longitude) <= 180
-  );
-}
-
 export function PropertyMap({
   properties,
   onOpen,
@@ -34,11 +24,18 @@ export function PropertyMap({
   onOpen: (property: PropertyPoint) => void;
 }) {
   const map = useRef<MapRef>(null);
-  const mappedProperties = useMemo(() => properties.filter(hasCoordinates), [properties]);
+  const mappedProperties = useMemo(
+    () =>
+      properties.flatMap((property) => {
+        const coordinates = propertyCoordinates(property);
+        return coordinates ? [{ ...property, ...coordinates }] : [];
+      }),
+    [properties],
+  );
   const bounds = useMemo(() => {
     if (!mappedProperties.length) return null;
-    const longitudes = mappedProperties.map((property) => Number(property.longitude));
-    const latitudes = mappedProperties.map((property) => Number(property.latitude));
+    const longitudes = mappedProperties.map((property) => property.longitude);
+    const latitudes = mappedProperties.map((property) => property.latitude);
     return [
       [Math.min(...longitudes), Math.min(...latitudes)],
       [Math.max(...longitudes), Math.max(...latitudes)],
@@ -51,8 +48,8 @@ export function PropertyMap({
     if (mappedProperties.length === 1) {
       instance.jumpTo({
         center: [
-          Number(mappedProperties[0].longitude),
-          Number(mappedProperties[0].latitude),
+          mappedProperties[0].longitude,
+          mappedProperties[0].latitude,
         ],
         zoom: 14,
       });
@@ -82,8 +79,8 @@ export function PropertyMap({
           if (mappedProperties.length === 1) {
             target.jumpTo({
               center: [
-                Number(mappedProperties[0].longitude),
-                Number(mappedProperties[0].latitude),
+                mappedProperties[0].longitude,
+                mappedProperties[0].latitude,
               ],
               zoom: 14,
             });
@@ -100,8 +97,8 @@ export function PropertyMap({
         {mappedProperties.map((property) => (
           <Marker
             key={property.id}
-            latitude={Number(property.latitude)}
-            longitude={Number(property.longitude)}
+            latitude={property.latitude}
+            longitude={property.longitude}
             anchor="bottom"
           >
             <button

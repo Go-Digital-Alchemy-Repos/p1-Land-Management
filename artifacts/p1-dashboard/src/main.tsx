@@ -8,7 +8,6 @@ import { ClientContacts } from "./ClientContacts";
 import { RequestComposer } from "./RequestComposer";
 import { RichTextEditor } from "./RichTextEditor";
 import { ClientWorkspace, PropertyWorkspace } from "./AccountWorkspace";
-import { PropertyMap } from "./PropertyMap";
 import { motifForPage } from "./motifs";
 import { InspectionReports } from "./InspectionReports";
 import { ServiceRequestTriage } from "./ServiceRequestTriage";
@@ -16,7 +15,7 @@ import { ProjectPhases } from "./ProjectPhases";
 import { formatPhoneNumber } from "./phone";
 import { ContactDetails, EmailLink } from "./contact-links";
 import { AccountProfile } from "./AccountProfile";
-import React, { useEffect, useRef, useState } from "react";
+import React, { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { createAuthClient } from "better-auth/react";
 import { twoFactorClient } from "better-auth/client/plugins";
@@ -67,6 +66,9 @@ import {
   type SettingsSection,
 } from "./dashboard-routes";
 const auth = createAuthClient({ plugins: [twoFactorClient()] });
+const PropertyMap = lazy(() =>
+  import("./PropertyMap").then(({ PropertyMap }) => ({ default: PropertyMap })),
+);
 async function api(path: string, body?: unknown, method: "POST" | "PATCH" = "POST") {
   const r = await fetch("/api/v1" + path, {
     method: body === undefined ? "GET" : method,
@@ -1453,10 +1455,18 @@ function App() {
                     <p>Choose a property pin to open its account profile.</p>
                   </div>
                 </div>
-                <PropertyMap
-                  properties={data.properties || []}
-                  onOpen={openPropertyWorkspace}
-                />
+                <Suspense
+                  fallback={
+                    <div className="property-map-loading" role="status">
+                      Loading property map…
+                    </div>
+                  }
+                >
+                  <PropertyMap
+                    properties={data.properties || []}
+                    onOpen={openPropertyWorkspace}
+                  />
+                </Suspense>
               </section>
               <section className="panel">
                 <PropertyCards

@@ -659,10 +659,19 @@ small {
 .property-map-panel { overflow: hidden; }
 .property-map-panel .panel-heading { align-items: flex-start; }
 .property-map-panel .panel-heading p { margin: 4px 0 0; }
-.property-map {
+.property-map,
+.property-map-loading {
   height: min(440px, 46vw);
   min-height: 300px;
+}
+.property-map {
   position: relative;
+  background: #eef1e9;
+}
+.property-map-loading {
+  display: grid;
+  place-items: center;
+  color: #4c6052;
   background: #eef1e9;
 }
 .property-map .maplibregl-ctrl-top-right { top: 14px; right: 14px; }
@@ -1140,7 +1149,7 @@ textarea {
   .property-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  .property-map { height: 320px; min-height: 260px; }
+  .property-map, .property-map-loading { height: 320px; min-height: 260px; }
   .property-map-summary { left: 12px; bottom: 12px; }
   .auth-story {
     padding: 40px;

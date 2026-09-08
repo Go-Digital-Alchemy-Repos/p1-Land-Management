@@ -128,6 +128,7 @@ try {
       "../p1-dashboard/tests/phone.test.ts",
       "../p1-dashboard/tests/dashboard-routes.test.ts",
       "../p1-dashboard/tests/dashboard-contract.test.ts",
+      "../p1-dashboard/tests/property-coordinates.test.ts",
       "../p1-dashboard/tests/service-request-triage.test.ts",
       "src/dashboard/integration.test.ts",
       "src/dashboard/profile-avatar.test.ts",
