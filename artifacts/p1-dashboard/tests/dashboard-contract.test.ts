@@ -24,6 +24,13 @@ import {
   getProjectPhaseHistory,
   listProjectPhaseBillingIntents,
   createProjectPhaseBillingIntent,
+  listSalesLeads,
+  createSalesLead,
+  convertSalesLead,
+  createSalesEstimate,
+  recordEstimateDecision,
+  reviseEstimate,
+  createEstimateChangeOrder,
 } from "@workspace/api-client-react/dashboard";
 test("generated dashboard client preserves cursor filters, explicit nulls and conflict errors", async () => {
   const original = globalThis.fetch;
@@ -268,6 +275,72 @@ test("generated dashboard client preserves cursor filters, explicit nulls and co
       amountCents: 250000,
       kind: "deposit",
     });
+    const leadId = "00000000-0000-4000-8000-000000000010";
+    const propertyId = "00000000-0000-4000-8000-000000000011";
+    const estimateId = "00000000-0000-4000-8000-000000000012";
+    await listSalesLeads();
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      "/api/v1/leads",
+    );
+    const lead = {
+      name: "Jordan Smith",
+      email: "jordan@example.test",
+      phone: "864-555-0100",
+      location: "Greenville, SC",
+      description: "Seasonal estate management",
+      source: "office",
+    };
+    await createSalesLead(lead);
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), lead);
+    await convertSalesLead(leadId, {
+      propertyName: "Smith Estate",
+      address: "100 Example Lane",
+    });
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      `/api/v1/leads/${leadId}/convert`,
+    );
+    const estimate = {
+      propertyId,
+      title: "Seasonal grounds plan",
+      scope: "Monthly mowing and inspection.",
+      amountCents: 125000,
+    };
+    await createSalesEstimate(estimate);
+    assert.equal(calls.at(-1)!.init?.method, "POST");
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), estimate);
+    await recordEstimateDecision(estimateId, {
+      status: "sent",
+      revision: 1,
+    });
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      `/api/v1/estimates/${estimateId}/decision`,
+    );
+    const revised = {
+      revision: 1,
+      title: "Seasonal grounds plan",
+      scope: "Monthly mowing and inspection with storm checks.",
+      amountCents: 150000,
+    };
+    await reviseEstimate(estimateId, revised);
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      `/api/v1/estimates/${estimateId}/revise`,
+    );
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), revised);
+    const changeOrder = {
+      title: "Storm cleanup allowance",
+      scope: "Remove fallen limbs after a named storm.",
+      amountCents: 50000,
+    };
+    await createEstimateChangeOrder(estimateId, changeOrder);
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      `/api/v1/estimates/${estimateId}/change-order`,
+    );
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), changeOrder);
     fail = true;
     await assert.rejects(
       listCommercialInquiries(),

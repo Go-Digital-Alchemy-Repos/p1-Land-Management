@@ -1808,6 +1808,275 @@
         }
       }
     },
+    "/leads": {
+      "get": {
+        "operationId": "listSalesLeads",
+        "description": "Office-only lead list. Owner, manager, and sales can see commercial assessment inquiries; dispatch and finance receive the ordinary operational lead list.",
+        "responses": {
+          "200": {
+            "description": "Authorized leads",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SalesLead"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Role or account-MFA requirement denied"
+          },
+          "404": {
+            "description": "Operational record not found or not accessible"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createSalesLead",
+        "description": "Office-only manual lead creation. It records intake only; it does not create a client, property, assessment, estimate, job, or billing record.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSalesLead"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created lead",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatedResource"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Role or account-MFA requirement denied"
+          },
+          "404": {
+            "description": "Operational record not found or not accessible"
+          }
+        }
+      }
+    },
+    "/leads/{id}/convert": {
+      "post": {
+        "operationId": "convertSalesLead",
+        "description": "Owner, manager, or sales only. Converts one eligible lead into a linked client and property. Repeating a completed conversion returns the existing linkage. It does not create an estimate, schedule work, dispatch, publish, bill, or call a provider.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SalesLeadConversion"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Lead conversion linkage",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SalesLeadConversionReceipt"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Role or account-MFA requirement denied"
+          },
+          "404": {
+            "description": "Operational record not found or not accessible"
+          },
+          "409": {
+            "description": "Commercial prospect onboarding is unavailable or verified contact data is required"
+          }
+        }
+      }
+    },
+    "/estimates/{id}/decision": {
+      "post": {
+        "operationId": "recordEstimateDecision",
+        "description": "Office staff may move a draft estimate to sent. Only an authorized client may approve or decline a current sent estimate for an accessible property. A recorded approval includes the approving identity and timestamp; stale or repeated decisions fail.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EstimateDecision"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Decision recorded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EstimateDecisionReceipt"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Role or account-MFA requirement denied"
+          },
+          "404": {
+            "description": "Operational record not found or not accessible"
+          },
+          "409": {
+            "description": "Estimate revision, status, or decision conflict"
+          }
+        }
+      }
+    },
+    "/estimates/{id}/revise": {
+      "post": {
+        "operationId": "reviseEstimate",
+        "description": "Owner, manager, or sales only. Creates the next revision in the same estimate series. Current revision and draft/sent state are required; an approved scope is immutable and requires a change order.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EstimateRevision"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created estimate revision",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatedResource"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Role or account-MFA requirement denied"
+          },
+          "404": {
+            "description": "Operational record not found or not accessible"
+          },
+          "409": {
+            "description": "Estimate changed or approved scope requires a change order"
+          }
+        }
+      }
+    },
+    "/estimates/{id}/change-order": {
+      "post": {
+        "operationId": "createEstimateChangeOrder",
+        "description": "Owner, manager, or sales only. Creates a separate draft change order only from an approved estimate. It does not alter the approved scope, post billing, send an invoice, or collect payment.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EstimateChangeOrder"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created change order",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatedResource"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Role or account-MFA requirement denied"
+          },
+          "404": {
+            "description": "Operational record not found or not accessible"
+          },
+          "409": {
+            "description": "An approved estimate is required"
+          }
+        }
+      }
+    },
     "/inspections": {
       "get": {
         "operationId": "listInspectionReports",
@@ -3011,6 +3280,41 @@
           },
           "409": {
             "description": "Stale version, eligibility or approved-cap conflict; retain edits for review"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createSalesEstimate",
+        "description": "Owner, manager, or sales only. Creates a draft estimate for an operational property. It does not send, approve, schedule, dispatch, publish, post billing, or collect payment.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSalesEstimate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created estimate",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatedResource"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Role or account-MFA requirement denied"
+          },
+          "404": {
+            "description": "Operational property not found"
           }
         }
       }
@@ -4408,6 +4712,277 @@
           },
           "created": {
             "type": "boolean"
+          }
+        }
+      },
+      "SalesLead": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "id",
+          "name",
+          "email",
+          "location",
+          "description",
+          "status",
+          "created_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "phone": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "location": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "source": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "status": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "converted_client_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "converted_property_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          }
+        },
+        "description": "Operational lead snapshot. Additional persisted fields remain intentionally forward-compatible."
+      },
+      "CreateSalesLead": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "email",
+          "location",
+          "description"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          },
+          "source": {
+            "type": "string",
+            "maxLength": 500
+          }
+        }
+      },
+      "SalesLeadConversion": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "propertyName",
+          "address"
+        ],
+        "properties": {
+          "clientId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "propertyName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          },
+          "address": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          }
+        }
+      },
+      "SalesLeadConversionReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "clientId",
+          "propertyId"
+        ],
+        "properties": {
+          "clientId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "propertyId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "CreateSalesEstimate": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "propertyId",
+          "title",
+          "scope",
+          "amountCents"
+        ],
+        "properties": {
+          "propertyId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          },
+          "scope": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          },
+          "amountCents": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000000000
+          }
+        }
+      },
+      "EstimateDecision": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "status",
+          "revision"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "sent",
+              "approved",
+              "declined"
+            ]
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "EstimateDecisionReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "ok"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          }
+        }
+      },
+      "EstimateRevision": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "revision",
+          "title",
+          "scope",
+          "amountCents"
+        ],
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          },
+          "scope": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          },
+          "amountCents": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000000000
+          }
+        }
+      },
+      "EstimateChangeOrder": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "title",
+          "scope",
+          "amountCents"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          },
+          "scope": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          },
+          "amountCents": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000000000
           }
         }
       },
