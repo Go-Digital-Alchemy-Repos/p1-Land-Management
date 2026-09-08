@@ -132,6 +132,7 @@ try {
       "../p1-dashboard/tests/service-request-triage.test.ts",
       "src/dashboard/integration.test.ts",
       "src/dashboard/profile-avatar.test.ts",
+      "src/dashboard/property-update-geocoding.test.ts",
     ],
     { cwd, env },
   );

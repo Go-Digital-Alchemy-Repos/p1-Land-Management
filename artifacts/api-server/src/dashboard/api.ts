@@ -400,10 +400,36 @@ api.post("/properties/:id", async (req, res) => {
       version: z.number().int().positive(),
     })
     .parse(req.body);
+  // A property pin represents its saved street address. Resolve a changed
+  // address before opening the write transaction so a slow third-party lookup
+  // never holds a database connection or row lock. The optimistic version is
+  // still checked again by the update below, so a concurrent edit cannot
+  // overwrite newer data with this lookup's result.
+  const current = await pool.query(
+    "SELECT address FROM property WHERE id=$1 AND archived=false AND lifecycle='operational' AND version=$2",
+    [propertyId, b.version],
+  );
+  if (!current.rowCount)
+    throw new HttpError(409, "Property changed or is unavailable; refresh before saving");
+  const addressChanged = current.rows[0].address !== b.address;
+  const coordinates = addressChanged
+    ? await geocodePropertyAddress(b.address)
+    : null;
   const result = await transaction(async (c) => {
     const changed = await c.query(
-      "UPDATE property SET name=$2,address=$3,acreage=$4,access_instructions=$5,version=version+1 WHERE id=$1 AND archived=false AND lifecycle='operational' AND version=$6 RETURNING id,client_id,name,address,acreage,access_instructions,version",
-      [propertyId, b.name, b.address, b.acreage, b.accessInstructions, b.version],
+      "UPDATE property SET name=$2,address=$3,acreage=$4,access_instructions=$5,latitude=CASE WHEN $7 THEN $8 ELSE latitude END,longitude=CASE WHEN $7 THEN $9 ELSE longitude END,location_precision=CASE WHEN $7 THEN $10 ELSE location_precision END,version=version+1 WHERE id=$1 AND archived=false AND lifecycle='operational' AND version=$6 RETURNING id,client_id,name,address,acreage,access_instructions,version",
+      [
+        propertyId,
+        b.name,
+        b.address,
+        b.acreage,
+        b.accessInstructions,
+        b.version,
+        addressChanged,
+        coordinates?.latitude ?? null,
+        coordinates?.longitude ?? null,
+        coordinates ? "approximate" : null,
+      ],
     );
     if (!changed.rowCount)
       throw new HttpError(409, "Property changed or is unavailable; refresh before saving");
