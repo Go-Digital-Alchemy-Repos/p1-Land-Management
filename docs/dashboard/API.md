@@ -8,6 +8,8 @@
 | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
 | Initialization/access | /setup, /setup/complete, /me, /staff, /account-mfa-policies, /account-mfa-policies/:id, /invitations, /invitations/accept                    |
 | Operations            | /clients, /properties, /properties/:id/timeline, /work-orders, /work-orders/:id/status, /work-orders/:id/publish, /field/sync                |
+
+The generated work-order contract covers office planning, versioned status transitions, and manager publication alongside the existing read, readiness, rescheduling, and field-sync methods. Only owner, manager, or dispatch can create or transition work; an override reason requires owner or manager authority. Publication requires a reviewed work order and is owner/manager-only. It publishes only eligible non-conflicting notes, checklist entries, and completion events; it does not publish field issues, alter billing, or record payment.
 | Project phases        | /projects/:id/phases, /project-phases/:id, /project-phases/:id/transitions, /project-phases/:id/publish, history and billing-intent routes     |
 | Service requests      | /requests, /service-requests, /service-requests/:id, transitions, history, conversion preview and conversion receipt routes                    |
 | Scheduling            | /assessment-slots, /assessment-slots/:id/book, /recurring-services; operations.ts owns rescheduling/pause routes                             |

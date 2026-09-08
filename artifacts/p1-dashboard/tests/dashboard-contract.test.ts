@@ -31,6 +31,9 @@ import {
   recordEstimateDecision,
   reviseEstimate,
   createEstimateChangeOrder,
+  createWorkOrder,
+  updateWorkOrderStatus,
+  publishWorkOrder,
 } from "@workspace/api-client-react/dashboard";
 test("generated dashboard client preserves cursor filters, explicit nulls and conflict errors", async () => {
   const original = globalThis.fetch;
@@ -341,6 +344,43 @@ test("generated dashboard client preserves cursor filters, explicit nulls and co
       `/api/v1/estimates/${estimateId}/change-order`,
     );
     assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), changeOrder);
+    const workOrderId = "00000000-0000-4000-8000-000000000013";
+    const workPropertyId = "00000000-0000-4000-8000-000000000014";
+    const workOrder = {
+      propertyId: workPropertyId,
+      title: "Driveway inspection",
+      scope: "Inspect drainage and gravel.",
+      assignedTo: "crew-member-id",
+      scheduledAt: "2026-09-10T13:00:00.000Z",
+      checklist: [{ label: "Photo record", done: false }],
+      prerequisites: [{ label: "Gate access", done: true }],
+    };
+    await createWorkOrder(workOrder);
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      "/api/v1/work-orders",
+    );
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), workOrder);
+    await updateWorkOrderStatus(workOrderId, {
+      status: "ready",
+      version: 2,
+      overrideReason: "Manager verified alternate equipment.",
+    });
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      `/api/v1/work-orders/${workOrderId}/status`,
+    );
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), {
+      status: "ready",
+      version: 2,
+      overrideReason: "Manager verified alternate equipment.",
+    });
+    await publishWorkOrder(workOrderId);
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      `/api/v1/work-orders/${workOrderId}/publish`,
+    );
+    assert.equal(calls.at(-1)!.init?.body, undefined);
     fail = true;
     await assert.rejects(
       listCommercialInquiries(),
