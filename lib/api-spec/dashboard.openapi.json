@@ -38,6 +38,46 @@
             "description": "Record changed or operation conflict"
           }
         }
+      },
+      "post": {
+        "operationId": "createWorkOrder",
+        "description": "Owner, manager, or dispatch only. Creates an operational work order. It does not publish client material, post billing, charge payment, or call providers.",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateWorkOrder" } } } },
+        "responses": {
+          "201": { "description": "Created work order", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreatedResource" } } } },
+          "401": { "description": "Verified session required" },
+          "403": { "description": "Role or account-MFA requirement denied" },
+          "404": { "description": "Operational work order or property not found" }
+        }
+      }
+    },
+    "/work-orders/{id}/status": {
+      "post": {
+        "operationId": "updateWorkOrderStatus",
+        "description": "Owner, manager, or dispatch only. Applies a server-validated status transition using the current version. Manager-only overrides are recorded when prerequisites would otherwise block progress.",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/WorkOrderStatusUpdate" } } } },
+        "responses": {
+          "200": { "description": "Status updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PublicationReceipt" } } } },
+          "401": { "description": "Verified session required" },
+          "403": { "description": "Role or account-MFA requirement denied" },
+          "404": { "description": "Operational work order or property not found" },
+          "409": { "description": "Stale version or invalid work-order transition" }
+        }
+      }
+    },
+    "/work-orders/{id}/publish": {
+      "post": {
+        "operationId": "publishWorkOrder",
+        "description": "Owner or manager only. Publishes a reviewed work order and eligible non-conflicting field notes, checklists, and completion events. It does not publish issues, alter billing, or record payment.",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "responses": {
+          "200": { "description": "Work order published", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PublicationReceipt" } } } },
+          "401": { "description": "Verified session required" },
+          "403": { "description": "Role or account-MFA requirement denied" },
+          "404": { "description": "Operational work order or property not found" },
+          "409": { "description": "Work must be reviewed before publication" }
+        }
       }
     },
     "/field/sync": {
@@ -5142,6 +5182,31 @@
             "minimum": 1,
             "maximum": 10000000000
           }
+        }
+      },
+      "WorkOrderItem": { "type": "object", "additionalProperties": false, "required": ["label", "done"], "properties": { "label": { "type": "string", "minLength": 1, "maxLength": 10000 }, "done": { "type": "boolean" } } },
+      "CreateWorkOrder": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["propertyId", "title"],
+        "properties": {
+          "propertyId": { "type": "string", "format": "uuid" },
+          "title": { "type": "string", "minLength": 1, "maxLength": 10000 },
+          "scope": { "type": "string", "maxLength": 10000, "default": "" },
+          "assignedTo": { "type": "string" },
+          "scheduledAt": { "type": "string", "format": "date-time" },
+          "checklist": { "type": "array", "maxItems": 100, "default": [], "items": { "$ref": "#/components/schemas/WorkOrderItem" } },
+          "prerequisites": { "type": "array", "maxItems": 50, "default": [], "items": { "$ref": "#/components/schemas/WorkOrderItem" } }
+        }
+      },
+      "WorkOrderStatusUpdate": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["status", "version"],
+        "properties": {
+          "status": { "type": "string", "minLength": 1, "maxLength": 10000 },
+          "version": { "type": "integer", "minimum": 1 },
+          "overrideReason": { "type": "string", "maxLength": 1000 }
         }
       },
       "ClientPrimaryContact": {

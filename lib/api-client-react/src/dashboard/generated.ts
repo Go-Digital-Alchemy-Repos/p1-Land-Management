@@ -56,6 +56,7 @@ import type {
   CreateSalesLead,
   CreateServiceAgreement,
   CreateServiceRequest,
+  CreateWorkOrder,
   CreatedResource,
   DashboardClient,
   DashboardMe,
@@ -120,6 +121,7 @@ import type {
   UpdateProjectPhase,
   UploadFieldPhotoHeaders,
   WorkOrder,
+  WorkOrderStatusUpdate,
   WorkVersion
 } from './models';
 
@@ -139,6 +141,81 @@ export const getMyWorkOrders = async ( options?: RequestInit): Promise<WorkOrder
   {
     ...options,
     method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateWorkOrderUrl = () => {
+
+
+
+
+  return `/api/v1/work-orders`
+}
+
+/**
+ * Owner, manager, or dispatch only. Creates an operational work order. It does not publish client material, post billing, charge payment, or call providers.
+ */
+export const createWorkOrder = async (createWorkOrder: CreateWorkOrder, options?: RequestInit): Promise<CreatedResource> => {
+
+  return customFetch<CreatedResource>(getCreateWorkOrderUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createWorkOrder,)
+  }
+);}
+
+
+
+export const getUpdateWorkOrderStatusUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/work-orders/${id}/status`
+}
+
+/**
+ * Owner, manager, or dispatch only. Applies a server-validated status transition using the current version. Manager-only overrides are recorded when prerequisites would otherwise block progress.
+ */
+export const updateWorkOrderStatus = async (id: string,
+    workOrderStatusUpdate: WorkOrderStatusUpdate, options?: RequestInit): Promise<PublicationReceipt> => {
+
+  return customFetch<PublicationReceipt>(getUpdateWorkOrderStatusUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      workOrderStatusUpdate,)
+  }
+);}
+
+
+
+export const getPublishWorkOrderUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/work-orders/${id}/publish`
+}
+
+/**
+ * Owner or manager only. Publishes a reviewed work order and eligible non-conflicting field notes, checklists, and completion events. It does not publish issues, alter billing, or record payment.
+ */
+export const publishWorkOrder = async (id: string, options?: RequestInit): Promise<PublicationReceipt> => {
+
+  return customFetch<PublicationReceipt>(getPublishWorkOrderUrl(id),
+  {
+    ...options,
+    method: 'POST'
 
 
   }
