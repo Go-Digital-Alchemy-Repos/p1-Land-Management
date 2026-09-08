@@ -723,11 +723,10 @@ small {
 .footer {
   display: flex;
   justify-content: space-between;
-  border-top: 1px solid #dde1d2;
-  padding: 24px 0;
+  padding: 20px 0 24px;
   font-size: 8px;
   letter-spacing: 1.6px;
-  color: #89937b;
+  color: #244936;
 }
 .footer span {
   letter-spacing: 0;
