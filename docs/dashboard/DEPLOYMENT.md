@@ -1,6 +1,6 @@
 # Deployment and support
 
-Status on 2026-09-07: reviewed preview is deployed to staging and the production dashboard hostname. Full launch acceptance remains pending provider, device and pilot gates.
+Status on 2026-09-08: the reviewed dashboard web and worker are deployed to production. Full launch acceptance remains pending provider, device and pilot gates.
 
 Railway project: `e83f79dd-d901-4ab1-836b-bdf272b58dc2` (p1-Land-Management).
 
@@ -27,6 +27,14 @@ Verify deployment status, health, setup behavior, TLS, authenticated no-store he
 Production dashboard DB volume backup schedule has DAILY/WEEKLY/MONTHLY enabled. Provider schedule retention is **not a guarantee of 30 daily recovery points**; confirm/implement the proposed 30-day retention before acceptance. A synthetic local pg_dump/restore succeeded previously (6 migrations, 2 properties, 2 field events); this is not a deployed restore rehearsal. Initial targets remain <=24 hours server data loss and restoration within one business day. Backup failure alerts, provider disconnection alerts and operational support ownership still need verification.
 
 Owner authorized setup costs without another cost approval step. A source-backed assumption estimate is in [COSTS.md](COSTS.md); actual measured usage remains to be recorded from provider billing. Messaging, storage/egress, backups and QuickBooks subscription/payment eligibility are separate expenses.
+
+## Integrated production release (b5fd35d)
+
+`b5fd35df8860dc392b722e30f446074b79885ca3` is the current integrated release source. Production dashboard web deployment `fcbe95c2-b566-4b17-8bdc-51580e7053dc` reached SUCCESS using `artifacts/api-server/Dockerfile.dashboard`. Its post-deploy health response returned `200` with `Cache-Control: no-store`, `X-Robots-Tag: noindex, nofollow`, the existing CSP/frame/nosniff headers, and `Strict-Transport-Security: max-age=31536000`. Root, `/properties`, and `/settings/security` served `200`; anonymous `/api/v1/requests` returned `401`.
+
+The source-disconnected production worker was promoted only after the web deployment succeeded. An allowlisted package was created from an isolated worktree at the exact source revision, omitting environment files, website source/assets, and Core. Worker deployment `b6131965-ec85-4458-8bd9-ee3837c0c032` reached SUCCESS with image `sha256:ade0114957b0034df1710e58d5389bae5596d029ed766e029a532626989b31de`; the active service reported SUCCESS/not stopped and startup emitted `event="worker.started"`. This release adds no provider credentials, invoice action, payment action, customer communication, database migration, or acceptance claim.
+
+The public website deployment `a92be6fe-eecf-44aa-8bcd-e6833e220515` also reached SUCCESS from the same source. Live `/`, `/commercial`, `/services`, `/sitemap.xml`, `/robots.txt`, and the public Core readiness gateway returned `200`; retired `/testimonials` returned `301` to `/contact` with HSTS. The worker and website evidence confirms deployed code and basic response boundaries only. QuickBooks, Twilio, owner recovery/MFA, physical-device offline behavior, backup/object recovery, and a one-crew/invited-client billing pilot remain acceptance gates.
 
 ## Reviewed preview candidate
 
