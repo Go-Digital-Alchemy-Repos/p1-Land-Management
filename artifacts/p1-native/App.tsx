@@ -579,6 +579,7 @@ export function Application({ services }: { services: ApplicationServices }) {
                     id: entry.accountId,
                     name: entry.displayName,
                     email: "",
+                    avatarUrl: null,
                     role: "crew",
                     mfaRequired: false,
                     ownerMfaRequired: false,
