@@ -1,0 +1,144 @@
+name: Verify P1
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - "codex/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-p1-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  public-and-dashboard:
+    name: Public website and dashboard
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.19.0
+
+      - name: Install locked dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check production dependencies
+        run: pnpm audit --prod --json > p1-production-audit.json
+
+      - name: Type-check workspaces
+        run: pnpm run typecheck
+
+      - name: Build production assets
+        run: pnpm run build
+
+      - name: Verify public website quality gates
+        run: |
+          pnpm --filter @workspace/p1-website check:server
+          pnpm --filter @workspace/p1-website check:layout
+          pnpm --filter @workspace/p1-website check:navigation
+          pnpm --filter @workspace/p1-website check:media
+          pnpm --filter @workspace/p1-website check:images
+          pnpm --filter @workspace/p1-website check:faq
+
+  core-platform:
+    name: P1 Core platform
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: platform/p1-core
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: platform/p1-core/package-lock.json
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Check production dependencies
+        run: npm audit --omit=dev --json > p1-core-production-audit.json
+
+      - name: Type-check and lint
+        run: |
+          npm run check
+          npm run lint
+
+      - name: Run Core test suite
+        run: npm test
+
+      - name: Build production bundle and enforce its budget
+        run: |
+          npm run build
+          npm run budget
+
+      - name: Verify P1 public-content contract
+        run: |
+          npm run manifest:validate -- config/p1-client-site-manifest.json
+          npm run site:contract:verify -- config/p1-client-site-manifest.json ../../artifacts/p1-website
+
+  native:
+    name: P1 Native app
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: artifacts/p1-native
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: artifacts/p1-native/pnpm-lock.yaml
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.19.0
+
+      - name: Install locked dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check production dependencies
+        run: pnpm audit --prod --json > p1-native-production-audit.json
+
+      - name: Type-check and test native code
+        run: |
+          pnpm typecheck
+          pnpm test
+          pnpm test:vault-storage
+
+      - name: Export Android and iOS bundles
+        run: pnpm export
