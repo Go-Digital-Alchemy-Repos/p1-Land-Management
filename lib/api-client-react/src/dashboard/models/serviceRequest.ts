@@ -5,15 +5,21 @@
  * Shared field, scheduling and commercial inbox contract. Other office routes remain documented in docs/dashboard/API.md.
  * OpenAPI spec version: 0.1.0
  */
+import type { ServiceRequestSource } from './serviceRequestSource';
 
 export interface ServiceRequest {
   id: string;
   property_id: string;
   /** Operational submitter identity. Omitted from client responses. */
   user_id?: string;
+  source?: ServiceRequestSource;
+  /** Operational contact linkage. Omitted from client responses. */
+  requester_contact_id?: string;
   description: string;
   /** Current workflow status. Clients must not infer dispatch or billing completion from this value. */
   status: string;
+  /** @minimum 1 */
+  version?: number;
   created_at: string;
   property_name: string;
 }

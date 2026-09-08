@@ -318,7 +318,10 @@ function App() {
                 "leads",
                 "assessment-slots",
                 ...(["owner", "manager", "dispatch"].includes(person.role)
-                  ? ["recurring-services", "projects", "inspections"]
+                  ? ["recurring-services", "recurring-jobs", "projects", "inspections"]
+                  : []),
+                ...(["owner", "manager", "sales"].includes(person.role)
+                  ? ["agreement-templates"]
                   : []),
               ];
       const values = await Promise.all(
@@ -558,7 +561,7 @@ function App() {
           ...b,
           intervalCount: Number(b.intervalCount),
         });
-      if (form === "project") await api("/projects", b);
+      if (form === "project") await api("/projects", { ...b, propertyIds: formData.getAll("propertyIds").map(String) });
       if (form === "expense")
         await api("/expenses", {
           ...b,
@@ -626,34 +629,70 @@ function App() {
           accessInstructions: b.accessInstructions,
         });
       if (form === "work")
-        await api("/work-orders", {
+        await api("/jobs/internal", {
           propertyId: b.propertyId,
           title: b.title,
           scope: b.scope,
+          reason: b.reason,
           assignedTo: b.assignedTo || undefined,
           scheduledAt: b.scheduledAt
             ? new Date(b.scheduledAt).toISOString()
             : undefined,
-          checklist: b.checklist
-            ? b.checklist
-                .split("\n")
-                .filter(Boolean)
-                .map((label) => ({ label, done: false }))
-            : [],
         });
       if (form === "lead") await api("/leads", b);
-      if (form === "estimate")
-        await api("/estimates", {
-          ...b,
-          amountCents: Math.round(Number(b.amount) * 100),
+      if (["estimate", "estimate-request"].includes(form || "")) {
+        const lineItems = String(b.lineItems || "")
+          .split("\n")
+          .filter(Boolean)
+          .map((line) => {
+            const [description, quantity, price, unit] = line.split("|").map((part) => part.trim());
+            return { description, quantity: Number(quantity), unitPriceCents: Math.round(Number(price) * 100), unit: unit || undefined };
+          });
+        if (!lineItems.length || lineItems.some((item) => !item.description || !item.quantity || item.unitPriceCents < 0))
+          throw new Error("Enter each line as description | quantity | unit price | optional unit");
+        const monthlyPeriods = () => {
+          const result: any[] = [];
+          if (!b.startsOn || !b.endsOn || !b.monthlyAmount) return result;
+          let start = b.startsOn;
+          while (start <= b.endsOn && result.length < 120) {
+            const day = new Date(start + "T00:00:00Z");
+            const monthEnd = new Date(Date.UTC(day.getUTCFullYear(), day.getUTCMonth() + 1, 0)).toISOString().slice(0, 10);
+            result.push({ startsOn: start, endsOn: monthEnd < b.endsOn ? monthEnd : b.endsOn, amountCents: Math.round(Number(b.monthlyAmount) * 100) });
+            start = new Date(Date.UTC(day.getUTCFullYear(), day.getUTCMonth() + 1, 1)).toISOString().slice(0, 10);
+          }
+          return result;
+        };
+        const recurring = b.kind === "recurring" ? {
+          cadence: b.cadence,
+          intervalCount: Number(b.intervalCount),
+          startsOn: b.startsOn,
+          endsOn: b.endsOn,
+          localTime: b.localTime || "08:00",
+          billingMode: b.billingMode,
+          unitAmountCents: b.billingMode === "per_visit" ? Math.round(Number(b.unitAmount) * 100) : null,
+          periods: b.billingMode === "fixed_monthly" ? monthlyPeriods() : [],
+        } : undefined;
+        await api(form === "estimate-request" ? "/requests/" + selected.id + "/estimates" : "/estimates", { propertyId: b.propertyId, title: b.title, scope: b.scope, terms: b.terms || "", kind: b.kind, projectId: b.projectId || undefined, lineItems, recurring, agreementTemplateId: b.kind === "recurring" ? b.agreementTemplateId : undefined });
+      }
+      if (form === "send-estimate")
+        await api("/estimates/" + selected.id + "/send", {
+          recipientContactIds: formData.getAll("recipientContactIds").map(String),
         });
+      if (form === "activate-recurring")
+        await api("/recurring-jobs/" + selected.id + "/activate", {
+          assignedTo: b.assignedTo,
+          nextDate: b.nextDate,
+          localTime: b.localTime,
+        });
+      if (form === "agreement-template")
+        await api("/agreement-templates", { name: b.name, body: b.body });
       if (form === "billing")
         await api("/billing", {
           ...b,
           operationId: billingOperationId,
           amountCents: Math.round(Number(b.amount) * 100),
         });
-      if (form === "request") await api("/requests", b);
+      if (form === "request") await api("/requests", { ...b, source: person?.role === "client" ? "portal" : "manual" });
       if (form === "invite")
         await api("/invitations", { ...b, clientId: b.clientId || undefined });
       if (form === "slot")
@@ -734,7 +773,7 @@ function App() {
   const propertySelect = () => (
     <label>
       Property
-      <select name="propertyId" required>
+      <select name="propertyId" required defaultValue={form === "estimate-request" ? selected?.property_id : undefined}>
         <option value="">Choose a property</option>
         {(data.properties || []).map((p: any) => (
           <option key={p.id} value={p.id}>
@@ -760,6 +799,10 @@ function App() {
   const openForm = (name: string, row?: any) => {
     setSelected(row);
     setForm(name);
+    if (name === "send-estimate" && row)
+      void api("/estimates/" + row.id + "/recipient-options")
+        .then((recipients) => setData((current: any) => ({ ...current, estimateRecipients: recipients })))
+        .catch((reason) => setError(reason.message));
   };
   const propertyPage = nav.find((item) => item.view === "Properties")!;
   const schedulePage = nav.find((item) => item.view === "Schedule")!;
@@ -1195,15 +1238,7 @@ function App() {
               )}
               {view === "Schedule" && ops && (
                 <button className="primary" onClick={() => openForm("work")}>
-                  <Plus size={17} /> New work order
-                </button>
-              )}
-              {view === "Recurring" && ops && (
-                <button
-                  className="primary"
-                  onClick={() => openForm("recurring")}
-                >
-                  <Plus size={17} /> Recurring service
+                  <Plus size={17} /> Internal or emergency Job
                 </button>
               )}
               {view === "Projects" && manager && (
@@ -1285,16 +1320,19 @@ function App() {
             </section>
           ) : <>
           {view === "Agreements" && (
-            <ServiceAgreements
-              role={person.role}
-              userId={person.id}
-              selectedAgreementId={
-                recordRoute?.kind === "agreement" ? recordRoute.id : undefined
-              }
-              onSelect={(id) =>
-                navigateRecord(agreementPage, { kind: "agreement", id })
-              }
-            />
+            <>
+              <ServiceAgreements
+                role={person.role}
+                userId={person.id}
+                selectedAgreementId={
+                  recordRoute?.kind === "agreement" ? recordRoute.id : undefined
+                }
+                onSelect={(id) =>
+                  navigateRecord(agreementPage, { kind: "agreement", id })
+                }
+              />
+              {manager && <section className="panel"><div className="panel-heading"><h2>Agreement templates</h2><button onClick={() => openForm("agreement-template")}><Plus size={16} /> New template</button></div><Table rows={data["agreement-templates"] || []} columns={["name", "version", "updated_at"]} empty="No reusable agreement templates yet." /></section>}
+            </>
           )}
           {view === "Overview" && (
             <>
@@ -1306,7 +1344,7 @@ function App() {
                     "In your workspace",
                   ],
                   [
-                    "Scheduled work",
+                    "Scheduled Jobs",
                     data.work?.filter((w: any) => w.status === "scheduled")
                       .length || 0,
                     "Ready for the crew",
@@ -1361,14 +1399,14 @@ function App() {
                           className="quiet-action"
                           onClick={() => void openWorkOrder(w.id, schedulePage)}
                         >
-                          Open work order
+                          Open Job
                         </button>
                       </div>
                     ))
                   ) : (
                     <Empty
                       title="A fresh start for your operations"
-                      text="Add a client and property, then schedule your first work order."
+                      text="Add a client and property, then schedule your first Job."
                     />
                   )}
                 </section>
@@ -1680,7 +1718,7 @@ function App() {
                     title={
                       view === "My Day"
                         ? "No work scheduled for this date"
-                        : "No work orders yet"
+                        : "No Jobs yet"
                     }
                     text="Scheduled assignments will appear here."
                   />
@@ -1755,17 +1793,9 @@ function App() {
                     )}
                     {e.status === "draft" && e.is_current && staff && (
                       <button
-                        onClick={() =>
-                          void run(async () => {
-                            await api("/estimates/" + e.id + "/decision", {
-                              status: "sent",
-                              revision: e.revision,
-                            });
-                            await refresh();
-                          })
-                        }
+                        onClick={() => openForm("send-estimate", e)}
                       >
-                        Make available
+                        Send to client
                       </button>
                     )}
                     {e.status === "sent" &&
@@ -1919,25 +1949,40 @@ function App() {
           )}
           {view === "Recurring" && (
             <section className="panel">
+              <div className="panel-heading">
+                <div>
+                  <h2>Recurring Jobs</h2>
+                  <p className="muted">Approved recurring work awaiting activation and active Job programs.</p>
+                </div>
+              </div>
               <Table
-                rows={data["recurring-services"] || []}
+                rows={data["recurring-jobs"] || []}
                 columns={[
                   "title",
+                  "client_name",
                   "property_name",
                   "cadence",
                   "next_date",
-                  "billing_mode",
+                  "agreement_status",
+                  "next_visit",
                   "paused",
                 ]}
-                empty="No recurring services yet."
+                empty="No recurring Jobs yet. Create one from an approved recurring estimate."
               />
+              {(data["recurring-jobs"] || []).filter((job: any) => job.paused && job.agreement_status === "draft").map((job: any) => (
+                <div className="schedule-row" key={"activate-" + job.id}>
+                  <span><strong>{job.title}</strong><small>Client-approved; waiting for dispatch activation.</small></span>
+                  <button onClick={() => openForm("activate-recurring", job)}>Schedule and activate</button>
+                </div>
+              ))}
             </section>
           )}
           {view === "Projects" && (
             <section className="panel">
+              <p className="muted">Projects group related Jobs across participating clients. Client portals remain limited to their own Jobs and documents.</p>
               <Table
                 rows={data.projects || []}
-                columns={["name", "property_name", "scope", "status"]}
+                columns={["name", "client_names", "property_names", "scope", "status"]}
                 empty="No projects yet."
               />
             </section>
@@ -1974,11 +2019,14 @@ function App() {
           )}
           {view === "Requests" && (
             <section className="panel">
-              <Table
-                rows={data.requests || []}
-                columns={["property_name", "description", "status"]}
-                empty="No service requests. New requests will appear here."
-              />
+              {(data.requests || []).map((request: any) => (
+                <div className="schedule-row" key={request.id}>
+                  <div><strong>{request.property_name}</strong><small>{request.description}</small></div>
+                  <span className="badge">{request.status.replaceAll("_", " ")}</span>
+                  {["new", "estimating"].includes(request.status) && ["owner", "manager", "sales"].includes(person.role || "") && <button onClick={() => openForm("estimate-request", request)}>Generate estimate</button>}
+                </div>
+              ))}
+              {!data.requests?.length && <p className="empty">No service requests. New requests will appear here.</p>}
             </section>
           )}
           {view === "Settings" && settingsSection === "security" && (
@@ -2352,8 +2400,13 @@ function App() {
                 )}
                 {form === "project" && (
                   <>
-                    {propertySelect()}
                     {field("name", "Project name")}
+                    <label>
+                      Participating properties
+                      <select name="propertyIds" multiple required size={Math.min(8, Math.max(3, (data.properties || []).length))}>
+                        {(data.properties || []).map((property: any) => <option key={property.id} value={property.id}>{property.name}</option>)}
+                      </select>
+                    </label>
                     <label>
                       Scope
                       <textarea name="scope" required />
@@ -2552,10 +2605,14 @@ function App() {
                 {form === "work" && (
                   <>
                     {propertySelect()}
-                    {field("title", "Work order title")}
+                    {field("title", "Internal or emergency Job title")}
                     <label>
                       Scope
                       <textarea name="scope" />
+                    </label>
+                    <label>
+                      Why is this Job exempt from estimate approval?
+                      <textarea name="reason" required />
                     </label>
                     <label>
                       Assigned person
@@ -2574,10 +2631,6 @@ function App() {
                       "datetime-local",
                       false,
                     )}
-                    <label>
-                      Checklist — one task per line
-                      <textarea name="checklist" />
-                    </label>
                   </>
                 )}
                 {form === "lead" && (
@@ -2591,24 +2644,62 @@ function App() {
                     </label>
                   </>
                 )}
-                {form === "estimate" && (
+                {["estimate", "estimate-request"].includes(form || "") && (
                   <>
                     {propertySelect()}
+                    {data.projects?.length > 0 && <label>Project (optional)<select name="projectId"><option value="">Not part of a Project</option>{(data.projects || []).map((project: any) => <option key={project.id} value={project.id}>{project.name}</option>)}</select></label>}
                     {field("title", "Estimate title")}
                     <label>
                       Scope to approve
                       <textarea name="scope" required />
                     </label>
                     <label>
-                      Amount (USD)
-                      <input
-                        name="amount"
-                        type="number"
-                        min="0.01"
-                        step="0.01"
-                        required
-                      />
+                      Line items — one per line: description | quantity | unit price | optional unit
+                      <textarea name="lineItems" required placeholder="Mowing | 1 | 250.00 | visit" />
                     </label>
+                    <label>
+                      Client-facing terms
+                      <textarea name="terms" />
+                    </label>
+                    <label>
+                      Job type
+                      <select name="kind">
+                        <option value="one_time">One-time Job</option>
+                        <option value="recurring">Recurring Job</option>
+                      </select>
+                    </label>
+                    <fieldset>
+                      <legend>Recurring Job details (required only for recurring estimates)</legend>
+                      <label>Agreement template<select name="agreementTemplateId"><option value="">Choose a template</option>{(data["agreement-templates"] || []).map((template: any) => <option key={template.id} value={template.id}>{template.name} · v{template.version}</option>)}</select></label>
+                      <label>Frequency<select name="cadence"><option value="weekly">Weeks</option><option value="monthly">Months</option></select></label>
+                      {field("intervalCount", "Every X weeks/months", "number", false)}
+                      {field("startsOn", "Agreement start", "date", false)}
+                      {field("endsOn", "Agreement end", "date", false)}
+                      {field("localTime", "Default Job time", "time", false)}
+                      <label>Billing basis<select name="billingMode"><option value="per_visit">Per visit</option><option value="fixed_monthly">Fixed monthly</option></select></label>
+                      {field("unitAmount", "Per-visit agreement rate (USD)", "number", false)}
+                      {field("monthlyAmount", "Monthly agreement amount (USD)", "number", false)}
+                    </fieldset>
+                  </>
+                )}
+                {form === "send-estimate" && (
+                  <>
+                    <p>Send <strong>{selected.title}</strong> to one or more client contacts.</p>
+                    <label>Recipients<select name="recipientContactIds" multiple required size={Math.min(6, Math.max(2, (data.estimateRecipients || []).length))}>{(data.estimateRecipients || []).map((contact: any) => <option key={contact.id} value={contact.id} disabled={!contact.email || !contact.email_enabled}>{contact.name} {contact.email ? `· ${contact.email}` : "· no email"}{!contact.email_enabled ? " · email disabled" : ""}</option>)}</select></label>
+                  </>
+                )}
+                {form === "activate-recurring" && (
+                  <>
+                    <p>Activate <strong>{selected.title}</strong> after setting its first visit and default team member.</p>
+                    <label>Default assigned person<select name="assignedTo" required><option value="">Choose a team member</option>{(data.staff || []).filter((staffMember: any) => staffMember.role !== "client").map((staffMember: any) => <option key={staffMember.id} value={staffMember.id}>{staffMember.name}</option>)}</select></label>
+                    {field("nextDate", "First visit", "date")}
+                    {field("localTime", "Default visit time", "time")}
+                  </>
+                )}
+                {form === "agreement-template" && (
+                  <>
+                    {field("name", "Template name")}
+                    <label>Agreement terms<textarea name="body" required /></label>
                   </>
                 )}
                 {form === "billing" && (
@@ -2751,6 +2842,33 @@ function App() {
     </div>
   );
 }
+function EstimateApproval() {
+  const token = decodeURIComponent(location.pathname.split("/").at(-1) || "");
+  const [document, setDocument] = useState<any>(null);
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [notice, setNotice] = useState("");
+  useEffect(() => {
+    void fetch("/api/public/estimates/" + encodeURIComponent(token))
+      .then(async (response) => {
+        const value = await response.json();
+        if (!response.ok) throw new Error(value.error || "Estimate is unavailable");
+        setDocument(value);
+      })
+      .catch((reason) => setError(reason.message));
+  }, [token]);
+  const decide = async (status: "approved" | "declined") => {
+    setBusy(true); setError("");
+    try {
+      const response = await fetch("/api/public/estimates/" + encodeURIComponent(token) + "/decision", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status }) });
+      const value = await response.json();
+      if (!response.ok) throw new Error(value.error || "Unable to record your decision");
+      setNotice(status === "approved" ? "Thank you. Your estimate has been approved and P1 will schedule the Job." : "Your decision has been recorded. P1 will follow up if needed.");
+      setDocument(null);
+    } catch (reason) { setError((reason as Error).message); } finally { setBusy(false); }
+  };
+  return <main className="auth-shell"><section className="auth-card estimate-approval"><img src="/p1-logo.png" alt="P1 Land Management" className="brand-logo" /><h1>Estimate review</h1>{error && <p className="error">{error}</p>}{notice && <p className="notice">{notice}</p>}{!document && !error && <p>Loading estimate…</p>}{document && <><p><strong>{document.title}</strong></p><p>{document.client_name} · {document.property_name}</p><p>{document.address}</p><p>{document.scope}</p><div className="table-wrap"><table><thead><tr><th>Description</th><th>Quantity</th><th>Rate</th></tr></thead><tbody>{document.line_items.map((item: any) => <tr key={item.position}><td>{item.description}</td><td>{item.quantity} {item.unit || ""}</td><td>{money(item.unit_price_cents)}</td></tr>)}</tbody></table></div><h2>{money(document.amount_cents)}</h2><p>Valid through {new Date(document.expires_at).toLocaleDateString("en-US")}</p>{document.terms && <p className="muted">{document.terms}</p>}<p><a href={`/api/public/estimates/${encodeURIComponent(token)}/pdf`}>Download PDF</a></p><div className="heading-actions"><button className="primary" disabled={busy} onClick={() => void decide("approved")}>Approve estimate</button><button disabled={busy} onClick={() => void decide("declined")}>Decline</button></div></>}</section></main>;
+}
 function Empty({ title, text }: { title: string; text: string }) {
   return (
     <div className="empty-state">
@@ -2826,6 +2944,6 @@ function Table({
     <p className="empty">{empty}</p>
   );
 }
-createRoot(document.getElementById("root")!).render(<App />);
+createRoot(document.getElementById("root")!).render(location.pathname.startsWith("/estimate-approval/") ? <EstimateApproval /> : <App />);
 if ("serviceWorker" in navigator && import.meta.env.PROD)
   void navigator.serviceWorker.register("/sw.js");

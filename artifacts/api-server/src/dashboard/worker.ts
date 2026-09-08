@@ -13,10 +13,11 @@ process.on("SIGTERM", () => {
 });
 async function deliver(job: {
   kind: string;
-  payload: { to: string; subject: string; text: string; userId: string };
+  payload: { to: string; subject?: string; text: string; userId?: string };
 }) {
   if (job.kind === "sms") {
-    return await deliverSms(job.payload);
+    if (!job.payload.userId) throw new Error("SMS recipient is not eligible");
+    return await deliverSms({ ...job.payload, userId: job.payload.userId });
   }
   if (job.kind === "quickbooks.reconcile") {
     await reconcileQuickBooks();

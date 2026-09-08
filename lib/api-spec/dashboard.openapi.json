@@ -40,6 +40,67 @@
         }
       }
     },
+    "/estimates": {
+      "post": {
+        "operationId": "createEstimate",
+        "description": "Creates a standalone or request-originated estimate. Recurring terms are immutable once sent.",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateEstimate" } } } },
+        "responses": {
+          "201": { "description": "Draft estimate", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreatedResource" } } } },
+          "400": { "description": "Invalid estimate configuration" },
+          "401": { "description": "Verified session required" },
+          "403": { "description": "Role or property access denied" }
+        }
+      }
+    },
+    "/requests/{requestId}/estimates": {
+      "post": {
+        "operationId": "createEstimateFromRequest",
+        "description": "Creates a draft estimate linked to an open service request.",
+        "parameters": [{ "name": "requestId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateEstimate" } } } },
+        "responses": { "201": { "description": "Draft estimate", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreatedResource" } } } }, "400": { "description": "Invalid estimate configuration" }, "401": { "description": "Verified session required" }, "403": { "description": "Role or property access denied" } }
+      }
+    },
+    "/recurring-jobs": {
+      "get": {
+        "operationId": "listRecurringJobs",
+        "description": "Staff-only bird's-eye view of recurring Job programs. Individual visits remain schedule resources.",
+        "responses": { "200": { "description": "Recurring Job programs", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/RecurringJob" } } } } }, "401": { "description": "Verified session required" }, "403": { "description": "Dispatch role required" } }
+      }
+    },
+    "/recurring-jobs/{recurringJobId}/activate": {
+      "post": {
+        "operationId": "activateRecurringJob",
+        "description": "Dispatches the initial visit and activates an accepted recurring agreement after billing safeguards pass.",
+        "parameters": [{ "name": "recurringJobId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ActivateRecurringJob" } } } },
+        "responses": { "200": { "description": "Activated recurring Job", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/OperationReceipt" } } } }, "400": { "description": "Initial dispatch or agreement eligibility invalid" }, "401": { "description": "Verified session required" }, "403": { "description": "Dispatch role required" }, "409": { "description": "Program has already changed" } }
+      }
+    },
+    "/agreement-templates": {
+      "get": {
+        "operationId": "listAgreementTemplates",
+        "responses": { "200": { "description": "Reusable agreement templates", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/AgreementTemplate" } } } } }, "401": { "description": "Verified session required" }, "403": { "description": "Office role required" } }
+      },
+      "post": {
+        "operationId": "createAgreementTemplate",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateAgreementTemplate" } } } },
+        "responses": { "201": { "description": "Versioned agreement template", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreatedResource" } } } }, "400": { "description": "Invalid template" }, "401": { "description": "Verified session required" }, "403": { "description": "Manager role required" } }
+      }
+    },
+    "/projects": {
+      "get": {
+        "operationId": "listProjects",
+        "description": "Staff-only Project containers. The response identifies participating clients and properties but is never a client portal projection.",
+        "responses": { "200": { "description": "Shared Projects", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Project" } } } } }, "401": { "description": "Verified session required" }, "403": { "description": "Dispatch role required" } }
+      },
+      "post": {
+        "operationId": "createProject",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateProject" } } } },
+        "responses": { "201": { "description": "Project created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreatedResource" } } } }, "400": { "description": "Participating properties invalid" }, "401": { "description": "Verified session required" }, "403": { "description": "Manager role required" } }
+      }
+    },
     "/field/sync": {
       "post": {
         "operationId": "syncFieldEvents",
@@ -2326,6 +2387,142 @@
   },
   "components": {
     "schemas": {
+      "EstimateLineItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["description", "quantity", "unitPriceCents"],
+        "properties": {
+          "description": { "type": "string", "minLength": 1, "maxLength": 2000 },
+          "unit": { "type": "string", "maxLength": 100 },
+          "quantity": { "type": "number", "exclusiveMinimum": 0 },
+          "unitPriceCents": { "type": "integer", "minimum": 0 }
+        }
+      },
+      "RecurringBillingPeriod": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["startsOn", "endsOn", "amountCents"],
+        "properties": {
+          "startsOn": { "type": "string", "format": "date" },
+          "endsOn": { "type": "string", "format": "date" },
+          "amountCents": { "type": "integer", "exclusiveMinimum": 0 }
+        }
+      },
+      "RecurringJobConfiguration": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["cadence", "intervalCount", "startsOn", "endsOn", "localTime", "billingMode", "unitAmountCents", "periods"],
+        "properties": {
+          "cadence": { "type": "string", "enum": ["weekly", "monthly"] },
+          "intervalCount": { "type": "integer", "minimum": 1, "maximum": 52 },
+          "startsOn": { "type": "string", "format": "date" },
+          "endsOn": { "type": "string", "format": "date" },
+          "localTime": { "type": "string", "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$" },
+          "billingMode": { "type": "string", "enum": ["fixed_monthly", "per_visit"] },
+          "unitAmountCents": { "type": ["integer", "null"], "minimum": 1 },
+          "periods": { "type": "array", "maxItems": 120, "items": { "$ref": "#/components/schemas/RecurringBillingPeriod" } }
+        }
+      },
+      "CreateEstimate": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["propertyId", "title", "scope", "lineItems", "kind"],
+        "properties": {
+          "propertyId": { "type": "string", "format": "uuid" },
+          "projectId": { "type": "string", "format": "uuid", "description": "Staff-only Project grouping; the selected property must participate." },
+          "title": { "type": "string", "minLength": 1, "maxLength": 10000 },
+          "scope": { "type": "string", "minLength": 1, "maxLength": 10000 },
+          "terms": { "type": "string", "maxLength": 50000 },
+          "lineItems": { "type": "array", "minItems": 1, "maxItems": 100, "items": { "$ref": "#/components/schemas/EstimateLineItem" } },
+          "kind": { "type": "string", "enum": ["one_time", "recurring"] },
+          "recurring": { "$ref": "#/components/schemas/RecurringJobConfiguration" },
+          "agreementTemplateId": { "type": "string", "format": "uuid", "description": "Required for recurring estimates and snapshotted when the draft is created." }
+        }
+      },
+      "AgreementTemplate": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "version", "body", "active", "created_at", "updated_at"],
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "name": { "type": "string" },
+          "version": { "type": "integer", "minimum": 1 },
+          "body": { "type": "string" },
+          "active": { "type": "boolean" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "CreateAgreementTemplate": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "body"],
+        "properties": { "name": { "type": "string", "minLength": 1, "maxLength": 200 }, "body": { "type": "string", "minLength": 1, "maxLength": 50000 } }
+      },
+      "RecurringJob": {
+        "type": "object",
+        "description": "Staff-only recurring Job program. Its future visits are independent Jobs on the schedule.",
+        "required": ["id", "property_id", "title", "cadence", "interval_count", "next_date", "local_time", "paused"],
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "property_id": { "type": "string", "format": "uuid" },
+          "estimate_id": { "type": ["string", "null"], "format": "uuid" },
+          "agreement_id": { "type": ["string", "null"], "format": "uuid" },
+          "project_id": { "type": ["string", "null"], "format": "uuid" },
+          "title": { "type": "string" },
+          "cadence": { "type": "string", "enum": ["weekly", "monthly"] },
+          "interval_count": { "type": "integer" },
+          "next_date": { "type": "string", "format": "date" },
+          "local_time": { "type": "string" },
+          "assigned_to": { "type": ["string", "null"], "format": "uuid" },
+          "paused": { "type": "boolean" },
+          "agreement_status": { "type": ["string", "null"] },
+          "next_visit": { "type": ["string", "null"], "format": "date-time" },
+          "visit_count": { "type": "integer" }
+        }
+      },
+      "ActivateRecurringJob": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["assignedTo", "nextDate", "localTime"],
+        "properties": {
+          "assignedTo": { "type": "string", "format": "uuid" },
+          "nextDate": { "type": "string", "format": "date" },
+          "localTime": { "type": "string", "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$" }
+        }
+      },
+      "ProjectParticipant": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["propertyId"],
+        "properties": { "propertyId": { "type": "string", "format": "uuid" } },
+        "description": "A participating property; its client is derived server-side. Projects never grant cross-client access."
+      },
+      "CreateProject": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["propertyIds", "name", "scope"],
+        "properties": {
+          "propertyIds": { "type": "array", "minItems": 1, "maxItems": 100, "items": { "type": "string", "format": "uuid" } },
+          "name": { "type": "string", "minLength": 1, "maxLength": 10000 },
+          "scope": { "type": "string", "minLength": 1, "maxLength": 10000 },
+          "phases": { "type": "array", "maxItems": 50, "items": { "type": "object", "required": ["name", "complete"], "properties": { "name": { "type": "string" }, "complete": { "type": "boolean" } } } }
+        }
+      },
+      "Project": {
+        "type": "object",
+        "description": "Staff-only multi-client delivery container. Jobs, estimates, agreements and billing stay property-specific.",
+        "required": ["id", "name", "scope"],
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "name": { "type": "string" },
+          "scope": { "type": "string" },
+          "phases": { "type": "array", "items": { "type": "object" } },
+          "client_names": { "type": "string" },
+          "property_names": { "type": "string" },
+          "created_at": { "type": "string", "format": "date-time" }
+        }
+      },
       "FieldOperation": {
         "type": "object",
         "properties": {
@@ -2442,6 +2639,27 @@
           },
           "assigned_to": {
             "type": ["string", "null"]
+          },
+          "estimate_id": {
+            "type": ["string", "null"],
+            "format": "uuid"
+          },
+          "request_id": {
+            "type": ["string", "null"],
+            "format": "uuid"
+          },
+          "project_id": {
+            "type": ["string", "null"],
+            "format": "uuid",
+            "description": "Staff-only grouping; omitted from client projections."
+          },
+          "recurring_service_id": {
+            "type": ["string", "null"],
+            "format": "uuid"
+          },
+          "job_kind": {
+            "type": "string",
+            "enum": ["one_time", "recurring_visit", "internal"]
           }
         },
         "required": ["id", "property_id", "property_name", "title", "status"],
@@ -3220,12 +3438,25 @@
             "type": "string",
             "description": "Operational submitter identity. Omitted from client responses."
           },
+          "source": {
+            "type": "string",
+            "enum": ["portal", "manual"]
+          },
+          "requester_contact_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Operational contact linkage. Omitted from client responses."
+          },
           "description": {
             "type": "string"
           },
           "status": {
             "type": "string",
             "description": "Current workflow status. Clients must not infer dispatch or billing completion from this value."
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
           },
           "created_at": {
             "type": "string",

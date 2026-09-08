@@ -25,6 +25,7 @@ import { qboApi, qboWebhook } from "./quickbooks";
 import { notificationsApi, smsWebhook } from "./notifications";
 import { clientWorkspaceApi } from "./client-workspace";
 import { salesApi } from "./sales";
+import { estimatePublicApi, jobsLifecycleApi } from "./jobs-lifecycle";
 import { pool, database } from "./database";
 import { sql } from "drizzle-orm";
 import { HttpError } from "./policy";
@@ -64,6 +65,7 @@ app.all("/api/auth/*splat", (req, res, next) => {
 app.use("/api/webhooks", qboWebhook, smsWebhook);
 app.use("/api/integrations/core/v1", commercialIngress, coreFederationIngress);
 app.use(express.json({ limit: "1mb" }));
+app.use("/api/public", estimatePublicApi);
 app.use(
   "/api/v1",
   (req, res, next) => {
@@ -93,6 +95,7 @@ app.use(
   commercialStaffApi,
   contactsApi,
   clientWorkspaceApi,
+  jobsLifecycleApi,
   api,
   operationsApi,
   workReadinessApi,

@@ -20,6 +20,7 @@ import {
 } from "./assessments";
 import { onboardClient, updateClient } from "./client-onboarding";
 import { agreementPreparationHealth } from "./agreement-preparation";
+import { notifyClientContacts, notifyRoles } from "./job-notifications";
 export const api = Router();
 const office: Role[] = ["owner", "manager", "dispatch", "sales", "finance"];
 const operations: Role[] = ["owner", "manager", "dispatch"];
@@ -480,6 +481,27 @@ api.post("/work-orders/:id/status", async (req, res) => {
       "UPDATE work_order SET status=$2,version=version+1,override_reason=COALESCE($3,override_reason) WHERE id=$1",
       [key, b.status, b.overrideReason || null],
     );
+    if (b.status === "reviewed" && w.request_id) {
+      const request = (
+        await c.query(
+          "UPDATE service_request SET status='closed',version=version+1,updated_at=now() WHERE id=$1 AND status='converted' RETURNING version",
+          [w.request_id],
+        )
+      ).rows[0];
+      if (request)
+        await c.query(
+          "INSERT INTO service_request_event(id,request_id,actor_id,event,version,details) VALUES($1,$2,$3,'closed',$4,$5)",
+          [randomUUID(), w.request_id, a.id, request.version, { workOrderId: key }],
+        );
+    }
+    if (b.status === "reviewed")
+      await notifyClientContacts(
+        c,
+        w.property_id,
+        "Job completed",
+        `${w.title} has been reviewed by P1.`,
+        `job-reviewed:${key}:${w.version + 1}`,
+      );
     await audit(c, a.id, "work." + b.status, key);
   });
   res.json({ ok: true });
@@ -682,10 +704,14 @@ api.post("/leads", async (req, res) => {
 api.get("/estimates", async (req, res) => {
   const a = await actor(req);
   requireRole(a.role, [...office, "client"]);
+  const fields =
+    a.role === "client"
+      ? "e.id,e.property_id,e.title,e.revision,e.amount_cents,e.scope,e.status,e.approved_at,e.created_at,e.is_current,e.kind,e.terms,e.expires_at,p.name AS property_name"
+      : "e.*,p.name AS property_name";
   res.json(
     (
       await pool.query(
-        `SELECT e.*,p.name AS property_name FROM estimate e JOIN property p ON p.id=e.property_id AND p.lifecycle='operational' ${a.role === "client" ? "WHERE e.status<>'draft' AND EXISTS(SELECT 1 FROM client_access ca WHERE ca.client_id=p.client_id AND ca.user_id=$1)" : ""} ORDER BY e.created_at DESC`,
+        `SELECT ${fields} FROM estimate e JOIN property p ON p.id=e.property_id AND p.lifecycle='operational' ${a.role === "client" ? "WHERE e.status<>'draft' AND EXISTS(SELECT 1 FROM client_access ca WHERE ca.client_id=p.client_id AND ca.user_id=$1)" : ""} ORDER BY e.created_at DESC`,
         a.role === "client" ? [a.id] : [],
       )
     ).rows,
@@ -837,16 +863,29 @@ api.get("/requests", async (req, res) => {
 api.post("/requests", async (req, res) => {
   const a = await actor(req);
   requireRole(a.role, [...office, "client"]);
-  const b = z.object({ propertyId: id, description: text }).parse(req.body);
+  const b = z.object({ propertyId: id, description: text, requesterContactId: id.optional(), source: z.enum(["portal", "manual"]).optional() }).parse(req.body);
+  const source = a.role === "client" ? "portal" : (b.source || "manual");
   await propertyAccess(a, b.propertyId);
   const key = randomUUID();
   await transaction(async (c) => {
     await requireOperationalProperty(c, b.propertyId);
+    if (b.requesterContactId) {
+      const contact = await c.query("SELECT 1 FROM contact c JOIN property p ON p.client_id=c.client_id WHERE c.id=$1 AND p.id=$2 AND c.archived=false", [b.requesterContactId, b.propertyId]);
+      if (!contact.rowCount) throw new HttpError(400, "Choose an active contact for this property");
+    }
     await c.query(
-      "INSERT INTO service_request(id,property_id,user_id,description) VALUES($1,$2,$3,$4)",
-      [key, b.propertyId, a.id, b.description],
+      "INSERT INTO service_request(id,property_id,user_id,description,source,requester_contact_id) VALUES($1,$2,$3,$4,$5,$6)",
+      [key, b.propertyId, a.id, b.description, source, b.requesterContactId || null],
     );
     await audit(c, a.id, "service_request.created", key);
+    await c.query("INSERT INTO service_request_event(id,request_id,actor_id,event,version) VALUES($1,$2,$3,'created',1)", [randomUUID(), key, a.id]);
+    await notifyRoles(
+      c,
+      ["owner", "manager", "sales"],
+      "New service request",
+      `A new ${source} request was received for service review.`,
+      `service-request:${key}`,
+    );
   });
   res.status(201).json({ id: key });
 });

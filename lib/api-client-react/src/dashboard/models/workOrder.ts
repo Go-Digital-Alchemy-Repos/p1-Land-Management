@@ -6,6 +6,7 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { WorkOrderChecklistItem } from './workOrderChecklistItem';
+import type { WorkOrderJobKind } from './workOrderJobKind';
 
 /**
  * Authorized work projection. Clients receive only identity, property name, title, scheduled_at and public status; operational fields are absent, not null placeholders.
@@ -26,4 +27,16 @@ export interface WorkOrder {
   published?: boolean;
   /** @nullable */
   assigned_to?: string | null;
+  /** @nullable */
+  estimate_id?: string | null;
+  /** @nullable */
+  request_id?: string | null;
+  /**
+     * Staff-only grouping; omitted from client projections.
+     * @nullable
+     */
+  project_id?: string | null;
+  /** @nullable */
+  recurring_service_id?: string | null;
+  job_kind?: WorkOrderJobKind;
 }
