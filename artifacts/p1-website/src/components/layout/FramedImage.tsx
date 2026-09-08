@@ -19,8 +19,9 @@ export function FramedImage({ src, alt, reverse, aspectClassName = "aspect-[4/3]
         className="relative overflow-hidden rounded-[4px] border-4 border-white"
         style={{ boxShadow: "0 40px 70px -34px hsl(215 45% 15%)" }}
       >
-        <img src={src} alt={alt} className={`w-full object-cover ${aspectClassName}`} loading="lazy" />
+        <img src={src} alt={alt} {...responsiveImageProps(src)} className={`w-full object-cover ${aspectClassName}`} loading="lazy" />
       </div>
     </div>
   );
 }
+import { responsiveImageProps } from "@/lib/responsive-images";

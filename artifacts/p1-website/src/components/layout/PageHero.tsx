@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { ContourField } from "@/components/layout/ContourField";
 import { IndexOfWork } from "@/components/layout/IndexOfWork";
+import { responsiveImageProps } from "@/lib/responsive-images";
 
 const TAN = "hsl(32 42% 62%)";
 
@@ -30,7 +31,7 @@ export function PageHero({ eyebrow, title, subtitle, image, imageAlt = "", child
     <section className="relative overflow-hidden bg-navy-deep">
       {image && (
         <div className="absolute inset-0">
-          <img src={image} alt={imageAlt} fetchPriority="high" decoding="async" className="h-full w-full object-cover" style={{ opacity: 0.5 }} />
+          <img src={image} alt={imageAlt} fetchPriority="high" decoding="async" {...responsiveImageProps(image, "100vw")} className="h-full w-full object-cover" style={{ opacity: 0.5 }} />
         </div>
       )}
       <div
