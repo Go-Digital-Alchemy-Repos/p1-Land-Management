@@ -604,6 +604,45 @@ test("generated property reads preserve role-minimized snapshots and unknown his
   }
 });
 
+test("generated property-area transport preserves authorized route and optional details", async () => {
+  const { listPropertyAreas, createPropertyArea } =
+    await import("@workspace/api-client-react/dashboard");
+  const original = globalThis.fetch;
+  const calls: { url: string; init?: RequestInit }[] = [];
+  const area = {
+    id: "area",
+    property_id: "property",
+    name: "North pasture",
+    description: "Seasonal drainage watch.",
+    acreage: "12.5",
+  };
+  globalThis.fetch = async (input, init) => {
+    calls.push({ url: String(input), init });
+    return Response.json([area]);
+  };
+  try {
+    assert.deepEqual(await listPropertyAreas("property"), [area]);
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      "/api/v1/properties/property/areas",
+    );
+    assert.equal(calls.at(-1)!.init?.method, "GET");
+    await createPropertyArea("property", {
+      name: "North pasture",
+      description: "Seasonal drainage watch.",
+      acreage: 12.5,
+    });
+    assert.equal(calls.at(-1)!.init?.method, "POST");
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), {
+      name: "North pasture",
+      description: "Seasonal drainage watch.",
+      acreage: 12.5,
+    });
+  } finally {
+    globalThis.fetch = original;
+  }
+});
+
 test("generated binary upload preserves exact bytes, typed target headers and native auth headers", async () => {
   const { uploadFieldPhoto, getPrivateFileContent } =
     await import("@workspace/api-client-react/dashboard");

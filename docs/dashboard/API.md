@@ -7,7 +7,7 @@
 | Domain                | Routes beneath /api/v1                                                                                                                       |
 | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
 | Initialization/access | /setup, /setup/complete, /me, /staff, /account-mfa-policies, /account-mfa-policies/:id, /invitations, /invitations/accept                    |
-| Operations            | /clients, /properties, /projects, /work-orders, /work-orders/:id/status, /work-orders/:id/publish, /field/sync                |
+| Operations            | /clients, /properties, /properties/:id/areas, /projects, /work-orders, /work-orders/:id/status, /work-orders/:id/publish, /field/sync                |
 
 `GET/POST /clients`, `POST /clients/:id`, and `POST /properties` are generated contracts. Office client updates require the current version and atomically maintain the primary contact. Client accounts receive a minimized client list; crew have no client-record access. A primary-contact onboarding request requires address and phone and returns its created contact ID; neither client nor property creation creates an invitation, schedule, work order, billing record, or provider action.
 
@@ -121,6 +121,8 @@ Scheduling review follow-up: `GET /work-orders/:id` authorizes the same client/c
 `listAccountMfaPolicies` and `updateAccountMfaPolicy` are owner-only generated contracts. The list includes all active account roles, including clients, while `/staff` remains role-minimized for its existing office readers. The update and its audit record share one transaction. If an owner requires their own unassured current session, the client must re-read `/me` and show enrollment immediately.
 
 `listDashboardProperties`, `getPropertyTimeline`, and `listPropertyFiles` share the existing authorized read projections with native clients. Internal property fields are optional because they are omitted for clients; acreage is a nullable PostgreSQL numeric string. Timeline reads contain the latest 200 events and retain historical JSON payloads. File metadata omits object keys and bucket URLs. These endpoints remain online snapshots rather than a complete synchronization feed.
+
+`listPropertyAreas` and `createPropertyArea` are generated contracts for `GET/POST /properties/:id/areas`. The read requires server-side access to an operational property: office roles can read it, clients need their account grant, and crew need currently assigned active work. Creation is owner/manager/dispatch-only and requires an operational property with a client. Area acreage returns as a nullable PostgreSQL numeric string; creation accepts a nonnegative number. These routes only store or read property-area records: they do not create assets, schedule or dispatch work, publish material, create billing, change QuickBooks, create a payment link, or record payment.
 
 ### Binary photo transport
 

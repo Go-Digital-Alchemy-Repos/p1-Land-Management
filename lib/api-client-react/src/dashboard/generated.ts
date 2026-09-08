@@ -54,6 +54,7 @@ import type {
   CreateManualAssessmentSlot,
   CreateProject,
   CreateProjectPhase,
+  CreatePropertyArea,
   CreateRecurringService,
   CreateSalesEstimate,
   CreateSalesLead,
@@ -96,6 +97,7 @@ import type {
   ProjectPhaseReceipt,
   ProjectPhaseTransition,
   ProjectPhaseTransitionReceipt,
+  PropertyArea,
   PropertyFile,
   PropertyTimelineEvent,
   PropertyWorkspace,
@@ -1827,6 +1829,56 @@ export const createDashboardProperty = async (createDashboardProperty: CreateDas
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
       createDashboardProperty,)
+  }
+);}
+
+
+
+export const getListPropertyAreasUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/properties/${id}/areas`
+}
+
+/**
+ * Returns areas for one operational property after server-side property authorization. Office roles can read operational properties; clients need an account grant; crew need active assigned work. The response is an online property snapshot and does not publish reports, change work, or infer property condition.
+ */
+export const listPropertyAreas = async (id: string, options?: RequestInit): Promise<PropertyArea[]> => {
+
+  return customFetch<PropertyArea[]>(getListPropertyAreasUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreatePropertyAreaUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/properties/${id}/areas`
+}
+
+/**
+ * Owner, manager, or dispatch only. Creates an area for an operational property with a client. It does not create assets, schedule or dispatch work, publish client material, create billing, post to QuickBooks, or record a payment.
+ */
+export const createPropertyArea = async (id: string,
+    createPropertyArea: CreatePropertyArea, options?: RequestInit): Promise<CreatedResource> => {
+
+  return customFetch<CreatedResource>(getCreatePropertyAreaUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createPropertyArea,)
   }
 );}
 

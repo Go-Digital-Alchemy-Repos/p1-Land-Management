@@ -2523,6 +2523,96 @@
         }
       }
     },
+    "/properties/{id}/areas": {
+      "get": {
+        "operationId": "listPropertyAreas",
+        "description": "Returns areas for one operational property after server-side property authorization. Office roles can read operational properties; clients need an account grant; crew need active assigned work. The response is an online property snapshot and does not publish reports, change work, or infer property condition.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Authorized property areas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PropertyArea"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Business profile or current account-MFA requirement denied"
+          },
+          "404": {
+            "description": "Operational property not found or inaccessible"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createPropertyArea",
+        "description": "Owner, manager, or dispatch only. Creates an area for an operational property with a client. It does not create assets, schedule or dispatch work, publish client material, create billing, post to QuickBooks, or record a payment.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePropertyArea"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created property area",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatedResource"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid property-area input"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Owner, manager, or dispatch role required"
+          },
+          "404": {
+            "description": "Operational property not found"
+          }
+        }
+      }
+    },
     "/properties/{id}/timeline": {
       "get": {
         "operationId": "getPropertyTimeline",
@@ -6489,6 +6579,63 @@
         },
         "required": ["id", "client_id", "name", "address", "acreage"],
         "additionalProperties": false
+      },
+      "PropertyArea": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "property_id",
+          "name",
+          "description",
+          "acreage"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "property_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "acreage": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "PostgreSQL numeric wire representation; null means acreage was not recorded."
+          }
+        }
+      },
+      "CreatePropertyArea": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 10000,
+            "default": ""
+          },
+          "acreage": {
+            "type": "number",
+            "minimum": 0
+          }
+        }
       },
       "PropertyTimelineEvent": {
         "type": "object",
