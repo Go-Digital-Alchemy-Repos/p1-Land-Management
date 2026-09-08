@@ -2,6 +2,16 @@
 
 Historical implementation branch: `codex/p1-cms-crm`. Current integration and production source: GitHub `main`. Original public baseline: `5303da0`; copied Core source: `aad2057ca53e0a55a873bcbe9c62a73e267be541`. The [master plan](MASTER_PLAN.md) remains the full scope; a deployed dashboard slice does not complete it.
 
+## September 8 — current exact-source release record
+
+GitHub `main` and the deployed P1 public site, isolated Core API, dashboard web service, and dashboard worker are at `a2ffc69a01ff927367828fff6870cb35599cc80d` (`test(dashboard): include jobs lifecycle in release harness`). This is the authoritative technical-release revision; older deployment identifiers and commit references below are historical evidence only.
+
+This revision includes the P1 structured-data logo correction, keeping the supplied P1 symbol in `LandscapingBusiness` and article publisher data while retaining the wide JPEG for Open Graph compatibility. It also extends the dashboard release harness to cover the request → estimate → job lifecycle. The full dashboard harness passed 34/34 checks, the copied Core suite passed 664 tests (with 27 existing environment-gated database tests skipped), the public 34-route SSR/CMS/metadata/accessibility-structure suite passed, and `pnpm audit --prod --json` returned zero known production dependency vulnerabilities.
+
+Live verification returned `200` for the public home page, Core readiness, and dashboard health. The public page renders the singular homepage headline, “Your first impression starts at the curb.” Public canonical redirects, real 404 handling, responsive WebP delivery, public security headers, the noindex `/admin/` boundary, and anonymous dashboard denial remain verified. A source-backed security review of the gateway, forms, commercial handoff, dashboard authorization, Core administration, and upload/private-media controls produced zero reportable findings; its coverage remains partial because it did not use production credentials, provider secrets, or an independent delegated reviewer.
+
+This technical release does **not** establish a designated Core owner, shared CMS/dashboard sign-in, production editorial acceptance, real-provider delivery, physical-device acceptance, or controlled client/crew pilot. Those gates remain active and require their specified P1 owner or operational evidence.
+
 ## September 8 — current exact-source production release
 
 GitHub `main` commit `90fd3db845da80b8a62d1b120dc45b361e6b84f6` is the current verified technical release. Railway reports `SUCCESS` and a running instance for the public site, isolated Core API, dashboard, and dashboard worker. The dashboard pre-deploy migration step completed for the web service; the worker was then rebuilt and deployed from the same checked-out release source.
