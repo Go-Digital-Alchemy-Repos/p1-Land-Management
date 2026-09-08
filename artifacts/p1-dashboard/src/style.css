@@ -558,14 +558,7 @@ small {
 }
 .property-art {
   height: 125px;
-  background: repeating-radial-gradient(
-    ellipse at 85% 85%,
-    #dce4cc 0,
-    #dce4cc 9px,
-    #cbd7b8 10px,
-    #dce4cc 12px,
-    #dce4cc 22px
-  );
+  background: #e8eddc url("/images/property-topography.png") center / cover no-repeat;
   padding: 22px;
   display: flex;
   justify-content: space-between;
