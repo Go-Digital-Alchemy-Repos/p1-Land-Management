@@ -105,20 +105,28 @@ app.use(
 app.use("/api", (_req, res) => {
   res.status(404).json({ error: "Endpoint not found" });
 });
+const dashboardStaticDir = resolve(
+  process.env.DASHBOARD_STATIC_DIR || "../p1-dashboard/dist",
+);
 app.use(
   express.static(
-    resolve(process.env.DASHBOARD_STATIC_DIR || "../p1-dashboard/dist"),
-    { index: false, maxAge: 0 },
+    dashboardStaticDir,
+    {
+      index: false,
+      maxAge: 0,
+      setHeaders(res, path) {
+        // Vite content-hashes every compiled asset filename. A deployed HTML
+        // document can therefore safely reference these for a year, while the
+        // non-hashed dashboard images remain revalidatable after each deploy.
+        if (/[/\\]assets[/\\].+-[A-Za-z0-9_-]{8,}\.[A-Za-z0-9]+$/.test(path))
+          res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+      },
+    },
   ),
 );
 app.get("/{*splat}", (_req, res) => {
   res.set("Cache-Control", "no-cache");
-  res.sendFile(
-    resolve(
-      process.env.DASHBOARD_STATIC_DIR || "../p1-dashboard/dist",
-      "index.html",
-    ),
-  );
+  res.sendFile(resolve(dashboardStaticDir, "index.html"));
 });
 app.use(
   (
