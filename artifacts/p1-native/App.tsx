@@ -40,6 +40,8 @@ import {
 } from "./src/core/transport";
 import { syncOperations } from "./src/core/sync";
 import { NATIVE_SUPPORT_GUIDANCE } from "./src/core/support-guidance";
+import { nativeRoleHome } from "./src/core/role-home";
+import { adjacentWorkday, validateWorkday } from "./src/core/workday";
 import { NativeAuth } from "./src/native/auth";
 import { openVault, type PhotoRecovery, type Vault } from "./src/native/vault";
 import { capturePhoto } from "./src/native/capture";
@@ -271,19 +273,26 @@ export function Application({ services }: { services: ApplicationServices }) {
     setPerson(current);
     return current;
   }
-  async function loadDay() {
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(day))
-      throw new Error("Choose a date in YYYY-MM-DD format.");
+  async function loadDay(targetDay = day) {
+    const selectedDay = validateWorkday(targetDay);
     const rows: WorkOrder[] = [];
     let cursor: string | null = null;
     do {
       const page: SchedulePage = await transport.request(
-        `/api/v1/schedule?from=${day}&through=${day}${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`,
+        `/api/v1/schedule?from=${selectedDay}&through=${selectedDay}${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`,
       );
       rows.push(...page.items);
       cursor = page.nextCursor;
     } while (cursor);
     return rows;
+  }
+  async function moveWorkday(offset: -1 | 1) {
+    const nextDay = adjacentWorkday(day, offset);
+    await verify();
+    setDay(nextDay);
+    setWork(await loadDay(nextDay));
+    setSelected(null);
+    setNotice(`Authorized work for ${nextDay} loaded.`);
   }
   async function refresh() {
     await verify();
@@ -638,6 +647,10 @@ export function Application({ services }: { services: ApplicationServices }) {
               <Text style={s.heading}>
                 {person.name} · {person.role}
               </Text>
+              <Text accessibilityRole="header" style={s.roleTitle}>
+                {nativeRoleHome(person.role).title}
+              </Text>
+              <Text>{nativeRoleHome(person.role).detail}</Text>
               <Text>Work date · America/New_York</Text>
               <TextInput
                 accessibilityLabel="Work date YYYY-MM-DD"
@@ -645,6 +658,8 @@ export function Application({ services }: { services: ApplicationServices }) {
                 onChangeText={setDay}
                 style={s.input}
               />
+              {action("Previous work day", () => moveWorkday(-1))}
+              {action("Next work day", () => moveWorkday(1))}
               {action("Refresh work", refresh)}
               {action("Sign out", logout)}
               {person.role !== "crew" && (
@@ -854,6 +869,7 @@ const s = StyleSheet.create({
   },
   title: { fontSize: 32, fontWeight: "800", color: "#183e2a" },
   heading: { fontSize: 19, fontWeight: "600" },
+  roleTitle: { fontSize: 24, fontWeight: "700", color: "#183e2a" },
   notice: { padding: 14, backgroundColor: "#e3ede7", color: "#183e2a" },
   input: {
     padding: 12,
