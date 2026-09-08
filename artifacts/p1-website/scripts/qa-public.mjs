@@ -68,6 +68,14 @@ try {
     assert.equal(headings[0], 1, `${path}: main starts with h1`);
     assert(!headings.some((level, index) => index > 0 && level - headings[index - 1] > 1), `${path}: heading level jump`);
     for (const image of main.matchAll(/<img\b[^>]*>/g)) assert(/\balt="[^"]*"/.test(image[0]) || /\baria-hidden="true"/.test(image[0]), `${path}: image alternative text`);
+    for (const control of main.matchAll(/<(input|select|textarea)\b[^>]*>/g)) {
+      const markup = control[0];
+      if (/\btype="hidden"|\baria-hidden="true"/.test(markup)) continue;
+      const id = markup.match(/\bid="([^"]+)"/)?.[1];
+      const hasAccessibleName = /\baria-label="[^"]+"|\baria-labelledby="[^"]+"/.test(markup)
+        || (id ? new RegExp(`<label\\b[^>]*\\bfor="${id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`).test(main) : false);
+      assert(hasAccessibleName, `${path}: visible ${control[1]} must have a programmatic label`);
+    }
     for (const image of html.matchAll(/<img\b[^>]*\bsrc="([^"]+)"[^>]*>/g)) {
       const src = image[1].split('?')[0];
       assert(!/\.(?:png|jpe?g|avif)$/i.test(src), `${path}: public raster image must use WebP (${src})`);

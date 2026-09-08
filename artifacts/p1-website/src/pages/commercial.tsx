@@ -66,7 +66,7 @@ function AssessmentForm() {
     {input('address', 'Property location — address or city / region', 'text', true, undefined, 500)}
     <fieldset id="commercial-services" tabIndex={-1} aria-describedby={errors.services ? 'services-error' : undefined} aria-invalid={!!errors.services}>
       <legend className="font-semibold">What does your site need? (select at least one)</legend>
-      <div className="mt-3 grid gap-2 sm:grid-cols-2">{[...capabilities.map(item => ({ value: item.value, title: item.title })), { value: 'general_site_assessment', title: 'General site assessment / not sure yet' }].map(item => <label key={item.value} className="flex min-h-12 cursor-pointer items-start gap-3 rounded-sm border border-slate-300 p-3 text-sm"><input className="mt-1 h-4 w-4 shrink-0 accent-primary" type="checkbox" name="services" value={item.value} />{item.title}</label>)}</div>
+      <div className="mt-3 grid gap-2 sm:grid-cols-2">{[...capabilities.map(item => ({ value: item.value, title: item.title })), { value: 'general_site_assessment', title: 'General site assessment / not sure yet' }].map(item => <label key={item.value} htmlFor={`commercial-service-${item.value}`} className="flex min-h-12 cursor-pointer items-start gap-3 rounded-sm border border-slate-300 p-3 text-sm"><input id={`commercial-service-${item.value}`} className="mt-1 h-4 w-4 shrink-0 accent-primary" type="checkbox" name="services" value={item.value} />{item.title}</label>)}</div>
       {errors.services && <p id="services-error" className="mt-2 text-sm font-semibold text-red-800">{errors.services}</p>}
     </fieldset>
     <div className="grid gap-6 sm:grid-cols-2">
