@@ -1,6 +1,6 @@
 # P1 Core federation consumer
 
-Status: Core consumer is integrated in `f219835` and passed the combined Core type check, 664-test suite and production build. No federation deployment or production-owner bootstrap has occurred. Frozen shared contract: `docs/contracts/p1-core-dashboard-federation-v1.md`, SHA-256 `e9ccc4f7563809127d9d88981cff8d6431f1fbd13caeed2a6b575f017f13361e`. Paired real Dashboard-provider and browser acceptance remain required.
+Status: The Core consumer and the Dashboard provider are deployed to staging, where the configured HTTPS callback, PKCE handoff, readiness checks, and database migrations passed. Production Core remains in its protected one-time owner-setup state; production federation has not been activated or accepted by a designated owner. Frozen shared contract: `docs/contracts/p1-core-dashboard-federation-v1.md`, SHA-256 `e9ccc4f7563809127d9d88981cff8d6431f1fbd13caeed2a6b575f017f13361e`. Paired real Dashboard-provider and browser acceptance remain required.
 
 Dashboard Better Auth remains the credential authority. Core retains its own explicitly assigned roles, permissions and suspension state. Published content and normal public lead intake remain independent of identity-provider availability.
 
