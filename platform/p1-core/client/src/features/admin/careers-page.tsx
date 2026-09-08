@@ -48,8 +48,6 @@ import {
   type CareerJob,
   type CareerSettings,
 } from "@shared/schema";
-import type { TherapistWithUser } from "@shared/types/directory";
-import { DIRECTORY_MODE_PROFILE_ALIASES } from "@shared/types/directory-settings";
 
 type CareerApplicationWithJob = CareerApplication & {
   job?: CareerJob | null;
@@ -64,7 +62,6 @@ const emptyJob = {
   workMode: "on_site",
   location: "",
   locationAddress: "",
-  directoryProfileId: "none",
   salaryMin: "",
   salaryMax: "",
   salaryCurrency: "USD",
@@ -101,7 +98,6 @@ function fromJob(job?: CareerJob | null) {
     workMode: job.workMode,
     location: job.location ?? "",
     locationAddress: job.locationAddress ?? "",
-    directoryProfileId: job.directoryProfileId ?? "none",
     salaryMin: job.salaryMin?.toString() ?? "",
     salaryMax: job.salaryMax?.toString() ?? "",
     salaryCurrency: job.salaryCurrency ?? "USD",
@@ -125,12 +121,6 @@ function fromJob(job?: CareerJob | null) {
 function JobEditor({ job, onClose }: { job?: CareerJob | null; onClose: () => void }) {
   const { toast } = useToast();
   const [form, setForm] = useState(fromJob(job));
-  const { data: profiles = [] } = useQuery<TherapistWithUser[]>({
-    queryKey: ["/api/admin/therapists"],
-  });
-  const storeLocations = profiles.filter((profile) =>
-    DIRECTORY_MODE_PROFILE_ALIASES.store_locator.includes(profile.directoryMode),
-  );
   useEffect(() => setForm(fromJob(job)), [job?.id]);
 
   const set = (key: keyof typeof form, value: unknown) =>
@@ -141,7 +131,6 @@ function JobEditor({ job, onClose }: { job?: CareerJob | null; onClose: () => vo
         ...form,
         salaryMin: form.salaryMin ? Number(form.salaryMin) : null,
         salaryMax: form.salaryMax ? Number(form.salaryMax) : null,
-        directoryProfileId: form.directoryProfileId === "none" ? null : form.directoryProfileId,
         publishedAt: form.publishedAt || null,
         closesAt: form.closesAt || null,
       };
@@ -196,38 +185,6 @@ function JobEditor({ job, onClose }: { job?: CareerJob | null; onClose: () => vo
         <div className="space-y-1.5">
           <Label>Location</Label>
           <Input value={form.location} onChange={(event) => set("location", event.target.value)} />
-        </div>
-        <div className="space-y-1.5">
-          <Label>Linked store location</Label>
-          <Select
-            value={form.directoryProfileId}
-            onValueChange={(value) => set("directoryProfileId", value)}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="No linked location" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="none">No linked location</SelectItem>
-              {storeLocations.map((profile) => {
-                const name =
-                  [profile.user?.firstName, profile.user?.lastName].filter(Boolean).join(" ") ||
-                  profile.title ||
-                  profile.city ||
-                  "Untitled location";
-                const detail = [profile.city, profile.state, profile.country]
-                  .filter(Boolean)
-                  .join(", ");
-                return (
-                  <SelectItem key={profile.id} value={profile.id}>
-                    {detail ? `${name} (${detail})` : name}
-                  </SelectItem>
-                );
-              })}
-            </SelectContent>
-          </Select>
-          <p className="text-xs text-muted-foreground">
-            Store Locator pages can show published jobs linked here.
-          </p>
         </div>
         <div className="space-y-1.5">
           <Label>Employment type</Label>
