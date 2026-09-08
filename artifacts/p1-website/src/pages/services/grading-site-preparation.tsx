@@ -16,12 +16,12 @@ const FAQS = [
   {
     question: "What's the difference between rough grading and fine grading?",
     answer:
-      "Rough grading is the initial shaping and leveling of a site after clearing — establishing the overall contours and slopes. Fine grading is the precision finish pass that sets the exact final grade for drainage, turf installation, or construction. P1 performs both, from first cut to finish grade.",
+      "Rough grading is the initial shaping and leveling of a site after clearing. Fine grading is the finish work that prepares the site for its approved drainage, turf or construction plan. Discuss the required tolerances, equipment and delivery scope with P1 before work begins.",
   },
   {
     question: "Can regrading fix drainage problems on my property?",
     answer:
-      "In most cases, yes. More than 80% of land drainage problems trace back to improper grade. P1 regrades slopes, swales, and transitions so water moves where it belongs — and can pair grading with French drains, swales, and retention systems when the site needs them.",
+      "Improper grade can contribute to drainage problems. P1 can review slopes, swales and transitions with you and discuss regrading or a coordinated drainage scope, subject to the property conditions, approved plans and any specialist review.",
   },
   {
     question: "Does P1 grade sites for new construction?",
@@ -31,7 +31,7 @@ const FAQS = [
   {
     question: "Why does grading matter before installing turf?",
     answer:
-      "Turf installed on improperly graded ground fails — water pools, roots suffocate, and bare spots spread. P1 verifies grade is correct for drainage and root establishment before laying sod or seeding, and can handle both grading and turf so one team is accountable for the result.",
+      "Turf performance depends on grade, drainage, soil preparation, species selection and establishment practices. Confirm the approved preparation, responsibilities and expected outcomes for grading and turf work before scheduling.",
   },
 ];
 
@@ -65,7 +65,7 @@ export default function GradingSitePreparation() {
             in the Carolinas
           </>
         }
-        subtitle="Precise grading makes everything else possible — proper drainage, stable foundations, healthy turf, and long-term land performance. P1 delivers accurate, professional grading for sites of any size across Upstate SC and Charlotte NC."
+        subtitle="Grading affects drainage, foundations, turf and long-term land performance. P1 reviews the requested scope, approved plans and site conditions for commercial, agricultural and large-acreage properties in Upstate SC and Charlotte NC."
         image={heroImg}
         imageAlt="Bulldozer grading a dirt site"
       />
@@ -76,7 +76,7 @@ export default function GradingSitePreparation() {
           
           <FeatureRow heading="Get Your Land Level — and Keep It That Way" image={levelImg} imageAlt="Motor grader leveling a large dirt site">
             <p>
-              Poorly graded land causes problems that compound over time: standing water, erosion, foundation pressure, failed turf, and drainage failure. Whether you're preparing a site for construction, correcting existing drainage issues, or establishing grade for new turf, P1 brings the equipment and expertise to get it right the first time.
+              Poorly graded land can contribute to standing water, erosion, foundation pressure, turf problems and drainage issues. Whether you are preparing a construction site, reviewing drainage concerns or establishing grade for turf, discuss the approved plans, site conditions, equipment and delivery scope with P1 before work begins.
             </p>
           </FeatureRow>
 
@@ -110,7 +110,7 @@ export default function GradingSitePreparation() {
 
           <FeatureRow heading="Grading for Turf Establishment" image={turfImg} imageAlt="Freshly graded soil transitioning into new sod">
             <p>
-              Turf installation on improperly graded ground fails. Before P1 lays sod or seeds an acre, we verify the grade is correct for drainage and root establishment. When we handle both grading and turf, you get a result that lasts — and a single point of accountability if it doesn't.
+              Turf installation on improperly graded ground can struggle. Before grading and turf work begin, confirm the approved grade, drainage approach, establishment practices and delivery responsibilities for the property. A coordinated scope helps keep those decisions with the same project team.
             </p>
           </FeatureRow>
 
@@ -125,7 +125,7 @@ export default function GradingSitePreparation() {
               Equipment & Precision
             </h2>
             <p className="text-lg text-secondary/80 leading-relaxed">
-              P1 uses GPS-guided grading equipment where precision tolerances demand it, and experienced operators for the full range of work from rough shaping to fine finish. We work on properties from a few acres to several hundred, across both commercial and agricultural applications.
+              Discuss the equipment, operators and accuracy targets needed for your grading scope before work begins. P1 reviews rough shaping, finish work and access requirements for commercial and agricultural properties during qualification.
             </p>
           </div>
 

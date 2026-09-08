@@ -13,22 +13,22 @@ const FAQS = [
   {
     question: "Why does my property have standing water after rain?",
     answer:
-      "In the Carolinas, standing water usually comes from heavy clay soils, compacted ground, flat topography, or improper grading that leaves water nowhere to go. P1 assesses the whole system — where water enters, where it sits, and where it needs to go — then designs a fix that solves the problem at the source.",
+      "In the Carolinas, standing water can result from clay soils, compacted ground, flat topography or improper grading. A site review should identify where water enters, where it collects and which work belongs in the agreed scope; engineering or specialist analysis may also be needed.",
   },
   {
     question: "What drainage systems does P1 install?",
     answer:
-      "P1 installs French drains, surface swales, catch basins and inlets, underground drainage pipe, retention and detention ponds, agricultural tile drainage, and erosion control in drainage zones — along with regrading when the root cause is improper slope.",
+      "Discuss French drains, surface swales, catch basins, underground pipe, pond work, agricultural drainage, erosion work and regrading with P1. The proposed work, approvals and any engineering or specialist responsibilities are confirmed for each property.",
   },
   {
     question: "Can P1 fix drainage on farm fields and pastures?",
     answer:
-      "Yes. Saturated fields can't be worked and lose topsoil to runoff. P1 installs agricultural drainage systems — including field tile drainage and perimeter ditching — that improve field trafficability, root health, and long-term productivity.",
+      "Saturated fields can be difficult to work and vulnerable to runoff. P1 can discuss field drainage, perimeter ditching and related grading work; confirm the site conditions, approvals and expected outcomes before work begins.",
   },
   {
     question: "Does P1 handle stormwater compliance for commercial properties?",
     answer:
-      "Yes. P1 supports stormwater compliance for commercial sites — including retention and detention pond maintenance, ditch clearing and shaping, and documented maintenance programs that keep systems functioning within local and state requirements.",
+      "P1 can discuss maintenance and exterior work around retention and detention ponds, ditches and drainage features. Regulatory compliance, inspections, documentation and any specialist responsibilities must be confirmed with the owner and appropriate professionals.",
   },
 ];
 
@@ -62,7 +62,7 @@ export default function Drainage() {
             — Greenville, Spartanburg & Charlotte
           </>
         }
-        subtitle="Standing water, soggy fields, erosion, and drainage failures cost landowners time, money, and turf. P1 designs and installs drainage systems that solve problems at the source — not just mask them."
+        subtitle="Standing water, soggy fields, erosion, and drainage failures cost landowners time, money, and turf. P1 reviews site conditions and discusses a drainage scope that addresses the source of the problem."
         image={heroImg}
         imageAlt="Drainage swale in grassy field"
       />
@@ -88,14 +88,14 @@ export default function Drainage() {
               {[
                 "French drain installation — perforated pipe and gravel systems to intercept and redirect subsurface water",
                 "Surface drainage swales — graded channels to carry surface runoff away from structures and fields",
-                "Retention and detention pond design and construction",
+                "Retention and detention pond planning and construction scope",
                 "Catch basin and inlet installation",
                 "Underground drainage pipe installation",
                 "Agricultural drainage — tile drainage for fields and pastures",
                 "Ditch clearing, shaping, and lining",
                 "Regrading for drainage correction",
                 "Erosion control and slope stabilization in drainage zones",
-                "Stormwater compliance support for commercial properties"
+                "Stormwater-related maintenance and documentation coordination"
               ].map((item, i) => (
                 <li key={i} className="flex items-start gap-3 bg-muted p-4 rounded-lg">
                   <CheckCircle2 className="w-6 h-6 text-primary shrink-0 mt-0.5" />

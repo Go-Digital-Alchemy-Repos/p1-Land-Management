@@ -86,7 +86,7 @@ export default function UpstateSC() {
                   "Industrial and agricultural land maintenance",
                   "Land clearing and forestry mulching",
                   "Fine grading and site preparation",
-                  "Drainage design and installation",
+                  "Drainage planning and scoped installation work",
                   "Turf installation — sod and large-acreage seeding",
                   "Tree services — trimming, removal, and selective clearing",
                   "Pond and waterway management",

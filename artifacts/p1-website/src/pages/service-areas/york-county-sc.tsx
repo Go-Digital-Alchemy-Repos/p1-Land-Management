@@ -94,7 +94,7 @@ export default function YorkCountySC() {
                 {[
                   "Land clearing and forestry mulching — lot clearing, right-of-way, and rural acreage",
                   "Fine grading and site preparation for commercial and residential development",
-                  "Drainage design and installation — French drains, retention, and erosion control",
+                  "Drainage planning and scoped French-drain, retention and erosion work",
                   "Pasture and equestrian property maintenance — fields, paddocks, and riding areas",
                   "Turf installation — sod and large-acreage seeding for Piedmont soils",
                   "Tree services — trimming, removal, and selective clearing",

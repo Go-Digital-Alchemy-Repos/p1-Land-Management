@@ -68,7 +68,7 @@ export default function About() {
               "Weekly and seasonal property maintenance contracts",
               "Land clearing and forestry mulching",
               "Fine grading and site preparation",
-              "Drainage design and installation",
+              "Drainage planning and scoped installation work",
               "Sod and seed installation for large acreage",
               "Tree management, trimming, and removal",
               "Pond and waterway care and management",

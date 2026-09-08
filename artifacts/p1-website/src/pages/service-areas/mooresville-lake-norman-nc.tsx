@@ -70,7 +70,7 @@ export default function MooresvilleLakeNormanNC() {
               <ul className="space-y-3">
                 {[
                   "Pond and waterway management — including shoreline restoration and water quality maintenance",
-                  "Drainage design and installation for sloped and waterfront terrain",
+                  "Drainage planning and scoped installation work for sloped and waterfront terrain",
                   "Land clearing and selective tree management",
                   "Grading and site preparation",
                   "Large-acreage turf installation and seeding",

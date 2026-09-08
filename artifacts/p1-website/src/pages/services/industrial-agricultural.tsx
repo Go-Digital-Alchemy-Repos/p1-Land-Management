@@ -13,22 +13,22 @@ const FAQS = [
   {
     question: "What agricultural property services does P1 provide?",
     answer:
-      "P1 provides pasture and field mowing, fence line clearing, farm pond management, drainage ditch clearing, erosion control, hay field and food plot establishment, land clearing for additional acreage, access road grading, and tree management for farms and rural landholdings.",
+      "P1 discusses pasture and field mowing, fence-line clearing, pond and ditch work, erosion-related site work, land clearing, access-road grading and tree management for farms and rural landholdings. Confirm the agreed scope, timing and any specialist requirements before work begins.",
   },
   {
     question: "Does P1 maintain industrial sites?",
     answer:
-      "Yes. P1 handles perimeter vegetation control, drainage system maintenance and stormwater compliance support, land clearing for facility expansion, grading corrections, erosion control, retention pond management, and emergency site cleanup for industrial facilities.",
+      "P1 can discuss perimeter vegetation, drainage and pond maintenance, clearing, grading corrections and erosion-related site work for industrial facilities. Confirm scope, availability, compliance responsibilities and emergency-response terms during qualification.",
   },
   {
     question: "Can P1 clear land to add pasture or crop acreage?",
     answer:
-      "Yes. P1 clears trees, brush, and stumps to open up additional productive acreage — often using forestry mulching to protect topsoil — and can follow with grading, drainage, lime and fertilization prep, and seeding to get new ground into production.",
+      "P1 can discuss selective clearing, brush and stump work to open additional acreage. Forestry mulching, grading, drainage, soil preparation and seeding are scoped by property, access, approvals and the project team.",
   },
   {
     question: "What equipment does P1 operate?",
     answer:
-      "P1 runs a fleet of heavy equipment — excavators, bulldozers, skid steers, forestry mulchers, and large-acreage mowing equipment — which lets us handle industrial and agricultural sites of any size across Upstate SC and the Charlotte, NC region.",
+      "Discuss the equipment, operator availability and access plan required for your industrial or agricultural property. P1 confirms the proposed equipment and delivery scope during qualification.",
   },
 ];
 
@@ -110,12 +110,12 @@ export default function IndustrialAgricultural() {
             <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[
                 "Perimeter vegetation control and mowing",
-                "Drainage system maintenance and stormwater compliance support",
+                "Drainage-system maintenance and stormwater-scope coordination",
                 "Land clearing for facility expansion or site development",
                 "Grading and regrading for site access and drainage correction",
                 "Erosion control installation and monitoring",
                 "Retention and detention pond management",
-                "Emergency land clearing and site cleanup"
+                "Storm-related clearing and site cleanup, subject to confirmed availability"
               ].map((item, i) => (
                 <li key={i} className="flex items-start gap-3 bg-muted p-4 rounded-lg">
                   <CheckCircle2 className="w-6 h-6 text-primary shrink-0 mt-0.5" />
@@ -130,7 +130,7 @@ export default function IndustrialAgricultural() {
               Large-Acreage Capability
             </h2>
             <p className="text-lg text-secondary/80 leading-relaxed">
-              P1 is equipped to work at scale. Our fleet of heavy equipment — including excavators, bulldozers, skid steers, and large-acreage mowing equipment — lets us handle industrial and agricultural sites of any size across Upstate South Carolina and the Charlotte, NC region.
+              P1 reviews the equipment, staffing, access and delivery needs for larger industrial and agricultural properties during qualification. Confirm the proposed work plan, availability and any specialist responsibilities before scheduling.
             </p>
           </div>
 

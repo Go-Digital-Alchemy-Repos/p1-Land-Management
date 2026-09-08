@@ -13,22 +13,22 @@ const FAQS = [
   {
     question: "What tree services does P1 provide?",
     answer:
-      "P1 provides tree trimming and canopy management, dead wood removal, hazardous tree removal, stump grinding, selective clearing, windbreak and tree line management, and storm damage cleanup — sized for commercial, agricultural, and large residential properties.",
+      "P1 discusses tree trimming, canopy management, dead-wood and tree removal, stump work, selective clearing, windbreak and tree-line management, and storm cleanup for commercial, agricultural and large residential properties. Confirm scope, access and any specialist requirements before work begins.",
   },
   {
     question: "Does P1 handle storm damage cleanup?",
     answer:
-      "Yes. After storms move through Upstate SC or the Charlotte NC region, P1 provides emergency debris clearing, downed tree removal, and hazard mitigation so your property is safe and accessible again quickly.",
+      "After a storm, contact P1 to discuss debris clearing, downed-tree work and site access. Availability, response timing, site safety and the agreed scope must be confirmed; this service is not emergency dispatch.",
   },
   {
     question: "Can P1 remove some trees while preserving others?",
     answer:
-      "Yes. Selective clearing is one of our specialties — removing unwanted or invasive species while preserving mature, valuable trees. It's a common approach for opening up land, clearing fence lines, and managing wooded acreage strategically.",
+      "Selective clearing can retain identified trees while removing agreed vegetation. Review the marked limits, tree condition, access and disposal approach with P1 and any required specialist before work begins.",
   },
   {
     question: "How is P1 different from a residential tree company?",
     answer:
-      "P1 is built for large acreage. We bring heavy equipment, forestry mulching capability, and crews experienced with commercial sites, farms, and estates — so tree work that would take a residential crew weeks gets done efficiently and safely at scale.",
+      "For larger-acreage tree and vegetation scopes, P1 reviews the proposed equipment, staffing, access and safety plan with the property team. Confirm the work plan and responsibilities before scheduling.",
   },
 ];
 
@@ -91,7 +91,7 @@ export default function TreeServices() {
                 "Tree removal — safe takedown of hazardous, dead, or unwanted trees",
                 "Stump grinding — complete removal of stumps below grade",
                 "Selective clearing — remove unwanted species while preserving valuable trees",
-                "Storm damage cleanup — emergency debris clearing after weather events",
+                "Storm-damage cleanup, subject to confirmed availability and safety conditions",
                 "Windbreak and tree line management",
                 "Tree line clearing for fence installation and access",
                 "Orchard and agricultural tree management"

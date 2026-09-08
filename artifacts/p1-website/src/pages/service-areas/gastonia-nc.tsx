@@ -21,7 +21,7 @@ const FAQS = [
   {
     question: "Can P1 fix drainage problems on Gastonia properties?",
     answer:
-      "Yes. The red clay soils and rolling terrain of Gaston County create frequent drainage and erosion challenges. P1 designs and installs French drains, stormwater systems, and erosion control solutions built for the local conditions.",
+      "Gaston County's red clay soils and rolling terrain can create drainage and erosion challenges. P1 reviews visible site conditions and discusses a scope for French drains, stormwater-related work or erosion control, with engineering, permitting and specialist responsibilities confirmed separately where needed.",
   },
   {
     question: "What size properties does P1 work on in Gastonia?",

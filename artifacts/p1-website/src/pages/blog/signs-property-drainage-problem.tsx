@@ -98,7 +98,7 @@ export default function BlogPost() {
 
             <h2>What to Do When You Spot These Signs</h2>
             <p>
-              The first step is a professional site assessment. Drainage problems have root causes that aren't always visible from the surface — and applying the wrong solution (say, installing a French drain when the real problem is incorrect grade) wastes money and leaves the problem unsolved.
+              The first step is a site assessment. Drainage problems have root causes that are not always visible from the surface, and applying the wrong solution — such as installing a French drain when the underlying issue is grade — can waste money while leaving the problem unresolved.
             </p>
             <p>
               A proper drainage assessment evaluates the overall topography, existing drainage infrastructure, soil type and permeability, and sources of the water causing the problem. From that assessment, a targeted solution can be designed — whether that's regrading, installing drainage pipes or swales, improving ditch capacity, or a combination.
