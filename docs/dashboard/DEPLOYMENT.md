@@ -4,6 +4,8 @@ Status on 2026-09-08: the reviewed dashboard web and worker are deployed to prod
 
 Project-phase implementation `0020` is deployed as an additive production migration. It passed the disposable-PostgreSQL migration replay and the role/lifecycle/idempotency suite before release. See [PROJECT_PHASES_PROPOSAL.md](PROJECT_PHASES_PROPOSAL.md).
 
+Service-request implementation `0021` is deployed as an additive production migration. Its non-validating lifecycle constraint retains historic nonstandard statuses; the new conversion record creates only an unassigned, unscheduled, unpublished work-order draft. See [SERVICE_REQUESTS_PROPOSAL.md](SERVICE_REQUESTS_PROPOSAL.md).
+
 Railway project: `e83f79dd-d901-4ab1-836b-bdf272b58dc2` (p1-Land-Management).
 
 | Resource                             | Identifier                           |
@@ -25,6 +27,12 @@ Production URL: https://dashboard.p1landmanagement.com. Cloudflare DNS task owns
 Web start: `node dist/dashboard/main.js`; predeploy: `node dist/dashboard/migrate.js`; health: `/api/healthz`; port 8080. Worker start: `node dist/dashboard/worker.js`; deploy only after web migrations succeed. Required web environment: private `DASHBOARD_DATABASE_URL`, `DASHBOARD_ORIGIN`, random `BETTER_AUTH_SECRET`, random `INTEGRATION_ENCRYPTION_KEY`, NODE_ENV and storage credentials. Workers share database and provider/crypto secrets through Railway variable references. Keep staging synthetic and avoid persistent duplicate provider resources.
 
 Verify deployment status, health, setup behavior, TLS, authenticated no-store headers, deep links, static assets, provider redirects, uploads and webhook signatures before declaring release. Inspect logs without printing credentials or customer content. Roll back application deployment through Railway to the previously verified image; retain additive schema changes. Rehearse compatibility before production data is present.
+
+## Service-request lifecycle release
+
+Local validation passed dashboard/API type checks, the dashboard production build, and the disposable PostgreSQL suite (25 tests) with migration replay. Production dashboard web deployment `1defa5c9-89b0-4d27-8c6b-4b596e6e7fa9`, labeled `Release service-request lifecycle d387571`, reached `SUCCESS` after its migration predeploy. The running worker remained `SUCCESS` at `01232cf4-e9d5-4958-a448-4f86aa7c7cfb`.
+
+After deployment, `https://dashboard.p1landmanagement.com/api/healthz` returned `200` with `Cache-Control: no-store`, HSTS, CSP, frame denial, and noindex headers. Anonymous `GET /api/v1/service-requests` returned `401` with `no-store`. No authenticated production request, conversion, or business data was created; invited-client and pilot acceptance remain required.
 
 Production dashboard DB volume backups retain six daily, 27 weekly and 89 monthly recovery points, and Railway point-in-time recovery is active; see [RECOVERY.md](RECOVERY.md) for the verified limits. This is not a guarantee of 30 daily recovery points. A synthetic local pg_dump/restore succeeded previously (6 migrations, 2 properties, 2 field events); this is not a deployed restore rehearsal. Initial targets remain <=24 hours server data loss and restoration within one business day. Backup failure alerts, provider disconnection alerts and operational support ownership still need verification.
 
