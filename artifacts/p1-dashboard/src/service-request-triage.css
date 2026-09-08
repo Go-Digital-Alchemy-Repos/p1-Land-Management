@@ -1,0 +1,129 @@
+.request-triage-layout {
+  display: grid;
+  grid-template-columns: minmax(230px, 0.75fr) minmax(0, 1.6fr);
+  gap: 16px;
+}
+.request-list,
+.request-card-list {
+  display: grid;
+  gap: 9px;
+}
+.request-summary {
+  display: grid;
+  align-items: start;
+  justify-items: start;
+  gap: 5px;
+  width: 100%;
+  text-align: left;
+}
+.request-summary span,
+.request-summary small {
+  color: #6c776d;
+  font-size: 12px;
+}
+.request-summary strong {
+  line-height: 1.35;
+}
+.request-summary.selected {
+  border-color: #6d8c4c;
+  background: #f1f5e5;
+  box-shadow: inset 3px 0 #6d8c4c;
+}
+.request-detail {
+  display: grid;
+  gap: 16px;
+  border: 1px solid #dbe2d3;
+  border-radius: 12px;
+  padding: 18px;
+  background: #fff;
+}
+.request-detail h3,
+.request-detail h4 {
+  margin-bottom: 0;
+  color: #294537;
+}
+.request-transition {
+  display: grid;
+  grid-template-columns: minmax(150px, 0.75fr) minmax(0, 1.4fr) auto;
+  gap: 10px;
+  align-items: end;
+  padding: 14px;
+  border-radius: 10px;
+  background: #f4f6ed;
+}
+.request-transition label,
+.request-conversion-form label {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  font-weight: 650;
+}
+.request-conversion {
+  display: grid;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid #e3e8dc;
+}
+.request-conversion-heading {
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  align-items: start;
+}
+.request-conversion-heading p {
+  max-width: 640px;
+  color: #6c776d;
+  margin: 6px 0 0;
+  line-height: 1.5;
+}
+.request-conversion-form {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 10px;
+  background: #f4f6ed;
+}
+.request-conversion-form textarea {
+  min-height: 80px;
+}
+.request-conversion-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.request-preview {
+  margin: 0;
+  padding: 11px;
+  border-left: 3px solid #7f984a;
+  background: #fff;
+}
+.request-card {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 15px;
+  border: 1px solid #dbe2d3;
+  border-radius: 12px;
+  background: #fff;
+}
+.request-card h3 {
+  margin: 0 0 5px;
+  color: #294537;
+}
+.request-card .eyebrow {
+  margin-bottom: 8px;
+}
+@media (max-width: 760px) {
+  .request-triage-layout,
+  .request-transition {
+    grid-template-columns: 1fr;
+  }
+  .request-conversion-heading,
+  .request-card {
+    flex-direction: column;
+  }
+  .request-conversion-heading button {
+    width: 100%;
+  }
+}

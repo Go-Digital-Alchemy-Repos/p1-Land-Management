@@ -8,6 +8,7 @@ import { ClientContacts } from "./ClientContacts";
 import { ClientWorkspace, PropertyWorkspace } from "./AccountWorkspace";
 import { motifForPage } from "./motifs";
 import { InspectionReports } from "./InspectionReports";
+import { ServiceRequestTriage } from "./ServiceRequestTriage";
 import { ProjectPhases } from "./ProjectPhases";
 import React, { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
@@ -1968,13 +1969,12 @@ function App() {
             </section>
           )}
           {view === "Requests" && (
-            <section className="panel">
-              <Table
-                rows={data.requests || []}
-                columns={["property_name", "description", "status"]}
-                empty="No service requests. New requests will appear here."
-              />
-            </section>
+            <ServiceRequestTriage
+              records={data.requests || []}
+              role={person?.role}
+              api={api}
+              onRefresh={refresh}
+            />
           )}
           {view === "Settings" && settingsSection === "security" && (
             <section className="panel">
