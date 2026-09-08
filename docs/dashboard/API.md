@@ -4,25 +4,25 @@
 
 `lib/api-spec/dashboard.openapi.json` specifies selected shared dashboard contracts, including setup/identity, client and property records, client contacts, field work, assessment availability and booking, integration health, property reads, sales, project and expense records, project-phase and service-request lifecycles, scheduling, commercial intake, agreement work and binary photos. `pnpm --filter @workspace/api-spec codegen:dashboard` generates the isolated dashboard fetch client. The UI consumes its field methods. Other routes currently validate with Zod at the server and still require full OpenAPI coverage.
 
-| Domain                | Routes beneath /api/v1                                                                                                                       |
-| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| Initialization/access | /setup, /setup/complete, /me, /staff, /account-mfa-policies, /account-mfa-policies/:id, /invitations, /invitations/accept                    |
-| Operations            | /clients, /properties, /properties/:id/areas, /projects, /work-orders, /work-orders/:id/status, /work-orders/:id/publish, /field/sync                |
+| Domain                | Routes beneath /api/v1                                                                                                                |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Initialization/access | /setup, /setup/complete, /me, /staff, /account-mfa-policies, /account-mfa-policies/:id, /invitations, /invitations/accept             |
+| Operations            | /clients, /properties, /properties/:id/areas, /projects, /work-orders, /work-orders/:id/status, /work-orders/:id/publish, /field/sync |
 
 `GET/POST /clients`, `POST /clients/:id`, and `POST /properties` are generated contracts. Office client updates require the current version and atomically maintain the primary contact. Client accounts receive a minimized client list; crew have no client-record access. A primary-contact onboarding request requires address and phone and returns its created contact ID; neither client nor property creation creates an invitation, schedule, work order, billing record, or provider action.
 
 The generated work-order contract covers office planning, versioned status transitions, and manager publication alongside the existing read, readiness, rescheduling, and field-sync methods. Only owner, manager, or dispatch can create or transition work; an override reason requires owner or manager authority. Publication requires a reviewed work order and is owner/manager-only. It publishes only eligible non-conflicting notes, checklist entries, and completion events; it does not publish field issues, alter billing, or record payment.
 
 `POST /properties/:id` is an office-only, versioned edit of an operational unarchived property. It requires `{name,address,acreage:null|number,accessInstructions?,version}` and returns `409` for stale or unavailable records. A changed address receives a best-effort server-side coordinate refresh; an unresolved address clears the prior point so the map cannot show an obsolete location, while an unchanged address retains its existing point without another geocoding request. `POST /projects/:id` is owner/manager-only and requires `{name,scope,expectedVersion}`. It atomically advances the project version and returns `409` on a stale or unavailable record. Neither route changes client access, phase state, schedules, work, billing, publication, providers, or payments.
-| Project phases        | /projects/:id/phases, /project-phases/:id, /project-phases/:id/transitions, /project-phases/:id/publish, history and billing-intent routes     |
-| Service requests      | /requests, /service-requests, /service-requests/:id, transitions, history, conversion preview and conversion receipt routes                    |
-| Scheduling            | /assessment-slots, /assessment-slots/:id/book, /recurring-services; operations.ts owns rescheduling/pause routes                             |
+| Project phases | /projects/:id/phases, /project-phases/:id, /project-phases/:id/transitions, /project-phases/:id/publish, history and billing-intent routes |
+| Service requests | /requests, /service-requests, /service-requests/:id, transitions, history, conversion preview and conversion receipt routes |
+| Scheduling | /assessment-slots, /assessment-slots/:id/book, /recurring-services; operations.ts owns rescheduling/pause routes |
 
 The generated recurring-schedule contract covers office creation and future-generation pause/resume. Owner, manager, and dispatch can configure weekly or monthly cadence, interval, America/New_York local time, assigned crew, and independent fixed-monthly or per-visit billing metadata. The worker remains responsible for creating occurrences; pausing never rewrites existing work orders, sends notifications, or alters billing records.
-| Sales                 | /leads, /estimates, estimate decision/revision and lead conversion routes in sales.ts                                                        |
-| Financial             | /expenses, /billing, /billing/:id/post, /quickbooks/connect, /quickbooks/callback, /quickbooks/import-preview, /quickbooks/import, /quickbooks/invoices |
-| Media                 | POST /files/:id with image body, x-p1-property, x-p1-work, x-p1-classification; GET/POST /profile/avatar; protected content/publication routes in files.ts |
-| Communications        | Notification, delivery and consent routes in notifications.ts                                                                                |
+| Sales | /leads, /estimates, estimate decision/revision and lead conversion routes in sales.ts |
+| Financial | /expenses, /billing, /billing/:id/post, /quickbooks/connect, /quickbooks/callback, /quickbooks/import-preview, /quickbooks/import, /quickbooks/invoices |
+| Media | POST /files/:id with image body, x-p1-property, x-p1-work, x-p1-classification; GET/POST /profile/avatar; protected content/publication routes in files.ts |
+| Communications | Notification, delivery and consent routes in notifications.ts |
 
 ## Client onboarding and maintenance
 

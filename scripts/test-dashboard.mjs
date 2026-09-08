@@ -97,7 +97,9 @@ try {
       const r = await fetch(env.DASHBOARD_ORIGIN + "/api/healthz");
       if (r.ok) {
         if (r.headers.get("x-robots-tag") !== "noindex, nofollow")
-          throw new Error("Dashboard must exclude operational responses from indexing");
+          throw new Error(
+            "Dashboard must exclude operational responses from indexing",
+          );
         if (r.headers.get("strict-transport-security") !== "max-age=31536000")
           throw new Error("Dashboard must enforce HTTPS transport policy");
         ready = true;

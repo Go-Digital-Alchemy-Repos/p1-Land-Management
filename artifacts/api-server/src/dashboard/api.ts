@@ -1,4 +1,8 @@
-import { requireOperationalProperty, requireOperationalChild, operationalQuery } from "./operational-property";
+import {
+  requireOperationalProperty,
+  requireOperationalChild,
+  operationalQuery,
+} from "./operational-property";
 import { Router } from "express";
 import { fieldEventSchema } from "@workspace/api-zod/dashboard";
 import { z } from "zod";
@@ -51,7 +55,10 @@ async function updateMfaRequirement(
     );
     if (!current.rowCount) throw new HttpError(404, "Account not found");
     if (current.rows[0].role === "owner" && !required)
-      throw new HttpError(409, "Multi-factor authentication is required for owners");
+      throw new HttpError(
+        409,
+        "Multi-factor authentication is required for owners",
+      );
     const result = await c.query(
       "UPDATE staff_profile SET mfa_required=$2 WHERE user_id=$1 RETURNING user_id,mfa_required",
       [targetId, required],
@@ -144,7 +151,7 @@ api.get("/staff", async (req, res) => {
   res.json(
     (
       await pool.query(
-        "SELECT u.id,u.name,p.role,p.mfa_required AS \"mfaRequired\" FROM \"user\" u JOIN staff_profile p ON p.user_id=u.id WHERE p.active=true AND p.role<>'client' ORDER BY u.name",
+        'SELECT u.id,u.name,p.role,p.mfa_required AS "mfaRequired" FROM "user" u JOIN staff_profile p ON p.user_id=u.id WHERE p.active=true AND p.role<>\'client\' ORDER BY u.name',
       )
     ).rows,
   );
@@ -155,7 +162,7 @@ api.get("/account-mfa-policies", async (req, res) => {
   res.json(
     (
       await pool.query(
-        "SELECT u.id,u.name,u.email,p.role,p.mfa_required AS \"mfaRequired\" FROM \"user\" u JOIN staff_profile p ON p.user_id=u.id WHERE p.active=true ORDER BY u.name,u.email",
+        'SELECT u.id,u.name,u.email,p.role,p.mfa_required AS "mfaRequired" FROM "user" u JOIN staff_profile p ON p.user_id=u.id WHERE p.active=true ORDER BY u.name,u.email',
       )
     ).rows,
   );
@@ -325,7 +332,8 @@ api.post("/clients/:id", async (req, res) => {
 });
 api.get("/properties", async (req, res) => {
   const a = await actor(req);
-  let sql = "SELECT p.id,p.client_id,p.name,p.address,p.acreage,p.latitude,p.longitude,p.access_instructions,p.notes,p.archived,p.created_at FROM property p WHERE p.archived=false AND p.lifecycle='operational'";
+  let sql =
+    "SELECT p.id,p.client_id,p.name,p.address,p.acreage,p.latitude,p.longitude,p.access_instructions,p.notes,p.archived,p.created_at FROM property p WHERE p.archived=false AND p.lifecycle='operational'";
   const args: string[] = [];
   if (a.role === "client") {
     sql +=
@@ -410,7 +418,10 @@ api.post("/properties/:id", async (req, res) => {
     [propertyId, b.version],
   );
   if (!current.rowCount)
-    throw new HttpError(409, "Property changed or is unavailable; refresh before saving");
+    throw new HttpError(
+      409,
+      "Property changed or is unavailable; refresh before saving",
+    );
   const addressChanged = current.rows[0].address !== b.address;
   const coordinates = addressChanged
     ? await geocodePropertyAddress(b.address)
@@ -432,7 +443,10 @@ api.post("/properties/:id", async (req, res) => {
       ],
     );
     if (!changed.rowCount)
-      throw new HttpError(409, "Property changed or is unavailable; refresh before saving");
+      throw new HttpError(
+        409,
+        "Property changed or is unavailable; refresh before saving",
+      );
     await audit(c, a.id, "property.updated", propertyId);
     return changed.rows[0];
   });
@@ -497,7 +511,7 @@ api.post("/work-orders", async (req, res) => {
   await propertyAccess(a, b.propertyId);
   const key = randomUUID();
   await transaction(async (c) => {
-    await requireOperationalProperty(c,b.propertyId);
+    await requireOperationalProperty(c, b.propertyId);
     await c.query(
       "INSERT INTO work_order(id,property_id,title,scope,assigned_to,scheduled_at,checklist,prerequisites) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
       [
@@ -528,7 +542,7 @@ api.post("/work-orders/:id/status", async (req, res) => {
     .parse(req.body);
   if (b.overrideReason) requireRole(a.role, managers);
   await transaction(async (c) => {
-    await requireOperationalChild(c,"work_order",key);
+    await requireOperationalChild(c, "work_order", key);
     const w = (
       await c.query("SELECT * FROM work_order WHERE id=$1 FOR UPDATE", [key])
     ).rows[0];
@@ -555,7 +569,7 @@ api.post("/work-orders/:id/publish", async (req, res) => {
   requireRole(a.role, managers);
   const key = id.parse(req.params.id);
   await transaction(async (c) => {
-    await requireOperationalChild(c,"work_order",key);
+    await requireOperationalChild(c, "work_order", key);
     const w = (
       await c.query("SELECT status FROM work_order WHERE id=$1 FOR UPDATE", [
         key,
@@ -579,7 +593,7 @@ api.post("/field/sync", async (req, res) => {
   const results = [];
   for (const e of events) {
     const result = await transaction(async (c) => {
-      await requireOperationalChild(c,"work_order",e.workOrderId);
+      await requireOperationalChild(c, "work_order", e.workOrderId);
       const w = (
         await c.query("SELECT * FROM work_order WHERE id=$1 FOR UPDATE", [
           e.workOrderId,
@@ -713,8 +727,12 @@ api.get("/leads", async (req, res) => {
   const a = await actor(req);
   requireRole(a.role, office);
   res.json(
-    (await pool.query("SELECT * FROM lead WHERE ($1::boolean OR inquiry_type IS DISTINCT FROM 'commercial_site_assessment') ORDER BY created_at DESC LIMIT 200", [["owner", "manager", "sales"].includes(a.role)]))
-      .rows,
+    (
+      await pool.query(
+        "SELECT * FROM lead WHERE ($1::boolean OR inquiry_type IS DISTINCT FROM 'commercial_site_assessment') ORDER BY created_at DESC LIMIT 200",
+        [["owner", "manager", "sales"].includes(a.role)],
+      )
+    ).rows,
   );
 });
 api.post("/leads", async (req, res) => {
@@ -769,7 +787,8 @@ api.post("/estimates", async (req, res) => {
     })
     .parse(req.body);
   const key = randomUUID();
-  await operationalQuery(b.propertyId,
+  await operationalQuery(
+    b.propertyId,
     "INSERT INTO estimate(id,property_id,title,scope,amount_cents) VALUES($1,$2,$3,$4,$5)",
     [key, b.propertyId, b.title, b.scope, b.amountCents],
   );
@@ -785,7 +804,7 @@ api.post("/estimates/:id/decision", async (req, res) => {
     })
     .parse(req.body);
   await transaction(async (c) => {
-    await requireOperationalChild(c,"estimate",key);
+    await requireOperationalChild(c, "estimate", key);
     const e = (
       await c.query("SELECT * FROM estimate WHERE id=$1 FOR UPDATE", [key])
     ).rows[0];
@@ -854,7 +873,7 @@ api.post("/billing", async (req, res) => {
         throw new HttpError(409, "Billing operation ID conflict");
       return previous.draft_id;
     }
-    await requireOperationalProperty(c,b.propertyId);
+    await requireOperationalProperty(c, b.propertyId);
     const key = randomUUID();
     const e = (
       await c.query(
