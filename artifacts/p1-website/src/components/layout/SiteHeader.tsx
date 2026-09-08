@@ -86,7 +86,7 @@ export function SiteHeader({ assessmentCta = false }: { assessmentCta?: boolean 
             <Phone className="h-4 w-4" />
             (704) 221-8928
           </a>
-          <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-6 hidden sm:inline-flex">
+          <Button asChild className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-6 hidden sm:inline-flex">
             {assessmentCta ? <a href="#assessment-request" onClick={(event) => { event.preventDefault(); focusAssessment(); }}>Request a Site Assessment</a> : <Link href="/contact">Get a Free Estimate</Link>}
           </Button>
 
