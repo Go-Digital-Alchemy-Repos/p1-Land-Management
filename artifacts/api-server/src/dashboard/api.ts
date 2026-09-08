@@ -823,7 +823,7 @@ api.get("/requests", async (req, res) => {
   requireRole(a.role, [...office, "client"]);
   const fields =
     a.role === "client"
-      ? "r.id,r.property_id,r.description,r.status,r.created_at,p.name AS property_name"
+      ? "r.id,r.property_id,r.description,CASE r.status WHEN 'new' THEN 'received' WHEN 'triaged' THEN 'under_review' WHEN 'scheduled' THEN 'service_planning' WHEN 'converted' THEN 'work_planning' WHEN 'closed' THEN 'closed' WHEN 'cancelled' THEN 'cancelled' ELSE 'under_review' END AS status,r.created_at,r.updated_at,p.name AS property_name"
       : "r.*,p.name AS property_name";
   res.json(
     (
@@ -845,6 +845,10 @@ api.post("/requests", async (req, res) => {
     await c.query(
       "INSERT INTO service_request(id,property_id,user_id,description) VALUES($1,$2,$3,$4)",
       [key, b.propertyId, a.id, b.description],
+    );
+    await c.query(
+      "INSERT INTO service_request_event(id,service_request_id,actor_id,event_type,prior_version,resulting_version,to_status,details) VALUES($1,$2,$3,'created',NULL,1,'new',$4)",
+      [randomUUID(), key, a.id, JSON.stringify({ source: "requests" })],
     );
     await audit(c, a.id, "service_request.created", key);
   });

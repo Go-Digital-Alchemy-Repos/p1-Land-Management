@@ -9,6 +9,7 @@
 | Initialization/access | /setup, /setup/complete, /me, /staff, /account-mfa-policies, /account-mfa-policies/:id, /invitations, /invitations/accept                    |
 | Operations            | /clients, /properties, /properties/:id/timeline, /work-orders, /work-orders/:id/status, /work-orders/:id/publish, /field/sync                |
 | Project phases        | /projects/:id/phases, /project-phases/:id, /project-phases/:id/transitions, /project-phases/:id/publish, history and billing-intent routes     |
+| Service requests      | /requests, /service-requests, /service-requests/:id, transitions, history, conversion preview and conversion receipt routes                    |
 | Scheduling            | /assessment-slots, /assessment-slots/:id/book, /recurring-services; operations.ts owns rescheduling/pause routes                             |
 | Sales                 | /leads, /estimates, estimate decision/revision and lead conversion routes in sales.ts                                                        |
 | Financial             | /billing, /billing/:id/post, /quickbooks/connect, /quickbooks/callback, /quickbooks/import-preview, /quickbooks/import, /quickbooks/invoices |
@@ -33,9 +34,15 @@ Billing creation requires `operationId` (UUID), `propertyId`, `estimateId`, `tit
 
 `POST /project-phases/:id/publish` is an owner/manager action for manager-review or accepted work and records a client-safe summary only. `POST /project-phases/:id/billing-intents` is owner/manager/finance-only. It requires an accepted phase, approved estimate, current phase version and UUID operation ID. The server stores one immutable intent and one draft billing record on an identical retry, enforces the estimate cap, and returns409 for a changed operation replay. It never posts to QuickBooks, sends an invoice, creates a payment link, records a payment, or publishes crew material.
 
-## Client service requests
+## Client service requests (candidate migration 0021)
 
-`GET /requests` is available to office and client roles. Clients receive requests for properties they can access, but the server omits the internal submitting user ID; office readers retain the operational submitter identity. `POST /requests` requires a client-accessible or operational property and creates a new request only; the insert and `service_request.created` audit event commit together. Status changes and work-order conversion require the separately approved service-request workflow contract.
+`GET/POST /requests` remain compatible. A client list response has client-safe status labels and no submitting-user identity; office readers retain the operational details. Creation requires a client-accessible or operational property and writes the first append-only lifecycle event in the same transaction.
+
+`GET /service-requests` and `GET /service-requests/:id` provide the normalized lifecycle read model. Clients can read only properties granted to their account and receive a minimized projection. Crew have no independent request queue. Owner, manager, dispatch, sales and finance can read the operational projection; only owner, manager and dispatch can mutate it.
+
+`POST /service-requests/:id/transitions` requires `{expectedVersion,status,reason}`. It accepts only `triaged`, `scheduled`, `closed`, or `cancelled` targets, locks the request, rejects stale or invalid transitions with409, advances the version, and appends an event. `GET /service-requests/:id/history` is office-only and reads append-only events.
+
+`POST /service-requests/:id/conversion-preview` writes nothing. `POST /service-requests/:id/conversions` requires `{operationId,expectedRequestVersion,title,scope,checklist,prerequisites}`. It permits only triaged or service-planning requests, records a stable fingerprint and one receipt, and returns that receipt on an identical retry; changed reuse, stale state, cancellation and a second operation return409. The work order is always an unassigned, unscheduled, unpublished `draft`. This route never invokes QuickBooks, notifications, payments, files, publication or outbox actions.
 
 ## Inspection report publication
 

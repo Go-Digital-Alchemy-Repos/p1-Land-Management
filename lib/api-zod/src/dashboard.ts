@@ -73,3 +73,21 @@ export const projectPhaseBillingIntentSchema = z.object({
   amountCents: z.number().int().positive().max(1e10),
   kind: z.enum(["deposit", "progress", "final"]),
 });
+
+export const serviceRequestWorkItemSchema = z.object({
+  label: z.string().trim().min(1).max(500),
+  done: z.boolean(),
+});
+export const serviceRequestConversionSchema = z.object({
+  operationId: z.string().uuid(),
+  expectedRequestVersion: z.number().int().positive(),
+  title: z.string().trim().min(1).max(500),
+  scope: z.string().trim().max(10000).default(""),
+  checklist: z.array(serviceRequestWorkItemSchema).max(100).default([]),
+  prerequisites: z.array(serviceRequestWorkItemSchema).max(50).default([]),
+});
+export const serviceRequestTransitionSchema = z.object({
+  expectedVersion: z.number().int().positive(),
+  status: z.enum(["triaged", "scheduled", "closed", "cancelled"]),
+  reason: z.string().trim().min(1).max(10000),
+});
