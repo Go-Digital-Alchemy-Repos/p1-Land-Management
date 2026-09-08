@@ -6,7 +6,7 @@
     "displayName": "P1 Land & Property Management",
     "source": {
       "repository": "https://github.com/Go-Digital-Alchemy-Repos/p1-Land-Management.git",
-      "revision": "b9681fd8c093465c14e7fdd518183ddaa287d6c1"
+      "revision": "d8af8fc55a98f4ab0b2c7ebdb4bad8199da771ad"
     },
     "owners": [
       {
@@ -1010,8 +1010,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1qb2q2i",
-            "label": "Text: Engineered French drains, swales and retention to move water away for good.",
+            "path": "f1buwh0d",
+            "label": "Text: French drains, swales and retention work planned around the property's water-management needs.",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -1227,22 +1227,22 @@
             "maxLength": 12000
           },
           {
-            "path": "f12ngw8h",
-            "label": "Text: Engineered cut-and-fill balancing",
+            "path": "ftohlc3",
+            "label": "Text: Cut-and-fill planning within the agreed scope",
             "type": "text",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "f177ucvz",
-            "label": "Text: Pad compaction & sub-grade prep",
+            "path": "f1tn7nix",
+            "label": "Text: Pad and sub-grade preparation",
             "type": "text",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "fat2acy",
-            "label": "Text: Positive drainage built into every grade",
+            "path": "f1fe8tv7",
+            "label": "Text: Drainage considerations coordinated with the project team",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -1276,11 +1276,11 @@
             "maxLength": 2000
           },
           {
-            "path": "f1daxspt",
-            "label": "Text: Owners choose P1 because we bring the equipment, expertise and discipline that big properties d",
-            "type": "textarea",
+            "path": "fu6hma",
+            "label": "Text: Discuss the equipment, scope, documentation and delivery responsibilities needed for your prope",
+            "type": "text",
             "required": false,
-            "maxLength": 12000
+            "maxLength": 2000
           },
           {
             "path": "fvvbhcg",
@@ -1318,15 +1318,15 @@
             "maxLength": 2000
           },
           {
-            "path": "fz774hm",
-            "label": "Text: Drainage Engineering",
+            "path": "f3iqcrm",
+            "label": "Text: Drainage Planning",
             "type": "text",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "f1szw6wt",
-            "label": "Text: We read the land's slope and water like a survey, then solve it at the grade level.",
+            "path": "f1ubn16f",
+            "label": "Text: We assess slope and water movement, then discuss grade-level work and any specialist involvemen",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -1677,7 +1677,7 @@
           "f1mg29hz": "Precision cut-and-fill that gives every project a true, build-ready foundation.",
           "f1f2xdki": "/assets/service-drainage-1280-DBaNqUrR.webp",
           "f1bkm223": "Drainage Solutions",
-          "f1qb2q2i": "Engineered French drains, swales and retention to move water away for good.",
+          "f1buwh0d": "French drains, swales and retention work planned around the property's water-management needs.",
           "f1llv5ek": "/services/turf-installation-seeding",
           "f1aqc58w": "/assets/service-turf-1280-SpHI1yov.webp",
           "f1okn1ny": "Turf Installation & Seeding",
@@ -1708,21 +1708,21 @@
           "f1y8d6j9": "Feature · Site Prep",
           "f1ydy51q": "Grading for New Construction",
           "f1dmd4bt": "Before construction begins, grading and drainage need a coordinated plan. Discuss building pads, site grades, and sub-grade preparation with P1 alongside the requirements of your project team.",
-          "f12ngw8h": "Engineered cut-and-fill balancing",
-          "f177ucvz": "Pad compaction & sub-grade prep",
-          "fat2acy": "Positive drainage built into every grade",
+          "ftohlc3": "Cut-and-fill planning within the agreed scope",
+          "f1tn7nix": "Pad and sub-grade preparation",
+          "f1fe8tv7": "Drainage considerations coordinated with the project team",
           "f15q4ld9": "Explore site prep",
           "f5mnubp": "Why P1",
           "f18ibqym": "The difference is in the",
           "f1xe5030": "groundwork.",
-          "f1daxspt": "Owners choose P1 because we bring the equipment, expertise and discipline that big properties demand — and we stand behind every grade we cut.",
+          "fu6hma": "Discuss the equipment, scope, documentation and delivery responsibilities needed for your property before work begins.",
           "fvvbhcg": "Discuss Your Project",
           "f1rltir7": "Heavy Equipment Fleet",
           "fhtpi9b": "Discuss the equipment and access requirements for your grading, clearing, and property maintenance work.",
           "frf7v61": "Large-Acreage Expertise",
           "fgjfb1m": "Built around properties most crews can't handle — farms, estates, HOAs and commercial sites.",
-          "fz774hm": "Drainage Engineering",
-          "f1szw6wt": "We read the land's slope and water like a survey, then solve it at the grade level.",
+          "f3iqcrm": "Drainage Planning",
+          "f1ubn16f": "We assess slope and water movement, then discuss grade-level work and any specialist involvement.",
           "f13zs1c8": "Dependable Scheduling",
           "fculwgr": "Crews that show up, communicate and finish on the timeline we commit to.",
           "frepd5q": "/assets/commercial-property-1280-DHKZ--xC.webp",
@@ -7106,7 +7106,7 @@
             "maxLength": 2000
           },
           {
-            "path": "f1sw7agj",
+            "path": "f16vyk1j",
             "label": "Text: Every building starts with the ground beneath it. Before foundations are poured, roads are pave",
             "type": "textarea",
             "required": false,
@@ -7183,8 +7183,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1nphbko",
-            "label": "Text: Yes. P1 prepares building pads, roads, and full sites for new homes, neighborhoods, and commerc",
+            "path": "f1yx8fbk",
+            "label": "Text: P1 discusses building pads, roads, and site preparation for new homes, neighborhoods, and comme",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -7362,7 +7362,7 @@
           "f1kas5h4": "/assets/grading-turf-1280-Br3CvA7j.webp",
           "f1npzytm": "Freshly graded soil transitioning into new sod",
           "f1ydy51q": "Grading for New Construction",
-          "f1sw7agj": "Every building starts with the ground beneath it. Before foundations are poured, roads are paved, or utilities go in, the site has to be graded to spec — level pads, correct slopes for drainage, and a stable, compacted surface that holds up under construction traffic. P1 prepares sites for new homes, neighborhoods, and commercial developments across Upstate SC and Charlotte NC, delivering grade that meets engineered plans and keeps your project on schedule.",
+          "f16vyk1j": "Every building starts with the ground beneath it. Before foundations are poured, roads are paved, or utilities go in, grading must be coordinated with the approved plans and project team. P1 discusses building pads, slopes, drainage and sub-grade preparation for new homes, neighborhoods and commercial developments across Upstate South Carolina and the Charlotte, NC region.",
           "fhb2ye9": "/assets/grading-construction-1280-CaX7duMl.webp",
           "f15xb7ln": "New residential neighborhood under construction on freshly graded land",
           "f1jej5xi": "Equipment & Precision",
@@ -7373,7 +7373,7 @@
           "f1er794a": "Can regrading fix drainage problems on my property?",
           "fanox1c": "In most cases, yes. More than 80% of land drainage problems trace back to improper grade. P1 regrades slopes, swales, and transitions so water moves where it belongs — and can pair grading with French drains, swales, and retention systems when the site needs them.",
           "feelapk": "Does P1 grade sites for new construction?",
-          "f1nphbko": "Yes. P1 prepares building pads, roads, and full sites for new homes, neighborhoods, and commercial developments across Upstate SC and Charlotte NC — delivering grade that meets engineered plans, using GPS-guided equipment where precision tolerances demand it.",
+          "f1yx8fbk": "P1 discusses building pads, roads, and site preparation for new homes, neighborhoods, and commercial developments across Upstate SC and Charlotte NC. Confirm approved plans, tolerances, equipment and any licensed specialist involvement before work begins.",
           "f1g8w52k": "Why does grading matter before installing turf?",
           "fvcg1gn": "Turf installed on improperly graded ground fails — water pools, roots suffocate, and bare spots spread. P1 verifies grade is correct for drainage and root establishment before laying sod or seeding, and can handle both grading and turf so one team is accountable for the result.",
           "f3quld0": "Call ",
@@ -7599,8 +7599,8 @@
             "maxLength": 12000
           },
           {
-            "path": "f1rq3zil",
-            "label": "Text: P1 approaches drainage the way engineers do: we assess the whole system, identify where water e",
+            "path": "f1acqx8k",
+            "label": "Text: P1 starts drainage work by reviewing the visible site conditions, where water enters and where ",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -7969,7 +7969,7 @@
           "fitsipf": "Ponds & Waterway Management",
           "fcz2rt8": "Drainage Problems Get Worse. Fix Them Right the First Time.",
           "ftgva8c": "Poor drainage is one of the most common — and most costly — problems facing large property owners in the Carolinas. Heavy clay soils, compacted ground, improper grading, and flat topography create conditions where water sits, roots suffocate, structures erode, and maintenance costs multiply.",
-          "f1rq3zil": "P1 approaches drainage the way engineers do: we assess the whole system, identify where water enters and where it needs to go, design a solution that moves it efficiently, and install it with the right materials for your soil type and site conditions.",
+          "f1acqx8k": "P1 starts drainage work by reviewing the visible site conditions, where water enters and where it needs to go. The agreed scope identifies the work P1 will perform and any civil, engineering, permitting or specialist responsibilities that require separate confirmation.",
           "fel35ie": "/assets/drainage-fix-1280-7P4ABb6K.webp",
           "f1f38haj": "Drainage system being installed to move water off a property",
           "ft7h1sn": "Drainage Services",
@@ -8232,8 +8232,8 @@
             "maxLength": 12000
           },
           {
-            "path": "f18pvlhr",
-            "label": "Text: P1 handles the full process: soil testing, site grading, soil amendment, species selection appr",
+            "path": "finsmqr",
+            "label": "Text: Discuss soil testing, site grading, amendment, species selection and seeding or sod installatio",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -8659,7 +8659,7 @@
           "foa1vas": "Land Clearing",
           "fnhf3ir": "Turf Done Right Starts Before the First Seed",
           "fwmnl97": "A healthy stand of turf — whether it's a commercial property lawn, a farm pasture, a sports field, or a residential estate — begins with proper site preparation. Bad grade, poor soil, improper species selection, and inadequate establishment practices are the reasons most large-acreage turf jobs fail within two to three years.",
-          "f18pvlhr": "P1 handles the full process: soil testing, site grading, soil amendment, species selection appropriate to your use and location, and professional seeding or sod installation. When we're responsible for everything, we can stand behind the result.",
+          "finsmqr": "Discuss soil testing, site grading, amendment, species selection and seeding or sod installation with P1 as part of the agreed scope. Establishment practices, responsibilities and any result commitments should be confirmed in writing before work begins.",
           "f1orr5hf": "/assets/turf-prep-1280-BiwahnV7.webp",
           "f1jk511b": "Site being prepared and graded before turf installation",
           "f1gig32i": "Sod Installation",
