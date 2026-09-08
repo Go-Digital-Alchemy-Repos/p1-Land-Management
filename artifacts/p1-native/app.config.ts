@@ -6,6 +6,12 @@ export default {
     version: "0.1.0",
     platforms: ["ios", "android"],
     orientation: "default",
+    icon: "./assets/icon.png",
+    splash: {
+      image: "./assets/icon.png",
+      resizeMode: "contain",
+      backgroundColor: "#173c32",
+    },
     ios: {
       supportsTablet: true,
       bundleIdentifier: "com.p1landmanagement.field.development",

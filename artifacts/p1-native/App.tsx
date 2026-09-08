@@ -21,6 +21,7 @@ import {
   ActivityIndicator,
   AppState,
   Button,
+  Modal,
   ScrollView,
   StyleSheet,
   Text,
@@ -38,6 +39,7 @@ import {
   SessionChanged,
 } from "./src/core/transport";
 import { syncOperations } from "./src/core/sync";
+import { NATIVE_SUPPORT_GUIDANCE } from "./src/core/support-guidance";
 import { NativeAuth } from "./src/native/auth";
 import { openVault, type PhotoRecovery, type Vault } from "./src/native/vault";
 import { capturePhoto } from "./src/native/capture";
@@ -83,7 +85,8 @@ export function Application({ services }: { services: ApplicationServices }) {
     [note, setNote] = useState(""),
     [notice, setNotice] = useState("Sign in with your invited P1 account."),
     [busy, setBusy] = useState(false),
-    [pending, setPending] = useState(0);
+    [pending, setPending] = useState(0),
+    [supportOpen, setSupportOpen] = useState(false);
   const [enrollment, setEnrollment] = useState(false),
     [setup, setSetup] = useState<{
       totpURI?: string;
@@ -490,6 +493,9 @@ export function Application({ services }: { services: ApplicationServices }) {
             {notice}
           </Text>
           {busy && <ActivityIndicator accessibilityLabel="Working" />}
+          {action("Help with account or saved work", async () => {
+            setSupportOpen(true);
+          })}
           {!person && enrollment ? (
             <View>
               <Text accessibilityRole="header" style={s.heading}>
@@ -802,6 +808,36 @@ export function Application({ services }: { services: ApplicationServices }) {
             Development build · Foreground sync. Office review and billing
             remain in the web dashboard.
           </Text>
+          <Modal
+            visible={supportOpen}
+            animationType="slide"
+            presentationStyle="pageSheet"
+            onRequestClose={() => setSupportOpen(false)}
+          >
+            <SafeAreaView style={s.support}>
+              <ScrollView contentContainerStyle={s.supportContent}>
+                <Text accessibilityRole="header" style={s.heading}>
+                  P1 Field support
+                </Text>
+                <Text>
+                  This guidance protects your assigned work and account. It does
+                  not change access or send information from this device.
+                </Text>
+                {NATIVE_SUPPORT_GUIDANCE.map((item) => (
+                  <View key={item.title} style={s.card}>
+                    <Text accessibilityRole="header" style={s.supportTitle}>
+                      {item.title}
+                    </Text>
+                    <Text>{item.detail}</Text>
+                  </View>
+                ))}
+                <Button
+                  title="Close support"
+                  onPress={() => setSupportOpen(false)}
+                />
+              </ScrollView>
+            </SafeAreaView>
+          </Modal>
         </ScrollView>
       </SafeAreaView>
     </SafeAreaProvider>
@@ -835,5 +871,8 @@ const s = StyleSheet.create({
     borderColor: "#ced9d1",
     backgroundColor: "white",
   },
+  support: { flex: 1, backgroundColor: "#f5f7f6" },
+  supportContent: { padding: 20, gap: 14 },
+  supportTitle: { fontSize: 18, fontWeight: "600", color: "#183e2a" },
   footer: { marginTop: 20, color: "#485a4d" },
 });
