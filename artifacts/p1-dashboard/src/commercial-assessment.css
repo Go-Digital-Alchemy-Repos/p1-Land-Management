@@ -6,3 +6,6 @@
 .assessment-create label, .assessment-editor > label, .assessment-editor fieldset label { display: grid; gap: .35rem; }
 .assessment-editor fieldset { display: grid; gap: .65rem; border: 1px solid var(--border, #d8ddd3); padding: .8rem; }
 .assessment-actions { display: flex; flex-wrap: wrap; gap: .7rem; }
+.assessment-archive { display: grid; gap: .7rem; border: 1px solid #a86b42; padding: .9rem; }
+.assessment-archive label { display: grid; gap: .35rem; }
+.assessment-archive div { display: flex; flex-wrap: wrap; gap: .7rem; }

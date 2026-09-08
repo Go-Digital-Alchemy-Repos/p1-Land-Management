@@ -53,6 +53,7 @@ export function CommercialAssessmentPanel({ leadId, leadVersion, disabled, onLea
   const [title, setTitle] = useState("Commercial site assessment"), [scopeNote, setScopeNote] = useState("");
   const [findings, setFindings] = useState<Finding[]>([]), [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [loading, setLoading] = useState(false), [saving, setSaving] = useState(false), [error, setError] = useState("");
+  const [archiveOpen, setArchiveOpen] = useState(false), [archiveReason, setArchiveReason] = useState("");
   const requestGeneration = useRef(0);
   const active = items.find((item) => item.status !== "archived");
   async function loadList() {
@@ -65,7 +66,7 @@ export function CommercialAssessmentPanel({ leadId, leadVersion, disabled, onLea
     const current = ++requestGeneration.current; setLoading(true); setError("");
     try {
       const detail = await api.get(leadId, assessmentId);
-      if (current === requestGeneration.current) { setSelected(detail); const draft = toDraft(detail); setTitle(draft.title); setScopeNote(draft.scopeNote); setFindings(draft.findings); setRecommendations(draft.recommendations); }
+      if (current === requestGeneration.current) { setSelected(detail); setArchiveOpen(false); setArchiveReason(""); const draft = toDraft(detail); setTitle(draft.title); setScopeNote(draft.scopeNote); setFindings(draft.findings); setRecommendations(draft.recommendations); }
     } catch (e) { if (current === requestGeneration.current) setError((e as Error).message); }
     finally { if (current === requestGeneration.current) setLoading(false); }
   }
@@ -91,11 +92,11 @@ export function CommercialAssessmentPanel({ leadId, leadVersion, disabled, onLea
     catch (e) { setError((e as Error).message); } finally { setSaving(false); }
   }
   async function archive() {
-    if (!selected) return; const reason = window.prompt("Why is this assessment baseline being archived?")?.trim(); if (!reason) return;
+    if (!selected || !archiveReason.trim()) return;
     setSaving(true); setError("");
     try {
-      await api.archive(leadId, selected.id, { expectedVersion: selected.version, reason });
-      setSelected(null); setTitle("Commercial site assessment"); setScopeNote(""); setFindings([]); setRecommendations([]);
+      await api.archive(leadId, selected.id, { expectedVersion: selected.version, reason: archiveReason.trim() });
+      setSelected(null); setTitle("Commercial site assessment"); setScopeNote(""); setFindings([]); setRecommendations([]); setArchiveOpen(false); setArchiveReason("");
       await loadList();
     }
     catch (e) { setError((e as Error).message); } finally { setSaving(false); }
@@ -119,7 +120,12 @@ export function CommercialAssessmentPanel({ leadId, leadVersion, disabled, onLea
       <h4>Recommended actions</h4>
       {recommendations.map((item, index) => <fieldset key={index} disabled={locked}><legend>Recommendation {index + 1}</legend><label>Related finding<select value={item.findingIndex ?? ""} onChange={(event) => setRecommendations((current) => current.map((value, itemIndex) => itemIndex === index ? { ...value, findingIndex: event.target.value === "" ? null : Number(event.target.value) } : value))}><option value="">General recommendation</option>{findings.map((finding, findingIndex) => <option key={findingIndex} value={findingIndex}>Finding {findingIndex + 1}: {finding.observation.slice(0, 60) || "Untitled"}</option>)}</select></label><label>Recommendation<textarea value={item.recommendation} maxLength={4000} onChange={(event) => setRecommendations((current) => current.map((value, itemIndex) => itemIndex === index ? { ...value, recommendation: event.target.value } : value))} /></label><label>Priority<select value={item.priority || ""} onChange={(event) => setRecommendations((current) => current.map((value, itemIndex) => itemIndex === index ? { ...value, priority: (event.target.value || null) as Priority | null } : value))}><option value="">Not assigned</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select></label><button type="button" onClick={() => setRecommendations((current) => current.filter((_, itemIndex) => itemIndex !== index))}>Remove recommendation</button></fieldset>)}
       {selected.status === "draft" && <button type="button" disabled={locked} onClick={() => setRecommendations((current) => [...current, emptyRecommendation()])}>Add recommendation</button>}
-      <div className="assessment-actions">{selected.status === "draft" && <><button type="button" className="primary" disabled={locked || !title.trim()} onClick={() => void save()}>{saving ? "Saving…" : "Save draft"}</button><button type="button" disabled={locked} onClick={() => void review()}>Mark reviewed and lock snapshot</button></>}{selected.status !== "archived" && <button type="button" disabled={disabled || saving} onClick={() => void archive()}>Archive assessment</button>}</div>
+      <div className="assessment-actions">{selected.status === "draft" && <><button type="button" className="primary" disabled={locked || !title.trim()} onClick={() => void save()}>{saving ? "Saving…" : "Save draft"}</button><button type="button" disabled={locked} onClick={() => void review()}>Mark reviewed and lock snapshot</button></>}{selected.status !== "archived" && <button type="button" disabled={disabled || saving} onClick={() => { setArchiveOpen(true); setArchiveReason(""); }}>Archive assessment</button>}</div>
+      {archiveOpen && selected.status !== "archived" && <form className="assessment-archive" onSubmit={(event) => { event.preventDefault(); void archive(); }}>
+        <p>Archiving preserves this private record and any reviewed snapshot. It does not create a proposal, booking, or work order.</p>
+        <label>Archive reason<textarea value={archiveReason} maxLength={2000} required disabled={disabled || saving} onChange={(event) => setArchiveReason(event.target.value)} /></label>
+        <div><button type="submit" disabled={disabled || saving || !archiveReason.trim()}>{saving ? "Archiving…" : "Confirm archive"}</button><button type="button" disabled={saving} onClick={() => { setArchiveOpen(false); setArchiveReason(""); }}>Cancel</button></div>
+      </form>}
       {selected.reviews.length > 0 && <p>Reviewed snapshot: version {selected.reviews[0].assessment_version} on {new Date(selected.reviews[0].created_at).toLocaleString()}.</p>}
     </div>}
   </section>;
