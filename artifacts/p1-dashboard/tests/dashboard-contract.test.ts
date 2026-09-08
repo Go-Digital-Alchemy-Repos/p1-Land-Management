@@ -24,6 +24,10 @@ import {
   getProjectPhaseHistory,
   listProjectPhaseBillingIntents,
   createProjectPhaseBillingIntent,
+  listProjects,
+  createProject,
+  listExpenses,
+  createExpense,
   listSalesLeads,
   createSalesLead,
   convertSalesLead,
@@ -284,6 +288,34 @@ test("generated dashboard client preserves cursor filters, explicit nulls and co
       amountCents: 250000,
       kind: "deposit",
     });
+    const projectPropertyId = "00000000-0000-4000-8000-000000000010";
+    await listProjects();
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      "/api/v1/projects",
+    );
+    const project = {
+      propertyId: projectPropertyId,
+      name: "Driveway restoration",
+      scope: "Repair drainage and gravel.",
+      phases: [{ name: "Mobilization", complete: false }],
+    };
+    await createProject(project);
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), project);
+    await listExpenses();
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      "/api/v1/expenses",
+    );
+    const expense = {
+      propertyId: projectPropertyId,
+      amountCents: 12500,
+      category: "Materials",
+      description: "Drainage gravel",
+      incurredOn: "2026-09-08",
+    };
+    await createExpense(expense);
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), expense);
     const leadId = "00000000-0000-4000-8000-000000000010";
     const propertyId = "00000000-0000-4000-8000-000000000011";
     const estimateId = "00000000-0000-4000-8000-000000000012";
