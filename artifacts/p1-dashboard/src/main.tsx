@@ -6,7 +6,7 @@ import { ScheduleCalendar } from "./ScheduleCalendar";
 import { AssessmentAvailability } from "./AssessmentAvailability";
 import { ClientContacts } from "./ClientContacts";
 import { ClientWorkspace, PropertyWorkspace } from "./AccountWorkspace";
-import { motifForArea } from "./motifs";
+import { motifForPage } from "./motifs";
 import { InspectionReports } from "./InspectionReports";
 import React, { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
@@ -1155,7 +1155,7 @@ function App() {
           </div>
         </header>
         <main className="content">
-          {!accountWorkspace && <div className="page-heading page-hero" style={{ "--page-motif": motifForArea(view === "Clients" ? "clients" : view === "Properties" ? "properties" : ["Schedule", "My Day", "Recurring", "Projects", "Inspections"].includes(view) ? "operations" : ["Sales", "Agreements", "Billing", "Expenses"].includes(view) ? "revenue" : view === "Settings" ? "settings" : "workspace") } as React.CSSProperties}>
+          {!accountWorkspace && <div className="page-heading page-hero" style={{ "--page-motif": motifForPage(view, settingsSection) } as React.CSSProperties}>
             <div>
               <p className="eyebrow">P1 · PROPERTY OPERATIONS</p>
               <h1>

@@ -1,15 +1,36 @@
-/** Lightweight decorative linework. These assets are intentionally non-geographic. */
-const svg = (content: string) => `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 360' fill='none' stroke='#6f8065' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'>${content}</svg>`)}")`;
+import type { DashboardView, SettingsSection } from "./dashboard-routes";
 
-export const atlasMotifs = {
-  workspace: svg("<path d='M0 278C150 220 242 255 365 205S570 123 690 185s213 46 316-12 141-30 194-6'/><path d='M0 315c182-70 290 18 459-47s270-123 417-65 218 25 324-21'/><path d='M35 145c42-34 85-34 129 0m256 11c32-29 69-29 105 0m137-53c25-27 59-27 85 0'/><path d='M774 126c17-58 31-87 54-104 21 30 33 65 33 104m-130 55c22-77 44-118 76-143 29 42 41 92 39 143'/><path d='M1044 211c24-65 46-99 77-121 31 38 47 78 47 121'/><path d='M208 201c22-51 42-76 70-96 26 31 40 63 42 96'/>") ,
-  clients: svg("<path d='M0 284c154-52 250-29 372-80s188-113 310-67 238 4 353-60 126-43 165-31'/><path d='M0 325c191-70 305-7 438-64s243-93 351-43 193 29 411-41'/><path d='M143 228c0-65 13-116 42-151 30 35 44 86 42 151m-91-82 49-55m-47 94 52-49m68 75c0-56 13-98 38-128 24 31 37 74 37 128m-78-65 41-44m-38 78 44-40m417-3c0-77 18-132 52-169 35 42 52 99 50 169m-107-90 57-57m-54 103 61-52'/><path d='M483 159c22-19 48-19 70 0m21-48c17-15 37-15 54 0m365 37c20-18 43-18 63 0'/>") ,
-  properties: svg("<path d='M0 279c143-72 270-65 383-18s238 47 352-28 214-93 465-12'/><path d='M-4 319c165-72 308-32 410 8s237 42 366-36 237-81 432-13'/><path d='M74 264c91-118 199-149 310-94s96 116-17 144-216-4-293-50Zm63 12c69-76 145-95 221-58s67 74-11 94-153 7-210-36Zm516-83c28-85 57-130 96-160 38 44 55 98 51 160m-120-73 67-63m-62 104 74-57m242 80c24-66 45-102 75-127 28 34 42 76 42 127'/>") ,
-  operations: svg("<path d='M0 267c154-11 219-95 344-77s162 111 293 79 196-143 339-112 123 64 224 42'/><path d='M0 320c147-29 252-85 384-56s163 76 277 49 221-119 340-93 114 61 199 55'/><path d='M59 278c100-41 172-133 255-111 78 21 91 121 179 87 93-35 93-159 199-143 88 14 83 124 184 103 93-20 120-126 241-113'/><circle cx='59' cy='278' r='6'/><circle cx='314' cy='167' r='6'/><circle cx='493' cy='254' r='6'/><circle cx='692' cy='111' r='6'/><circle cx='876' cy='214' r='6'/><path d='M167 90l15 15m0-15-15 15m735-47 15 15m0-15-15 15'/>") ,
-  revenue: svg("<path d='M0 298 167 160l184 160 171-186 183 186 154-160 181 160'/><path d='M54 331 219 194l167 137 159-172 170 172 147-145 157 145'/><path d='M108 254 288 109m-94 186 180-145m-80 182 179-146m-76 150 178-145m-71 149 178-145m-72 145 174-141m-56 134 141-115'/><path d='M87 150h52m-26-26v52m684-84h52m-26-26v52'/>") ,
-  settings: svg("<path d='M0 296c143-52 255-46 360-4s221 44 322-23 216-128 345-74 107 88 173 57'/><path d='M0 332c177-58 275-25 397 15s224 18 325-46 206-110 332-65 105 85 146 71'/><path d='M185 251c0-90 19-158 57-204 39 48 56 116 52 204m-121-105 70-69m-65 111 78-64m308 87c0-76 16-133 50-171 34 42 49 100 46 171m-104-89 57-58m-53 103 65-54m263 106c0-52 12-93 36-120 25 30 38 70 37 120'/>") ,
+const illustration = (name: string) => `url("/images/illustrations/${name}.png")`;
+
+const pageIllustrations: Record<Exclude<DashboardView, "Settings">, string> = {
+  Overview: illustration("overview"),
+  Properties: illustration("properties"),
+  Clients: illustration("clients"),
+  Schedule: illustration("schedule"),
+  "My Day": illustration("my-day"),
+  Sales: illustration("sales"),
+  Agreements: illustration("agreements"),
+  Billing: illustration("billing"),
+  Requests: illustration("requests"),
+  Recurring: illustration("recurring"),
+  Projects: illustration("projects"),
+  Inspections: illustration("inspections"),
+  Expenses: illustration("expenses"),
 };
 
-export function motifForArea(area: keyof typeof atlasMotifs) {
-  return atlasMotifs[area];
+const settingsIllustrations: Record<SettingsSection, string> = {
+  people: illustration("settings-people"),
+  security: illustration("settings-security"),
+  integrations: illustration("settings-integrations"),
+  preferences: illustration("settings-preferences"),
+};
+
+export function motifForPage(view: DashboardView, settingsSection?: SettingsSection) {
+  return view === "Settings"
+    ? settingsIllustrations[settingsSection || "people"]
+    : pageIllustrations[view];
+}
+
+export function motifForWorkspace(kind: "client" | "property") {
+  return illustration(`${kind}-workspace`);
 }
