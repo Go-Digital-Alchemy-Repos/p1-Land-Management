@@ -1277,6 +1277,31 @@ body { background: var(--atlas-paper); }
   background-size: cover, cover;
   background-attachment: fixed, fixed;
 }
+.content.workspace-motif {
+  min-height: calc(100vh - 84px);
+  max-width: none;
+  margin: 0;
+  padding-inline: max(var(--page-gutter), calc((100% - 1560px) / 2));
+  background-color: var(--atlas-paper);
+  background-image:
+    radial-gradient(ellipse 96% 94% at 50% 48%, rgb(246 245 239 / .82) 20%, rgb(246 245 239 / .92) 58%, var(--atlas-paper) 92%),
+    var(--workspace-motif);
+  background-repeat: no-repeat, no-repeat;
+  background-position: center, center 84px;
+  background-size: cover, min(1560px, 108vw) auto;
+  background-attachment: fixed, fixed;
+}
+.workspace-motif > .page-heading {
+  min-height: 190px;
+  padding: 48px 0 38px;
+  margin-bottom: 10px;
+}
+.workspace-motif .panel,
+.workspace-motif .data-surface {
+  background-color: rgb(255 255 255 / 92%);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
 .page-hero {
   position: relative;
   isolation: isolate;
@@ -1545,6 +1570,11 @@ td { padding: 16px var(--atlas-surface-inset); }
   .atlas-stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 700px) {
+  .content.workspace-motif {
+    background-attachment: scroll, scroll;
+    background-size: cover, min(1200px, 155vw) auto;
+  }
+  .workspace-motif > .page-heading { min-height: 166px; padding: 27px 0 25px; }
   .page-heading.page-hero { min-height: 166px; padding: 27px 0 25px; }
   .page-hero::before { inset: auto -85% -20px 13%; opacity: .52; }
   .account-hero { min-height: 190px; }
