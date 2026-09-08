@@ -6,7 +6,7 @@
     "displayName": "P1 Land & Property Management",
     "source": {
       "repository": "https://github.com/Go-Digital-Alchemy-Repos/p1-Land-Management.git",
-      "revision": "e261a29eb285cf2b85334bed92c000e382d7f950"
+      "revision": "724ffdf6fd1880c084064f3a7f640e41decd8ef9"
     },
     "owners": [
       {
@@ -20592,6 +20592,15 @@
       "id": "p1-estimate",
       "routeId": "contact",
       "endpoint": "/api/forms/p1-estimate/submit",
+      "method": "POST",
+      "authentication": "public",
+      "handlerOwner": "platform",
+      "secretRefs": []
+    },
+    {
+      "id": "p1-commercial-assessment",
+      "routeId": "commercial",
+      "endpoint": "/api/forms/p1-commercial-assessment/submit",
       "method": "POST",
       "authentication": "public",
       "handlerOwner": "platform",

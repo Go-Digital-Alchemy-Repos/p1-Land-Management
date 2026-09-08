@@ -14,6 +14,23 @@ assert(!/\b(?:Blog|Gallery)\b/.test(headerSource), 'Header main navigation must 
 assert.equal((headerSource.match(/Service Areas/g) || []).length, 2, 'Desktop and mobile service menus must each include Service Areas');
 assert(/services\.map\([\s\S]*?Service Areas/.test(headerSource), 'Service Areas must follow the services list');
 assert(/font-bold text-primary[\s\S]*?Service Areas/.test(headerSource), 'Service Areas must retain its emphasized blue styling');
+const commercialInquirySource = readFileSync(resolve(root, 'src/lib/commercial-inquiry.ts'), 'utf8');
+const expectedPublicForms = [
+  { id: 'p1-estimate', routeId: 'contact', endpoint: '/api/forms/p1-estimate/submit', method: 'POST', authentication: 'public', handlerOwner: 'platform' },
+  { id: 'p1-commercial-assessment', routeId: 'commercial', endpoint: '/api/forms/p1-commercial-assessment/submit', method: 'POST', authentication: 'public', handlerOwner: 'platform' },
+];
+const contractManifests = [
+  resolve(root, 'config/client-site-manifest.json'),
+  resolve(root, '../../platform/p1-core/config/p1-client-site-manifest.json'),
+].map((path) => JSON.parse(readFileSync(path, 'utf8')));
+for (const contractManifest of contractManifests) {
+  assert.deepEqual(
+    contractManifest.forms.map(({ id, routeId, endpoint, method, authentication, handlerOwner }) => ({ id, routeId, endpoint, method, authentication, handlerOwner })),
+    expectedPublicForms,
+    'Public intake forms must have an identical, explicit site-to-platform contract',
+  );
+}
+assert(commercialInquirySource.includes(expectedPublicForms[1].endpoint), 'Commercial inquiry transport must use the declared CMS form endpoint');
 const warnings = [];
 const originalError = console.error;
 console.error = (...args) => warnings.push(args.join(' '));
