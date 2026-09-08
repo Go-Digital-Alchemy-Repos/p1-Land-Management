@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite --config vite.config.ts --host 0.0.0.0",
+    "dev": "vite --config vite.config.ts",
     "sitemap": "node scripts/generate-sitemap.mjs",
     "prebuild": "node scripts/generate-sitemap.mjs",
     "build": "vite build --config vite.config.ts && node scripts/prerender.mjs && node scripts/generate-cms-manifest.mjs",

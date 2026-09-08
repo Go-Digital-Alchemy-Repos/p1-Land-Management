@@ -43,6 +43,11 @@ The Vite configs default to local ports when `PORT` is not set:
 
 Railway still provides `PORT` in production.
 
+Development servers bind to `127.0.0.1` and accept only local Host headers by
+default. A temporary controlled-network preview must explicitly set both
+`DEV_BIND_HOST=0.0.0.0` and `DEV_ALLOWED_HOSTS=preview.example.test`; do not
+disable Vite host validation.
+
 ## Deployment
 
 Railway builds from the root `Dockerfile`:

@@ -23,8 +23,8 @@ const BUSINESS_NAME = (() => {
   return match[1];
 })();
 
-// Extract static routes from App.tsx (same approach as generate-sitemap.mjs)
-const appTsx = readFileSync(resolve(root, "src/App.tsx"), "utf8");
+// Extract static routes from the shared router (same approach as generate-sitemap.mjs)
+const appTsx = readFileSync(resolve(root, "src/app-routes.tsx"), "utf8");
 const routes = [];
 const seen = new Set();
 const routeRegex = /<Route\s+path="([^"]+)"/g;
@@ -36,7 +36,7 @@ while ((m = routeRegex.exec(appTsx)) !== null) {
   seen.add(path);
   routes.push(path);
 }
-if (routes.length === 0) throw new Error("No routes found in src/App.tsx");
+if (routes.length === 0) throw new Error("No routes found in src/app-routes.tsx");
 
 // 1. Build the SSR bundle
 const { build } = await import("vite");

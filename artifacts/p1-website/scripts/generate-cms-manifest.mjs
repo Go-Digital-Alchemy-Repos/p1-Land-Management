@@ -5,9 +5,9 @@ import { configureP1Manifest } from '../../../platform/p1-core/script/p1-manifes
 const root=resolve(import.meta.dirname,'..');
 process.env.NODE_ENV='production';
 const {render}=await import(pathToFileURL(resolve(root,'dist/server/entry-server.js')));
-const app=readFileSync(resolve(root,'src/App.tsx'),'utf8');
+const app=readFileSync(resolve(root,'src/app-routes.tsx'),'utf8');
 const idFor=p=>p==='/'?'home':p.replace(/^\/+|\/+$/g,'').replace(/[^a-z0-9]+/g,'-');
-const componentsByName=Object.fromEntries([...app.matchAll(/const (\w+) = page\("\.\/(.*?)"\)/g)].map(m=>[m[1],m[2]]));
+const componentsByName=Object.fromEntries([...app.matchAll(/(\w+)\s*=\s*page\(\s*"\.\/(.*?)"\s*,?\s*\)/g)].map(m=>[m[1],m[2]]));
 const paths=[...app.matchAll(/<Route\s+path="([^"]+)"\s+component=\{(\w+)\}/g)].map(m=>({path:m[1],file:componentsByName[m[2]]}));
 const components=[];const globals={};
 function editable(key,fields,region) {
