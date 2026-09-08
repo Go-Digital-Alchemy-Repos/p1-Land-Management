@@ -128,7 +128,11 @@ jobs:
           cache: pnpm
           cache-dependency-path: artifacts/p1-native/pnpm-lock.yaml
 
-      - name: Install locked dependencies
+      - name: Install linked shared-contract dependencies
+        working-directory: .
+        run: pnpm install --frozen-lockfile
+
+      - name: Install locked native dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Check production dependencies
