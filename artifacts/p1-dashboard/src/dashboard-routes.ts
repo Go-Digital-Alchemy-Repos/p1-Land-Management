@@ -28,9 +28,29 @@ export type NavigationGroup =
   | "Settings";
 
 export type RecordRoute =
-  | { kind: "property"; id: string }
+  | { kind: "client"; id: string; tab: ClientWorkspaceTab }
+  | { kind: "property"; id: string; tab: PropertyWorkspaceTab }
   | { kind: "work-order"; id: string }
   | { kind: "agreement"; id: string };
+
+export type ClientWorkspaceTab =
+  | "overview"
+  | "properties"
+  | "contacts"
+  | "agreements"
+  | "schedule"
+  | "requests"
+  | "projects"
+  | "notes";
+
+export type PropertyWorkspaceTab =
+  | "overview"
+  | "schedule"
+  | "agreements"
+  | "requests"
+  | "projects"
+  | "inspections"
+  | "notes-files";
 
 export type DashboardPageRoute = {
   view: DashboardView;
@@ -76,6 +96,10 @@ function normalizedPath(pathname: string) {
   return pathname.replace(/\/+$/, "") || "/";
 }
 
+function validRecordId(value: string) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+}
+
 function pageFor(view: DashboardView) {
   return DASHBOARD_PAGES.find((page) => page.view === view && !page.settingsSection);
 }
@@ -83,17 +107,40 @@ function pageFor(view: DashboardView) {
 function recordId(pathname: string, prefix: string) {
   if (!pathname.startsWith(prefix)) return null;
   const value = pathname.slice(prefix.length);
-  return value && !value.includes("/") ? value : null;
+  return value && !value.includes("/") && validRecordId(value) ? value : null;
 }
+
+function workspaceRecord<T extends string>(
+  pathname: string,
+  prefix: string,
+  tabs: readonly T[],
+): { id: string; tab: T } | null {
+  if (!pathname.startsWith(prefix)) return null;
+  const parts = pathname.slice(prefix.length).split("/");
+  if (!parts[0] || !validRecordId(parts[0]) || parts.length > 2 || (parts[1] && !tabs.includes(parts[1] as T)))
+    return null;
+  return { id: parts[0], tab: (parts[1] || "overview") as T };
+}
+
+const CLIENT_TABS: readonly ClientWorkspaceTab[] = [
+  "overview", "properties", "contacts", "agreements", "schedule", "requests", "projects", "notes",
+];
+const PROPERTY_TABS: readonly PropertyWorkspaceTab[] = [
+  "overview", "schedule", "agreements", "requests", "projects", "inspections", "notes-files",
+];
 
 export function routeFromPath(pathname: string): DashboardRoute {
   const path = normalizedPath(pathname);
   const page = DASHBOARD_PAGES.find((candidate) => candidate.path === path);
   if (page) return { kind: "page", page };
 
-  const propertyId = recordId(path, "/properties/");
-  if (propertyId) {
-    return { kind: "page", page: pageFor("Properties")!, record: { kind: "property", id: propertyId } };
+  const client = workspaceRecord(path, "/clients/", CLIENT_TABS);
+  if (client) {
+    return { kind: "page", page: pageFor("Clients")!, record: { kind: "client", ...client } };
+  }
+  const property = workspaceRecord(path, "/properties/", PROPERTY_TABS);
+  if (property) {
+    return { kind: "page", page: pageFor("Properties")!, record: { kind: "property", ...property } };
   }
   const scheduleWorkId = recordId(path, "/schedule/work-orders/");
   if (scheduleWorkId) {
@@ -113,8 +160,10 @@ export function routeFromPath(pathname: string): DashboardRoute {
 export function pathForRoute(route: Extract<DashboardRoute, { kind: "page" }>) {
   if (!route.record) return route.page.path;
   switch (route.record.kind) {
+    case "client":
+      return `/clients/${encodeURIComponent(route.record.id)}${route.record.tab === "overview" ? "" : `/${route.record.tab}`}`;
     case "property":
-      return `/properties/${encodeURIComponent(route.record.id)}`;
+      return `/properties/${encodeURIComponent(route.record.id)}${route.record.tab === "overview" ? "" : `/${route.record.tab}`}`;
     case "work-order":
       return `${route.page.view === "My Day" ? "/my-day" : "/schedule"}/work-orders/${encodeURIComponent(route.record.id)}`;
     case "agreement":
@@ -138,6 +187,7 @@ export function canAccessRoute(route: DashboardRoute, role: string | null | unde
     return ["Overview", "Properties", "Schedule", "Sales", "Billing", "Requests", "Inspections"].includes(view);
   }
   if (settingsSection) return ["owner", "manager"].includes(role);
+  if (view === "Clients") return ["owner", "manager", "dispatch", "sales", "finance"].includes(role);
   if (view === "Agreements") return ["owner", "manager", "finance", "dispatch"].includes(role);
   if (["Recurring", "Projects", "Inspections"].includes(view)) return ["owner", "manager", "dispatch"].includes(role);
   if (view === "Expenses" || view === "Billing") return ["owner", "manager", "finance"].includes(role);

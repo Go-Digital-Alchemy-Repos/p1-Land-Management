@@ -5,6 +5,8 @@ import { PropertyFiles } from "./PropertyFiles";
 import { ScheduleCalendar } from "./ScheduleCalendar";
 import { AssessmentAvailability } from "./AssessmentAvailability";
 import { ClientContacts } from "./ClientContacts";
+import { ClientWorkspace, PropertyWorkspace } from "./AccountWorkspace";
+import { motifForArea } from "./motifs";
 import { InspectionReports } from "./InspectionReports";
 import React, { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
@@ -733,16 +735,11 @@ function App() {
   const schedulePage = nav.find((item) => item.view === "Schedule")!;
   const myDayPage = nav.find((item) => item.view === "My Day")!;
   const agreementPage = nav.find((item) => item.view === "Agreements")!;
-  const openPropertyTimeline = async (property: any, updateRoute = true) => {
-    await run(async () => {
-      const timeline = await api("/properties/" + property.id + "/timeline");
-      setSelected({ property, timeline });
-      setForm("timeline");
-      if (updateRoute) {
-        navigateRecord(propertyPage, { kind: "property", id: property.id });
-      }
-    });
-  };
+  const openPropertyWorkspace = (property: { id: string }) =>
+    navigateRecord(propertyPage, { kind: "property", id: property.id, tab: "overview" });
+  const clientPage = nav.find((item) => item.view === "Clients")!;
+  const openClientWorkspace = (client: { id: string }) =>
+    navigateRecord(clientPage, { kind: "client", id: client.id, tab: "overview" });
   const openWorkOrder = async (
     id: string,
     page = view === "My Day" ? myDayPage : schedulePage,
@@ -830,6 +827,8 @@ function App() {
     !routeUnavailable &&
     view === item.view &&
     (item.view !== "Settings" || settingsSection === item.settingsSection);
+  const accountWorkspace =
+    recordRoute?.kind === "client" || recordRoute?.kind === "property";
   useEffect(() => {
     if (!recordRoute) {
       recordOpenAttempted.current = null;
@@ -837,14 +836,6 @@ function App() {
     }
     const key = `${recordRoute.kind}:${recordRoute.id}`;
     if (recordOpenAttempted.current === key) return;
-    if (recordRoute.kind === "property") {
-      if (!Array.isArray(data.properties)) return;
-      recordOpenAttempted.current = key;
-      const property = data.properties.find((item: any) => item.id === recordRoute.id);
-      if (property) void openPropertyTimeline(property, false);
-      else setNotice("That property is no longer available in this workspace.");
-      return;
-    }
     if (recordRoute.kind === "work-order") {
       recordOpenAttempted.current = key;
       void openWorkOrder(
@@ -853,7 +844,7 @@ function App() {
         false,
       );
     }
-  }, [recordRoute?.kind, recordRoute?.id, data.properties, view]);
+  }, [recordRoute?.kind, recordRoute?.id, view]);
   if (loading) return <div className="loading">Loading P1 Operations…</div>;
   if (!person)
     return (
@@ -1136,7 +1127,7 @@ function App() {
           </div>
         </header>
         <main className="content">
-          <div className="page-heading">
+          {!accountWorkspace && <div className="page-heading page-hero" style={{ "--page-motif": motifForArea(view === "Clients" ? "clients" : view === "Properties" ? "properties" : ["Schedule", "My Day", "Recurring", "Projects", "Inspections"].includes(view) ? "operations" : ["Sales", "Agreements", "Billing", "Expenses"].includes(view) ? "revenue" : view === "Settings" ? "settings" : "workspace") } as React.CSSProperties}>
             <div>
               <p className="eyebrow">P1 · PROPERTY OPERATIONS</p>
               <h1>
@@ -1211,7 +1202,7 @@ function App() {
                 </button>
               )}
             </div>}
-          </div>
+          </div>}
           {error && (
             <div role="alert" className="error">
               {error}
@@ -1222,7 +1213,33 @@ function App() {
               {notice}
             </div>
           )}
-          {routeUnavailable ? (
+          {recordRoute?.kind === "client" ? (
+            <ClientWorkspace
+              id={recordRoute.id}
+              tab={recordRoute.tab}
+              request={api}
+              onTab={(tab) =>
+                navigateRecord(clientPage, { kind: "client", id: recordRoute.id, tab })
+              }
+              onProperty={(id) =>
+                navigateRecord(propertyPage, { kind: "property", id, tab: "overview" })
+              }
+            />
+          ) : recordRoute?.kind === "property" ? (
+            <PropertyWorkspace
+              id={recordRoute.id}
+              tab={recordRoute.tab}
+              request={api}
+              canOpenClient={staff}
+              role={person.role}
+              onTab={(tab) =>
+                navigateRecord(propertyPage, { kind: "property", id: recordRoute.id, tab })
+              }
+              onClient={(id) =>
+                navigateRecord(clientPage, { kind: "client", id, tab: "overview" })
+              }
+            />
+          ) : routeUnavailable ? (
             <section className="panel route-unavailable" aria-labelledby="route-unavailable-title">
               <div className="panel-heading">
                 <h2 id="route-unavailable-title">This dashboard link is unavailable</h2>
@@ -1352,7 +1369,7 @@ function App() {
                 </div>
                 <PropertyCards
                   properties={data.properties || []}
-                  onOpen={(property) => void openPropertyTimeline(property)}
+                  onOpen={openPropertyWorkspace}
                 />
               </section>
             </>
@@ -1361,7 +1378,7 @@ function App() {
             <section className="panel">
               <PropertyCards
                 properties={data.properties || []}
-                onOpen={(property) => void openPropertyTimeline(property)}
+                onOpen={openPropertyWorkspace}
               />
             </section>
           )}
@@ -1391,6 +1408,9 @@ function App() {
                   </div>
                   {staff && (
                     <div className="row-actions">
+                      <button className="primary" onClick={() => openClientWorkspace(client)}>
+                        Open account <ArrowUpRight size={15} />
+                      </button>
                       <button onClick={() => openForm("edit-client", client)}>
                         Edit client
                       </button>

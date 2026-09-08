@@ -1023,6 +1023,23 @@
         }
       }
     },
+    "/clients/{clientId}/workspace": {
+      "get": {
+        "operationId": "getClientWorkspace",
+        "description": "Office-only client command-center projection. Aggregates only records already linked to the requested client and includes internal notes for office roles.",
+        "parameters": [{ "name": "clientId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "responses": { "200": { "description": "Authorized client workspace", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ClientWorkspace" } } } }, "401": { "description": "Verified session required" }, "403": { "description": "Office role required" }, "404": { "description": "Client not found" } }
+      }
+    },
+    "/clients/{clientId}/notes": {
+      "post": {
+        "operationId": "createClientNote",
+        "description": "Office-only append-only internal note. Optional property scope must belong to the requested client; clients and crew cannot read or create notes.",
+        "parameters": [{ "name": "clientId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateClientNote" } } } },
+        "responses": { "201": { "description": "Note recorded", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreatedResource" } } } }, "400": { "description": "Invalid body or property ownership" }, "401": { "description": "Verified session required" }, "403": { "description": "Office role required" }, "404": { "description": "Client not found" } }
+      }
+    },
     "/integrations": {
       "get": {
         "operationId": "getIntegrationHealth",
@@ -1109,7 +1126,13 @@
         "operationId": "createInspectionReport",
         "description": "Records an operational inspection report. It remains private until an owner or manager explicitly publishes it.",
         "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateInspectionReport" } } } },
-        "responses": { "201": { "description": "Inspection created", "content": { "application/json": { "$ref": "#/components/schemas/CreatedResource" } } } }, "400": { "description": "Invalid report" }, "401": { "description": "Verified session required" }, "403": { "description": "Role or required-account MFA denied" }, "404": { "description": "Operational property not accessible" } }
+        "responses": {
+          "201": { "description": "Inspection created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreatedResource" } } } },
+          "400": { "description": "Invalid report" },
+          "401": { "description": "Verified session required" },
+          "403": { "description": "Role or required-account MFA denied" },
+          "404": { "description": "Operational property not accessible" }
+        }
       }
     },
     "/inspections/{id}/publish": {
@@ -1202,6 +1225,14 @@
             }
           }
         ]
+      }
+    },
+    "/properties/{id}/workspace": {
+      "get": {
+        "operationId": "getPropertyWorkspace",
+        "description": "Permission-guarded property workspace projection. Client and crew views exclude access instructions and internal notes; office views include only notes linked to the client and this property or client-wide notes.",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "responses": { "200": { "description": "Authorized property workspace", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/PropertyWorkspace" } } } }, "401": { "description": "Verified session required" }, "403": { "description": "Role or account-MFA requirement denied" }, "404": { "description": "Property not found or inaccessible" } }
       }
     },
     "/properties/{id}/files": {
@@ -3203,6 +3234,59 @@
           "property_name": {
             "type": "string"
           }
+        }
+      },
+      "CreateClientNote": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["body"],
+        "properties": {
+          "body": { "type": "string", "minLength": 1, "maxLength": 10000 },
+          "propertyId": { "type": "string", "format": "uuid" }
+        }
+      },
+      "ClientNote": {
+        "type": "object",
+        "required": ["id", "body", "created_at", "author_name"],
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "property_id": { "type": ["string", "null"], "format": "uuid" },
+          "property_name": { "type": ["string", "null"] },
+          "body": { "type": "string" },
+          "author_name": { "type": "string" },
+          "created_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "ClientWorkspace": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["client", "properties", "contacts", "agreements", "schedule", "requests", "projects", "notes", "activity"],
+        "properties": {
+          "client": { "type": "object", "additionalProperties": true },
+          "properties": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
+          "contacts": { "type": "array", "items": { "$ref": "#/components/schemas/ClientContact" } },
+          "agreements": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
+          "schedule": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
+          "requests": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
+          "projects": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
+          "notes": { "type": "array", "items": { "$ref": "#/components/schemas/ClientNote" } },
+          "activity": { "type": "array", "items": { "type": "object", "additionalProperties": true } }
+        }
+      },
+      "PropertyWorkspace": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["property", "schedule", "agreements", "requests", "projects", "inspections", "files", "contacts", "notes"],
+        "properties": {
+          "property": { "type": "object", "additionalProperties": true },
+          "schedule": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
+          "agreements": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
+          "requests": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
+          "projects": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
+          "inspections": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
+          "files": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
+          "contacts": { "type": "array", "items": { "$ref": "#/components/schemas/ClientContact" } },
+          "notes": { "type": "array", "items": { "$ref": "#/components/schemas/ClientNote" } }
         }
       },
       "DashboardProperty": {

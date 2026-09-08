@@ -23,6 +23,7 @@ import { operationsApi } from "./operations";
 import { filesApi } from "./files";
 import { qboApi, qboWebhook } from "./quickbooks";
 import { notificationsApi, smsWebhook } from "./notifications";
+import { clientWorkspaceApi } from "./client-workspace";
 import { salesApi } from "./sales";
 import { pool, database } from "./database";
 import { sql } from "drizzle-orm";
@@ -90,6 +91,7 @@ app.use(
   prospectContextApi,
   commercialStaffApi,
   contactsApi,
+  clientWorkspaceApi,
   api,
   operationsApi,
   workReadinessApi,

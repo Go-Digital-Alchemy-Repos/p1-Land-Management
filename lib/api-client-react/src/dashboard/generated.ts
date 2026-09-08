@@ -37,6 +37,7 @@ import type {
   BookAssessmentSlot,
   CancelServiceAgreement,
   ClientContact,
+  ClientWorkspace,
   CommercialFollowUp,
   CommercialInquiry,
   CommercialInquiryDetail,
@@ -44,6 +45,7 @@ import type {
   CreateAssessmentBlackout,
   CreateBillingDraft,
   CreateClientContact,
+  CreateClientNote,
   CreateInspectionReport,
   CreateManualAssessmentSlot,
   CreateServiceAgreement,
@@ -69,6 +71,7 @@ import type {
   PhotoUploadReceipt,
   PropertyFile,
   PropertyTimelineEvent,
+  PropertyWorkspace,
   PublicationReceipt,
   ReadinessResult,
   ReadinessUpdate,
@@ -399,7 +402,7 @@ export const getGetDashboardMeUrl = () => {
 }
 
 /**
- * Verified identity and active business role. Does not grant session assurance or bypass owner MFA. Inactive or missing business profiles return role null.
+ * Verified identity and active business role. Does not grant session assurance or bypass an account MFA requirement. Inactive or missing business profiles return role null.
  */
 export const getDashboardMe = async ( options?: RequestInit): Promise<DashboardMe> => {
 
@@ -690,6 +693,56 @@ export const updateClientContact = async (clientId: string,
 
 
 
+export const getGetClientWorkspaceUrl = (clientId: string,) => {
+
+
+
+
+  return `/api/v1/clients/${clientId}/workspace`
+}
+
+/**
+ * Office-only client command-center projection. Aggregates only records already linked to the requested client and includes internal notes for office roles.
+ */
+export const getClientWorkspace = async (clientId: string, options?: RequestInit): Promise<ClientWorkspace> => {
+
+  return customFetch<ClientWorkspace>(getGetClientWorkspaceUrl(clientId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateClientNoteUrl = (clientId: string,) => {
+
+
+
+
+  return `/api/v1/clients/${clientId}/notes`
+}
+
+/**
+ * Office-only append-only internal note. Optional property scope must belong to the requested client; clients and crew cannot read or create notes.
+ */
+export const createClientNote = async (clientId: string,
+    createClientNote: CreateClientNote, options?: RequestInit): Promise<CreatedResource> => {
+
+  return customFetch<CreatedResource>(getCreateClientNoteUrl(clientId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createClientNote,)
+  }
+);}
+
+
+
 export const getGetIntegrationHealthUrl = () => {
 
 
@@ -923,6 +976,30 @@ export const getGetPropertyTimelineUrl = (id: string,) => {
 export const getPropertyTimeline = async (id: string, options?: RequestInit): Promise<PropertyTimelineEvent[]> => {
 
   return customFetch<PropertyTimelineEvent[]>(getGetPropertyTimelineUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getGetPropertyWorkspaceUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/properties/${id}/workspace`
+}
+
+/**
+ * Permission-guarded property workspace projection. Client and crew views exclude access instructions and internal notes; office views include only notes linked to the client and this property or client-wide notes.
+ */
+export const getPropertyWorkspace = async (id: string, options?: RequestInit): Promise<PropertyWorkspace> => {
+
+  return customFetch<PropertyWorkspace>(getGetPropertyWorkspaceUrl(id),
   {
     ...options,
     method: 'GET'
