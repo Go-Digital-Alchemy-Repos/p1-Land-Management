@@ -413,7 +413,9 @@ api.post("/properties/:id", async (req, res) => {
       address: text,
       acreage: z.number().nonnegative().nullable(),
       accessInstructions: z.string().max(10000).default(""),
-      propertyTypeId: id.nullable(),
+      // Existing generated clients do not send this newer optional field.
+      // Omission must retain the saved classification rather than clearing it.
+      propertyTypeId: id.nullable().optional(),
       version: z.number().int().positive(),
     })
     .parse(req.body);
@@ -441,14 +443,15 @@ api.post("/properties/:id", async (req, res) => {
       if (!propertyType.rowCount) throw new HttpError(400, "Property type not found");
     }
     const changed = await c.query(
-      "UPDATE property SET name=$2,address=$3,acreage=$4,access_instructions=$5,property_type_id=$6,latitude=CASE WHEN $8 THEN $9 ELSE latitude END,longitude=CASE WHEN $8 THEN $10 ELSE longitude END,location_precision=CASE WHEN $8 THEN $11 ELSE location_precision END,version=version+1 WHERE id=$1 AND archived=false AND lifecycle='operational' AND version=$7 RETURNING id,client_id,name,address,acreage,access_instructions,property_type_id,version",
+      "UPDATE property SET name=$2,address=$3,acreage=$4,access_instructions=$5,property_type_id=CASE WHEN $6 THEN $7 ELSE property_type_id END,latitude=CASE WHEN $9 THEN $10 ELSE latitude END,longitude=CASE WHEN $9 THEN $11 ELSE longitude END,location_precision=CASE WHEN $9 THEN $12 ELSE location_precision END,version=version+1 WHERE id=$1 AND archived=false AND lifecycle='operational' AND version=$8 RETURNING id,client_id,name,address,acreage,access_instructions,version",
       [
         propertyId,
         b.name,
         b.address,
         b.acreage,
         b.accessInstructions,
-        b.propertyTypeId,
+        b.propertyTypeId !== undefined,
+        b.propertyTypeId ?? null,
         b.version,
         addressChanged,
         coordinates?.latitude ?? null,
@@ -470,7 +473,12 @@ api.post("/properties/:id/property-type", async (req, res) => {
   const a = await actor(req);
   requireRole(a.role, managers);
   const propertyId = id.parse(req.params.id);
-  const b = z.object({ propertyTypeId: id.nullable() }).parse(req.body);
+  const b = z
+    .object({
+      propertyTypeId: id.nullable(),
+      expectedVersion: z.number().int().positive(),
+    })
+    .parse(req.body);
   const result = await transaction(async (c) => {
     let propertyTypeName: string | null = null;
     if (b.propertyTypeId) {
@@ -482,10 +490,14 @@ api.post("/properties/:id/property-type", async (req, res) => {
       propertyTypeName = propertyType.rows[0].name;
     }
     const changed = await c.query(
-      "UPDATE property SET property_type_id=$2,version=version+1 WHERE id=$1 AND archived=false AND lifecycle='operational' RETURNING id,property_type_id,version",
-      [propertyId, b.propertyTypeId],
+      "UPDATE property SET property_type_id=$2,version=version+1 WHERE id=$1 AND archived=false AND lifecycle='operational' AND version=$3 RETURNING id,property_type_id,version",
+      [propertyId, b.propertyTypeId, b.expectedVersion],
     );
-    if (!changed.rowCount) throw new HttpError(404, "Property not found");
+    if (!changed.rowCount)
+      throw new HttpError(
+        409,
+        "Property changed or is unavailable; refresh before saving",
+      );
     await audit(c, a.id, "property.type.updated", propertyId);
     return { ...changed.rows[0], property_type_name: propertyTypeName };
   });

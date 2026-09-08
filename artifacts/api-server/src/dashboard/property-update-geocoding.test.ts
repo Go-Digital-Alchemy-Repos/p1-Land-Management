@@ -5,6 +5,7 @@ import express from "express";
 import { pool } from "./database";
 import { auth } from "./auth";
 import { api } from "./api";
+import { propertyTypesApi } from "./property-types";
 import { HttpError } from "./policy";
 import { ZodError } from "zod";
 
@@ -18,6 +19,7 @@ test(
   { skip: !testOrigin },
   async () => {
     const manager = randomUUID();
+    const clientUser = randomUUID();
     const client = randomUUID();
     const property = randomUUID();
     await pool.query(
@@ -27,6 +29,14 @@ test(
     await pool.query(
       "INSERT INTO staff_profile(user_id,role) VALUES($1,'manager')",
       [manager],
+    );
+    await pool.query(
+      'INSERT INTO "user"(id,name,email,"emailVerified") VALUES($1,$2,$3,true)',
+      [clientUser, "Map client", `${clientUser}@example.test`],
+    );
+    await pool.query(
+      "INSERT INTO staff_profile(user_id,role) VALUES($1,'client')",
+      [clientUser],
     );
     await pool.query("INSERT INTO client(id,name) VALUES($1,$2)", [
       client,
@@ -70,7 +80,7 @@ test(
 
     const app = express();
     app.use(express.json());
-    app.use("/api/v1", api);
+    app.use("/api/v1", propertyTypesApi, api);
     app.use(
       (
         error: unknown,
@@ -97,7 +107,21 @@ test(
         body: JSON.stringify(body),
       });
     try {
-      let response = await update({
+      let response = await originalFetch(`${url.slice(0, url.lastIndexOf("/properties/"))}/property-types`, {
+        headers: { "x-test-user": clientUser },
+      });
+      assert.equal(response.status, 403);
+      response = await originalFetch(`${url.slice(0, url.lastIndexOf("/properties/"))}/property-types`, {
+        headers: { "x-test-user": manager },
+      });
+      assert.equal(response.status, 200);
+      assert.ok(
+        ((await response.json()) as { name: string }[]).some(
+          (item) => item.name === "Industrial",
+        ),
+      );
+
+      response = await update({
         name: "Map property",
         address: "200 New Lane, Rock Hill, SC",
         acreage: null,
@@ -171,6 +195,50 @@ test(
           location_precision: null,
           version: 4,
         },
+      );
+
+      const propertyType = randomUUID();
+      const propertyTypeName = `Industrial test ${propertyType.slice(0, 8)}`;
+      await pool.query(
+        "INSERT INTO property_type(id,name,position) VALUES($1,$2,10)",
+        [propertyType, propertyTypeName],
+      );
+      response = await originalFetch(`${url}/property-type`, {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-test-user": manager },
+        body: JSON.stringify({ propertyTypeId: propertyType, expectedVersion: 4 }),
+      });
+      assert.equal(response.status, 200);
+      assert.deepEqual(await response.json(), {
+        id: property,
+        property_type_id: propertyType,
+        property_type_name: propertyTypeName,
+        version: 5,
+      });
+      response = await originalFetch(`${url}/property-type`, {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-test-user": manager },
+        body: JSON.stringify({ propertyTypeId: null, expectedVersion: 4 }),
+      });
+      assert.equal(response.status, 409);
+
+      // An older editor that has not been updated to send propertyTypeId must
+      // retain the current classification when it edits another field.
+      response = await update({
+        name: "Industrial map property",
+        address: "300 Unresolved Road, SC",
+        acreage: null,
+        version: 5,
+      });
+      assert.equal(response.status, 200);
+      assert.deepEqual(
+        (
+          await pool.query(
+            "SELECT property_type_id,version FROM property WHERE id=$1",
+            [property],
+          )
+        ).rows[0],
+        { property_type_id: propertyType, version: 6 },
       );
     } finally {
       globalThis.fetch = originalFetch;

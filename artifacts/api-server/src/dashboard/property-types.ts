@@ -23,7 +23,8 @@ function duplicateName(error: unknown) {
 }
 
 propertyTypesApi.get("/property-types", async (req, res) => {
-  await actor(req);
+  const user = await actor(req);
+  requireRole(user.role, managers);
   const result = await pool.query(
     "SELECT id,name,position,created_at FROM property_type ORDER BY position,name",
   );

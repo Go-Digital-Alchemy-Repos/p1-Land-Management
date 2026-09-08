@@ -384,7 +384,10 @@ export function PropertyWorkspace({
   async function updatePropertyType(propertyTypeId: string) {
     setTypeSaving(true); setError("");
     try {
-      await request(`/properties/${id}/property-type`, { propertyTypeId: propertyTypeId || null });
+      await request(`/properties/${id}/property-type`, {
+        propertyTypeId: propertyTypeId || null,
+        expectedVersion: property.version,
+      });
       await load();
     } catch (reason) { setError((reason as Error).message); } finally { setTypeSaving(false); }
   }
