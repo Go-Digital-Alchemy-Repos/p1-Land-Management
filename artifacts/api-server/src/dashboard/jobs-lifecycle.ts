@@ -33,7 +33,7 @@ const recurringConfig = z.object({
   if (value.billingMode === "per_visit" && (value.unitAmountCents === null || value.periods.length)) ctx.addIssue({ code: "custom", message: "Per-visit agreements require a rate and no monthly periods" });
   if (value.billingMode === "fixed_monthly" && (value.unitAmountCents !== null || !value.periods.length)) ctx.addIssue({ code: "custom", message: "Monthly agreements require explicit monthly periods" });
 });
-const estimateInput = z.object({
+const lifecycleEstimateInput = z.object({
   propertyId: id,
   title: text,
   scope: text,
@@ -47,7 +47,25 @@ const estimateInput = z.object({
   if (value.kind === "recurring" && (!value.recurring || !value.agreementTemplateId)) ctx.addIssue({ code: "custom", message: "Recurring estimates require a schedule and agreement template" });
   if (value.kind === "one_time" && (value.recurring || value.agreementTemplateId)) ctx.addIssue({ code: "custom", message: "One-time estimates cannot include recurring agreement details" });
 });
-type EstimateInput = z.infer<typeof estimateInput>;
+// The prior dashboard contract created a one-time estimate from a single
+// amount. Keep it accepted while new callers supply itemized scope.
+const legacyEstimateInput = z.object({
+  propertyId: id,
+  title: text,
+  scope: text,
+  amountCents: z.number().int().positive().max(10_000_000_000),
+}).transform((value) => ({
+  propertyId: value.propertyId,
+  title: value.title,
+  scope: value.scope,
+  terms: "",
+  lineItems: [{ description: value.title, unit: undefined, quantity: 1, unitPriceCents: value.amountCents }],
+  kind: "one_time" as const,
+  projectId: undefined,
+  recurring: undefined,
+  agreementTemplateId: undefined,
+}));
+const estimateInput = z.union([lifecycleEstimateInput, legacyEstimateInput]);
 const offices = ["owner", "manager", "sales"] as const;
 const dispatch = ["owner", "manager", "dispatch"] as const;
 const sha = (value: string) => createHash("sha256").update(value).digest("hex");
@@ -230,8 +248,20 @@ jobsLifecycleApi.post("/estimates/:id/send", async (req, res) => {
   res.json({ ok: true });
 });
 jobsLifecycleApi.post("/estimates/:id/decision", async (req, res) => {
-  const a = await actor(req); const key = id.parse(req.params.id); const b = z.object({ status: z.enum(["approved", "declined"]), revision: z.number().int().positive() }).parse(req.body);
-  requireRole(a.role, ["client"]); const estimate = await estimateDocument(pool, key); await propertyAccess(a, estimate.property_id); if (estimate.revision !== b.revision) throw new HttpError(409, "Estimate changed; refresh and retry");
+  const a = await actor(req); const key = id.parse(req.params.id); const b = z.object({ status: z.enum(["sent", "approved", "declined"]), revision: z.number().int().positive() }).parse(req.body);
+  const estimate = await estimateDocument(pool, key); await propertyAccess(a, estimate.property_id); if (estimate.revision !== b.revision) throw new HttpError(409, "Estimate changed; refresh and retry");
+  if (b.status === "sent") {
+    requireRole(a.role, [...offices]);
+    await transaction(async (c) => {
+      const current = (await c.query("SELECT status,is_current,revision FROM estimate WHERE id=$1 FOR UPDATE", [key])).rows[0];
+      if (!current || !current.is_current || current.revision !== b.revision || current.status !== "draft") throw new HttpError(409, "Estimate changed or decision already recorded");
+      await c.query("UPDATE estimate SET status='sent' WHERE id=$1", [key]);
+      await audit(c, a.id, "estimate.sent_legacy", key);
+    });
+    res.json({ ok: true });
+    return;
+  }
+  requireRole(a.role, ["client"]);
   res.json(await decideEstimate(key, b.status, a.id, null));
 });
 jobsLifecycleApi.post("/jobs/internal", async (req, res) => {

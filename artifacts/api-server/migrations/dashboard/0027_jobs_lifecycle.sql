@@ -119,3 +119,10 @@ ON CONFLICT DO NOTHING;
 INSERT INTO project_property(project_id,property_id)
 SELECT id,property_id FROM project WHERE property_id IS NOT NULL
 ON CONFLICT DO NOTHING;
+
+-- Operational notifications belong to the account lifecycle. Removing a user
+-- must not leave orphaned notifications or block account cleanup.
+ALTER TABLE notification DROP CONSTRAINT notification_user_id_fkey;
+ALTER TABLE notification
+  ADD CONSTRAINT notification_user_id_fkey
+  FOREIGN KEY(user_id) REFERENCES "user"(id) ON DELETE CASCADE;

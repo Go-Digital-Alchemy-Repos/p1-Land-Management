@@ -15,15 +15,15 @@ export async function notifyStaff(
     [userId],
   )).rows[0];
   if (!recipient?.email) return;
-  const notificationId = randomUUID();
-  await c.query(
-    "INSERT INTO notification(id,user_id,title,body) VALUES($1,$2,$3,$4)",
-    [notificationId, userId, title, body],
-  );
-  await c.query(
+  const queued = await c.query(
     "INSERT INTO outbox(id,kind,payload,dedup_key) VALUES($1,'email',$2,$3) ON CONFLICT(dedup_key) DO NOTHING",
     [randomUUID(), { to: recipient.email, subject: title, text: body }, dedupKey],
   );
+  if (queued.rowCount)
+    await c.query(
+      "INSERT INTO notification(id,user_id,title,body) VALUES($1,$2,$3,$4)",
+      [randomUUID(), userId, title, body],
+    );
 }
 
 export async function notifyClientContacts(

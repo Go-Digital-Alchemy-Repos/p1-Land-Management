@@ -4724,14 +4724,15 @@
       },
       "post": {
         "operationId": "createLifecycleEstimate",
-        "description": "Owner, manager, or sales only. Creates a draft estimate for an operational property. It does not send, approve, schedule, dispatch, publish, post billing, or collect payment.",
+        "description": "Owner, manager, or sales only. Creates a draft estimate for an operational property. New callers send itemized CreateEstimate input. The amount-only CreateSalesEstimate input remains supported for compatibility and becomes one line item. It does not send, approve, schedule, dispatch, publish, post billing, or collect payment.",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateEstimate"
-              }
+              "schema": { "oneOf": [
+                { "$ref": "#/components/schemas/CreateEstimate" },
+                { "$ref": "#/components/schemas/CreateSalesEstimate" }
+              ] }
             }
           }
         },
