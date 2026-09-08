@@ -1551,6 +1551,136 @@
         }
       }
     },
+    "/projects": {
+      "get": {
+        "operationId": "listProjects",
+        "description": "Owner, manager, dispatch, or finance only. Lists projects for operational properties. It does not publish client material, dispatch work, create billing, post to QuickBooks, or record payments.",
+        "responses": {
+          "200": {
+            "description": "Operational projects",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Project"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Owner, manager, dispatch, or finance role required"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createProject",
+        "description": "Owner or manager only. Creates a project for an operational property and preserves the supplied legacy phase summary. It does not create normalized phases, dispatch work, create billing, post to QuickBooks, or record payments.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProject"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created project",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatedResource"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid project input"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Owner or manager role required"
+          },
+          "404": {
+            "description": "Operational property not found"
+          }
+        }
+      }
+    },
+    "/expenses": {
+      "get": {
+        "operationId": "listExpenses",
+        "description": "Owner, manager, or finance only. Lists recorded expenses for operational properties. It is an operational job-costing view and does not post accounting changes, create payment links, or record payments.",
+        "responses": {
+          "200": {
+            "description": "Operational expenses",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Expense"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Owner, manager, or finance role required"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createExpense",
+        "description": "Owner, manager, or finance only. Records one expense against an operational property. It does not create a QuickBooks entry, post accounting changes, create a payment link, or record a payment.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateExpense"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created expense",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatedResource"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid expense input"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Owner, manager, or finance role required"
+          },
+          "404": {
+            "description": "Operational property not found"
+          }
+        }
+      }
+    },
     "/projects/{projectId}/phases": {
       "get": {
         "operationId": "listProjectPhases",
@@ -4390,6 +4520,194 @@
           "sms": { "$ref": "#/components/schemas/IntegrationConfiguration" },
           "jobs": { "type": "array", "maxItems": 50, "items": { "$ref": "#/components/schemas/IntegrationActionQueueItem" } },
           "agreementPreparation": { "$ref": "#/components/schemas/AgreementPreparationHealth" }
+        }
+      },
+      "LegacyProjectPhase": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "complete"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          },
+          "complete": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Project": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "property_id",
+          "name",
+          "scope",
+          "status",
+          "phases",
+          "created_at",
+          "property_name"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "property_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "description": "Legacy project status. The project-phase lifecycle is the authoritative detailed execution state."
+          },
+          "phases": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LegacyProjectPhase"
+            }
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "property_name": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateProject": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "propertyId",
+          "name",
+          "scope"
+        ],
+        "properties": {
+          "propertyId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          },
+          "scope": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          },
+          "phases": {
+            "type": "array",
+            "maxItems": 50,
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/LegacyProjectPhase"
+            }
+          }
+        }
+      },
+      "Expense": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "property_id",
+          "work_order_id",
+          "amount_cents",
+          "category",
+          "description",
+          "incurred_on",
+          "created_by",
+          "property_name"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "property_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "work_order_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "amount_cents": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]*$",
+            "description": "Positive cents returned as a base-10 string because the PostgreSQL source column is bigint."
+          },
+          "category": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "incurred_on": {
+            "type": "string",
+            "format": "date"
+          },
+          "created_by": {
+            "type": "string"
+          },
+          "property_name": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateExpense": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "propertyId",
+          "amountCents",
+          "category",
+          "description",
+          "incurredOn"
+        ],
+        "properties": {
+          "propertyId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "amountCents": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 10000000000
+          },
+          "category": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          },
+          "incurredOn": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          }
         }
       },
       "ProjectPhasePrerequisite": {

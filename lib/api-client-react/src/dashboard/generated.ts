@@ -49,8 +49,10 @@ import type {
   CreateClientNote,
   CreateDashboardClient,
   CreateDashboardProperty,
+  CreateExpense,
   CreateInspectionReport,
   CreateManualAssessmentSlot,
+  CreateProject,
   CreateProjectPhase,
   CreateRecurringService,
   CreateSalesEstimate,
@@ -67,6 +69,7 @@ import type {
   EstimateDecision,
   EstimateDecisionReceipt,
   EstimateRevision,
+  Expense,
   FieldSyncResponse,
   GenerateAssessmentAvailability,
   GeneratedAssessmentAvailability,
@@ -82,6 +85,7 @@ import type {
   ListServiceAgreementsParams,
   OperationReceipt,
   PhotoUploadReceipt,
+  Project,
   ProjectPhase,
   ProjectPhaseBillingIntent,
   ProjectPhaseBillingIntentInput,
@@ -1149,6 +1153,104 @@ export const convertServiceRequest = async (id: string,
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
       serviceRequestConversion,)
+  }
+);}
+
+
+
+export const getListProjectsUrl = () => {
+
+
+
+
+  return `/api/v1/projects`
+}
+
+/**
+ * Owner, manager, dispatch, or finance only. Lists projects for operational properties. It does not publish client material, dispatch work, create billing, post to QuickBooks, or record payments.
+ */
+export const listProjects = async ( options?: RequestInit): Promise<Project[]> => {
+
+  return customFetch<Project[]>(getListProjectsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateProjectUrl = () => {
+
+
+
+
+  return `/api/v1/projects`
+}
+
+/**
+ * Owner or manager only. Creates a project for an operational property and preserves the supplied legacy phase summary. It does not create normalized phases, dispatch work, create billing, post to QuickBooks, or record payments.
+ */
+export const createProject = async (createProject: CreateProject, options?: RequestInit): Promise<CreatedResource> => {
+
+  return customFetch<CreatedResource>(getCreateProjectUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createProject,)
+  }
+);}
+
+
+
+export const getListExpensesUrl = () => {
+
+
+
+
+  return `/api/v1/expenses`
+}
+
+/**
+ * Owner, manager, or finance only. Lists recorded expenses for operational properties. It is an operational job-costing view and does not post accounting changes, create payment links, or record payments.
+ */
+export const listExpenses = async ( options?: RequestInit): Promise<Expense[]> => {
+
+  return customFetch<Expense[]>(getListExpensesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateExpenseUrl = () => {
+
+
+
+
+  return `/api/v1/expenses`
+}
+
+/**
+ * Owner, manager, or finance only. Records one expense against an operational property. It does not create a QuickBooks entry, post accounting changes, create a payment link, or record a payment.
+ */
+export const createExpense = async (createExpense: CreateExpense, options?: RequestInit): Promise<CreatedResource> => {
+
+  return customFetch<CreatedResource>(getCreateExpenseUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createExpense,)
   }
 );}
 

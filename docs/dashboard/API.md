@@ -2,12 +2,12 @@
 
 `/api/v1` endpoints use verified Better Auth sessions. Browser cookie mutations require the configured dashboard Origin. Future iOS/Android clients use the same account's signed bearer session token in `Authorization`; a valid bearer request is allowed without a browser Origin and is still subject to the same verified-email, MFA, role and property authorization checks. Errors use HTTP status and an error message; callers must preserve pending operations on failure.
 
-`lib/api-spec/dashboard.openapi.json` specifies selected shared dashboard contracts, including setup/identity, client and property records, client contacts, field work, assessment availability and booking, integration health, property reads, sales, project-phase and service-request lifecycles, scheduling, commercial intake, agreement work and binary photos. `pnpm --filter @workspace/api-spec codegen:dashboard` generates the isolated dashboard fetch client. The UI consumes its field methods. Other routes currently validate with Zod at the server and still require full OpenAPI coverage.
+`lib/api-spec/dashboard.openapi.json` specifies selected shared dashboard contracts, including setup/identity, client and property records, client contacts, field work, assessment availability and booking, integration health, property reads, sales, project and expense records, project-phase and service-request lifecycles, scheduling, commercial intake, agreement work and binary photos. `pnpm --filter @workspace/api-spec codegen:dashboard` generates the isolated dashboard fetch client. The UI consumes its field methods. Other routes currently validate with Zod at the server and still require full OpenAPI coverage.
 
 | Domain                | Routes beneath /api/v1                                                                                                                       |
 | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
 | Initialization/access | /setup, /setup/complete, /me, /staff, /account-mfa-policies, /account-mfa-policies/:id, /invitations, /invitations/accept                    |
-| Operations            | /clients, /properties, /properties/:id/timeline, /work-orders, /work-orders/:id/status, /work-orders/:id/publish, /field/sync                |
+| Operations            | /clients, /properties, /projects, /work-orders, /work-orders/:id/status, /work-orders/:id/publish, /field/sync                |
 
 `GET/POST /clients`, `POST /clients/:id`, and `POST /properties` are generated contracts. Office client updates require the current version and atomically maintain the primary contact. Client accounts receive a minimized client list; crew have no client-record access. A primary-contact onboarding request requires address and phone and returns its created contact ID; neither client nor property creation creates an invitation, schedule, work order, billing record, or provider action.
 
@@ -18,7 +18,7 @@ The generated work-order contract covers office planning, versioned status trans
 
 The generated recurring-schedule contract covers office creation and future-generation pause/resume. Owner, manager, and dispatch can configure weekly or monthly cadence, interval, America/New_York local time, assigned crew, and independent fixed-monthly or per-visit billing metadata. The worker remains responsible for creating occurrences; pausing never rewrites existing work orders, sends notifications, or alters billing records.
 | Sales                 | /leads, /estimates, estimate decision/revision and lead conversion routes in sales.ts                                                        |
-| Financial             | /billing, /billing/:id/post, /quickbooks/connect, /quickbooks/callback, /quickbooks/import-preview, /quickbooks/import, /quickbooks/invoices |
+| Financial             | /expenses, /billing, /billing/:id/post, /quickbooks/connect, /quickbooks/callback, /quickbooks/import-preview, /quickbooks/import, /quickbooks/invoices |
 | Media                 | POST /files/:id with image body, x-p1-property, x-p1-work, x-p1-classification; protected content/publication routes in files.ts             |
 | Communications        | Notification, delivery and consent routes in notifications.ts                                                                                |
 
@@ -41,6 +41,12 @@ Billing creation requires `operationId` (UUID), `propertyId`, `estimateId`, `tit
 `POST /project-phases/:id/publish` is an owner/manager action for manager-review or accepted work and records a client-safe summary only. `POST /project-phases/:id/billing-intents` is owner/manager/finance-only. It requires an accepted phase, approved estimate, current phase version and UUID operation ID. The server stores one immutable intent and one draft billing record on an identical retry, enforces the estimate cap, and returns409 for a changed operation replay. It never posts to QuickBooks, sends an invoice, creates a payment link, records a payment, or publishes crew material.
 
 The phase list/detail, create/update, transition, publication, history, and billing-intent endpoints are generated from the shared OpenAPI contract. The generated types keep client publications and crew assignment views minimized; office-only event history and billing-intent records remain server-authorized.
+
+## Project and expense records
+
+`GET/POST /projects` is generated from the shared contract. Owner, manager, dispatch, and finance can list operational-property projects; only owner and manager can create one. A creation writes the legacy project summary and optional legacy phase list only. It does not create normalized project phases, dispatch work, publish client material, create billing, post to QuickBooks, or record a payment.
+
+`GET/POST /expenses` is generated from the shared contract. Owner, manager, and finance can list and record expenses for operational properties. It is an operational job-costing record; QuickBooks remains the accounting system of record. The database returns `amount_cents` as a base-10 string because the source column is PostgreSQL `bigint`; request `amountCents` remains a positive integer. These endpoints do not create a QuickBooks entry, post accounting changes, create a payment link, or record a payment.
 
 ## Sales lifecycle
 
