@@ -197,6 +197,39 @@
       }
     ]
   },
+  "data-center-campus.png": {
+    "sourceBytes": 2541683,
+    "sourceHash": "d58ad414c7159546987f28dd35838108ced3626907c98260933c451699bf2d81",
+    "width": 1448,
+    "height": 1086,
+    "default": "optimized/data-center-campus-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/data-center-campus-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 360,
+        "bytes": 30254,
+        "quality": 78
+      },
+      {
+        "path": "optimized/data-center-campus-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 576,
+        "bytes": 69430,
+        "quality": 78
+      },
+      {
+        "path": "optimized/data-center-campus-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 960,
+        "bytes": 161034,
+        "quality": 78
+      }
+    ]
+  },
   "features/about-who.png": {
     "sourceBytes": 2064870,
     "sourceHash": "a785a80db6fea0b44ed8f07db2047f86fcbf56b3fe41de939bedbf4e1700878a",
