@@ -6,6 +6,8 @@ Branch: `codex/p1-cms-crm`. Original public baseline: `5303da0`; copied Core sou
 
 GitHub `main` commit `addcdbfdc50d5867db02671892fc8065f800702d` is deployed successfully to both the P1 public service and the dashboard service. Production verification returned `200` for the public homepage and dashboard health endpoint. The public service redirects the apex host to `www`, normalizes trailing-slash and `.html` public variants with `308`, returns a genuine noindex `404` for unknown pages, and preserves `/admin` as a noindex dashboard boundary. The exact 34-route production build passed SSR/CMS/metadata/internal-link/accessibility-structure QA, initial JavaScript remained within the 150KiB gzip budget (largest route: 132.5KiB), all 51 public image sources use responsive WebP variants, and the 1,240px desktop / 24px responsive-gutter contract passed. The production dependency audit reported zero known production vulnerabilities. This is current technical release evidence; it does not replace shared-identity, owner/editor, provider, real-user performance, complete screen-reader, assessment/onboarding, target-account, native-device, or controlled-pilot acceptance gates recorded below.
 
+The native baseline also passed all 52 policy, vault, transport, offline, sync, and outbox tests, its SQLite outbox-storage check, and its disposable Better Auth protocol harness. This host has only macOS Command Line Tools and no Android device tooling, so it cannot establish the required iOS/Android physical-device, signing, distribution, or controlled-pilot evidence.
+
 ## Current release state
 
 | Workstream | Verified state | Remaining release gate |
