@@ -978,6 +978,129 @@
         }
       }
     },
+    "/clients": {
+      "get": {
+        "operationId": "listDashboardClients",
+        "description": "Office roles receive active client records and primary-contact summary fields. Client accounts receive only their own IDs and names; crew cannot access this route.",
+        "responses": {
+          "200": {
+            "description": "Authorized clients",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DashboardClient"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Office role or account-MFA requirement denied"
+          },
+          "404": {
+            "description": "Client or operational property not found"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createDashboardClient",
+        "description": "Office-only client creation. Supplying primaryContact uses atomic onboarding and requires the business address and phone. Without it, the endpoint creates a minimal client record. Neither mode sends invitations, creates a property, schedules work, or posts billing.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDashboardClient"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created client or onboarding receipt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/CreatedResource"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ClientOnboardingReceipt"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Office role or account-MFA requirement denied"
+          },
+          "404": {
+            "description": "Client or operational property not found"
+          }
+        }
+      }
+    },
+    "/clients/{id}": {
+      "post": {
+        "operationId": "updateDashboardClient",
+        "description": "Office-only optimistic client update. The supplied version must be current; the primary contact is updated or created in the same transaction. A stale version fails without overwriting either record.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateDashboardClient"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated client snapshot",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardClient"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Office role or account-MFA requirement denied"
+          },
+          "404": {
+            "description": "Client or operational property not found"
+          },
+          "409": {
+            "description": "Client changed or is unavailable; refresh before saving"
+          }
+        }
+      }
+    },
     "/clients/{clientId}/contacts": {
       "get": {
         "operationId": "listClientContacts",
@@ -2143,6 +2266,41 @@
           },
           "404": {
             "description": "Property not accessible"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createDashboardProperty",
+        "description": "Office-only property creation for a client. It records a property only; it does not schedule work, grant client access, publish material, or create billing.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDashboardProperty"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created property",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatedResource"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Office role or account-MFA requirement denied"
+          },
+          "404": {
+            "description": "Client or operational property not found"
           }
         }
       }
@@ -4983,6 +5141,255 @@
             "type": "integer",
             "minimum": 1,
             "maximum": 10000000000
+          }
+        }
+      },
+      "ClientPrimaryContact": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "firstName",
+          "lastName",
+          "email",
+          "position",
+          "phone"
+        ],
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "lastName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 254
+          },
+          "position": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "phone": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50
+          }
+        }
+      },
+      "DashboardClient": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": [
+          "id",
+          "name"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "email"
+          },
+          "phone": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "billing_address": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "primary_contact_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "primary_contact_first_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "primary_contact_last_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "primary_contact_email": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "email"
+          },
+          "primary_contact_phone": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "primary_contact_position": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "CreateDashboardClient": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "phone": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "address": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          },
+          "primaryContact": {
+            "$ref": "#/components/schemas/ClientPrimaryContact"
+          }
+        },
+        "description": "When primaryContact is supplied, address and phone are required for atomic onboarding."
+      },
+      "ClientOnboardingReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "primaryContactId",
+          "version"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "primaryContactId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "integer",
+            "enum": [
+              1
+            ]
+          }
+        }
+      },
+      "UpdateDashboardClient": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "address",
+          "phone",
+          "email",
+          "version",
+          "primaryContact"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          },
+          "address": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          },
+          "phone": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50
+          },
+          "email": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "email",
+            "maxLength": 254
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "primaryContact": {
+            "$ref": "#/components/schemas/ClientPrimaryContact"
+          }
+        }
+      },
+      "CreateDashboardProperty": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "clientId",
+          "name",
+          "address"
+        ],
+        "properties": {
+          "clientId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          },
+          "address": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          },
+          "acreage": {
+            "type": "number",
+            "minimum": 0
+          },
+          "accessInstructions": {
+            "type": "string",
+            "maxLength": 10000,
+            "default": ""
           }
         }
       },
