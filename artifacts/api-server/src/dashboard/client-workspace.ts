@@ -143,7 +143,7 @@ clientWorkspaceApi.get("/properties/:id/workspace", async (req, res) => {
     crewSafe
       ? Promise.resolve({ rows: [] as unknown[] })
       : pool.query(
-          "SELECT id,description,status,created_at FROM service_request WHERE property_id=$1 ORDER BY CASE status WHEN 'new' THEN 0 ELSE 1 END,created_at DESC LIMIT 12",
+          `SELECT id,description,${clientSafe ? "CASE status WHEN 'new' THEN 'received' WHEN 'triaged' THEN 'under_review' WHEN 'scheduled' THEN 'service_planning' WHEN 'converted' THEN 'work_planning' WHEN 'closed' THEN 'closed' WHEN 'cancelled' THEN 'cancelled' ELSE 'under_review' END" : "status"} AS status,created_at,updated_at FROM service_request WHERE property_id=$1 ORDER BY CASE status WHEN 'new' THEN 0 ELSE 1 END,created_at DESC LIMIT 12`,
           [propertyId],
         ),
     crewSafe

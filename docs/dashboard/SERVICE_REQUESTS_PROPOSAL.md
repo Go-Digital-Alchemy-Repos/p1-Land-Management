@@ -1,6 +1,6 @@
 # Service-request triage and work-order conversion — decision proposal
 
-Status: **proposed for Project Orchestrator review. This document does not authorize a schema, API, UI, migration, or deployment change.**
+Status: **implemented locally as migration 0021 and awaiting integration and deployment.**
 
 ## Current boundary
 
@@ -8,18 +8,18 @@ Clients and office roles can create and read property-scoped requests. Client re
 
 ## Proposed lifecycle and visibility
 
-Use the following operational states: `new`, `triaged`, `scheduled`, `converted`, `closed`, and `cancelled`. The exact client-facing labels are a product decision; clients must never infer dispatch, billing, payment, or completion from a status alone.
+The implementation uses the operational states `new`, `triaged`, `scheduled`, `converted`, `closed`, and `cancelled`. Client projections use `received`, `under_review`, `service_planning`, `work_planning`, `closed`, and `cancelled`; they do not disclose a crew, work completion, billing, or payment state.
 
-- Owner, manager, and dispatch may triage, schedule, close, cancel, and convert. Each state/scope/assignee change includes the current request version and a reason where the change is not an ordinary `new → triaged` progression.
-- Office read access stays explicitly role-scoped. Decide whether sales and finance retain the current read-only access before implementation; neither role may change dispatch status or convert work by default.
+- Owner, manager, and dispatch may triage, mark service-planning, close, cancel, and convert. Every state change includes the current request version and a reason. `converted` is set only by the idempotent conversion transaction.
+- Owner, manager, dispatch, sales, and finance retain read access. Sales and finance cannot change lifecycle state or convert work.
 - Clients can create requests for their accessible properties and read only client-safe fields: request ID, property, description, client-facing status, created/updated time, and an explicitly published linked work reference if one is approved. They never receive submitter IDs, staff assignments, internal reasons, audit events, private work scope, or financial data.
 - Crew see work orders assigned to them, not an independent request queue.
 
 ## Conversion contract
 
-`POST /service-requests/:id/conversion-preview` is a no-write review of the request snapshot, selected property, draft work scope, prerequisites, schedule and assignment. `POST /service-requests/:id/conversions` records conversion with a client-supplied operation UUID, request version, canonical payload fingerprint and required work-order fields.
+`POST /service-requests/:id/conversion-preview` is a no-write review of the request snapshot and a selected draft work scope/checklist/prerequisites. `POST /service-requests/:id/conversions` records conversion with a client-supplied operation UUID, request version, canonical payload fingerprint and required draft-work fields.
 
-Within one transaction, conversion locks the request and parent property, verifies its version/state, creates exactly one work order, writes an immutable conversion receipt, advances the request to `converted`, and writes audit events. Repeating the same operation and payload returns the original receipt; reusing the operation ID with changed input or using a stale version returns `409`. Conversion never posts an invoice, sends a message, publishes material, or marks work complete.
+Within one transaction, conversion locks the request and parent property, verifies its version/state, creates exactly one work order, writes an immutable conversion receipt, advances the request to `converted`, and writes audit events. Repeating the same operation and payload returns the original receipt; reusing the operation ID with changed input or using a stale version returns `409`. The generated work order is always `draft`, unassigned, unscheduled, and unpublished. Conversion never posts an invoice, sends a message, creates an outbox/provider action, publishes material, or marks work complete.
 
 ## Proposed persistence and migration
 
@@ -31,11 +31,11 @@ Use the next unclaimed dashboard migration number and additive records only:
 | `service_request_event` | Append-only status/scope/assignment history with actor, version, reason and timestamp. |
 | `service_request_conversion` | Immutable operation/fingerprint/request/work-order receipt; unique request and unique operation keys prevent duplicate work. |
 
-Existing requests receive a safe initial version and retain their original status. Add new constraints as `NOT VALID`, verify/backfill valid existing values, then validate in a controlled follow-up. Do not remove columns or alter historical descriptions. Application rollback retains the additive records; it must not delete generated work or reopen a request merely to match older code.
+Existing requests receive a safe initial version and retain their original status. The status constraint is `NOT VALID`: it applies to new and updated rows without rejecting historical rows. Historic rows with a nonstandard status remain readable but cannot be transitioned through the new workflow until an owner-directed data correction is separately planned. No columns or descriptions are removed. Application rollback retains additive records; it must not delete generated work or reopen a request merely to match older code.
 
 ## API and contract requirements
 
-Add versioned routes only with Zod validation, OpenAPI, generated client methods, server-side role/property checks, `Cache-Control: no-store` for authenticated responses, and typed error behavior. Existing `GET/POST /requests` remains compatible. Status updates and conversion use dedicated routes rather than overloading create.
+The implemented versioned routes use Zod validation, server-side role/property checks, typed errors, and the dashboard-wide `Cache-Control: no-store` policy. Existing `GET/POST /requests` remains compatible; client status values are now safe labels and each new request writes an initial append-only event. Status updates and conversion use dedicated routes rather than overloading create. Full OpenAPI/generated-client coverage remains a platform-wide follow-up.
 
 ## Staged acceptance evidence
 
@@ -44,8 +44,6 @@ Add versioned routes only with Zod validation, OpenAPI, generated client methods
 - Parent lifecycle change during conversion, prerequisite/dispatch guard behavior, and audit/event ordering.
 - Generated contract/type checks, database migration replay, populated restore, application rollback compatibility, accessible responsive UI, and an invited-client request-to-reviewed-work pilot.
 
-## Decisions requested
+## Integration and release notes
 
-1. Confirm the status vocabulary and client-facing labels.
-2. Confirm sales/finance read access and whether any client may see a published converted work reference.
-3. Confirm that one request may create at most one work order in v1; follow-on work would use a separate request or explicit owner/manager correction.
+The implementation is additive and has passed disposable-PostgreSQL migration replay plus HTTP role, client isolation, stale-version, conversion-retry, cancellation, append-only, and no-provider-action tests. It is not deployed. Integration must preserve the migration order, review the versioned wire contract with the shared OpenAPI backlog, and exercise the flow with invited pilot users before release.

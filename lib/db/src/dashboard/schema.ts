@@ -351,7 +351,11 @@ export const serviceRequest = pgTable(
     userId: text("user_id").notNull(),
     description: text().notNull(),
     status: text().default("new").notNull(),
+    version: integer().default(1).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" })
       .defaultNow()
       .notNull(),
   },
@@ -366,6 +370,30 @@ export const serviceRequest = pgTable(
       foreignColumns: [user.id],
       name: "service_request_user_id_fkey",
     }),
+  ],
+);
+
+export const serviceRequestEvent = pgTable(
+  "service_request_event",
+  {
+    id: uuid().primaryKey().notNull(),
+    serviceRequestId: uuid("service_request_id").notNull(),
+    actorId: text("actor_id").notNull(),
+    eventType: text("event_type").notNull(),
+    priorVersion: integer("prior_version"),
+    resultingVersion: integer("resulting_version").notNull(),
+    fromStatus: text("from_status"),
+    toStatus: text("to_status"),
+    reason: text(),
+    details: jsonb().default({}).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index("service_request_event_request_created_idx").using("btree", table.serviceRequestId.asc().nullsLast().op("uuid_ops"), table.createdAt.desc().nullsLast().op("timestamptz_ops")),
+    foreignKey({ columns: [table.serviceRequestId], foreignColumns: [serviceRequest.id], name: "service_request_event_service_request_id_fkey" }),
+    foreignKey({ columns: [table.actorId], foreignColumns: [user.id], name: "service_request_event_actor_id_fkey" }),
   ],
 );
 
@@ -665,6 +693,29 @@ export const workOrder = pgTable(
       "work_order_status_check",
       sql`status = ANY (ARRAY['draft'::text, 'scheduled'::text, 'in_progress'::text, 'completed'::text, 'reviewed'::text, 'cancelled'::text, 'skipped'::text, 'delayed'::text])`,
     ),
+  ],
+);
+
+export const serviceRequestConversion = pgTable(
+  "service_request_conversion",
+  {
+    operationId: uuid("operation_id").primaryKey().notNull(),
+    serviceRequestId: uuid("service_request_id").notNull(),
+    workOrderId: uuid("work_order_id").notNull(),
+    actorId: text("actor_id").notNull(),
+    expectedRequestVersion: integer("expected_request_version").notNull(),
+    fingerprint: text().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    unique("service_request_conversion_service_request_id_key").on(table.serviceRequestId),
+    unique("service_request_conversion_work_order_id_key").on(table.workOrderId),
+    index("service_request_conversion_request_created_idx").using("btree", table.serviceRequestId.asc().nullsLast().op("uuid_ops"), table.createdAt.desc().nullsLast().op("timestamptz_ops")),
+    foreignKey({ columns: [table.serviceRequestId], foreignColumns: [serviceRequest.id], name: "service_request_conversion_service_request_id_fkey" }),
+    foreignKey({ columns: [table.workOrderId], foreignColumns: [workOrder.id], name: "service_request_conversion_work_order_id_fkey" }),
+    foreignKey({ columns: [table.actorId], foreignColumns: [user.id], name: "service_request_conversion_actor_id_fkey" }),
   ],
 );
 

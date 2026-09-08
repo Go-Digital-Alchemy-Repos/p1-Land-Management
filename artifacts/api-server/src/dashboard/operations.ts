@@ -9,11 +9,13 @@ import { contactsApi } from "./contact-routes";
 import { assessmentApi } from "./assessment-routes";
 import { scheduleApi } from "./schedule-routes";
 import { projectPhaseApi } from "./project-phase.routes";
+import { serviceRequestApi } from "./service-request.routes";
 export const operationsApi = Router();
 operationsApi.use(scheduleApi);
 operationsApi.use(assessmentApi);
 operationsApi.use(contactsApi);
 operationsApi.use(projectPhaseApi);
+operationsApi.use(serviceRequestApi);
 const id = z.string().uuid(),
   text = z.string().trim().min(1).max(10000);
 operationsApi.get("/recurring-services", async (req, res) => {
