@@ -10,6 +10,8 @@ import heroImg from "@/assets/service-clearing.png";
 import preparesImg from "@/assets/features/clearing-prepares.png";
 import mulchingImg from "@/assets/features/clearing-mulching.png";
 
+import { FaqAccordion } from "@/components/content/FaqAccordion";
+
 const FAQS = [
   {
     question: "How much does land clearing cost in Upstate SC and Charlotte NC?",
@@ -130,14 +132,7 @@ export default function LandClearing() {
 
           <div className="space-y-6">
             <h2 className="text-2xl font-serif font-bold text-secondary border-b border-border pb-4">Land Clearing FAQs</h2>
-            <div className="space-y-6">
-              {FAQS.map((f) => (
-                <div key={f.question} className="bg-card border border-card-border rounded-xl p-6 shadow-sm space-y-2">
-                  <h3 className="text-lg font-serif font-bold text-secondary">{f.question}</h3>
-                  <p className="text-secondary/80 leading-relaxed">{f.answer}</p>
-                </div>
-              ))}
-            </div>
+            <FaqAccordion items={FAQS} />
             <p className="font-bold text-secondary mt-6 border-l-4 border-primary pl-4">
               Call <a href="tel:7042218928" className="text-primary hover:underline">+1 (704) 221-8928</a> or <Link href="/contact" className="text-primary hover:underline">request a free estimate online</Link> to discuss your clearing project.
             </p>

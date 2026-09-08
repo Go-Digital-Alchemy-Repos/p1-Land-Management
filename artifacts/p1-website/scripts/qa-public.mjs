@@ -56,6 +56,12 @@ try {
       assert(match[0].includes('data-seo-jsonld'), `${path}: schema cleanup marker`);
       JSON.parse(match[1]);
     }
+    if (html.includes('"@type":"FAQPage"')) {
+      assert(html.includes('data-content-type="faq"'), `${path}: FAQ content is semantically labelled`);
+      const faqItems = [...html.matchAll(/<details\b[^>]*\bdata-faq-item(?:="")?[^>]*>/g)];
+      assert(faqItems.length > 0, `${path}: FAQPage uses native accordion items`);
+      for (const item of faqItems) assert(!/\bopen(?:=|\s|>)/.test(item[0]), `${path}: FAQ answers are collapsed initially`);
+    }
   }
   const home = render('/');
   for (const type of ['text', 'image', 'ctaTarget']) {
@@ -96,5 +102,5 @@ for (const key of Object.keys(manifest).filter(key => /^src\/pages\/.*\.tsx$/.te
   if (bytes > worst.bytes) worst = { route: key, bytes };
   assert(bytes <= 150 * 1024, `${key}: initial JS ${(bytes / 1024).toFixed(1)} KiB exceeds 150 KiB`);
 }
-console.log(`PASS ${paths.length} routes: SSR, metadata, CMS text/image/link overrides, internal links, proof, JSON-LD and no React warnings.`);
+console.log(`PASS ${paths.length} routes: SSR, metadata, CMS text/image/link overrides, internal links, proof, FAQ accordion/JSON-LD and no React warnings.`);
 console.log(`PASS initial JS <=150 KiB gzip; largest ${worst.route}: ${(worst.bytes / 1024).toFixed(1)} KiB.`);

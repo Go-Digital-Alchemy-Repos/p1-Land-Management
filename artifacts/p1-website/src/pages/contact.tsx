@@ -3,7 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
-import { localBusinessSchema, breadcrumbSchema } from "@/lib/structured-data";
+import { localBusinessSchema, breadcrumbSchema, faqSchema } from "@/lib/structured-data";
+import { FaqAccordion } from "@/components/content/FaqAccordion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,6 +17,29 @@ import { EMAIL, PHONE_DISPLAY, PHONE_HREF } from "@/lib/site";
 const SERVICES = [
   "Land Clearing", "Grading & Site Prep", "Drainage", "Turf & Seeding",
   "Tree Services", "Pond & Waterway", "Property Maintenance", "Property Reconstruction", "Not Sure"
+];
+
+const FAQS = [
+  {
+    question: "What is your minimum property size?",
+    answer: "P1 specializes in properties 1 acre and larger. We do not take standard residential lawn maintenance jobs.",
+  },
+  {
+    question: "Do you serve both South Carolina and North Carolina?",
+    answer: "Yes. We serve Upstate South Carolina (Greenville, Spartanburg, and surrounding areas) and the Charlotte, NC region (Charlotte, Concord, Mooresville, Lake Norman, Gastonia, and surrounding areas).",
+  },
+  {
+    question: "How quickly can you start a project?",
+    answer: "Timeline depends on project type and current schedule. After your estimate, we'll give you a realistic start date.",
+  },
+  {
+    question: "Do you offer ongoing maintenance contracts?",
+    answer: "Yes. We offer weekly, bi-weekly, and monthly maintenance programs for commercial, agricultural, and large residential properties.",
+  },
+  {
+    question: "Are you licensed and insured?",
+    answer: "Ask our team for current insurance documentation and any license information relevant to your project before work begins.",
+  },
 ];
 
 export default function Contact() {
@@ -68,7 +92,7 @@ export default function Contact() {
         title="Get a Free Estimate | P1 Land & Property Management"
         description="Request a free on-site estimate for land clearing, grading, drainage, turf, pond management, or property maintenance. Serving Upstate SC and Charlotte NC. Call (704) 221-8928."
         jsonLd={[
-          localBusinessSchema(),
+          localBusinessSchema(), faqSchema(FAQS),
           breadcrumbSchema([
             { name: "Home", path: "/" },
             { name: "Contact", path: "/contact" },
@@ -277,28 +301,7 @@ export default function Contact() {
             Frequently Asked Questions
           </h2>
           
-          <div className="grid gap-6">
-            <div className="bg-card border border-border p-6 rounded-lg shadow-sm">
-              <h3 className="font-bold text-lg text-secondary mb-2">What is your minimum property size?</h3>
-              <p className="text-secondary/80 leading-relaxed">P1 specializes in properties 1 acre and larger. We do not take standard residential lawn maintenance jobs.</p>
-            </div>
-            <div className="bg-card border border-border p-6 rounded-lg shadow-sm">
-              <h3 className="font-bold text-lg text-secondary mb-2">Do you serve both South Carolina and North Carolina?</h3>
-              <p className="text-secondary/80 leading-relaxed">Yes. We serve Upstate South Carolina (Greenville, Spartanburg, and surrounding areas) and the Charlotte, NC region (Charlotte, Concord, Mooresville, Lake Norman, Gastonia, and surrounding areas).</p>
-            </div>
-            <div className="bg-card border border-border p-6 rounded-lg shadow-sm">
-              <h3 className="font-bold text-lg text-secondary mb-2">How quickly can you start a project?</h3>
-              <p className="text-secondary/80 leading-relaxed">Timeline depends on project type and current schedule. After your estimate, we'll give you a realistic start date.</p>
-            </div>
-            <div className="bg-card border border-border p-6 rounded-lg shadow-sm">
-              <h3 className="font-bold text-lg text-secondary mb-2">Do you offer ongoing maintenance contracts?</h3>
-              <p className="text-secondary/80 leading-relaxed">Yes. We offer weekly, bi-weekly, and monthly maintenance programs for commercial, agricultural, and large residential properties.</p>
-            </div>
-            <div className="bg-card border border-border p-6 rounded-lg shadow-sm">
-              <h3 className="font-bold text-lg text-secondary mb-2">Are you licensed and insured?</h3>
-              <p className="text-secondary/80 leading-relaxed">Ask our team for current insurance documentation and any license information relevant to your project before work begins.</p>
-            </div>
-          </div>
+          <FaqAccordion items={FAQS} />
         </div>
       </section>
 

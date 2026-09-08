@@ -59,6 +59,8 @@ const values = [
   { n: "04", title: "Dependable Scheduling", desc: "Crews that show up, communicate and finish on the timeline we commit to.", icon: CalendarCheck },
 ];
 
+import { FaqAccordion } from "@/components/content/FaqAccordion";
+
 const FAQS = [
   {
     question: "What does P1 Land & Property Management do?",
@@ -389,18 +391,7 @@ export default function Home() {
               Frequently asked questions.
             </h2>
           </div>
-          <div className="space-y-6">
-            {FAQS.map((f) => (
-              <div
-                key={f.question}
-                className="rounded-[4px] border bg-white p-8"
-                style={{ borderColor: "hsl(215 30% 15% / 0.08)", boxShadow: "0 14px 40px -30px hsl(215 45% 15%)" }}
-              >
-                <h3 className="font-serif text-xl font-bold text-secondary">{f.question}</h3>
-                <p className="mt-3 leading-relaxed" style={{ color: "hsl(215 20% 35%)" }}>{f.answer}</p>
-              </div>
-            ))}
-          </div>
+          <FaqAccordion items={FAQS} />
           <p className="mt-10 border-l-4 border-primary pl-4 font-bold text-secondary">
             Still have questions? Call <a href="tel:7042218928" className="text-primary hover:underline">+1 (704) 221-8928</a> or{" "}
             <Link href="/contact" className="text-primary hover:underline">request a free estimate online</Link>.

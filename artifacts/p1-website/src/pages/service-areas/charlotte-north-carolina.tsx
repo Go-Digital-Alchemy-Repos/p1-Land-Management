@@ -10,6 +10,8 @@ import charlotteImg from "@/assets/features/charlotte-region.png";
 import unionCountyImg from "@/assets/features/union-county-equestrian.png";
 import { CheckCircle2, ArrowRight } from "lucide-react";
 
+import { FaqAccordion } from "@/components/content/FaqAccordion";
+
 const FAQS = [
   {
     question: "Which communities in the Charlotte region does P1 serve?",
@@ -169,14 +171,7 @@ export default function CharlotteRegionNC() {
 
           <div className="space-y-6">
             <h2 className="text-2xl font-serif font-bold text-secondary border-b border-border pb-4">Charlotte, NC Region Land & Property Management FAQs</h2>
-            <div className="space-y-6">
-              {FAQS.map((f) => (
-                <div key={f.question} className="bg-card border border-card-border rounded-xl p-6 shadow-sm space-y-2">
-                  <h3 className="text-lg font-serif font-bold text-secondary">{f.question}</h3>
-                  <p className="text-secondary/80 leading-relaxed">{f.answer}</p>
-                </div>
-              ))}
-            </div>
+            <FaqAccordion items={FAQS} />
           </div>
 
         </div>
