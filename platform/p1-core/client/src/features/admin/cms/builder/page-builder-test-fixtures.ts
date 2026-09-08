@@ -45,10 +45,10 @@ export const mixedBuilderFixture: BuilderContent = {
       },
     },
     {
-      id: "directory-block",
-      type: "directory-browser",
+      id: "managed-form-block",
+      type: "form-embed",
       props: {
-        heading: "Find a Verified Provider",
+        formSlug: "contact-form",
       },
     },
   ],

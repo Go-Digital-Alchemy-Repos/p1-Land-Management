@@ -1,5 +1,5 @@
 import { TeamSection } from "@/components/shared/team-section";
-import { lazy, Suspense, useState, useMemo, type ReactElement } from "react";
+import { lazy, Suspense, type ReactElement } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -13,10 +13,8 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import {
-  ArrowRight,
   BookOpen,
   CalendarDays,
-  Clock,
   Image,
   Loader2,
   Lock,
@@ -24,16 +22,12 @@ import {
   Send,
   UserCheck,
 } from "lucide-react";
-import { LoginDialog } from "@/components/auth/login-dialog";
-import { MapView } from "@/components/directory/map-view";
 import type { BlockInstance } from "./block-registry";
-import type { TherapistProfile, User as AppUser } from "@shared/schema";
 import { PublicFormRenderer } from "@/components/forms/public-form-renderer";
 import { CompanyInformationCard } from "@/components/shared/company-information-card";
 import { getImageObjectPositionStyle } from "@/lib/image-focus";
 import { getEventPath } from "@shared/event-url";
 import { isDynamicBlock, getBlockDef } from "./block-registry";
-import { mergeJoinHeroBlocks } from "@shared/cms-blocks";
 import {
   SectionStyleWrapper,
   DEFAULT_SECTION_LINEAR_GRADIENT,
@@ -92,10 +86,6 @@ import {
   str,
 } from "./block-renderer.shared";
 
-type DirectoryProvider = TherapistProfile & {
-  user?: Pick<AppUser, "firstName" | "lastName"> & { profileImageUrl?: string | null };
-};
-
 function GalleryBlock({ props }: { props: Record<string, unknown> }) {
   const galleryId = str(props.galleryId);
   const layout = str(props.layout) || "inherit";
@@ -131,10 +121,6 @@ function GalleryBlock({ props }: { props: Record<string, unknown> }) {
   );
 }
 
-interface DirectoryProvidersResponse {
-  items: DirectoryProvider[];
-}
-
 const LazyManagedFormEmbedBlock = lazy(() =>
   import("@/features/public/public-dynamic-blocks").then((module) => ({
     default: module.ManagedFormEmbedBlock,
@@ -153,21 +139,9 @@ const LazyRecordingArchivesSection = lazy(() =>
   })),
 );
 
-const LazyDirectoryBrowserSection = lazy(() =>
-  import("@/features/directory/directory-page").then((module) => ({
-    default: module.DirectoryBrowserSection,
-  })),
-);
-
 const LazyCareerListingsSection = lazy(() =>
   import("@/features/public/careers-page").then((module) => ({
     default: module.CareerListingsSection,
-  })),
-);
-
-const LazyPortfolioGridSection = lazy(() =>
-  import("@/features/public/portfolio-page").then((module) => ({
-    default: module.PortfolioGridSection,
   })),
 );
 
@@ -702,70 +676,6 @@ function VideoEmbedBlock({ props }: { props: Record<string, unknown> }) {
   );
 }
 
-function TherapistMapBlock({ props }: { props: Record<string, unknown> }) {
-  const { data: allTherapistsData, isLoading } = useQuery<DirectoryProvidersResponse>({
-    queryKey: ["/api/therapists", "pageSize=500"],
-    queryFn: async () => {
-      const res = await fetch("/api/therapists?pageSize=500");
-      if (!res.ok) throw new Error("Failed to fetch providers");
-      return res.json();
-    },
-  });
-
-  const mapTherapists = useMemo(
-    () =>
-      (allTherapistsData?.items ?? []).map((t) => ({
-        profile: t,
-        user: {
-          firstName: t.user?.firstName ?? null,
-          lastName: t.user?.lastName ?? null,
-          profileImageUrl: t.user?.profileImageUrl ?? null,
-        },
-      })),
-    [allTherapistsData],
-  );
-  const headingAlignment = str(props.sectionHeadingAlignment) || "center";
-  const buttonJustifyClass =
-    headingAlignment === "left"
-      ? "justify-start"
-      : headingAlignment === "right"
-        ? "justify-end"
-        : "justify-center";
-
-  return (
-    <section
-      className="relative bg-[#ffffff4d] overflow-hidden"
-      data-testid="section-professional-map"
-    >
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-14 sm:py-20 md:py-24">
-        <div className="mb-8 sm:mb-12 space-y-5">
-          <SectionHeading props={props} defaultAlignment="center" />
-          <div className={`flex ${buttonJustifyClass}`}>
-            <Link href="/directory">
-              <Button variant="outline" data-testid="button-view-all-therapists">
-                Find a Verified Provider <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
-        </div>
-        {isLoading ? (
-          <div className="flex justify-center py-16">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-          </div>
-        ) : (
-          <MapView
-            therapists={mapTherapists}
-            height="500px"
-            interactive
-            zoom={2}
-            center={[20, 0]}
-          />
-        )}
-      </div>
-    </section>
-  );
-}
-
 function ContactFormBlock() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8" data-testid="dynamic-contact-form">
@@ -787,142 +697,6 @@ function ContactFormBlock() {
           <CompanyInformationCard />
         </div>
       </div>
-    </div>
-  );
-}
-
-function JoinRegistrationFormBlock({ props }: { props: Record<string, unknown> }) {
-  const [loginOpen, setLoginOpen] = useState(false);
-  const heading = str(props.heading);
-  const accentHeading = str(props.accentHeading);
-  const subheading = str(props.subheading);
-  const hasImageBackground = !!str(props.sectionBackgroundImageUrl);
-  const headingTextStyle = colorStyle(
-    props.headingColor,
-    hasImageBackground ? "#ffffff" : undefined,
-  );
-  const accentHeadingTextStyle = colorStyle(
-    props.accentHeadingColor,
-    hasImageBackground ? "#ffffff" : undefined,
-  );
-  const subheadingTextStyle = colorStyle(
-    props.subheadingColor,
-    hasImageBackground ? "#ffffff" : undefined,
-  );
-  const applicationStatusText = str(props.applicationStatusText) || "Apply to join.";
-  const loginPromptPrefix =
-    str(props.loginPromptPrefix) || "If you're already a member click here to";
-  const loginLinkText = str(props.loginLinkText) || "Log in";
-  const loginPromptSuffix = str(props.loginPromptSuffix) || "to your profile!";
-  const hasHeroCopy = !!(heading || accentHeading);
-
-  return (
-    <section
-      className={`max-w-4xl mx-auto px-4 sm:px-6 text-center ${hasHeroCopy ? "py-14 sm:py-20 md:py-24" : "py-8 sm:py-10 md:py-12"}`}
-      data-testid="dynamic-join-registration-form"
-    >
-      {hasHeroCopy && (
-        <>
-          <h1
-            className="font-heading text-3xl sm:text-4xl md:text-5xl font-bold mb-6"
-            data-testid="text-join-title"
-            style={headingTextStyle}
-          >
-            {heading}
-            {accentHeading && (
-              <>
-                {" "}
-                <span className="text-accent" style={accentHeadingTextStyle}>
-                  {accentHeading}
-                </span>
-              </>
-            )}
-          </h1>
-          {subheading && (
-            <div
-              className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto mb-8 [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-2 [&_a]:hover:text-primary/80 [&_p]:m-0"
-              data-testid="text-join-subheading"
-              style={subheadingTextStyle}
-              dangerouslySetInnerHTML={{ __html: subheading }}
-            />
-          )}
-        </>
-      )}
-      <Button
-        size="lg"
-        className="bg-accent text-accent-foreground border-accent-border text-base px-8 py-6 opacity-60 cursor-not-allowed"
-        disabled
-        data-testid="button-apply-member"
-      >
-        <Clock className="mr-2 h-5 w-5" />
-        {applicationStatusText}
-      </Button>
-      <p
-        className="text-sm sm:text-base text-muted-foreground mt-6"
-        data-testid="text-login-prompt"
-        style={subheadingTextStyle}
-      >
-        {loginPromptPrefix}{" "}
-        <button
-          onClick={() => setLoginOpen(true)}
-          className="text-accent underline underline-offset-2 hover:text-accent/80 font-medium"
-          data-testid="button-member-login"
-        >
-          {loginLinkText}
-        </button>{" "}
-        {loginPromptSuffix}
-      </p>
-      <LoginDialog open={loginOpen} onOpenChange={setLoginOpen} />
-    </section>
-  );
-}
-
-function JoinHeroBlock({ props }: { props: Record<string, unknown> }) {
-  const heading = str(props.heading) || "Are you a verified provider?";
-  const accentHeading = str(props.accentHeading) || "Join the Network!";
-  const subheading = str(props.subheading);
-  const hasImageBackground = !!str(props.sectionBackgroundImageUrl);
-  const headingTextStyle = colorStyle(
-    props.headingColor,
-    hasImageBackground ? "#ffffff" : undefined,
-  );
-  const accentHeadingTextStyle = colorStyle(
-    props.accentHeadingColor,
-    hasImageBackground ? "#ffffff" : undefined,
-  );
-  const subheadingTextStyle = colorStyle(
-    props.subheadingColor,
-    hasImageBackground ? "#ffffff" : undefined,
-  );
-
-  return (
-    <div
-      className="max-w-4xl mx-auto px-4 sm:px-6 py-14 sm:py-20 md:py-24 text-center"
-      data-testid="dynamic-join-hero"
-    >
-      <h1
-        className="font-heading text-3xl sm:text-4xl md:text-5xl font-bold mb-6"
-        data-testid="text-join-hero-title"
-        style={headingTextStyle}
-      >
-        {heading}
-        {accentHeading && (
-          <>
-            {" "}
-            <span className="text-accent" style={accentHeadingTextStyle}>
-              {accentHeading}
-            </span>
-          </>
-        )}
-      </h1>
-      {subheading && (
-        <div
-          className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-2 [&_a]:hover:text-primary/80 [&_p]:m-0"
-          data-testid="text-join-hero-subheading"
-          style={subheadingTextStyle}
-          dangerouslySetInnerHTML={{ __html: subheading }}
-        />
-      )}
     </div>
   );
 }
@@ -1005,17 +779,13 @@ export function BlockRenderer({
   if (isDynamicBlock(block.type)) {
     if (
       isAdminPreview &&
-      block.type !== "directory-browser" &&
       block.type !== "career-listings" &&
-      block.type !== "portfolio-grid" &&
       block.type !== "team"
     ) {
       renderedBlock = <DynamicPlaceholderAdmin block={block} />;
     }
     if (!renderedBlock && block.type === "team")
       renderedBlock = <TeamSection props={block.props} />;
-    if (!renderedBlock && block.type === "therapist-map")
-      renderedBlock = <TherapistMapBlock props={block.props} />;
     if (!renderedBlock && block.type === "contact-form") renderedBlock = <ContactFormBlock />;
     if (!renderedBlock && block.type === "form-embed") {
       renderedBlock = (
@@ -1024,10 +794,6 @@ export function BlockRenderer({
         </Suspense>
       );
     }
-    if (!renderedBlock && block.type === "join-hero")
-      renderedBlock = <JoinHeroBlock props={block.props} />;
-    if (!renderedBlock && block.type === "join-registration-form")
-      renderedBlock = <JoinRegistrationFormBlock props={block.props} />;
     if (!renderedBlock && block.type === "blog-post-feed")
       renderedBlock = <BlogPostFeedBlock props={block.props} />;
     if (!renderedBlock && block.type === "blog-featured-post")
@@ -1048,24 +814,10 @@ export function BlockRenderer({
         </Suspense>
       );
     }
-    if (!renderedBlock && block.type === "directory-browser") {
-      renderedBlock = (
-        <Suspense fallback={<DynamicPreviewFallback />}>
-          <LazyDirectoryBrowserSection props={block.props} syncUrl={false} />
-        </Suspense>
-      );
-    }
     if (!renderedBlock && block.type === "career-listings") {
       renderedBlock = (
         <Suspense fallback={<DynamicPreviewFallback />}>
           <LazyCareerListingsSection props={block.props} />
-        </Suspense>
-      );
-    }
-    if (!renderedBlock && block.type === "portfolio-grid") {
-      renderedBlock = (
-        <Suspense fallback={<DynamicPreviewFallback />}>
-          <LazyPortfolioGridSection props={block.props} />
         </Suspense>
       );
     }
@@ -1106,13 +858,9 @@ export function BlockRenderer({
  *  Update this set when adding new full-width block types. */
 const FULL_WIDTH_BLOCKS = new Set([
   "hero",
-  "join-hero",
-  "join-registration-form",
   "events-archive",
   "video-archives",
-  "directory-browser",
   "career-listings",
-  "portfolio-grid",
   "cta",
   "trust-bar",
   "divider",
@@ -1121,7 +869,7 @@ const FULL_WIDTH_BLOCKS = new Set([
 ]);
 
 export function PageRenderer({ blocks }: { blocks: BlockInstance[] }) {
-  const normalizedBlocks = mergeJoinHeroBlocks(blocks);
+  const normalizedBlocks = blocks;
 
   return (
     <div>

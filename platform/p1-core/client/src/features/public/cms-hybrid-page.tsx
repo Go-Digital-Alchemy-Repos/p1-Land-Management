@@ -7,8 +7,6 @@ import { PublicBlockRenderer, PublicPageRenderer } from "@/features/public/publi
 import { PublicSidebar } from "@/features/public/public-sidebar";
 import { useFrontendEditTarget } from "@/features/frontend-edit/frontend-edit";
 import { Loader2 } from "lucide-react";
-import { Link } from "wouter";
-import { Button } from "@/components/ui/button";
 import type { BlockInstance, BuilderContent } from "@/features/admin/cms/builder/block-registry";
 import type { CmsPage, SeoSettings } from "@shared/schema";
 import { JsonLd } from "@/components/shared/json-ld";
@@ -35,18 +33,6 @@ class CmsNotFoundError extends Error {
   constructor(slug: string) {
     super(`CMS page not found: ${slug}`);
     this.name = "CmsNotFoundError";
-  }
-}
-
-class CmsMembershipAccessError extends Error {
-  status: number;
-  teaser: string | null;
-
-  constructor(status: number, teaser: string | null) {
-    super("Membership access required");
-    this.name = "CmsMembershipAccessError";
-    this.status = status;
-    this.teaser = teaser;
   }
 }
 
@@ -179,33 +165,6 @@ function CmsLoadingPage() {
   );
 }
 
-function MembershipRestrictedPage({ teaser, status }: { teaser?: string | null; status: number }) {
-  return (
-    <div className="min-h-screen flex flex-col" data-testid="cms-membership-restricted">
-      <Navbar />
-      <main className="flex-1">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-24 text-center">
-          <h1 className="text-3xl font-heading font-semibold mb-4">
-            {status === 401 ? "Sign in to continue" : "Membership required"}
-          </h1>
-          <p className="text-muted-foreground mb-6">
-            {teaser || "This content is available to members with the right access level."}
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            <Link href="/admin/login">
-              <Button>{status === 401 ? "Sign In" : "Sign In"}</Button>
-            </Link>
-            <Link href="/membership">
-              <Button variant="outline">View Memberships</Button>
-            </Link>
-          </div>
-        </div>
-      </main>
-      <Footer />
-    </div>
-  );
-}
-
 export function CmsPageView({ page, globalSeo, previewLabel }: CmsPageViewProps) {
   useFrontendEditTarget({
     kind: "cms-page",
@@ -271,13 +230,6 @@ export function CmsHybridPage({ slug, fallback, enabled = true }: CmsHybridPageP
       if (res.status === 404) {
         throw new CmsNotFoundError(slug);
       }
-      if (res.status === 401 || res.status === 403) {
-        const payload = await res.json().catch(() => ({}));
-        throw new CmsMembershipAccessError(
-          res.status,
-          typeof payload.teaser === "string" ? payload.teaser : null,
-        );
-      }
       if (!res.ok) {
         throw new Error(`CMS fetch failed: ${res.status} ${res.statusText}`);
       }
@@ -312,9 +264,6 @@ export function CmsHybridPage({ slug, fallback, enabled = true }: CmsHybridPageP
   }
 
   if (error) {
-    if (error instanceof CmsMembershipAccessError) {
-      return <MembershipRestrictedPage status={error.status} teaser={error.teaser} />;
-    }
     if (import.meta.env.DEV && !(error instanceof CmsNotFoundError)) {
       console.warn(
         `[CmsHybridPage] Transient error for slug "${slug}", showing fallback:`,

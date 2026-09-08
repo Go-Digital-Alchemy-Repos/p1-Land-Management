@@ -10,6 +10,8 @@ The P1-owned Core Platform installation exposes only the CMS, blog/content, form
 
 The public gateway and the P1 Core API must return an unavailable response for every excluded app route. The `p1-module-exclusions` regression test keeps the Core API boundary explicit. Events and Careers remain installed but disabled until P1 accepts the related operating process.
 
+P1’s CMS builder and public renderer do not offer Directory, Portfolio, or Membership blocks. These excluded blocks and the Membership access-rule editor are removed from the P1 client bundle; ordinary CMS pages, galleries, blog posts, managed forms, and CRM intake remain available.
+
 ## Configuration
 
 Feature app settings live in the `system_configuration` settings category:

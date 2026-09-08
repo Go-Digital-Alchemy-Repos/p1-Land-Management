@@ -65,7 +65,6 @@ export const LEGACY_BLOCK_TYPE_ALIASES: Record<string, string> = {
   "articles-preview": "blog-preview",
   "events-feed": "events-preview",
   "upcoming-events": "events-preview",
-  "portfolio-archive": "portfolio-grid",
 };
 
 export const ALIGN_OPTIONS = [

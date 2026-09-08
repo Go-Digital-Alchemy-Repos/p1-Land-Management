@@ -72,7 +72,6 @@ import {
   FolderKanban,
 } from "lucide-react";
 import type { BlockInstance, BuilderContent } from "@/features/admin/cms/builder/block-registry";
-import { mergeJoinHeroBlocks } from "@shared/cms-blocks";
 import { getImageObjectPositionStyle } from "@/lib/image-focus";
 import { FULL_WIDTH_BLOCK_TYPES } from "@/features/admin/cms/builder/page-builder-constants";
 import { stripHtml } from "@/lib/html";
@@ -153,20 +152,11 @@ function GalleryBlock({ props }: { props: Record<string, unknown> }) {
   );
 }
 
-const LazyTherapistMapBlock = lazy(() =>
-  import("./public-dynamic-blocks").then((m) => ({ default: m.TherapistMapBlock })),
-);
 const LazyContactFormBlock = lazy(() =>
   import("./public-dynamic-blocks").then((m) => ({ default: m.ContactFormBlock })),
 );
 const LazyManagedFormEmbedBlock = lazy(() =>
   import("./public-dynamic-blocks").then((m) => ({ default: m.ManagedFormEmbedBlock })),
-);
-const LazyJoinHeroBlock = lazy(() =>
-  import("./public-dynamic-blocks").then((m) => ({ default: m.JoinHeroBlock })),
-);
-const LazyJoinRegistrationFormBlock = lazy(() =>
-  import("./public-dynamic-blocks").then((m) => ({ default: m.JoinRegistrationFormBlock })),
 );
 const LazyBlogPostFeedBlock = lazy(() =>
   import("./public-dynamic-blocks").then((m) => ({ default: m.BlogPostFeedBlock })),
@@ -185,18 +175,9 @@ const LazyRecordingArchivesSection = lazy(() =>
     default: m.RecordingArchivesSection,
   })),
 );
-const LazyDirectoryBrowserSection = lazy(() =>
-  import("@/features/directory/directory-page").then((m) => ({
-    default: m.DirectoryBrowserSection,
-  })),
-);
 const LazyCareerListingsSection = lazy(() =>
   import("@/features/public/careers-page").then((m) => ({ default: m.CareerListingsSection })),
 );
-const LazyPortfolioGridSection = lazy(() =>
-  import("@/features/public/portfolio-page").then((m) => ({ default: m.PortfolioGridSection })),
-);
-
 function DynamicFallback() {
   return (
     <div className="flex justify-center py-16">
@@ -1807,19 +1788,14 @@ const RENDERERS: Record<string, React.ComponentType<{ props: Record<string, unkn
 };
 
 const DYNAMIC_BLOCK_TYPES = new Set([
-  "therapist-map",
   "contact-form",
   "form-embed",
-  "join-hero",
-  "join-registration-form",
   "blog-post-feed",
   "blog-featured-post",
   "standard-blog-page",
   "events-archive",
   "video-archives",
-  "directory-browser",
   "career-listings",
-  "portfolio-grid",
 ]);
 
 export function PublicBlockRenderer({
@@ -1859,13 +1835,6 @@ export function PublicBlockRenderer({
         </Suspense>
       );
     }
-    if (block.type === "therapist-map") {
-      renderedBlock = (
-        <Suspense fallback={<DynamicFallback />}>
-          <LazyTherapistMapBlock props={block.props} />
-        </Suspense>
-      );
-    }
     if (block.type === "contact-form") {
       renderedBlock = (
         <Suspense fallback={<DynamicFallback />}>
@@ -1877,20 +1846,6 @@ export function PublicBlockRenderer({
       renderedBlock = (
         <Suspense fallback={<DynamicFallback />}>
           <LazyManagedFormEmbedBlock props={block.props} />
-        </Suspense>
-      );
-    }
-    if (block.type === "join-hero") {
-      renderedBlock = (
-        <Suspense fallback={<DynamicFallback />}>
-          <LazyJoinHeroBlock props={block.props} />
-        </Suspense>
-      );
-    }
-    if (block.type === "join-registration-form") {
-      renderedBlock = (
-        <Suspense fallback={<DynamicFallback />}>
-          <LazyJoinRegistrationFormBlock props={block.props} />
         </Suspense>
       );
     }
@@ -1908,24 +1863,10 @@ export function PublicBlockRenderer({
         </Suspense>
       );
     }
-    if (block.type === "directory-browser") {
-      renderedBlock = (
-        <Suspense fallback={<DynamicFallback />}>
-          <LazyDirectoryBrowserSection props={block.props} />
-        </Suspense>
-      );
-    }
     if (block.type === "career-listings") {
       renderedBlock = (
         <Suspense fallback={<DynamicFallback />}>
           <LazyCareerListingsSection props={block.props} />
-        </Suspense>
-      );
-    }
-    if (block.type === "portfolio-grid") {
-      renderedBlock = (
-        <Suspense fallback={<DynamicFallback />}>
-          <LazyPortfolioGridSection props={block.props} />
         </Suspense>
       );
     }
@@ -1964,7 +1905,7 @@ export function PublicBlockRenderer({
 
 export function PublicPageRenderer({ blocks }: { blocks: BlockInstance[] }) {
   let nonFullWidthIndex = 0;
-  const normalizedBlocks = mergeJoinHeroBlocks(blocks);
+  const normalizedBlocks = blocks;
   return (
     <div>
       {normalizedBlocks.map((block) => {
