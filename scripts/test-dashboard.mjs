@@ -96,6 +96,8 @@ try {
     try {
       const r = await fetch(env.DASHBOARD_ORIGIN + "/api/healthz");
       if (r.ok) {
+        if (r.headers.get("x-robots-tag") !== "noindex, nofollow")
+          throw new Error("Dashboard must exclude operational responses from indexing");
         ready = true;
         break;
       }

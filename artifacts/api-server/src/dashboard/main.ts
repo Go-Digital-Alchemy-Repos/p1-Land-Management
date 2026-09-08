@@ -37,6 +37,7 @@ app.disable("x-powered-by");
 app.use((req, res, next) => {
   res.set({
     "X-Content-Type-Options": "nosniff",
+    "X-Robots-Tag": "noindex, nofollow",
     "Referrer-Policy": "no-referrer",
     "X-Frame-Options": "DENY",
     "Content-Security-Policy":
