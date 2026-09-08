@@ -6,7 +6,7 @@
     "displayName": "P1 Land & Property Management",
     "source": {
       "repository": "https://github.com/Go-Digital-Alchemy-Repos/p1-Land-Management.git",
-      "revision": "d8af8fc55a98f4ab0b2c7ebdb4bad8199da771ad"
+      "revision": "86f7928386267d240fe63d0c8a46464c19e5173d"
     },
     "owners": [
       {
@@ -1936,8 +1936,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1h0t45w",
-            "label": "Text: Drainage design and installation",
+            "path": "f15hd2ts",
+            "label": "Text: Drainage planning and scoped installation work",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -2126,7 +2126,7 @@
           "f1jw7e3j": "Weekly and seasonal property maintenance contracts",
           "fxm4gre": "Land clearing and forestry mulching",
           "f1dotjd1": "Fine grading and site preparation",
-          "f1h0t45w": "Drainage design and installation",
+          "f15hd2ts": "Drainage planning and scoped installation work",
           "fuv32x8": "Sod and seed installation for large acreage",
           "f2ckx2b": "Tree management, trimming, and removal",
           "f15dq8f3": "Pond and waterway care and management",
@@ -5858,8 +5858,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1qo8go4",
-            "label": "Text: Drainage system maintenance and stormwater compliance support",
+            "path": "f1wv7mbj",
+            "label": "Text: Drainage-system maintenance and stormwater-scope coordination",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -5893,8 +5893,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f13xl5ov",
-            "label": "Text: Emergency land clearing and site cleanup",
+            "path": "fiaasvl",
+            "label": "Text: Storm-related clearing and site cleanup, subject to confirmed availability",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -5907,8 +5907,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fn4p77k",
-            "label": "Text: P1 is equipped to work at scale. Our fleet of heavy equipment — including excavators, bulldozer",
+            "path": "f1pl3ii",
+            "label": "Text: P1 reviews the equipment, staffing, access and delivery needs for larger industrial and agricul",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -5928,8 +5928,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f16bhg88",
-            "label": "Text: P1 provides pasture and field mowing, fence line clearing, farm pond management, drainage ditch",
+            "path": "f6sqcb8",
+            "label": "Text: P1 discusses pasture and field mowing, fence-line clearing, pond and ditch work, erosion-relate",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -5942,8 +5942,8 @@
             "maxLength": 2000
           },
           {
-            "path": "foyb5ft",
-            "label": "Text: Yes. P1 handles perimeter vegetation control, drainage system maintenance and stormwater compli",
+            "path": "fluqi5e",
+            "label": "Text: P1 can discuss perimeter vegetation, drainage and pond maintenance, clearing, grading correctio",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -5956,8 +5956,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fiqgcjm",
-            "label": "Text: Yes. P1 clears trees, brush, and stumps to open up additional productive acreage — often using ",
+            "path": "f185km97",
+            "label": "Text: P1 can discuss selective clearing, brush and stump work to open additional acreage. Forestry mu",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -5970,8 +5970,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f9e6uz8",
-            "label": "Text: P1 runs a fleet of heavy equipment — excavators, bulldozers, skid steers, forestry mulchers, an",
+            "path": "f6gw595",
+            "label": "Text: Discuss the equipment, operator availability and access plan required for your industrial or ag",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -6131,23 +6131,23 @@
           "f1xssd1e": "Tree management — clearing, trimming, and strategic removal",
           "f15g0v3i": "Industrial Site Services",
           "flab6tc": "Perimeter vegetation control and mowing",
-          "f1qo8go4": "Drainage system maintenance and stormwater compliance support",
+          "f1wv7mbj": "Drainage-system maintenance and stormwater-scope coordination",
           "f4gjxus": "Land clearing for facility expansion or site development",
           "f19k0vd0": "Grading and regrading for site access and drainage correction",
           "fi0dj2t": "Erosion control installation and monitoring",
           "f1cp4u7x": "Retention and detention pond management",
-          "f13xl5ov": "Emergency land clearing and site cleanup",
+          "fiaasvl": "Storm-related clearing and site cleanup, subject to confirmed availability",
           "f1935rkc": "Large-Acreage Capability",
-          "fn4p77k": "P1 is equipped to work at scale. Our fleet of heavy equipment — including excavators, bulldozers, skid steers, and large-acreage mowing equipment — lets us handle industrial and agricultural sites of any size across Upstate South Carolina and the Charlotte, NC region.",
+          "f1pl3ii": "P1 reviews the equipment, staffing, access and delivery needs for larger industrial and agricultural properties during qualification. Confirm the proposed work plan, availability and any specialist responsibilities before scheduling.",
           "fqockmv": "Industrial & Agricultural Land Maintenance FAQs",
           "fx9kkwg": "What agricultural property services does P1 provide?",
-          "f16bhg88": "P1 provides pasture and field mowing, fence line clearing, farm pond management, drainage ditch clearing, erosion control, hay field and food plot establishment, land clearing for additional acreage, access road grading, and tree management for farms and rural landholdings.",
+          "f6sqcb8": "P1 discusses pasture and field mowing, fence-line clearing, pond and ditch work, erosion-related site work, land clearing, access-road grading and tree management for farms and rural landholdings. Confirm the agreed scope, timing and any specialist requirements before work begins.",
           "f1smjq6h": "Does P1 maintain industrial sites?",
-          "foyb5ft": "Yes. P1 handles perimeter vegetation control, drainage system maintenance and stormwater compliance support, land clearing for facility expansion, grading corrections, erosion control, retention pond management, and emergency site cleanup for industrial facilities.",
+          "fluqi5e": "P1 can discuss perimeter vegetation, drainage and pond maintenance, clearing, grading corrections and erosion-related site work for industrial facilities. Confirm scope, availability, compliance responsibilities and emergency-response terms during qualification.",
           "fh2sd1v": "Can P1 clear land to add pasture or crop acreage?",
-          "fiqgcjm": "Yes. P1 clears trees, brush, and stumps to open up additional productive acreage — often using forestry mulching to protect topsoil — and can follow with grading, drainage, lime and fertilization prep, and seeding to get new ground into production.",
+          "f185km97": "P1 can discuss selective clearing, brush and stump work to open additional acreage. Forestry mulching, grading, drainage, soil preparation and seeding are scoped by property, access, approvals and the project team.",
           "f12gyakv": "What equipment does P1 operate?",
-          "f9e6uz8": "P1 runs a fleet of heavy equipment — excavators, bulldozers, skid steers, forestry mulchers, and large-acreage mowing equipment — which lets us handle industrial and agricultural sites of any size across Upstate SC and the Charlotte, NC region.",
+          "f6gw595": "Discuss the equipment, operator availability and access plan required for your industrial or agricultural property. P1 confirms the proposed equipment and delivery scope during qualification.",
           "f3quld0": "Call ",
           "fr6htqz": " or ",
           "fwzei3c": " to discuss your working property.",
@@ -6847,8 +6847,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f8geeks",
-            "label": "Text: Precise grading makes everything else possible — proper drainage, stable foundations, healthy t",
+            "path": "f1q7l5s8",
+            "label": "Text: Grading affects drainage, foundations, turf and long-term land performance. P1 reviews the requ",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -6966,8 +6966,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fg8cxc4",
-            "label": "Text: Poorly graded land causes problems that compound over time: standing water, erosion, foundation",
+            "path": "f11dbv5x",
+            "label": "Text: Poorly graded land can contribute to standing water, erosion, foundation pressure, turf problem",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -7078,8 +7078,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1qo0ngv",
-            "label": "Text: Turf installation on improperly graded ground fails. Before P1 lays sod or seeds an acre, we ve",
+            "path": "f1k0ed7r",
+            "label": "Text: Turf installation on improperly graded ground can struggle. Before grading and turf work begin,",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -7134,8 +7134,8 @@
             "maxLength": 2000
           },
           {
-            "path": "ftrp216",
-            "label": "Text: P1 uses GPS-guided grading equipment where precision tolerances demand it, and experienced oper",
+            "path": "f4557d9",
+            "label": "Text: Discuss the equipment, operators and accuracy targets needed for your grading scope before work",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -7155,8 +7155,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f19n7p52",
-            "label": "Text: Rough grading is the initial shaping and leveling of a site after clearing — establishing the o",
+            "path": "fvnikui",
+            "label": "Text: Rough grading is the initial shaping and leveling of a site after clearing. Fine grading is the",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -7169,8 +7169,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fanox1c",
-            "label": "Text: In most cases, yes. More than 80% of land drainage problems trace back to improper grade. P1 re",
+            "path": "fl95cf3",
+            "label": "Text: Improper grade can contribute to drainage problems. P1 can review slopes, swales and transition",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -7197,8 +7197,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fvcg1gn",
-            "label": "Text: Turf installed on improperly graded ground fails — water pools, roots suffocate, and bare spots",
+            "path": "fkf44rr",
+            "label": "Text: Turf performance depends on grade, drainage, soil preparation, species selection and establishm",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -7325,7 +7325,7 @@
           "f7aumzw": "Bulldozer grading a dirt site",
           "f1i5fdfo": "Grading & Site Preparation",
           "f1isqm08": "Large Properties",
-          "f8geeks": "Precise grading makes everything else possible — proper drainage, stable foundations, healthy turf, and long-term land performance. P1 delivers accurate, professional grading for sites of any size across Upstate SC and Charlotte NC.",
+          "f1q7l5s8": "Grading affects drainage, foundations, turf and long-term land performance. P1 reviews the requested scope, approved plans and site conditions for commercial, agricultural and large-acreage properties in Upstate SC and Charlotte NC.",
           "f1ke7dc6": "Index of Work",
           "fgwkxig": "/services/grading-site-preparation",
           "f1bqup5r": "01",
@@ -7342,7 +7342,7 @@
           "f1amwadv": "05",
           "fitsipf": "Ponds & Waterway Management",
           "fwmi7j5": "Get Your Land Level — and Keep It That Way",
-          "fg8cxc4": "Poorly graded land causes problems that compound over time: standing water, erosion, foundation pressure, failed turf, and drainage failure. Whether you're preparing a site for construction, correcting existing drainage issues, or establishing grade for new turf, P1 brings the equipment and expertise to get it right the first time.",
+          "f11dbv5x": "Poorly graded land can contribute to standing water, erosion, foundation pressure, turf problems and drainage issues. Whether you are preparing a construction site, reviewing drainage concerns or establishing grade for turf, discuss the approved plans, site conditions, equipment and delivery scope with P1 before work begins.",
           "fcw9jq8": "/assets/grading-level-1280-CyraN_zA.webp",
           "f1k9u174": "Motor grader leveling a large dirt site",
           "f11pvrpw": "Grading Services",
@@ -7358,7 +7358,7 @@
           "fct718z": "/assets/grading-drainage-1280-DnvwKFBi.webp",
           "f9umvkm": "Graded swale channeling water across a property",
           "fp5z1kp": "Grading for Turf Establishment",
-          "f1qo0ngv": "Turf installation on improperly graded ground fails. Before P1 lays sod or seeds an acre, we verify the grade is correct for drainage and root establishment. When we handle both grading and turf, you get a result that lasts — and a single point of accountability if it doesn't.",
+          "f1k0ed7r": "Turf installation on improperly graded ground can struggle. Before grading and turf work begin, confirm the approved grade, drainage approach, establishment practices and delivery responsibilities for the property. A coordinated scope helps keep those decisions with the same project team.",
           "f1kas5h4": "/assets/grading-turf-1280-Br3CvA7j.webp",
           "f1npzytm": "Freshly graded soil transitioning into new sod",
           "f1ydy51q": "Grading for New Construction",
@@ -7366,16 +7366,16 @@
           "fhb2ye9": "/assets/grading-construction-1280-CaX7duMl.webp",
           "f15xb7ln": "New residential neighborhood under construction on freshly graded land",
           "f1jej5xi": "Equipment & Precision",
-          "ftrp216": "P1 uses GPS-guided grading equipment where precision tolerances demand it, and experienced operators for the full range of work from rough shaping to fine finish. We work on properties from a few acres to several hundred, across both commercial and agricultural applications.",
+          "f4557d9": "Discuss the equipment, operators and accuracy targets needed for your grading scope before work begins. P1 reviews rough shaping, finish work and access requirements for commercial and agricultural properties during qualification.",
           "f101rf8l": "Grading & Site Preparation FAQs",
           "fc5ntzf": "What's the difference between rough grading and fine grading?",
-          "f19n7p52": "Rough grading is the initial shaping and leveling of a site after clearing — establishing the overall contours and slopes. Fine grading is the precision finish pass that sets the exact final grade for drainage, turf installation, or construction. P1 performs both, from first cut to finish grade.",
+          "fvnikui": "Rough grading is the initial shaping and leveling of a site after clearing. Fine grading is the finish work that prepares the site for its approved drainage, turf or construction plan. Discuss the required tolerances, equipment and delivery scope with P1 before work begins.",
           "f1er794a": "Can regrading fix drainage problems on my property?",
-          "fanox1c": "In most cases, yes. More than 80% of land drainage problems trace back to improper grade. P1 regrades slopes, swales, and transitions so water moves where it belongs — and can pair grading with French drains, swales, and retention systems when the site needs them.",
+          "fl95cf3": "Improper grade can contribute to drainage problems. P1 can review slopes, swales and transitions with you and discuss regrading or a coordinated drainage scope, subject to the property conditions, approved plans and any specialist review.",
           "feelapk": "Does P1 grade sites for new construction?",
           "f1yx8fbk": "P1 discusses building pads, roads, and site preparation for new homes, neighborhoods, and commercial developments across Upstate SC and Charlotte NC. Confirm approved plans, tolerances, equipment and any licensed specialist involvement before work begins.",
           "f1g8w52k": "Why does grading matter before installing turf?",
-          "fvcg1gn": "Turf installed on improperly graded ground fails — water pools, roots suffocate, and bare spots spread. P1 verifies grade is correct for drainage and root establishment before laying sod or seeding, and can handle both grading and turf so one team is accountable for the result.",
+          "fkf44rr": "Turf performance depends on grade, drainage, soil preparation, species selection and establishment practices. Confirm the approved preparation, responsibilities and expected outcomes for grading and turf work before scheduling.",
           "f3quld0": "Call ",
           "fr6htqz": " or ",
           "f1md8skz": " to discuss your grading project.",
@@ -7473,7 +7473,7 @@
             "maxLength": 2000
           },
           {
-            "path": "f1wqypym",
+            "path": "fd1vq52",
             "label": "Text: Standing water, soggy fields, erosion, and drainage failures cost landowners time, money, and t",
             "type": "textarea",
             "required": false,
@@ -7641,8 +7641,8 @@
             "maxLength": 2000
           },
           {
-            "path": "foikm4a",
-            "label": "Text: Retention and detention pond design and construction",
+            "path": "f1cmg5df",
+            "label": "Text: Retention and detention pond planning and construction scope",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -7690,8 +7690,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fncbid8",
-            "label": "Text: Stormwater compliance support for commercial properties",
+            "path": "f1cidmg1",
+            "label": "Text: Stormwater-related maintenance and documentation coordination",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -7781,8 +7781,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fozbijj",
-            "label": "Text: In the Carolinas, standing water usually comes from heavy clay soils, compacted ground, flat to",
+            "path": "f6ceps9",
+            "label": "Text: In the Carolinas, standing water can result from clay soils, compacted ground, flat topography ",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -7795,8 +7795,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fbn7krn",
-            "label": "Text: P1 installs French drains, surface swales, catch basins and inlets, underground drainage pipe, ",
+            "path": "fal6gee",
+            "label": "Text: Discuss French drains, surface swales, catch basins, underground pipe, pond work, agricultural ",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -7809,8 +7809,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1753ba7",
-            "label": "Text: Yes. Saturated fields can't be worked and lose topsoil to runoff. P1 installs agricultural drai",
+            "path": "f1rq6f2w",
+            "label": "Text: Saturated fields can be difficult to work and vulnerable to runoff. P1 can discuss field draina",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -7823,8 +7823,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f3haye7",
-            "label": "Text: Yes. P1 supports stormwater compliance for commercial sites — including retention and detention",
+            "path": "f10n7h4g",
+            "label": "Text: P1 can discuss maintenance and exterior work around retention and detention ponds, ditches and ",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -7951,7 +7951,7 @@
           "f1q8j59x": "Drainage swale in grassy field",
           "f1itpl39": "Drainage Solutions",
           "f1isqm08": "Large Properties",
-          "f1wqypym": "Standing water, soggy fields, erosion, and drainage failures cost landowners time, money, and turf. P1 designs and installs drainage systems that solve problems at the source — not just mask them.",
+          "fd1vq52": "Standing water, soggy fields, erosion, and drainage failures cost landowners time, money, and turf. P1 reviews site conditions and discusses a drainage scope that addresses the source of the problem.",
           "f1ke7dc6": "Index of Work",
           "f1cn1znt": "/services/drainage",
           "f1bqup5r": "01",
@@ -7975,14 +7975,14 @@
           "ft7h1sn": "Drainage Services",
           "f11hwu3e": "French drain installation — perforated pipe and gravel systems to intercept and redirect subsurface water",
           "f1jnu45j": "Surface drainage swales — graded channels to carry surface runoff away from structures and fields",
-          "foikm4a": "Retention and detention pond design and construction",
+          "f1cmg5df": "Retention and detention pond planning and construction scope",
           "f3ei1jh": "Catch basin and inlet installation",
           "f10bo3gi": "Underground drainage pipe installation",
           "f10vyqtt": "Agricultural drainage — tile drainage for fields and pastures",
           "f3ywyvb": "Ditch clearing, shaping, and lining",
           "f1nq9cvj": "Regrading for drainage correction",
           "f1fzhnaa": "Erosion control and slope stabilization in drainage zones",
-          "fncbid8": "Stormwater compliance support for commercial properties",
+          "f1cidmg1": "Stormwater-related maintenance and documentation coordination",
           "fscyifp": "Common Drainage Problems We Solve",
           "f1mnggyf": "Standing water in fields, yards, or near structures after rain",
           "f1ge27y3": "Soggy, compacted soil that won't grow healthy turf",
@@ -7995,13 +7995,13 @@
           "f1br72n3": "For farm and agricultural properties, drainage is directly tied to productivity. Saturated fields can't be worked, can't support healthy root systems, and lose topsoil to runoff. P1 installs agricultural drainage systems — including field tile drainage and perimeter ditching — that improve field trafficability and long-term productivity.",
           "f7f59j2": "Drainage FAQs",
           "fwns204": "Why does my property have standing water after rain?",
-          "fozbijj": "In the Carolinas, standing water usually comes from heavy clay soils, compacted ground, flat topography, or improper grading that leaves water nowhere to go. P1 assesses the whole system — where water enters, where it sits, and where it needs to go — then designs a fix that solves the problem at the source.",
+          "f6ceps9": "In the Carolinas, standing water can result from clay soils, compacted ground, flat topography or improper grading. A site review should identify where water enters, where it collects and which work belongs in the agreed scope; engineering or specialist analysis may also be needed.",
           "f7dclpn": "What drainage systems does P1 install?",
-          "fbn7krn": "P1 installs French drains, surface swales, catch basins and inlets, underground drainage pipe, retention and detention ponds, agricultural tile drainage, and erosion control in drainage zones — along with regrading when the root cause is improper slope.",
+          "fal6gee": "Discuss French drains, surface swales, catch basins, underground pipe, pond work, agricultural drainage, erosion work and regrading with P1. The proposed work, approvals and any engineering or specialist responsibilities are confirmed for each property.",
           "flupkj4": "Can P1 fix drainage on farm fields and pastures?",
-          "f1753ba7": "Yes. Saturated fields can't be worked and lose topsoil to runoff. P1 installs agricultural drainage systems — including field tile drainage and perimeter ditching — that improve field trafficability, root health, and long-term productivity.",
+          "f1rq6f2w": "Saturated fields can be difficult to work and vulnerable to runoff. P1 can discuss field drainage, perimeter ditching and related grading work; confirm the site conditions, approvals and expected outcomes before work begins.",
           "f13ml6h6": "Does P1 handle stormwater compliance for commercial properties?",
-          "f3haye7": "Yes. P1 supports stormwater compliance for commercial sites — including retention and detention pond maintenance, ditch clearing and shaping, and documented maintenance programs that keep systems functioning within local and state requirements.",
+          "f10n7h4g": "P1 can discuss maintenance and exterior work around retention and detention ponds, ditches and drainage features. Regulatory compliance, inspections, documentation and any specialist responsibilities must be confirmed with the owner and appropriate professionals.",
           "f3quld0": "Call ",
           "fr6htqz": " or ",
           "f7jcwum": " to discuss your drainage problem.",
@@ -8979,8 +8979,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f12lydog",
-            "label": "Text: Storm damage cleanup — emergency debris clearing after weather events",
+            "path": "f1xqjn8t",
+            "label": "Text: Storm-damage cleanup, subject to confirmed availability and safety conditions",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -9042,8 +9042,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f12nidao",
-            "label": "Text: P1 provides tree trimming and canopy management, dead wood removal, hazardous tree removal, stu",
+            "path": "f1n57qaq",
+            "label": "Text: P1 discusses tree trimming, canopy management, dead-wood and tree removal, stump work, selectiv",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -9056,8 +9056,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fse7cgn",
-            "label": "Text: Yes. After storms move through Upstate SC or the Charlotte NC region, P1 provides emergency deb",
+            "path": "f9e9ton",
+            "label": "Text: After a storm, contact P1 to discuss debris clearing, downed-tree work and site access. Availab",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -9070,8 +9070,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fo1n9c3",
-            "label": "Text: Yes. Selective clearing is one of our specialties — removing unwanted or invasive species while",
+            "path": "f1riarsc",
+            "label": "Text: Selective clearing can retain identified trees while removing agreed vegetation. Review the mar",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -9084,8 +9084,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fztp6vn",
-            "label": "Text: P1 is built for large acreage. We bring heavy equipment, forestry mulching capability, and crew",
+            "path": "f1gp47p0",
+            "label": "Text: For larger-acreage tree and vegetation scopes, P1 reviews the proposed equipment, staffing, acc",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -9238,7 +9238,7 @@
           "fvy66r4": "Tree removal — safe takedown of hazardous, dead, or unwanted trees",
           "fjapdej": "Stump grinding — complete removal of stumps below grade",
           "f1i0etwg": "Selective clearing — remove unwanted species while preserving valuable trees",
-          "f12lydog": "Storm damage cleanup — emergency debris clearing after weather events",
+          "f1xqjn8t": "Storm-damage cleanup, subject to confirmed availability and safety conditions",
           "f12c9jw1": "Windbreak and tree line management",
           "fifkqqi": "Tree line clearing for fence installation and access",
           "f1bmxqbi": "Orchard and agricultural tree management",
@@ -9247,13 +9247,13 @@
           "fdt4mvr": "Either way, the goal is the same: your land configured the way you want it, with the trees that belong there and without the ones that don't.",
           "f8k0azx": "Tree Services FAQs",
           "f1xkj5zg": "What tree services does P1 provide?",
-          "f12nidao": "P1 provides tree trimming and canopy management, dead wood removal, hazardous tree removal, stump grinding, selective clearing, windbreak and tree line management, and storm damage cleanup — sized for commercial, agricultural, and large residential properties.",
+          "f1n57qaq": "P1 discusses tree trimming, canopy management, dead-wood and tree removal, stump work, selective clearing, windbreak and tree-line management, and storm cleanup for commercial, agricultural and large residential properties. Confirm scope, access and any specialist requirements before work begins.",
           "fc37i9x": "Does P1 handle storm damage cleanup?",
-          "fse7cgn": "Yes. After storms move through Upstate SC or the Charlotte NC region, P1 provides emergency debris clearing, downed tree removal, and hazard mitigation so your property is safe and accessible again quickly.",
+          "f9e9ton": "After a storm, contact P1 to discuss debris clearing, downed-tree work and site access. Availability, response timing, site safety and the agreed scope must be confirmed; this service is not emergency dispatch.",
           "f1pxp694": "Can P1 remove some trees while preserving others?",
-          "fo1n9c3": "Yes. Selective clearing is one of our specialties — removing unwanted or invasive species while preserving mature, valuable trees. It's a common approach for opening up land, clearing fence lines, and managing wooded acreage strategically.",
+          "f1riarsc": "Selective clearing can retain identified trees while removing agreed vegetation. Review the marked limits, tree condition, access and disposal approach with P1 and any required specialist before work begins.",
           "fr4jodx": "How is P1 different from a residential tree company?",
-          "fztp6vn": "P1 is built for large acreage. We bring heavy equipment, forestry mulching capability, and crews experienced with commercial sites, farms, and estates — so tree work that would take a residential crew weeks gets done efficiently and safely at scale.",
+          "f1gp47p0": "For larger-acreage tree and vegetation scopes, P1 reviews the proposed equipment, staffing, access and safety plan with the property team. Confirm the work plan and responsibilities before scheduling.",
           "f3quld0": "Call ",
           "fr6htqz": " or ",
           "frw1s4v": " to discuss your trees.",
@@ -11442,8 +11442,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1h0t45w",
-            "label": "Text: Drainage design and installation",
+            "path": "f15hd2ts",
+            "label": "Text: Drainage planning and scoped installation work",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -11861,7 +11861,7 @@
           "fdz7oth": "Industrial and agricultural land maintenance",
           "fxm4gre": "Land clearing and forestry mulching",
           "f1dotjd1": "Fine grading and site preparation",
-          "f1h0t45w": "Drainage design and installation",
+          "f15hd2ts": "Drainage planning and scoped installation work",
           "fstamdn": "Turf installation — sod and large-acreage seeding",
           "f1t0vehh": "Tree services — trimming, removal, and selective clearing",
           "fh3h93n": "Pond and waterway management",
@@ -12076,8 +12076,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1h0t45w",
-            "label": "Text: Drainage design and installation",
+            "path": "f15hd2ts",
+            "label": "Text: Drainage planning and scoped installation work",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -12481,7 +12481,7 @@
           "fdz7oth": "Industrial and agricultural land maintenance",
           "fxm4gre": "Land clearing and forestry mulching",
           "f1dotjd1": "Fine grading and site preparation",
-          "f1h0t45w": "Drainage design and installation",
+          "f15hd2ts": "Drainage planning and scoped installation work",
           "fstamdn": "Turf installation — sod and large-acreage seeding",
           "f1t0vehh": "Tree services — trimming, removal, and selective clearing",
           "fh3h93n": "Pond and waterway management",
@@ -14664,8 +14664,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1cn8c2w",
-            "label": "Text: Drainage design and installation for sloped and waterfront terrain",
+            "path": "fo1lir8",
+            "label": "Text: Drainage planning and scoped installation work for sloped and waterfront terrain",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -14935,7 +14935,7 @@
           "fbkotb7": "P1 Land & Property Management serves the large waterfront estates, rural acreage, and commercial properties of the Mooresville and Lake Norman area. This region's concentration of high-value lakefront and rural properties — combined with the drainage and terrain challenges of sloped, lakeside land — makes it an ideal market for P1's specialized services.",
           "f9gq3if": "Mooresville & Lake Norman Services",
           "f1ctvgj": "Pond and waterway management — including shoreline restoration and water quality maintenance",
-          "f1cn8c2w": "Drainage design and installation for sloped and waterfront terrain",
+          "fo1lir8": "Drainage planning and scoped installation work for sloped and waterfront terrain",
           "ff5zyc8": "Land clearing and selective tree management",
           "f199ki65": "Grading and site preparation",
           "f17fpbd1": "Large-acreage turf installation and seeding",
@@ -15207,8 +15207,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fjrwvtf",
-            "label": "Text: Yes. The red clay soils and rolling terrain of Gaston County create frequent drainage and erosi",
+            "path": "f16bv36y",
+            "label": "Text: Gaston County's red clay soils and rolling terrain can create drainage and erosion challenges. ",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -15350,7 +15350,7 @@
           "f2o1z9j": "Does P1 handle industrial site vegetation management in Gaston County?",
           "f1oco7kl": "Yes. P1 provides land clearing, vegetation management, and ongoing grounds maintenance for industrial facilities and manufacturing sites throughout Gaston County, keeping large properties safe, accessible, and compliant.",
           "f1110lh0": "Can P1 fix drainage problems on Gastonia properties?",
-          "fjrwvtf": "Yes. The red clay soils and rolling terrain of Gaston County create frequent drainage and erosion challenges. P1 designs and installs French drains, stormwater systems, and erosion control solutions built for the local conditions.",
+          "f16bv36y": "Gaston County's red clay soils and rolling terrain can create drainage and erosion challenges. P1 reviews visible site conditions and discusses a scope for French drains, stormwater-related work or erosion control, with engineering, permitting and specialist responsibilities confirmed separately where needed.",
           "f1w8h00": "What size properties does P1 work on in Gastonia?",
           "f1m9akst": "P1 focuses on properties 1 acre and larger — industrial, commercial, agricultural, and large residential — bringing heavy equipment and experienced crews that standard landscapers can't provide.",
           "f1menulx": " to discuss scope and availability.",
@@ -15510,8 +15510,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fwsin60",
-            "label": "Text: Drainage design and installation — French drains, retention, and erosion control",
+            "path": "f13kyl3b",
+            "label": "Text: Drainage planning and scoped French-drain, retention and erosion work",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -15913,7 +15913,7 @@
           "f1f2wik3": "Land & Property Management Services Throughout Union County",
           "f1f395zv": "Land clearing and forestry mulching — lot clearing, right-of-way, and rural acreage",
           "f1kyksem": "Fine grading and site preparation for commercial and residential development",
-          "fwsin60": "Drainage design and installation — French drains, retention, and erosion control",
+          "f13kyl3b": "Drainage planning and scoped French-drain, retention and erosion work",
           "f1gle02g": "Pasture and equestrian property maintenance — fields, paddocks, and riding areas",
           "fauliv8": "Turf installation — sod and large-acreage seeding for Piedmont soils",
           "f1t0vehh": "Tree services — trimming, removal, and selective clearing",
@@ -16112,8 +16112,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fwsin60",
-            "label": "Text: Drainage design and installation — French drains, retention, and erosion control",
+            "path": "f13kyl3b",
+            "label": "Text: Drainage planning and scoped French-drain, retention and erosion work",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -16515,7 +16515,7 @@
           "f1yq7cv": "Land & Property Management Services Throughout Lancaster County",
           "f1f395zv": "Land clearing and forestry mulching — lot clearing, right-of-way, and rural acreage",
           "f1kyksem": "Fine grading and site preparation for commercial and residential development",
-          "fwsin60": "Drainage design and installation — French drains, retention, and erosion control",
+          "f13kyl3b": "Drainage planning and scoped French-drain, retention and erosion work",
           "f1gle02g": "Pasture and equestrian property maintenance — fields, paddocks, and riding areas",
           "fauliv8": "Turf installation — sod and large-acreage seeding for Piedmont soils",
           "f1t0vehh": "Tree services — trimming, removal, and selective clearing",
@@ -16714,8 +16714,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fwsin60",
-            "label": "Text: Drainage design and installation — French drains, retention, and erosion control",
+            "path": "f13kyl3b",
+            "label": "Text: Drainage planning and scoped French-drain, retention and erosion work",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -17152,7 +17152,7 @@
           "ftgf093": "Land & Property Management Services Throughout York County",
           "f1f395zv": "Land clearing and forestry mulching — lot clearing, right-of-way, and rural acreage",
           "f1kyksem": "Fine grading and site preparation for commercial and residential development",
-          "fwsin60": "Drainage design and installation — French drains, retention, and erosion control",
+          "f13kyl3b": "Drainage planning and scoped French-drain, retention and erosion work",
           "f1gle02g": "Pasture and equestrian property maintenance — fields, paddocks, and riding areas",
           "fauliv8": "Turf installation — sod and large-acreage seeding for Piedmont soils",
           "f1t0vehh": "Tree services — trimming, removal, and selective clearing",
@@ -19362,8 +19362,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f16zucga",
-            "label": "Text: The first step is a professional site assessment. Drainage problems have root causes that aren'",
+            "path": "fs8oq5c",
+            "label": "Text: The first step is a site assessment. Drainage problems have root causes that are not always vis",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -19551,7 +19551,7 @@
           "f1jvvpzm": "Water that collects near building foundations, equipment storage areas, or other structures is both a maintenance problem and a structural risk. Repeated saturation of soil adjacent to foundations causes settling, cracking, and in severe cases, structural failure. On farm properties, this might show up as water intrusion in equipment barns or storage buildings situated in low spots.",
           "f1xmtrx6": "If water consistently runs toward a structure rather than away from it, the grade around that structure needs correction — and the broader drainage system needs evaluation to understand why water is routing toward the building.",
           "fx5iih4": "What to Do When You Spot These Signs",
-          "f16zucga": "The first step is a professional site assessment. Drainage problems have root causes that aren't always visible from the surface — and applying the wrong solution (say, installing a French drain when the real problem is incorrect grade) wastes money and leaves the problem unsolved.",
+          "fs8oq5c": "The first step is a site assessment. Drainage problems have root causes that are not always visible from the surface, and applying the wrong solution — such as installing a French drain when the underlying issue is grade — can waste money while leaving the problem unresolved.",
           "f1y5k0w4": "A proper drainage assessment evaluates the overall topography, existing drainage infrastructure, soil type and permeability, and sources of the water causing the problem. From that assessment, a targeted solution can be designed — whether that's regrading, installing drainage pipes or swales, improving ditch capacity, or a combination.",
           "f1bg6n39": "P1 Land & Property Management provides on-site drainage assessments and installs custom drainage solutions for large commercial, agricultural, and residential properties throughout Upstate South Carolina and the Charlotte, NC region.",
           "f3quld0": "Call ",
