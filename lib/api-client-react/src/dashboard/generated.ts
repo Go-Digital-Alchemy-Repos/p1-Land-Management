@@ -81,6 +81,14 @@ import type {
   ServiceAgreementFinancial,
   ServiceAgreementPage,
   ServiceRequest,
+  ServiceRequestConversion,
+  ServiceRequestConversionPreview,
+  ServiceRequestConversionPreviewInput,
+  ServiceRequestConversionReceipt,
+  ServiceRequestEvent,
+  ServiceRequestLifecycle,
+  ServiceRequestTransition,
+  ServiceRequestTransitionReceipt,
   SyncFieldEventsBody,
   UpdateAccountMfaPolicy,
   UpdateClientContact,
@@ -811,6 +819,156 @@ export const createServiceRequest = async (createServiceRequest: CreateServiceRe
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
       createServiceRequest,)
+  }
+);}
+
+
+
+export const getListServiceRequestLifecycleUrl = () => {
+
+
+
+
+  return `/api/v1/service-requests`
+}
+
+/**
+ * Lists service requests. Office roles receive operational fields; clients receive only requests for accessible properties with client-safe status labels. Crew members cannot access this route.
+ */
+export const listServiceRequestLifecycle = async ( options?: RequestInit): Promise<ServiceRequestLifecycle[]> => {
+
+  return customFetch<ServiceRequestLifecycle[]>(getListServiceRequestLifecycleUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getGetServiceRequestLifecycleUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/service-requests/${id}`
+}
+
+/**
+ * Returns one service request. Office roles receive operational fields. Clients require property access and receive a client-safe projection. Crew members cannot access this route.
+ */
+export const getServiceRequestLifecycle = async (id: string, options?: RequestInit): Promise<ServiceRequestLifecycle> => {
+
+  return customFetch<ServiceRequestLifecycle>(getGetServiceRequestLifecycleUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getTransitionServiceRequestUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/service-requests/${id}/transitions`
+}
+
+/**
+ * Owner, manager, or dispatch only. Changes status with optimistic versioning and an explicit reason. It does not assign crews, schedule work, publish client material, post billing, or call providers.
+ */
+export const transitionServiceRequest = async (id: string,
+    serviceRequestTransition: ServiceRequestTransition, options?: RequestInit): Promise<ServiceRequestTransitionReceipt> => {
+
+  return customFetch<ServiceRequestTransitionReceipt>(getTransitionServiceRequestUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      serviceRequestTransition,)
+  }
+);}
+
+
+
+export const getGetServiceRequestHistoryUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/service-requests/${id}/history`
+}
+
+/**
+ * Office-only append-only service-request lifecycle history. Clients and crew cannot access this route.
+ */
+export const getServiceRequestHistory = async (id: string, options?: RequestInit): Promise<ServiceRequestEvent[]> => {
+
+  return customFetch<ServiceRequestEvent[]>(getGetServiceRequestHistoryUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getPreviewServiceRequestConversionUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/service-requests/${id}/conversion-preview`
+}
+
+/**
+ * Owner, manager, or dispatch only. Previews an unscheduled, unassigned, unpublished draft work order from a triaged or scheduled request. It never writes, dispatches, bills, publishes, or calls a provider.
+ */
+export const previewServiceRequestConversion = async (id: string,
+    serviceRequestConversionPreviewInput: ServiceRequestConversionPreviewInput, options?: RequestInit): Promise<ServiceRequestConversionPreview> => {
+
+  return customFetch<ServiceRequestConversionPreview>(getPreviewServiceRequestConversionUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      serviceRequestConversionPreviewInput,)
+  }
+);}
+
+
+
+export const getConvertServiceRequestUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/service-requests/${id}/conversions`
+}
+
+/**
+ * Owner, manager, or dispatch only. Creates exactly one retry-safe planning draft from a triaged or scheduled request. The operation ID is idempotent for the same actor and payload. The resulting draft is unassigned, unscheduled, unpublished, and has no billing or provider side effects.
+ */
+export const convertServiceRequest = async (id: string,
+    serviceRequestConversion: ServiceRequestConversion, options?: RequestInit): Promise<ServiceRequestConversionReceipt> => {
+
+  return customFetch<ServiceRequestConversionReceipt>(getConvertServiceRequestUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      serviceRequestConversion,)
   }
 );}
 

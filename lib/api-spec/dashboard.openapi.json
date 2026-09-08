@@ -1116,6 +1116,278 @@
         }
       }
     },
+    "/service-requests": {
+      "get": {
+        "operationId": "listServiceRequestLifecycle",
+        "description": "Lists service requests. Office roles receive operational fields; clients receive only requests for accessible properties with client-safe status labels. Crew members cannot access this route.",
+        "responses": {
+          "200": {
+            "description": "Authorized service requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ServiceRequestLifecycle"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Role or account-MFA requirement denied"
+          },
+          "404": {
+            "description": "Service request not found or not accessible"
+          }
+        }
+      }
+    },
+    "/service-requests/{id}": {
+      "get": {
+        "operationId": "getServiceRequestLifecycle",
+        "description": "Returns one service request. Office roles receive operational fields. Clients require property access and receive a client-safe projection. Crew members cannot access this route.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Authorized service request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceRequestLifecycle"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Role or account-MFA requirement denied"
+          },
+          "404": {
+            "description": "Service request not found or not accessible"
+          }
+        }
+      }
+    },
+    "/service-requests/{id}/transitions": {
+      "post": {
+        "operationId": "transitionServiceRequest",
+        "description": "Owner, manager, or dispatch only. Changes status with optimistic versioning and an explicit reason. It does not assign crews, schedule work, publish client material, post billing, or call providers.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServiceRequestTransition"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Transition receipt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceRequestTransitionReceipt"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Role or account-MFA requirement denied"
+          },
+          "404": {
+            "description": "Service request not found or not accessible"
+          },
+          "409": {
+            "description": "Version conflict or lifecycle transition is not allowed"
+          }
+        }
+      }
+    },
+    "/service-requests/{id}/history": {
+      "get": {
+        "operationId": "getServiceRequestHistory",
+        "description": "Office-only append-only service-request lifecycle history. Clients and crew cannot access this route.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lifecycle history",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ServiceRequestEvent"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Role or account-MFA requirement denied"
+          },
+          "404": {
+            "description": "Service request not found or not accessible"
+          }
+        }
+      }
+    },
+    "/service-requests/{id}/conversion-preview": {
+      "post": {
+        "operationId": "previewServiceRequestConversion",
+        "description": "Owner, manager, or dispatch only. Previews an unscheduled, unassigned, unpublished draft work order from a triaged or scheduled request. It never writes, dispatches, bills, publishes, or calls a provider.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServiceRequestConversionPreviewInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Draft conversion preview",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceRequestConversionPreview"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Role or account-MFA requirement denied"
+          },
+          "404": {
+            "description": "Service request not found or not accessible"
+          },
+          "409": {
+            "description": "Request is not eligible for conversion"
+          }
+        }
+      }
+    },
+    "/service-requests/{id}/conversions": {
+      "post": {
+        "operationId": "convertServiceRequest",
+        "description": "Owner, manager, or dispatch only. Creates exactly one retry-safe planning draft from a triaged or scheduled request. The operation ID is idempotent for the same actor and payload. The resulting draft is unassigned, unscheduled, unpublished, and has no billing or provider side effects.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ServiceRequestConversion"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Previously created conversion receipt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceRequestConversionReceipt"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "New conversion receipt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServiceRequestConversionReceipt"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Role or account-MFA requirement denied"
+          },
+          "404": {
+            "description": "Service request not found or not accessible"
+          },
+          "409": {
+            "description": "Operation ID conflict, version conflict, or request is not eligible for conversion"
+          }
+        }
+      }
+    },
     "/inspections": {
       "get": {
         "operationId": "listInspectionReports",
@@ -3113,6 +3385,354 @@
           "sms": { "$ref": "#/components/schemas/IntegrationConfiguration" },
           "jobs": { "type": "array", "maxItems": 50, "items": { "$ref": "#/components/schemas/IntegrationActionQueueItem" } },
           "agreementPreparation": { "$ref": "#/components/schemas/AgreementPreparationHealth" }
+        }
+      },
+      "ServiceRequestLifecycle": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "property_id",
+          "description",
+          "status",
+          "created_at",
+          "property_name"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "property_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "user_id": {
+            "type": "string",
+            "description": "Operational submitter identity. Omitted from client responses."
+          },
+          "description": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "description": "Office roles receive the operational lifecycle status. Clients receive a safe, non-dispatch/non-billing status label."
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Optimistic concurrency version. Omitted from client-safe projections."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Most recent lifecycle update. Omitted where unavailable on historical records."
+          },
+          "property_name": {
+            "type": "string"
+          }
+        }
+      },
+      "ServiceRequestWorkItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "label",
+          "done"
+        ],
+        "properties": {
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "done": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ServiceRequestTransition": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expectedVersion",
+          "status",
+          "reason"
+        ],
+        "properties": {
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "triaged",
+              "scheduled",
+              "closed",
+              "cancelled"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          }
+        }
+      },
+      "ServiceRequestTransitionReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "status",
+          "version"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "triaged",
+              "scheduled",
+              "closed",
+              "cancelled"
+            ]
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "ServiceRequestEvent": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "service_request_id",
+          "actor_id",
+          "event_type",
+          "prior_version",
+          "resulting_version",
+          "details",
+          "created_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "service_request_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "actor_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "event_type": {
+            "type": "string",
+            "enum": [
+              "created",
+              "transitioned",
+              "converted"
+            ]
+          },
+          "prior_version": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1
+          },
+          "resulting_version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "from_status": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "to_status": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "details": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ServiceRequestConversionPreviewInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "title"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "scope": {
+            "type": "string",
+            "maxLength": 10000,
+            "default": ""
+          },
+          "checklist": {
+            "type": "array",
+            "maxItems": 100,
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ServiceRequestWorkItem"
+            }
+          },
+          "prerequisites": {
+            "type": "array",
+            "maxItems": 50,
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ServiceRequestWorkItem"
+            }
+          }
+        }
+      },
+      "ServiceRequestConversion": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ServiceRequestConversionPreviewInput"
+          },
+          {
+            "type": "object",
+            "required": [
+              "operationId",
+              "expectedRequestVersion"
+            ],
+            "properties": {
+              "operationId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "expectedRequestVersion": {
+                "type": "integer",
+                "minimum": 1
+              }
+            }
+          }
+        ]
+      },
+      "ServiceRequestConversionPreview": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "request",
+          "workOrder",
+          "providerActions"
+        ],
+        "properties": {
+          "request": {
+            "$ref": "#/components/schemas/ServiceRequestLifecycle"
+          },
+          "workOrder": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "propertyId",
+              "title",
+              "scope",
+              "checklist",
+              "prerequisites",
+              "status",
+              "assignedTo",
+              "scheduledAt"
+            ],
+            "properties": {
+              "propertyId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "title": {
+                "type": "string"
+              },
+              "scope": {
+                "type": "string"
+              },
+              "checklist": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ServiceRequestWorkItem"
+                }
+              },
+              "prerequisites": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ServiceRequestWorkItem"
+                }
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "draft"
+                ]
+              },
+              "assignedTo": {
+                "type": "null"
+              },
+              "scheduledAt": {
+                "type": "null"
+              }
+            }
+          },
+          "providerActions": {
+            "type": "array",
+            "maxItems": 0,
+            "items": {}
+          }
+        }
+      },
+      "ServiceRequestConversionReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "operationId",
+          "created"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "operationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "created": {
+            "type": "boolean"
+          }
         }
       },
       "CreateServiceRequest": {

@@ -9,6 +9,12 @@ import {
   listAgreementPreparationJobs,
   previewAgreementPreparationRetry,
   retryAgreementPreparation,
+  listServiceRequestLifecycle,
+  getServiceRequestLifecycle,
+  transitionServiceRequest,
+  getServiceRequestHistory,
+  previewServiceRequestConversion,
+  convertServiceRequest,
 } from "@workspace/api-client-react/dashboard";
 test("generated dashboard client preserves cursor filters, explicit nulls and conflict errors", async () => {
   const original = globalThis.fetch;
@@ -127,6 +133,58 @@ test("generated dashboard client preserves cursor filters, explicit nulls and co
       expectedRevision: 3,
       eligibilityFingerprint: "a".repeat(64),
       reason: "Manager corrected the prerequisite.",
+    });
+    const requestId = "00000000-0000-4000-8000-000000000004";
+    await listServiceRequestLifecycle();
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      "/api/v1/service-requests",
+    );
+    await getServiceRequestLifecycle(requestId);
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      `/api/v1/service-requests/${requestId}`,
+    );
+    await transitionServiceRequest(requestId, {
+      expectedVersion: 2,
+      status: "triaged",
+      reason: "Office review completed.",
+    });
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), {
+      expectedVersion: 2,
+      status: "triaged",
+      reason: "Office review completed.",
+    });
+    await getServiceRequestHistory(requestId);
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      `/api/v1/service-requests/${requestId}/history`,
+    );
+    const draft = {
+      title: "Inspect north drive",
+      scope: "Assess drainage.",
+      checklist: [{ label: "Photo record", done: false }],
+      prerequisites: [{ label: "Gate access", done: false }],
+    };
+    await previewServiceRequestConversion(requestId, draft);
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      `/api/v1/service-requests/${requestId}/conversion-preview`,
+    );
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), draft);
+    await convertServiceRequest(requestId, {
+      ...draft,
+      operationId: "00000000-0000-4000-8000-000000000005",
+      expectedRequestVersion: 3,
+    });
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      `/api/v1/service-requests/${requestId}/conversions`,
+    );
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), {
+      ...draft,
+      operationId: "00000000-0000-4000-8000-000000000005",
+      expectedRequestVersion: 3,
     });
     fail = true;
     await assert.rejects(
