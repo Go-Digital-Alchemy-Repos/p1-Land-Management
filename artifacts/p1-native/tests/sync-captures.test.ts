@@ -282,3 +282,21 @@ test("user cancellation stops the snapshot before later photos or operations", a
   );
   assert.deepEqual(calls, ["load:one", "upload:one"]);
 });
+
+test("progress reports only delivery state and ordinal, not saved capture contents", async () => {
+  const f = fixture();
+  const progress: unknown[] = [];
+  await syncCaptures({
+    ...f.steps,
+    onProgress: (event) => progress.push(event),
+  });
+  assert.deepEqual(progress, [
+    { kind: "photos", status: "uploading", current: 1, total: 2 },
+    { kind: "photos", status: "accepted", current: 1, total: 2 },
+    { kind: "photos", status: "uploading", current: 2, total: 2 },
+    { kind: "photos", status: "accepted", current: 2, total: 2 },
+    { kind: "operations", status: "processing" },
+    { kind: "operations", status: "processed" },
+  ]);
+  assert.doesNotMatch(JSON.stringify(progress), /photo-A|photo-B/);
+});

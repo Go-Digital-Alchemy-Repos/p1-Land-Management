@@ -90,7 +90,8 @@ export function Application({ services }: { services: ApplicationServices }) {
     [busy, setBusy] = useState(false),
     [pending, setPending] = useState(0),
     [supportOpen, setSupportOpen] = useState(false),
-    [syncing, setSyncing] = useState(false);
+    [syncing, setSyncing] = useState(false),
+    [syncProgress, setSyncProgress] = useState("");
   const [enrollment, setEnrollment] = useState(false),
     [setup, setSetup] = useState<{
       totpURI?: string;
@@ -395,6 +396,7 @@ export function Application({ services }: { services: ApplicationServices }) {
     const controller = new AbortController();
     syncAbort.current = controller;
     setSyncing(true);
+    setSyncProgress("Preparing saved work for sync.");
     const assertCurrent = () => {
       if (vault.current !== current) throw new SessionChanged();
       vault.require(origin, current.accountId);
@@ -439,6 +441,20 @@ export function Application({ services }: { services: ApplicationServices }) {
             [401, 403].includes(error.status)),
         isCancelled: (error) =>
           controller.signal.aborted || error instanceof RequestCancelled,
+        onProgress: (progress) => {
+          if (progress.kind === "photos")
+            setSyncProgress(
+              progress.status === "uploading"
+                ? `Syncing photo ${progress.current} of ${progress.total}.`
+                : `Photo ${progress.current} of ${progress.total} ${progress.status}.`,
+            );
+          else
+            setSyncProgress(
+              progress.status === "processing"
+                ? "Syncing saved work entries."
+                : `Saved work entries ${progress.status}.`,
+            );
+        },
       });
       assertCurrent();
       const remaining = await current.pendingCount();
@@ -450,6 +466,7 @@ export function Application({ services }: { services: ApplicationServices }) {
     } finally {
       if (syncAbort.current === controller) syncAbort.current = null;
       setSyncing(false);
+      setSyncProgress("");
     }
   }
 
@@ -519,6 +536,7 @@ export function Application({ services }: { services: ApplicationServices }) {
           {busy && <ActivityIndicator accessibilityLabel="Working" />}
           {syncing && (
             <View style={s.button}>
+              <Text accessibilityLiveRegion="polite">{syncProgress}</Text>
               <Button
                 title="Cancel current sync"
                 onPress={() => syncAbort.current?.abort()}

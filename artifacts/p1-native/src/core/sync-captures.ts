@@ -3,6 +3,17 @@ export type CaptureSyncResult = {
   photoFailures: number;
   operationsProcessed: boolean;
 };
+export type CaptureSyncProgress =
+  | Readonly<{
+      kind: "photos";
+      status: "uploading" | "accepted" | "unconfirmed";
+      current: number;
+      total: number;
+    }>
+  | Readonly<{
+      kind: "operations";
+      status: "processing" | "processed" | "unconfirmed";
+    }>;
 /** Independent delivery failures never discard captures or bypass identity locks. */
 export async function syncCaptures<Photo extends { id: string }>(steps: {
   photoIds(): Promise<string[]>;
@@ -14,6 +25,7 @@ export async function syncCaptures<Photo extends { id: string }>(steps: {
   isFatal(error: unknown): boolean;
   /** A user-requested stop must not continue to later captures or operations. */
   isCancelled?(error: unknown): boolean;
+  onProgress?(progress: CaptureSyncProgress): void;
 }): Promise<CaptureSyncResult> {
   const result = {
     photosAcknowledged: 0,
@@ -22,9 +34,15 @@ export async function syncCaptures<Photo extends { id: string }>(steps: {
   };
   steps.assertCurrent();
   const photoIds = [...(await steps.photoIds())];
-  for (const id of photoIds) {
+  for (const [index, id] of photoIds.entries()) {
     steps.assertCurrent();
     try {
+      steps.onProgress?.({
+        kind: "photos",
+        status: "uploading",
+        current: index + 1,
+        total: photoIds.length,
+      });
       // No prefetch: each BLOB becomes eligible for collection before the next load.
       const photo = await steps.loadPhoto(id);
       steps.assertCurrent();
@@ -47,23 +65,38 @@ export async function syncCaptures<Photo extends { id: string }>(steps: {
       steps.assertCurrent();
       // Count only receipts whose local persistence completed successfully.
       result.photosAcknowledged++;
+      steps.onProgress?.({
+        kind: "photos",
+        status: "accepted",
+        current: index + 1,
+        total: photoIds.length,
+      });
     } catch (error) {
       // A failed identity check must escape, regardless of the delivery error.
       steps.assertCurrent();
       if (steps.isFatal(error)) throw error;
       if (steps.isCancelled?.(error)) throw error;
       result.photoFailures++;
+      steps.onProgress?.({
+        kind: "photos",
+        status: "unconfirmed",
+        current: index + 1,
+        total: photoIds.length,
+      });
     }
   }
   steps.assertCurrent();
   try {
+    steps.onProgress?.({ kind: "operations", status: "processing" });
     await steps.operations();
     steps.assertCurrent();
     result.operationsProcessed = true;
+    steps.onProgress?.({ kind: "operations", status: "processed" });
   } catch (error) {
     steps.assertCurrent();
     if (steps.isFatal(error)) throw error;
     if (steps.isCancelled?.(error)) throw error;
+    steps.onProgress?.({ kind: "operations", status: "unconfirmed" });
     // syncOperations already persists validated receipts and retains other IDs.
   }
   return result;

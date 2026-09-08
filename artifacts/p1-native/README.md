@@ -50,6 +50,8 @@ The signed-in shell uses a role-scoped home description and provides validated p
 
 Foreground sync has a visible **Cancel current sync** control. Cancellation propagates to both the single-photo upload and operation transport requests; it halts the captured snapshot before later work begins and leaves every unacknowledged local item pending for an explicit retry. A cancellation is not a delivery receipt, conflict resolution or background-sync promise.
 
+During foreground sync, the app announces only the ordinal photo count and whether a photo or saved work entry is uploading, accepted, processed or unconfirmed. It never puts local capture IDs, note text, photo metadata or image data in the progress surface.
+
 `6999665` drains the initial field-operation queue in batches of100 rather than stopping after the first batch. Each response is validated before recording receipts; a partial response retains unconfirmed entries and stops, and any later request failure leaves subsequent batches unsent. Six sync tests cover201 entries, lost responses, conflicts, partial acknowledgments and a later-batch failure. Photo-upload isolation and per-item recovery remain separate work.
 
 `a927c31` persists checklist changes and their immutable queued events in the same transaction. Reopening or re-downloading the same work revision retains local ticks; newer server versions are not overlaid. Root independently ran the actual vault against disposable SQLite with mocked Expo adapters, checking reopen, separate accounts, failed-write rollback and retry identity. This test does not establish SQLCipher device behavior.
