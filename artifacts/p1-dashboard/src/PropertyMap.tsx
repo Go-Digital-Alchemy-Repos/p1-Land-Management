@@ -65,7 +65,18 @@ export function PropertyMap({
 
   useEffect(() => {
     const instance = map.current;
-    if (!instance || !bounds) return;
+    if (!instance) return;
+    if (mappedProperties.length === 1) {
+      instance.jumpTo({
+        center: [
+          Number(mappedProperties[0].longitude),
+          Number(mappedProperties[0].latitude),
+        ],
+        zoom: 14,
+      });
+      return;
+    }
+    if (!bounds) return;
     instance.fitBounds(bounds, {
       padding: { top: 72, right: 72, bottom: 56, left: 72 },
       maxZoom: 15,
@@ -98,6 +109,21 @@ export function PropertyMap({
               ),
             );
           });
+          if (mappedProperties.length === 1) {
+            target.jumpTo({
+              center: [
+                Number(mappedProperties[0].longitude),
+                Number(mappedProperties[0].latitude),
+              ],
+              zoom: 14,
+            });
+          } else if (bounds) {
+            target.fitBounds(bounds, {
+              padding: { top: 72, right: 72, bottom: 56, left: 72 },
+              maxZoom: 15,
+              duration: 0,
+            });
+          }
         }}
       >
         <NavigationControl position="top-right" showCompass={false} />
