@@ -1200,17 +1200,12 @@ function App() {
                 </button>
               )}
               {view === "Properties" && staff && (
-                <div className="property-heading-actions">
-                  <span className="health-badge" role="status">
-                    <CheckCircle2 size={14} aria-hidden="true" /> Healthy
-                  </span>
-                  <button
-                    className="primary"
-                    onClick={() => openForm("property")}
-                  >
-                    <Plus size={17} /> Add property
-                  </button>
-                </div>
+                <button
+                  className="primary"
+                  onClick={() => openForm("property")}
+                >
+                  <Plus size={17} /> Add property
+                </button>
               )}
               {view === "Schedule" && ops && (
                 <button className="primary" onClick={() => openForm("work")}>
@@ -1255,7 +1250,7 @@ function App() {
               {error}
             </div>
           )}
-          {notice && !(view === "Properties" && notice === "Everything is up to date.") && (
+          {notice && (
             <div role="status" className="notice">
               {notice}
             </div>

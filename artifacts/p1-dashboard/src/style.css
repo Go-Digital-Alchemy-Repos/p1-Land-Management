@@ -390,21 +390,6 @@ small {
   color: #79876c;
   margin-bottom: 13px;
 }
-.property-heading-actions {
-  display: grid;
-  justify-items: end;
-  gap: var(--space-3);
-}
-.health-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  color: #426b3d;
-  font-size: 12px;
-  font-weight: 650;
-  line-height: 1;
-}
-.health-badge svg { color: #5e9750; }
 .metrics {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
