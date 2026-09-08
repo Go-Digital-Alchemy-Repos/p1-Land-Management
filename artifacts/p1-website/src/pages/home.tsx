@@ -134,7 +134,7 @@ export default function Home() {
             <h1 className="max-w-3xl font-display text-[clamp(2.6rem,6.4vw,5.4rem)] font-light leading-[0.98] tracking-[-0.02em] text-white">
               Your first impression{" "}
               <em className="font-semibold not-italic text-tan" style={{ fontStyle: "italic" }}>
-                start at the curb.
+                starts at the curb.
               </em>
             </h1>
             <p className="mt-7 max-w-xl text-lg leading-relaxed" style={{ color: "hsl(40 20% 92% / 0.82)" }}>
