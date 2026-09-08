@@ -36,6 +36,7 @@ import type { FieldOperation } from "@workspace/api-zod/dashboard";
 import {
   BusinessTransport,
   RequestFailure,
+  RequestCancelled,
   SessionChanged,
 } from "./src/core/transport";
 import { syncOperations } from "./src/core/sync";
@@ -88,7 +89,8 @@ export function Application({ services }: { services: ApplicationServices }) {
     [notice, setNotice] = useState("Sign in with your invited P1 account."),
     [busy, setBusy] = useState(false),
     [pending, setPending] = useState(0),
-    [supportOpen, setSupportOpen] = useState(false);
+    [supportOpen, setSupportOpen] = useState(false),
+    [syncing, setSyncing] = useState(false);
   const [enrollment, setEnrollment] = useState(false),
     [setup, setSetup] = useState<{
       totpURI?: string;
@@ -104,7 +106,8 @@ export function Application({ services }: { services: ApplicationServices }) {
   );
   const vault = useRef(new AccountVault<Vault>()).current,
     busyRef = useRef(false),
-    recoveredPhotoNotice = useRef<string | null>(null);
+    recoveredPhotoNotice = useRef<string | null>(null),
+    syncAbort = useRef<AbortController | null>(null);
   function describePhotoRecovery(recovery: PhotoRecovery) {
     const parts: string[] = [];
     if (recovery.recovered)
@@ -389,53 +392,65 @@ export function Application({ services }: { services: ApplicationServices }) {
   async function sync() {
     await verify();
     const current = requireBoundVault();
+    const controller = new AbortController();
+    syncAbort.current = controller;
+    setSyncing(true);
     const assertCurrent = () => {
       if (vault.current !== current) throw new SessionChanged();
       vault.require(origin, current.accountId);
     };
-    const result = await syncCaptures({
-      photoIds: () => current.pendingPhotoIds(),
-      loadPhoto: (id) => current.loadPendingPhoto(id),
-      upload: async (photo) => {
-        const m = JSON.parse(photo.manifest);
-        return transport.request<PhotoUploadReceipt>(
-          `/api/v1/files/${photo.id}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": m.mime,
-              "x-p1-property": m.propertyId,
-              "x-p1-work": m.workOrderId,
-              "x-p1-classification": m.classification,
+    try {
+      const result = await syncCaptures({
+        photoIds: () => current.pendingPhotoIds(),
+        loadPhoto: (id) => current.loadPendingPhoto(id),
+        upload: async (photo) => {
+          const m = JSON.parse(photo.manifest);
+          return transport.request<PhotoUploadReceipt>(
+            `/api/v1/files/${photo.id}`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": m.mime,
+                "x-p1-property": m.propertyId,
+                "x-p1-work": m.workOrderId,
+                "x-p1-classification": m.classification,
+              },
+              body: photo.bytes as unknown as BodyInit,
+              signal: controller.signal,
             },
-            body: photo.bytes as unknown as BodyInit,
-          },
-        );
-      },
-      acknowledgePhoto: (id) => current.acknowledgePhoto(id),
-      operations: () =>
-        syncOperations(current, (events) => {
-          assertCurrent();
-          return transport.request("/api/v1/field/sync", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ events }),
-          });
-        }),
-      assertCurrent,
-      isFatal: (error) =>
-        error instanceof SessionChanged ||
-        ((error instanceof RequestFailure ||
-          error instanceof AuthRequestFailure) &&
-          [401, 403].includes(error.status)),
-    });
-    assertCurrent();
-    const remaining = await current.pendingCount();
-    assertCurrent();
-    setPending(remaining);
-    setNotice(
-      `Photos acknowledged: ${result.photosAcknowledged}. ${result.photoFailures ? `Unconfirmed photo attempts: ${result.photoFailures}. ` : ""}${result.operationsProcessed ? "Operation queue processed." : "Operations need retry or office review."} Saved items remaining: ${remaining}.`,
-    );
+          );
+        },
+        acknowledgePhoto: (id) => current.acknowledgePhoto(id),
+        operations: () =>
+          syncOperations(current, (events) => {
+            assertCurrent();
+            return transport.request("/api/v1/field/sync", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ events }),
+              signal: controller.signal,
+            });
+          }),
+        assertCurrent,
+        isFatal: (error) =>
+          error instanceof SessionChanged ||
+          ((error instanceof RequestFailure ||
+            error instanceof AuthRequestFailure) &&
+            [401, 403].includes(error.status)),
+        isCancelled: (error) =>
+          controller.signal.aborted || error instanceof RequestCancelled,
+      });
+      assertCurrent();
+      const remaining = await current.pendingCount();
+      assertCurrent();
+      setPending(remaining);
+      setNotice(
+        `Photos acknowledged: ${result.photosAcknowledged}. ${result.photoFailures ? `Unconfirmed photo attempts: ${result.photoFailures}. ` : ""}${result.operationsProcessed ? "Operation queue processed." : "Operations need retry or office review."} Saved items remaining: ${remaining}.`,
+      );
+    } finally {
+      if (syncAbort.current === controller) syncAbort.current = null;
+      setSyncing(false);
+    }
   }
 
   async function logout() {
@@ -502,6 +517,14 @@ export function Application({ services }: { services: ApplicationServices }) {
             {notice}
           </Text>
           {busy && <ActivityIndicator accessibilityLabel="Working" />}
+          {syncing && (
+            <View style={s.button}>
+              <Button
+                title="Cancel current sync"
+                onPress={() => syncAbort.current?.abort()}
+              />
+            </View>
+          )}
           {action("Help with account or saved work", async () => {
             setSupportOpen(true);
           })}

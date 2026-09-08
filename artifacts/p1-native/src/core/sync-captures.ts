@@ -12,6 +12,8 @@ export async function syncCaptures<Photo extends { id: string }>(steps: {
   operations(): Promise<void>;
   assertCurrent(): void;
   isFatal(error: unknown): boolean;
+  /** A user-requested stop must not continue to later captures or operations. */
+  isCancelled?(error: unknown): boolean;
 }): Promise<CaptureSyncResult> {
   const result = {
     photosAcknowledged: 0,
@@ -49,6 +51,7 @@ export async function syncCaptures<Photo extends { id: string }>(steps: {
       // A failed identity check must escape, regardless of the delivery error.
       steps.assertCurrent();
       if (steps.isFatal(error)) throw error;
+      if (steps.isCancelled?.(error)) throw error;
       result.photoFailures++;
     }
   }
@@ -60,6 +63,7 @@ export async function syncCaptures<Photo extends { id: string }>(steps: {
   } catch (error) {
     steps.assertCurrent();
     if (steps.isFatal(error)) throw error;
+    if (steps.isCancelled?.(error)) throw error;
     // syncOperations already persists validated receipts and retains other IDs.
   }
   return result;
