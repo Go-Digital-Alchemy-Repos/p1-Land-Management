@@ -1254,6 +1254,14 @@ body { background: var(--atlas-paper); }
 }
 .sidebar nav .nav-group-items > button:hover:not(.active) { background: rgb(224 235 204 / 9%); }
 .content { background: var(--atlas-paper); }
+.content.desk-workspace-preview {
+  min-height: calc(100vh - 84px);
+  background-color: var(--atlas-paper);
+  background-image: url("/images/illustrations/manager-desk.png");
+  background-repeat: no-repeat;
+  background-position: center top;
+  background-size: min(1662px, 100%) auto;
+}
 .page-hero {
   position: relative;
   isolation: isolate;
@@ -1274,6 +1282,7 @@ body { background: var(--atlas-paper); }
   mask-image: radial-gradient(ellipse 90% 95% at 61% 54%, #000 43%, rgb(0 0 0 / .78) 61%, rgb(0 0 0 / .36) 78%, transparent 100%);
   pointer-events: none;
 }
+.desk-workspace-preview .page-hero::before { display: none; }
 .page-heading.page-hero {
   min-height: 190px;
   padding: 48px 0 38px;

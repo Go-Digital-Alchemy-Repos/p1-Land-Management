@@ -1156,7 +1156,7 @@ function App() {
             </div>
           </div>
         </header>
-        <main className="content">
+        <main className={view === "Overview" ? "content desk-workspace-preview" : "content"}>
           {!accountWorkspace && <div className="page-heading page-hero" style={{ "--page-motif": motifForPage(view, settingsSection) } as React.CSSProperties}>
             <div>
               <p className="eyebrow">P1 · PROPERTY OPERATIONS</p>
