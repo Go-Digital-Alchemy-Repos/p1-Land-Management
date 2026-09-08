@@ -10,6 +10,7 @@
     "ios": "expo run:ios",
     "typecheck": "tsc --noEmit",
     "test": "node --experimental-transform-types --test tests/*.test.ts",
+    "test:vault-storage": "cd ../.. && node artifacts/p1-native/tests/photo-recovery-vault.cjs && node artifacts/p1-native/tests/checklist-vault.cjs",
     "export": "expo export --platform all"
   },
   "dependencies": {

@@ -39,17 +39,18 @@ export async function capturePhoto(
     format: SaveFormat.JPEG,
     compress: 0.85,
   });
-  await vault.stagePhoto(
-    {
-      id: Crypto.randomUUID(),
-      workOrderId,
-      propertyId,
-      mime: "image/jpeg",
-      classification: "general",
-      capturedAt: new Date().toISOString(),
-    },
-    normalized.uri,
-  );
+  const manifest = {
+    id: Crypto.randomUUID(),
+    workOrderId,
+    propertyId,
+    mime: "image/jpeg" as const,
+    classification: "general" as const,
+    capturedAt: new Date().toISOString(),
+  };
+  // Persist the encrypted, account-scoped recovery record before reading the
+  // cache file. A process interruption can then resume secure staging later.
+  await vault.rememberTemporaryPhoto(manifest, normalized.uri);
+  await vault.stageRememberedPhoto(manifest.id);
   // Picker returns an application cache copy, never remove a photo-library asset.
   if (
     source.uri !== normalized.uri &&

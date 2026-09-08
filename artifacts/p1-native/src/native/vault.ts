@@ -18,6 +18,10 @@ import {
   fieldEventSchema,
   type FieldOperation,
 } from "@workspace/api-zod/dashboard";
+import {
+  CURRENT_VAULT_SCHEMA_VERSION,
+  vaultMigrationPlan,
+} from "../core/vault-migrations";
 const secure = {
   keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
 };
@@ -29,6 +33,28 @@ export type QueuedPhoto = {
   classification: UploadFieldPhotoXP1Classification;
   capturedAt: string;
 };
+export type PhotoRecovery = Readonly<{
+  recovered: number;
+  cleaned: number;
+  missing: number;
+  missingIds: readonly string[];
+}>;
+function validatePhotoManifest(value: unknown): QueuedPhoto {
+  if (!value || typeof value !== "object")
+    throw new Error("Saved photo metadata is invalid.");
+  const manifest = value as Partial<QueuedPhoto>;
+  if (
+    typeof manifest.id !== "string" ||
+    typeof manifest.workOrderId !== "string" ||
+    typeof manifest.propertyId !== "string" ||
+    manifest.mime !== "image/jpeg" ||
+    typeof manifest.classification !== "string" ||
+    typeof manifest.capturedAt !== "string" ||
+    !Number.isFinite(Date.parse(manifest.capturedAt))
+  )
+    throw new Error("Saved photo metadata is invalid.");
+  return manifest as QueuedPhoto;
+}
 const opening = new Map<string, Promise<unknown>>();
 export async function openVault(
   origin: string,
@@ -123,22 +149,33 @@ async function createVault(
       throw new Error(
         "Encrypted database support is unavailable. Use the P1 native development build.",
       );
+    await transaction(async (tx) => {
+      await tx.execAsync(
+        "CREATE TABLE IF NOT EXISTS metadata(key TEXT PRIMARY KEY,value TEXT NOT NULL)",
+      );
+      const version = await tx.getFirstAsync<{ value: string }>(
+        "SELECT value FROM metadata WHERE key='version'",
+      );
+      const current = version ? Number(version.value) : 0;
+      for (const migration of vaultMigrationPlan(current)) {
+        for (const statement of migration.statements)
+          await tx.execAsync(statement);
+        await tx.runAsync(
+          "INSERT OR REPLACE INTO metadata(key,value) VALUES('version',?)",
+          String(migration.to),
+        );
+      }
+      const finalVersion = await tx.getFirstAsync<{ value: string }>(
+        "SELECT value FROM metadata WHERE key='version'",
+      );
+      if (finalVersion?.value !== String(CURRENT_VAULT_SCHEMA_VERSION))
+        throw new Error("Protected storage upgrade is required.");
+    });
     if (
       requireExisting &&
       !(await db.getFirstAsync("SELECT value FROM metadata WHERE key='day'"))
     )
       throw new Error("No downloaded assignment snapshot is available.");
-    await transaction(async (tx) => {
-      await tx.execAsync(`CREATE TABLE IF NOT EXISTS metadata(key TEXT PRIMARY KEY,value TEXT NOT NULL);
-        CREATE TABLE IF NOT EXISTS operations(seq INTEGER PRIMARY KEY AUTOINCREMENT,id TEXT UNIQUE NOT NULL,payload TEXT NOT NULL,state TEXT NOT NULL DEFAULT 'pending');
-        CREATE TABLE IF NOT EXISTS photos(seq INTEGER PRIMARY KEY AUTOINCREMENT,id TEXT UNIQUE NOT NULL,manifest TEXT NOT NULL,bytes BLOB NOT NULL,state TEXT NOT NULL DEFAULT 'pending');
-        INSERT OR IGNORE INTO metadata VALUES('version','1');`);
-      const version = await tx.getFirstAsync<{ value: string }>(
-        "SELECT value FROM metadata WHERE key='version'",
-      );
-      if (version?.value !== "1")
-        throw new Error("Protected storage upgrade is required.");
-    });
   } catch (error) {
     await db.closeAsync();
     throw error;
@@ -302,26 +339,134 @@ async function createVault(
         }
       });
     },
-    async stagePhoto(manifest: QueuedPhoto, temporaryUri: string) {
-      const temporary = new File(temporaryUri),
-        bytes = await temporary.bytes();
-      if (!bytes.length || bytes.length > 15 * 1024 * 1024)
-        throw new Error("Photo exceeds the upload limit.");
+    async rememberTemporaryPhoto(manifest: QueuedPhoto, temporaryUri: string) {
+      if (!temporaryUri.startsWith("file:"))
+        throw new Error("Photo staging requires a private file.");
+      const serialized = JSON.stringify(validatePhotoManifest(manifest));
       await transaction(async (tx) => {
-        const old = await tx.getFirstAsync(
-          "SELECT id FROM photos WHERE id=?",
+        const existing = await tx.getFirstAsync<{
+          manifest: string;
+          temporary_uri: string;
+        }>(
+          "SELECT manifest,temporary_uri FROM photo_staging WHERE id=?",
           manifest.id,
         );
-        if (old) throw new Error("This photo is already staged.");
+        if (
+          existing &&
+          (existing.manifest !== serialized ||
+            existing.temporary_uri !== temporaryUri)
+        )
+          throw new Error("Photo ID already contains different work.");
         await tx.runAsync(
-          "INSERT INTO photos(id,manifest,bytes) VALUES(?,?,?)",
+          "INSERT OR IGNORE INTO photo_staging(id,manifest,temporary_uri) VALUES(?,?,?)",
           manifest.id,
-          JSON.stringify(manifest),
-          bytes,
+          serialized,
+          temporaryUri,
         );
       });
-      // Committed ciphertext is authoritative before temporary cleartext is removed.
+    },
+    async stageRememberedPhoto(id: string) {
+      const staged = await db.getFirstAsync<{
+        id: string;
+        manifest: string;
+        temporary_uri: string;
+        state: "pending" | "committed" | "missing";
+      }>(
+        "SELECT id,manifest,temporary_uri,state FROM photo_staging WHERE id=?",
+        id,
+      );
+      if (!staged) throw new Error("Saved temporary photo was not found.");
+      const manifest = validatePhotoManifest(JSON.parse(staged.manifest));
+      const temporary = new File(staged.temporary_uri);
+      const persisted = await db.getFirstAsync<{ manifest: string }>(
+        "SELECT manifest FROM photos WHERE id=?",
+        id,
+      );
+      if (persisted && persisted.manifest !== staged.manifest)
+        throw new Error("Photo ID already contains different work.");
+      if (!temporary.exists) {
+        if (persisted) {
+          await transaction(async (tx) => {
+            await tx.runAsync("DELETE FROM photo_staging WHERE id=?", id);
+          });
+          return "cleaned" as const;
+        }
+        await transaction(async (tx) => {
+          await tx.runAsync(
+            "UPDATE photo_staging SET state='missing' WHERE id=?",
+            id,
+          );
+        });
+        throw new Error(
+          "Temporary photo is unavailable. Its interrupted capture is retained for office support.",
+        );
+      }
+      if (!persisted) {
+        const bytes = await temporary.bytes();
+        if (!bytes.length || bytes.length > 15 * 1024 * 1024)
+          throw new Error("Photo exceeds the upload limit.");
+        await transaction(async (tx) => {
+          const current = await tx.getFirstAsync<{
+            manifest: string;
+          }>("SELECT manifest FROM photo_staging WHERE id=?", id);
+          if (!current || current.manifest !== staged.manifest)
+            throw new Error("Temporary photo changed before secure staging.");
+          await tx.runAsync(
+            "INSERT INTO photos(id,manifest,bytes) VALUES(?,?,?)",
+            id,
+            staged.manifest,
+            bytes,
+          );
+          await tx.runAsync(
+            "UPDATE photo_staging SET state='committed' WHERE id=?",
+            id,
+          );
+        });
+      }
+      // The encrypted BLOB is authoritative. If this removal is interrupted,
+      // the committed journal row is cleaned on the next account-bound launch.
       temporary.delete();
+      await transaction(async (tx) => {
+        await tx.runAsync("DELETE FROM photo_staging WHERE id=?", id);
+      });
+      return "staged" as const;
+    },
+    async recoverTemporaryPhotos(): Promise<PhotoRecovery> {
+      const staged = await db.getAllAsync<{ id: string; state: string }>(
+        "SELECT id,state FROM photo_staging ORDER BY id",
+      );
+      const result: {
+        recovered: number;
+        cleaned: number;
+        missing: number;
+        missingIds: string[];
+      } = { recovered: 0, cleaned: 0, missing: 0, missingIds: [] };
+      for (const row of staged) {
+        try {
+          const outcome = await this.stageRememberedPhoto(row.id);
+          if (row.state === "pending" && outcome === "staged")
+            result.recovered++;
+          else result.cleaned++;
+        } catch (error) {
+          if (
+            error instanceof Error &&
+            error.message.startsWith("Temporary photo is unavailable")
+          ) {
+            result.missing++;
+            result.missingIds.push(row.id);
+            continue;
+          }
+          throw error;
+        }
+      }
+      return result;
+    },
+    async stagePhoto(
+      manifest: QueuedPhoto,
+      temporaryUri: string,
+    ): Promise<void> {
+      await this.rememberTemporaryPhoto(manifest, temporaryUri);
+      await this.stageRememberedPhoto(manifest.id);
     },
     async pendingPhotoIds(): Promise<string[]> {
       const rows = await db.getAllAsync<{ id: string }>(

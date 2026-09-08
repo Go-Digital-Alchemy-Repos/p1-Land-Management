@@ -73,6 +73,15 @@ function resource(accountId: string): Vault {
       return [];
     },
     recordResults: async () => recordUse("ack"),
+    rememberTemporaryPhoto: async () => recordUse("remember-photo"),
+    stageRememberedPhoto: async () => {
+      recordUse("stage-photo");
+      return "staged" as const;
+    },
+    recoverTemporaryPhotos: async () => {
+      recordUse("recover-photos");
+      return { recovered: 0, cleaned: 0, missing: 0, missingIds: [] };
+    },
     stagePhoto: async () => recordUse("photo"),
     pendingPhotoIds: async () => {
       recordUse("photos");

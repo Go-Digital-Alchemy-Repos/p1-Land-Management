@@ -39,7 +39,7 @@ import {
 } from "./src/core/transport";
 import { syncOperations } from "./src/core/sync";
 import { NativeAuth } from "./src/native/auth";
-import { openVault, type Vault } from "./src/native/vault";
+import { openVault, type PhotoRecovery, type Vault } from "./src/native/vault";
 import { capturePhoto } from "./src/native/capture";
 const origin =
   process.env.EXPO_PUBLIC_P1_API_ORIGIN ||
@@ -98,7 +98,39 @@ export function Application({ services }: { services: ApplicationServices }) {
     }).format(new Date()),
   );
   const vault = useRef(new AccountVault<Vault>()).current,
-    busyRef = useRef(false);
+    busyRef = useRef(false),
+    recoveredPhotoNotice = useRef<string | null>(null);
+  function describePhotoRecovery(recovery: PhotoRecovery) {
+    const parts: string[] = [];
+    if (recovery.recovered)
+      parts.push(
+        `${recovery.recovered} interrupted photo${recovery.recovered === 1 ? "" : "s"} recovered into protected storage`,
+      );
+    if (recovery.cleaned)
+      parts.push(
+        `${recovery.cleaned} temporary photo file${recovery.cleaned === 1 ? "" : "s"} cleaned after secure staging`,
+      );
+    if (recovery.missing) {
+      const references = recovery.missingIds.slice(0, 3).join(", ");
+      const remainder = recovery.missingIds.length - 3;
+      parts.push(
+        `${recovery.missing} interrupted photo capture${recovery.missing === 1 ? "" : "s"} could not be recovered and remain${recovery.missing === 1 ? "s" : ""} protected on this device for office support (reference ${references}${remainder > 0 ? ` and ${remainder} more` : ""})`,
+      );
+    }
+    return parts.length ? `${parts.join(". ")}.` : null;
+  }
+  async function attachCrewVault(accountId: string, requireExisting = false) {
+    const opened = await openVault(origin, accountId, requireExisting);
+    try {
+      const recovery = await opened.recoverTemporaryPhotos();
+      recoveredPhotoNotice.current = describePhotoRecovery(recovery);
+      vault.attach(opened);
+      return opened;
+    } catch (error) {
+      await opened.close();
+      throw error;
+    }
+  }
   async function detachVault() {
     const close = vault.detach();
     setOutbox(null);
@@ -213,7 +245,7 @@ export function Application({ services }: { services: ApplicationServices }) {
       await detachVault();
     transport.bind({ accountId: current.id, token });
     if (current.role === "crew" && !vault.current)
-      vault.attach(await openVault(origin, current.id));
+      await attachCrewVault(current.id);
     if (current.role === "crew") {
       const response = await auth.call("get-session", undefined);
       if (
@@ -254,7 +286,9 @@ export function Application({ services }: { services: ApplicationServices }) {
     await verify();
     setWork(await loadDay());
     setSelected(null);
-    setNotice("Current authorized work loaded.");
+    const recovery = recoveredPhotoNotice.current;
+    recoveredPhotoNotice.current = null;
+    setNotice(recovery || "Current authorized work loaded.");
     if (vault.current) setPending(await vault.current.pendingCount());
   }
   useEffect(() => {
@@ -571,8 +605,7 @@ export function Application({ services }: { services: ApplicationServices }) {
                     throw new Error("Sign in online before offline access.");
                   const entry = await recallOffline(origin, token);
                   await detachVault();
-                  const saved = await openVault(origin, entry.accountId, true);
-                  vault.attach(saved);
+                  const saved = await attachCrewVault(entry.accountId, true);
                   const rows = await saved.downloaded();
                   setWork(rows);
                   setPerson({
@@ -587,8 +620,10 @@ export function Application({ services }: { services: ApplicationServices }) {
                   setOffline(true);
                   transport.bind(null);
                   setPending(await saved.pendingCount());
+                  const recovery = recoveredPhotoNotice.current;
+                  recoveredPhotoNotice.current = null;
                   setNotice(
-                    `Offline downloaded work. Access expires ${new Date(entry.expiresAt).toLocaleString()}. Reconnect before syncing.`,
+                    `${recovery ? `${recovery} ` : ""}Offline downloaded work. Access expires ${new Date(entry.expiresAt).toLocaleString()}. Reconnect before syncing.`,
                   );
                 })}
             </View>
@@ -668,7 +703,8 @@ export function Application({ services }: { services: ApplicationServices }) {
                   </Text>
                   {selected.scheduled_at ? (
                     <Text>
-                      Scheduled · {formatPropertyTimestamp(selected.scheduled_at)}
+                      Scheduled ·{" "}
+                      {formatPropertyTimestamp(selected.scheduled_at)}
                     </Text>
                   ) : (
                     <Text>Schedule pending</Text>
