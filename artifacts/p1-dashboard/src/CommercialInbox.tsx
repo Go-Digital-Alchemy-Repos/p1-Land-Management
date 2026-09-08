@@ -6,7 +6,7 @@ import {
   updateCommercialFollowUp,
 } from "@workspace/api-client-react/dashboard";
 import { useEffect, useRef, useState } from "react";
-import { formatPhoneNumber } from "./phone";
+import { EmailLink, PhoneLink } from "./contact-links";
 import "./commercial-inbox.css";
 const statuses = [
   "new",
@@ -297,9 +297,9 @@ export function CommercialInbox({
               {selected.contact_title ? " · " + selected.contact_title : ""}
             </p>
             <p>
-              {selected.email || "No email provided"}
+              {selected.email ? <EmailLink email={selected.email} /> : "No email provided"}
               <br />
-              {formatPhoneNumber(selected.phone) || "No phone provided"}
+              {selected.phone ? <PhoneLink phone={selected.phone} /> : "No phone provided"}
             </p>
             <dl>
               {[

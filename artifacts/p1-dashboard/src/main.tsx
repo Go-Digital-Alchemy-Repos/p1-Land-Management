@@ -11,6 +11,7 @@ import { InspectionReports } from "./InspectionReports";
 import { ServiceRequestTriage } from "./ServiceRequestTriage";
 import { ProjectPhases } from "./ProjectPhases";
 import { formatPhoneNumber } from "./phone";
+import { ContactDetails, EmailLink } from "./contact-links";
 import React, { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { createAuthClient } from "better-auth/react";
@@ -1427,22 +1428,9 @@ function App() {
                 <div className="schedule-row" key={client.id}>
                   <div>
                     <strong>{client.name}</strong>
-                    <small>
-                      {[client.billing_address, formatPhoneNumber(client.phone)]
-                        .filter(Boolean)
-                        .join(" · ")}
-                    </small>
+                    <small><ContactDetails prefix={client.billing_address} phone={client.phone} /></small>
                     {client.primary_contact_name && (
-                      <small>
-                        {[
-                          client.primary_contact_name,
-                          client.primary_contact_position,
-                          client.primary_contact_email,
-                          formatPhoneNumber(client.primary_contact_phone),
-                        ]
-                          .filter(Boolean)
-                          .join(" · ")}
-                      </small>
+                      <small><ContactDetails prefix={[client.primary_contact_name, client.primary_contact_position].filter(Boolean).join(" · ")} email={client.primary_contact_email} phone={client.primary_contact_phone} /></small>
                     )}
                   </div>
                   {staff && (
@@ -2085,7 +2073,7 @@ function App() {
                     {(data["account-mfa-policies"] || []).map((member: any) => (
                       <div className="row-actions" key={member.id}>
                         <span>
-                          {member.name} · {member.role} · {member.email} —{" "}
+                          {member.name} · {member.role} · <EmailLink email={member.email} /> —{" "}
                           {member.mfaRequired ? "Required" : "Optional"}
                         </span>
                         <button

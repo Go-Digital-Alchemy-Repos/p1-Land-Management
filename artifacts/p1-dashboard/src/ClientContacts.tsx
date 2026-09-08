@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { ContactDetails } from "./contact-links";
 import { formatPhoneNumber } from "./phone";
 type Contact = {
   id: string;
@@ -105,10 +106,11 @@ export function ClientContacts({
                 {contact.archived ? " · archived" : ""}
               </small>
               <small>
-                {[contact.position, contact.email, formatPhoneNumber(contact.phone)]
-                  .filter(Boolean)
-                  .join(" · ") ||
-                  "No contact details recorded"}
+                <ContactDetails
+                  prefix={contact.position || (!contact.email && !contact.phone ? "No contact details recorded" : undefined)}
+                  email={contact.email}
+                  phone={contact.phone}
+                />
               </small>
             </div>
             <button disabled={busy} onClick={() => edit(contact)}>

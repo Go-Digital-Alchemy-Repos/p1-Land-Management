@@ -12,6 +12,7 @@ import {
 } from "./commercial-context.types";
 import "./commercial-context.css";
 import { formatPhoneNumber } from "./phone";
+import { EmailLink, PhoneLink } from "./contact-links";
 type Choice = { mode: "new" | "existing" | "none"; selected: Candidate | null };
 type Draft = {
   organization: Choice;
@@ -486,8 +487,8 @@ export function CommercialContextPanel({
             <p>
               <strong>Reviewed contact</strong>
               {context.contact?.name || "Not linked"}
-              {context.contact?.email && <span>{context.contact.email}</span>}
-              {context.contact?.phone && <span>{formatPhoneNumber(context.contact.phone)}</span>}
+              {context.contact?.email && <span><EmailLink email={context.contact.email} /></span>}
+              {context.contact?.phone && <span><PhoneLink phone={context.contact.phone} /></span>}
             </p>
             <p>
               <strong>Reviewed property</strong>

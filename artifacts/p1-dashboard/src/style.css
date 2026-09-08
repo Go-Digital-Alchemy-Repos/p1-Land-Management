@@ -82,6 +82,16 @@ textarea:focus-visible {
 a {
   color: inherit;
 }
+.contact-link {
+  color: inherit;
+  text-decoration-color: rgb(72 105 77 / 42%);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+.contact-link:hover {
+  color: #315f3f;
+  text-decoration-color: currentColor;
+}
 h1,
 h2,
 h3,
