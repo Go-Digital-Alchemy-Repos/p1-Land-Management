@@ -122,6 +122,14 @@ api.get("/me", async (req, res) => {
     id: s.user.id,
     name: s.user.name,
     email: s.user.email,
+    avatarUrl: (
+      await pool.query(
+        "SELECT updated_at FROM account_avatar WHERE user_id=$1",
+        [s.user.id],
+      )
+    ).rowCount
+      ? "/api/v1/profile/avatar"
+      : null,
     twoFactorEnabled: s.user.twoFactorEnabled,
     mfaRequired,
     // Deprecated compatibility alias for existing native clients.

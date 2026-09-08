@@ -14,6 +14,7 @@ import { ServiceRequestTriage } from "./ServiceRequestTriage";
 import { ProjectPhases } from "./ProjectPhases";
 import { formatPhoneNumber } from "./phone";
 import { ContactDetails, EmailLink } from "./contact-links";
+import { AccountProfile } from "./AccountProfile";
 import React, { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { createAuthClient } from "better-auth/react";
@@ -82,6 +83,7 @@ type Person = {
   role: string | null;
   twoFactorEnabled: boolean;
   mfaRequired?: boolean;
+  avatarUrl?: string | null;
 };
 type NavItem = DashboardPageRoute & {
   icon: typeof LayoutDashboard;
@@ -100,6 +102,7 @@ const icons: Record<DashboardPageRoute["view"] | "Settings:security" | "Settings
   Projects: ClipboardList,
   Inspections: CheckCircle2,
   Expenses: Wallet,
+  Profile: Users,
   Settings: Users,
   "Settings:security": ShieldCheck,
   "Settings:integrations": Plug,
@@ -828,7 +831,7 @@ function App() {
     manager = ["owner", "manager"].includes(person?.role || ""),
     ops = ["owner", "manager", "dispatch"].includes(person?.role || "");
   const allowedNav = nav.filter((item) =>
-    canAccessRoute({ kind: "page", page: item }, person?.role),
+    item.navigation !== false && canAccessRoute({ kind: "page", page: item }, person?.role),
   );
   const activePage = nav.find(
     (item) =>
@@ -1156,16 +1159,24 @@ function App() {
                 : view}
             </strong>
           </div>
-          <div className="user">
+          <button
+            className="user account-menu-trigger"
+            onClick={() => navigate("Profile")}
+            aria-label="Open your account profile"
+          >
             <span className={isOnline ? "connection" : "connection offline"}>
               {isOnline ? "Connected" : "Offline"}
             </span>
-            <span className="avatar">{person.name.slice(0, 1)}</span>
+            {person.avatarUrl ? (
+              <img className="avatar" src={person.avatarUrl} alt="" />
+            ) : (
+              <span className="avatar">{person.name.slice(0, 1)}</span>
+            )}
             <div>
               {person.name}
               <small>{person.role}</small>
             </div>
-          </div>
+          </button>
         </header>
         <main
           className={view === "Overview" ? "content desk-workspace-preview" : "content workspace-motif"}
@@ -1301,6 +1312,19 @@ function App() {
               </div>
             </section>
           ) : <>
+          {view === "Profile" && (
+            <AccountProfile
+              account={person}
+              actions={{
+                updateUser: (input) => auth.updateUser(input),
+                changePassword: (input) => auth.changePassword(input),
+                enableTwoFactor: (input) => auth.twoFactor.enable(input),
+                verifyTotp: (input) => auth.twoFactor.verifyTotp(input),
+                disableTwoFactor: (input) => auth.twoFactor.disable(input),
+              }}
+              onRefresh={session}
+            />
+          )}
           {view === "Agreements" && (
             <ServiceAgreements
               role={person.role}

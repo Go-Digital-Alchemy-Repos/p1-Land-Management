@@ -16,6 +16,7 @@ const pageIllustrations: Record<Exclude<DashboardView, "Settings">, string> = {
   Projects: illustration("projects"),
   Inspections: illustration("inspections"),
   Expenses: illustration("expenses"),
+  Profile: illustration("settings-security"),
 };
 
 const settingsIllustrations: Record<SettingsSection, string> = {

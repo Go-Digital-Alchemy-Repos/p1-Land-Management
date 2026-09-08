@@ -12,7 +12,8 @@ export type DashboardView =
   | "Projects"
   | "Inspections"
   | "Expenses"
-  | "Settings";
+  | "Settings"
+  | "Profile";
 
 export type SettingsSection =
   | "people"
@@ -58,6 +59,7 @@ export type DashboardPageRoute = {
   path: string;
   group: NavigationGroup;
   settingsSection?: SettingsSection;
+  navigation?: boolean;
 };
 
 export type DashboardRoute =
@@ -78,6 +80,7 @@ export const DASHBOARD_PAGES: readonly DashboardPageRoute[] = [
   { view: "Agreements", label: "Agreements", path: "/agreements", group: "Revenue" },
   { view: "Billing", label: "Billing", path: "/billing", group: "Revenue" },
   { view: "Expenses", label: "Expenses", path: "/expenses", group: "Revenue" },
+  { view: "Profile", label: "My profile", path: "/profile", group: "Workspace", navigation: false },
   { view: "Settings", label: "People & access", path: "/settings/people", group: "Settings", settingsSection: "people" },
   { view: "Settings", label: "Security", path: "/settings/security", group: "Settings", settingsSection: "security" },
   { view: "Settings", label: "Integrations", path: "/settings/integrations", group: "Settings", settingsSection: "integrations" },
@@ -182,6 +185,7 @@ export function defaultRouteForRole(role: string | null | undefined) {
 export function canAccessRoute(route: DashboardRoute, role: string | null | undefined) {
   if (route.kind !== "page" || !role) return false;
   const { view, settingsSection } = route.page;
+  if (view === "Profile") return true;
   if (role === "crew") return ["My Day", "Properties"].includes(view);
   if (role === "client") {
     return ["Overview", "Properties", "Schedule", "Sales", "Billing", "Requests", "Inspections"].includes(view);

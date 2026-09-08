@@ -21,6 +21,7 @@ import {
 import { api } from "./api";
 import { operationsApi } from "./operations";
 import { filesApi } from "./files";
+import { profileApi } from "./profile";
 import { qboApi, qboWebhook } from "./quickbooks";
 import { notificationsApi, smsWebhook } from "./notifications";
 import { clientWorkspaceApi } from "./client-workspace";
@@ -97,6 +98,7 @@ app.use(
   operationsApi,
   workReadinessApi,
   serviceAgreementApi,
+  profileApi,
   filesApi,
   qboApi,
   notificationsApi,

@@ -15,6 +15,12 @@ test("dashboard routes preserve canonical modules, settings, and supported recor
   assert.equal(settings.page.settingsSection, "security");
   assert.equal(pathForRoute(settings), "/settings/security");
 
+  const profile = routeFromPath("/profile/");
+  assert.equal(profile.kind, "page");
+  if (profile.kind !== "page") return;
+  assert.equal(profile.page.view, "Profile");
+  assert.equal(pathForRoute(profile), "/profile");
+
   const propertyId = "11111111-1111-4111-8111-111111111111";
   const clientId = "22222222-2222-4222-8222-222222222222";
   const workId = "33333333-3333-4333-8333-333333333333";
@@ -53,6 +59,8 @@ test("dashboard routes fail closed for unknown and role-restricted destinations"
   const security = routeFromPath("/settings/security");
   assert.equal(canAccessRoute(security, "owner"), true);
   assert.equal(canAccessRoute(security, "client"), false);
+  assert.equal(canAccessRoute(routeFromPath("/profile"), "client"), true);
+  assert.equal(canAccessRoute(routeFromPath("/profile"), "crew"), true);
 
   const agreement = routeFromPath("/agreements/44444444-4444-4444-8444-444444444444");
   assert.equal(canAccessRoute(agreement, "finance"), true);

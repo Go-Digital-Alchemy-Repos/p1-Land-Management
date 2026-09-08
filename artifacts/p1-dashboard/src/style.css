@@ -344,6 +344,15 @@ small {
   align-items: center;
   font-size: 12px;
 }
+.account-menu-trigger {
+  min-height: 0;
+  padding: 5px 8px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  text-align: left;
+}
+.account-menu-trigger:hover { background: #eef1e8; }
 .user small {
   font-size: 10px;
   text-transform: capitalize;
@@ -356,6 +365,40 @@ small {
   border-radius: 50%;
   background: #e6e9dc;
 }
+.avatar[src] { object-fit: cover; }
+.account-profile { display: grid; gap: var(--space-6); max-width: 1120px; }
+.profile-identity { display: grid; grid-template-columns: auto minmax(0, 1fr) minmax(240px, 320px); align-items: center; gap: var(--space-6); padding: var(--space-6); }
+.profile-identity .eyebrow { margin-bottom: 8px; }
+.profile-identity h2 { margin-bottom: 7px; font-size: 24px; }
+.profile-identity .muted { margin-bottom: 0; }
+.profile-avatar-wrap { display: grid; justify-items: center; gap: 9px; }
+.profile-avatar { width: 88px; height: 88px; border-radius: 50%; object-fit: cover; border: 3px solid #fff; box-shadow: 0 1px 5px rgb(23 61 49 / 16%); }
+.profile-avatar-fallback { display: grid; place-items: center; background: #dfe8bd; color: #254937; font-size: 30px; font-weight: 650; }
+.avatar-change { min-height: 34px; padding: 6px 9px; font-size: 11px; }
+.avatar-dropzone { display: grid; justify-items: center; gap: 5px; min-height: 132px; padding: 21px 16px; border: 1px dashed #9dad92; border-radius: 10px; background: #f8faf5; color: #466548; text-align: center; cursor: pointer; }
+.avatar-dropzone:hover { background: #f0f5e8; border-color: #6f9462; }
+.avatar-dropzone span { font-size: 12px; font-weight: 650; }
+.avatar-dropzone small { font-size: 10px; }
+.avatar-dropzone input, .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; clip-path: inset(50%); }
+.profile-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-6); }
+.profile-grid .panel, .profile-security { overflow: hidden; }
+.profile-grid .panel-heading, .profile-security .panel-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-4); }
+.profile-grid .panel-heading h2, .profile-security .panel-heading h2 { display: flex; align-items: center; gap: 8px; margin: 0; }
+.profile-grid .panel-heading p, .profile-security .panel-heading p { margin: 5px 0 0; color: #6c776d; font-size: 12px; line-height: 1.5; }
+.profile-form { display: grid; gap: 14px; padding: var(--space-6); }
+.profile-form label { display: grid; gap: 6px; color: #5a6a55; font-size: 12px; font-weight: 650; }
+.profile-form input { width: 100%; min-height: 44px; padding: 10px 12px; border: 1px solid #d4ddca; border-radius: 7px; color: #294137; background: #fff; }
+.profile-form input[readonly] { background: #f4f6f1; color: #6e796e; }
+.profile-form .check-label { display: flex; align-items: flex-start; gap: 9px; font-weight: 500; line-height: 1.45; }
+.profile-form .check-label input { width: 16px; min-height: 16px; margin: 1px 0 0; }
+.form-help { margin: -4px 0 0; color: #778273; font-size: 11px; line-height: 1.45; }
+.profile-form button { justify-self: start; }
+.inline-form { grid-template-columns: minmax(0, 360px) auto; align-items: end; }
+.profile-security .panel-heading { border-bottom: 1px solid #e1e6da; }
+.mfa-enrollment { display: grid; justify-items: start; gap: 12px; padding: var(--space-6); }
+.mfa-enrollment p { margin: 0; color: #5e6c5d; line-height: 1.5; }
+.mfa-enrollment .inline-form { width: 100%; padding: 0; }
+.profile-danger { border-top: 1px solid #e1e6da; }
 .connection {
   font-size: 10px;
   color: #557145;
@@ -1112,6 +1155,12 @@ textarea {
     align-items: flex-start;
     gap: 12px;
   }
+  .profile-identity,
+  .profile-grid { grid-template-columns: 1fr; }
+  .profile-identity { justify-items: start; }
+  .profile-avatar-wrap { grid-template-columns: auto auto; align-items: center; }
+  .avatar-dropzone { width: 100%; }
+  .inline-form { grid-template-columns: 1fr; }
   .heading-actions button {
     font-size: 11px;
   }
