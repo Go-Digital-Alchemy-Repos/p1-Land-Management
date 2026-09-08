@@ -1235,8 +1235,8 @@ textarea {
 }
 body { background: var(--atlas-paper); }
 .sidebar {
-  background: #123c31 url("/images/textures/sidebar-paper-v1.webp") center top / 420px 420px repeat;
-  background-blend-mode: soft-light;
+  background: #123c31 url("/images/textures/sidebar-paper-v1.webp") center top / 360px 360px repeat;
+  background-blend-mode: overlay;
   border-right: 1px solid rgb(255 255 255 / 7%);
 }
 .sidebar nav .nav-group-trigger {
