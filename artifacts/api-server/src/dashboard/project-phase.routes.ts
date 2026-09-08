@@ -218,6 +218,8 @@ projectPhaseApi.get("/project-phases/:id/history", async (req, res) => {
   const a = await actor(req);
   requirePhaseOffice(a);
   const phaseId = id.parse(req.params.id);
+  const phase = await pool.query("SELECT 1 FROM project_phase ph JOIN project j ON j.id=ph.project_id JOIN property p ON p.id=j.property_id AND p.lifecycle='operational' AND p.client_id IS NOT NULL WHERE ph.id=$1", [phaseId]);
+  if (!phase.rowCount) throw new HttpError(404, "Project phase not found");
   const r = await pool.query("SELECT e.* FROM project_phase_event e JOIN project_phase ph ON ph.id=e.phase_id JOIN project j ON j.id=ph.project_id JOIN property p ON p.id=j.property_id AND p.lifecycle='operational' AND p.client_id IS NOT NULL WHERE e.phase_id=$1 ORDER BY e.created_at DESC", [phaseId]);
   res.json(r.rows);
 });
@@ -226,6 +228,8 @@ projectPhaseApi.get("/project-phases/:id/billing-intents", async (req, res) => {
   const a = await actor(req);
   requireRole(a.role, ["owner", "manager", "finance"]);
   const phaseId = id.parse(req.params.id);
+  const phase = await pool.query("SELECT 1 FROM project_phase ph JOIN project j ON j.id=ph.project_id JOIN property p ON p.id=j.property_id AND p.lifecycle='operational' AND p.client_id IS NOT NULL WHERE ph.id=$1", [phaseId]);
+  if (!phase.rowCount) throw new HttpError(404, "Project phase not found");
   const r = await pool.query("SELECT i.operation_id,i.expected_phase_version,i.kind,i.created_at,b.id AS billing_draft_id,b.title,b.amount_cents,b.status,b.quickbooks_id FROM project_phase_billing_intent i JOIN billing_draft b ON b.id=i.billing_draft_id JOIN project_phase ph ON ph.id=i.phase_id JOIN project j ON j.id=ph.project_id JOIN property p ON p.id=j.property_id AND p.lifecycle='operational' AND p.client_id IS NOT NULL WHERE i.phase_id=$1 ORDER BY i.created_at DESC", [phaseId]);
   res.json(r.rows);
 });
