@@ -130,6 +130,7 @@ try {
       "../p1-dashboard/tests/dashboard-contract.test.ts",
       "../p1-dashboard/tests/service-request-triage.test.ts",
       "src/dashboard/integration.test.ts",
+      "src/dashboard/profile-avatar.test.ts",
     ],
     { cwd, env },
   );

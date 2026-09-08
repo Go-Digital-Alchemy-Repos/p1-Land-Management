@@ -19,6 +19,13 @@ import { HttpError } from "./policy";
 
 export const profileApi = Router();
 
+// Avatar uploads are buffered before Sharp decodes them. Keep that short-lived
+// memory and CPU work bounded independently of the caller's network speed.
+// Authentication still occurs before a slot is claimed, so unauthenticated
+// traffic cannot exhaust the limit.
+let activeAvatarUploads = 0;
+const avatarUploadLimit = 4;
+
 function storage() {
   if (
     !process.env.S3_ENDPOINT ||
@@ -78,74 +85,80 @@ profileApi.get("/profile/avatar", async (req, res) => {
 
 profileApi.post(
   "/profile/avatar",
-  async (req: Request, _res: Response, next: NextFunction) => {
-    await actor(req);
-    raw({ type: ["image/jpeg", "image/png", "image/webp"], limit: "5mb" })(
-      req,
-      _res,
-      next,
-    );
-  },
   async (req: Request, res: Response) => {
     const a = await actor(req);
-    const original = req.body as Buffer;
-    const mime = String(req.headers["content-type"] || "");
-    if (!Buffer.isBuffer(original) || !supportedImage(original, mime))
-      throw new HttpError(400, "Upload a JPEG, PNG, or WebP image");
-    let image: Buffer;
+    if (activeAvatarUploads >= avatarUploadLimit)
+      throw new HttpError(429, "Avatar uploads are busy; retry shortly");
+    activeAvatarUploads++;
     try {
-      image = await sharp(original, { limitInputPixels: 16_000_000 })
-        .rotate()
-        .resize(512, 512, { fit: "cover", position: "attention" })
-        .webp({ quality: 86 })
-        .toBuffer();
-    } catch {
-      throw new HttpError(
-        400,
-        "Image cannot be decoded or exceeds the image size limit",
+      await new Promise<void>((resolve, reject) =>
+        raw({ type: ["image/jpeg", "image/png", "image/webp"], limit: "5mb" })(
+          req,
+          res,
+          (error) => (error ? reject(error) : resolve()),
+        ),
       );
-    }
-    const objectKey = `avatars/${a.id}/${randomUUID()}.webp`;
-    await storage().send(
-      new PutObjectCommand({
-        Bucket: process.env.S3_BUCKET,
-        Key: objectKey,
-        Body: image,
-        ContentType: "image/webp",
-        CacheControl: "private, no-store",
-      }),
-    );
-    const previous = await transaction(async (client) => {
-      const old = (
+      const original = req.body as Buffer;
+      const mime = String(req.headers["content-type"] || "");
+      if (!Buffer.isBuffer(original) || !supportedImage(original, mime))
+        throw new HttpError(400, "Upload a JPEG, PNG, or WebP image");
+      let image: Buffer;
+      try {
+        image = await sharp(original, { limitInputPixels: 16_000_000 })
+          .rotate()
+          .resize(512, 512, { fit: "cover", position: "attention" })
+          .webp({ quality: 86 })
+          .toBuffer();
+      } catch {
+        throw new HttpError(
+          400,
+          "Image cannot be decoded or exceeds the image size limit",
+        );
+      }
+      const objectKey = `avatars/${a.id}/${randomUUID()}.webp`;
+      await storage().send(
+        new PutObjectCommand({
+          Bucket: process.env.S3_BUCKET,
+          Key: objectKey,
+          Body: image,
+          ContentType: "image/webp",
+          CacheControl: "private, no-store",
+        }),
+      );
+      const previous = await transaction(async (client) => {
+        const old = (
+          await client.query(
+            "SELECT object_key FROM account_avatar WHERE user_id=$1 FOR UPDATE",
+            [a.id],
+          )
+        ).rows[0];
         await client.query(
-          "SELECT object_key FROM account_avatar WHERE user_id=$1 FOR UPDATE",
-          [a.id],
-        )
-      ).rows[0];
-      await client.query(
-        `INSERT INTO account_avatar(user_id,object_key,mime,bytes,updated_at)
-         VALUES($1,$2,'image/webp',$3,now())
-         ON CONFLICT(user_id) DO UPDATE SET object_key=EXCLUDED.object_key,mime=EXCLUDED.mime,bytes=EXCLUDED.bytes,updated_at=now()`,
-        [a.id, objectKey, image.length],
-      );
-      await client.query(
-        "INSERT INTO audit_event(id,user_id,action,entity_id) VALUES($1,$2,'account.avatar.updated',$2)",
-        [randomUUID(), a.id],
-      );
-      return old?.object_key as string | undefined;
-    });
-    if (previous)
-      await storage()
-        .send(
-          new DeleteObjectCommand({
-            Bucket: process.env.S3_BUCKET,
-            Key: previous,
-          }),
-        )
-        .catch(() => undefined);
-    res
-      .status(201)
-      .json({ avatarUrl: `/api/v1/profile/avatar?v=${Date.now()}` });
+          `INSERT INTO account_avatar(user_id,object_key,mime,bytes,updated_at)
+           VALUES($1,$2,'image/webp',$3,now())
+           ON CONFLICT(user_id) DO UPDATE SET object_key=EXCLUDED.object_key,mime=EXCLUDED.mime,bytes=EXCLUDED.bytes,updated_at=now()`,
+          [a.id, objectKey, image.length],
+        );
+        await client.query(
+          "INSERT INTO audit_event(id,user_id,action,entity_id) VALUES($1,$2,'account.avatar.updated',$2)",
+          [randomUUID(), a.id],
+        );
+        return old?.object_key as string | undefined;
+      });
+      if (previous)
+        await storage()
+          .send(
+            new DeleteObjectCommand({
+              Bucket: process.env.S3_BUCKET,
+              Key: previous,
+            }),
+          )
+          .catch(() => undefined);
+      res
+        .status(201)
+        .json({ avatarUrl: `/api/v1/profile/avatar?v=${Date.now()}` });
+    } finally {
+      activeAvatarUploads--;
+    }
   },
   (error: unknown, _req: Request, res: Response, next: NextFunction) => {
     if (
