@@ -1,6 +1,14 @@
 # P1 implementation status — September 7, 2026
 
-Branch: `codex/p1-cms-crm`. Original public baseline: `5303da0`; copied Core source: `aad2057ca53e0a55a873bcbe9c62a73e267be541`. The [master plan](MASTER_PLAN.md) remains the full scope; a deployed dashboard slice does not complete it.
+Historical implementation branch: `codex/p1-cms-crm`. Current integration and production source: GitHub `main`. Original public baseline: `5303da0`; copied Core source: `aad2057ca53e0a55a873bcbe9c62a73e267be541`. The [master plan](MASTER_PLAN.md) remains the full scope; a deployed dashboard slice does not complete it.
+
+## September 8 — current exact-source production release
+
+GitHub `main` commit `90fd3db845da80b8a62d1b120dc45b361e6b84f6` is the current verified technical release. Railway reports `SUCCESS` and a running instance for the public site, isolated Core API, dashboard, and dashboard worker. The dashboard pre-deploy migration step completed for the web service; the worker was then rebuilt and deployed from the same checked-out release source.
+
+The release adds the documented request → estimate → job lifecycle (`0027_jobs_lifecycle.sql`) without replacing the established estimate API: itemized estimates, secure public decision tokens, idempotent approval conversion, recurring-agreement gates, audit events, notifications, and legacy estimate creation/status compatibility all passed the isolated database/HTTP harness. The full dashboard harness passed 33/33 checks, including migration replay and legacy compatibility; workspace type checks and production builds passed. The public 34-route SSR/metadata/accessibility-structure QA, layout and image-budget checks also passed. `pnpm audit --prod --json` reported zero production dependency vulnerabilities.
+
+Live checks after the release returned `200` for the public home page, Core readiness and dashboard health. Protected dashboard jobs return `401` with `Cache-Control: no-store` without a session. An invalid public estimate token returns `404` with `no-store`. The public server still normalizes `/admin` to the noindex `/admin/` boundary; all sitemap URLs return their canonical 200 response and unknown public routes return a genuine 404. This confirms a technical deployment, not owner acceptance, live shared CMS sign-in, real-provider delivery, published CMS records, screen-reader acceptance, physical-device acceptance, or a controlled customer/crew pilot.
 
 ## September 8 — exact-source release update
 
