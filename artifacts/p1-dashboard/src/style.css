@@ -739,7 +739,7 @@ small {
 }
 .property-art {
   height: 125px;
-  background: #e8eddc url("/images/illustrations/properties.webp") center / cover no-repeat;
+  background: #edf0df url("/images/property-topography.webp") center / cover no-repeat;
   padding: 22px;
   display: flex;
   justify-content: space-between;
