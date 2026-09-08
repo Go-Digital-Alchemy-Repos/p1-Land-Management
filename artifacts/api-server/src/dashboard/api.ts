@@ -32,6 +32,51 @@ const operations: Role[] = ["owner", "manager", "dispatch"];
 const managers: Role[] = ["owner", "manager"];
 const id = z.string().uuid();
 const text = z.string().trim().min(1).max(10000);
+const addressLine = z.string().trim().min(1).max(200);
+const addressLineOptional = z.string().trim().max(200).optional();
+const addressCity = z.string().trim().min(1).max(100);
+const addressState = z.string().trim().regex(/^[a-z]{2}$/i, "Use a two-letter state code").transform((value) => value.toUpperCase());
+const addressPostalCode = z.string().trim().regex(/^\d{5}(?:-\d{4})?$/, "Use a five- or nine-digit ZIP code");
+const propertyAddressInput = z.object({
+  // Retained only for existing internal callers while they move to the
+  // structured form. New UI always sends the individual address components.
+  address: text.optional(),
+  addressLine1: addressLine.optional(),
+  addressLine2: addressLineOptional,
+  city: addressCity.optional(),
+  state: addressState.optional(),
+  postalCode: addressPostalCode.optional(),
+}).superRefine((value, context) => {
+  if (value.addressLine1 || value.city || value.state || value.postalCode) {
+    if (!value.addressLine1) context.addIssue({ code: z.ZodIssueCode.custom, path: ["addressLine1"], message: "Address line 1 is required" });
+    if (!value.city) context.addIssue({ code: z.ZodIssueCode.custom, path: ["city"], message: "City is required" });
+    if (!value.state) context.addIssue({ code: z.ZodIssueCode.custom, path: ["state"], message: "State is required" });
+    if (!value.postalCode) context.addIssue({ code: z.ZodIssueCode.custom, path: ["postalCode"], message: "ZIP code is required" });
+    return;
+  }
+  if (!value.address) context.addIssue({ code: z.ZodIssueCode.custom, path: ["addressLine1"], message: "A complete address is required" });
+});
+type PropertyAddressInput = z.infer<typeof propertyAddressInput>;
+function normalizePropertyAddress(input: PropertyAddressInput) {
+  if (input.addressLine1 && input.city && input.state && input.postalCode) {
+    return {
+      address: [input.addressLine1, input.addressLine2, `${input.city}, ${input.state} ${input.postalCode}`].filter(Boolean).join(", "),
+      addressLine1: input.addressLine1,
+      addressLine2: input.addressLine2 || null,
+      city: input.city,
+      state: input.state,
+      postalCode: input.postalCode,
+    };
+  }
+  return {
+    address: input.address!,
+    addressLine1: null,
+    addressLine2: null,
+    city: null,
+    state: null,
+    postalCode: null,
+  };
+}
 const primaryContact = z.object({
   firstName: z.string().trim().min(1).max(100),
   lastName: z.string().trim().min(1).max(100),
@@ -334,7 +379,7 @@ api.post("/clients/:id", async (req, res) => {
 api.get("/properties", async (req, res) => {
   const a = await actor(req);
   let sql =
-    "SELECT p.id,p.client_id,p.name,p.address,p.acreage,p.latitude,p.longitude,p.property_type_id,pt.name AS property_type_name,p.access_instructions,p.notes,p.archived,p.created_at FROM property p LEFT JOIN property_type pt ON pt.id=p.property_type_id WHERE p.archived=false AND p.lifecycle='operational'";
+    "SELECT p.id,p.client_id,p.name,p.address,p.address_line1,p.address_line2,p.city,p.state,p.postal_code,p.acreage,p.latitude,p.longitude,p.property_type_id,pt.name AS property_type_name,p.access_instructions,p.notes,p.archived,p.created_at FROM property p LEFT JOIN property_type pt ON pt.id=p.property_type_id WHERE p.archived=false AND p.lifecycle='operational'";
   const args: string[] = [];
   if (a.role === "client") {
     sql +=
@@ -355,6 +400,11 @@ api.get("/properties", async (req, res) => {
             client_id: p.client_id,
             name: p.name,
             address: p.address,
+            address_line1: p.address_line1,
+            address_line2: p.address_line2,
+            city: p.city,
+            state: p.state,
+            postal_code: p.postal_code,
             acreage: p.acreage,
             latitude: p.latitude,
             longitude: p.longitude,
@@ -368,30 +418,36 @@ api.get("/properties", async (req, res) => {
 api.post("/properties", async (req, res) => {
   const a = await actor(req);
   requireRole(a.role, office);
-  const b = z
-    .object({
+  const b = z.intersection(
+    z.object({
       clientId: id,
       name: text,
-      address: text,
       acreage: z.number().nonnegative().optional(),
       accessInstructions: z.string().max(10000).default(""),
       propertyTypeId: id.nullable().optional(),
-    })
-    .parse(req.body);
+    }),
+    propertyAddressInput,
+  ).parse(req.body);
+  const address = normalizePropertyAddress(b);
   const key = randomUUID();
-  const coordinates = await geocodePropertyAddress(b.address);
+  const coordinates = await geocodePropertyAddress(address.address);
   await transaction(async (c) => {
     if (b.propertyTypeId) {
       const propertyType = await c.query("SELECT id FROM property_type WHERE id=$1", [b.propertyTypeId]);
       if (!propertyType.rowCount) throw new HttpError(400, "Property type not found");
     }
     await c.query(
-      "INSERT INTO property(id,client_id,name,address,acreage,access_instructions,property_type_id,latitude,longitude,location_precision) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",
+      "INSERT INTO property(id,client_id,name,address,address_line1,address_line2,city,state,postal_code,acreage,access_instructions,property_type_id,latitude,longitude,location_precision) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)",
       [
         key,
         b.clientId,
         b.name,
-        b.address,
+        address.address,
+        address.addressLine1,
+        address.addressLine2,
+        address.city,
+        address.state,
+        address.postalCode,
         b.acreage ?? null,
         b.accessInstructions,
         b.propertyTypeId ?? null,
@@ -408,18 +464,19 @@ api.post("/properties/:id", async (req, res) => {
   const a = await actor(req);
   requireRole(a.role, office);
   const propertyId = id.parse(req.params.id);
-  const b = z
-    .object({
+  const b = z.intersection(
+    z.object({
       name: text,
-      address: text,
       acreage: z.number().nonnegative().nullable(),
       accessInstructions: z.string().max(10000).default(""),
       // Existing generated clients do not send this newer optional field.
       // Omission must retain the saved classification rather than clearing it.
       propertyTypeId: id.nullable().optional(),
       version: z.number().int().positive(),
-    })
-    .parse(req.body);
+    }),
+    propertyAddressInput,
+  ).parse(req.body);
+  const address = normalizePropertyAddress(b);
   // A property pin represents its saved street address. Resolve a changed
   // address before opening the write transaction so a slow third-party lookup
   // never holds a database connection or row lock. The optimistic version is
@@ -434,9 +491,9 @@ api.post("/properties/:id", async (req, res) => {
       409,
       "Property changed or is unavailable; refresh before saving",
     );
-  const addressChanged = current.rows[0].address !== b.address;
+  const addressChanged = current.rows[0].address !== address.address;
   const coordinates = addressChanged
-    ? await geocodePropertyAddress(b.address)
+    ? await geocodePropertyAddress(address.address)
     : null;
   const result = await transaction(async (c) => {
     if (b.propertyTypeId) {
@@ -444,11 +501,16 @@ api.post("/properties/:id", async (req, res) => {
       if (!propertyType.rowCount) throw new HttpError(400, "Property type not found");
     }
     const changed = await c.query(
-      "UPDATE property SET name=$2,address=$3,acreage=$4,access_instructions=$5,property_type_id=CASE WHEN $6 THEN $7 ELSE property_type_id END,latitude=CASE WHEN $9 THEN $10 ELSE latitude END,longitude=CASE WHEN $9 THEN $11 ELSE longitude END,location_precision=CASE WHEN $9 THEN $12 ELSE location_precision END,version=version+1 WHERE id=$1 AND archived=false AND lifecycle='operational' AND version=$8 RETURNING id,client_id,name,address,acreage,access_instructions,version",
+      "UPDATE property SET name=$2,address=$3,address_line1=$4,address_line2=$5,city=$6,state=$7,postal_code=$8,acreage=$9,access_instructions=$10,property_type_id=CASE WHEN $11 THEN $12 ELSE property_type_id END,latitude=CASE WHEN $14 THEN $15 ELSE latitude END,longitude=CASE WHEN $14 THEN $16 ELSE longitude END,location_precision=CASE WHEN $14 THEN $17 ELSE location_precision END,version=version+1 WHERE id=$1 AND archived=false AND lifecycle='operational' AND version=$13 RETURNING id,client_id,name,address,address_line1,address_line2,city,state,postal_code,acreage,access_instructions,property_type_id,version",
       [
         propertyId,
         b.name,
-        b.address,
+        address.address,
+        address.addressLine1,
+        address.addressLine2,
+        address.city,
+        address.state,
+        address.postalCode,
         b.acreage,
         b.accessInstructions,
         b.propertyTypeId !== undefined,

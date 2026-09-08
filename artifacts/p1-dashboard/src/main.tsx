@@ -681,9 +681,14 @@ function App() {
         await api("/properties", {
           clientId: b.clientId,
           name: b.name,
-          address: b.address,
+          addressLine1: b.addressLine1,
+          addressLine2: b.addressLine2 || undefined,
+          city: b.city,
+          state: b.state,
+          postalCode: b.postalCode,
           acreage: b.acreage ? Number(b.acreage) : undefined,
           accessInstructions: b.accessInstructions,
+          propertyTypeId: b.propertyTypeId || null,
         });
       if (form === "work")
         await api("/jobs/internal", {
@@ -2670,7 +2675,42 @@ function App() {
                   <>
                     {clientSelect()}
                     {field("name", "Property name")}
-                    {field("address", "Address")}
+                    <label>
+                      Property type
+                      <select name="propertyTypeId">
+                        <option value="">Not classified</option>
+                        {propertyTypes.map((propertyType: any) => (
+                          <option key={propertyType.id} value={propertyType.id}>
+                            {propertyType.name}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <fieldset className="property-address-fields">
+                      <legend>Property address</legend>
+                      <label>
+                        Address line 1
+                        <input name="addressLine1" autoComplete="address-line1" required />
+                      </label>
+                      <label>
+                        Address line 2 <span className="optional-field">Optional</span>
+                        <input name="addressLine2" autoComplete="address-line2" />
+                      </label>
+                      <div className="property-address-grid">
+                        <label>
+                          City
+                          <input name="city" autoComplete="address-level2" required />
+                        </label>
+                        <label>
+                          State
+                          <input name="state" autoComplete="address-level1" inputMode="text" maxLength={2} pattern="[A-Za-z]{2}" placeholder="NC" required />
+                        </label>
+                        <label>
+                          ZIP code
+                          <input name="postalCode" autoComplete="postal-code" inputMode="numeric" pattern="\\d{5}(-\\d{4})?" placeholder="28105" required />
+                        </label>
+                      </div>
+                    </fieldset>
                     {field("acreage", "Acreage", "number", false)}
                     <label>
                       Access instructions

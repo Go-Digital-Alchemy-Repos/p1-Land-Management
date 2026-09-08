@@ -11,6 +11,16 @@ export interface DashboardProperty {
   client_id: string;
   name: string;
   address: string;
+  /** @nullable */
+  address_line1?: string | null;
+  /** @nullable */
+  address_line2?: string | null;
+  /** @nullable */
+  city?: string | null;
+  /** @nullable */
+  state?: string | null;
+  /** @nullable */
+  postal_code?: string | null;
   /**
      * PostgreSQL numeric wire representation; do not coerce missing to zero
      * @nullable

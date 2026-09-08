@@ -14,10 +14,28 @@ export interface CreateDashboardProperty {
      */
   name: string;
   /**
+     * Legacy formatted address accepted for existing internal callers. New property entry must use structured address fields.
+     * @deprecated
      * @minLength 1
      * @maxLength 10000
      */
-  address: string;
+  address?: string;
+  /**
+     * @minLength 1
+     * @maxLength 200
+     */
+  addressLine1: string;
+  /** @maxLength 200 */
+  addressLine2?: string;
+  /**
+     * @minLength 1
+     * @maxLength 100
+     */
+  city: string;
+  /** @pattern ^[A-Za-z]{2}$ */
+  state: string;
+  /** @pattern ^\d{5}(?:-\d{4})?$ */
+  postalCode: string;
   /** @minimum 0 */
   acreage?: number;
   /** @maxLength 10000 */
