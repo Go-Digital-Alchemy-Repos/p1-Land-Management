@@ -8,6 +8,7 @@
 | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
 | Initialization/access | /setup, /setup/complete, /me, /staff, /account-mfa-policies, /account-mfa-policies/:id, /invitations, /invitations/accept                    |
 | Operations            | /clients, /properties, /properties/:id/timeline, /work-orders, /work-orders/:id/status, /work-orders/:id/publish, /field/sync                |
+| Project phases        | /projects/:id/phases, /project-phases/:id, /project-phases/:id/transitions, /project-phases/:id/publish, history and billing-intent routes     |
 | Scheduling            | /assessment-slots, /assessment-slots/:id/book, /recurring-services; operations.ts owns rescheduling/pause routes                             |
 | Sales                 | /leads, /estimates, estimate decision/revision and lead conversion routes in sales.ts                                                        |
 | Financial             | /billing, /billing/:id/post, /quickbooks/connect, /quickbooks/callback, /quickbooks/import-preview, /quickbooks/import, /quickbooks/invoices |
@@ -23,6 +24,14 @@ Office roles (owner, manager, dispatch, sales and finance) create a client with 
 Migration 0015 adds the client version and primary-contact detail columns without removing existing data. The legacy minimal client-create payload remains supported for compatibility with existing internal integrations, but the dashboard uses the complete onboarding payload.
 
 Billing creation requires `operationId` (UUID), `propertyId`, `estimateId`, `title`, integer `amountCents`, and `kind` (service/deposit/progress/final). Reuse the same operation ID on an identical retry. Different payload reuse returns 409; a new financial intent requires a new operation ID. The transaction stores actor, canonical validated-payload fingerprint and resulting draft ID. This does not automatically send an invoice or collect payment.
+
+## Project phases (candidate migration 0020)
+
+`POST /projects/:projectId/phases` requires owner or manager and creates an additive normalized phase while preserving the legacy JSON `project.phases` value. An explicit occupied `position` returns409. Owner/manager edits use `PATCH /project-phases/:id` with `expectedVersion` and a required reason. Terminal accepted, cancelled and archived records reject edits.
+
+`POST /project-phases/:id/transitions` requires the current version, target state and a reason. The server validates lifecycle transitions, blocks ready/in-progress states with unmet prerequisites unless an explicit override reason is recorded, and requires all linked work to be reviewed/cancelled/skipped before acceptance. `GET /project-phases/:id/history` returns the append-only event history only to office roles. Client reads are restricted to explicitly published projections; crew reads are restricted to phases with active assigned work.
+
+`POST /project-phases/:id/publish` is an owner/manager action for manager-review or accepted work and records a client-safe summary only. `POST /project-phases/:id/billing-intents` is owner/manager/finance-only. It requires an accepted phase, approved estimate, current phase version and UUID operation ID. The server stores one immutable intent and one draft billing record on an identical retry, enforces the estimate cap, and returns409 for a changed operation replay. It never posts to QuickBooks, sends an invoice, creates a payment link, records a payment, or publishes crew material.
 
 ## Client service requests
 

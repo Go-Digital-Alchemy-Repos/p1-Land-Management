@@ -57,6 +57,8 @@ test("dashboard routes fail closed for unknown and role-restricted destinations"
   const agreement = routeFromPath("/agreements/44444444-4444-4444-8444-444444444444");
   assert.equal(canAccessRoute(agreement, "finance"), true);
   assert.equal(canAccessRoute(agreement, "sales"), false);
+  assert.equal(canAccessRoute(routeFromPath("/projects"), "finance"), true);
+  assert.equal(canAccessRoute(routeFromPath("/projects"), "client"), false);
   assert.equal(canAccessRoute(routeFromPath("/clients/22222222-2222-4222-8222-222222222222"), "client"), false);
 
   assert.equal(defaultRouteForRole("crew").page.path, "/my-day");

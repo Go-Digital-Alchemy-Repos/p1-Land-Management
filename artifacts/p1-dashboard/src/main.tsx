@@ -8,6 +8,7 @@ import { ClientContacts } from "./ClientContacts";
 import { ClientWorkspace, PropertyWorkspace } from "./AccountWorkspace";
 import { motifForPage } from "./motifs";
 import { InspectionReports } from "./InspectionReports";
+import { ProjectPhases } from "./ProjectPhases";
 import React, { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { createAuthClient } from "better-auth/react";
@@ -299,7 +300,7 @@ function App() {
                 "properties",
                 "clients",
                 ...(person.role === "finance"
-                  ? ["billing", "estimates", "expenses", "quickbooks/invoices"]
+                  ? ["billing", "estimates", "expenses", "quickbooks/invoices", "projects"]
                   : []),
                 ...(["owner", "manager", "sales"].includes(person.role)
                   ? ["estimates"]
@@ -1934,13 +1935,7 @@ function App() {
             </section>
           )}
           {view === "Projects" && (
-            <section className="panel">
-              <Table
-                rows={data.projects || []}
-                columns={["name", "property_name", "scope", "status"]}
-                empty="No projects yet."
-              />
-            </section>
+            <ProjectPhases projects={data.projects || []} estimates={data.estimates || []} role={person?.role} api={api} refresh={refresh} onError={setError} />
           )}
           {view === "Inspections" && (
             <InspectionReports

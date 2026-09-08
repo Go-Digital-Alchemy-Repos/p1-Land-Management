@@ -2,6 +2,8 @@
 
 Status on 2026-09-08: the reviewed dashboard web and worker are deployed to production. Full launch acceptance remains pending provider, device and pilot gates.
 
+Project-phase implementation `0020` is an undeployed candidate. It must pass independent review, exact-source packaging, additive-migration rehearsal and staged role/browser acceptance before any production migration. See [PROJECT_PHASES_PROPOSAL.md](PROJECT_PHASES_PROPOSAL.md).
+
 Railway project: `e83f79dd-d901-4ab1-836b-bdf272b58dc2` (p1-Land-Management).
 
 | Resource                             | Identifier                           |
