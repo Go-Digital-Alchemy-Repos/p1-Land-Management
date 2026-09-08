@@ -19,7 +19,12 @@ export function RichTextEditor({ name, value, defaultValue = "", onChange, requi
   const editor = useRef<HTMLDivElement>(null);
   const lastValue = useRef(currentValue);
   useEffect(() => {
-    if (editor.current && currentValue !== lastValue.current) editor.current.textContent = currentValue;
+    // A contenteditable element has no React children, so seed it explicitly on
+    // first mount as well as after an external value change. Comparing the DOM
+    // value keeps a prefilled revision visible without moving the caret after
+    // ordinary typing.
+    if (editor.current && editor.current.innerText !== currentValue)
+      editor.current.textContent = currentValue;
     lastValue.current = currentValue;
   }, [currentValue]);
   const update = () => {
