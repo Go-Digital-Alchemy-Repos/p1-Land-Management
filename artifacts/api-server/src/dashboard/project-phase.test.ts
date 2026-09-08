@@ -80,5 +80,6 @@ test("project phases preserve legacy projects, enforce lifecycle and create retr
   const history = await request("finance", `/api/v1/project-phases/${phaseId}/history`);
   assert.equal(history.status, 200);
   assert.ok(history.body.some((event: any) => event.event_type === "billing_intent_created"));
+  assert.equal((await request("finance", `/api/v1/project-phases/${randomUUID()}/history`)).status, 404);
   await assert.rejects(() => pool.query("UPDATE project_phase_event SET reason='tampered' WHERE phase_id=$1", [phaseId]), /append-only/);
 });
