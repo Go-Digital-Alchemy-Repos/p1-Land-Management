@@ -15,6 +15,15 @@ import {
   getServiceRequestHistory,
   previewServiceRequestConversion,
   convertServiceRequest,
+  listProjectPhases,
+  createProjectPhase,
+  getProjectPhase,
+  updateProjectPhase,
+  transitionProjectPhase,
+  publishProjectPhase,
+  getProjectPhaseHistory,
+  listProjectPhaseBillingIntents,
+  createProjectPhaseBillingIntent,
 } from "@workspace/api-client-react/dashboard";
 test("generated dashboard client preserves cursor filters, explicit nulls and conflict errors", async () => {
   const original = globalThis.fetch;
@@ -185,6 +194,79 @@ test("generated dashboard client preserves cursor filters, explicit nulls and co
       ...draft,
       operationId: "00000000-0000-4000-8000-000000000005",
       expectedRequestVersion: 3,
+    });
+    const projectId = "00000000-0000-4000-8000-000000000006";
+    const phaseId = "00000000-0000-4000-8000-000000000007";
+    const phaseDetails = {
+      title: "Driveway restoration",
+      scope: "Repair drainage and gravel.",
+      plannedStart: "2026-09-08",
+      plannedEnd: "2026-09-10",
+      prerequisites: [{ label: "Gate access", done: true }],
+    };
+    await listProjectPhases(projectId);
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      `/api/v1/projects/${projectId}/phases`,
+    );
+    await createProjectPhase(projectId, { ...phaseDetails, position: 2 });
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), {
+      ...phaseDetails,
+      position: 2,
+    });
+    await getProjectPhase(phaseId);
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      `/api/v1/project-phases/${phaseId}`,
+    );
+    await updateProjectPhase(phaseId, {
+      ...phaseDetails,
+      expectedVersion: 2,
+      reason: "Client confirmed the access window.",
+    });
+    assert.equal(calls.at(-1)!.init?.method, "PATCH");
+    await transitionProjectPhase(phaseId, {
+      expectedVersion: 3,
+      status: "ready",
+      reason: "Prerequisites checked.",
+    });
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      `/api/v1/project-phases/${phaseId}/transitions`,
+    );
+    await publishProjectPhase(phaseId, {
+      expectedVersion: 4,
+      summary: "Access and drainage preparation are complete.",
+    });
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), {
+      expectedVersion: 4,
+      summary: "Access and drainage preparation are complete.",
+    });
+    await getProjectPhaseHistory(phaseId);
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      `/api/v1/project-phases/${phaseId}/history`,
+    );
+    await listProjectPhaseBillingIntents(phaseId);
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      `/api/v1/project-phases/${phaseId}/billing-intents`,
+    );
+    await createProjectPhaseBillingIntent(phaseId, {
+      operationId: "00000000-0000-4000-8000-000000000008",
+      expectedPhaseVersion: 5,
+      estimateId: "00000000-0000-4000-8000-000000000009",
+      title: "Driveway restoration deposit",
+      amountCents: 250000,
+      kind: "deposit",
+    });
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), {
+      operationId: "00000000-0000-4000-8000-000000000008",
+      expectedPhaseVersion: 5,
+      estimateId: "00000000-0000-4000-8000-000000000009",
+      title: "Driveway restoration deposit",
+      amountCents: 250000,
+      kind: "deposit",
     });
     fail = true;
     await assert.rejects(
