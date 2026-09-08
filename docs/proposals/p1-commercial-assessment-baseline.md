@@ -1,9 +1,9 @@
 # Commercial assessment baseline — COM-05 implementation contract
 
-Status: **implemented on the integration branch, September 8, 2026; pending
-staged release verification.** This bounded commercial workflow increment
-follows the deployed intake and prospect-context slice. It creates a private,
-versioned assessment baseline;
+Status: **deployed to P1 production on September 8, 2026 at
+`6e68bec`.** This bounded commercial workflow increment follows the deployed
+intake and prospect-context slice. It creates a private, versioned assessment
+baseline;
 it does not confirm an appointment, assess a fee, publish a report, create a
 proposal, onboard a customer, assign work, or grant portal access.
 

@@ -93,3 +93,10 @@ Authenticated CMS inspection found 36 registered route/component pairs: eight pu
 The guarded import initialized all 28 untouched components with retained CMS draft/publish APIs at revision2 after backup. The eight prior publications retained their exact revisions and content. Agent verification checked36 public content endpoints,35 crawler pages unchanged apart from hydration state, and35 sitemap dates matching publication timestamps. Root inspected the verifier and receipt report; an immediate independent rerun hit429 on its first read and stopped without changing rate limits. Evidence and recovery boundaries are in `p1-core-staging-1869384.md`. Production CMS initialization remains separate.
 
 Native implementation `f12f752` additionally passed bundled Android emulator process-death/offline access checks with real encrypted storage and synthetic identity responses. Exact note/photo bytes and second-account data survived; expired and known-revoked sessions remained locked after restart. Root verified the APK hash and before/after stored rows. Follow-on checklist recovery, bounded multi-batch sync, recoverable-photo continuation, visible outbox and request-timeout regressions are now covered by the current 48-test suite. Physical/iOS/provider/device pilot acceptance remains open.
+# September 8, 2026 — commercial assessment baseline production record
+
+- **Source:** `6e68bec feat(commercial): add private assessment baselines`
+- **Dashboard deployment:** Railway `6849e1cd-c248-4ba2-b73b-c89063c18faa` succeeded; the additive `0026_commercial_assessment_baselines.sql` migration runs in the dashboard pre-deploy step.
+- **Public deployment:** Railway `3141af18-bdfe-469f-a5aa-baa2c14e80eb` succeeded.
+- **Live verification:** `https://www.p1landmanagement.com/` and `https://dashboard.p1landmanagement.com/api/healthz` returned HTTP 200 after deployment.
+- **Validation before release:** isolated synthetic PostgreSQL dashboard suite (33/33 including migration replay), dashboard API build, dashboard production build, and type checks passed.
