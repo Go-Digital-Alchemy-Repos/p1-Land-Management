@@ -51,9 +51,11 @@ const run =
           "users_email_key",
           "p1_federation_bootstrap_consumption_pkey",
         ].includes(String(e.constraint));
-      if (duplicate) e = new FederationError(409, "federation_identity_conflict");
-      const known = e instanceof FederationError ? e : null;
-      const status = known ? known.status : e instanceof z.ZodError ? 400 : 503;
+      const normalizedError = duplicate
+        ? new FederationError(409, "federation_identity_conflict")
+        : e;
+      const known = normalizedError instanceof FederationError ? normalizedError : null;
+      const status = known ? known.status : normalizedError instanceof z.ZodError ? 400 : 503;
       const code = known
         ? known.code
         : status === 400
