@@ -6,6 +6,7 @@ import {
   updateCommercialFollowUp,
 } from "@workspace/api-client-react/dashboard";
 import { useEffect, useRef, useState } from "react";
+import { formatPhoneNumber } from "./phone";
 import "./commercial-inbox.css";
 const statuses = [
   "new",
@@ -298,7 +299,7 @@ export function CommercialInbox({
             <p>
               {selected.email || "No email provided"}
               <br />
-              {selected.phone || "No phone provided"}
+              {formatPhoneNumber(selected.phone) || "No phone provided"}
             </p>
             <dl>
               {[

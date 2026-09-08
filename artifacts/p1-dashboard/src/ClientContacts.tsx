@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { formatPhoneNumber } from "./phone";
 type Contact = {
   id: string;
   name: string;
@@ -77,7 +78,7 @@ export function ClientContacts({
     setDraft({
       name: contact.name,
       email: contact.email || "",
-      phone: contact.phone || "",
+      phone: formatPhoneNumber(contact.phone),
       position: contact.position || "",
       kind: contact.kind,
     });
@@ -104,7 +105,7 @@ export function ClientContacts({
                 {contact.archived ? " · archived" : ""}
               </small>
               <small>
-                {[contact.position, contact.email, contact.phone]
+                {[contact.position, contact.email, formatPhoneNumber(contact.phone)]
                   .filter(Boolean)
                   .join(" · ") ||
                   "No contact details recorded"}
@@ -157,6 +158,7 @@ export function ClientContacts({
             maxLength={50}
             value={draft.phone}
             onChange={(e) => setDraft({ ...draft, phone: e.target.value })}
+            onBlur={(e) => setDraft({ ...draft, phone: formatPhoneNumber(e.target.value) })}
           />
         </label>
         <label>

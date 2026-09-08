@@ -10,6 +10,7 @@ import { motifForPage } from "./motifs";
 import { InspectionReports } from "./InspectionReports";
 import { ServiceRequestTriage } from "./ServiceRequestTriage";
 import { ProjectPhases } from "./ProjectPhases";
+import { formatPhoneNumber } from "./phone";
 import React, { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { createAuthClient } from "better-auth/react";
@@ -704,7 +705,12 @@ function App() {
   ) => (
     <label>
       {label}
-      <input name={name} type={type} required={required} />
+      <input
+        name={name}
+        type={type}
+        required={required}
+        onBlur={type === "tel" ? (event) => { event.currentTarget.value = formatPhoneNumber(event.currentTarget.value); } : undefined}
+      />
     </label>
   );
   const passwordField = (label: string) => (
@@ -1419,7 +1425,7 @@ function App() {
                   <div>
                     <strong>{client.name}</strong>
                     <small>
-                      {[client.billing_address, client.phone]
+                      {[client.billing_address, formatPhoneNumber(client.phone)]
                         .filter(Boolean)
                         .join(" · ")}
                     </small>
@@ -1429,7 +1435,7 @@ function App() {
                           client.primary_contact_name,
                           client.primary_contact_position,
                           client.primary_contact_email,
-                          client.primary_contact_phone,
+                          formatPhoneNumber(client.primary_contact_phone),
                         ]
                           .filter(Boolean)
                           .join(" · ")}
@@ -2471,7 +2477,8 @@ function App() {
                         name="phone"
                         type="tel"
                         required
-                        defaultValue={selected.phone || ""}
+                        defaultValue={formatPhoneNumber(selected.phone)}
+                        onBlur={(event) => { event.currentTarget.value = formatPhoneNumber(event.currentTarget.value); }}
                       />
                     </label>
                     <fieldset>
@@ -2526,7 +2533,8 @@ function App() {
                           name="primaryPhone"
                           type="tel"
                           required
-                          defaultValue={selected.primary_contact_phone || ""}
+                          defaultValue={formatPhoneNumber(selected.primary_contact_phone)}
+                          onBlur={(event) => { event.currentTarget.value = formatPhoneNumber(event.currentTarget.value); }}
                         />
                       </label>
                     </fieldset>
