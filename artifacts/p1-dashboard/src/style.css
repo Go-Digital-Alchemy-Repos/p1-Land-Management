@@ -1262,7 +1262,7 @@ body { background: var(--atlas-paper); }
   background-color: var(--atlas-paper);
   background-image:
     radial-gradient(ellipse 94% 92% at 50% 48%, rgb(246 245 239 / 0) 42%, rgb(246 245 239 / .22) 60%, rgb(246 245 239 / .72) 82%, var(--atlas-paper) 100%),
-    url("/images/illustrations/manager-desk.webp");
+    url("/images/illustrations/manager-desk-overview-v2.webp");
   background-repeat: no-repeat, no-repeat;
   background-position: center, center 84px;
   background-size: cover, cover;
