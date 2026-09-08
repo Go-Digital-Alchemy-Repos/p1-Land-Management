@@ -240,6 +240,56 @@ test(
         ).rows[0],
         { property_type_id: propertyType, version: 6 },
       );
+
+      const customType = `Portfolio test ${randomUUID().slice(0, 8)}`;
+      response = await originalFetch(
+        `${url.slice(0, url.lastIndexOf("/properties/"))}/property-types`,
+        {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            "x-test-user": manager,
+          },
+          body: JSON.stringify({ name: customType }),
+        },
+      );
+      assert.equal(response.status, 201);
+      const createdType = (await response.json()) as { id: string; name: string };
+      assert.equal(createdType.name, customType);
+      response = await originalFetch(
+        `${url.slice(0, url.lastIndexOf("/properties/"))}/property-types`,
+        {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            "x-test-user": manager,
+          },
+          body: JSON.stringify({ name: customType.toUpperCase() }),
+        },
+      );
+      assert.equal(response.status, 409);
+      response = await originalFetch(
+        `${url.slice(0, url.lastIndexOf("/properties/"))}/property-types/${createdType.id}`,
+        {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            "x-test-user": manager,
+          },
+          body: JSON.stringify({ name: `${customType} revised` }),
+        },
+      );
+      assert.equal(response.status, 200);
+      response = await originalFetch(
+        `${url.slice(0, url.lastIndexOf("/properties/"))}/property-types/${createdType.id}`,
+        { method: "DELETE", headers: { "x-test-user": manager } },
+      );
+      assert.equal(response.status, 200);
+      response = await originalFetch(
+        `${url.slice(0, url.lastIndexOf("/properties/"))}/property-types/${propertyType}`,
+        { method: "DELETE", headers: { "x-test-user": manager } },
+      );
+      assert.equal(response.status, 409);
     } finally {
       globalThis.fetch = originalFetch;
       (auth.api as any).getSession = originalSession;
