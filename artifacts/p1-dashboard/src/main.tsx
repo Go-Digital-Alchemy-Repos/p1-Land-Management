@@ -5,6 +5,8 @@ import { PropertyFiles } from "./PropertyFiles";
 import { ScheduleCalendar } from "./ScheduleCalendar";
 import { AssessmentAvailability } from "./AssessmentAvailability";
 import { ClientContacts } from "./ClientContacts";
+import { RequestComposer } from "./RequestComposer";
+import { RichTextEditor } from "./RichTextEditor";
 import { ClientWorkspace, PropertyWorkspace } from "./AccountWorkspace";
 import { motifForPage } from "./motifs";
 import { InspectionReports } from "./InspectionReports";
@@ -2216,6 +2218,15 @@ function App() {
             )}
             {form === "contacts" ? (
               <ClientContacts client={selected} request={api} />
+            ) : form === "request" ? (
+              <RequestComposer
+                properties={data.properties || []}
+                request={api}
+                onSaved={async () => {
+                  setForm(null);
+                  await refresh();
+                }}
+              />
             ) : form === "import" ? (
               <div className="import-preview">
                 <p>
@@ -2322,7 +2333,7 @@ function App() {
                     {field("title", "Service title")}
                     <label>
                       Scope
-                      <textarea name="scope" />
+                      <RichTextEditor name="scope" ariaLabel="Service scope" placeholder="Describe the recurring service scope." />
                     </label>
                     <label>
                       Frequency
@@ -2348,7 +2359,7 @@ function App() {
                     {field("name", "Project name")}
                     <label>
                       Scope
-                      <textarea name="scope" required />
+                      <RichTextEditor name="scope" ariaLabel="Project scope" placeholder="Describe the project scope." />
                     </label>
                   </>
                 )}
@@ -2390,7 +2401,7 @@ function App() {
                     </label>
                     <label>
                       Observation
-                      <textarea name="note" required />
+                      <RichTextEditor name="note" ariaLabel="Inspection observation" placeholder="Record the observation and relevant details." />
                     </label>
                   </>
                 )}
@@ -2410,11 +2421,7 @@ function App() {
                     {field("title", "Title")}
                     <label>
                       Scope
-                      <textarea
-                        name="scope"
-                        required
-                        defaultValue={form === "revise" ? selected.scope : ""}
-                      />
+                      <RichTextEditor name="scope" ariaLabel="Agreement scope" defaultValue={form === "revise" ? selected.scope : ""} placeholder="Describe the service scope." />
                     </label>
                     <label>
                       Amount (USD)
@@ -2539,7 +2546,7 @@ function App() {
                     {field("acreage", "Acreage", "number", false)}
                     <label>
                       Access instructions
-                      <textarea name="accessInstructions" />
+                      <RichTextEditor name="accessInstructions" ariaLabel="Access instructions" placeholder="Add gates, contacts, arrival, and access instructions." />
                     </label>
                   </>
                 )}
@@ -2549,7 +2556,7 @@ function App() {
                     {field("title", "Work order title")}
                     <label>
                       Scope
-                      <textarea name="scope" />
+                      <RichTextEditor name="scope" ariaLabel="Work order scope" placeholder="Describe the work to complete." />
                     </label>
                     <label>
                       Assigned person
@@ -2581,7 +2588,7 @@ function App() {
                     {field("location", "Property location")}
                     <label>
                       What needs doing?
-                      <textarea name="description" required />
+                      <RichTextEditor name="description" ariaLabel="Assessment details" placeholder="Describe the property and what needs doing." />
                     </label>
                   </>
                 )}
@@ -2591,7 +2598,7 @@ function App() {
                     {field("title", "Estimate title")}
                     <label>
                       Scope to approve
-                      <textarea name="scope" required />
+                      <RichTextEditor name="scope" ariaLabel="Estimate scope" placeholder="Describe the scope to approve." />
                     </label>
                     <label>
                       Amount (USD)
@@ -2641,15 +2648,6 @@ function App() {
                           ),
                         )}
                       </select>
-                    </label>
-                  </>
-                )}
-                {form === "request" && (
-                  <>
-                    {propertySelect()}
-                    <label>
-                      How can we help?
-                      <textarea name="description" required />
                     </label>
                   </>
                 )}
@@ -2715,7 +2713,7 @@ function App() {
                     </label>
                     <label>
                       Notes
-                      <textarea name="text" required />
+                      <RichTextEditor name="text" ariaLabel="Field work notes" placeholder="Add field notes, observations, or handoff details." />
                     </label>
                     {selected.checklist?.map((item: any, index: number) => (
                       <label key={index} className="check-item">

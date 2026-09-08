@@ -92,6 +92,54 @@ a {
   color: #315f3f;
   text-decoration-color: currentColor;
 }
+.rich-text-editor {
+  margin-top: 7px;
+  overflow: hidden;
+  border: 1px solid #d6ddcc;
+  border-radius: 8px;
+  background: #fff;
+}
+.rich-text-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-height: 42px;
+  padding: 5px 7px;
+  border-bottom: 1px solid #e3e8de;
+  background: #f7f9f3;
+}
+.rich-text-toolbar button {
+  min-width: 32px;
+  min-height: 32px;
+  padding: 6px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+}
+.rich-text-toolbar button:hover { background: #e7eddd; }
+.rich-text-toolbar > span { width: 1px; height: 20px; margin: 0 5px; background: #d8ded2; }
+.rich-text-input {
+  min-height: 150px;
+  padding: 13px;
+  color: #294137;
+  font-size: 13px;
+  line-height: 1.6;
+  outline: 0;
+  white-space: pre-wrap;
+}
+.rich-text-input:empty::before { content: attr(data-placeholder); color: #899486; }
+.rich-text-input:focus { box-shadow: inset 0 0 0 2px #87a446; }
+.rich-text-value { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.request-composer { display: grid; gap: 18px; padding: 24px; }
+.request-composer > label { margin: 0; }
+.request-attachments { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px 16px; padding: 16px; border: 1px dashed #bdcbb2; border-radius: 9px; background: #f7f9f3; }
+.request-attachments p { margin: 4px 0 0; color: #71806e; font-size: 11px; }
+.request-attachments > input { display: none; }
+.request-attachments ul { grid-column: 1 / -1; display: grid; gap: 5px; margin: 2px 0 0; padding: 0; list-style: none; }
+.request-attachments li { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 38px; padding: 6px 0; border-top: 1px solid #e1e7da; }
+.request-attachments li span { display: flex; align-items: center; min-width: 0; gap: 7px; overflow-wrap: anywhere; color: #455a49; font-size: 12px; }
+.request-attachments li small { display: inline; color: #778473; white-space: nowrap; }
+.request-attachments li button { min-width: 34px; min-height: 34px; padding: 5px; border: 0; background: transparent; }
 h1,
 h2,
 h3,
@@ -1020,6 +1068,9 @@ textarea {
   }
 }
 @media (max-width: 700px) {
+  .request-composer { padding: 18px; }
+  .request-attachments { grid-template-columns: 1fr; }
+  .request-attachments > button { width: 100%; }
   h1 {
     font-size: 29px;
   }

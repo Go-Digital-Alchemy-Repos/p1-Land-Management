@@ -3,6 +3,7 @@ import type {
   AgreementPreparationRetryPreview,
 } from "../../../lib/api-client-react/src/dashboard/models";
 import { useEffect, useRef, useState } from "react";
+import { RichTextEditor } from "./RichTextEditor";
 import {
   listAgreementPreparationJobs,
   previewAgreementPreparationRetry,
@@ -222,15 +223,7 @@ export function AgreementPreparationQueue({
               </p>
               <label>
                 Retry reason
-                <textarea
-                  value={reason}
-                  maxLength={2000}
-                  disabled={busy}
-                  onChange={(event) => {
-                    setReason(event.target.value);
-                    setOperationId(null);
-                  }}
-                />
+                <RichTextEditor value={reason} maxLength={2000} disabled={busy} ariaLabel="Retry reason" placeholder="Explain why this work should be retried." onChange={(value) => { setReason(value); setOperationId(null); }} />
               </label>
               <div className="agreement-actions">
                 <button

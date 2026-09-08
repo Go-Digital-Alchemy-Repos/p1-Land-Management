@@ -5,6 +5,7 @@ import {
   serviceRequestUiPolicy,
 } from "./service-request-triage.policy";
 import "./service-request-triage.css";
+import { RichTextEditor } from "./RichTextEditor";
 
 type Api = (
   path: string,
@@ -326,12 +327,7 @@ export function ServiceRequestTriage({
                       </label>
                       <label>
                         Draft scope
-                        <textarea
-                          value={scope}
-                          onChange={(event) => setScope(event.target.value)}
-                          maxLength={10000}
-                          disabled={busy}
-                        />
+                        <RichTextEditor value={scope} onChange={setScope} maxLength={10000} disabled={busy} ariaLabel="Draft scope" placeholder="Describe the planned scope." />
                       </label>
                       <div className="request-conversion-actions">
                         <button

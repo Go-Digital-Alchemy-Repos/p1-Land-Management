@@ -15,6 +15,31 @@ export const filesApi = Router();
 let activeUploads = 0;
 // Bound buffering and decoding globally; authentication and target authorization precede raw parsing.
 const uploadLimit = 4;
+const attachmentMimeTypes = new Set([
+  "application/pdf",
+  "text/plain",
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+]);
+const requestRoles = ["owner", "manager", "dispatch", "sales", "finance", "client"] as const;
+
+async function requestAttachmentAccess(a: Awaited<ReturnType<typeof actor>>, requestId: string) {
+  const request = (await pool.query(
+    "SELECT id,property_id FROM service_request WHERE id=$1",
+    [requestId],
+  )).rows[0];
+  if (!request) throw new HttpError(404, "Service request not found");
+  await propertyAccess(a, request.property_id);
+  return request as { id: string; property_id: string };
+}
+
+function attachmentName(value: unknown) {
+  const name = z.string().trim().min(1).max(180).parse(value);
+  return name.replace(/[^a-zA-Z0-9._() -]/g, "_");
+}
 function storage() {
   if (
     !process.env.S3_ENDPOINT ||
@@ -58,7 +83,7 @@ filesApi.post(
     await propertyAccess(a, propertyId);
     const work = (await pool.query("SELECT property_id,assigned_to,status FROM work_order WHERE id=$1", [workId])).rows[0];
     if (!work || work.property_id !== propertyId || (a.role === "crew" && (work.assigned_to !== a.id || ["cancelled","skipped","reviewed"].includes(work.status)))) throw new HttpError(403, "Work assignment is not accessible");
-    next();
+    return next();
   },
   async (req: Request, res: Response) => {
     if (activeUploads >= uploadLimit) throw new HttpError(429, "Uploads are busy; retry shortly");
@@ -198,20 +223,78 @@ filesApi.get("/properties/:id/files", async (req, res) => {
     ).rows,
   );
 });
+filesApi.get("/requests/:id/attachments", async (req, res) => {
+  const a = await actor(req);
+  requireRole(a.role, [...requestRoles]);
+  const requestId = z.string().uuid().parse(req.params.id);
+  await requestAttachmentAccess(a, requestId);
+  res.json((await pool.query(
+    "SELECT f.id,f.name,f.mime,f.bytes,f.created_at FROM service_request_attachment a JOIN file_record f ON f.id=a.file_id WHERE a.request_id=$1 AND f.status='ready' ORDER BY a.created_at DESC",
+    [requestId],
+  )).rows);
+});
+filesApi.post(
+  "/requests/:requestId/attachments/:id",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const a = await actor(req);
+    requireRole(a.role, [...requestRoles]);
+    const requestId = z.string().uuid().parse(req.params.requestId);
+    await requestAttachmentAccess(a, requestId);
+    next();
+  },
+  async (req: Request, res: Response) => {
+    if (activeUploads >= uploadLimit) throw new HttpError(429, "Uploads are busy; retry shortly");
+    activeUploads++;
+    try {
+      await new Promise<void>((resolve, reject) => raw({ type: () => true, limit: "20mb" })(req, res, (error) => error ? reject(error) : resolve()));
+      const a = await actor(req);
+      const requestId = z.string().uuid().parse(req.params.requestId);
+      const fileId = z.string().uuid().parse(req.params.id);
+      const request = await requestAttachmentAccess(a, requestId);
+      const mime = String(req.headers["content-type"] || "").split(";", 1)[0].toLowerCase();
+      if (!attachmentMimeTypes.has(mime)) throw new HttpError(400, "Use a PDF, image, text, Word, or Excel file");
+      const bytes = req.body as Buffer;
+      if (!Buffer.isBuffer(bytes) || !bytes.length) throw new HttpError(400, "Choose a non-empty file");
+      const name = attachmentName(req.headers["x-p1-file-name"]);
+      const objectKey = `requests/${requestId}/${fileId}-${createHash("sha256").update(bytes).digest("hex")}`;
+      await transaction(async (c) => {
+        await c.query("SELECT id FROM service_request WHERE id=$1 FOR UPDATE", [requestId]);
+        const count = await c.query("SELECT count(*)::int AS count FROM service_request_attachment WHERE request_id=$1", [requestId]);
+        const existing = (await c.query("SELECT * FROM file_record WHERE id=$1", [fileId])).rows[0];
+        if (existing && (existing.user_id !== a.id || existing.object_key !== objectKey || existing.property_id !== request.property_id || existing.name !== name || existing.mime !== mime)) throw new HttpError(409, "Attachment operation ID conflict");
+        if (!existing && count.rows[0].count >= 5) throw new HttpError(400, "A request can include up to five attachments");
+        await c.query("INSERT INTO file_record(id,property_id,user_id,object_key,name,mime,bytes,classification,status) VALUES($1,$2,$3,$4,$5,$6,$7,'general','pending') ON CONFLICT(id) DO NOTHING", [fileId, request.property_id, a.id, objectKey, name, mime, bytes.length]);
+        await c.query("INSERT INTO service_request_attachment(id,request_id,file_id) VALUES($1,$2,$3) ON CONFLICT(file_id) DO NOTHING", [randomUUID(), requestId, fileId]);
+      });
+      const existing = (await pool.query("SELECT status FROM file_record WHERE id=$1", [fileId])).rows[0];
+      if (existing.status === "ready") return res.json({ id: fileId, status: "accepted" });
+      await storage().send(new PutObjectCommand({ Bucket: process.env.S3_BUCKET, Key: objectKey, Body: bytes, ContentType: mime }));
+      await pool.query("UPDATE file_record SET status='ready' WHERE id=$1", [fileId]);
+      return res.status(201).json({ id: fileId, status: "accepted" });
+    } finally { activeUploads--; }
+  },
+  (error: unknown, _req: Request, res: Response, next: NextFunction) => {
+    if (error && typeof error === "object" && "type" in error && error.type === "entity.too.large") return res.status(413).json({ error: "Attachment exceeds the 20 MiB limit" });
+    return next(error);
+  },
+);
 filesApi.get("/files/:id/content", async (req, res) => {
   const a = await actor(req);
   const key = z.string().uuid().parse(req.params.id);
   const f = (
     await pool.query(
-      "SELECT * FROM file_record WHERE id=$1 AND status='ready'",
+      "SELECT f.*,a.request_id FROM file_record f LEFT JOIN service_request_attachment a ON a.file_id=f.id WHERE f.id=$1 AND f.status='ready'",
       [key],
     )
   ).rows[0];
   if (!f) throw new HttpError(404, "File not found");
-  await propertyAccess(a, f.property_id);
-  if (a.role === "client" && !f.published)
+  if (f.request_id) {
+    requireRole(a.role, [...requestRoles]);
+    await requestAttachmentAccess(a, f.request_id);
+  } else await propertyAccess(a, f.property_id);
+  if (!f.request_id && a.role === "client" && !f.published)
     throw new HttpError(404, "File not found");
-  if (a.role === "crew") {
+  if (!f.request_id && a.role === "crew") {
     const w = await pool.query(
       "SELECT 1 FROM work_order WHERE id=$1 AND assigned_to=$2",
       [f.work_order_id, a.id],
@@ -225,6 +308,7 @@ filesApi.get("/files/:id/content", async (req, res) => {
   res
     .type(f.mime)
     .set("Cache-Control", "no-store")
+    .set("Content-Disposition", f.request_id ? `attachment; filename="${String(f.name).replace(/["\\]/g, "_")}"` : "inline")
     .send(Buffer.from(await result.Body.transformToByteArray()));
 });
 filesApi.post("/files/:id/publish", async (req, res) => {

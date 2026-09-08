@@ -7,6 +7,7 @@ import {
 } from "@workspace/api-client-react/dashboard";
 import { useEffect, useRef, useState } from "react";
 import { EmailLink, PhoneLink } from "./contact-links";
+import { RichTextEditor } from "./RichTextEditor";
 import "./commercial-inbox.css";
 const statuses = [
   "new",
@@ -360,13 +361,7 @@ export function CommercialInbox({
               </label>
               <label>
                 Next action
-                <textarea
-                  name="action"
-                  required
-                  maxLength={2000}
-                  defaultValue={selected.next_action || ""}
-                  disabled={detailsBusy}
-                />
+                <RichTextEditor name="action" defaultValue={selected.next_action || ""} maxLength={2000} disabled={detailsBusy} ariaLabel="Next action" placeholder="Record the next action and owner." />
               </label>
               <label>
                 Follow-up due (device timezone)

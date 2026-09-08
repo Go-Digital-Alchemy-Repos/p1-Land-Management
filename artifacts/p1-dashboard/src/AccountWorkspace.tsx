@@ -13,6 +13,7 @@ import { ClientContacts } from "./ClientContacts";
 import type { ClientWorkspaceTab, PropertyWorkspaceTab } from "./dashboard-routes";
 import { motifForWorkspace } from "./motifs";
 import { ContactDetails } from "./contact-links";
+import { RichTextEditor } from "./RichTextEditor";
 
 type Request = (path: string, body?: unknown) => Promise<any>;
 type WorkspaceProps = {
@@ -131,7 +132,7 @@ function NoteComposer({
     } catch (reason) { setError((reason as Error).message); } finally { setBusy(false); }
   }
   return <form className="note-composer" onSubmit={submit}>
-    <label>New internal note<textarea required value={body} maxLength={10000} onChange={(event) => setBody(event.target.value)} placeholder="Capture context for the office team. Notes are permanent once saved." /></label>
+    <label>New internal note<RichTextEditor value={body} onChange={setBody} required maxLength={10000} ariaLabel="New internal note" placeholder="Capture context for the office team. Notes are permanent once saved." /></label>
     <div className="note-composer-actions"><label>Property scope<select value={propertyId} onChange={(event) => setPropertyId(event.target.value)}><option value="">Client-wide note</option>{properties.map((property) => <option key={property.id} value={property.id}>{property.name}</option>)}</select></label><button type="submit" className="primary" disabled={busy || !body.trim()}><Plus size={16} />{busy ? "Saving…" : "Add note"}</button></div>
     {error && <p className="error" role="alert">{error}</p>}
   </form>;
