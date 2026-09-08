@@ -10,6 +10,12 @@ A read-only custom-format `pg_dump` from Railway dashboard staging, carried over
 
 Production volume backup `f93d4729-dbe2-4d04-b8df-624b5328c85f` was created before migration 0008 and listed by Railway. DAILY/WEEKLY/MONTHLY schedules are enabled. Retention and missed-backup alerting must still be verified against the proposed 30 days.
 
+## Production point-in-time recovery — September 8
+
+Production dashboard PostgreSQL (`Postgres-EjJV`, service `9488d9fe-6e0e-42c1-8965-8757a8b2a034`) now has Railway point-in-time recovery enabled. Railway created the private `Postgres-PITR` archive bucket and deployed the six WAL-archive connection variables plus the archive-path setting to the database. After the service and its dependents returned online, the recovery control displayed an active restore timeline from `2026-09-07 21:35:07` through `21:36:52` (America/New_York display), with a selectable restore target. Railway states that a PITR restore creates a new Postgres service while the current service remains running.
+
+Scheduled volume backups remain enabled alongside PITR: the latest daily backup was 867 MB and six hours old at verification, with the next scheduled run in 17 hours. The configured retention is six daily, 27 weekly, and 89 monthly backups. This improves recovery coverage but does not establish the one-business-day restoration objective, object-storage recovery, QuickBooks reconciliation, or missed-backup alerting. The current coverage should be monitored until it spans the required recovery window before relying on it during an incident.
+
 ## Application-only rollback
 
 Use explicit project/environment/service identifiers from DEPLOYMENT.md. Select the last verified web image in Railway deployment history, redeploy that image, then verify health, deep links, authenticated access, uploads and worker compatibility. Preserve additive database columns; do not reverse migrations simply to match an older application image. Stop dependent worker processing if its schema/API assumptions differ. A deployment rollback rehearsal remains required.
