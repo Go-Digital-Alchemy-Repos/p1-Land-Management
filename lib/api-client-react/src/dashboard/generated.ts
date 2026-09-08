@@ -52,6 +52,7 @@ import type {
   CreateInspectionReport,
   CreateManualAssessmentSlot,
   CreateProjectPhase,
+  CreateRecurringService,
   CreateSalesEstimate,
   CreateSalesLead,
   CreateServiceAgreement,
@@ -97,6 +98,7 @@ import type {
   PublicationReceipt,
   ReadinessResult,
   ReadinessUpdate,
+  RecurringServicePause,
   RescheduleWork,
   SalesLead,
   SalesLeadConversion,
@@ -1531,6 +1533,32 @@ export const createEstimateChangeOrder = async (id: string,
 
 
 
+export const getPauseRecurringServiceUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/recurring-services/${id}/pause`
+}
+
+/**
+ * Owner, manager, or dispatch only. Pauses or resumes future recurrence generation; it does not rewrite existing work orders or billing.
+ */
+export const pauseRecurringService = async (id: string,
+    recurringServicePause: RecurringServicePause, options?: RequestInit): Promise<PublicationReceipt> => {
+
+  return customFetch<PublicationReceipt>(getPauseRecurringServiceUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      recurringServicePause,)
+  }
+);}
+
+
+
 export const getListInspectionReportsUrl = () => {
 
 
@@ -2323,6 +2351,31 @@ export const listAgreementRecurrences = async ( options?: RequestInit): Promise<
     method: 'GET'
 
 
+  }
+);}
+
+
+
+export const getCreateRecurringServiceUrl = () => {
+
+
+
+
+  return `/api/v1/recurring-services`
+}
+
+/**
+ * Owner, manager, or dispatch only. Records a recurrence configuration; occurrence generation remains worker-controlled.
+ */
+export const createRecurringService = async (createRecurringService: CreateRecurringService, options?: RequestInit): Promise<CreatedResource> => {
+
+  return customFetch<CreatedResource>(getCreateRecurringServiceUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createRecurringService,)
   }
 );}
 
