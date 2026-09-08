@@ -39,6 +39,7 @@ import {
   ShieldCheck,
   Plug,
   SlidersHorizontal,
+  LibraryBig,
   ChevronDown,
   Eye,
   EyeOff,
@@ -69,7 +70,7 @@ const auth = createAuthClient({ plugins: [twoFactorClient()] });
 const PropertyMap = lazy(() =>
   import("./PropertyMap").then(({ PropertyMap }) => ({ default: PropertyMap })),
 );
-async function api(path: string, body?: unknown, method: "POST" | "PATCH" = "POST") {
+async function api(path: string, body?: unknown, method: "POST" | "PATCH" | "DELETE" = "POST") {
   const r = await fetch("/api/v1" + path, {
     method: body === undefined ? "GET" : method,
     headers: body === undefined ? {} : { "Content-Type": "application/json" },
@@ -91,7 +92,7 @@ type Person = {
 type NavItem = DashboardPageRoute & {
   icon: typeof LayoutDashboard;
 };
-const icons: Record<DashboardPageRoute["view"] | "Settings:security" | "Settings:integrations" | "Settings:preferences", typeof LayoutDashboard> = {
+const icons: Record<DashboardPageRoute["view"] | "Settings:security" | "Settings:integrations" | "Settings:preferences" | "Settings:term-libraries", typeof LayoutDashboard> = {
   Overview: LayoutDashboard,
   Properties: MapPin,
   Clients: Users,
@@ -110,6 +111,7 @@ const icons: Record<DashboardPageRoute["view"] | "Settings:security" | "Settings
   "Settings:security": ShieldCheck,
   "Settings:integrations": Plug,
   "Settings:preferences": SlidersHorizontal,
+  "Settings:term-libraries": LibraryBig,
 };
 const nav: NavItem[] = DASHBOARD_PAGES.map((page) => ({
   ...page,
@@ -145,6 +147,47 @@ function operatingDate(value: string | Date) {
     .map((type) => parts.find((part) => part.type === type)?.value)
     .join("-");
 }
+
+function PropertyTypesLibrary({
+  propertyTypes,
+  request,
+  onRefresh,
+}: {
+  propertyTypes: any[];
+  request: (path: string, body?: unknown, method?: "POST" | "PATCH" | "DELETE") => Promise<any>;
+  onRefresh: () => Promise<void>;
+}) {
+  const [newName, setNewName] = useState("");
+  const [editing, setEditing] = useState<{ id: string; name: string } | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  async function runChange(change: () => Promise<unknown>) {
+    setBusy(true); setError("");
+    try { await change(); await onRefresh(); }
+    catch (reason) { setError((reason as Error).message); }
+    finally { setBusy(false); }
+  }
+  return <section className="panel term-library-panel">
+    <div className="panel-heading"><div><h2>Property types library</h2><p>Shared classifications for the property directory and account workspaces.</p></div></div>
+    <div className="term-library-body">
+      <form className="term-library-add" onSubmit={(event) => { event.preventDefault(); if (!newName.trim()) return; void runChange(async () => { await request("/property-types", { name: newName }); setNewName(""); }); }}>
+        <label>New property type<input value={newName} maxLength={100} onChange={(event) => setNewName(event.target.value)} placeholder="e.g. Hospitality" /></label>
+        <button className="primary" disabled={busy || !newName.trim()}><Plus size={16} />Add type</button>
+      </form>
+      <div className="term-library-list">
+        {propertyTypes.map((item) => {
+          const editingThis = editing?.id === item.id;
+          const name = editingThis && editing ? editing.name : "";
+          return <div className="term-library-row" key={item.id}>
+            {editingThis ? <form onSubmit={(event) => { event.preventDefault(); if (!name.trim()) return; void runChange(async () => { await request(`/property-types/${item.id}`, { name }); setEditing(null); }); }}><input aria-label={`Rename ${item.name}`} value={name} maxLength={100} onChange={(event) => setEditing({ id: item.id, name: event.target.value })} /><div><button className="primary" disabled={busy || !name.trim()}>Save</button><button type="button" className="secondary" disabled={busy} onClick={() => setEditing(null)}>Cancel</button></div></form> : <><strong>{item.name}</strong><div className="term-library-actions"><button type="button" className="text-action" disabled={busy} onClick={() => setEditing({ id: item.id, name: item.name })}>Rename</button><button type="button" className="quiet-action danger-action" disabled={busy} onClick={() => { if (window.confirm(`Remove ${item.name}? This is available only when no properties use it.`)) void runChange(() => request(`/property-types/${item.id}`, {}, "DELETE")); }}>Remove</button></div></>}
+          </div>;
+        })}
+        {!propertyTypes.length && <p className="empty">No property types have been added yet.</p>}
+      </div>
+      {error && <p className="error" role="alert">{error}</p>}
+    </div>
+  </section>;
+}
 function App() {
   const initialRoute = routeFromLocation();
   const initialPage =
@@ -176,6 +219,9 @@ function App() {
     [isOnline, setOnline] = useState(navigator.onLine),
     [count, setCount] = useState(0),
     [menu, setMenu] = useState(false);
+  const [propertySearch, setPropertySearch] = useState("");
+  const [propertyTypeFilter, setPropertyTypeFilter] = useState("");
+  const [propertySort, setPropertySort] = useState<"name" | "type">("name");
   const [authMode, setAuthMode] = useState("login"),
     [mfa, setMfa] = useState<any>(null);
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -298,6 +344,7 @@ function App() {
             ? [
                 "work-orders",
                 "properties",
+                "property-types",
                 "clients",
                 "estimates",
                 "billing",
@@ -309,6 +356,7 @@ function App() {
             : [
                 "work-orders",
                 "properties",
+                "property-types",
                 "clients",
                 ...(person.role === "finance"
                   ? ["billing", "estimates", "expenses", "quickbooks/invoices", "projects"]
@@ -833,6 +881,25 @@ function App() {
     ),
     manager = ["owner", "manager"].includes(person?.role || ""),
     ops = ["owner", "manager", "dispatch"].includes(person?.role || "");
+  const propertyTypes = data["property-types"] || [];
+  const visibleProperties = (data.properties || [])
+    .filter((property: any) => {
+      const haystack = [property.name, property.address, property.property_type_name]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+      return (
+        (!propertyTypeFilter || property.property_type_id === propertyTypeFilter) &&
+        haystack.includes(propertySearch.trim().toLowerCase())
+      );
+    })
+    .toSorted((left: any, right: any) =>
+      propertySort === "type"
+        ? `${left.property_type_name || "Unclassified"}\u0000${left.name}`.localeCompare(
+            `${right.property_type_name || "Unclassified"}\u0000${right.name}`,
+          )
+        : left.name.localeCompare(right.name),
+    );
   const allowedNav = nav.filter((item) =>
     item.navigation !== false && canAccessRoute({ kind: "page", page: item }, person?.role),
   );
@@ -1469,8 +1536,13 @@ function App() {
                 </Suspense>
               </section>
               <section className="panel">
+                <div className="property-directory-controls" aria-label="Property directory controls">
+                  <label>Search properties<input type="search" value={propertySearch} onChange={(event) => setPropertySearch(event.target.value)} placeholder="Name or address" /></label>
+                  <label>Property type<select value={propertyTypeFilter} onChange={(event) => setPropertyTypeFilter(event.target.value)}><option value="">All property types</option>{propertyTypes.map((type: any) => <option key={type.id} value={type.id}>{type.name}</option>)}</select></label>
+                  <label>Sort by<select value={propertySort} onChange={(event) => setPropertySort(event.target.value as "name" | "type")}><option value="name">Name</option><option value="type">Property type</option></select></label>
+                </div>
                 <PropertyCards
-                  properties={data.properties || []}
+                  properties={visibleProperties}
                   onOpen={openPropertyWorkspace}
                 />
               </section>
@@ -2229,6 +2301,13 @@ function App() {
               </div>
             </section>
           )}
+          {view === "Settings" && settingsSection === "term-libraries" && (
+            <PropertyTypesLibrary
+              propertyTypes={propertyTypes}
+              request={api}
+              onRefresh={refresh}
+            />
+          )}
           </>}
           <footer className="footer">
             P1 LAND & PROPERTY MANAGEMENT <span>Built for the work ahead.</span>
@@ -2824,6 +2903,7 @@ function PropertyCards({
               {p.name} <ArrowUpRight size={18} />
             </h3>
             <p>{p.address}</p>
+            {p.property_type_name && <small className="property-type-label">{p.property_type_name}</small>}
             <small>View property history</small>
           </div>
         </button>

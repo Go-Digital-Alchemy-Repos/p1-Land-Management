@@ -6118,6 +6118,13 @@
             "type": "string",
             "maxLength": 10000,
             "default": ""
+          },
+          "propertyTypeId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
           }
         }
       },
@@ -6735,6 +6742,13 @@
             "type": ["string", "null"],
             "description": "PostgreSQL numeric wire representation; do not coerce missing to zero"
           },
+          "property_type_id": {
+            "type": ["string", "null"],
+            "format": "uuid"
+          },
+          "property_type_name": {
+            "type": ["string", "null"]
+          },
           "access_instructions": {
             "type": "string"
           },
@@ -6783,6 +6797,13 @@
             "type": "string",
             "maxLength": 10000,
             "default": ""
+          },
+          "propertyTypeId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
           },
           "version": {
             "type": "integer",

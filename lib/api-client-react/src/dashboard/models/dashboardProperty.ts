@@ -16,6 +16,10 @@ export interface DashboardProperty {
      * @nullable
      */
   acreage: string | null;
+  /** @nullable */
+  property_type_id?: string | null;
+  /** @nullable */
+  property_type_name?: string | null;
   access_instructions?: string;
   notes?: string;
   archived?: boolean;

@@ -44,7 +44,7 @@ clientWorkspaceApi.get("/clients/:id/workspace", async (req, res) => {
   const client = await officeClient(clientId);
   const [properties, contacts, agreements, schedule, requests, projects, notes, activity] = await Promise.all([
     pool.query(
-      "SELECT id,name,address,acreage,access_instructions,version,created_at FROM property WHERE client_id=$1 AND archived=false AND lifecycle='operational' ORDER BY name",
+      "SELECT p.id,p.name,p.address,p.acreage,p.latitude,p.longitude,p.property_type_id,pt.name AS property_type_name,p.access_instructions,p.version,p.created_at FROM property p LEFT JOIN property_type pt ON pt.id=p.property_type_id WHERE p.client_id=$1 AND p.archived=false AND p.lifecycle='operational' ORDER BY p.name",
       [clientId],
     ),
     pool.query(
@@ -122,7 +122,7 @@ clientWorkspaceApi.get("/properties/:id/workspace", async (req, res) => {
   await propertyAccess(user, propertyId);
   const visibility = propertyVisibility(user.role, user.id);
   const propertyResult = await pool.query(
-    `SELECT p.id,p.name,p.address,p.acreage,p.created_at,c.name AS client_name${office.includes(user.role) ? ",p.client_id,p.access_instructions" : ""} FROM property p JOIN client c ON c.id=p.client_id WHERE p.id=$1 AND p.archived=false AND p.lifecycle='operational'${visibility.clause}`,
+    `SELECT p.id,p.name,p.address,p.acreage,p.latitude,p.longitude,p.property_type_id,pt.name AS property_type_name,p.created_at,c.name AS client_name${office.includes(user.role) ? ",p.client_id,p.access_instructions,p.version" : ""} FROM property p JOIN client c ON c.id=p.client_id LEFT JOIN property_type pt ON pt.id=p.property_type_id WHERE p.id=$1 AND p.archived=false AND p.lifecycle='operational'${visibility.clause}`,
     [propertyId, ...visibility.values],
   );
   if (!propertyResult.rowCount) throw new HttpError(404, "Property not found");

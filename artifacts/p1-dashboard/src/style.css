@@ -707,6 +707,29 @@ small {
   line-height: 1.35;
 }
 .property-map-summary span { color: #5d6d60; }
+.property-directory-controls {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(180px, .5fr) minmax(150px, .35fr);
+  gap: 12px;
+  padding: 18px var(--atlas-surface-inset);
+  border-bottom: 1px solid var(--atlas-line);
+  background: rgb(255 255 255 / 58%);
+}
+.property-directory-controls label { display: grid; gap: 6px; color: #5e6d59; font-size: 11px; font-weight: 700; }
+.property-directory-controls input,.property-directory-controls select { min-height: 44px; }
+.property-location-map {
+  position: relative;
+  aspect-ratio: 1;
+  min-height: 244px;
+  overflow: hidden;
+  background: #e8eee4;
+}
+.property-location-map .maplibregl-ctrl-top-right { top: 10px; right: 10px; }
+.property-location-map .maplibregl-ctrl-group { border: 1px solid var(--atlas-line); box-shadow: 0 2px 8px rgb(24 54 42 / 13%); }
+.property-location-map--unavailable { display: grid; place-items: center; align-content: center; gap: 8px; padding: 22px; color: #617050; text-align: center; }
+.property-location-map--unavailable p { margin: 0; font-size: 12px; line-height: 1.45; }
+.property-map-pin--static { cursor: default; pointer-events: none; }
+.property-location-map-label { position: absolute; left: 10px; bottom: 10px; display: inline-flex; align-items: center; gap: 5px; padding: 7px 9px; border: 1px solid rgb(210 219 199 / 90%); border-radius: 999px; background: rgb(255 255 252 / 94%); color: #486343; font-size: 10px; font-weight: 700; pointer-events: none; }
 .property-card {
   padding: 0;
   display: block;
@@ -733,6 +756,8 @@ small {
 .property-info {
   padding: 19px;
 }
+.property-info .property-type-label { display: block; margin: 10px 0 0; color: #557143; font-size: 10px; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
+.property-info .property-type-label + small { display: block; margin-top: 8px; }
 .property-info h3 {
   display: flex;
   justify-content: space-between;
@@ -1654,6 +1679,7 @@ td { padding: 16px var(--atlas-surface-inset); }
 .data-surface-body > :where(div, section):not(.atlas-table-wrap, .activity-list, .context-list, .note-list, .atlas-empty) {
   padding: var(--atlas-surface-inset);
 }
+.data-surface-body > .property-location-map { padding: 0; }
 .data-surface-body > .context-list > .muted {
   margin: 0;
   padding: 18px 16px;
@@ -1717,6 +1743,7 @@ td { padding: 16px var(--atlas-surface-inset); }
 .account-workspace { padding-bottom: 20px; }
 .account-hero { min-height: 212px; display: flex; align-items: flex-end; margin-bottom: 0; }
 .account-hero::before { inset: -28px -4% -76px 37%; height: 325px; opacity: .62; }
+.atlas-properties .account-hero::before { display: none; }
 .page-hero-content { width: 100%; padding: 36px 0 32px; position: relative; z-index: 1; }
 .account-hero .eyebrow { margin-bottom: 13px; color: #718069; }
 .account-hero-title { display: flex; gap: 22px; align-items: flex-end; justify-content: space-between; }
@@ -1732,6 +1759,28 @@ td { padding: 16px var(--atlas-surface-inset); }
 .notes-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, .38fr); gap: 22px; align-items: start; }
 .account-primary-column { display: grid; gap: 22px; min-width: 0; }
 .context-rail { display: grid; gap: 18px; min-width: 0; }
+.property-overview { grid-template-columns: minmax(260px, .38fr) minmax(0, 1fr); }
+.property-context-rail { grid-column: 1; }
+.property-overview > .account-primary-column { grid-column: 2; grid-row: 1; }
+.property-type-control { display: grid; gap: 8px; }
+.property-type-control label { display: grid; gap: 7px; color: #5c6a57; font-size: 11px; font-weight: 700; }
+.property-type-control select { min-height: 44px; }
+.property-type-control p,.property-type-control small { margin: 0; }
+.property-type-control p { color: var(--atlas-ink); font-weight: 650; }
+.property-type-control small { color: #617050; font-size: 11px; }
+.term-library-body { display: grid; gap: 18px; padding: var(--atlas-surface-inset); }
+.term-library-add { display: flex; align-items: end; gap: 12px; padding-bottom: 18px; border-bottom: 1px solid var(--atlas-line); }
+.term-library-add label { display: grid; flex: 1; gap: 7px; color: #5c6a57; font-size: 11px; font-weight: 700; }
+.term-library-add input { min-height: 44px; }
+.term-library-add .primary { min-height: 44px; white-space: nowrap; }
+.term-library-list { display: grid; border: 1px solid var(--atlas-line); border-radius: 10px; overflow: hidden; }
+.term-library-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; min-height: 58px; padding: 12px 14px; border-bottom: 1px solid var(--atlas-line); }
+.term-library-row:last-child { border-bottom: 0; }
+.term-library-row strong { color: var(--atlas-ink); }
+.term-library-row form { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 12px; }
+.term-library-row form input { min-height: 42px; flex: 1; }
+.term-library-row form div,.term-library-actions { display: flex; align-items: center; gap: 8px; }
+.danger-action { color: #8d3c30; }
 .data-surface { overflow: hidden; background: rgb(255 255 255 / 82%); }
 .data-surface-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid var(--atlas-line); }
 .data-surface-header h2 { margin: 0; }
@@ -1825,6 +1874,7 @@ td { padding: 16px var(--atlas-surface-inset); }
 
 @media (max-width: 900px) {
   .account-overview,.notes-layout { grid-template-columns: 1fr; }
+  .property-overview > .account-primary-column,.property-context-rail { grid-column: auto; grid-row: auto; }
   .context-rail { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .atlas-stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
@@ -1860,6 +1910,10 @@ td { padding: 16px var(--atlas-surface-inset); }
   .atlas-stat { padding: 14px; }
   .atlas-stat strong { margin-top: 12px; font-size: 23px; }
   .context-rail { grid-template-columns: 1fr; }
+  .property-location-map { min-height: 220px; }
+  .property-directory-controls { grid-template-columns: 1fr; padding: 16px; }
+  .term-library-add,.term-library-row,.term-library-row form { align-items: stretch; flex-direction: column; }
+  .term-library-row form div,.term-library-actions { justify-content: flex-end; }
   .data-surface-header { min-height: auto; padding: 16px; }
   .data-surface-header p { font-size: 11px; }
   .atlas-table { min-width: 0; }

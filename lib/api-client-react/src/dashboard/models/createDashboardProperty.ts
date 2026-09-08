@@ -22,4 +22,6 @@ export interface CreateDashboardProperty {
   acreage?: number;
   /** @maxLength 10000 */
   accessInstructions?: string;
+  /** @nullable */
+  propertyTypeId?: string | null;
 }

@@ -24,6 +24,7 @@ const settingsIllustrations: Record<SettingsSection, string> = {
   security: illustration("settings-security"),
   integrations: illustration("settings-integrations"),
   preferences: illustration("settings-preferences"),
+  "term-libraries": illustration("settings-preferences"),
 };
 
 export function motifForPage(view: DashboardView, settingsSection?: SettingsSection) {

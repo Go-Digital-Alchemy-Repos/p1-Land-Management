@@ -19,7 +19,8 @@ export type SettingsSection =
   | "people"
   | "security"
   | "integrations"
-  | "preferences";
+  | "preferences"
+  | "term-libraries";
 
 export type NavigationGroup =
   | "Workspace"
@@ -85,6 +86,7 @@ export const DASHBOARD_PAGES: readonly DashboardPageRoute[] = [
   { view: "Settings", label: "Security", path: "/settings/security", group: "Settings", settingsSection: "security" },
   { view: "Settings", label: "Integrations", path: "/settings/integrations", group: "Settings", settingsSection: "integrations" },
   { view: "Settings", label: "Preferences", path: "/settings/preferences", group: "Settings", settingsSection: "preferences" },
+  { view: "Settings", label: "Term libraries", path: "/settings/term-libraries", group: "Settings", settingsSection: "term-libraries" },
 ];
 
 export const NAVIGATION_GROUPS: readonly NavigationGroup[] = [

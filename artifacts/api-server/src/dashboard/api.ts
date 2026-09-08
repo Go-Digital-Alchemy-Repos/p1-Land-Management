@@ -333,7 +333,7 @@ api.post("/clients/:id", async (req, res) => {
 api.get("/properties", async (req, res) => {
   const a = await actor(req);
   let sql =
-    "SELECT p.id,p.client_id,p.name,p.address,p.acreage,p.latitude,p.longitude,p.access_instructions,p.notes,p.archived,p.created_at FROM property p WHERE p.archived=false AND p.lifecycle='operational'";
+    "SELECT p.id,p.client_id,p.name,p.address,p.acreage,p.latitude,p.longitude,p.property_type_id,pt.name AS property_type_name,p.access_instructions,p.notes,p.archived,p.created_at FROM property p LEFT JOIN property_type pt ON pt.id=p.property_type_id WHERE p.archived=false AND p.lifecycle='operational'";
   const args: string[] = [];
   if (a.role === "client") {
     sql +=
@@ -357,6 +357,8 @@ api.get("/properties", async (req, res) => {
             acreage: p.acreage,
             latitude: p.latitude,
             longitude: p.longitude,
+            property_type_id: p.property_type_id,
+            property_type_name: p.property_type_name,
           }
         : p,
     ),
@@ -372,13 +374,18 @@ api.post("/properties", async (req, res) => {
       address: text,
       acreage: z.number().nonnegative().optional(),
       accessInstructions: z.string().max(10000).default(""),
+      propertyTypeId: id.nullable().optional(),
     })
     .parse(req.body);
   const key = randomUUID();
   const coordinates = await geocodePropertyAddress(b.address);
   await transaction(async (c) => {
+    if (b.propertyTypeId) {
+      const propertyType = await c.query("SELECT id FROM property_type WHERE id=$1", [b.propertyTypeId]);
+      if (!propertyType.rowCount) throw new HttpError(400, "Property type not found");
+    }
     await c.query(
-      "INSERT INTO property(id,client_id,name,address,acreage,access_instructions,latitude,longitude,location_precision) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)",
+      "INSERT INTO property(id,client_id,name,address,acreage,access_instructions,property_type_id,latitude,longitude,location_precision) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",
       [
         key,
         b.clientId,
@@ -386,6 +393,7 @@ api.post("/properties", async (req, res) => {
         b.address,
         b.acreage ?? null,
         b.accessInstructions,
+        b.propertyTypeId ?? null,
         coordinates?.latitude ?? null,
         coordinates?.longitude ?? null,
         coordinates ? "approximate" : null,
@@ -405,6 +413,7 @@ api.post("/properties/:id", async (req, res) => {
       address: text,
       acreage: z.number().nonnegative().nullable(),
       accessInstructions: z.string().max(10000).default(""),
+      propertyTypeId: id.nullable(),
       version: z.number().int().positive(),
     })
     .parse(req.body);
@@ -427,14 +436,19 @@ api.post("/properties/:id", async (req, res) => {
     ? await geocodePropertyAddress(b.address)
     : null;
   const result = await transaction(async (c) => {
+    if (b.propertyTypeId) {
+      const propertyType = await c.query("SELECT id FROM property_type WHERE id=$1", [b.propertyTypeId]);
+      if (!propertyType.rowCount) throw new HttpError(400, "Property type not found");
+    }
     const changed = await c.query(
-      "UPDATE property SET name=$2,address=$3,acreage=$4,access_instructions=$5,latitude=CASE WHEN $7 THEN $8 ELSE latitude END,longitude=CASE WHEN $7 THEN $9 ELSE longitude END,location_precision=CASE WHEN $7 THEN $10 ELSE location_precision END,version=version+1 WHERE id=$1 AND archived=false AND lifecycle='operational' AND version=$6 RETURNING id,client_id,name,address,acreage,access_instructions,version",
+      "UPDATE property SET name=$2,address=$3,acreage=$4,access_instructions=$5,property_type_id=$6,latitude=CASE WHEN $8 THEN $9 ELSE latitude END,longitude=CASE WHEN $8 THEN $10 ELSE longitude END,location_precision=CASE WHEN $8 THEN $11 ELSE location_precision END,version=version+1 WHERE id=$1 AND archived=false AND lifecycle='operational' AND version=$7 RETURNING id,client_id,name,address,acreage,access_instructions,property_type_id,version",
       [
         propertyId,
         b.name,
         b.address,
         b.acreage,
         b.accessInstructions,
+        b.propertyTypeId,
         b.version,
         addressChanged,
         coordinates?.latitude ?? null,
@@ -449,6 +463,31 @@ api.post("/properties/:id", async (req, res) => {
       );
     await audit(c, a.id, "property.updated", propertyId);
     return changed.rows[0];
+  });
+  res.json(result);
+});
+api.post("/properties/:id/property-type", async (req, res) => {
+  const a = await actor(req);
+  requireRole(a.role, managers);
+  const propertyId = id.parse(req.params.id);
+  const b = z.object({ propertyTypeId: id.nullable() }).parse(req.body);
+  const result = await transaction(async (c) => {
+    let propertyTypeName: string | null = null;
+    if (b.propertyTypeId) {
+      const propertyType = await c.query(
+        "SELECT name FROM property_type WHERE id=$1",
+        [b.propertyTypeId],
+      );
+      if (!propertyType.rowCount) throw new HttpError(400, "Property type not found");
+      propertyTypeName = propertyType.rows[0].name;
+    }
+    const changed = await c.query(
+      "UPDATE property SET property_type_id=$2,version=version+1 WHERE id=$1 AND archived=false AND lifecycle='operational' RETURNING id,property_type_id,version",
+      [propertyId, b.propertyTypeId],
+    );
+    if (!changed.rowCount) throw new HttpError(404, "Property not found");
+    await audit(c, a.id, "property.type.updated", propertyId);
+    return { ...changed.rows[0], property_type_name: propertyTypeName };
   });
   res.json(result);
 });

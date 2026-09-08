@@ -5,7 +5,9 @@ import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import { MapPin } from "lucide-react";
 import { propertyCoordinates } from "./property-coordinates";
 
-const MAP_STYLE_URL = "https://tiles.openfreemap.org/styles/positron";
+// Liberty gives property teams the road and place-label context they need while
+// retaining a calm, low-contrast base under Atlas pins and overlays.
+const MAP_STYLE_URL = "https://tiles.openfreemap.org/styles/liberty";
 const P1_REGION: [number, number] = [34.95, -80.78];
 
 type PropertyPoint = {
@@ -119,6 +121,41 @@ export function PropertyMap({
         </strong>
         <span>Choose a pin to open its property profile.</span>
       </div>
+    </div>
+  );
+}
+
+export function PropertyLocationMap({ property }: { property: PropertyPoint }) {
+  const coordinates = propertyCoordinates(property);
+  if (!coordinates) {
+    return (
+      <div className="property-location-map property-location-map--unavailable" aria-label="Property map unavailable">
+        <MapPin aria-hidden="true" size={22} />
+        <p>Map placement is not available for this property yet.</p>
+      </div>
+    );
+  }
+  const { latitude, longitude } = coordinates;
+  return (
+    <div className="property-location-map" data-testid="property-location-map">
+      <Map
+        workerUrl={workerUrl}
+        initialViewState={{ latitude, longitude, zoom: 14.4 }}
+        mapStyle={MAP_STYLE_URL}
+        attributionControl={{ compact: true }}
+        dragRotate={false}
+        pitchWithRotate={false}
+        touchPitch={false}
+        style={{ height: "100%", width: "100%" }}
+      >
+        <NavigationControl position="top-right" showCompass={false} />
+        <Marker latitude={latitude} longitude={longitude} anchor="bottom">
+          <span className="property-map-pin property-map-pin--static" aria-label={`${property.name} location`}>
+            <MapPin aria-hidden="true" size={31} strokeWidth={2.4} />
+          </span>
+        </Marker>
+      </Map>
+      <div className="property-location-map-label"><MapPin size={13} aria-hidden="true" /><span>Approx. 1-mile context</span></div>
     </div>
   );
 }

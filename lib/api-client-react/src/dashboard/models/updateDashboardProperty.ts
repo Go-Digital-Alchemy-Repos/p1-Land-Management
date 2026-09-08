@@ -24,6 +24,8 @@ export interface UpdateDashboardProperty {
   acreage: number | null;
   /** @maxLength 10000 */
   accessInstructions?: string;
+  /** @nullable */
+  propertyTypeId?: string | null;
   /** @minimum 1 */
   version: number;
 }
