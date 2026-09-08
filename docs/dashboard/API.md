@@ -2,7 +2,7 @@
 
 `/api/v1` endpoints use verified Better Auth sessions. Browser cookie mutations require the configured dashboard Origin. Future iOS/Android clients use the same account's signed bearer session token in `Authorization`; a valid bearer request is allowed without a browser Origin and is still subject to the same verified-email, MFA, role and property authorization checks. Errors use HTTP status and an error message; callers must preserve pending operations on failure.
 
-`lib/api-spec/dashboard.openapi.json` specifies selected shared dashboard contracts, including setup/identity, client contacts, field work, assessment availability and booking, integration health, property reads, service requests, scheduling, commercial intake, agreement work and binary photos. `pnpm --filter @workspace/api-spec codegen:dashboard` generates the isolated dashboard fetch client. The UI consumes its field methods. Other routes currently validate with Zod at the server and still require full OpenAPI coverage.
+`lib/api-spec/dashboard.openapi.json` specifies selected shared dashboard contracts, including setup/identity, client contacts, field work, assessment availability and booking, integration health, property reads, the service-request lifecycle, scheduling, commercial intake, agreement work and binary photos. `pnpm --filter @workspace/api-spec codegen:dashboard` generates the isolated dashboard fetch client. The UI consumes its field methods. Other routes currently validate with Zod at the server and still require full OpenAPI coverage.
 
 | Domain                | Routes beneath /api/v1                                                                                                                       |
 | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -44,7 +44,7 @@ Billing creation requires `operationId` (UUID), `propertyId`, `estimateId`, `tit
 
 `POST /service-requests/:id/conversion-preview` writes nothing. `POST /service-requests/:id/conversions` requires `{operationId,expectedRequestVersion,title,scope,checklist,prerequisites}`. It permits only triaged or service-planning requests, records a stable fingerprint and one receipt, and returns that receipt on an identical retry; changed reuse, stale state, cancellation and a second operation return409. The work order is always an unassigned, unscheduled, unpublished `draft`. This route never invokes QuickBooks, notifications, payments, files, publication or outbox actions.
 
-The migration and public health/authentication boundaries are production-verified. Full OpenAPI/generated-client coverage, accessible office triage UI, invited-client workflow acceptance and the one-crew pilot remain open.
+The migration and public health/authentication boundaries are production-verified. The lifecycle reads, transitions, history, conversion preview and idempotent draft conversion are generated from the shared OpenAPI contract; broader office-route coverage, invited-client workflow acceptance and the one-crew pilot remain open.
 
 ## Inspection report publication
 
