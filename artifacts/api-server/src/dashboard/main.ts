@@ -44,7 +44,7 @@ app.use((req, res, next) => {
     "X-Frame-Options": "DENY",
     "Strict-Transport-Security": "max-age=31536000",
     "Content-Security-Policy":
-      "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
+      "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data: https://tiles.openfreemap.org; connect-src 'self' https://tiles.openfreemap.org; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
     "Permissions-Policy": "geolocation=(), microphone=()",
   });
   if (req.path.startsWith("/api")) res.set("Cache-Control", "no-store");
