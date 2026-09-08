@@ -398,7 +398,7 @@ function SetupGuard({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (needsSetup && location !== "/admin/setup") {
-      setLocation("/setup");
+      setLocation("/admin/setup");
     }
   }, [needsSetup, location, setLocation]);
 
