@@ -7,7 +7,7 @@ import { gzipSync } from 'node:zlib';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const { render } = await import(pathToFileURL(resolve(root, 'dist/server/entry-server.js')).href);
 const paths = [...readFileSync(resolve(root, 'src/App.tsx'), 'utf8').matchAll(/<Route\s+path="([^"]+)"/g)].map(match => match[1]);
-assert.equal(paths.length, 35, 'Review route inventory when adding or removing pages');
+assert.equal(paths.length, 34, 'Review route inventory when adding or removing pages');
 const warnings = [];
 const originalError = console.error;
 console.error = (...args) => warnings.push(args.join(' '));

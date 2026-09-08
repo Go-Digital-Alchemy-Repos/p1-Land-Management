@@ -8,9 +8,13 @@ const source = (path) => readFileSync(resolve(root, path), "utf8");
 
 const home = source("src/pages/home.tsx");
 assert.match(home, /src=\{heroImg\}[\s\S]*?fetchPriority="high"[\s\S]*?decoding="async"/, "homepage hero must keep high loading priority");
-for (const image of ["s.img", "featureImg", "testimonialImg"]) {
+for (const image of ["featureImg", "testimonialImg"]) {
   assert.match(home, new RegExp(`src=\\{${image.replace(".", "\\.")}\\}[\\s\\S]{0,180}?loading="lazy"[\\s\\S]{0,80}?decoding="async"`), `homepage ${image} must defer below-fold media`);
 }
+
+const servicesGrid = source("src/components/content/ServicesGrid.tsx");
+assert.match(servicesGrid, /<img[\s\S]{0,240}?\{\.\.\.imageProps\}[\s\S]{0,180}?loading="lazy"/, "Services Grid images must defer below-fold media");
+assert.match(servicesGrid, /responsiveImageProps\(image/, "Services Grid images must use the responsive WebP image helper");
 
 const pageHero = source("src/components/layout/PageHero.tsx");
 assert.match(pageHero, /src=\{image\}[\s\S]*?fetchPriority="high"[\s\S]*?decoding="async"/, "interior page heroes must retain high loading priority");
@@ -27,7 +31,7 @@ assert.match(optimizer, /for \(const format of \['webp'\]\)/, "image optimizer m
 
 const commercial = source("src/pages/commercial.tsx");
 assert.match(commercial, /src=\{hero\}[\s\S]*?fetchPriority="high"[\s\S]*?decoding="async"/, "commercial hero must retain high loading priority");
-assert.match(commercial, /src=\{water\}[\s\S]*?loading="lazy"[\s\S]*?decoding="async"/, "commercial supporting image must defer");
+assert.match(commercial, /src=\{dataCenterCampus\}[\s\S]*?loading="lazy"[\s\S]*?decoding="async"/, "commercial supporting image must defer");
 
 for (const path of [
   "src/pages/blog/index.tsx",

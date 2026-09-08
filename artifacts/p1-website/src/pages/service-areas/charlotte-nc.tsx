@@ -36,10 +36,10 @@ export default function CharlotteNC() {
   return (
     <Layout>
       <SEO 
-        title="Land Clearing & Commercial Property Management Charlotte NC | P1 Land & Property Management"
-        description="Professional land clearing, grading, drainage, and commercial property management in Charlotte, NC. Properties 1 acre and larger. Call (704) 221-8928."
+        title="Land Clearing & Commercial Landscaping Charlotte NC | P1 Land & Property Management"
+        description="Professional land clearing, grading, drainage, and commercial landscaping in Charlotte, NC. Properties 1 acre and larger. Call (704) 221-8928."
         jsonLd={[
-          serviceAreaSchema({ areaName: "Charlotte, North Carolina", areaType: "City", description: "Professional land clearing, grading, drainage, and commercial property management in Charlotte, NC. Properties 1 acre and larger. Call (704) 221-8928.", path: "/service-areas/charlotte-nc" }),
+          serviceAreaSchema({ areaName: "Charlotte, North Carolina", areaType: "City", description: "Professional land clearing, grading, drainage, and commercial landscaping in Charlotte, NC. Properties 1 acre and larger. Call (704) 221-8928.", path: "/service-areas/charlotte-nc" }),
           breadcrumbSchema([
             { name: "Home", path: "/" },
             { name: "Service Areas", path: "/service-areas" },
@@ -53,7 +53,7 @@ export default function CharlotteNC() {
         eyebrow="Service Area · NC"
         title={
           <>
-            Land Clearing & Commercial Property Management in{" "}
+            Land Clearing & Commercial Landscaping in{" "}
             <em className="font-semibold not-italic text-tan" style={{ fontStyle: "italic" }}>
               Charlotte, NC
             </em>
@@ -61,7 +61,7 @@ export default function CharlotteNC() {
         }
         subtitle="P1 Land & Property Management delivers full-service land and property management for commercial, industrial, and large residential properties throughout Charlotte, NC and Mecklenburg County. As Charlotte continues its rapid growth, demand for professional large-acreage property contractors has never been higher — and P1 fills that gap with a complete range of services from initial land clearing through ongoing maintenance."
         image={heroImg}
-        imageAlt="Land Clearing & Commercial Property Management in Charlotte, NC"
+        imageAlt="Land Clearing & Commercial Landscaping in Charlotte, NC"
       />
 
       <section className="py-24 bg-background">
@@ -71,7 +71,7 @@ export default function CharlotteNC() {
               <h2 className="text-3xl font-serif font-bold text-secondary border-b border-border pb-4">Charlotte NC Services</h2>
               <ul className="space-y-3">
                 {[
-                  "Commercial property management and maintenance contracts",
+                  "Commercial landscaping and exterior grounds maintenance contracts",
                   "Land clearing and forestry mulching",
                   "Fine grading and site preparation for development",
                   "Stormwater and drainage system installation",

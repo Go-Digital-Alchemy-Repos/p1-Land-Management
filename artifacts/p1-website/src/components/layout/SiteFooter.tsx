@@ -31,7 +31,7 @@ export function SiteFooter() {
         <div>
           <h4 className="font-serif text-[11px] font-bold uppercase tracking-[0.2em] text-tan mb-6">Services</h4>
           <ul className="space-y-3 text-sm text-secondary-foreground/70">
-            <li><Link href="/services/commercial-property-management" className="hover:text-primary transition-colors">Commercial Management</Link></li>
+            <li><Link href="/services/commercial-landscaping" className="hover:text-primary transition-colors">Commercial Landscaping</Link></li>
             <li><Link href="/services/industrial-agricultural" className="hover:text-primary transition-colors">Industrial & Agricultural</Link></li>
             <li><Link href="/services/land-clearing" className="hover:text-primary transition-colors">Land Clearing</Link></li>
             <li><Link href="/services/grading-site-preparation" className="hover:text-primary transition-colors">Grading & Site Prep</Link></li>

@@ -14,7 +14,7 @@ import { FaqAccordion } from "@/components/content/FaqAccordion";
 
 const FAQS = [
   {
-    question: "What's included in a P1 commercial maintenance program?",
+    question: "What's included in a P1 commercial landscaping program?",
     answer:
       "Programs are customized to each site, but typically include turf mowing and edging, tree trimming and canopy management, pond and stormwater retention care, drainage inspection and maintenance, erosion control, seasonal seeding and fertilization, and brush management for undeveloped acreage.",
   },
@@ -35,18 +35,18 @@ const FAQS = [
   },
 ];
 
-export default function CommercialPropertyManagement() {
+export default function CommercialLandscaping() {
   return (
     <Layout>
       <SEO 
-        title="Commercial Property Management | P1 Land & Property Management | Upstate SC & Charlotte NC"
-        description="Professional commercial property maintenance for 1-acre-plus properties across Upstate SC and Charlotte NC. Turf, drainage, land clearing, ponds, and more. Call (704) 221-8928."
+        title="Commercial Landscaping | P1 Land & Property Management | Upstate SC & Charlotte NC"
+        description="Commercial landscaping and exterior grounds maintenance for 1-acre-plus properties across Upstate SC and Charlotte NC. Turf, drainage, land clearing, ponds, and more. Call (704) 221-8928."
         jsonLd={[
-          serviceSchema({ name: "Commercial Property Management", description: "Professional commercial property maintenance for 1-acre-plus properties across Upstate SC and Charlotte NC. Turf, drainage, land clearing, ponds, and more. Call (704) 221-8928.", path: "/services/commercial-property-management" }),
+          serviceSchema({ name: "Commercial Landscaping", description: "Commercial landscaping and exterior grounds maintenance for 1-acre-plus properties across Upstate SC and Charlotte NC. Turf, drainage, land clearing, ponds, and more. Call (704) 221-8928.", path: "/services/commercial-landscaping" }),
           breadcrumbSchema([
             { name: "Home", path: "/" },
             { name: "Services", path: "/services" },
-            { name: "Commercial Property Management", path: "/services/commercial-property-management" },
+            { name: "Commercial Landscaping", path: "/services/commercial-landscaping" },
           ]),
           faqSchema(FAQS),
         ]}
@@ -55,16 +55,16 @@ export default function CommercialPropertyManagement() {
       {/* PAGE HERO */}
       <PageHero
         indexOfWork
-        eyebrow="Commercial Property Management"
+        eyebrow="Commercial Landscaping"
         title={
           <>
-            Commercial Property Management for{" "}
+            Commercial Landscaping for{" "}
             <em className="font-semibold not-italic text-tan" style={{ fontStyle: "italic" }}>
               Large-Acreage Properties
             </em>
           </>
         }
-        subtitle="P1 provides professional, scheduled property maintenance for commercial sites, business campuses, industrial properties, and large commercial landholdings throughout Upstate South Carolina and the Charlotte, NC region. If it's on your land, we manage it."
+        subtitle="P1 provides commercial landscaping and scheduled exterior grounds maintenance for commercial sites, business campuses, industrial properties, and large commercial landholdings throughout Upstate South Carolina and the Charlotte, NC region."
         image={heroImg}
         imageAlt="Manicured commercial property landscape"
       />
@@ -87,7 +87,7 @@ export default function CommercialPropertyManagement() {
               What's Included in Our Commercial Programs
             </h2>
             <p className="text-lg text-secondary/80 leading-relaxed mb-6">
-              P1 commercial property programs are customized to your site — but typically include:
+              P1 commercial landscaping programs are customized to your site — but typically include:
             </p>
             <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[
@@ -139,7 +139,7 @@ export default function CommercialPropertyManagement() {
           </div>
 
           <div className="space-y-6">
-            <h2 className="text-2xl font-serif font-bold text-secondary border-b border-border pb-4">Commercial Property Management FAQs</h2>
+            <h2 className="text-2xl font-serif font-bold text-secondary border-b border-border pb-4">Commercial Landscaping FAQs</h2>
             <FaqAccordion items={FAQS} />
             <p className="font-bold text-secondary mt-6 border-l-4 border-primary pl-4">
               Call <a href="tel:7042218928" className="text-primary hover:underline">+1 (704) 221-8928</a> or <Link href="/contact" className="text-primary hover:underline">request a free estimate online</Link> to discuss your commercial property.
@@ -149,7 +149,7 @@ export default function CommercialPropertyManagement() {
         </div>
       </section>
 
-      <section className="site-shell py-12"><h2 className="text-2xl font-bold">Looking for a connected exterior site plan?</h2><p className="mt-4 text-muted-foreground">Explore how grounds, drainage, land and corrective work can fit an agreed commercial property scope.</p><a href="/commercial" className="mt-5 inline-block font-bold text-primary underline">Commercial Site Management & Site Assessment</a></section>
+      <section className="site-shell py-12"><h2 className="text-2xl font-bold">Looking for a connected exterior site plan?</h2><p className="mt-4 text-muted-foreground">Explore how commercial landscaping, drainage, land and corrective work can fit an agreed exterior-work scope.</p><a href="/commercial" className="mt-5 inline-block font-bold text-primary underline">Commercial Site Management & Site Assessment</a></section>
       <FinalCTA />
     </Layout>
   );

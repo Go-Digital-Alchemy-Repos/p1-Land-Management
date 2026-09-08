@@ -2,6 +2,7 @@ import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { ContourField } from "@/components/layout/ContourField";
 import { IndexOfWork } from "@/components/layout/IndexOfWork";
+import { ServicesGrid } from "@/components/content/ServicesGrid";
 import { SEO } from "@/components/seo";
 import { localBusinessSchema, faqSchema } from "@/lib/structured-data";
 import { Link } from "wouter";
@@ -9,48 +10,20 @@ import { Button } from "@/components/ui/button";
 import heroImg from "@/assets/hero-bg.png";
 import featureImg from "@/assets/features/grading-construction.png";
 import testimonialImg from "@/assets/commercial-property.png";
-import serviceCommercial from "@/assets/service-commercial.png";
-import serviceIndustrial from "@/assets/service-industrial.png";
-import serviceClearing from "@/assets/service-clearing.png";
-import serviceGrading from "@/assets/service-grading.png";
-import serviceDrainage from "@/assets/service-drainage.png";
-import serviceTurf from "@/assets/service-turf.png";
-import serviceTree from "@/assets/service-tree.png";
-import servicePond from "@/assets/service-pond.png";
-import serviceReconstruction from "@/assets/service-reconstruction.png";
 import {
   Phone,
   ArrowUpRight,
-  ArrowRight,
   ShieldCheck,
   Check,
   MapPin,
   Mountain,
   Droplets,
-  Trees,
-  Waves,
-  Building2,
-  Sprout,
-  Tractor,
-  Wrench,
   Truck,
   Ruler,
   CalendarCheck,
 } from "lucide-react";
 
 const TAN = "hsl(32 42% 62%)";
-
-const services = [
-  { n: "01", title: "Commercial Property Management", desc: "Scheduled, self-sufficient programs that keep large sites pristine year-round.", img: serviceCommercial, icon: Building2, slug: "commercial-property-management" },
-  { n: "02", title: "Industrial & Agricultural Land", desc: "Heavy-duty care for farms, industrial sites and working rural acreage.", img: serviceIndustrial, icon: Tractor, slug: "industrial-agricultural" },
-  { n: "03", title: "Land Clearing & Mulching", desc: "Selective clearing and forestry mulching that opens up acreage responsibly.", img: serviceClearing, icon: Trees, slug: "land-clearing" },
-  { n: "04", title: "Fine Grading & Site Prep", desc: "Precision cut-and-fill that gives every project a true, build-ready foundation.", img: serviceGrading, icon: Mountain, slug: "grading-site-preparation" },
-  { n: "05", title: "Drainage Solutions", desc: "French drains, swales and retention work planned around the property's water-management needs.", img: serviceDrainage, icon: Droplets, slug: "drainage" },
-  { n: "06", title: "Turf Installation & Seeding", desc: "Sod and seed installation built for large-scale acreage and lasting cover.", img: serviceTurf, icon: Sprout, slug: "turf-installation-seeding" },
-  { n: "07", title: "Tree & Brush Management", desc: "Removal, trimming and stump grinding handled with the right heavy iron.", img: serviceTree, icon: Trees, slug: "tree-services" },
-  { n: "08", title: "Pond & Waterway Management", desc: "Design, excavation and long-term care of ponds and working waterways.", img: servicePond, icon: Waves, slug: "pond-waterway-management" },
-  { n: "09", title: "Property Reconstruction", desc: "Full-scale rebuilds from drainage overhaul to complete site regrading.", img: serviceReconstruction, icon: Wrench, slug: "property-reconstruction" },
-];
 
 const values = [
   { n: "01", title: "Heavy Equipment Fleet", desc: "Discuss the equipment and access requirements for your grading, clearing, and property maintenance work.", icon: Truck },
@@ -65,7 +38,7 @@ const FAQS = [
   {
     question: "What does P1 Land & Property Management do?",
     answer:
-      "P1 is a full-service land and property management company. We handle land clearing and forestry mulching, fine grading and site preparation, drainage solutions, turf installation and seeding, tree and brush management, pond and waterway management, commercial property management, and complete property reconstruction.",
+      "P1 is a full-service land and property management company. We handle land clearing and forestry mulching, fine grading and site preparation, drainage solutions, turf installation and seeding, tree and brush management, pond and waterway management, commercial landscaping, and complete property reconstruction.",
   },
   {
     question: "Is there a minimum property size for P1's services?",
@@ -200,35 +173,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {services.map((s) => (
-              <Link
-                key={s.n}
-                href={`/services/${s.slug}`}
-                className="group relative block overflow-hidden rounded-[4px] border bg-white transition-all duration-300 hover:-translate-y-1.5"
-                style={{ borderColor: "hsl(215 30% 15% / 0.08)", boxShadow: "0 1px 0 hsl(215 30% 15% / 0.04)" }}
-                onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 34px 60px -30px hsl(215 45% 15%), 0 10px 22px -16px hsl(215 40% 22% / 0.4)"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "0 1px 0 hsl(215 30% 15% / 0.04)"; }}
-              >
-                <div className="relative h-52 overflow-hidden">
-                  <img src={s.img} alt={s.title} loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                  <div className="absolute inset-0" style={{ background: "linear-gradient(to top, hsl(215 50% 11% / 0.55), transparent 55%)" }} />
-                  <span className="absolute left-4 top-4 flex h-9 w-9 items-center justify-center rounded-[3px] font-sans text-xs font-bold tabular-nums text-primary backdrop-blur" style={{ background: "hsl(40 22% 97% / 0.92)" }}>
-                    {s.n}
-                  </span>
-                  <s.icon className="absolute bottom-4 right-4 h-6 w-6 text-white/90" />
-                </div>
-                <div className="p-6">
-                  <h3 className="font-serif text-xl font-bold tracking-tight text-secondary">{s.title}</h3>
-                  <p className="mt-2 text-[14px] leading-relaxed" style={{ color: "hsl(215 18% 38%)" }}>{s.desc}</p>
-                  <div className="mt-4 inline-flex items-center gap-1.5 font-sans text-[12px] font-bold uppercase text-clay-ink opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{ letterSpacing: "0.12em" }}>
-                    Learn more <ArrowRight className="h-3.5 w-3.5" />
-                  </div>
-                </div>
-                <span className="absolute inset-x-0 bottom-0 h-[3px] origin-left scale-x-0 bg-clay transition-transform duration-300 group-hover:scale-x-100" />
-              </Link>
-            ))}
-          </div>
+          <ServicesGrid />
         </div>
       </section>
 

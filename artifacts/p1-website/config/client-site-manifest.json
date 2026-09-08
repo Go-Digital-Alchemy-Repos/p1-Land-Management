@@ -6,7 +6,7 @@
     "displayName": "P1 Land & Property Management",
     "source": {
       "repository": "https://github.com/Go-Digital-Alchemy-Repos/p1-Land-Management.git",
-      "revision": "86f7928386267d240fe63d0c8a46464c19e5173d"
+      "revision": "7903a503cb0f4261bf6b19083ea213e2976380fa"
     },
     "owners": [
       {
@@ -117,21 +117,6 @@
       ]
     },
     {
-      "id": "testimonials",
-      "path": "/testimonials",
-      "owner": "site",
-      "componentRef": "src/pages/testimonials.tsx",
-      "editableRegions": [
-        "testimonials",
-        "global"
-      ],
-      "lockedBehaviors": [
-        "routing",
-        "validation",
-        "accessibility"
-      ]
-    },
-    {
       "id": "services",
       "path": "/services",
       "owner": "site",
@@ -147,12 +132,12 @@
       ]
     },
     {
-      "id": "services-commercial-property-management",
-      "path": "/services/commercial-property-management",
+      "id": "services-commercial-landscaping",
+      "path": "/services/commercial-landscaping",
       "owner": "site",
-      "componentRef": "src/pages/services/commercial-property-management.tsx",
+      "componentRef": "src/pages/services/commercial-landscaping.tsx",
       "editableRegions": [
-        "services-commercial-property-management",
+        "services-commercial-landscaping",
         "global"
       ],
       "lockedBehaviors": [
@@ -667,8 +652,8 @@
             "maxLength": 2000
           },
           {
-            "path": "frt3wyk",
-            "label": "Text: start at the curb.",
+            "path": "f1owtgu3",
+            "label": "Text: starts at the curb.",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -716,8 +701,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1xlfu9k",
-            "label": "Link: /services/commercial-property-management",
+            "path": "fwwr8hd",
+            "label": "Link: /services/commercial-landscaping",
             "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
@@ -730,8 +715,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1mphmae",
-            "label": "Text: Commercial Property Management",
+            "path": "ffzg0ag",
+            "label": "Text: Commercial Landscaping",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -877,6 +862,13 @@
             "maxLength": 2000
           },
           {
+            "path": "f10v9k0a",
+            "label": "Text: Scheduled exterior grounds maintenance that keeps large sites pristine year-round.",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
             "path": "fj88j4j",
             "label": "Image: /assets/service-commercial-1280-L65U2NEr.webp",
             "type": "image",
@@ -884,25 +876,25 @@
             "maxLength": 2000
           },
           {
-            "path": "fd197wc",
-            "label": "Image description: Commercial Property Management",
+            "path": "fzgodm2",
+            "label": "Image description: Commercial Landscaping",
             "type": "imageAlt",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "f6wtxte",
-            "label": "Text: Scheduled, self-sufficient programs that keep large sites pristine year-round.",
+            "path": "f19vd1b5",
+            "label": "Text: Industrial & Agricultural Land",
             "type": "text",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "f2dwspx",
-            "label": "Text: Learn more",
-            "type": "text",
+            "path": "f1n4wpqe",
+            "label": "Text: Heavy-duty care for farms, industrial sites and working rural acreage.",
+            "type": "textarea",
             "required": false,
-            "maxLength": 2000
+            "maxLength": 12000
           },
           {
             "path": "f1gkmumd",
@@ -926,18 +918,18 @@
             "maxLength": 2000
           },
           {
-            "path": "f19vd1b5",
-            "label": "Text: Industrial & Agricultural Land",
+            "path": "f11u2429",
+            "label": "Text: Land Clearing & Mulching",
             "type": "text",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "f1n4wpqe",
-            "label": "Text: Heavy-duty care for farms, industrial sites and working rural acreage.",
-            "type": "text",
+            "path": "f3f76n0",
+            "label": "Text: Selective clearing and forestry mulching that opens up acreage responsibly.",
+            "type": "textarea",
             "required": false,
-            "maxLength": 2000
+            "maxLength": 12000
           },
           {
             "path": "ffhuwyj",
@@ -954,18 +946,18 @@
             "maxLength": 2000
           },
           {
-            "path": "f11u2429",
-            "label": "Text: Land Clearing & Mulching",
+            "path": "fptku78",
+            "label": "Text: Fine Grading & Site Prep",
             "type": "text",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "f3f76n0",
-            "label": "Text: Selective clearing and forestry mulching that opens up acreage responsibly.",
-            "type": "text",
+            "path": "f1mg29hz",
+            "label": "Text: Precision cut-and-fill that gives every project a true, build-ready foundation.",
+            "type": "textarea",
             "required": false,
-            "maxLength": 2000
+            "maxLength": 12000
           },
           {
             "path": "f1cjy9l7",
@@ -982,18 +974,11 @@
             "maxLength": 2000
           },
           {
-            "path": "fptku78",
-            "label": "Text: Fine Grading & Site Prep",
-            "type": "text",
+            "path": "f1buwh0d",
+            "label": "Text: French drains, swales and retention work planned around the property's water-management needs.",
+            "type": "textarea",
             "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1mg29hz",
-            "label": "Text: Precision cut-and-fill that gives every project a true, build-ready foundation.",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
+            "maxLength": 12000
           },
           {
             "path": "f1f2xdki",
@@ -1010,11 +995,18 @@
             "maxLength": 2000
           },
           {
-            "path": "f1buwh0d",
-            "label": "Text: French drains, swales and retention work planned around the property's water-management needs.",
+            "path": "f1kbr878",
+            "label": "Text: Turf Installation & Seeding",
             "type": "text",
             "required": false,
             "maxLength": 2000
+          },
+          {
+            "path": "fmzkk35",
+            "label": "Text: Sod and seed installation built for large-scale acreage and lasting cover.",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
           },
           {
             "path": "f1llv5ek",
@@ -1038,25 +1030,18 @@
             "maxLength": 2000
           },
           {
-            "path": "f1awvw2u",
-            "label": "Text: 06",
+            "path": "f18cikrh",
+            "label": "Text: Tree & Brush Management",
             "type": "text",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "f1kbr878",
-            "label": "Text: Turf Installation & Seeding",
-            "type": "text",
+            "path": "f1d1ig41",
+            "label": "Text: Removal, trimming and stump grinding handled with the right heavy iron.",
+            "type": "textarea",
             "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "fmzkk35",
-            "label": "Text: Sod and seed installation built for large-scale acreage and lasting cover.",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
+            "maxLength": 12000
           },
           {
             "path": "f8soebj",
@@ -1080,25 +1065,18 @@
             "maxLength": 2000
           },
           {
-            "path": "f1b6vhrt",
-            "label": "Text: 07",
+            "path": "fr3noro",
+            "label": "Text: Pond & Waterway Management",
             "type": "text",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "f18cikrh",
-            "label": "Text: Tree & Brush Management",
-            "type": "text",
+            "path": "fnvm2lx",
+            "label": "Text: Design, excavation and long-term care of ponds and working waterways.",
+            "type": "textarea",
             "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1d1ig41",
-            "label": "Text: Removal, trimming and stump grinding handled with the right heavy iron.",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
+            "maxLength": 12000
           },
           {
             "path": "f1j9al4f",
@@ -1115,25 +1093,18 @@
             "maxLength": 2000
           },
           {
-            "path": "f1dorx0k",
-            "label": "Text: 08",
+            "path": "f1xtoq0z",
+            "label": "Text: Property Reconstruction",
             "type": "text",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "fr3noro",
-            "label": "Text: Pond & Waterway Management",
-            "type": "text",
+            "path": "fui1nab",
+            "label": "Text: Full-scale rebuilds from drainage overhaul to complete site regrading.",
+            "type": "textarea",
             "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "fnvm2lx",
-            "label": "Text: Design, excavation and long-term care of ponds and working waterways.",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
+            "maxLength": 12000
           },
           {
             "path": "f1h3mhh4",
@@ -1153,27 +1124,6 @@
             "path": "fntxnsd",
             "label": "Image description: Property Reconstruction",
             "type": "imageAlt",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1dyripj",
-            "label": "Text: 09",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1xtoq0z",
-            "label": "Text: Property Reconstruction",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "fui1nab",
-            "label": "Text: Full-scale rebuilds from drainage overhaul to complete site regrading.",
-            "type": "text",
             "required": false,
             "maxLength": 2000
           },
@@ -1458,7 +1408,7 @@
             "maxLength": 2000
           },
           {
-            "path": "fmr72ld",
+            "path": "f33ix2n",
             "label": "Text: P1 is a full-service land and property management company. We handle land clearing and forestry",
             "type": "textarea",
             "required": false,
@@ -1628,16 +1578,16 @@
           "fzw6d7c": "Heavy equipment shaping large acreage",
           "f11v7ef6": "The Land Specialists",
           "f1awf3gu": "Your first impression",
-          "frt3wyk": "start at the curb.",
+          "f1owtgu3": "starts at the curb.",
           "f1n46d7g": "Grading, drainage, clearing and ponds for big properties across Upstate South Carolina and the Charlotte metro. Heavy-equipment professionals for farms, estates, HOAs and commercial sites.",
           "f1odvf8f": "Get a Free Quote",
           "fmggb4x": "/contact",
           "f1d192in": "Call (704) 221-8928",
           "f9spy6u": "tel:7042218928",
           "f1ke7dc6": "Index of Work",
-          "f1xlfu9k": "/services/commercial-property-management",
+          "fwwr8hd": "/services/commercial-landscaping",
           "f1bqup5r": "01",
-          "f1mphmae": "Commercial Property Management",
+          "ffzg0ag": "Commercial Landscaping",
           "fgwkxig": "/services/grading-site-preparation",
           "f1c0uauq": "02",
           "f1i5fdfo": "Grading & Site Preparation",
@@ -1658,49 +1608,44 @@
           "f5kskz3": "A full field of capabilities,",
           "f1k6cbi6": "one accountable crew.",
           "f5mk31y": "From the first cut to ongoing care, discuss your property’s needs and coordinate the scope with P1.",
+          "f10v9k0a": "Scheduled exterior grounds maintenance that keeps large sites pristine year-round.",
           "fj88j4j": "/assets/service-commercial-1280-L65U2NEr.webp",
-          "fd197wc": "Commercial Property Management",
-          "f6wtxte": "Scheduled, self-sufficient programs that keep large sites pristine year-round.",
-          "f2dwspx": "Learn more ",
+          "fzgodm2": "Commercial Landscaping",
+          "f19vd1b5": "Industrial & Agricultural Land",
+          "f1n4wpqe": "Heavy-duty care for farms, industrial sites and working rural acreage.",
           "f1gkmumd": "/services/industrial-agricultural",
           "f1ff7yus": "/assets/service-industrial-1280-DHwKA5iR.webp",
           "f16l1lvf": "Industrial & Agricultural Land",
-          "f19vd1b5": "Industrial & Agricultural Land",
-          "f1n4wpqe": "Heavy-duty care for farms, industrial sites and working rural acreage.",
-          "ffhuwyj": "/assets/service-clearing-1280-ChQ3RvyP.webp",
-          "f2z1vh7": "Land Clearing & Mulching",
           "f11u2429": "Land Clearing & Mulching",
           "f3f76n0": "Selective clearing and forestry mulching that opens up acreage responsibly.",
-          "f1cjy9l7": "/assets/service-grading-1280-B0ka5_58.webp",
-          "fvaij0u": "Fine Grading & Site Prep",
+          "ffhuwyj": "/assets/service-clearing-1280-ChQ3RvyP.webp",
+          "f2z1vh7": "Land Clearing & Mulching",
           "fptku78": "Fine Grading & Site Prep",
           "f1mg29hz": "Precision cut-and-fill that gives every project a true, build-ready foundation.",
+          "f1cjy9l7": "/assets/service-grading-1280-B0ka5_58.webp",
+          "fvaij0u": "Fine Grading & Site Prep",
+          "f1buwh0d": "French drains, swales and retention work planned around the property's water-management needs.",
           "f1f2xdki": "/assets/service-drainage-1280-DBaNqUrR.webp",
           "f1bkm223": "Drainage Solutions",
-          "f1buwh0d": "French drains, swales and retention work planned around the property's water-management needs.",
+          "f1kbr878": "Turf Installation & Seeding",
+          "fmzkk35": "Sod and seed installation built for large-scale acreage and lasting cover.",
           "f1llv5ek": "/services/turf-installation-seeding",
           "f1aqc58w": "/assets/service-turf-1280-SpHI1yov.webp",
           "f1okn1ny": "Turf Installation & Seeding",
-          "f1awvw2u": "06",
-          "f1kbr878": "Turf Installation & Seeding",
-          "fmzkk35": "Sod and seed installation built for large-scale acreage and lasting cover.",
+          "f18cikrh": "Tree & Brush Management",
+          "f1d1ig41": "Removal, trimming and stump grinding handled with the right heavy iron.",
           "f8soebj": "/services/tree-services",
           "fb3xzm3": "/assets/service-tree-1280-DIDNuEDJ.webp",
           "foqr11b": "Tree & Brush Management",
-          "f1b6vhrt": "07",
-          "f18cikrh": "Tree & Brush Management",
-          "f1d1ig41": "Removal, trimming and stump grinding handled with the right heavy iron.",
-          "f1j9al4f": "/assets/service-pond-1280-DHTzyRYV.webp",
-          "fe6fch2": "Pond & Waterway Management",
-          "f1dorx0k": "08",
           "fr3noro": "Pond & Waterway Management",
           "fnvm2lx": "Design, excavation and long-term care of ponds and working waterways.",
+          "f1j9al4f": "/assets/service-pond-1280-DHTzyRYV.webp",
+          "fe6fch2": "Pond & Waterway Management",
+          "f1xtoq0z": "Property Reconstruction",
+          "fui1nab": "Full-scale rebuilds from drainage overhaul to complete site regrading.",
           "f1h3mhh4": "/services/property-reconstruction",
           "f1h1ifc2": "/assets/service-reconstruction-1280-7a4gsZkc.webp",
           "fntxnsd": "Property Reconstruction",
-          "f1dyripj": "09",
-          "f1xtoq0z": "Property Reconstruction",
-          "fui1nab": "Full-scale rebuilds from drainage overhaul to complete site regrading.",
           "fhb2ye9": "/assets/grading-construction-1280-CaX7duMl.webp",
           "fx12ycg": "Grading for new construction",
           "f1t5rvg2": "Site Prep",
@@ -1741,7 +1686,7 @@
           "f2vn0sw": "Common Questions",
           "f1edgxzi": "Frequently asked questions.",
           "f1o2eben": "What does P1 Land & Property Management do?",
-          "fmr72ld": "P1 is a full-service land and property management company. We handle land clearing and forestry mulching, fine grading and site preparation, drainage solutions, turf installation and seeding, tree and brush management, pond and waterway management, commercial property management, and complete property reconstruction.",
+          "f33ix2n": "P1 is a full-service land and property management company. We handle land clearing and forestry mulching, fine grading and site preparation, drainage solutions, turf installation and seeding, tree and brush management, pond and waterway management, commercial landscaping, and complete property reconstruction.",
           "f1m254w": "Is there a minimum property size for P1's services?",
           "f1v91yf7": "Yes. P1 specializes in properties 1 acre and larger — commercial sites, industrial and agricultural land, HOAs, farms, estates, and large residential acreage. That focus lets us bring the heavy equipment and expertise that big properties demand.",
           "f11iczzd": "What areas does P1 Land & Property Management serve?",
@@ -2399,15 +2344,15 @@
             "maxLength": 2000
           },
           {
-            "path": "fij1yrm",
-            "label": "Text: Commercial grounds services",
+            "path": "fvm06ew",
+            "label": "Text: Commercial landscaping services",
             "type": "text",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "f1xlfu9k",
-            "label": "Link: /services/commercial-property-management",
+            "path": "fwwr8hd",
+            "label": "Link: /services/commercial-landscaping",
             "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
@@ -2560,8 +2505,8 @@
             "maxLength": 12000
           },
           {
-            "path": "fz483w9",
-            "label": "Text: Ongoing property management",
+            "path": "f168iovj",
+            "label": "Text: Ongoing commercial landscaping",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -2672,22 +2617,22 @@
             "maxLength": 2000
           },
           {
-            "path": "f1j9al4f",
-            "label": "Image: /assets/service-pond-1280-DHTzyRYV.webp",
+            "path": "fascy0n",
+            "label": "Image: /assets/data-center-campus-1280-BDyegjDb.webp",
             "type": "image",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "f91ex7d",
-            "label": "Image description: Illustrative pond and surrounding grounds showing exterior water-management considerations",
+            "path": "f18z5khl",
+            "label": "Image description: Illustrative aerial view of a data-center campus with maintained green space, tree buffers and ",
             "type": "imageAlt",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "flarjqd",
-            "label": "Text: Illustrative imagery — not a P1 project or evidence of data-center experience.",
+            "path": "f3u7o20",
+            "label": "Text: Illustrative imagery — not a P1 project or evidence of P1 data-center experience.",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -3090,8 +3035,8 @@
           "f2emmus": "0",
           "fan7ap5": "Grounds & Vegetation Management",
           "ftoofzx": "Bring acreage, overgrowth and perimeter vegetation into a practical maintenance plan.",
-          "fij1yrm": "Commercial grounds services",
-          "f1xlfu9k": "/services/commercial-property-management",
+          "fvm06ew": "Commercial landscaping services",
+          "fwwr8hd": "/services/commercial-landscaping",
           "fjbos4v": "Stormwater & Drainage",
           "f1h53tip": "Discuss drainage correction, ponds and waterway maintenance as connected parts of your property.",
           "f1t4wjlj": "Drainage services",
@@ -3113,7 +3058,7 @@
           "f1y9nwzi": "Corrective property work",
           "fdwwhxp": "Recurring Site Management",
           "fwhjsnt": "Build an agreed maintenance schedule with inspection priorities, communication and follow-up expectations defined together.",
-          "fz483w9": "Ongoing property management",
+          "f168iovj": "Ongoing commercial landscaping",
           "fwy4o7t": "Property lifecycle",
           "foc9u5l": "Continuity from development to daily operations.",
           "fdpg9qj": "PHASE 0",
@@ -3129,9 +3074,9 @@
           "fqr6xnt": "Discuss access coordination, work windows, safety expectations, communication and documentation with your site team. The agreed plan must fit the customer’s protocols; no security clearance, uptime guarantee or response commitment is implied.",
           "f1rhk3bl": "Explore pond & waterway maintenance",
           "fv11gbc": "/services/pond-waterway-management",
-          "f1j9al4f": "/assets/service-pond-1280-DHTzyRYV.webp",
-          "f91ex7d": "Illustrative pond and surrounding grounds showing exterior water-management considerations",
-          "flarjqd": "Illustrative imagery — not a P1 project or evidence of data-center experience.",
+          "fascy0n": "/assets/data-center-campus-1280-BDyegjDb.webp",
+          "f18z5khl": "Illustrative aerial view of a data-center campus with maintained green space, tree buffers and a stormwater pond",
+          "f3u7o20": "Illustrative imagery — not a P1 project or evidence of P1 data-center experience.",
           "f1kt7gl0": "Perimeter vegetation & buffers",
           "f1k18yz4": "Drainage, erosion & ponds",
           "f14vjff2": "Service roads & access areas",
@@ -3858,8 +3803,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1vnp215",
-            "label": "Text: Commercial Management",
+            "path": "ffzg0ag",
+            "label": "Text: Commercial Landscaping",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -4177,7 +4122,7 @@
           "f18psxzy": "Turf & Seeding",
           "f1emojmd": "Pond & Waterway",
           "f1xtoq0z": "Property Reconstruction",
-          "f1vnp215": "Commercial Management",
+          "ffzg0ag": "Commercial Landscaping",
           "fly9gd8": "Industrial & Agricultural",
           "f1fjhxcs": "Tree Services",
           "f16f0ool": " service illustrations shown",
@@ -4215,248 +4160,6 @@
           "f1uh3yw6": "Free, no-pressure quotes across Upstate SC and the Charlotte metro.",
           "f1odvf8f": "Get a Free Quote",
           "fmggb4x": "/contact",
-          "f1d192in": "Call (704) 221-8928",
-          "f9spy6u": "tel:7042218928",
-          "f1w00rmf": "Call P1",
-          "f1u26c9a": "tel:+17042218928",
-          "f1qryswv": "Get an Estimate"
-        },
-        "lockedBehaviors": [
-          "routing",
-          "form-validation",
-          "authentication",
-          "responsive-layout"
-        ]
-      },
-      {
-        "key": "testimonials-content",
-        "version": "1.0.0",
-        "rendererRef": "src/lib/cms-jsx-runtime.ts",
-        "fieldSchemaRef": "src/lib/cms.tsx",
-        "allowedRegions": [
-          "testimonials"
-        ],
-        "editableFields": [
-          "heading",
-          "copy",
-          "image",
-          "imageAlt",
-          "ctaTarget"
-        ],
-        "fields": [
-          {
-            "path": "fum15fc",
-            "label": "Text: Skip to main content",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "seoTitle",
-            "label": "SEO title",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "seoDescription",
-            "label": "SEO description",
-            "type": "textarea",
-            "required": false,
-            "maxLength": 12000
-          },
-          {
-            "path": "seoImage",
-            "label": "Image: /opengraph.jpg",
-            "type": "image",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1h1ifc2",
-            "label": "Image: /assets/service-reconstruction-1280-7a4gsZkc.webp",
-            "type": "image",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1ijtar6",
-            "label": "Image description: Illustration of property reconstruction services",
-            "type": "imageAlt",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f3xg7e8",
-            "label": "Text: Working With P1",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f153ldi5",
-            "label": "Text: Property",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "fxdjtms",
-            "label": "Text: Explore services for commercial, agricultural, and large residential properties across the Caro",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1yqa7qn",
-            "label": "Text: Choose the right approach for your land",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "fqmaow7",
-            "label": "Text: Clearing, grading, drainage, turf, tree care, and pond management each address different proper",
-            "type": "textarea",
-            "required": false,
-            "maxLength": 12000
-          },
-          {
-            "path": "fr6htqz",
-            "label": "Text: or",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1u810sm",
-            "label": "Text: .",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "foqkxpf",
-            "label": "Text: Explore our services",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f958gr",
-            "label": "Link: /services",
-            "type": "ctaTarget",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "fbdmqfm",
-            "label": "Text: request an estimate",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "fmggb4x",
-            "label": "Link: /contact",
-            "type": "ctaTarget",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1u1km71",
-            "label": "Image: /assets/fine-grading-1280-CWwHPN9f.webp",
-            "type": "image",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f5dus4q",
-            "label": "Text: Start the Conversation",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f19zqrt0",
-            "label": "Text: Have acreage that needs shaping? Let's walk it together.",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1uh3yw6",
-            "label": "Text: Free, no-pressure quotes across Upstate SC and the Charlotte metro.",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1odvf8f",
-            "label": "Text: Get a Free Quote",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1d192in",
-            "label": "Text: Call (704) 221-8928",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f9spy6u",
-            "label": "Link: tel:7042218928",
-            "type": "ctaTarget",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1w00rmf",
-            "label": "Text: Call P1",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1u26c9a",
-            "label": "Link: tel:+17042218928",
-            "type": "ctaTarget",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1qryswv",
-            "label": "Text: Get an Estimate",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          }
-        ],
-        "defaultContent": {
-          "fum15fc": "Skip to main content",
-          "seoTitle": "Working With P1 | P1 Land & Property Management",
-          "seoDescription": "Discuss your land and property management needs with P1. Explore services and request an estimate.",
-          "seoImage": "/opengraph.jpg",
-          "f1h1ifc2": "/assets/service-reconstruction-1280-7a4gsZkc.webp",
-          "f1ijtar6": "Illustration of property reconstruction services",
-          "f3xg7e8": "Working With P1",
-          "f153ldi5": "Property",
-          "fxdjtms": "Explore services for commercial, agricultural, and large residential properties across the Carolinas.",
-          "f1yqa7qn": "Choose the right approach for your land",
-          "fqmaow7": "Clearing, grading, drainage, turf, tree care, and pond management each address different property needs. Tell us about your goals so we can discuss the work involved.",
-          "fr6htqz": " or ",
-          "f1u810sm": ".",
-          "foqkxpf": "Explore our services",
-          "f958gr": "/services",
-          "fbdmqfm": "request an estimate",
-          "fmggb4x": "/contact",
-          "f1u1km71": "/assets/fine-grading-1280-CWwHPN9f.webp",
-          "f5dus4q": "Start the Conversation",
-          "f19zqrt0": "Have acreage that needs shaping? Let's walk it together.",
-          "f1uh3yw6": "Free, no-pressure quotes across Upstate SC and the Charlotte metro.",
-          "f1odvf8f": "Get a Free Quote",
           "f1d192in": "Call (704) 221-8928",
           "f9spy6u": "tel:7042218928",
           "f1w00rmf": "Call P1",
@@ -4557,37 +4260,37 @@
             "maxLength": 2000
           },
           {
-            "path": "f1xlfu9k",
-            "label": "Link: /services/commercial-property-management",
+            "path": "ffzg0ag",
+            "label": "Text: Commercial Landscaping",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f10v9k0a",
+            "label": "Text: Scheduled exterior grounds maintenance that keeps large sites pristine year-round.",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "fwwr8hd",
+            "label": "Link: /services/commercial-landscaping",
             "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "f1mphmae",
-            "label": "Text: Commercial Property Management",
-            "type": "text",
+            "path": "fj88j4j",
+            "label": "Image: /assets/service-commercial-1280-L65U2NEr.webp",
+            "type": "image",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "f1xt829i",
-            "label": "Text: Scheduled maintenance programs for commercial and business properties",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1cgsp11",
-            "label": "Text: Learn More →",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1gkmumd",
-            "label": "Link: /services/industrial-agricultural",
-            "type": "ctaTarget",
+            "path": "fzgodm2",
+            "label": "Image description: Commercial Landscaping",
+            "type": "imageAlt",
             "required": false,
             "maxLength": 2000
           },
@@ -4599,11 +4302,46 @@
             "maxLength": 2000
           },
           {
-            "path": "f1b7981z",
-            "label": "Text: Heavy-duty care for farms, industrial sites, and rural acreage",
+            "path": "f1n4wpqe",
+            "label": "Text: Heavy-duty care for farms, industrial sites and working rural acreage.",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1gkmumd",
+            "label": "Link: /services/industrial-agricultural",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1ff7yus",
+            "label": "Image: /assets/service-industrial-1280-DHwKA5iR.webp",
+            "type": "image",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f16l1lvf",
+            "label": "Image description: Industrial & Agricultural Land",
+            "type": "imageAlt",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f11u2429",
+            "label": "Text: Land Clearing & Mulching",
             "type": "text",
             "required": false,
             "maxLength": 2000
+          },
+          {
+            "path": "f3f76n0",
+            "label": "Text: Selective clearing and forestry mulching that opens up acreage responsibly.",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
           },
           {
             "path": "f14gqnzz",
@@ -4613,18 +4351,32 @@
             "maxLength": 2000
           },
           {
-            "path": "foa1vas",
-            "label": "Text: Land Clearing",
+            "path": "ffhuwyj",
+            "label": "Image: /assets/service-clearing-1280-ChQ3RvyP.webp",
+            "type": "image",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f2z1vh7",
+            "label": "Image description: Land Clearing & Mulching",
+            "type": "imageAlt",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fptku78",
+            "label": "Text: Fine Grading & Site Prep",
             "type": "text",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "fh2s2i4",
-            "label": "Text: Full clearing and grubbing of trees, brush, and vegetation",
-            "type": "text",
+            "path": "f1mg29hz",
+            "label": "Text: Precision cut-and-fill that gives every project a true, build-ready foundation.",
+            "type": "textarea",
             "required": false,
-            "maxLength": 2000
+            "maxLength": 12000
           },
           {
             "path": "fgwkxig",
@@ -4634,23 +4386,16 @@
             "maxLength": 2000
           },
           {
-            "path": "f680y9o",
-            "label": "Text: Fine Grading & Site Preparation",
-            "type": "text",
+            "path": "f1cjy9l7",
+            "label": "Image: /assets/service-grading-1280-B0ka5_58.webp",
+            "type": "image",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "f1f6tct4",
-            "label": "Text: Precision grading to prepare land for construction, drainage, or turf",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1cn1znt",
-            "label": "Link: /services/drainage",
-            "type": "ctaTarget",
+            "path": "fvaij0u",
+            "label": "Image description: Fine Grading & Site Prep",
+            "type": "imageAlt",
             "required": false,
             "maxLength": 2000
           },
@@ -4662,16 +4407,30 @@
             "maxLength": 2000
           },
           {
-            "path": "f1c3jch4",
-            "label": "Text: French drains, retention systems, and custom drainage design",
-            "type": "text",
+            "path": "f1buwh0d",
+            "label": "Text: French drains, swales and retention work planned around the property's water-management needs.",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1cn1znt",
+            "label": "Link: /services/drainage",
+            "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "f1llv5ek",
-            "label": "Link: /services/turf-installation-seeding",
-            "type": "ctaTarget",
+            "path": "f1f2xdki",
+            "label": "Image: /assets/service-drainage-1280-DBaNqUrR.webp",
+            "type": "image",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1bkm223",
+            "label": "Image description: Drainage Solutions",
+            "type": "imageAlt",
             "required": false,
             "maxLength": 2000
           },
@@ -4683,11 +4442,46 @@
             "maxLength": 2000
           },
           {
-            "path": "f1ci19cf",
-            "label": "Text: Sod and seed installation for large-scale acreage",
+            "path": "fmzkk35",
+            "label": "Text: Sod and seed installation built for large-scale acreage and lasting cover.",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1llv5ek",
+            "label": "Link: /services/turf-installation-seeding",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1aqc58w",
+            "label": "Image: /assets/service-turf-1280-SpHI1yov.webp",
+            "type": "image",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1okn1ny",
+            "label": "Image description: Turf Installation & Seeding",
+            "type": "imageAlt",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f18cikrh",
+            "label": "Text: Tree & Brush Management",
             "type": "text",
             "required": false,
             "maxLength": 2000
+          },
+          {
+            "path": "f1d1ig41",
+            "label": "Text: Removal, trimming and stump grinding handled with the right heavy iron.",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
           },
           {
             "path": "f8soebj",
@@ -4697,23 +4491,16 @@
             "maxLength": 2000
           },
           {
-            "path": "f1fjhxcs",
-            "label": "Text: Tree Services",
-            "type": "text",
+            "path": "fb3xzm3",
+            "label": "Image: /assets/service-tree-1280-DIDNuEDJ.webp",
+            "type": "image",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "f236cii",
-            "label": "Text: Tree management, trimming, removal, and stump grinding",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "fv11gbc",
-            "label": "Link: /services/pond-waterway-management",
-            "type": "ctaTarget",
+            "path": "foqr11b",
+            "label": "Image description: Tree & Brush Management",
+            "type": "imageAlt",
             "required": false,
             "maxLength": 2000
           },
@@ -4725,16 +4512,30 @@
             "maxLength": 2000
           },
           {
-            "path": "fe4w1dv",
-            "label": "Text: Ongoing pond care, water quality, and waterway clearing",
-            "type": "text",
+            "path": "fnvm2lx",
+            "label": "Text: Design, excavation and long-term care of ponds and working waterways.",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "fv11gbc",
+            "label": "Link: /services/pond-waterway-management",
+            "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "f1h3mhh4",
-            "label": "Link: /services/property-reconstruction",
-            "type": "ctaTarget",
+            "path": "f1j9al4f",
+            "label": "Image: /assets/service-pond-1280-DHTzyRYV.webp",
+            "type": "image",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fe6fch2",
+            "label": "Image description: Pond & Waterway Management",
+            "type": "imageAlt",
             "required": false,
             "maxLength": 2000
           },
@@ -4746,9 +4547,30 @@
             "maxLength": 2000
           },
           {
-            "path": "f1umuq6v",
-            "label": "Text: Full-scale property rebuilds from drainage overhaul to complete regrading",
-            "type": "text",
+            "path": "fui1nab",
+            "label": "Text: Full-scale rebuilds from drainage overhaul to complete site regrading.",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1h3mhh4",
+            "label": "Link: /services/property-reconstruction",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1h1ifc2",
+            "label": "Image: /assets/service-reconstruction-1280-7a4gsZkc.webp",
+            "type": "image",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fntxnsd",
+            "label": "Image description: Property Reconstruction",
+            "type": "imageAlt",
             "required": false,
             "maxLength": 2000
           },
@@ -4841,34 +4663,51 @@
           "f1238i19": "Your Property Needs",
           "f1cbjdtd": "From early land clearing to ongoing property maintenance, discuss the work your large-acreage property needs in the Carolinas and define a connected scope with P1.",
           "f1u6jl7i": "P1 land and property services",
-          "f1xlfu9k": "/services/commercial-property-management",
-          "f1mphmae": "Commercial Property Management",
-          "f1xt829i": "Scheduled maintenance programs for commercial and business properties",
-          "f1cgsp11": "Learn More →",
-          "f1gkmumd": "/services/industrial-agricultural",
+          "ffzg0ag": "Commercial Landscaping",
+          "f10v9k0a": "Scheduled exterior grounds maintenance that keeps large sites pristine year-round.",
+          "fwwr8hd": "/services/commercial-landscaping",
+          "fj88j4j": "/assets/service-commercial-1280-L65U2NEr.webp",
+          "fzgodm2": "Commercial Landscaping",
           "f19vd1b5": "Industrial & Agricultural Land",
-          "f1b7981z": "Heavy-duty care for farms, industrial sites, and rural acreage",
+          "f1n4wpqe": "Heavy-duty care for farms, industrial sites and working rural acreage.",
+          "f1gkmumd": "/services/industrial-agricultural",
+          "f1ff7yus": "/assets/service-industrial-1280-DHwKA5iR.webp",
+          "f16l1lvf": "Industrial & Agricultural Land",
+          "f11u2429": "Land Clearing & Mulching",
+          "f3f76n0": "Selective clearing and forestry mulching that opens up acreage responsibly.",
           "f14gqnzz": "/services/land-clearing",
-          "foa1vas": "Land Clearing",
-          "fh2s2i4": "Full clearing and grubbing of trees, brush, and vegetation",
+          "ffhuwyj": "/assets/service-clearing-1280-ChQ3RvyP.webp",
+          "f2z1vh7": "Land Clearing & Mulching",
+          "fptku78": "Fine Grading & Site Prep",
+          "f1mg29hz": "Precision cut-and-fill that gives every project a true, build-ready foundation.",
           "fgwkxig": "/services/grading-site-preparation",
-          "f680y9o": "Fine Grading & Site Preparation",
-          "f1f6tct4": "Precision grading to prepare land for construction, drainage, or turf",
-          "f1cn1znt": "/services/drainage",
+          "f1cjy9l7": "/assets/service-grading-1280-B0ka5_58.webp",
+          "fvaij0u": "Fine Grading & Site Prep",
           "f1itpl39": "Drainage Solutions",
-          "f1c3jch4": "French drains, retention systems, and custom drainage design",
-          "f1llv5ek": "/services/turf-installation-seeding",
+          "f1buwh0d": "French drains, swales and retention work planned around the property's water-management needs.",
+          "f1cn1znt": "/services/drainage",
+          "f1f2xdki": "/assets/service-drainage-1280-DBaNqUrR.webp",
+          "f1bkm223": "Drainage Solutions",
           "f1kbr878": "Turf Installation & Seeding",
-          "f1ci19cf": "Sod and seed installation for large-scale acreage",
+          "fmzkk35": "Sod and seed installation built for large-scale acreage and lasting cover.",
+          "f1llv5ek": "/services/turf-installation-seeding",
+          "f1aqc58w": "/assets/service-turf-1280-SpHI1yov.webp",
+          "f1okn1ny": "Turf Installation & Seeding",
+          "f18cikrh": "Tree & Brush Management",
+          "f1d1ig41": "Removal, trimming and stump grinding handled with the right heavy iron.",
           "f8soebj": "/services/tree-services",
-          "f1fjhxcs": "Tree Services",
-          "f236cii": "Tree management, trimming, removal, and stump grinding",
-          "fv11gbc": "/services/pond-waterway-management",
+          "fb3xzm3": "/assets/service-tree-1280-DIDNuEDJ.webp",
+          "foqr11b": "Tree & Brush Management",
           "fr3noro": "Pond & Waterway Management",
-          "fe4w1dv": "Ongoing pond care, water quality, and waterway clearing",
-          "f1h3mhh4": "/services/property-reconstruction",
+          "fnvm2lx": "Design, excavation and long-term care of ponds and working waterways.",
+          "fv11gbc": "/services/pond-waterway-management",
+          "f1j9al4f": "/assets/service-pond-1280-DHTzyRYV.webp",
+          "fe6fch2": "Pond & Waterway Management",
           "f1xtoq0z": "Property Reconstruction",
-          "f1umuq6v": "Full-scale property rebuilds from drainage overhaul to complete regrading",
+          "fui1nab": "Full-scale rebuilds from drainage overhaul to complete site regrading.",
+          "f1h3mhh4": "/services/property-reconstruction",
+          "f1h1ifc2": "/assets/service-reconstruction-1280-7a4gsZkc.webp",
+          "fntxnsd": "Property Reconstruction",
           "f1u1km71": "/assets/fine-grading-1280-CWwHPN9f.webp",
           "f5dus4q": "Start the Conversation",
           "f19zqrt0": "Have acreage that needs shaping? Let's walk it together.",
@@ -4889,12 +4728,12 @@
         ]
       },
       {
-        "key": "services-commercial-property-management-content",
+        "key": "services-commercial-landscaping-content",
         "version": "1.0.0",
         "rendererRef": "src/lib/cms-jsx-runtime.ts",
         "fieldSchemaRef": "src/lib/cms.tsx",
         "allowedRegions": [
-          "services-commercial-property-management"
+          "services-commercial-landscaping"
         ],
         "editableFields": [
           "heading",
@@ -4947,8 +4786,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1mphmae",
-            "label": "Text: Commercial Property Management",
+            "path": "ffzg0ag",
+            "label": "Text: Commercial Landscaping",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -4961,8 +4800,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f10xhqjf",
-            "label": "Text: P1 provides professional, scheduled property maintenance for commercial sites, business campuse",
+            "path": "f12lftyh",
+            "label": "Text: P1 provides commercial landscaping and scheduled exterior grounds maintenance for commercial si",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -4975,8 +4814,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1xlfu9k",
-            "label": "Link: /services/commercial-property-management",
+            "path": "fwwr8hd",
+            "label": "Link: /services/commercial-landscaping",
             "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
@@ -5115,8 +4954,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1x42997",
-            "label": "Text: P1 commercial property programs are customized to your site — but typically include:",
+            "path": "fnet116",
+            "label": "Text: P1 commercial landscaping programs are customized to your site — but typically include:",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -5262,15 +5101,15 @@
             "maxLength": 2000
           },
           {
-            "path": "fca31o3",
-            "label": "Text: Commercial Property Management FAQs",
+            "path": "f1sxbbih",
+            "label": "Text: Commercial Landscaping FAQs",
             "type": "text",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "f18976qt",
-            "label": "Text: What's included in a P1 commercial maintenance program?",
+            "path": "faz4w4m",
+            "label": "Text: What's included in a P1 commercial landscaping program?",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -5381,8 +5220,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fjkia8s",
-            "label": "Text: Explore how grounds, drainage, land and corrective work can fit an agreed commercial property s",
+            "path": "fqv61d7",
+            "label": "Text: Explore how commercial landscaping, drainage, land and corrective work can fit an agreed exteri",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -5467,16 +5306,16 @@
         ],
         "defaultContent": {
           "fum15fc": "Skip to main content",
-          "seoTitle": "Commercial Property Management | P1 Land & Property Management | Upstate SC & Charlotte NC",
-          "seoDescription": "Professional commercial property maintenance for 1-acre-plus properties across Upstate SC and Charlotte NC. Turf, drainage, land clearing, ponds, and more. Call (704) 221-8928.",
+          "seoTitle": "Commercial Landscaping | P1 Land & Property Management | Upstate SC & Charlotte NC",
+          "seoDescription": "Commercial landscaping and exterior grounds maintenance for 1-acre-plus properties across Upstate SC and Charlotte NC. Turf, drainage, land clearing, ponds, and more. Call (704) 221-8928.",
           "seoImage": "/opengraph.jpg",
           "fj88j4j": "/assets/service-commercial-1280-L65U2NEr.webp",
           "fkqkjey": "Manicured commercial property landscape",
-          "f1mphmae": "Commercial Property Management",
+          "ffzg0ag": "Commercial Landscaping",
           "fhqpxw3": "Large-Acreage Properties",
-          "f10xhqjf": "P1 provides professional, scheduled property maintenance for commercial sites, business campuses, industrial properties, and large commercial landholdings throughout Upstate South Carolina and the Charlotte, NC region. If it's on your land, we manage it.",
+          "f12lftyh": "P1 provides commercial landscaping and scheduled exterior grounds maintenance for commercial sites, business campuses, industrial properties, and large commercial landholdings throughout Upstate South Carolina and the Charlotte, NC region.",
           "f1ke7dc6": "Index of Work",
-          "f1xlfu9k": "/services/commercial-property-management",
+          "fwwr8hd": "/services/commercial-landscaping",
           "f1bqup5r": "01",
           "fgwkxig": "/services/grading-site-preparation",
           "f1c0uauq": "02",
@@ -5496,7 +5335,7 @@
           "f1rnw6st": "/assets/commercial-attention-1280-Co4nd32i.webp",
           "f16meay5": "Crew maintaining a large commercial property's grounds",
           "f2cfecq": "What's Included in Our Commercial Programs",
-          "f1x42997": "P1 commercial property programs are customized to your site — but typically include:",
+          "fnet116": "P1 commercial landscaping programs are customized to your site — but typically include:",
           "fq6t4h4": "Regular turf mowing, edging, and cleanup for large-acreage grounds",
           "f1olxb09": "Tree trimming, selective removal, and canopy management",
           "fqcgp44": "Pond, lake, and stormwater retention management",
@@ -5517,8 +5356,8 @@
           "f1sz1s82": "Upstate SC and Charlotte NC serviceability reviewed during qualification",
           "f1cjfg7a": "Project-relevant insurance, licensing and procurement documentation reviewed on request",
           "f2f8aux": "Site-assessment availability and terms confirmed during qualification",
-          "fca31o3": "Commercial Property Management FAQs",
-          "f18976qt": "What's included in a P1 commercial maintenance program?",
+          "f1sxbbih": "Commercial Landscaping FAQs",
+          "faz4w4m": "What's included in a P1 commercial landscaping program?",
           "f1fogsmf": "Programs are customized to each site, but typically include turf mowing and edging, tree trimming and canopy management, pond and stormwater retention care, drainage inspection and maintenance, erosion control, seasonal seeding and fertilization, and brush management for undeveloped acreage.",
           "fa7rbfc": "How is a commercial maintenance schedule established?",
           "f1dhnb5v": "P1 reviews the property, the requested work and operating constraints before proposing an agreed scope and service schedule. Site-assessment availability, access requirements and any fee are confirmed during qualification.",
@@ -5534,7 +5373,7 @@
           "fatly8t": "request a free estimate online",
           "fmggb4x": "/contact",
           "fmiy0jn": "Looking for a connected exterior site plan?",
-          "fjkia8s": "Explore how grounds, drainage, land and corrective work can fit an agreed commercial property scope.",
+          "fqv61d7": "Explore how commercial landscaping, drainage, land and corrective work can fit an agreed exterior-work scope.",
           "f811gyl": "Commercial Site Management & Site Assessment",
           "f4ap5vh": "/commercial",
           "f1u1km71": "/assets/fine-grading-1280-CWwHPN9f.webp",
@@ -5655,8 +5494,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1xlfu9k",
-            "label": "Link: /services/commercial-property-management",
+            "path": "fwwr8hd",
+            "label": "Link: /services/commercial-landscaping",
             "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
@@ -5669,8 +5508,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1mphmae",
-            "label": "Text: Commercial Property Management",
+            "path": "ffzg0ag",
+            "label": "Text: Commercial Landscaping",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -6102,9 +5941,9 @@
           "f1ke7dc6": "Index of Work",
           "f1gkmumd": "/services/industrial-agricultural",
           "f1bqup5r": "01",
-          "f1xlfu9k": "/services/commercial-property-management",
+          "fwwr8hd": "/services/commercial-landscaping",
           "f1c0uauq": "02",
-          "f1mphmae": "Commercial Property Management",
+          "ffzg0ag": "Commercial Landscaping",
           "fgwkxig": "/services/grading-site-preparation",
           "f1catwjp": "03",
           "f1i5fdfo": "Grading & Site Preparation",
@@ -6273,8 +6112,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1xlfu9k",
-            "label": "Link: /services/commercial-property-management",
+            "path": "fwwr8hd",
+            "label": "Link: /services/commercial-landscaping",
             "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
@@ -6287,8 +6126,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1mphmae",
-            "label": "Text: Commercial Property Management",
+            "path": "ffzg0ag",
+            "label": "Text: Commercial Landscaping",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -6706,9 +6545,9 @@
           "f1ke7dc6": "Index of Work",
           "f14gqnzz": "/services/land-clearing",
           "f1bqup5r": "01",
-          "f1xlfu9k": "/services/commercial-property-management",
+          "fwwr8hd": "/services/commercial-landscaping",
           "f1c0uauq": "02",
-          "f1mphmae": "Commercial Property Management",
+          "ffzg0ag": "Commercial Landscaping",
           "fgwkxig": "/services/grading-site-preparation",
           "f1catwjp": "03",
           "f1i5fdfo": "Grading & Site Preparation",
@@ -6875,8 +6714,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1xlfu9k",
-            "label": "Link: /services/commercial-property-management",
+            "path": "fwwr8hd",
+            "label": "Link: /services/commercial-landscaping",
             "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
@@ -6889,8 +6728,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1mphmae",
-            "label": "Text: Commercial Property Management",
+            "path": "ffzg0ag",
+            "label": "Text: Commercial Landscaping",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -7329,9 +7168,9 @@
           "f1ke7dc6": "Index of Work",
           "fgwkxig": "/services/grading-site-preparation",
           "f1bqup5r": "01",
-          "f1xlfu9k": "/services/commercial-property-management",
+          "fwwr8hd": "/services/commercial-landscaping",
           "f1c0uauq": "02",
-          "f1mphmae": "Commercial Property Management",
+          "ffzg0ag": "Commercial Landscaping",
           "f1cn1znt": "/services/drainage",
           "f1catwjp": "03",
           "f1itpl39": "Drainage Solutions",
@@ -7501,8 +7340,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1xlfu9k",
-            "label": "Link: /services/commercial-property-management",
+            "path": "fwwr8hd",
+            "label": "Link: /services/commercial-landscaping",
             "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
@@ -7515,8 +7354,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1mphmae",
-            "label": "Text: Commercial Property Management",
+            "path": "ffzg0ag",
+            "label": "Text: Commercial Landscaping",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -7955,9 +7794,9 @@
           "f1ke7dc6": "Index of Work",
           "f1cn1znt": "/services/drainage",
           "f1bqup5r": "01",
-          "f1xlfu9k": "/services/commercial-property-management",
+          "fwwr8hd": "/services/commercial-landscaping",
           "f1c0uauq": "02",
-          "f1mphmae": "Commercial Property Management",
+          "ffzg0ag": "Commercial Landscaping",
           "fgwkxig": "/services/grading-site-preparation",
           "f1catwjp": "03",
           "f1i5fdfo": "Grading & Site Preparation",
@@ -8134,8 +7973,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1xlfu9k",
-            "label": "Link: /services/commercial-property-management",
+            "path": "fwwr8hd",
+            "label": "Link: /services/commercial-landscaping",
             "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
@@ -8148,8 +7987,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1mphmae",
-            "label": "Text: Commercial Property Management",
+            "path": "ffzg0ag",
+            "label": "Text: Commercial Landscaping",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -8645,9 +8484,9 @@
           "f1llv5ek": "/services/turf-installation-seeding",
           "f1bqup5r": "01",
           "f18psxzy": "Turf & Seeding",
-          "f1xlfu9k": "/services/commercial-property-management",
+          "fwwr8hd": "/services/commercial-landscaping",
           "f1c0uauq": "02",
-          "f1mphmae": "Commercial Property Management",
+          "ffzg0ag": "Commercial Landscaping",
           "fgwkxig": "/services/grading-site-preparation",
           "f1catwjp": "03",
           "f1i5fdfo": "Grading & Site Preparation",
@@ -8825,8 +8664,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1xlfu9k",
-            "label": "Link: /services/commercial-property-management",
+            "path": "fwwr8hd",
+            "label": "Link: /services/commercial-landscaping",
             "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
@@ -8839,8 +8678,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1mphmae",
-            "label": "Text: Commercial Property Management",
+            "path": "ffzg0ag",
+            "label": "Text: Commercial Landscaping",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -9216,9 +9055,9 @@
           "f1ke7dc6": "Index of Work",
           "f8soebj": "/services/tree-services",
           "f1bqup5r": "01",
-          "f1xlfu9k": "/services/commercial-property-management",
+          "fwwr8hd": "/services/commercial-landscaping",
           "f1c0uauq": "02",
-          "f1mphmae": "Commercial Property Management",
+          "ffzg0ag": "Commercial Landscaping",
           "fgwkxig": "/services/grading-site-preparation",
           "f1catwjp": "03",
           "f1i5fdfo": "Grading & Site Preparation",
@@ -9386,8 +9225,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1xlfu9k",
-            "label": "Link: /services/commercial-property-management",
+            "path": "fwwr8hd",
+            "label": "Link: /services/commercial-landscaping",
             "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
@@ -9400,8 +9239,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1mphmae",
-            "label": "Text: Commercial Property Management",
+            "path": "ffzg0ag",
+            "label": "Text: Commercial Landscaping",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -9855,9 +9694,9 @@
           "fv11gbc": "/services/pond-waterway-management",
           "f1bqup5r": "01",
           "fitsipf": "Ponds & Waterway Management",
-          "f1xlfu9k": "/services/commercial-property-management",
+          "fwwr8hd": "/services/commercial-landscaping",
           "f1c0uauq": "02",
-          "f1mphmae": "Commercial Property Management",
+          "ffzg0ag": "Commercial Landscaping",
           "fgwkxig": "/services/grading-site-preparation",
           "f1catwjp": "03",
           "f1i5fdfo": "Grading & Site Preparation",
@@ -10036,8 +9875,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1xlfu9k",
-            "label": "Link: /services/commercial-property-management",
+            "path": "fwwr8hd",
+            "label": "Link: /services/commercial-landscaping",
             "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
@@ -10050,8 +9889,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1mphmae",
-            "label": "Text: Commercial Property Management",
+            "path": "ffzg0ag",
+            "label": "Text: Commercial Landscaping",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -10505,9 +10344,9 @@
           "f1h3mhh4": "/services/property-reconstruction",
           "f1bqup5r": "01",
           "f1s0gw1w": "Reconstruction",
-          "f1xlfu9k": "/services/commercial-property-management",
+          "fwwr8hd": "/services/commercial-landscaping",
           "f1c0uauq": "02",
-          "f1mphmae": "Commercial Property Management",
+          "ffzg0ag": "Commercial Landscaping",
           "fgwkxig": "/services/grading-site-preparation",
           "f1catwjp": "03",
           "f1i5fdfo": "Grading & Site Preparation",
@@ -11036,7 +10875,7 @@
             "maxLength": 2000
           },
           {
-            "path": "f3er1b6",
+            "path": "f1mvufmg",
             "label": "Text: Yes. Every market gets P1's full service lineup — land clearing and forestry mulching, fine gra",
             "type": "textarea",
             "required": false,
@@ -11261,7 +11100,7 @@
           "fsm3kz4": "Will P1 travel to properties outside the cities listed on this page?",
           "f18jdj0c": "Yes. The cities and counties listed are our core markets, but P1 regularly works on rural and unincorporated acreage throughout Upstate South Carolina and the Charlotte metro. If your property is 1 acre or larger and in the general region, call (704) 221-8928 and we'll confirm coverage.",
           "f8jm8z9": "Are the same services available in every service area?",
-          "f3er1b6": "Yes. Every market gets P1's full service lineup — land clearing and forestry mulching, fine grading and site preparation, drainage solutions, turf installation, tree services, pond and waterway management, commercial property management, and full property reconstruction.",
+          "f1mvufmg": "Yes. Every market gets P1's full service lineup — land clearing and forestry mulching, fine grading and site preparation, drainage solutions, turf installation, tree services, pond and waterway management, commercial landscaping, and full property reconstruction.",
           "f11n2ozx": "How do I find out if P1 serves my property?",
           "f3lmutn": "The fastest way is to call (704) 221-8928 or request a free estimate online. Tell us where the property is located and what you need done, and we'll let you know right away whether it falls within our service area and schedule a site visit.",
           "f3quld0": "Call ",
@@ -11414,8 +11253,8 @@
             "maxLength": 2000
           },
           {
-            "path": "frz26lj",
-            "label": "Text: Commercial property management and maintenance contracts",
+            "path": "fubo3m5",
+            "label": "Text: Commercial landscaping and exterior grounds maintenance contracts",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -11857,7 +11696,7 @@
           "f10h622y": "/assets/upstate-partner-1280-DIG6tVz_.webp",
           "ff56bic": "Rolling Upstate South Carolina countryside with large properties",
           "f1o4epxa": "Services Available Throughout Upstate SC",
-          "frz26lj": "Commercial property management and maintenance contracts",
+          "fubo3m5": "Commercial landscaping and exterior grounds maintenance contracts",
           "fdz7oth": "Industrial and agricultural land maintenance",
           "fxm4gre": "Land clearing and forestry mulching",
           "f1dotjd1": "Fine grading and site preparation",
@@ -12048,8 +11887,8 @@
             "maxLength": 2000
           },
           {
-            "path": "frz26lj",
-            "label": "Text: Commercial property management and maintenance contracts",
+            "path": "fubo3m5",
+            "label": "Text: Commercial landscaping and exterior grounds maintenance contracts",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -12477,7 +12316,7 @@
           "f1wsdj16": "/assets/charlotte-region-1280-DBt7ZvCy.webp",
           "f95gqrx": "Large-acreage property development in the Charlotte NC region",
           "fd6lfp7": "Services Available Throughout the Charlotte Region",
-          "frz26lj": "Commercial property management and maintenance contracts",
+          "fubo3m5": "Commercial landscaping and exterior grounds maintenance contracts",
           "fdz7oth": "Industrial and agricultural land maintenance",
           "fxm4gre": "Land clearing and forestry mulching",
           "f1dotjd1": "Fine grading and site preparation",
@@ -13818,8 +13657,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1g6iila",
-            "label": "Image description: Land Clearing & Commercial Property Management in Charlotte, NC",
+            "path": "f1xzm6bo",
+            "label": "Image description: Land Clearing & Commercial Landscaping in Charlotte, NC",
             "type": "imageAlt",
             "required": false,
             "maxLength": 2000
@@ -13853,8 +13692,8 @@
             "maxLength": 2000
           },
           {
-            "path": "frz26lj",
-            "label": "Text: Commercial property management and maintenance contracts",
+            "path": "fubo3m5",
+            "label": "Text: Commercial landscaping and exterior grounds maintenance contracts",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -14121,16 +13960,16 @@
         ],
         "defaultContent": {
           "fum15fc": "Skip to main content",
-          "seoTitle": "Land Clearing & Commercial Property Management Charlotte NC | P1 Land & Property Management",
-          "seoDescription": "Professional land clearing, grading, drainage, and commercial property management in Charlotte, NC. Properties 1 acre and larger. Call (704) 221-8928.",
+          "seoTitle": "Land Clearing & Commercial Landscaping Charlotte NC | P1 Land & Property Management",
+          "seoDescription": "Professional land clearing, grading, drainage, and commercial landscaping in Charlotte, NC. Properties 1 acre and larger. Call (704) 221-8928.",
           "seoImage": "/opengraph.jpg",
           "fkelb9o": "/assets/hero-charlotte-metro-1280-BEZot7VN.webp",
-          "f1g6iila": "Land Clearing & Commercial Property Management in Charlotte, NC",
+          "f1xzm6bo": "Land Clearing & Commercial Landscaping in Charlotte, NC",
           "f1uwh9f8": "Service Area · NC",
           "fnev383": "Charlotte, NC",
           "f1tl5j7y": "P1 Land & Property Management delivers full-service land and property management for commercial, industrial, and large residential properties throughout Charlotte, NC and Mecklenburg County. As Charlotte continues its rapid growth, demand for professional large-acreage property contractors has never been higher — and P1 fills that gap with a complete range of services from initial land clearing through ongoing maintenance.",
           "f1i9l80t": "Charlotte NC Services",
-          "frz26lj": "Commercial property management and maintenance contracts",
+          "fubo3m5": "Commercial landscaping and exterior grounds maintenance contracts",
           "fxm4gre": "Land clearing and forestry mulching",
           "f1393vcn": "Fine grading and site preparation for development",
           "f1y3g3w5": "Stormwater and drainage system installation",
@@ -15545,8 +15384,8 @@
             "maxLength": 2000
           },
           {
-            "path": "frz26lj",
-            "label": "Text: Commercial property management and maintenance contracts",
+            "path": "fubo3m5",
+            "label": "Text: Commercial landscaping and exterior grounds maintenance contracts",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -15918,7 +15757,7 @@
           "fauliv8": "Turf installation — sod and large-acreage seeding for Piedmont soils",
           "f1t0vehh": "Tree services — trimming, removal, and selective clearing",
           "f17a0987": "Pond and waterway management — construction, restoration, and water quality",
-          "frz26lj": "Commercial property management and maintenance contracts",
+          "fubo3m5": "Commercial landscaping and exterior grounds maintenance contracts",
           "fue3vu": "Full property reconstruction",
           "f1vdc1hu": "Communities We Serve in Union County",
           "f10xreb2": "P1 provides land clearing, grading, drainage, turf, and property management services throughout Union County, NC, including:",
@@ -16147,8 +15986,8 @@
             "maxLength": 2000
           },
           {
-            "path": "frz26lj",
-            "label": "Text: Commercial property management and maintenance contracts",
+            "path": "fubo3m5",
+            "label": "Text: Commercial landscaping and exterior grounds maintenance contracts",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -16520,7 +16359,7 @@
           "fauliv8": "Turf installation — sod and large-acreage seeding for Piedmont soils",
           "f1t0vehh": "Tree services — trimming, removal, and selective clearing",
           "f17a0987": "Pond and waterway management — construction, restoration, and water quality",
-          "frz26lj": "Commercial property management and maintenance contracts",
+          "fubo3m5": "Commercial landscaping and exterior grounds maintenance contracts",
           "fue3vu": "Full property reconstruction",
           "f153tqpe": "Communities We Serve in Lancaster County",
           "fl2tawf": "P1 provides land clearing, grading, drainage, turf, and property management services throughout Lancaster County, SC, including:",
@@ -16749,8 +16588,8 @@
             "maxLength": 2000
           },
           {
-            "path": "frz26lj",
-            "label": "Text: Commercial property management and maintenance contracts",
+            "path": "fubo3m5",
+            "label": "Text: Commercial landscaping and exterior grounds maintenance contracts",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -17157,7 +16996,7 @@
           "fauliv8": "Turf installation — sod and large-acreage seeding for Piedmont soils",
           "f1t0vehh": "Tree services — trimming, removal, and selective clearing",
           "f17a0987": "Pond and waterway management — construction, restoration, and water quality",
-          "frz26lj": "Commercial property management and maintenance contracts",
+          "fubo3m5": "Commercial landscaping and exterior grounds maintenance contracts",
           "fue3vu": "Full property reconstruction",
           "f13r2bys": "Communities We Serve in York County",
           "f1q34271": "P1 provides land clearing, grading, drainage, turf, and property management services throughout York County, SC, including:",
@@ -20170,20 +20009,6 @@
             "maxLength": 2000
           },
           {
-            "path": "f3xg7e8",
-            "label": "Text: Working With P1",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "frrw5x7",
-            "label": "Link: /testimonials",
-            "type": "ctaTarget",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
             "path": "fwi7akw",
             "label": "Text: Contact",
             "type": "text",
@@ -20254,15 +20079,15 @@
             "maxLength": 2000
           },
           {
-            "path": "f1vnp215",
-            "label": "Text: Commercial Management",
+            "path": "ffzg0ag",
+            "label": "Text: Commercial Landscaping",
             "type": "text",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "f1xlfu9k",
-            "label": "Link: /services/commercial-property-management",
+            "path": "fwwr8hd",
+            "label": "Link: /services/commercial-landscaping",
             "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
@@ -20682,8 +20507,6 @@
           "fqd1hep": "About",
           "f13gcn04": "/about",
           "f15gaxfw": "Services ",
-          "f3xg7e8": "Working With P1",
-          "frrw5x7": "/testimonials",
           "fwi7akw": "Contact",
           "fmggb4x": "/contact",
           "f15oz4jr": "(704) 221-8928",
@@ -20694,8 +20517,8 @@
           "ffuz26q": "info@p1landmanagement.com",
           "f10kkf1c": "mailto:info@p1landmanagement.com",
           "f1hf0vxg": "Services",
-          "f1vnp215": "Commercial Management",
-          "f1xlfu9k": "/services/commercial-property-management",
+          "ffzg0ag": "Commercial Landscaping",
+          "fwwr8hd": "/services/commercial-landscaping",
           "fly9gd8": "Industrial & Agricultural",
           "f1gkmumd": "/services/industrial-agricultural",
           "foa1vas": "Land Clearing",
@@ -20798,9 +20621,8 @@
         "commercial",
         "contact",
         "gallery",
-        "testimonials",
         "services",
-        "services-commercial-property-management",
+        "services-commercial-landscaping",
         "services-industrial-agricultural",
         "services-land-clearing",
         "services-grading-site-preparation",

@@ -42,7 +42,7 @@ const Contact = page("./pages/contact.tsx");
 const Gallery = page("./pages/gallery.tsx");
 
 const ServicesIndex = page("./pages/services/index.tsx");
-const CommercialPropertyManagement = page("./pages/services/commercial-property-management.tsx");
+const CommercialLandscaping = page("./pages/services/commercial-landscaping.tsx");
 const IndustrialAgricultural = page("./pages/services/industrial-agricultural.tsx");
 const LandClearing = page("./pages/services/land-clearing.tsx");
 const GradingSitePreparation = page("./pages/services/grading-site-preparation.tsx");
@@ -85,7 +85,7 @@ function Router() {
 
       {/* Services */}
       <Route path="/services" component={ServicesIndex} />
-      <Route path="/services/commercial-property-management" component={CommercialPropertyManagement} />
+      <Route path="/services/commercial-landscaping" component={CommercialLandscaping} />
       <Route path="/services/industrial-agricultural" component={IndustrialAgricultural} />
       <Route path="/services/land-clearing" component={LandClearing} />
       <Route path="/services/grading-site-preparation" component={GradingSitePreparation} />

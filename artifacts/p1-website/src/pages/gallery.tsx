@@ -31,7 +31,7 @@ const projects: Project[] = [
   { title: "Large-Acreage Turf Installation", location: "Anderson, SC", service: "Turf & Seeding", market: "Upstate SC", image: imgTurf },
   { title: "Pond Restoration & Shoreline Repair", location: "Mooresville, NC", service: "Pond & Waterway", market: "Charlotte NC", image: imgPond },
   { title: "Full Property Reconstruction", location: "Gastonia, NC", service: "Property Reconstruction", market: "Charlotte NC", image: imgReconstruction },
-  { title: "Commercial Campus Grounds Management", location: "Greenville, SC", service: "Commercial Management", market: "Upstate SC", image: imgCommercial },
+  { title: "Commercial Campus Grounds Management", location: "Greenville, SC", service: "Commercial Landscaping", market: "Upstate SC", image: imgCommercial },
   { title: "Agricultural Land Preparation", location: "Concord, NC", service: "Industrial & Agricultural", market: "Charlotte NC", image: imgIndustrial },
   { title: "Tree Removal & Stump Grinding", location: "Spartanburg, SC", service: "Tree Services", market: "Upstate SC", image: imgTree },
 ];
@@ -44,7 +44,7 @@ const serviceFilters = [
   "Turf & Seeding",
   "Pond & Waterway",
   "Property Reconstruction",
-  "Commercial Management",
+  "Commercial Landscaping",
   "Industrial & Agricultural",
   "Tree Services",
 ];

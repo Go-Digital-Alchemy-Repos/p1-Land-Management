@@ -24,7 +24,7 @@ export function SiteHeader({ assessmentCta = false }: { assessmentCta?: boolean 
 
   const services = [
     { name: "Commercial Site Management", href: "/commercial" },
-    { name: "Commercial Property Management", href: "/services/commercial-property-management" },
+    { name: "Commercial Landscaping", href: "/services/commercial-landscaping" },
     { name: "Industrial & Agricultural Land", href: "/services/industrial-agricultural" },
     { name: "Land Clearing", href: "/services/land-clearing" },
     { name: "Grading & Site Preparation", href: "/services/grading-site-preparation" },

@@ -1,3 +1,5 @@
+import { cmsValue, useCms } from "@/lib/cms";
+
 export type FaqItem = {
   question: string;
   answer: string;
@@ -33,7 +35,7 @@ export function FaqAccordion({ items }: FaqAccordionProps) {
             data-faq-item
           >
             <summary className="flex min-h-16 cursor-pointer list-none items-center justify-between gap-6 p-6 text-left [&::-webkit-details-marker]:hidden">
-              <h3 className="text-lg font-serif font-bold text-secondary">{question}</h3>
+              <span className="text-lg font-serif font-bold text-secondary">{question}</span>
               <span
                 aria-hidden="true"
                 className="shrink-0 text-2xl font-light leading-none text-primary transition-transform duration-200 group-open:rotate-45 motion-reduce:transition-none"
@@ -50,4 +52,3 @@ export function FaqAccordion({ items }: FaqAccordionProps) {
     </div>
   );
 }
-import { cmsValue, useCms } from "@/lib/cms";

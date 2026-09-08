@@ -77,6 +77,12 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
     }
     const apex = await request(port, '/contact', { Host: 'p1landmanagement.com' });
     assert.equal(apex.status, 308); assert.equal(apex.headers.location, 'https://www.p1landmanagement.com/contact');
+    const legacyService = await request(port, '/services/commercial-property-management?utm_source=qa');
+    assert.equal(legacyService.status, 308);
+    assert.equal(legacyService.headers.location, '/services/commercial-landscaping?utm_source=qa');
+    const renamedService = await request(port, '/services/commercial-landscaping');
+    assert.equal(renamedService.status, 200);
+    assert(renamedService.body.includes('Commercial Landscaping'));
   });
   await t.test('retired testimonials page permanently redirects to Contact', async () => {
     const response = await request(port, '/testimonials?utm_source=qa');

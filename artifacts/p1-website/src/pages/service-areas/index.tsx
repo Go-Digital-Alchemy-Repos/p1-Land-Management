@@ -26,7 +26,7 @@ const FAQS = [
   {
     question: "Are the same services available in every service area?",
     answer:
-      "Yes. Every market gets P1's full service lineup — land clearing and forestry mulching, fine grading and site preparation, drainage solutions, turf installation, tree services, pond and waterway management, commercial property management, and full property reconstruction.",
+      "Yes. Every market gets P1's full service lineup — land clearing and forestry mulching, fine grading and site preparation, drainage solutions, turf installation, tree services, pond and waterway management, commercial landscaping, and full property reconstruction.",
   },
   {
     question: "How do I find out if P1 serves my property?",

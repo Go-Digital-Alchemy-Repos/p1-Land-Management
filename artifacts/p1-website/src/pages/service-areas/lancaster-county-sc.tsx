@@ -96,7 +96,7 @@ export default function LancasterCountySC() {
                   "Turf installation — sod and large-acreage seeding for Piedmont soils",
                   "Tree services — trimming, removal, and selective clearing",
                   "Pond and waterway management — construction, restoration, and water quality",
-                  "Commercial property management and maintenance contracts",
+                  "Commercial landscaping and exterior grounds maintenance contracts",
                   "Full property reconstruction",
                 ].map((item, i) => (
                   <li key={i} className="flex items-start gap-3 text-secondary/80 font-medium">

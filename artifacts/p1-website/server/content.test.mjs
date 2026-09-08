@@ -110,9 +110,9 @@ test('unconditional 304 and invalid persisted JSON degrade to seed safely', asyn
 });
 
 
-test('all 35 routes stay within the routine Core read budget while publishing refreshes immediately', async t => {
+test('all 34 routes stay within the routine Core read budget while publishing refreshes immediately', async t => {
   t.mock.timers.enable({ apis: ['Date'], now: 1_000_000 });
-  const routes = Array.from({ length: 35 }, (_, i) => ({ path: `/page-${i}`, id: `page-${i}` }));
+  const routes = Array.from({ length: 34 }, (_, i) => ({ path: `/page-${i}`, id: `page-${i}` }));
   const full = { routes, puck: { editableComponents: [...routes.map(r => definition(`${r.id}-content`)), definition('site-chrome')] } };
   let calls = 0, revision = 1;
   const store = createContentStore({ manifest: full, origin: 'https://core.example', fetcher: async url => {

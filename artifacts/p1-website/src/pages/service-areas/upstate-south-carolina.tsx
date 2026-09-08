@@ -84,7 +84,7 @@ export default function UpstateSC() {
               <h2 className="text-2xl font-serif font-bold text-secondary">Services Available Throughout Upstate SC</h2>
               <ul className="space-y-3">
                 {[
-                  "Commercial property management and maintenance contracts",
+                  "Commercial landscaping and exterior grounds maintenance contracts",
                   "Industrial and agricultural land maintenance",
                   "Land clearing and forestry mulching",
                   "Fine grading and site preparation",
