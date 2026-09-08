@@ -20,6 +20,7 @@ import {
 } from "./assessments";
 import { onboardClient, updateClient } from "./client-onboarding";
 import { agreementPreparationHealth } from "./agreement-preparation";
+import { geocodePropertyAddress } from "./property-geocoding";
 export const api = Router();
 const office: Role[] = ["owner", "manager", "dispatch", "sales", "finance"];
 const operations: Role[] = ["owner", "manager", "dispatch"];
@@ -324,7 +325,7 @@ api.post("/clients/:id", async (req, res) => {
 });
 api.get("/properties", async (req, res) => {
   const a = await actor(req);
-  let sql = "SELECT p.id,p.client_id,p.name,p.address,p.acreage,p.access_instructions,p.notes,p.archived,p.created_at FROM property p WHERE p.archived=false AND p.lifecycle='operational'";
+  let sql = "SELECT p.id,p.client_id,p.name,p.address,p.acreage,p.latitude,p.longitude,p.access_instructions,p.notes,p.archived,p.created_at FROM property p WHERE p.archived=false AND p.lifecycle='operational'";
   const args: string[] = [];
   if (a.role === "client") {
     sql +=
@@ -346,6 +347,8 @@ api.get("/properties", async (req, res) => {
             name: p.name,
             address: p.address,
             acreage: p.acreage,
+            latitude: p.latitude,
+            longitude: p.longitude,
           }
         : p,
     ),
@@ -364,9 +367,10 @@ api.post("/properties", async (req, res) => {
     })
     .parse(req.body);
   const key = randomUUID();
+  const coordinates = await geocodePropertyAddress(b.address);
   await transaction(async (c) => {
     await c.query(
-      "INSERT INTO property(id,client_id,name,address,acreage,access_instructions) VALUES($1,$2,$3,$4,$5,$6)",
+      "INSERT INTO property(id,client_id,name,address,acreage,access_instructions,latitude,longitude,location_precision) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)",
       [
         key,
         b.clientId,
@@ -374,6 +378,9 @@ api.post("/properties", async (req, res) => {
         b.address,
         b.acreage ?? null,
         b.accessInstructions,
+        coordinates?.latitude ?? null,
+        coordinates?.longitude ?? null,
+        coordinates ? "approximate" : null,
       ],
     );
     await audit(c, a.id, "property.created", key);

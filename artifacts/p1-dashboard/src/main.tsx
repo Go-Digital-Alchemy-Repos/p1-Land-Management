@@ -8,6 +8,7 @@ import { ClientContacts } from "./ClientContacts";
 import { RequestComposer } from "./RequestComposer";
 import { RichTextEditor } from "./RichTextEditor";
 import { ClientWorkspace, PropertyWorkspace } from "./AccountWorkspace";
+import { PropertyMap } from "./PropertyMap";
 import { motifForPage } from "./motifs";
 import { InspectionReports } from "./InspectionReports";
 import { ServiceRequestTriage } from "./ServiceRequestTriage";
@@ -1444,12 +1445,26 @@ function App() {
             </>
           )}
           {view === "Properties" && (
-            <section className="panel">
-              <PropertyCards
-                properties={data.properties || []}
-                onOpen={openPropertyWorkspace}
-              />
-            </section>
+            <>
+              <section className="panel property-map-panel">
+                <div className="panel-heading">
+                  <div>
+                    <h2>Property map</h2>
+                    <p>Choose a property pin to open its account profile.</p>
+                  </div>
+                </div>
+                <PropertyMap
+                  properties={data.properties || []}
+                  onOpen={openPropertyWorkspace}
+                />
+              </section>
+              <section className="panel">
+                <PropertyCards
+                  properties={data.properties || []}
+                  onOpen={openPropertyWorkspace}
+                />
+              </section>
+            </>
           )}
           {view === "Clients" && (
             <section className="panel">
