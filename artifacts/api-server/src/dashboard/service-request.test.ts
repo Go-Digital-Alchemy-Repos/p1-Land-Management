@@ -182,9 +182,6 @@ test(
       checklist: [{ label: "Photograph entry", done: false }],
       prerequisites: [{ label: "Confirm gate access", done: false }],
     };
-    const beforeOutbox = (
-      await pool.query("SELECT count(*)::int AS n FROM outbox")
-    ).rows[0].n;
     const preview = await request(
       "manager",
       `/api/v1/service-requests/${requestId}/conversion-preview`,
@@ -229,9 +226,17 @@ test(
       scheduled_at: null,
       published: false,
     });
+    // Other integration files share this disposable database and may legitimately
+    // create unrelated jobs. A conversion must not enqueue anything that refers to
+    // its unique request or newly created work order.
     assert.equal(
-      (await pool.query("SELECT count(*)::int AS n FROM outbox")).rows[0].n,
-      beforeOutbox,
+      (
+        await pool.query(
+          "SELECT count(*)::int AS n FROM outbox WHERE payload::text LIKE '%' || $1 || '%' OR payload::text LIKE '%' || $2 || '%'",
+          [requestId, first.body.id],
+        )
+      ).rows[0].n,
+      0,
     );
     const retry = await request(
       "manager",
