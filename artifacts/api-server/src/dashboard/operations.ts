@@ -139,6 +139,25 @@ operationsApi.post("/projects", async (req, res) => {
   );
   res.status(201).json({ id: key });
 });
+operationsApi.post("/projects/:id", async (req, res) => {
+  const a = await actor(req);
+  requireRole(a.role, ["owner", "manager"]);
+  const projectId = id.parse(req.params.id);
+  const b = z.object({ name: text, scope: text }).parse(req.body);
+  const project = await transaction(async (c) => {
+    const changed = await c.query(
+      "UPDATE project j SET name=$2,scope=$3 WHERE j.id=$1 AND EXISTS(SELECT 1 FROM property p WHERE p.id=j.property_id AND p.lifecycle='operational' AND p.client_id IS NOT NULL) RETURNING j.id,j.property_id,j.name,j.scope,j.status",
+      [projectId, b.name, b.scope],
+    );
+    if (!changed.rowCount) throw new HttpError(404, "Project not found");
+    await c.query(
+      "INSERT INTO audit_event(id,user_id,action,entity_id) VALUES($1,$2,$3,$4)",
+      [randomUUID(), a.id, "project.updated", projectId],
+    );
+    return changed.rows[0];
+  });
+  res.json(project);
+});
 operationsApi.get("/expenses", async (req, res) => {
   const a = await actor(req);
   requireRole(a.role, ["owner", "manager", "finance"]);

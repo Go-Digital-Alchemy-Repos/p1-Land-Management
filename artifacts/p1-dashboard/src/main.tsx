@@ -1265,6 +1265,7 @@ function App() {
               id={recordRoute.id}
               tab={recordRoute.tab}
               request={api}
+              role={person.role || ""}
               onTab={(tab) =>
                 navigateRecord(clientPage, { kind: "client", id: recordRoute.id, tab })
               }

@@ -44,7 +44,7 @@ clientWorkspaceApi.get("/clients/:id/workspace", async (req, res) => {
   const client = await officeClient(clientId);
   const [properties, contacts, agreements, schedule, requests, projects, notes, activity] = await Promise.all([
     pool.query(
-      "SELECT id,name,address,acreage,access_instructions,created_at FROM property WHERE client_id=$1 AND archived=false AND lifecycle='operational' ORDER BY name",
+      "SELECT id,name,address,acreage,access_instructions,version,created_at FROM property WHERE client_id=$1 AND archived=false AND lifecycle='operational' ORDER BY name",
       [clientId],
     ),
     pool.query(

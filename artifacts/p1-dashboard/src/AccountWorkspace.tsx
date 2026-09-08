@@ -10,10 +10,18 @@ import {
   Users,
 } from "lucide-react";
 import { ClientContacts } from "./ClientContacts";
+import { AgreementEditor } from "./AgreementEditor";
 import type { ClientWorkspaceTab, PropertyWorkspaceTab } from "./dashboard-routes";
 import { motifForWorkspace } from "./motifs";
 import { ContactDetails } from "./contact-links";
 import { RichTextEditor } from "./RichTextEditor";
+import { formatPhoneNumber } from "./phone";
+import type {
+  AgreementEstimateOption,
+  AgreementRecurrenceOption,
+  DashboardProperty,
+  ServiceAgreementFinancial,
+} from "../../../lib/api-client-react/src/dashboard/models";
 
 type Request = (path: string, body?: unknown) => Promise<any>;
 type WorkspaceProps = {
@@ -22,6 +30,7 @@ type WorkspaceProps = {
   request: Request;
   onTab: (tab: ClientWorkspaceTab) => void;
   onProperty: (id: string) => void;
+  role: string;
 };
 
 const clientTabs: { id: ClientWorkspaceTab; label: string }[] = [
@@ -138,25 +147,190 @@ function NoteComposer({
   </form>;
 }
 
-export function ClientWorkspace({ id, tab, request, onTab, onProperty }: WorkspaceProps) {
+type WorkspaceProperty = {
+  id: string;
+  name: string;
+  address: string;
+  acreage: string | number | null;
+  access_instructions: string;
+  version: number;
+};
+
+function FormMessage({ error }: { error: string }) {
+  return error ? <p className="error" role="alert">{error}</p> : null;
+}
+
+function PropertyEditor({
+  clientId,
+  property,
+  request,
+  onSaved,
+  onCancel,
+}: {
+  clientId: string;
+  property?: WorkspaceProperty;
+  request: Request;
+  onSaved: () => void;
+  onCancel: () => void;
+}) {
+  const [name, setName] = useState(property?.name || "");
+  const [address, setAddress] = useState(property?.address || "");
+  const [acreage, setAcreage] = useState(property?.acreage?.toString() || "");
+  const [accessInstructions, setAccessInstructions] = useState(property?.access_instructions || "");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  async function save(event: FormEvent) {
+    event.preventDefault();
+    const normalizedAcreage = acreage.trim() === "" ? null : Number(acreage);
+    if (normalizedAcreage !== null && (!Number.isFinite(normalizedAcreage) || normalizedAcreage < 0)) {
+      setError("Acreage must be a non-negative number.");
+      return;
+    }
+    setBusy(true); setError("");
+    try {
+      await request(property ? `/properties/${property.id}` : "/properties", property
+        ? { name, address, acreage: normalizedAcreage, accessInstructions, version: property.version }
+        : { clientId, name, address, ...(normalizedAcreage === null ? {} : { acreage: normalizedAcreage }), accessInstructions });
+      onSaved();
+    } catch (reason) { setError((reason as Error).message); } finally { setBusy(false); }
+  }
+  return <form className="account-resource-form" onSubmit={save}>
+    <div><h3>{property ? "Edit property" : "Add property"}</h3><p>Keep the address and site access details ready for operations.</p></div>
+    <label>Property name<input required maxLength={10000} value={name} onChange={(event) => setName(event.target.value)} /></label>
+    <label>Street address<input required maxLength={10000} value={address} onChange={(event) => setAddress(event.target.value)} /></label>
+    <label>Acreage<input type="number" min="0" step="0.01" value={acreage} onChange={(event) => setAcreage(event.target.value)} /></label>
+    <label>Access instructions<textarea maxLength={10000} value={accessInstructions} onChange={(event) => setAccessInstructions(event.target.value)} placeholder="Gate codes, arrival details, and site access guidance." /></label>
+    <div className="account-resource-actions"><button type="button" className="secondary" disabled={busy} onClick={onCancel}>Cancel</button><button className="primary" disabled={busy}>{busy ? "Saving…" : property ? "Save property" : "Add property"}</button></div>
+    <FormMessage error={error} />
+  </form>;
+}
+
+function RequestEditor({
+  properties,
+  request,
+  onSaved,
+  onCancel,
+}: {
+  properties: WorkspaceProperty[];
+  request: Request;
+  onSaved: () => void;
+  onCancel: () => void;
+}) {
+  const [propertyId, setPropertyId] = useState(properties[0]?.id || "");
+  const [description, setDescription] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  async function save(event: FormEvent) {
+    event.preventDefault(); setBusy(true); setError("");
+    try { await request("/requests", { propertyId, description }); onSaved(); }
+    catch (reason) { setError((reason as Error).message); } finally { setBusy(false); }
+  }
+  return <form className="account-resource-form" onSubmit={save}>
+    <div><h3>Create service request</h3><p>Record a request received by phone or directly from the client.</p></div>
+    <label>Property<select required value={propertyId} onChange={(event) => setPropertyId(event.target.value)}><option value="">Choose a property</option>{properties.map((property) => <option value={property.id} key={property.id}>{property.name}</option>)}</select></label>
+    <label>Request details<textarea required maxLength={10000} value={description} onChange={(event) => setDescription(event.target.value)} placeholder="Describe the requested service and any timing or access details." /></label>
+    <div className="account-resource-actions"><button type="button" className="secondary" disabled={busy} onClick={onCancel}>Cancel</button><button className="primary" disabled={busy || !propertyId || !description.trim()}>{busy ? "Creating…" : "Create request"}</button></div>
+    <FormMessage error={error} />
+  </form>;
+}
+
+function ProjectEditor({
+  project,
+  properties,
+  request,
+  onSaved,
+  onCancel,
+}: {
+  project?: any;
+  properties: WorkspaceProperty[];
+  request: Request;
+  onSaved: () => void;
+  onCancel: () => void;
+}) {
+  const [propertyId, setPropertyId] = useState(project?.property_id || properties[0]?.id || "");
+  const [name, setName] = useState(project?.name || "");
+  const [scope, setScope] = useState(project?.scope || "");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  async function save(event: FormEvent) {
+    event.preventDefault(); setBusy(true); setError("");
+    try {
+      await request(project ? `/projects/${project.id}` : "/projects", project ? { name, scope } : { propertyId, name, scope, phases: [] });
+      onSaved();
+    } catch (reason) { setError((reason as Error).message); } finally { setBusy(false); }
+  }
+  return <form className="account-resource-form" onSubmit={save}>
+    <div><h3>{project ? "Edit project" : "Create project"}</h3><p>Set the accountable property and the operational scope before planning phases.</p></div>
+    {!project && <label>Property<select required value={propertyId} onChange={(event) => setPropertyId(event.target.value)}><option value="">Choose a property</option>{properties.map((property) => <option value={property.id} key={property.id}>{property.name}</option>)}</select></label>}
+    <label>Project name<input required maxLength={10000} value={name} onChange={(event) => setName(event.target.value)} /></label>
+    <label>Scope<textarea required maxLength={10000} value={scope} onChange={(event) => setScope(event.target.value)} placeholder="Describe the work, outcome, and constraints." /></label>
+    <div className="account-resource-actions"><button type="button" className="secondary" disabled={busy} onClick={onCancel}>Cancel</button><button className="primary" disabled={busy || (!project && !propertyId)}>{busy ? "Saving…" : project ? "Save project" : "Create project"}</button></div>
+    <FormMessage error={error} />
+  </form>;
+}
+
+function ClientAgreementEditor({
+  clientId,
+  properties,
+  existing,
+  request,
+  onSaved,
+  onCancel,
+}: {
+  clientId: string;
+  properties: WorkspaceProperty[];
+  existing?: ServiceAgreementFinancial;
+  request: Request;
+  onSaved: () => void;
+  onCancel: () => void;
+}) {
+  const [recurrences, setRecurrences] = useState<AgreementRecurrenceOption[]>([]);
+  const [estimates, setEstimates] = useState<AgreementEstimateOption[]>([]);
+  const [error, setError] = useState("");
+  useEffect(() => {
+    let active = true;
+    Promise.all([request("/recurring-services"), request("/estimates")])
+      .then(([nextRecurrences, nextEstimates]) => { if (active) { setRecurrences(nextRecurrences); setEstimates(nextEstimates); } })
+      .catch((reason) => { if (active) setError((reason as Error).message); });
+    return () => { active = false; };
+  }, [request]);
+  const agreementProperties: DashboardProperty[] = properties.map((property) => ({
+    ...property,
+    client_id: clientId,
+    acreage: property.acreage === null ? null : String(property.acreage),
+  }));
+  if (error) return <div className="account-resource-form"><FormMessage error={error} /><button className="secondary" onClick={onCancel}>Close</button></div>;
+  return <div className="account-resource-form agreement-editor-shell"><AgreementEditor existing={existing} properties={agreementProperties} recurrences={recurrences} estimates={estimates} onSaved={() => { onSaved(); onCancel(); }} onCancel={onCancel} /></div>;
+}
+
+export function ClientWorkspace({ id, tab, request, onTab, onProperty, role }: WorkspaceProps) {
   const [workspace, setWorkspace] = useState<any>(null);
   const [error, setError] = useState("");
+  const [editor, setEditor] = useState<
+    | { kind: "property"; property?: WorkspaceProperty }
+    | { kind: "request" }
+    | { kind: "project"; project?: any }
+    | { kind: "agreement"; existing?: ServiceAgreementFinancial }
+    | null
+  >(null);
   const load = () => request(`/clients/${id}/workspace`).then(setWorkspace).catch((reason) => setError(reason.message));
-  useEffect(() => { setWorkspace(null); setError(""); void load(); }, [id]);
+  useEffect(() => { setWorkspace(null); setError(""); setEditor(null); void load(); }, [id]);
   if (error) return <DataSurface title="Client workspace unavailable"><Empty title="This client is unavailable" text={error} /></DataSurface>;
   if (!workspace) return <div className="workspace-loading">Loading client account…</div>;
   const client = workspace.client;
+  const properties = workspace.properties as WorkspaceProperty[];
+  const canManage = ["owner", "manager"].includes(role);
   const attention = [...workspace.requests.filter((item: any) => item.status === "new"), ...workspace.projects.filter((item: any) => !["complete", "completed"].includes(item.status))];
   return <article className="account-workspace atlas-clients">
     <section className="page-hero account-hero" style={{ "--page-motif": motifForWorkspace("client") } as CSSProperties}><div className="page-hero-content"><p className="eyebrow">CLIENT COMMAND CENTER</p><div className="account-hero-title"><div><h1>{client.name}</h1><p><ContactDetails prefix={client.billing_address} phone={client.phone} email={client.email} /></p></div><span className="atlas-chip"><Users size={15} />Client account</span></div></div></section>
     <WorkspaceTabs tabs={clientTabs} active={tab} onChange={onTab} />
     {tab === "overview" && <div className="account-overview"><div className="account-primary-column"><div className="atlas-stat-grid"><Stat label="Properties" value={workspace.properties.length} icon={<MapPin size={18} />} /><Stat label="Upcoming work" value={workspace.schedule.length} icon={<CalendarDays size={18} />} /><Stat label="Active agreements" value={workspace.agreements.filter((item: any) => item.status === "active").length} icon={<FileText size={18} />} /><Stat label="Needs attention" value={attention.length} icon={<MessageSquare size={18} />} /></div><DataSurface title="Upcoming work" detail="The next scheduled service across this account." action={<button className="text-action" onClick={() => onTab("schedule")}>View schedule <ArrowUpRight size={15} /></button>}><Rows items={workspace.schedule.slice(0, 5)} columns={[{ label: "Work", render: (item) => <strong>{item.title}</strong> }, { label: "Property", render: (item) => item.property_name }, { label: "Scheduled", render: (item) => stamp(item.scheduled_at) }, { label: "Status", render: (item) => <Status value={item.status} /> }]} empty={{ title: "No work on the calendar", text: "Scheduled jobs for this client will appear here." }} /></DataSurface><DataSurface title="Account activity" detail="Recent internal operational activity."><div className="activity-list">{workspace.activity.length ? workspace.activity.map((item: any) => <div key={item.id}><span className="activity-dot" /><p><strong>{item.author_name || "P1 team"}</strong> {item.action.replaceAll(".", " ")}</p><small>{stamp(item.created_at)}</small></div>) : <Empty title="No activity yet" text="New account activity will appear here." />}</div></DataSurface></div><aside className="context-rail"><DataSurface title="Property portfolio" detail={`${workspace.properties.length} operational properties`}><div className="context-list">{workspace.properties.slice(0, 5).map((property: any) => <button key={property.id} onClick={() => onProperty(property.id)}><MapPin size={16} /><span><strong>{property.name}</strong><small>{property.address}</small></span><ArrowUpRight size={15} /></button>)}{!workspace.properties.length && <p className="muted">No properties yet.</p>}</div></DataSurface><DataSurface title="Active agreements"><div className="context-list">{workspace.agreements.filter((item: any) => item.status === "active").slice(0, 4).map((agreement: any) => <div key={agreement.id}><FileText size={16} /><span><strong>{agreement.title}</strong><small>{agreement.property_name} · ends {agreement.ends_on}</small></span></div>)}{!workspace.agreements.some((item: any) => item.status === "active") && <p className="muted">No active agreements.</p>}</div></DataSurface></aside></div>}
-    {tab === "properties" && <DataSurface title="Properties" detail="Operational places connected to this client account."><Rows items={workspace.properties} columns={[{ label: "Property", render: (property) => <button className="table-link" onClick={() => onProperty(property.id)}>{property.name} <ArrowUpRight size={15} /></button> }, { label: "Address", render: (property) => property.address }, { label: "Acreage", render: (property) => property.acreage ? `${property.acreage} acres` : "—" }, { label: "Access", render: (property) => property.access_instructions ? "Instructions on file" : "—" }]} empty={{ title: "No properties yet", text: "Add a property to begin scheduling work for this client." }} /></DataSurface>}
+    {tab === "properties" && <DataSurface title="Properties" detail="Operational places connected to this client account." action={<button className="text-action" onClick={() => setEditor({ kind: "property" })}><Plus size={15} /> Add property</button>}>{editor?.kind === "property" && <PropertyEditor clientId={id} property={editor.property} request={request} onSaved={() => { setEditor(null); void load(); }} onCancel={() => setEditor(null)} />}<Rows items={workspace.properties} columns={[{ label: "Property", render: (property) => <button className="table-link" onClick={() => onProperty(property.id)}>{property.name} <ArrowUpRight size={15} /></button> }, { label: "Address", render: (property) => property.address }, { label: "Acreage", render: (property) => property.acreage ? `${property.acreage} acres` : "—" }, { label: "Access", render: (property) => property.access_instructions ? "Instructions on file" : "—" }, { label: "", render: (property) => <button className="table-link" onClick={() => setEditor({ kind: "property", property })}>Edit</button> }]} empty={{ title: "No properties yet", text: "Add a property to begin scheduling work for this client." }} /></DataSurface>}
     {tab === "contacts" && <DataSurface title="Contacts" detail="People associated with this account."><ClientContacts client={client} request={request} /></DataSurface>}
-    {tab === "agreements" && <DataSurface title="Service agreements" detail="Active, draft, and prior client commitments."><Rows items={workspace.agreements} columns={[{ label: "Agreement", render: (item) => <strong>{item.title}</strong> }, { label: "Property", render: (item) => item.property_name }, { label: "Term", render: (item) => `${item.starts_on} — ${item.ends_on}` }, { label: "Status", render: (item) => <Status value={item.status} /> }]} empty={{ title: "No agreements yet", text: "Service agreements linked to this client will appear here." }} /></DataSurface>}
+    {tab === "agreements" && <DataSurface title="Service agreements" detail="Active, draft, and prior client commitments." action={canManage ? <button className="text-action" onClick={() => setEditor({ kind: "agreement" })}><Plus size={15} /> New agreement</button> : undefined}>{editor?.kind === "agreement" && <ClientAgreementEditor clientId={id} properties={properties} existing={editor.existing} request={request} onSaved={() => void load()} onCancel={() => setEditor(null)} />}<Rows items={workspace.agreements} columns={[{ label: "Agreement", render: (item) => <strong>{item.title}</strong> }, { label: "Property", render: (item) => item.property_name }, { label: "Term", render: (item) => `${item.starts_on} — ${item.ends_on}` }, { label: "Status", render: (item) => <Status value={item.status} /> }, ...(canManage ? [{ label: "", render: (item: any) => item.status === "draft" ? <button className="table-link" onClick={() => void request(`/service-agreements/${item.id}`).then((existing) => setEditor({ kind: "agreement", existing }))}>Edit draft</button> : <span className="muted">Terms locked</span> }] : [])]} empty={{ title: "No agreements yet", text: "Service agreements linked to this client will appear here." }} /></DataSurface>}
     {tab === "schedule" && <DataSurface title="Client schedule" detail="Upcoming and in-flight operational work."><Rows items={workspace.schedule} columns={[{ label: "Work", render: (item) => <strong>{item.title}</strong> }, { label: "Property", render: (item) => item.property_name }, { label: "Scheduled", render: (item) => stamp(item.scheduled_at) }, { label: "Status", render: (item) => <Status value={item.status} /> }]} empty={{ title: "No work on the calendar", text: "Schedule a work order to see it here." }} /></DataSurface>}
-    {tab === "requests" && <DataSurface title="Service requests" detail="Requests connected to this client’s properties."><Rows items={workspace.requests} columns={[{ label: "Request", render: (item) => item.description }, { label: "Property", render: (item) => item.property_name }, { label: "Received", render: (item) => stamp(item.created_at) }, { label: "Status", render: (item) => <Status value={item.status} /> }]} empty={{ title: "No service requests", text: "Client requests will appear here." }} /></DataSurface>}
-    {tab === "projects" && <DataSurface title="Projects" detail="Project work across the account."><Rows items={workspace.projects} columns={[{ label: "Project", render: (item) => <strong>{item.name}</strong> }, { label: "Property", render: (item) => item.property_name }, { label: "Scope", render: (item) => item.scope }, { label: "Status", render: (item) => <Status value={item.status} /> }]} empty={{ title: "No projects", text: "Projects for this account will appear here." }} /></DataSurface>}
+    {tab === "requests" && <DataSurface title="Service requests" detail="Requests connected to this client’s properties." action={<button className="text-action" onClick={() => setEditor({ kind: "request" })}><Plus size={15} /> Create request</button>}>{editor?.kind === "request" && <RequestEditor properties={properties} request={request} onSaved={() => { setEditor(null); void load(); }} onCancel={() => setEditor(null)} />}<Rows items={workspace.requests} columns={[{ label: "Request", render: (item) => item.description }, { label: "Property", render: (item) => item.property_name }, { label: "Received", render: (item) => stamp(item.created_at) }, { label: "Status", render: (item) => <Status value={item.status} /> }]} empty={{ title: "No service requests", text: "Client requests will appear here." }} /></DataSurface>}
+    {tab === "projects" && <DataSurface title="Projects" detail="Project work across the account." action={canManage ? <button className="text-action" onClick={() => setEditor({ kind: "project" })}><Plus size={15} /> New project</button> : undefined}>{editor?.kind === "project" && <ProjectEditor project={editor.project} properties={properties} request={request} onSaved={() => { setEditor(null); void load(); }} onCancel={() => setEditor(null)} />}<Rows items={workspace.projects} columns={[{ label: "Project", render: (item) => <strong>{item.name}</strong> }, { label: "Property", render: (item) => item.property_name }, { label: "Scope", render: (item) => item.scope }, { label: "Status", render: (item) => <Status value={item.status} /> }, ...(canManage ? [{ label: "", render: (item: any) => <button className="table-link" onClick={() => setEditor({ kind: "project", project: item })}>Edit</button> }] : [])]} empty={{ title: "No projects", text: "Projects for this account will appear here." }} /></DataSurface>}
     {tab === "notes" && <div className="notes-layout"><DataSurface title="Internal notes" detail="Office-only, append-only account context."><NoteComposer clientId={id} properties={workspace.properties} request={request} onSaved={load} /><div className="note-list">{workspace.notes.length ? workspace.notes.map((note: any) => <article key={note.id}><header><strong>{note.author_name}</strong><span>{note.property_name || "Client-wide"}</span><time>{stamp(note.created_at)}</time></header><p>{note.body}</p></article>) : <Empty title="No notes yet" text="Keep the next handoff clear by adding the first internal note." />}</div></DataSurface><aside className="context-rail"><DataSurface title="Note policy"><p className="muted">Notes are visible to office roles only. They cannot be edited or deleted after saving.</p></DataSurface></aside></div>}
   </article>;
 }

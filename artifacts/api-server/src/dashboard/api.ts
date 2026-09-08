@@ -372,6 +372,31 @@ api.post("/properties", async (req, res) => {
   });
   res.status(201).json({ id: key });
 });
+api.post("/properties/:id", async (req, res) => {
+  const a = await actor(req);
+  requireRole(a.role, office);
+  const propertyId = id.parse(req.params.id);
+  const b = z
+    .object({
+      name: text,
+      address: text,
+      acreage: z.number().nonnegative().nullable(),
+      accessInstructions: z.string().max(10000).default(""),
+      version: z.number().int().positive(),
+    })
+    .parse(req.body);
+  const result = await transaction(async (c) => {
+    const changed = await c.query(
+      "UPDATE property SET name=$2,address=$3,acreage=$4,access_instructions=$5,version=version+1 WHERE id=$1 AND archived=false AND lifecycle='operational' AND version=$6 RETURNING id,client_id,name,address,acreage,access_instructions,version",
+      [propertyId, b.name, b.address, b.acreage, b.accessInstructions, b.version],
+    );
+    if (!changed.rowCount)
+      throw new HttpError(409, "Property changed or is unavailable; refresh before saving");
+    await audit(c, a.id, "property.updated", propertyId);
+    return changed.rows[0];
+  });
+  res.json(result);
+});
 api.get("/work-orders", async (req, res) => {
   const a = await actor(req);
   let sql =
