@@ -558,7 +558,7 @@ small {
 }
 .property-art {
   height: 125px;
-  background: #e8eddc url("/images/illustrations/properties.png") center / cover no-repeat;
+  background: #e8eddc url("/images/illustrations/properties.webp") center / cover no-repeat;
   padding: 22px;
   display: flex;
   justify-content: space-between;
