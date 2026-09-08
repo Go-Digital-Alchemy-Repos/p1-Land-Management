@@ -127,6 +127,7 @@ try {
       "../p1-dashboard/tests/schedule-dates.test.ts",
       "../p1-dashboard/tests/dashboard-routes.test.ts",
       "../p1-dashboard/tests/dashboard-contract.test.ts",
+      "../p1-dashboard/tests/service-request-triage.test.ts",
       "src/dashboard/integration.test.ts",
     ],
     { cwd, env },
