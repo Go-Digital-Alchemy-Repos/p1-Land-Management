@@ -4,7 +4,6 @@ import type {
   CmsMediaAsset,
   CmsMediaLibraryAsset,
   CmsMediaUsageReference,
-  DirectoryProfileMedia,
   CmsPage,
   CmsGalleryWithItems,
   Event,
@@ -184,10 +183,6 @@ function brandingStatusLabel(setting: SystemSetting) {
     : setting.key === "favicon_url"
       ? "Site favicon"
       : "Branding setting";
-}
-
-function directoryGalleryStatusLabel(media: DirectoryProfileMedia) {
-  return media.primary ? "Primary directory gallery image" : "Directory gallery image";
 }
 
 function cmsGalleryStatusLabel(gallery: CmsGalleryWithItems) {
