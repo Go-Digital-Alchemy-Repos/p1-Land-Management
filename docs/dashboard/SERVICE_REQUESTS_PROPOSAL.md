@@ -1,6 +1,6 @@
 # Service-request triage and work-order conversion — decision proposal
 
-Status: **implemented locally as migration 0021 and awaiting integration and deployment.**
+Status: **implemented and deployed in migration 0021.**
 
 ## Current boundary
 
@@ -46,4 +46,4 @@ The implemented versioned routes use Zod validation, server-side role/property c
 
 ## Integration and release notes
 
-The implementation is additive and has passed disposable-PostgreSQL migration replay plus HTTP role, client isolation, stale-version, conversion-retry, cancellation, append-only, and no-provider-action tests. It is not deployed. Integration must preserve the migration order, review the versioned wire contract with the shared OpenAPI backlog, and exercise the flow with invited pilot users before release.
+The implementation is additive and passed disposable-PostgreSQL migration replay plus HTTP role, client isolation, stale-version, conversion-retry, cancellation, append-only, and no-provider-action tests. Production dashboard deployment `1defa5c9-89b0-4d27-8c6b-4b596e6e7fa9` reached SUCCESS; public health returned200 and the anonymous lifecycle endpoint returned401/no-store. No authenticated production request or conversion was created. Generated-client coverage, accessible office triage UI, invited-client workflow acceptance and the one-crew pilot remain open.

@@ -34,7 +34,7 @@ Billing creation requires `operationId` (UUID), `propertyId`, `estimateId`, `tit
 
 `POST /project-phases/:id/publish` is an owner/manager action for manager-review or accepted work and records a client-safe summary only. `POST /project-phases/:id/billing-intents` is owner/manager/finance-only. It requires an accepted phase, approved estimate, current phase version and UUID operation ID. The server stores one immutable intent and one draft billing record on an identical retry, enforces the estimate cap, and returns409 for a changed operation replay. It never posts to QuickBooks, sends an invoice, creates a payment link, records a payment, or publishes crew material.
 
-## Client service requests (candidate migration 0021)
+## Client service requests (deployed migration 0021)
 
 `GET/POST /requests` remain compatible. A client list response has client-safe status labels and no submitting-user identity; office readers retain the operational details. Creation requires a client-accessible or operational property and writes the first append-only lifecycle event in the same transaction.
 
@@ -43,6 +43,8 @@ Billing creation requires `operationId` (UUID), `propertyId`, `estimateId`, `tit
 `POST /service-requests/:id/transitions` requires `{expectedVersion,status,reason}`. It accepts only `triaged`, `scheduled`, `closed`, or `cancelled` targets, locks the request, rejects stale or invalid transitions with409, advances the version, and appends an event. `GET /service-requests/:id/history` is office-only and reads append-only events.
 
 `POST /service-requests/:id/conversion-preview` writes nothing. `POST /service-requests/:id/conversions` requires `{operationId,expectedRequestVersion,title,scope,checklist,prerequisites}`. It permits only triaged or service-planning requests, records a stable fingerprint and one receipt, and returns that receipt on an identical retry; changed reuse, stale state, cancellation and a second operation return409. The work order is always an unassigned, unscheduled, unpublished `draft`. This route never invokes QuickBooks, notifications, payments, files, publication or outbox actions.
+
+The migration and public health/authentication boundaries are production-verified. Full OpenAPI/generated-client coverage, accessible office triage UI, invited-client workflow acceptance and the one-crew pilot remain open.
 
 ## Inspection report publication
 
