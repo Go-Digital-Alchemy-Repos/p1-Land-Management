@@ -2,6 +2,16 @@
 
 Historical implementation branch: `codex/p1-cms-crm`. Current integration and production source: GitHub `main`. Original public baseline: `5303da0`; copied Core source: `aad2057ca53e0a55a873bcbe9c62a73e267be541`. The [master plan](MASTER_PLAN.md) remains the full scope; a deployed dashboard slice does not complete it.
 
+## September 8 — verified-source release record
+
+GitHub `main` commit `39f40a310d2cb4b0acd434c727e1717f5aac6b12` was the latest verified technical release when this record was written. Railway reports `SUCCESS` for the public website (`e0ef3844-7725-410f-bf41-e517fbf9c0dc`), isolated Core API (`8f91e95d-d5fe-407c-824b-1d32ff66b190`) and dashboard web service (`d23da4ff-231c-4eff-bb82-0b1ca053a84d`), all from that exact source. Live checks returned HTTP 200 for `https://www.p1landmanagement.com/`, same-origin Core readiness (database connected), and `https://dashboard.p1landmanagement.com/api/healthz`. The dashboard worker remains healthy; Railway does not expose its source commit hash, so this record does not assert one.
+
+The root [Verify P1 workflow](../.github/workflows/verify.yml) completed successfully for this revision: [GitHub Actions run 34202777511](https://github.com/Go-Digital-Alchemy-Repos/p1-Land-Management/actions/runs/34202777511). Its public/dashboard, isolated Core, and native jobs each used locked installs; production dependency audits reported zero known vulnerabilities; type checks, tests, production builds, bundle budgets, the public/Core contract verifier, and Android/iOS Expo static exports passed.
+
+The public home page renders “Your first impression starts at the curb.” The first noun is singular. The 51 source photographs are retained for the asset pipeline while every public site raster photograph is emitted as responsive WebP; the P1 SVG/ICO/Apple-touch icons and the wide JPEG Open Graph fallback remain intentionally format-specific for browser and social-preview compatibility.
+
+This evidence confirms a technical release and release automation. It does not establish a designated Core owner, shared CMS/dashboard sign-in, production editorial acceptance, real-provider delivery, physical-device acceptance, real-user performance, complete screen-reader acceptance, or a controlled client/crew pilot.
+
 ## September 8 — current exact-source release record
 
 Railway reports the public site, isolated Core API, and dashboard web service running GitHub `main` source `361818ce7409f96a746bb291b6dc82ea5ee0a7b8` (`feat(native): show privacy-safe sync progress`). Their deployment IDs are respectively `c48680b0-1ce6-42d5-aa24-eeed02e16f38`, `73fe96de-bc28-458c-8296-c66cf31576ce`, and `777308df-67aa-4826-a7de-a1fc36525f39`, all `SUCCESS`. The dashboard worker is also `SUCCESS`, but Railway does not expose a commit hash for that deployment, so this record does not assert one. The source change adds only native-client progress handling; the latest public, Core, and dashboard application behavior remains the `2083f0cc64082af07097cf9b25989d4b74ba868e` technical release described below. Older deployment identifiers and commit references below are historical evidence only.

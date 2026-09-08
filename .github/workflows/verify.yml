@@ -63,6 +63,20 @@ jobs:
     name: P1 Core platform
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: p1_core_ci
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d p1_core_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     defaults:
       run:
         working-directory: platform/p1-core
@@ -85,6 +99,15 @@ jobs:
       - name: Check production dependencies
         run: npm audit --omit=dev --json > p1-core-production-audit.json
 
+      - name: Verify additive database migrations
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/p1_core_ci
+        run: >-
+          npx tsx -e 'import { runMigrations } from "./server/migrate.ts";
+          import { pool } from "./server/db.ts";
+          (async () => { try { await runMigrations(); await runMigrations(); }
+          finally { await pool.end(); } })().catch(error => { console.error(error); process.exitCode = 1; });'
+
       - name: Type-check and lint
         run: |
           npm run check
@@ -92,6 +115,33 @@ jobs:
 
       - name: Run Core test suite
         run: npm test
+
+      - name: Create disposable reliability databases
+        env:
+          PGHOST: localhost
+          PGPORT: 5432
+          PGUSER: postgres
+          PGPASSWORD: postgres
+          PGDATABASE: postgres
+        run: >-
+          node --input-type=module -e 'import pg from "pg";
+          const pool = new pg.Pool();
+          try { for (const name of ["core_backup_test", "core_form_effect_test", "core_settings_test"])
+          await pool.query(`CREATE DATABASE ${name}`); } finally { await pool.end(); }'
+
+      - name: Verify database reliability across timezones
+        env:
+          BACKUP_TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/core_backup_test
+          FORM_EFFECT_TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/core_form_effect_test
+        run: |
+          for timezone in America/New_York UTC; do
+            TZ="$timezone" npx vitest run server/services/system-backup.database.test.ts server/storage/forms-effects.database.test.ts
+          done
+
+      - name: Verify atomic settings persistence
+        env:
+          SETTINGS_TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/core_settings_test
+        run: npx vitest run server/__tests__/settings-atomic.db.test.ts
 
       - name: Build production bundle and enforce its budget
         run: |
