@@ -36,6 +36,10 @@ The source-disconnected production worker was promoted only after the web deploy
 
 The public website deployment `a92be6fe-eecf-44aa-8bcd-e6833e220515` also reached SUCCESS from the same source. Live `/`, `/commercial`, `/services`, `/sitemap.xml`, `/robots.txt`, and the public Core readiness gateway returned `200`; retired `/testimonials` returned `301` to `/contact` with HSTS. The worker and website evidence confirms deployed code and basic response boundaries only. QuickBooks, Twilio, owner recovery/MFA, physical-device offline behavior, backup/object recovery, and a one-crew/invited-client billing pilot remain acceptance gates.
 
+## Dashboard illustration optimization (f3c2776)
+
+Dashboard deployment `b5c17033-0cf4-49a7-9598-318089d00adc` reached SUCCESS from `f3c277658f2577730cd6bcd0e55ba774213fd5c2`, image `sha256:7de2cac07e65e6c0dfe1431ef0d7529174b692ebc2002ea09360104a17df0f4c`. It adds page-specific, non-geographic dashboard illustrations and serves all 19 as WebP, replacing the prior PNG copies. The optimized set is 1,148,454 bytes, down 93.1% from the PNG source set. The dashboard build passed; live root returned `200` with HSTS and noindex headers, and its delivered CSS references the WebP property illustration. This is a presentation/performance update only: no API, schema, worker, provider, authentication, role, or operational-process behavior changed.
+
 ## Reviewed preview candidate
 
 Snapshot manifest: `preview-source-manifest.json` (SHA-256 `73b231fbf24132e4db951ca84f2e8f9d2eea12490f2e50c9c53eed228e619be8`). Staging deployment `d7ffd471-d0bd-4bf1-881d-89b98cb9cb72` reached SUCCESS. Health/setup, root/deep-link HTML, JS/CSS, logo and service worker returned200; anonymous clients/properties/file content returned401 with no-store. Browser rendered the supplied logo and fail-closed setup message.
