@@ -1256,11 +1256,17 @@ body { background: var(--atlas-paper); }
 .content { background: var(--atlas-paper); }
 .content.desk-workspace-preview {
   min-height: calc(100vh - 84px);
+  max-width: none;
+  margin: 0;
+  padding-inline: max(var(--page-gutter), calc((100% - 1560px) / 2));
   background-color: var(--atlas-paper);
-  background-image: url("/images/illustrations/manager-desk.webp");
-  background-repeat: no-repeat;
-  background-position: center top;
-  background-size: min(1662px, 100%) auto;
+  background-image:
+    radial-gradient(ellipse 94% 92% at 50% 48%, rgb(246 245 239 / 0) 42%, rgb(246 245 239 / .22) 60%, rgb(246 245 239 / .72) 82%, var(--atlas-paper) 100%),
+    url("/images/illustrations/manager-desk.webp");
+  background-repeat: no-repeat, no-repeat;
+  background-position: center, center 84px;
+  background-size: cover, cover;
+  background-attachment: fixed, fixed;
 }
 .page-hero {
   position: relative;
@@ -1313,7 +1319,7 @@ body { background: var(--atlas-paper); }
 .metric { border-color: var(--atlas-line); border-radius: 12px; box-shadow: none; }
 .metric:hover { border-color: #c9d1bd; }
 .metric strong { color: var(--atlas-ink); }
-.next-panel { background: linear-gradient(140deg, #e5eacb, #dce6b7); border: 1px solid #d1dcb1; }
+.next-panel { background: linear-gradient(140deg, #eff2e0, #eaf0d4); border: 1px solid #e2e8ce; }
 .property-card { border-radius: 11px; }
 .property-card:hover { transform: translateY(-2px); border-color: #bac8a6; }
 .property-grid { gap: 18px; }
