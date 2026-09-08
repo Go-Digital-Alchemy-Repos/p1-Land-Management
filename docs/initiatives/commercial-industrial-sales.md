@@ -1,6 +1,6 @@
 # Commercial / Industrial Sales and Account Development
 
-Status: **PLANNED — owner-requested addition, September 7, 2026.** This is an approved addition to project scope, not a claim that the page, workflows, schema changes or capabilities have shipped. It complements all existing website, CMS, CRM, field, financial and native-app requirements. Parent: [master plan](../MASTER_PLAN.md). Delivery register: [tasks](../TASKS.md).
+Status: **IN PROGRESS — owner-requested addition, September 7, 2026.** The `/commercial` page, differentiated managed intake, and signed Core-to-dashboard handoff are implemented and deployed with bounded delivery/retry evidence. This does not claim that every service scope is verified, that assessment-to-onboarding is complete, or that target-account pursuit, attachments, reporting, and native continuity have shipped. It complements all existing website, CMS, CRM, field, financial and native-app requirements. Parent: [master plan](../MASTER_PLAN.md). Delivery register: [tasks](../TASKS.md).
 
 ## Business outcome and positioning
 
