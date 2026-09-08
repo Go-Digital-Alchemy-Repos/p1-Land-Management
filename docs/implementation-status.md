@@ -8,6 +8,8 @@ GitHub `main` commit `addcdbfdc50d5867db02671892fc8065f800702d` is deployed succ
 
 The native baseline also passed all 52 policy, vault, transport, offline, sync, and outbox tests, its SQLite outbox-storage check, and its disposable Better Auth protocol harness. This host has only macOS Command Line Tools and no Android device tooling, so it cannot establish the required iOS/Android physical-device, signing, distribution, or controlled-pilot evidence.
 
+The current native source also passes TypeScript and a fresh `expo export --platform all`: Metro produced Android and iOS Hermes bundles. This verifies release bundling, not an Xcode archive, Android APK/AAB, signing, or physical-device behavior.
+
 ## Current release state
 
 | Workstream | Verified state | Remaining release gate |
