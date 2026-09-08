@@ -38,6 +38,8 @@ import {
   createWorkOrder,
   updateWorkOrderStatus,
   publishWorkOrder,
+  createRecurringService,
+  pauseRecurringService,
 } from "@workspace/api-client-react/dashboard";
 test("generated dashboard client preserves cursor filters, explicit nulls and conflict errors", async () => {
   const original = globalThis.fetch;
@@ -436,6 +438,32 @@ test("generated dashboard client preserves cursor filters, explicit nulls and co
       `/api/v1/work-orders/${workOrderId}/publish`,
     );
     assert.equal(calls.at(-1)!.init?.body, undefined);
+    const recurringId = "00000000-0000-4000-8000-000000000015";
+    const recurring = {
+      propertyId: workPropertyId,
+      title: "Seasonal grounds care",
+      scope: "Mowing and perimeter inspection.",
+      cadence: "monthly" as const,
+      intervalCount: 1,
+      nextDate: "2026-10-01",
+      localTime: "08:00",
+      assignedTo: "crew-member-id",
+      billingMode: "fixed_monthly" as const,
+    };
+    await createRecurringService(recurring);
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      "/api/v1/recurring-services",
+    );
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), recurring);
+    await pauseRecurringService(recurringId, { paused: true });
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      `/api/v1/recurring-services/${recurringId}/pause`,
+    );
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), {
+      paused: true,
+    });
     fail = true;
     await assert.rejects(
       listCommercialInquiries(),
