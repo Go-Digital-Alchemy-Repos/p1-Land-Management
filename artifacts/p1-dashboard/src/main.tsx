@@ -852,7 +852,7 @@ function App() {
           : new Set([...current, activePage.group]),
       );
     }
-  }, [activePage, routeUnavailable]);
+  }, [activePage?.group, routeUnavailable]);
   useEffect(() => {
     const current = routeFromLocation();
     if (
@@ -1084,9 +1084,11 @@ function App() {
             return (
               <section className="nav-group" key={group} aria-label={group}>
                 <button
+                  type="button"
                   className="nav-group-trigger"
                   aria-expanded={expanded}
                   aria-controls={groupId}
+                  aria-label={`${expanded ? "Collapse" : "Expand"} ${group}`}
                   onClick={() =>
                     setExpandedGroups((current) => {
                       const next = new Set(current);
