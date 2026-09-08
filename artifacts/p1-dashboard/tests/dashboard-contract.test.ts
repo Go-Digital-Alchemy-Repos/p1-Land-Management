@@ -3,6 +3,12 @@ import assert from "node:assert/strict";
 import {
   listCommercialInquiries,
   updateCommercialFollowUp,
+  listCommercialAssessmentBaselines,
+  createCommercialAssessmentBaseline,
+  getCommercialAssessmentBaseline,
+  updateCommercialAssessmentBaseline,
+  reviewCommercialAssessmentBaseline,
+  archiveCommercialAssessmentBaseline,
   getSchedule,
   rescheduleWork,
   updateWorkReadiness,
@@ -87,6 +93,54 @@ test("generated dashboard client preserves cursor filters, explicit nulls and co
       nextActionDueAt: null,
       status: "contacted",
     });
+    const assessmentLeadId = "00000000-0000-4000-8000-000000000001";
+    const assessmentId = "00000000-0000-4000-8000-000000000002";
+    await listCommercialAssessmentBaselines(assessmentLeadId);
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      `/api/v1/commercial-inquiries/${assessmentLeadId}/assessment-baselines`,
+    );
+    const createAssessment = {
+      operationId: "00000000-0000-4000-8000-000000000003",
+      expectedLeadVersion: 2,
+      title: "Initial exterior baseline",
+      scopeNote: null,
+    };
+    await createCommercialAssessmentBaseline(assessmentLeadId, createAssessment);
+    assert.equal(calls.at(-1)!.init?.method, "POST");
+    assert.deepEqual(
+      JSON.parse(String(calls.at(-1)!.init?.body)),
+      createAssessment,
+    );
+    await getCommercialAssessmentBaseline(assessmentLeadId, assessmentId);
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      `/api/v1/commercial-inquiries/${assessmentLeadId}/assessment-baselines/${assessmentId}`,
+    );
+    const updateAssessment = {
+      expectedVersion: 1,
+      title: "Initial exterior baseline",
+      scopeNote: "Documented before proposal.",
+      findings: [],
+      recommendations: [],
+    };
+    await updateCommercialAssessmentBaseline(assessmentLeadId, assessmentId, updateAssessment);
+    assert.equal(calls.at(-1)!.init?.method, "PUT");
+    assert.deepEqual(
+      JSON.parse(String(calls.at(-1)!.init?.body)),
+      updateAssessment,
+    );
+    await reviewCommercialAssessmentBaseline(assessmentLeadId, assessmentId, {
+      expectedVersion: 2,
+    });
+    assert.equal(calls.at(-1)!.init?.method, "POST");
+    assert.match(String(calls.at(-1)!.url), /\/review$/);
+    await archiveCommercialAssessmentBaseline(assessmentLeadId, assessmentId, {
+      expectedVersion: 3,
+      reason: "Superseded by a later site walk.",
+    });
+    assert.equal(calls.at(-1)!.init?.method, "POST");
+    assert.match(String(calls.at(-1)!.url), /\/archive$/);
     await getSchedule({
       from: "2026-09-07",
       through: "2026-09-13",
