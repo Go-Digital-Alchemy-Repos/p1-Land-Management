@@ -1327,6 +1327,40 @@ body { background: var(--atlas-paper); }
 th { background: #f5f6f0; padding: 13px 24px; letter-spacing: .04em; }
 td { padding: 16px 24px; }
 
+/* Overview cards rise gently from the desk surface without affecting other pages. */
+.desk-workspace-preview .metric,
+.desk-workspace-preview .overview-grid > .panel,
+.desk-workspace-preview .overview-grid > .next-panel,
+.desk-workspace-preview > .panel {
+  background-color: rgb(255 255 255 / 86%);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 6px rgb(29 49 35 / 4%), 0 10px 24px rgb(29 49 35 / 7%);
+  animation: overview-card-enter 460ms cubic-bezier(.22, 1, .36, 1) both;
+}
+.desk-workspace-preview .metrics .metric:nth-child(1) { animation-delay: 30ms; }
+.desk-workspace-preview .metrics .metric:nth-child(2) { animation-delay: 80ms; }
+.desk-workspace-preview .metrics .metric:nth-child(3) { animation-delay: 130ms; }
+.desk-workspace-preview .metrics .metric:nth-child(4) { animation-delay: 180ms; }
+.desk-workspace-preview .overview-grid > .panel { animation-delay: 230ms; }
+.desk-workspace-preview .overview-grid > .next-panel {
+  background: rgb(234 240 212 / 86%);
+  animation-delay: 280ms;
+}
+.desk-workspace-preview > .panel { animation-delay: 330ms; }
+@keyframes overview-card-enter {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .desk-workspace-preview .metric,
+  .desk-workspace-preview .overview-grid > .panel,
+  .desk-workspace-preview .overview-grid > .next-panel,
+  .desk-workspace-preview > .panel {
+    animation: none;
+  }
+}
+
 .account-workspace { padding-bottom: 20px; }
 .account-hero { min-height: 212px; display: flex; align-items: flex-end; margin-bottom: 0; }
 .account-hero::before { inset: -28px -4% -76px 37%; height: 325px; opacity: .62; }
