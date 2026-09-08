@@ -125,12 +125,13 @@ test('all 34 routes stay within the routine Core read budget while publishing re
     t.mock.timers.setTime(1_000_000 + elapsed);
     await Promise.all(routes.map(route => store.snapshot(route.path)));
   }
-  assert.equal(calls, 144); // 36 components, four refresh rounds.
+  const refreshCalls = (routes.length + 1) * 4; // Every route plus shared chrome, across four refresh rounds.
+  assert.equal(calls, refreshCalls);
   revision = 2;
   store.invalidate();
   const published = await store.snapshot('/page-0');
   assert.equal(published.revision, 2);
   assert.equal(published.globalRevision, 2);
   assert.equal(published.content.title, 'Revision 2');
-  assert.equal(calls, 146);
+  assert.equal(calls, refreshCalls + 2);
 });
