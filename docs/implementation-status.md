@@ -4,7 +4,7 @@ Historical implementation branch: `codex/p1-cms-crm`. Current integration and pr
 
 ## September 8 — current exact-source release record
 
-GitHub `main` and the deployed P1 public site, isolated Core API, dashboard web service, and dashboard worker are at `a2ffc69a01ff927367828fff6870cb35599cc80d` (`test(dashboard): include jobs lifecycle in release harness`). This is the authoritative technical-release revision; older deployment identifiers and commit references below are historical evidence only.
+The deployed P1 public site, isolated Core API, dashboard web service, and dashboard worker are at application revision `a2ffc69a01ff927367828fff6870cb35599cc80d` (`test(dashboard): include jobs lifecycle in release harness`). This is the authoritative technical-release revision; later `main` commits that update this record do not change the deployed application artifact. Older deployment identifiers and commit references below are historical evidence only.
 
 This revision includes the P1 structured-data logo correction, keeping the supplied P1 symbol in `LandscapingBusiness` and article publisher data while retaining the wide JPEG for Open Graph compatibility. It also extends the dashboard release harness to cover the request → estimate → job lifecycle. The full dashboard harness passed 34/34 checks, the copied Core suite passed 664 tests (with 27 existing environment-gated database tests skipped), the public 34-route SSR/CMS/metadata/accessibility-structure suite passed, and `pnpm audit --prod --json` returned zero known production dependency vulnerabilities.
 
