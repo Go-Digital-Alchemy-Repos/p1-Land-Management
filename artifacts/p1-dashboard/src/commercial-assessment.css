@@ -1,0 +1,8 @@
+.commercial-assessment { border-top: 1px solid var(--border, #d8ddd3); margin-top: 1.5rem; padding-top: 1.5rem; }
+.assessment-list { display: flex; flex-wrap: wrap; gap: .5rem; margin: .75rem 0; }
+.assessment-list button { display: grid; gap: .2rem; text-align: left; }
+.assessment-list button[aria-pressed="true"] { outline: 2px solid #536640; }
+.assessment-create, .assessment-editor { display: grid; gap: .8rem; margin-top: 1rem; }
+.assessment-create label, .assessment-editor > label, .assessment-editor fieldset label { display: grid; gap: .35rem; }
+.assessment-editor fieldset { display: grid; gap: .65rem; border: 1px solid var(--border, #d8ddd3); padding: .8rem; }
+.assessment-actions { display: flex; flex-wrap: wrap; gap: .7rem; }

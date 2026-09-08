@@ -1,4 +1,5 @@
 import { CommercialContextPanel } from "./CommercialContextPanel";
+import { CommercialAssessmentPanel } from "./CommercialAssessmentPanel";
 import type { ContextTransport } from "./commercial-context.types";
 import {
   listCommercialInquiries,
@@ -393,6 +394,16 @@ export function CommercialInbox({
               onMutationAck={({leadId: id, expectedVersion, newVersion}) => {
                 setSelected((current) => current?.id === id && current.version === expectedVersion ? {...current, version: newVersion} : current);
                 setRows((current) => current.map(row => row.id === id && row.version === expectedVersion ? {...row, version: newVersion} : row));
+              }}
+            />
+            <CommercialAssessmentPanel
+              key={selected.id + ":" + selected.version}
+              leadId={selected.id}
+              leadVersion={selected.version}
+              disabled={saving || detailLoading || contextBusy}
+              onLeadMutationAck={({ expectedVersion, newVersion }) => {
+                setSelected((current) => current?.id === selected.id && current.version === expectedVersion ? { ...current, version: newVersion } : current);
+                setRows((current) => current.map((row) => row.id === selected.id && row.version === expectedVersion ? { ...row, version: newVersion } : row));
               }}
             />
           </article>

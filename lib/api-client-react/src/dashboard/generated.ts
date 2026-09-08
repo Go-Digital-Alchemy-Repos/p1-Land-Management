@@ -39,6 +39,13 @@ import type {
   ClientContact,
   ClientOnboardingReceipt,
   ClientWorkspace,
+  CommercialAssessmentArchive,
+  CommercialAssessmentCreate,
+  CommercialAssessmentCreateReceipt,
+  CommercialAssessmentDetail,
+  CommercialAssessmentSummary,
+  CommercialAssessmentUpdate,
+  CommercialAssessmentVersionInput,
   CommercialFollowUp,
   CommercialInquiry,
   CommercialInquiryDetail,
@@ -2632,6 +2639,166 @@ export const createSalesEstimate = async (createSalesEstimate: CreateSalesEstima
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
       createSalesEstimate,)
+  }
+);}
+
+
+
+export const getListCommercialAssessmentBaselinesUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/commercial-inquiries/${id}/assessment-baselines`
+}
+
+/**
+ * Owner, manager, and sales only. Private sales baselines; no booking, proposal, or operational side effect.
+ */
+export const listCommercialAssessmentBaselines = async (id: string, options?: RequestInit): Promise<CommercialAssessmentSummary[]> => {
+
+  return customFetch<CommercialAssessmentSummary[]>(getListCommercialAssessmentBaselinesUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateCommercialAssessmentBaselineUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/commercial-inquiries/${id}/assessment-baselines`
+}
+
+/**
+ * Stable operation UUID plus lead version makes an identical retry return its original receipt.
+ */
+export const createCommercialAssessmentBaseline = async (id: string,
+    commercialAssessmentCreate: CommercialAssessmentCreate, options?: RequestInit): Promise<CommercialAssessmentCreateReceipt> => {
+
+  return customFetch<CommercialAssessmentCreateReceipt>(getCreateCommercialAssessmentBaselineUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      commercialAssessmentCreate,)
+  }
+);}
+
+
+
+export const getGetCommercialAssessmentBaselineUrl = (id: string,
+    assessmentId: string,) => {
+
+
+
+
+  return `/api/v1/commercial-inquiries/${id}/assessment-baselines/${assessmentId}`
+}
+
+/**
+ * Owner, manager, and sales only.
+ */
+export const getCommercialAssessmentBaseline = async (id: string,
+    assessmentId: string, options?: RequestInit): Promise<CommercialAssessmentDetail> => {
+
+  return customFetch<CommercialAssessmentDetail>(getGetCommercialAssessmentBaselineUrl(id,assessmentId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getUpdateCommercialAssessmentBaselineUrl = (id: string,
+    assessmentId: string,) => {
+
+
+
+
+  return `/api/v1/commercial-inquiries/${id}/assessment-baselines/${assessmentId}`
+}
+
+/**
+ * Draft-only complete collection replacement guarded by assessment version.
+ */
+export const updateCommercialAssessmentBaseline = async (id: string,
+    assessmentId: string,
+    commercialAssessmentUpdate: CommercialAssessmentUpdate, options?: RequestInit): Promise<CommercialAssessmentDetail> => {
+
+  return customFetch<CommercialAssessmentDetail>(getUpdateCommercialAssessmentBaselineUrl(id,assessmentId),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      commercialAssessmentUpdate,)
+  }
+);}
+
+
+
+export const getReviewCommercialAssessmentBaselineUrl = (id: string,
+    assessmentId: string,) => {
+
+
+
+
+  return `/api/v1/commercial-inquiries/${id}/assessment-baselines/${assessmentId}/review`
+}
+
+/**
+ * Draft-only CAS review. Creates an immutable private snapshot; does not approve work.
+ */
+export const reviewCommercialAssessmentBaseline = async (id: string,
+    assessmentId: string,
+    commercialAssessmentVersionInput: CommercialAssessmentVersionInput, options?: RequestInit): Promise<CommercialAssessmentDetail> => {
+
+  return customFetch<CommercialAssessmentDetail>(getReviewCommercialAssessmentBaselineUrl(id,assessmentId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      commercialAssessmentVersionInput,)
+  }
+);}
+
+
+
+export const getArchiveCommercialAssessmentBaselineUrl = (id: string,
+    assessmentId: string,) => {
+
+
+
+
+  return `/api/v1/commercial-inquiries/${id}/assessment-baselines/${assessmentId}/archive`
+}
+
+/**
+ * CAS archive with a reason. This preserves review history.
+ */
+export const archiveCommercialAssessmentBaseline = async (id: string,
+    assessmentId: string,
+    commercialAssessmentArchive: CommercialAssessmentArchive, options?: RequestInit): Promise<CommercialAssessmentDetail> => {
+
+  return customFetch<CommercialAssessmentDetail>(getArchiveCommercialAssessmentBaselineUrl(id,assessmentId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      commercialAssessmentArchive,)
   }
 );}
 

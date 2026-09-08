@@ -1,8 +1,9 @@
 # Commercial assessment baseline — COM-05 implementation contract
 
-Status: **implementation-ready contract, September 8, 2026.** This is the
-next bounded commercial workflow increment after the deployed intake and
-prospect-context slice. It creates a private, versioned assessment baseline;
+Status: **implemented on the integration branch, September 8, 2026; pending
+staged release verification.** This bounded commercial workflow increment
+follows the deployed intake and prospect-context slice. It creates a private,
+versioned assessment baseline;
 it does not confirm an appointment, assess a fee, publish a report, create a
 proposal, onboard a customer, assign work, or grant portal access.
 
@@ -54,7 +55,7 @@ One assessment represents one staff-managed baseline for one commercial lead.
 
 | Field | Requirement |
 | --- | --- |
-| `id` | UUID supplied by the caller's stable create operation and reused on retry. |
+| `id` | Server-generated UUID. A separate caller-supplied `operationId` is persisted for idempotent retry receipts. |
 | `lead_id` | Required FK to a `lead` whose `inquiry_type` is `commercial_site_assessment`. |
 | `property_id` | Nullable FK to the lead's exact linked property. The database/service rejects a different property UUID. |
 | `status` | `draft`, `reviewed`, or `archived`; no implicit transition to an operational status. |
@@ -73,10 +74,11 @@ reusing a title or overwriting history.
 Store findings and recommendations as normalized child records, not a free-text
 lead payload or opaque JSON blob.
 
-`commercial_assessment_finding` includes assessment ID, stable UUID, ordered
-position, bounded category (`grounds`, `vegetation`, `drainage`, `stormwater`,
-`erosion`, `trees`, `access`, `other`), bounded factual observation, optional
-condition/priority, author and timestamps. A finding does not create an issue
+`commercial_assessment_finding` includes assessment ID, UUID, ordered
+position, bounded category (`grounds_vegetation`, `stormwater_drainage`,
+`grading_erosion`, `tree_land`, `roads_access`, `emergency_corrective`,
+`recurring_site_management`, `other`), bounded factual observation, optional
+condition/priority and timestamps. A finding does not create an issue
 or work order.
 
 `commercial_assessment_recommendation` includes assessment ID, stable UUID,
@@ -102,8 +104,9 @@ client-facing use.
    identical retry returns the original receipt; changed actor, lead, property,
    or body returns 409 without writing another baseline.
 4. Updates and review require `expectedVersion`; stale writers receive 409 and
-   retain no partial child changes. Apply parent lock, then child rows in stable
-   UUID order, then write the audit/review receipt in the same transaction.
+   retain no partial child changes. Apply parent lock, replace the complete
+   bounded ordered draft collections, then write the audit/review receipt in
+   the same transaction.
 5. On every mutation, add an audit event with IDs, version transition, action,
    and summary only. Do not put contact details, raw intake, security details,
    or full observations in logs.
@@ -119,13 +122,18 @@ Generate the OpenAPI client only after the routes and DTOs are final.
 | Endpoint | Contract |
 | --- | --- |
 | `GET /assessment-baselines` | Sales-role-only list of minimum safe DTOs for that inquiry. No raw intake/contact channels unless already available through the commercial detail endpoint. |
-| `POST /assessment-baselines` | Stable `{id, expectedLeadVersion, propertyId?, title, scopeNote?}`. Creates one private draft and returns its receipt. |
+| `POST /assessment-baselines` | Stable `{operationId, expectedLeadVersion, propertyId?, title, scopeNote?}`. Creates one private draft and returns its receipt. |
 | `GET /assessment-baselines/:id` | Sales-role-only detail with current version, findings, recommendations, review metadata, and no public-report URL. |
-| `PATCH /assessment-baselines/:id` | CAS update of title/scope/findings/recommendations. The request submits the complete bounded ordered collections so deletion is explicit and auditable. |
+| `PUT /assessment-baselines/:id` | CAS update of title/scope/findings/recommendations. The request submits the complete bounded ordered collections so deletion is explicit and auditable. |
 | `POST /assessment-baselines/:id/review` | CAS transition from draft to reviewed and creates an immutable review snapshot. A no-op or duplicate review is an explicit conflict/replay receipt, never silent re-review. |
 | `POST /assessment-baselines/:id/archive` | CAS archive with bounded reason. Archiving never deletes review history. |
 
-The Commercial Inbox should show only a compact “Assessment baseline: none / draft / reviewed” indicator and a route to the sales-only detail panel. It must preserve the original intake, assigned owner, next action, and conflict-safe follow-up behavior. The panel must state that review does not book a property walk or approve work.
+The Commercial Inbox now includes a sales-only assessment panel alongside the
+existing intake, follow-up, and prospect-context panels. It exposes
+none/draft/reviewed/archived state, bounded finding and recommendation editing,
+explicit review/archive actions, and clear language that a review does not book
+a property walk or approve work. It preserves the original intake, assigned
+owner, next action, and conflict-safe follow-up behavior.
 
 ## Required evidence before promotion
 

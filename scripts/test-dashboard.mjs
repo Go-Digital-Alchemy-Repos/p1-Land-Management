@@ -57,6 +57,8 @@ try {
     CORE_FEDERATION_REDIRECT_URI:
       "https://core.example.test/api/auth/federation/callback",
     CORE_FEDERATION_TEST_ALLOW_INSECURE_ORIGIN: "true",
+    COMMERCIAL_TEST_DATABASE_URL:
+      "postgresql://postgres:p1-test-only@" + mapping + "/dashboard",
   });
   let ready = false;
   for (let i = 0; i < 30; i++) {
@@ -126,6 +128,7 @@ try {
       "src/dashboard/work-readiness.test.ts",
       "src/dashboard/project-phase.test.ts",
       "src/dashboard/service-request.test.ts",
+      "src/dashboard/commercial-assessment.test.ts",
       "../p1-dashboard/tests/schedule-dates.test.ts",
       "../p1-dashboard/tests/phone.test.ts",
       "../p1-dashboard/tests/dashboard-routes.test.ts",
