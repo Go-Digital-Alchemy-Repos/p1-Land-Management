@@ -6,6 +6,12 @@ Project-phase implementation `0020` is deployed as an additive production migrat
 
 Service-request implementation `0021` is deployed as an additive production migration. Its non-validating lifecycle constraint retains historic nonstandard statuses; the new conversion record creates only an unassigned, unscheduled, unpublished work-order draft. See [SERVICE_REQUESTS_PROPOSAL.md](SERVICE_REQUESTS_PROPOSAL.md).
 
+## Overview desk visual release (c739434)
+
+Dashboard web deployment `0acd5ca3-35bd-4809-bce6-fba8f0a6ca7e` was released from an allowlisted package built at `c739434`. The Overview route now uses a full-width, fixed desk backdrop with a paper-color fade, a left title-safe field, and a lighter Next Right Thing panel. The sole desk asset is `manager-desk-overview-v2.webp` (143,394 bytes); no PNG illustration was deployed. Dashboard type checking and the production Vite build passed before release. Live verification confirmed the delivered CSS references the WebP asset, includes its fixed-background and panel-color rules, the image responds as `image/webp`, and `/api/healthz` remains `200` with the existing no-store and security headers.
+
+This is a dashboard presentation/performance release only. It introduces no schema or migration change, worker update, authentication or role change, provider call, billing action, customer communication, or business-data write. The subsequent `ccfcba2` OpenAPI/generated-client change is contract-only and does not require a runtime rollout.
+
 Railway project: `e83f79dd-d901-4ab1-836b-bdf272b58dc2` (p1-Land-Management).
 
 | Resource                             | Identifier                           |
