@@ -1235,7 +1235,7 @@ textarea {
 }
 body { background: var(--atlas-paper); }
 .sidebar {
-  background: #123c31 url("/images/textures/sidebar-paper-v1.jpg") center top / 420px 420px repeat;
+  background: #123c31 url("/images/textures/sidebar-paper-v1.webp") center top / 420px 420px repeat;
   background-blend-mode: soft-light;
   border-right: 1px solid rgb(255 255 255 / 7%);
 }
