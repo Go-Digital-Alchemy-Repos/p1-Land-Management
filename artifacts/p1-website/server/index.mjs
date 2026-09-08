@@ -21,11 +21,15 @@ const legacyPublicRoutes = new Map([
 // Keep established links useful after retiring pages that no longer represent
 // an active customer journey. The destination remains within the public site.
 const retiredRoutes = new Map([['/testimonials', '/contact']]);
-// Deployment-owned configuration, never the request Host, controls indexing.
+// Deployment-owned configuration determines whether this is an indexable
+// production release. In that release, public documents only belong on the
+// configured canonical host; Railway's generated service alias must not create
+// a second indexable copy of the site.
 const indexableDeployment = (() => {
   try { return new URL(manifest.origins?.publicSite).origin === canonical; }
   catch { return false; }
 })();
+const canonicalHost = new URL(canonical).hostname;
 const mime = { '.html':'text/html; charset=utf-8', '.js':'text/javascript; charset=utf-8', '.css':'text/css; charset=utf-8', '.json':'application/json', '.xml':'application/xml', '.txt':'text/plain; charset=utf-8', '.svg':'image/svg+xml', '.ico':'image/x-icon', '.webp':'image/webp', '.avif':'image/avif', '.jpg':'image/jpeg', '.png':'image/png', '.woff2':'font/woff2' };
 const escape = x => String(x).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 function send(req,res,status,body,type='text/html; charset=utf-8',cache='no-cache') {
@@ -77,10 +81,15 @@ const server=http.createServer(async(req,res)=>{
     res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Referrer-Policy','strict-origin-when-cross-origin');res.setHeader('X-Frame-Options','SAMEORIGIN');
     res.setHeader('Permissions-Policy','camera=(), microphone=(), geolocation=()');
     if(process.env.NODE_ENV==='production')res.setHeader('Strict-Transport-Security','max-age=31536000');
-    const host=(req.headers.host || '').split(':')[0];
+    const host=(req.headers.host || '').split(':')[0].toLowerCase();
     const backendPath = ['/admin','/api','/uploads','/r2'].some(prefix => pathname === prefix || pathname.startsWith(prefix + '/'));
     if (backendPath) res.setHeader('X-Robots-Tag','noindex, nofollow');
     const infrastructurePath = backendPath || pathname === '/healthz' || pathname === '/assets' || pathname.startsWith('/assets/');
+    // Local hosts are kept usable for the isolated runtime suite. Public
+    // alternate hosts redirect before an HTML, robots, or sitemap response can
+    // be served, while operational routes remain explicitly noindex.
+    const localHost = host === '' || host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+    const redirectToCanonicalHost = indexableDeployment && !localHost && host !== canonicalHost;
     let normalized=pathname;
     // Core and static asset servers own their exact paths and directory redirects.
     if (!infrastructurePath) {
@@ -89,9 +98,9 @@ const server=http.createServer(async(req,res)=>{
       if(normalized!=='/')normalized=normalized.replace(/\/+$/,'');
     }
     const replacement = retiredRoutes.get(normalized);
-    if (replacement) {res.writeHead(301,{Location:`${host==='p1landmanagement.com'?canonical:''}${replacement}${url.search}`});return res.end();}
+    if (replacement) {res.writeHead(301,{Location:`${redirectToCanonicalHost?canonical:''}${replacement}${url.search}`});return res.end();}
     const redirectPath = legacyPublicRoutes.get(normalized) || normalized;
-    if(host==='p1landmanagement.com' || redirectPath!==pathname) {res.writeHead(308,{Location:`${host==='p1landmanagement.com'?canonical:''}${redirectPath}${url.search}`});return res.end();}
+    if(redirectToCanonicalHost || redirectPath!==pathname) {res.writeHead(308,{Location:`${redirectToCanonicalHost?canonical:''}${redirectPath}${url.search}`});return res.end();}
     if(pathname==='/api/p1/page-content' && ['GET','HEAD'].includes(req.method)) {const snapshot=await content.snapshot(url.searchParams.get('path')||'/');return send(req,res,snapshot?200:404,JSON.stringify(snapshot||{error:'Not found'}),'application/json','no-store');}
     if(pathname==='/healthz')return send(req,res,200,'{"status":"ok"}','application/json','no-store');
     if(backendPath)return proxy(req,res);

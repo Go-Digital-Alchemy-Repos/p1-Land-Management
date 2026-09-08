@@ -114,14 +114,18 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
     assert.equal(script.headers['cache-control'], 'public, max-age=31536000, immutable');
     const head = await request(port, asset[1], {}, 'HEAD'); assert.equal(head.status, 200); assert.equal(head.body, '');
   });
-  await t.test('production stays indexable based on manifest with preview exclusion preserved', async () => {
-    const home = await request(port, '/', { Host: 'staging-looking.example.test' });
+  await t.test('production only serves indexable public documents on the canonical host', async () => {
+    const home = await request(port, '/', { Host: 'www.p1landmanagement.com' });
+    assert.equal(home.status, 200);
     assert.equal(home.headers['x-robots-tag'], undefined);
     assert(home.body.includes('name="robots" content="index, follow"'));
-    const robots = await request(port, '/robots.txt');
+    const railwayAlias = await request(port, '/contact/?utm_source=qa', { Host: 'p1-land-management-production.up.railway.app' });
+    assert.equal(railwayAlias.status, 308);
+    assert.equal(railwayAlias.headers.location, 'https://www.p1landmanagement.com/contact?utm_source=qa');
+    const robots = await request(port, '/robots.txt', { Host: 'www.p1landmanagement.com' });
     assert.equal(robots.status, 200);
     assert(!/^Disallow:\s*\/\s*$/m.test(robots.body), 'Production robots must not block the entire site');
-    const preview = await request(port, '/?cmsPreview=1');
+    const preview = await request(port, '/?cmsPreview=1', { Host: 'www.p1landmanagement.com' });
     assert.equal(preview.headers['x-robots-tag'], 'noindex, nofollow');
   });
   await t.test('dashboard routes and assets proxy to configured upstream', async () => {
