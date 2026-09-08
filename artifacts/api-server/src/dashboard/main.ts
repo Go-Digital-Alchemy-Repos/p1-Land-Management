@@ -41,6 +41,7 @@ app.use((req, res, next) => {
     "X-Robots-Tag": "noindex, nofollow",
     "Referrer-Policy": "no-referrer",
     "X-Frame-Options": "DENY",
+    "Strict-Transport-Security": "max-age=31536000",
     "Content-Security-Policy":
       "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
     "Permissions-Policy": "geolocation=(), microphone=()",
