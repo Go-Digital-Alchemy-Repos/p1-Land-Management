@@ -40,7 +40,10 @@ function proxy(req,res) {
   headers['x-forwarded-for']=clientIp(req);
   headers['x-real-ip']=headers['x-forwarded-for'];
   const upstream=(target.protocol==='https:'?https:http).request(target,{method:req.method,headers},response=>{
-    res.writeHead(response.statusCode || 502,{ ...response.headers, ...(!indexableDeployment ? { 'x-robots-tag': 'noindex, nofollow' } : {}) });
+    // Dashboard, API, and upload endpoints are operational surfaces, never
+    // search results. Override upstream defaults so this remains true even if
+    // the Core service changes its own indexing policy.
+    res.writeHead(response.statusCode || 502,{ ...response.headers, 'x-robots-tag': 'noindex, nofollow' });
     if (req.method==='POST' && req.url.includes('/publish') && response.statusCode>=200 && response.statusCode<300) content.invalidate();
     response.pipe(res);
   });
@@ -70,6 +73,7 @@ const server=http.createServer(async(req,res)=>{
     if(process.env.NODE_ENV==='production')res.setHeader('Strict-Transport-Security','max-age=31536000');
     const host=(req.headers.host || '').split(':')[0];
     const backendPath = ['/admin','/api','/uploads','/r2'].some(prefix => pathname === prefix || pathname.startsWith(prefix + '/'));
+    if (backendPath) res.setHeader('X-Robots-Tag','noindex, nofollow');
     const infrastructurePath = backendPath || pathname === '/healthz' || pathname === '/assets' || pathname.startsWith('/assets/');
     let normalized=pathname;
     // Core and static asset servers own their exact paths and directory redirects.

@@ -118,11 +118,14 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
       adminPath = admin.headers.location;
     }
     assert.equal(adminPath, '/admin/'); assert.equal(admin.status, 200); assert(admin.body.includes('QA private dashboard login'));
+    assert.equal(admin.headers['x-robots-tag'], 'noindex, nofollow');
     const asset = await request(port, '/admin/assets/dashboard-qa.js'); assert.equal(asset.status, 200); assert.equal(asset.headers['content-type'], 'text/javascript');
+    assert.equal(asset.headers['x-robots-tag'], 'noindex, nofollow');
     assert(upstreamRequests.some(item => item.path === '/admin/assets/dashboard-qa.js'));
     for (const exactPath of ['/admin/cms/team/', '/admin/index.html', '/api/test/', '/uploads/photo.html', '/r2/photo.html']) {
       const response = await request(port, exactPath);
       assert.equal(response.headers.location, undefined, `Gateway must preserve ${exactPath}`);
+      assert.equal(response.headers['x-robots-tag'], 'noindex, nofollow', `Operational response stays out of search: ${exactPath}`);
       assert(upstreamRequests.some(item => item.path === exactPath));
     }
     const asset404 = await request(port, '/assets/missing.html');
