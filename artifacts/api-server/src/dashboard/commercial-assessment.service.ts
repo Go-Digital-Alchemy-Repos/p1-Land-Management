@@ -73,11 +73,20 @@ async function assessment(c: { query: typeof pool.query }, leadId: string, asses
 }
 async function detail(c: { query: typeof pool.query }, leadId: string, assessmentId: string) {
   const item = await assessment(c, leadId, assessmentId);
-  const [findings, recommendations, reviews] = await Promise.all([
-    c.query("SELECT id,position,category,condition_label,observation,priority,created_at,updated_at FROM commercial_assessment_finding WHERE assessment_id=$1 ORDER BY position", [assessmentId]),
-    c.query("SELECT id,position,finding_id,recommendation,priority,created_at,updated_at FROM commercial_assessment_recommendation WHERE assessment_id=$1 ORDER BY position", [assessmentId]),
-    c.query("SELECT id,assessment_version,snapshot_sha256,reviewed_by,created_at FROM commercial_assessment_review WHERE assessment_id=$1 ORDER BY assessment_version DESC", [assessmentId]),
-  ]);
+  // A transaction client carries one PostgreSQL connection. Keep these reads
+  // serial so pg never overlaps client.query calls on that connection.
+  const findings = await c.query(
+    "SELECT id,position,category,condition_label,observation,priority,created_at,updated_at FROM commercial_assessment_finding WHERE assessment_id=$1 ORDER BY position",
+    [assessmentId],
+  );
+  const recommendations = await c.query(
+    "SELECT id,position,finding_id,recommendation,priority,created_at,updated_at FROM commercial_assessment_recommendation WHERE assessment_id=$1 ORDER BY position",
+    [assessmentId],
+  );
+  const reviews = await c.query(
+    "SELECT id,assessment_version,snapshot_sha256,reviewed_by,created_at FROM commercial_assessment_review WHERE assessment_id=$1 ORDER BY assessment_version DESC",
+    [assessmentId],
+  );
   return { ...item, findings: findings.rows, recommendations: recommendations.rows, reviews: reviews.rows };
 }
 
