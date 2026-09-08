@@ -1257,7 +1257,7 @@ body { background: var(--atlas-paper); }
 .content.desk-workspace-preview {
   min-height: calc(100vh - 84px);
   background-color: var(--atlas-paper);
-  background-image: url("/images/illustrations/manager-desk.png");
+  background-image: url("/images/illustrations/manager-desk.webp");
   background-repeat: no-repeat;
   background-position: center top;
   background-size: min(1662px, 100%) auto;
