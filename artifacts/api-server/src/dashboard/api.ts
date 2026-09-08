@@ -45,12 +45,10 @@ async function updateMfaRequirement(
 ) {
   return transaction(async (c) => {
     const current = await c.query(
-      "SELECT role FROM staff_profile WHERE user_id=$1 AND active=true FOR UPDATE",
+      "SELECT 1 FROM staff_profile WHERE user_id=$1 AND active=true FOR UPDATE",
       [targetId],
     );
     if (!current.rowCount) throw new HttpError(404, "Account not found");
-    if (current.rows[0].role === "owner" && !required)
-      throw new HttpError(409, "Multi-factor authentication is required for owners");
     const result = await c.query(
       "UPDATE staff_profile SET mfa_required=$2 WHERE user_id=$1 RETURNING user_id,mfa_required",
       [targetId, required],
@@ -92,7 +90,7 @@ api.post("/setup/complete", async (req, res) => {
     if (r.rows[0]?.completed_at)
       throw new HttpError(409, "Setup is already complete");
     await c.query(
-      "INSERT INTO staff_profile(user_id,role,mfa_required) VALUES($1,'owner',true)",
+      "INSERT INTO staff_profile(user_id,role,mfa_required) VALUES($1,'owner',false)",
       [s.user.id],
     );
     await c.query(

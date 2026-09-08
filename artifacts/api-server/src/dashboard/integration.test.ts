@@ -150,9 +150,10 @@ test(
     );
     r = await owner("/api/v1/setup/complete", { code: "secret" });
     assert.equal(r.status, 201, JSON.stringify(r.data));
-    // Bootstrap makes the owner MFA-required immediately. Authentication
-    // enrollment remains available, but protected business data does not.
-    assert.equal((await owner("/api/v1/clients")).status, 403);
+    // Owner MFA is optional by default. The owner can begin using the
+    // dashboard and later choose a per-account requirement in Settings.
+    assert.equal((await owner("/api/v1/clients")).status, 200);
+    assert.equal((await owner("/api/v1/me")).data.mfaRequired, false);
     assert.equal(
       (await staleOwner("/api/v1/setup/complete", { code: "secret" })).status,
       401,
@@ -398,16 +399,15 @@ test(
     );
     r = await owner("/api/auth/two-factor/verify-totp", { code: totp(secret) });
     assert.equal(r.status, 200, JSON.stringify(r.data));
-    // Ownership is permanently MFA-required. A verified owner may manage
-    // another account's policy, but cannot use that policy endpoint to weaken
-    // their own current or future session requirements.
+    // The super admin can return even their own account to the optional
+    // policy after completing verification for an enforced session.
     assert.equal(
       (
         await owner(`/api/v1/account-mfa-policies/${ownerId}`, {
           required: false,
         })
       ).status,
-      409,
+      200,
     );
     r = await owner("/api/v1/me");
     assert.equal(r.data.mfaRequired, false);
