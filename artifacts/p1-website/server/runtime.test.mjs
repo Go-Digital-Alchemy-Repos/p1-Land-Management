@@ -78,6 +78,14 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
     const apex = await request(port, '/contact', { Host: 'p1landmanagement.com' });
     assert.equal(apex.status, 308); assert.equal(apex.headers.location, 'https://www.p1landmanagement.com/contact');
   });
+  await t.test('retired testimonials page permanently redirects to Contact', async () => {
+    const response = await request(port, '/testimonials?utm_source=qa');
+    assert.equal(response.status, 301);
+    assert.equal(response.headers.location, '/contact?utm_source=qa');
+    const apex = await request(port, '/testimonials/', { Host: 'p1landmanagement.com' });
+    assert.equal(apex.status, 301);
+    assert.equal(apex.headers.location, 'https://www.p1landmanagement.com/contact');
+  });
   await t.test('HTML and hydration state share a published revision without fetching drafts', async () => {
     const response = await request(port, '/'); assert.equal(response.status, 200);
     assert(response.body.includes('<title>QA Published Home</title>'));

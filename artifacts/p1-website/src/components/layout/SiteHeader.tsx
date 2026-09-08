@@ -71,10 +71,6 @@ export function SiteHeader({ assessmentCta = false }: { assessmentCta?: boolean 
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Link href="/testimonials" className="group relative hover:text-primary transition-colors">
-            Working With P1
-            <span className="absolute -bottom-1.5 left-0 h-[2px] w-0 bg-clay transition-all duration-300 group-hover:w-full" />
-          </Link>
           <Link href="/contact" className="group relative hover:text-primary transition-colors">
             Contact
             <span className="absolute -bottom-1.5 left-0 h-[2px] w-0 bg-clay transition-all duration-300 group-hover:w-full" />
@@ -127,7 +123,6 @@ export function SiteHeader({ assessmentCta = false }: { assessmentCta?: boolean 
                     </div>
                   </div>
 
-                  <Link href="/testimonials" onClick={() => setIsOpen(false)} className="text-lg font-medium text-secondary">Working With P1</Link>
                   <Link href="/contact" onClick={() => setIsOpen(false)} className="text-lg font-medium text-secondary">Contact</Link>
                 </div>
 

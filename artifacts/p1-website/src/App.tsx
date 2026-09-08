@@ -40,7 +40,6 @@ const About = page("./pages/about.tsx");
 const Commercial = page("./pages/commercial.tsx");
 const Contact = page("./pages/contact.tsx");
 const Gallery = page("./pages/gallery.tsx");
-const Testimonials = page("./pages/testimonials.tsx");
 
 const ServicesIndex = page("./pages/services/index.tsx");
 const CommercialPropertyManagement = page("./pages/services/commercial-property-management.tsx");
@@ -83,7 +82,6 @@ function Router() {
       <Route path="/commercial" component={Commercial} />
       <Route path="/contact" component={Contact} />
       <Route path="/gallery" component={Gallery} />
-      <Route path="/testimonials" component={Testimonials} />
 
       {/* Services */}
       <Route path="/services" component={ServicesIndex} />

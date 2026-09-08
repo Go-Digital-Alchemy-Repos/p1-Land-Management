@@ -15,6 +15,9 @@ const { render } = await import(pathToFileURL(path.join(root,'dist/server/entry-
 const origin = process.env.P1_CORE_ORIGIN?.replace(/\/$/,'');
 const content = createContentStore({ manifest, origin, cacheDir: process.env.P1_CONTENT_CACHE_DIR });
 const canonical = 'https://www.p1landmanagement.com';
+// Keep established links useful after retiring pages that no longer represent
+// an active customer journey. The destination remains within the public site.
+const retiredRoutes = new Map([['/testimonials', '/contact']]);
 // Deployment-owned configuration, never the request Host, controls indexing.
 const indexableDeployment = (() => {
   try { return new URL(manifest.origins?.publicSite).origin === canonical; }
@@ -82,6 +85,8 @@ const server=http.createServer(async(req,res)=>{
       if(normalized.endsWith('/index'))normalized=normalized.slice(0,-6)||'/';
       if(normalized!=='/')normalized=normalized.replace(/\/+$/,'');
     }
+    const replacement = retiredRoutes.get(normalized);
+    if (replacement) {res.writeHead(301,{Location:`${host==='p1landmanagement.com'?canonical:''}${replacement}${url.search}`});return res.end();}
     if(host==='p1landmanagement.com' || normalized!==pathname) {res.writeHead(308,{Location:`${host==='p1landmanagement.com'?canonical:''}${normalized}${url.search}`});return res.end();}
     if(pathname==='/api/p1/page-content' && ['GET','HEAD'].includes(req.method)) {const snapshot=await content.snapshot(url.searchParams.get('path')||'/');return send(req,res,snapshot?200:404,JSON.stringify(snapshot||{error:'Not found'}),'application/json','no-store');}
     if(pathname==='/healthz')return send(req,res,200,'{"status":"ok"}','application/json','no-store');
@@ -91,7 +96,7 @@ const server=http.createServer(async(req,res)=>{
     if(pathname==='/robots.txt' && !indexableDeployment)return send(req,res,200,'User-agent: *\nDisallow: /\n','text/plain; charset=utf-8');
     if(url.searchParams.has('cmsPreview'))res.setHeader('X-Robots-Tag','noindex, nofollow');
     if(pathname==='/sitemap.xml') {
-      const snapshots=await Promise.all([...content.routes.keys()].map(p=>content.snapshot(p)));
+      const snapshots=await Promise.all([...content.routes.keys()].filter(p=>!retiredRoutes.has(p)).map(p=>content.snapshot(p)));
       const body=`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${snapshots.map(s=>`<url><loc>${canonical}${escape(s.route)}</loc>${s.publishedAt?`<lastmod>${escape(new Date(s.publishedAt).toISOString())}</lastmod>`:''}</url>`).join('')}</urlset>`;
       return send(req,res,200,body,'application/xml');
     }
