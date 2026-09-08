@@ -1,5 +1,5 @@
 import { federationEnabled } from "../services/federation-client";
-import { FEDERATION_COOKIE, federationConsumer, hasFederationHistory, updateUnlinkedPassword } from "../services/federation-runtime";
+import { FEDERATION_COOKIE, hasFederationHistory, updateUnlinkedPassword } from "../services/federation-runtime";
 import { pool } from "../db";
 import { digest } from "../services/federation-consumer";
 import { getBaseUrl } from "../utils/route-helpers";
@@ -20,7 +20,6 @@ import {
   loginLimiter,
   forgotPasswordLimiter,
   resetPasswordLimiter,
-  registerLimiter,
 } from "../middleware/security";
 import { logger } from "../utils/logger";
 import * as r2Service from "../services/r2.service";

@@ -6,10 +6,6 @@ import cookieParser from "cookie-parser";
 import type { Server } from "node:http";
 import type { AddressInfo } from "node:net";
 import type { User } from "@shared/schema";
-import {
-  DEFAULT_CRM_PIPELINE_CONFIG,
-  CRM_PIPELINE_SETTING_KEY,
-} from "@shared/crm-pipeline-settings";
 const state = vi.hoisted(() => ({
   raw: null as string | null,
   proof: null as any,

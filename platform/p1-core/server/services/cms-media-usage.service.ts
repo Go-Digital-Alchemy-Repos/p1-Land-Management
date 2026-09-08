@@ -7,9 +7,6 @@ import type {
   DirectoryProfileMedia,
   CmsPage,
   CmsGalleryWithItems,
-  EcommerceCategory,
-  EcommerceProduct,
-  EcommerceProductMedia,
   Event,
   SeoSettings,
   SystemSetting,
@@ -187,20 +184,6 @@ function brandingStatusLabel(setting: SystemSetting) {
     : setting.key === "favicon_url"
       ? "Site favicon"
       : "Branding setting";
-}
-
-function ecommerceProductStatusLabel(product: EcommerceProduct) {
-  return product.active && product.status === "published"
-    ? "Published product"
-    : `${product.status ?? "Draft"} product`;
-}
-
-function ecommerceCategoryStatusLabel(category: EcommerceCategory) {
-  return category.active ? "Active category" : "Inactive category";
-}
-
-function mediaLinkStatusLabel(media: EcommerceProductMedia) {
-  return media.primary ? "Primary product media" : "Product media";
 }
 
 function directoryGalleryStatusLabel(media: DirectoryProfileMedia) {
