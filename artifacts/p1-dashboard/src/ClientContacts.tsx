@@ -86,8 +86,8 @@ export function ClientContacts({
     setError("");
   }
   return (
-    <div>
-      <p>
+    <div className="client-contacts">
+      <p className="client-contacts-intro">
         Site, primary and billing contacts for {client.name}. Contacts do not
         receive portal access automatically.
       </p>
@@ -96,16 +96,16 @@ export function ClientContacts({
           {error}
         </p>
       )}
-      <ul className="contact-list">
+      <ul className="contact-list client-contact-list">
         {contacts.map((contact) => (
           <li key={contact.id}>
-            <div>
+            <div className="client-contact-summary">
               <strong>{contact.name}</strong>
-              <small>
+              <small className="client-contact-role">
                 {contact.kind}
                 {contact.archived ? " · archived" : ""}
               </small>
-              <small>
+              <small className="client-contact-details">
                 <ContactDetails
                   prefix={contact.position || (!contact.email && !contact.phone ? "No contact details recorded" : undefined)}
                   email={contact.email}
@@ -113,7 +113,7 @@ export function ClientContacts({
                 />
               </small>
             </div>
-            <button disabled={busy} onClick={() => edit(contact)}>
+            <button className="quiet-action" disabled={busy} onClick={() => edit(contact)}>
               Edit{contact.archived ? " / restore" : ""}
             </button>
           </li>
@@ -121,63 +121,71 @@ export function ClientContacts({
       </ul>
       {!contacts.length && <p className="empty">No contacts yet.</p>}
       <form
+        className="client-contact-form"
         onSubmit={(event) => {
           event.preventDefault();
           void save(false);
         }}
       >
-        <h3>{editing ? "Edit contact" : "Add contact"}</h3>
-        <label>
-          Name
-          <input
-            required
-            maxLength={200}
-            value={draft.name}
-            onChange={(e) => setDraft({ ...draft, name: e.target.value })}
-          />
-        </label>
-        <label>
-          Position
-          <input
-            maxLength={200}
-            value={draft.position}
-            onChange={(e) => setDraft({ ...draft, position: e.target.value })}
-          />
-        </label>
-        <label>
-          Email
-          <input
-            type="email"
-            maxLength={254}
-            value={draft.email}
-            onChange={(e) => setDraft({ ...draft, email: e.target.value })}
-          />
-        </label>
-        <label>
-          Phone
-          <input
-            type="tel"
-            maxLength={50}
-            value={draft.phone}
-            onChange={(e) => setDraft({ ...draft, phone: e.target.value })}
-            onBlur={(e) => setDraft({ ...draft, phone: formatPhoneNumber(e.target.value) })}
-          />
-        </label>
-        <label>
-          Contact role
-          <select
-            value={draft.kind}
-            onChange={(e) =>
-              setDraft({ ...draft, kind: e.target.value as Contact["kind"] })
-            }
-          >
-            <option value="site">Site</option>
-            <option value="billing">Billing</option>
-            <option value="primary">Primary</option>
-            <option value="other">Other</option>
-          </select>
-        </label>
-        <div className="work-actions">
+        <header className="client-contact-form-heading">
+          <div>
+            <h3>{editing ? "Edit contact" : "Add contact"}</h3>
+            <p>{editing ? "Update this account contact’s details." : "Keep account and field contacts current."}</p>
+          </div>
+        </header>
+        <div className="client-contact-form-grid">
+          <label>
+            Name
+            <input
+              required
+              maxLength={200}
+              value={draft.name}
+              onChange={(e) => setDraft({ ...draft, name: e.target.value })}
+            />
+          </label>
+          <label>
+            Position
+            <input
+              maxLength={200}
+              value={draft.position}
+              onChange={(e) => setDraft({ ...draft, position: e.target.value })}
+            />
+          </label>
+          <label>
+            Email
+            <input
+              type="email"
+              maxLength={254}
+              value={draft.email}
+              onChange={(e) => setDraft({ ...draft, email: e.target.value })}
+            />
+          </label>
+          <label>
+            Phone
+            <input
+              type="tel"
+              maxLength={50}
+              value={draft.phone}
+              onChange={(e) => setDraft({ ...draft, phone: e.target.value })}
+              onBlur={(e) => setDraft({ ...draft, phone: formatPhoneNumber(e.target.value) })}
+            />
+          </label>
+          <label className="client-contact-role-field">
+            Contact role
+            <select
+              value={draft.kind}
+              onChange={(e) =>
+                setDraft({ ...draft, kind: e.target.value as Contact["kind"] })
+              }
+            >
+              <option value="site">Site</option>
+              <option value="billing">Billing</option>
+              <option value="primary">Primary</option>
+              <option value="other">Other</option>
+            </select>
+          </label>
+        </div>
+        <div className="work-actions client-contact-form-actions">
           <button
             className="primary"
             disabled={busy || !draft.name.trim()}

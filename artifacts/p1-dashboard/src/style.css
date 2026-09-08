@@ -1206,6 +1206,84 @@ textarea {
   display: block;
   overflow-wrap: anywhere;
 }
+.client-contacts {
+  display: grid;
+}
+.client-contacts-intro {
+  margin: 0;
+  padding: 18px var(--atlas-surface-inset);
+  color: #526054;
+  font-size: 13px;
+  line-height: 1.55;
+}
+.client-contact-list {
+  margin: 0;
+  border-top: 1px solid var(--atlas-line);
+}
+.client-contact-list li {
+  min-height: 84px;
+  padding: 16px var(--atlas-surface-inset);
+  border-bottom-color: #e6eae2;
+}
+.client-contact-summary {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.client-contact-summary strong {
+  color: var(--atlas-ink);
+  font-size: 13px;
+}
+.client-contact-role {
+  color: #6d7b69;
+  font-size: 11px;
+  text-transform: capitalize;
+}
+.client-contact-details {
+  color: #687468;
+  font-size: 11px;
+}
+.client-contact-form {
+  display: grid;
+  gap: 18px;
+  margin: 0;
+  padding: 22px var(--atlas-surface-inset) var(--atlas-surface-inset);
+  background: linear-gradient(135deg, #f5f7ef, #fbfcf9 62%);
+}
+.client-contact-form-heading h3 {
+  margin: 0;
+  color: var(--atlas-ink);
+  font-size: 15px;
+}
+.client-contact-form-heading p {
+  margin: 5px 0 0;
+  color: #6c786c;
+  font-size: 12px;
+  line-height: 1.45;
+}
+.client-contact-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 16px;
+}
+.client-contact-form-grid label {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+}
+.client-contact-form-grid input,
+.client-contact-form-grid select {
+  min-height: 44px;
+  margin: 0;
+}
+.client-contact-role-field {
+  grid-column: 1 / -1;
+  max-width: 360px;
+}
+.client-contact-form-actions {
+  align-items: center;
+  padding-top: 2px;
+}
  .inspection-report-list {
   display: grid;
   gap: 16px;
@@ -1580,6 +1658,19 @@ td { padding: 16px var(--atlas-surface-inset); }
   .atlas-stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 700px) {
+  .client-contacts-intro,
+  .client-contact-list li,
+  .client-contact-form {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .client-contact-form-grid {
+    grid-template-columns: 1fr;
+  }
+  .client-contact-role-field {
+    grid-column: auto;
+    max-width: none;
+  }
   .content.workspace-motif {
     background-attachment: scroll, scroll;
     background-size: cover, min(1200px, 155vw) auto;
