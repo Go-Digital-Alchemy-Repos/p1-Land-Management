@@ -77,6 +77,7 @@ export function ServicesGrid() {
                 src={image}
                 alt={alt}
                 loading="lazy"
+                decoding="async"
                 className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
               />
               <div className="absolute inset-0" style={{ background: "linear-gradient(to top, hsl(215 50% 11% / 0.55), transparent 55%)" }} />

@@ -33,6 +33,8 @@ const commercial = source("src/pages/commercial.tsx");
 assert.match(commercial, /src=\{hero\}[\s\S]*?fetchPriority="high"[\s\S]*?decoding="async"/, "commercial hero must retain high loading priority");
 assert.match(commercial, /src=\{dataCenterCampus\}[\s\S]*?loading="lazy"[\s\S]*?decoding="async"/, "commercial supporting image must defer");
 
+assert.match(servicesGrid, /src=\{image\}[\s\S]*?loading="lazy"[\s\S]*?decoding="async"/, "shared service-card imagery must defer");
+
 for (const path of [
   "src/pages/blog/index.tsx",
   "src/pages/service-areas/index.tsx",
