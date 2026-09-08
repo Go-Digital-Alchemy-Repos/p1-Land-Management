@@ -2,7 +2,7 @@
 
 Status on 2026-09-08: the reviewed dashboard web and worker are deployed to production. Full launch acceptance remains pending provider, device and pilot gates.
 
-Project-phase implementation `0020` is an undeployed candidate. It must pass independent review, exact-source packaging, additive-migration rehearsal and staged role/browser acceptance before any production migration. See [PROJECT_PHASES_PROPOSAL.md](PROJECT_PHASES_PROPOSAL.md).
+Project-phase implementation `0020` is deployed as an additive production migration. It passed the disposable-PostgreSQL migration replay and the role/lifecycle/idempotency suite before release. See [PROJECT_PHASES_PROPOSAL.md](PROJECT_PHASES_PROPOSAL.md).
 
 Railway project: `e83f79dd-d901-4ab1-836b-bdf272b58dc2` (p1-Land-Management).
 
@@ -39,6 +39,16 @@ Use [PILOT_ACCEPTANCE.md](PILOT_ACCEPTANCE.md) for the required owner, integrati
 The source-disconnected production worker was promoted only after the web deployment succeeded. An allowlisted package was created from an isolated worktree at the exact source revision, omitting environment files, website source/assets, and Core. Worker deployment `b6131965-ec85-4458-8bd9-ee3837c0c032` reached SUCCESS with image `sha256:ade0114957b0034df1710e58d5389bae5596d029ed766e029a532626989b31de`; the active service reported SUCCESS/not stopped and startup emitted `event="worker.started"`. This release adds no provider credentials, invoice action, payment action, customer communication, database migration, or acceptance claim.
 
 The public website deployment `a92be6fe-eecf-44aa-8bcd-e6833e220515` also reached SUCCESS from the same source. Live `/`, `/commercial`, `/services`, `/sitemap.xml`, `/robots.txt`, and the public Core readiness gateway returned `200`; retired `/testimonials` returned `301` to `/contact` with HSTS. The worker and website evidence confirms deployed code and basic response boundaries only. QuickBooks, Twilio, owner recovery/MFA, physical-device offline behavior, backup/object recovery, and a one-crew/invited-client billing pilot remain acceptance gates.
+
+## Project phases and draft billing intents (cd76d2c)
+
+`cd76d2c83cfcf7253bea609b19479d2712f379cb` adds the normalized, append-only project-phase lifecycle and retry-safe draft billing intents. Migration `0020_project_phases.sql` is additive: it preserves the legacy `project.phases` JSON, creates normalized phase/event/billing-intent records, and adds a nullable work-order phase reference. It does not post an invoice, call a provider, or create customer communications.
+
+Before release, shared-library and API type checks passed. The disposable PostgreSQL suite passed 24/24 checks and replayed the complete migration ledger using only synthetic records. It covers legacy JSON preservation, operational-property and role boundaries, phase transitions/prerequisites, reviewed-work acceptance, append-only events, version conflicts, duplicate explicit positions, client/crew field minimization, and idempotent draft billing operations.
+
+Production dashboard web deployment `6bb5a72d-2d8d-41c2-8223-9d921c72ce21` reached SUCCESS from that source (image `sha256:0e27fc742f9d08ed0a45fcbe7f9bb2bf09edc454699c17ed04bf194cc1a9e0ed`) and ran the web-only migration command. The matching source-disconnected worker was promoted from an allowlisted package after web success: deployment `01232cf4-e9d5-4958-a448-4f86aa7c7cfb`, image `sha256:142d969d72d9fe692e7b9063cf6b19fd7d083b4684cc2db250da5d9f4f0bd9b8`. Its startup log emitted `worker.started` without an application error. Live dashboard health returned `200` with no-store, HSTS, CSP, frame denial and noindex headers; an anonymous phase-history request returned `401` with no-store. The public website and Core source deployments associated with the same commit also reached SUCCESS.
+
+Application rollback must retain migration `0020` and its append-only records. Roll back only the application image after assessing the incident; do not remove phase data or reverse the migration as a convenience. Role/browser acceptance with an authorized owner, an actual crew, and an invited client remains part of [PILOT_ACCEPTANCE.md](PILOT_ACCEPTANCE.md).
 
 ## Dashboard illustration optimization (f3c2776)
 
