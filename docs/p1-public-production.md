@@ -2,6 +2,12 @@
 
 The P1 public CMS gateway is live. This document retains the pre-release evidence below and records the subsequent exact-source releases; it is not evidence that the broader project, CMS initialization, shared identity, or owner acceptance is complete.
 
+## Integrated public/Core release — b5fd35d
+
+On September 8, public deployment `a92be6fe-eecf-44aa-8bcd-e6833e220515` reached SUCCESS on service `72d588fd-c963-4e0f-944b-1cb8c5c2fa19` from `b5fd35df8860dc392b722e30f446074b79885ca3`, image `sha256:99f741cf5e180d1d9a0f891234c7d5ba6944a68d465d1d145599bd7f80a0d9bd`. The paired Core deployment is recorded in `p1-core-production.md` and uses the same source revision.
+
+Live checks returned `200` for `/`, `/commercial`, `/services`, `/sitemap.xml`, `/robots.txt`, and same-origin Core readiness. The sitemap exposes 34 public URLs; retired `/testimonials` returns `301` to `/contact`. The rendered homepage headline is “Your first impression starts at the curb.” The rendered public raster-image pipeline serves WebP variants, while vector branding assets and the JPEG social-preview compatibility asset remain intentional exceptions. This release does not create an administrator, publish unverified proof, change provider settings, or close owner-acceptance gates.
+
 ## Reviewed candidate
 
 Source `03ba5b800937e32140170e68641d15a7326e786d`, production origins `https://www.p1landmanagement.com`. Root independently verified all472 packaged hashes, archive and manifest after the author froze the final artifact.
@@ -47,7 +53,7 @@ On September 7, Railway deployment `bbaa3cad-9488-433a-93d8-fa0f3b03fda2` reache
 
 The image pipeline now emits responsive WebP variants only and no longer packages unused AVIF variants. Original local PNG/JPEG masters remain solely as source material for the reproducible optimizer; vector logo/favicon assets and the JPEG social-share compatibility image remain outside rendered page imagery. The build fails if rendered public raster images or responsive candidates regress to PNG, JPEG, or AVIF. Image budgets remain within their limits, and the highest initial public JavaScript route is 131.7 KiB gzip.
 
-Live verification fetched all 35 sitemap routes: every rendered raster image URL is WebP, the homepage contains the corrected singular headline “Your first impression start at the curb,” and `/healthz` returns success. This deployment does not change CMS content, Core data, authentication, or outstanding owner-acceptance gates.
+Live verification fetched all 35 sitemap routes: every rendered raster image URL is WebP, the homepage contains the corrected singular headline, and `/healthz` returns success. This deployment does not change CMS content, Core data, authentication, or outstanding owner-acceptance gates.
 
 ## About-page claim qualification — f936fbb
 
