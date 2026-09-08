@@ -5,18 +5,13 @@
  * Shared field, scheduling and commercial inbox contract. Other office routes remain documented in docs/dashboard/API.md.
  * OpenAPI spec version: 0.1.0
  */
-import type { LegacyProjectPhase } from './legacyProjectPhase';
 
-export interface Project {
+export interface ProjectEditReceipt {
   id: string;
   property_id: string;
   name: string;
   scope: string;
-  /** Legacy project status. The project-phase lifecycle is the authoritative detailed execution state. */
   status: string;
-  phases: LegacyProjectPhase[];
   /** @minimum 1 */
   version: number;
-  created_at: string;
-  property_name: string;
 }

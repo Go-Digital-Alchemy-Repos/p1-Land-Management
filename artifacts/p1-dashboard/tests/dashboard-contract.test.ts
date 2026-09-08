@@ -26,6 +26,7 @@ import {
   createProjectPhaseBillingIntent,
   listProjects,
   createProject,
+  updateProject,
   listExpenses,
   createExpense,
   listSalesLeads,
@@ -39,6 +40,7 @@ import {
   createDashboardClient,
   updateDashboardClient,
   createDashboardProperty,
+  updateDashboardProperty,
   createWorkOrder,
   updateWorkOrderStatus,
   publishWorkOrder,
@@ -302,6 +304,21 @@ test("generated dashboard client preserves cursor filters, explicit nulls and co
     };
     await createProject(project);
     assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), project);
+    await updateProject("project-id", {
+      name: "Driveway restoration",
+      scope: "Repair drainage and gravel.",
+      expectedVersion: 2,
+    });
+    assert.equal(calls.at(-1)!.init?.method, "POST");
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      "/api/v1/projects/project-id",
+    );
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), {
+      name: "Driveway restoration",
+      scope: "Repair drainage and gravel.",
+      expectedVersion: 2,
+    });
     await listExpenses();
     assert.equal(
       new URL(calls.at(-1)!.url, "https://example.test").pathname,
@@ -432,6 +449,25 @@ test("generated dashboard client preserves cursor filters, explicit nulls and co
       address: "123 Fieldstone Road",
       acreage: 125,
       accessInstructions: "Call before entry.",
+    });
+    await updateDashboardProperty("property-id", {
+      name: "Pine Ridge",
+      address: "123 Fieldstone Road",
+      acreage: null,
+      accessInstructions: "Call before entry.",
+      version: 3,
+    });
+    assert.equal(calls.at(-1)!.init?.method, "POST");
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      "/api/v1/properties/property-id",
+    );
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), {
+      name: "Pine Ridge",
+      address: "123 Fieldstone Road",
+      acreage: null,
+      accessInstructions: "Call before entry.",
+      version: 3,
     });
     const workOrderId = "00000000-0000-4000-8000-000000000015";
     const workPropertyId = "00000000-0000-4000-8000-000000000016";

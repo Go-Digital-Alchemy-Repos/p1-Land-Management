@@ -65,6 +65,7 @@ import type {
   DashboardClient,
   DashboardMe,
   DashboardProperty,
+  DashboardPropertyEditReceipt,
   EditServiceAgreement,
   EstimateChangeOrder,
   EstimateDecision,
@@ -87,6 +88,7 @@ import type {
   OperationReceipt,
   PhotoUploadReceipt,
   Project,
+  ProjectEditReceipt,
   ProjectPhase,
   ProjectPhaseBillingIntent,
   ProjectPhaseBillingIntentInput,
@@ -126,6 +128,8 @@ import type {
   UpdateAccountMfaPolicy,
   UpdateClientContact,
   UpdateDashboardClient,
+  UpdateDashboardProperty,
+  UpdateProject,
   UpdateProjectPhase,
   UploadFieldPhotoHeaders,
   WorkOrder,
@@ -1209,6 +1213,32 @@ export const createProject = async (createProject: CreateProject, options?: Requ
 
 
 
+export const getUpdateProjectUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/projects/${id}`
+}
+
+/**
+ * Owner or manager only. Versioned edit of a project on an operational client property. A stale version returns 409; it does not change phases, work, billing, dispatch, publications, provider state, or payments.
+ */
+export const updateProject = async (id: string,
+    updateProject: UpdateProject, options?: RequestInit): Promise<ProjectEditReceipt> => {
+
+  return customFetch<ProjectEditReceipt>(getUpdateProjectUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      updateProject,)
+  }
+);}
+
+
+
 export const getListExpensesUrl = () => {
 
 
@@ -1829,6 +1859,32 @@ export const createDashboardProperty = async (createDashboardProperty: CreateDas
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
       createDashboardProperty,)
+  }
+);}
+
+
+
+export const getUpdateDashboardPropertyUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/properties/${id}`
+}
+
+/**
+ * Office-only versioned property edit for an operational, unarchived property. A stale version returns 409; this does not change client access, schedules, work, billing, or published material.
+ */
+export const updateDashboardProperty = async (id: string,
+    updateDashboardProperty: UpdateDashboardProperty, options?: RequestInit): Promise<DashboardPropertyEditReceipt> => {
+
+  return customFetch<DashboardPropertyEditReceipt>(getUpdateDashboardPropertyUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      updateDashboardProperty,)
   }
 );}
 

@@ -255,7 +255,7 @@ function ProjectEditor({
   async function save(event: FormEvent) {
     event.preventDefault(); setBusy(true); setError("");
     try {
-      await request(project ? `/projects/${project.id}` : "/projects", project ? { name, scope } : { propertyId, name, scope, phases: [] });
+      await request(project ? `/projects/${project.id}` : "/projects", project ? { name, scope, expectedVersion: project.version } : { propertyId, name, scope, phases: [] });
       onSaved();
     } catch (reason) { setError((reason as Error).message); } finally { setBusy(false); }
   }

@@ -560,6 +560,7 @@ export const project = pgTable(
     scope: text().notNull(),
     status: text().default("planned").notNull(),
     phases: jsonb().default([]).notNull(),
+    version: integer().default(1).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
       .defaultNow()
       .notNull(),

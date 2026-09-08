@@ -1616,6 +1616,57 @@
         }
       }
     },
+    "/projects/{id}": {
+      "post": {
+        "operationId": "updateProject",
+        "description": "Owner or manager only. Versioned edit of a project on an operational client property. A stale version returns 409; it does not change phases, work, billing, dispatch, publications, provider state, or payments.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProject"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated project",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectEditReceipt"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid project input"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Owner or manager role required"
+          },
+          "409": {
+            "description": "Project version conflict or unavailable project"
+          }
+        }
+      }
+    },
     "/expenses": {
       "get": {
         "operationId": "listExpenses",
@@ -2519,6 +2570,57 @@
           },
           "404": {
             "description": "Client or operational property not found"
+          }
+        }
+      }
+    },
+    "/properties/{id}": {
+      "post": {
+        "operationId": "updateDashboardProperty",
+        "description": "Office-only versioned property edit for an operational, unarchived property. A stale version returns 409; this does not change client access, schedules, work, billing, or published material.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateDashboardProperty"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated property",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardPropertyEditReceipt"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid property input"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Office role or account-MFA requirement denied"
+          },
+          "409": {
+            "description": "Property version conflict or unavailable property"
           }
         }
       }
@@ -4640,6 +4742,7 @@
           "scope",
           "status",
           "phases",
+          "version",
           "created_at",
           "property_name"
         ],
@@ -4667,6 +4770,10 @@
             "items": {
               "$ref": "#/components/schemas/LegacyProjectPhase"
             }
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
           },
           "created_at": {
             "type": "string",
@@ -4707,6 +4814,66 @@
             "items": {
               "$ref": "#/components/schemas/LegacyProjectPhase"
             }
+          }
+        }
+      },
+      "UpdateProject": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "scope",
+          "expectedVersion"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          },
+          "scope": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          },
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "ProjectEditReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "property_id",
+          "name",
+          "scope",
+          "status",
+          "version"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "property_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
           }
         }
       },
@@ -6579,6 +6746,87 @@
         },
         "required": ["id", "client_id", "name", "address", "acreage"],
         "additionalProperties": false
+      },
+      "UpdateDashboardProperty": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "address",
+          "acreage",
+          "version"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          },
+          "address": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          },
+          "acreage": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "accessInstructions": {
+            "type": "string",
+            "maxLength": 10000,
+            "default": ""
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "DashboardPropertyEditReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "client_id",
+          "name",
+          "address",
+          "acreage",
+          "access_instructions",
+          "version"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "client_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "acreage": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "PostgreSQL numeric wire representation; null means acreage was not recorded."
+          },
+          "access_instructions": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
       },
       "PropertyArea": {
         "type": "object",

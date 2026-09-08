@@ -143,16 +143,29 @@ operationsApi.post("/projects/:id", async (req, res) => {
   const a = await actor(req);
   requireRole(a.role, ["owner", "manager"]);
   const projectId = id.parse(req.params.id);
-  const b = z.object({ name: text, scope: text }).parse(req.body);
+  const b = z
+    .object({
+      name: text,
+      scope: text,
+      expectedVersion: z.number().int().positive(),
+    })
+    .parse(req.body);
   const project = await transaction(async (c) => {
     const changed = await c.query(
-      "UPDATE project j SET name=$2,scope=$3 WHERE j.id=$1 AND EXISTS(SELECT 1 FROM property p WHERE p.id=j.property_id AND p.lifecycle='operational' AND p.client_id IS NOT NULL) RETURNING j.id,j.property_id,j.name,j.scope,j.status",
-      [projectId, b.name, b.scope],
+      "UPDATE project j SET name=$2,scope=$3,version=version+1 WHERE j.id=$1 AND j.version=$4 AND EXISTS(SELECT 1 FROM property p WHERE p.id=j.property_id AND p.lifecycle='operational' AND p.client_id IS NOT NULL) RETURNING j.id,j.property_id,j.name,j.scope,j.status,j.version",
+      [projectId, b.name, b.scope, b.expectedVersion],
     );
-    if (!changed.rowCount) throw new HttpError(404, "Project not found");
+    if (!changed.rowCount)
+      throw new HttpError(409, "Project changed or is unavailable; refresh before saving");
     await c.query(
-      "INSERT INTO audit_event(id,user_id,action,entity_id) VALUES($1,$2,$3,$4)",
-      [randomUUID(), a.id, "project.updated", projectId],
+      "INSERT INTO audit_event(id,user_id,action,entity_id,details) VALUES($1,$2,$3,$4,$5)",
+      [
+        randomUUID(),
+        a.id,
+        "project.updated",
+        projectId,
+        JSON.stringify({ priorVersion: b.expectedVersion, version: changed.rows[0].version }),
+      ],
     );
     return changed.rows[0];
   });

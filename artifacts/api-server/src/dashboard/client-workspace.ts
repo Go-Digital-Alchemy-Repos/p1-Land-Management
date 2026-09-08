@@ -64,7 +64,7 @@ clientWorkspaceApi.get("/clients/:id/workspace", async (req, res) => {
       [clientId],
     ),
     pool.query(
-      "SELECT j.id,j.property_id,j.name,j.scope,j.status,j.created_at,p.name AS property_name FROM project j JOIN property p ON p.id=j.property_id WHERE p.client_id=$1 AND p.lifecycle='operational' ORDER BY j.created_at DESC LIMIT 12",
+      "SELECT j.id,j.property_id,j.name,j.scope,j.status,j.version,j.created_at,p.name AS property_name FROM project j JOIN property p ON p.id=j.property_id WHERE p.client_id=$1 AND p.lifecycle='operational' ORDER BY j.created_at DESC LIMIT 12",
       [clientId],
     ),
     pool.query(
