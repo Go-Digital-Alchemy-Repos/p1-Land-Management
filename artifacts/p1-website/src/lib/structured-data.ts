@@ -4,6 +4,7 @@ import {
   BUSINESS_DESCRIPTION,
   PHONE_E164,
   EMAIL,
+  BUSINESS_IMAGE_URL,
   LOGO_URL,
   ADDRESS,
   AREAS_SERVED,
@@ -42,7 +43,7 @@ export function localBusinessSchema(): JsonLd {
     url: SITE_URL,
     telephone: PHONE_E164,
     email: EMAIL,
-    image: LOGO_URL,
+    image: BUSINESS_IMAGE_URL,
     logo: LOGO_URL,
     priceRange: "$$",
     address: {

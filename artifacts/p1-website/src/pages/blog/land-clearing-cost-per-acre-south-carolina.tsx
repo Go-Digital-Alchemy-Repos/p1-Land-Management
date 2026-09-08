@@ -3,6 +3,7 @@ import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
+import { LOGO_URL } from "@/lib/site";
 import heroImg from "@/assets/blog-land-clearing.png";
 
 export default function BlogPost() {
@@ -21,7 +22,7 @@ export default function BlogPost() {
           publisher: {
             "@type": "Organization",
             name: "P1 Land & Property Management",
-            logo: { "@type": "ImageObject", url: "https://www.p1landmanagement.com/opengraph.jpg" },
+            logo: { "@type": "ImageObject", url: LOGO_URL },
           },
         }}
       />

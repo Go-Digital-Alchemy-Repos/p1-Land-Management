@@ -8,6 +8,7 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const { render } = await import(pathToFileURL(resolve(root, 'dist/server/entry-server.js')).href);
 const paths = [...readFileSync(resolve(root, 'src/app-routes.tsx'), 'utf8').matchAll(/<Route\s+path="([^"]+)"/g)].map(match => match[1]);
 assert.equal(paths.length, 34, 'Review route inventory when adding or removing pages');
+const companyIconUrl = 'https://www.p1landmanagement.com/p1-symbol.svg';
 const headerSource = readFileSync(resolve(root, 'src/components/layout/SiteHeader.tsx'), 'utf8');
 assert(!headerSource.includes('View All Services'), 'Header must not restore the retired View All Services item');
 assert(!/\b(?:Blog|Gallery)\b/.test(headerSource), 'Header main navigation must exclude Blog and Gallery');
@@ -85,7 +86,14 @@ try {
     }
     for (const match of html.matchAll(/<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)) {
       assert(match[0].includes('data-seo-jsonld'), `${path}: schema cleanup marker`);
-      JSON.parse(match[1]);
+      const jsonLd = JSON.parse(match[1]);
+      if (jsonLd['@type'] === 'LandscapingBusiness') {
+        assert.equal(jsonLd.logo, companyIconUrl, `${path}: business schema uses the P1 symbol`);
+        assert.equal(jsonLd.image, 'https://www.p1landmanagement.com/opengraph.jpg', `${path}: business schema retains its social image`);
+      }
+      if (jsonLd['@type'] === 'Article') {
+        assert.equal(jsonLd.publisher?.logo?.url, companyIconUrl, `${path}: article publisher uses the P1 symbol`);
+      }
     }
     if (html.includes('"@type":"FAQPage"')) {
       assert(html.includes('data-content-type="faq"'), `${path}: FAQ content is semantically labelled`);
