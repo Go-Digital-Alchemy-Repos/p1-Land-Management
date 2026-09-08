@@ -18,6 +18,9 @@ const canonical = 'https://www.p1landmanagement.com';
 const legacyPublicRoutes = new Map([
   ['/services/commercial-property-management', '/services/commercial-landscaping'],
 ]);
+// The CMS is served behind the protected /admin gateway. Keep the original
+// owner setup link useful without creating a separate public setup surface.
+const adminShortcutRoutes = new Map([['/setup', '/admin/setup']]);
 // Keep established links useful after retiring pages that no longer represent
 // an active customer journey. The destination remains within the public site.
 const retiredRoutes = new Map([['/testimonials', '/contact']]);
@@ -96,6 +99,12 @@ const server=http.createServer(async(req,res)=>{
       if(normalized.endsWith('.html'))normalized=normalized.slice(0,-5);
       if(normalized.endsWith('/index'))normalized=normalized.slice(0,-6)||'/';
       if(normalized!=='/')normalized=normalized.replace(/\/+$/,'');
+    }
+    const adminShortcut = adminShortcutRoutes.get(normalized);
+    if (adminShortcut) {
+      res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+      res.writeHead(308,{Location:`${redirectToCanonicalHost?canonical:''}${adminShortcut}${url.search}`});
+      return res.end();
     }
     const replacement = retiredRoutes.get(normalized);
     if (replacement) {res.writeHead(301,{Location:`${redirectToCanonicalHost?canonical:''}${replacement}${url.search}`});return res.end();}

@@ -83,6 +83,10 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
     const renamedService = await request(port, '/services/commercial-landscaping');
     assert.equal(renamedService.status, 200);
     assert(renamedService.body.includes('Commercial Landscaping'));
+    const setup = await request(port, '/setup/?utm_source=owner-invite');
+    assert.equal(setup.status, 308);
+    assert.equal(setup.headers.location, '/admin/setup?utm_source=owner-invite');
+    assert.equal(setup.headers['x-robots-tag'], 'noindex, nofollow');
   });
   await t.test('retired testimonials page permanently redirects to Contact', async () => {
     const response = await request(port, '/testimonials?utm_source=qa');
