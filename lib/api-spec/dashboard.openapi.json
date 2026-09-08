@@ -4444,6 +4444,7 @@
           "id",
           "name",
           "email",
+          "avatarUrl",
           "mfaRequired",
           "ownerMfaRequired",
           "role"
@@ -4457,6 +4458,10 @@
           },
           "email": {
             "type": "string"
+          },
+          "avatarUrl": {
+            "type": ["string", "null"],
+            "description": "Private same-origin avatar endpoint for the current account; null when no avatar is stored."
           },
           "twoFactorEnabled": {
             "type": ["boolean", "null"]
