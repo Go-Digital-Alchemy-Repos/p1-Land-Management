@@ -1,14 +1,14 @@
 # Site Feature Apps — P1 install policy
 
-The P1-owned Core Platform installation deliberately exposes only the CMS, blog/content, forms, CRM, media, permissions, and operational capabilities required by P1. The reusable Core source retains feature infrastructure for maintenance, but P1 runtime policy is authoritative over generic upstream defaults.
+The P1-owned Core Platform installation exposes only the CMS, blog/content, forms, CRM, media, permissions, and operational capabilities required by P1. The P1 feature contract contains no switch for Directory, eCommerce, Membership, or Portfolio; those routes are rejected before application routing, and their remaining legacy source is being removed in dependency-safe slices. Upstream reference material does not authorize those products in P1.
 
 | App | P1 runtime policy | Availability control |
 | --- | --- | --- |
 | CMS, blog/content, forms, CRM, media, permissions | Retained | Normal P1 configuration and role permissions |
-| Directory, eCommerce, Membership, Portfolio | Excluded | Hard-disabled by `getSiteFeatures()`; settings cannot expose their UI or API surfaces |
+| Directory, eCommerce, Membership, Portfolio | Excluded | No P1 feature setting; API boundary returns 404 and P1 admin settings do not expose these products |
 | Events, Careers | Installed, disabled | Default off; may be explicitly enabled only after P1 accepts the related operating process |
 
-The public gateway and the P1 Core API must return an unavailable response for every excluded app route. P1 verification currently covers public ecommerce, directory, membership, and portfolio endpoints plus disabled Events and Careers endpoints. Existing generic source and historical upstream documentation are retained as reference material; they do not authorize those products in P1.
+The public gateway and the P1 Core API must return an unavailable response for every excluded app route. The `p1-module-exclusions` regression test keeps the Core API boundary explicit. Events and Careers remain installed but disabled until P1 accepts the related operating process.
 
 ## Configuration
 
@@ -16,16 +16,12 @@ Feature app settings live in the `system_configuration` settings category:
 
 | Setting             | Shared Feature Key  | Default |
 | ------------------- | ------------------- | ------- |
-| `enable_directory`  | `directoryEnabled`  | Excluded in P1 |
 | `enable_blog`       | `blogEnabled`       | Enabled |
 | `enable_events`     | `eventsEnabled`     | Disabled in P1 |
 | `enable_crm`        | `crmEnabled`        | Enabled |
-| `enable_ecommerce`  | `ecommerceEnabled`  | Excluded in P1 |
-| `enable_membership` | `membershipEnabled` | Excluded in P1 |
 | `enable_careers`    | `careersEnabled`    | Disabled in P1 |
-| `enable_portfolio`  | `portfolioEnabled`  | Excluded in P1 |
 
-P1 administrators can manage only the retained and explicitly installable features. The excluded-module values are forced off at runtime and are not a future toggle.
+P1 administrators can manage only the retained and explicitly installable features. Excluded modules have no P1 setting and are not a future toggle.
 
 ## Runtime Contract
 
@@ -40,9 +36,9 @@ If settings cannot be read, the server logs a warning and returns the shared def
 
 ## API Gating
 
-Feature-specific middleware should be used for routes that must disappear when an app is disabled. Public and admin route groups should use the matching middleware, such as `requireEcommerceEnabled`, `requireMembershipEnabled`, `requireCareersEnabled`, or `requirePortfolioEnabled`.
+Feature-specific middleware is used for retained configurable modules. Public and admin route groups use the matching middleware, such as `requireCmsEnabled`, `requireEventsEnabled`, `requireCrmEnabled`, and `requireCareersEnabled`.
 
-When a gated app is disabled, the API returns a 404-style unavailable response instead of exposing the feature surface.
+When a retained gated app is disabled, the API returns a 404-style unavailable response instead of exposing the feature surface. The P1 API exclusion boundary rejects excluded module paths independently of the feature settings.
 
 ## Admin Navigation
 
@@ -50,7 +46,7 @@ Admin navigation uses the site configuration to hide or reveal major app section
 
 ## Implementation Guidance
 
-- Add new feature keys to `SiteFeatures`, `DEFAULT_SITE_FEATURES`, settings UI, and route/navigation gates together.
+- Add new retained feature keys to `SiteFeatures`, `DEFAULT_SITE_FEATURES`, settings UI, and route/navigation gates together. Do not add P1 switches for excluded modules.
 - Update public search collectors and sitemap/feed behavior when a feature controls public discoverability.
 - Treat toggles as availability controls, not destructive cleanup operations.
 - Gate public APIs, admin APIs, and visible navigation consistently.

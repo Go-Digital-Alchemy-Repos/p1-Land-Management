@@ -45,14 +45,6 @@ const EXTRA_ADMIN_COMMANDS: AdminCommandItem[] = [
     keywords: ["settings", "email", "templates"],
     icon: () => null,
   },
-  {
-    id: "ecommerce-refunds",
-    title: "Refunds",
-    href: "/admin/ecommerce/refunds",
-    groupLabel: "Ecommerce",
-    keywords: ["store", "orders", "returns"],
-    icon: () => null,
-  },
 ];
 
 function pushNavItemCommands(

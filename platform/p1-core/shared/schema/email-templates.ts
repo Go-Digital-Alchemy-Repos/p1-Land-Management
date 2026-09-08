@@ -5,11 +5,8 @@ import { z } from "zod";
 
 export const EMAIL_TEMPLATE_MODULES = [
   "events",
-  "ecommerce",
-  "membership",
   "forms",
   "users",
-  "directory",
   "crm",
   "system",
 ] as const;

@@ -12,14 +12,10 @@ import type { SettingsData } from "../settings-page";
 
 type SystemConfigurationSettingKey =
   | "enable_cms"
-  | "enable_directory"
   | "enable_blog"
   | "enable_events"
   | "enable_crm"
-  | "enable_ecommerce"
-  | "enable_membership"
-  | "enable_careers"
-  | "enable_portfolio";
+  | "enable_careers";
 const SYSTEM_CONFIGURATION_FIELDS: Array<{
   key: SystemConfigurationSettingKey;
   label: string;
@@ -67,12 +63,6 @@ export function SystemConfigurationTab({ settings }: { settings: SettingsData })
         DEFAULT_SITE_FEATURES.cmsEnabled,
       );
     }
-    if (key === "enable_directory") {
-      return normalizeBooleanSetting(
-        systemConfig.enable_directory?.value,
-        DEFAULT_SITE_FEATURES.directoryEnabled,
-      );
-    }
     if (key === "enable_blog") {
       return normalizeBooleanSetting(
         systemConfig.enable_blog?.value,
@@ -85,28 +75,10 @@ export function SystemConfigurationTab({ settings }: { settings: SettingsData })
         DEFAULT_SITE_FEATURES.crmEnabled,
       );
     }
-    if (key === "enable_ecommerce") {
-      return normalizeBooleanSetting(
-        systemConfig.enable_ecommerce?.value,
-        DEFAULT_SITE_FEATURES.ecommerceEnabled,
-      );
-    }
-    if (key === "enable_membership") {
-      return normalizeBooleanSetting(
-        systemConfig.enable_membership?.value,
-        DEFAULT_SITE_FEATURES.membershipEnabled,
-      );
-    }
     if (key === "enable_careers") {
       return normalizeBooleanSetting(
         systemConfig.enable_careers?.value,
         DEFAULT_SITE_FEATURES.careersEnabled,
-      );
-    }
-    if (key === "enable_portfolio") {
-      return normalizeBooleanSetting(
-        systemConfig.enable_portfolio?.value,
-        DEFAULT_SITE_FEATURES.portfolioEnabled,
       );
     }
     return normalizeBooleanSetting(
@@ -116,38 +88,26 @@ export function SystemConfigurationTab({ settings }: { settings: SettingsData })
   };
   const [values, setValues] = useState<Record<SystemConfigurationSettingKey, boolean>>({
     enable_cms: getStoredValue("enable_cms"),
-    enable_directory: getStoredValue("enable_directory"),
     enable_blog: getStoredValue("enable_blog"),
     enable_events: getStoredValue("enable_events"),
     enable_crm: getStoredValue("enable_crm"),
-    enable_ecommerce: getStoredValue("enable_ecommerce"),
-    enable_membership: getStoredValue("enable_membership"),
     enable_careers: getStoredValue("enable_careers"),
-    enable_portfolio: getStoredValue("enable_portfolio"),
   });
 
   useEffect(() => {
     setValues({
       enable_cms: getStoredValue("enable_cms"),
-      enable_directory: getStoredValue("enable_directory"),
       enable_blog: getStoredValue("enable_blog"),
       enable_events: getStoredValue("enable_events"),
       enable_crm: getStoredValue("enable_crm"),
-      enable_ecommerce: getStoredValue("enable_ecommerce"),
-      enable_membership: getStoredValue("enable_membership"),
       enable_careers: getStoredValue("enable_careers"),
-      enable_portfolio: getStoredValue("enable_portfolio"),
     });
   }, [
     systemConfig.enable_cms?.value,
-    systemConfig.enable_directory?.value,
     systemConfig.enable_blog?.value,
     systemConfig.enable_events?.value,
     systemConfig.enable_crm?.value,
-    systemConfig.enable_ecommerce?.value,
-    systemConfig.enable_membership?.value,
     systemConfig.enable_careers?.value,
-    systemConfig.enable_portfolio?.value,
   ]);
 
   const saveMutation = useMutation({
