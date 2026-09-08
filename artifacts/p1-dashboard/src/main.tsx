@@ -33,6 +33,8 @@ import {
   Plug,
   SlidersHorizontal,
   ChevronDown,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import {
   getMyWorkOrders,
@@ -164,6 +166,8 @@ function App() {
     [menu, setMenu] = useState(false);
   const [authMode, setAuthMode] = useState("login"),
     [mfa, setMfa] = useState<any>(null);
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  useEffect(() => setPasswordVisible(false), [authMode]);
   const applyRoute = (
     route: Extract<DashboardRoute, { kind: "page" }>,
     historyMode: "push" | "replace" | "none" = "push",
@@ -701,6 +705,32 @@ function App() {
       <input name={name} type={type} required={required} />
     </label>
   );
+  const passwordField = (label: string) => (
+    <label>
+      {label}
+      <span className="password-field">
+        <input
+          name="password"
+          type={passwordVisible ? "text" : "password"}
+          autoComplete={
+            authMode === "signup" || authMode === "new-password"
+              ? "new-password"
+              : "current-password"
+          }
+          required
+        />
+        <button
+          type="button"
+          className="password-toggle"
+          aria-label={passwordVisible ? "Hide password" : "Show password"}
+          aria-pressed={passwordVisible}
+          onClick={() => setPasswordVisible((visible) => !visible)}
+        >
+          {passwordVisible ? <EyeOff size={18} /> : <Eye size={18} />}
+        </button>
+      </span>
+    </label>
+  );
   const propertySelect = () => (
     <label>
       Property
@@ -906,12 +936,10 @@ function App() {
             {!["totp", "recovery", "new-password"].includes(authMode) &&
               field("email", "Email address", "email")}
             {!["reset", "totp", "recovery"].includes(authMode) &&
-              field(
-                "password",
+              passwordField(
                 authMode === "signup"
                   ? "Choose a password (at least 12 characters)"
                   : "Password",
-                "password",
               )}
             {authMode === "signup" &&
               (boot?.initialized
