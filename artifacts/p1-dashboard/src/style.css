@@ -1232,6 +1232,7 @@ textarea {
   --atlas-copper: #b7784d;
   --atlas-line: #d8ddd1;
   --atlas-subtle: #eef0e8;
+  --atlas-surface-inset: clamp(18px, 2vw, 24px);
 }
 body { background: var(--atlas-paper); }
 .sidebar {
@@ -1314,14 +1315,14 @@ body { background: var(--atlas-paper); }
 .panel-heading,
 .data-surface-header {
   min-height: 72px;
-  padding: 18px 24px;
+  padding: 18px var(--atlas-surface-inset);
   background: rgb(255 255 255 / 62%);
 }
 .panel-heading h2,
 .data-surface-header h2 { font-size: 16px; color: var(--atlas-ink); }
 .panel-heading button,
 .text-action { color: #46683e; font-weight: 650; }
-.schedule-row { padding: 18px 24px; }
+.schedule-row { padding: 18px var(--atlas-surface-inset); }
 .schedule-row:hover { background: #fafbf7; }
 .schedule-row:has(.quiet-action) {
   position: relative;
@@ -1351,8 +1352,50 @@ body { background: var(--atlas-paper); }
 .property-card:hover { transform: translateY(-2px); border-color: #bac8a6; }
 .property-grid { gap: 18px; }
 .table-wrap { border-radius: 0 0 14px 14px; }
-th { background: #f5f6f0; padding: 13px 24px; letter-spacing: .04em; }
-td { padding: 16px 24px; }
+th { background: #f5f6f0; padding: 13px var(--atlas-surface-inset); letter-spacing: .04em; }
+td { padding: 16px var(--atlas-surface-inset); }
+
+/* Shared panel anatomy: direct content never sits against a card edge. */
+.panel > summary {
+  display: block;
+  padding: 18px var(--atlas-surface-inset);
+  font-weight: 650;
+}
+.panel > p:not(.empty),
+.panel > [role="status"],
+.panel > [role="alert"] {
+  margin: 0;
+  padding: 16px var(--atlas-surface-inset);
+}
+.panel > .inspection-report-list,
+.panel > .request-triage-layout,
+.panel > .request-card-list {
+  padding: var(--atlas-surface-inset);
+}
+.data-surface-body > p {
+  margin: 0;
+  padding: var(--atlas-surface-inset);
+}
+.data-surface-body > :where(div, section):not(.atlas-table-wrap, .activity-list, .context-list, .note-list, .atlas-empty) {
+  padding: var(--atlas-surface-inset);
+}
+.data-surface-body > .context-list > .muted {
+  margin: 0;
+  padding: 18px 16px;
+}
+.schedule-calendar > .calendar-toolbar,
+.schedule-calendar > .muted,
+.schedule-calendar > [role="status"],
+.schedule-calendar > [role="alert"] {
+  margin-left: var(--atlas-surface-inset);
+  margin-right: var(--atlas-surface-inset);
+}
+.schedule-calendar > .calendar-days,
+.schedule-calendar > .calendar-unscheduled,
+.schedule-calendar > .panel {
+  margin-left: var(--atlas-surface-inset);
+  margin-right: var(--atlas-surface-inset);
+}
 
 /* Overview cards rise gently from the desk surface without affecting other pages. */
 .desk-workspace-preview .metric,
