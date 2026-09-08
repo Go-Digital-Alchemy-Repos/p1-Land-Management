@@ -39,6 +39,27 @@ export async function capturePhoto(
     format: SaveFormat.JPEG,
     compress: 0.85,
   });
+  const normalizedFile = new File(normalized.uri);
+  const discardSourceCacheCopy = () => {
+    // Picker returns an application cache copy, never remove a photo-library asset.
+    if (
+      source.uri !== normalized.uri &&
+      source.uri.startsWith("file:") &&
+      source.uri.startsWith(Paths.cache.uri)
+    ) {
+      const temporary = new File(source.uri);
+      if (temporary.exists) temporary.delete();
+    }
+  };
+  try {
+    await vault.requirePhotoStorage(normalizedFile.size || 0);
+  } catch (error) {
+    // This generated cache copy never entered the protected queue. Removing it
+    // prevents an unencrypted abandoned capture while preserving prior work.
+    if (normalizedFile.exists) normalizedFile.delete();
+    discardSourceCacheCopy();
+    throw error;
+  }
   const manifest = {
     id: Crypto.randomUUID(),
     workOrderId,
@@ -51,14 +72,6 @@ export async function capturePhoto(
   // cache file. A process interruption can then resume secure staging later.
   await vault.rememberTemporaryPhoto(manifest, normalized.uri);
   await vault.stageRememberedPhoto(manifest.id);
-  // Picker returns an application cache copy, never remove a photo-library asset.
-  if (
-    source.uri !== normalized.uri &&
-    source.uri.startsWith("file:") &&
-    source.uri.startsWith(Paths.cache.uri)
-  ) {
-    const temporary = new File(source.uri);
-    if (temporary.exists) temporary.delete();
-  }
+  discardSourceCacheCopy();
   return true;
 }

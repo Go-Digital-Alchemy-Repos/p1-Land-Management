@@ -43,6 +43,10 @@ import { syncOperations } from "./src/core/sync";
 import { NATIVE_SUPPORT_GUIDANCE } from "./src/core/support-guidance";
 import { nativeRoleHome } from "./src/core/role-home";
 import { adjacentWorkday, validateWorkday } from "./src/core/workday";
+import {
+  protectedStorageMessage,
+  type ProtectedStorageStatus,
+} from "./src/core/storage-capacity";
 import { NativeAuth } from "./src/native/auth";
 import { openVault, type PhotoRecovery, type Vault } from "./src/native/vault";
 import { capturePhoto } from "./src/native/capture";
@@ -89,6 +93,7 @@ export function Application({ services }: { services: ApplicationServices }) {
     [notice, setNotice] = useState("Sign in with your invited P1 account."),
     [busy, setBusy] = useState(false),
     [pending, setPending] = useState(0),
+    [storage, setStorage] = useState<ProtectedStorageStatus | null>(null),
     [supportOpen, setSupportOpen] = useState(false),
     [syncing, setSyncing] = useState(false),
     [syncProgress, setSyncProgress] = useState("");
@@ -147,6 +152,7 @@ export function Application({ services }: { services: ApplicationServices }) {
     setWork([]);
     setSelected(null);
     setPending(0);
+    setStorage(null);
     setNote("");
     await close;
   }
@@ -154,6 +160,14 @@ export function Application({ services }: { services: ApplicationServices }) {
     if (!person || person.role !== "crew")
       throw new Error("Protected work is locked for this account.");
     return vault.require(origin, person.id);
+  }
+  async function refreshStorage(current = vault.current) {
+    if (!current) {
+      setStorage(null);
+      return;
+    }
+    const status = await current.storageStatus();
+    if (vault.current === current) setStorage(status);
   }
   async function loadOutbox(cursors: (OutboxCursor | null)[] = [null]) {
     const current = requireBoundVault();
@@ -305,7 +319,10 @@ export function Application({ services }: { services: ApplicationServices }) {
     const recovery = recoveredPhotoNotice.current;
     recoveredPhotoNotice.current = null;
     setNotice(recovery || "Current authorized work loaded.");
-    if (vault.current) setPending(await vault.current.pendingCount());
+    if (vault.current) {
+      setPending(await vault.current.pendingCount());
+      await refreshStorage();
+    }
   }
   useEffect(() => {
     void run(async () => {
@@ -460,6 +477,7 @@ export function Application({ services }: { services: ApplicationServices }) {
       const remaining = await current.pendingCount();
       assertCurrent();
       setPending(remaining);
+      await refreshStorage(current);
       setNotice(
         `Photos acknowledged: ${result.photosAcknowledged}. ${result.photoFailures ? `Unconfirmed photo attempts: ${result.photoFailures}. ` : ""}${result.operationsProcessed ? "Operation queue processed." : "Operations need retry or office review."} Saved items remaining: ${remaining}.`,
       );
@@ -516,6 +534,7 @@ export function Application({ services }: { services: ApplicationServices }) {
       )
     ) {
       setPending(await vault.current.pendingCount());
+      await refreshStorage();
       setNotice("Photo saved securely.");
     }
   };
@@ -676,6 +695,7 @@ export function Application({ services }: { services: ApplicationServices }) {
                   setOffline(true);
                   transport.bind(null);
                   setPending(await saved.pendingCount());
+                  await refreshStorage(saved);
                   const recovery = recoveredPhotoNotice.current;
                   recoveredPhotoNotice.current = null;
                   setNotice(
@@ -713,6 +733,11 @@ export function Application({ services }: { services: ApplicationServices }) {
               )}
               {person.role === "crew" && (
                 <>
+                  {storage && (
+                    <Text accessibilityLiveRegion="polite">
+                      {protectedStorageMessage(storage)}
+                    </Text>
+                  )}
                   {action("Download assignments", async () => {
                     await verify();
                     const rows = await loadDay();

@@ -22,6 +22,10 @@ import {
   CURRENT_VAULT_SCHEMA_VERSION,
   vaultMigrationPlan,
 } from "../core/vault-migrations";
+import {
+  photoStagingCapacityError,
+  protectedStorageStatus,
+} from "../core/storage-capacity";
 const secure = {
   keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
 };
@@ -291,6 +295,24 @@ async function createVault(
       return (await db.getFirstAsync<{ n: number }>(
         "SELECT (SELECT count(*) FROM operations)+(SELECT count(*) FROM photos) n",
       ))!.n;
+    },
+    async storageStatus() {
+      const queued = await db.getFirstAsync<{ count: number; bytes: number }>(
+        "SELECT count(*) count, coalesce(sum(length(bytes)),0) bytes FROM photos",
+      );
+      return protectedStorageStatus({
+        queuedPhotoCount: queued?.count || 0,
+        queuedPhotoBytes: queued?.bytes || 0,
+        availableBytes: Paths.availableDiskSpace,
+        totalBytes: Paths.totalDiskSpace,
+      });
+    },
+    async requirePhotoStorage(photoBytes: number) {
+      const error = photoStagingCapacityError(
+        await this.storageStatus(),
+        photoBytes,
+      );
+      if (error) throw new Error(error);
     },
     async enqueue(operation: FieldOperation) {
       const payload = JSON.stringify(fieldEventSchema.parse(operation));
