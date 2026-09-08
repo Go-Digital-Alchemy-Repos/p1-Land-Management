@@ -189,7 +189,8 @@ export function canAccessRoute(route: DashboardRoute, role: string | null | unde
   if (settingsSection) return ["owner", "manager"].includes(role);
   if (view === "Clients") return ["owner", "manager", "dispatch", "sales", "finance"].includes(role);
   if (view === "Agreements") return ["owner", "manager", "finance", "dispatch"].includes(role);
-  if (["Recurring", "Projects", "Inspections"].includes(view)) return ["owner", "manager", "dispatch"].includes(role);
+  if (view === "Projects") return ["owner", "manager", "dispatch", "finance"].includes(role);
+  if (["Recurring", "Inspections"].includes(view)) return ["owner", "manager", "dispatch"].includes(role);
   if (view === "Expenses" || view === "Billing") return ["owner", "manager", "finance"].includes(role);
   if (view === "Sales") return ["owner", "manager", "sales"].includes(role);
   return true;

@@ -1396,6 +1396,20 @@ td { padding: 16px 24px; }
 .service-agreements .agreement-list > button[aria-pressed="true"] { outline: 0; border-color: #9eb77c; background: #f0f4e5; box-shadow: inset 3px 0 #77924d; }
 .service-agreements .agreement-queue { margin: 0; padding: 22px 24px 24px; border-top-color: var(--atlas-line); }
 
+.project-phases { display: grid; gap: 16px; }
+.project-phases .section-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.project-phase-select { display: grid; max-width: 480px; gap: 6px; }
+.phase-list { display: grid; gap: 10px; }
+.phase-card { display: grid; gap: 12px; padding: 18px; border: 1px solid #dbe2d3; border-radius: 12px; background: #fff; }
+.phase-card h3 { margin: 0; color: #294537; }
+.phase-card p { margin: 6px 0 0; }
+.phase-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.phase-form { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; padding: 14px; border-radius: 10px; background: #f4f6ed; }
+.phase-form label { display: grid; gap: 6px; margin: 0; }
+.phase-form textarea { min-height: 76px; }
+.phase-override { display: grid; gap: 6px; padding: 10px; border-left: 3px solid #b47a19; background: #fff8e8; color: #77520f; font-size: 12px; font-weight: 700; }
+.warning { color: #9a6700; font-weight: 700; }
+
 @media (max-width: 900px) {
   .account-overview,.notes-layout { grid-template-columns: 1fr; }
   .context-rail { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -1430,4 +1444,5 @@ td { padding: 16px 24px; }
   .note-list article { padding: 16px; }
   .note-list time { width: 100%; margin-left: 0; }
   .service-agreements .agreement-workspace,.service-agreements .agreement-queue { padding: 16px; }
+  .project-phases .section-heading,.phase-form { display: grid; grid-template-columns: 1fr; }
 }

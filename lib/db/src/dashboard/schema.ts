@@ -545,6 +545,60 @@ export const project = pgTable(
   ],
 );
 
+export const projectPhase = pgTable(
+  "project_phase",
+  {
+    id: uuid().primaryKey().notNull(),
+    projectId: uuid("project_id").notNull(),
+    position: integer().notNull(),
+    title: text().notNull(),
+    scope: text().default("").notNull(),
+    status: text().default("planned").notNull(),
+    plannedStart: date("planned_start"),
+    plannedEnd: date("planned_end"),
+    actualStart: date("actual_start"),
+    actualEnd: date("actual_end"),
+    prerequisites: jsonb().default([]).notNull(),
+    overrideReason: text("override_reason"),
+    version: integer().default(1).notNull(),
+    publishedSummary: text("published_summary"),
+    publishedAt: timestamp("published_at", { withTimezone: true, mode: "string" }),
+    publishedBy: text("published_by"),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    unique("project_phase_project_id_position_key").on(table.projectId, table.position),
+    index("project_phase_project_position_idx").using("btree", table.projectId.asc().nullsLast().op("uuid_ops"), table.position.asc().nullsLast().op("int4_ops")),
+    index("project_phase_project_status_idx").using("btree", table.projectId.asc().nullsLast().op("uuid_ops"), table.status.asc().nullsLast().op("text_ops")),
+    foreignKey({ columns: [table.projectId], foreignColumns: [project.id], name: "project_phase_project_id_fkey" }),
+    foreignKey({ columns: [table.publishedBy], foreignColumns: [user.id], name: "project_phase_published_by_fkey" }),
+  ],
+);
+
+export const projectPhaseEvent = pgTable(
+  "project_phase_event",
+  {
+    id: uuid().primaryKey().notNull(),
+    phaseId: uuid("phase_id").notNull(),
+    actorId: text("actor_id").notNull(),
+    eventType: text("event_type").notNull(),
+    priorVersion: integer("prior_version"),
+    resultingVersion: integer("resulting_version").notNull(),
+    fromStatus: text("from_status"),
+    toStatus: text("to_status"),
+    reason: text(),
+    details: jsonb().default({}).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" }).defaultNow().notNull(),
+  },
+  (table) => [
+    index("project_phase_event_phase_created_idx").using("btree", table.phaseId.asc().nullsLast().op("uuid_ops"), table.createdAt.desc().nullsLast().op("timestamptz_ops")),
+    foreignKey({ columns: [table.phaseId], foreignColumns: [projectPhase.id], name: "project_phase_event_phase_id_fkey" }),
+    foreignKey({ columns: [table.actorId], foreignColumns: [user.id], name: "project_phase_event_actor_id_fkey" }),
+  ],
+);
+
 export const workOrder = pgTable(
   "work_order",
   {
@@ -569,6 +623,7 @@ export const workOrder = pgTable(
     recurringServiceId: uuid("recurring_service_id"),
     occurrenceDate: date("occurrence_date"),
     projectId: uuid("project_id"),
+    projectPhaseId: uuid("project_phase_id"),
   },
   (table) => [
     index("work_order_assigned_to_scheduled_at_idx").using(
@@ -600,6 +655,11 @@ export const workOrder = pgTable(
       columns: [table.projectId],
       foreignColumns: [project.id],
       name: "work_order_project_id_fkey",
+    }),
+    foreignKey({
+      columns: [table.projectPhaseId],
+      foreignColumns: [projectPhase.id],
+      name: "work_order_project_phase_id_fkey",
     }),
     check(
       "work_order_status_check",
@@ -678,6 +738,29 @@ export const billingDraft = pgTable(
       "billing_draft_status_check",
       sql`status = ANY (ARRAY['draft'::text, 'approved'::text, 'posted'::text, 'failed'::text])`,
     ),
+  ],
+);
+
+export const projectPhaseBillingIntent = pgTable(
+  "project_phase_billing_intent",
+  {
+    operationId: uuid("operation_id").primaryKey().notNull(),
+    phaseId: uuid("phase_id").notNull(),
+    billingDraftId: uuid("billing_draft_id").notNull(),
+    actorId: text("actor_id").notNull(),
+    expectedPhaseVersion: integer("expected_phase_version").notNull(),
+    fingerprint: text().notNull(),
+    kind: text().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    unique("project_phase_billing_intent_billing_draft_id_key").on(table.billingDraftId),
+    index("project_phase_billing_intent_phase_created_idx").using("btree", table.phaseId.asc().nullsLast().op("uuid_ops"), table.createdAt.desc().nullsLast().op("timestamptz_ops")),
+    foreignKey({ columns: [table.phaseId], foreignColumns: [projectPhase.id], name: "project_phase_billing_intent_phase_id_fkey" }),
+    foreignKey({ columns: [table.billingDraftId], foreignColumns: [billingDraft.id], name: "project_phase_billing_intent_billing_draft_id_fkey" }),
+    foreignKey({ columns: [table.actorId], foreignColumns: [user.id], name: "project_phase_billing_intent_actor_id_fkey" }),
   ],
 );
 

@@ -122,6 +122,7 @@ try {
       "src/dashboard/owner-recovery.test.ts",
       "src/dashboard/core-federation.test.ts",
       "src/dashboard/work-readiness.test.ts",
+      "src/dashboard/project-phase.test.ts",
       "../p1-dashboard/tests/schedule-dates.test.ts",
       "../p1-dashboard/tests/dashboard-routes.test.ts",
       "../p1-dashboard/tests/dashboard-contract.test.ts",

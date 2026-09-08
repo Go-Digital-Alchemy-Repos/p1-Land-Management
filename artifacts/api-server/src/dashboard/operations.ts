@@ -8,10 +8,12 @@ import { requireRole, HttpError } from "./policy";
 import { contactsApi } from "./contact-routes";
 import { assessmentApi } from "./assessment-routes";
 import { scheduleApi } from "./schedule-routes";
+import { projectPhaseApi } from "./project-phase.routes";
 export const operationsApi = Router();
 operationsApi.use(scheduleApi);
 operationsApi.use(assessmentApi);
 operationsApi.use(contactsApi);
+operationsApi.use(projectPhaseApi);
 const id = z.string().uuid(),
   text = z.string().trim().min(1).max(10000);
 operationsApi.get("/recurring-services", async (req, res) => {
@@ -105,7 +107,7 @@ operationsApi.post("/properties/:id/areas", async (req, res) => {
 });
 operationsApi.get("/projects", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, ["owner", "manager", "dispatch"]);
+  requireRole(a.role, ["owner", "manager", "dispatch", "finance"]);
   res.json(
     (
       await pool.query(
