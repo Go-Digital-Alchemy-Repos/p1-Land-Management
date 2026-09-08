@@ -1,6 +1,14 @@
-# Site Feature Apps
+# Site Feature Apps — P1 install policy
 
-Core Platform can now turn major apps on or off per site through system configuration. This allows the same codebase to serve sites that do not need every product area.
+The P1-owned Core Platform installation deliberately exposes only the CMS, blog/content, forms, CRM, media, permissions, and operational capabilities required by P1. The reusable Core source retains feature infrastructure for maintenance, but P1 runtime policy is authoritative over generic upstream defaults.
+
+| App | P1 runtime policy | Availability control |
+| --- | --- | --- |
+| CMS, blog/content, forms, CRM, media, permissions | Retained | Normal P1 configuration and role permissions |
+| Directory, eCommerce, Membership, Portfolio | Excluded | Hard-disabled by `getSiteFeatures()`; settings cannot expose their UI or API surfaces |
+| Events, Careers | Installed, disabled | Default off; may be explicitly enabled only after P1 accepts the related operating process |
+
+The public gateway and the P1 Core API must return an unavailable response for every excluded app route. P1 verification currently covers public ecommerce, directory, membership, and portfolio endpoints plus disabled Events and Careers endpoints. Existing generic source and historical upstream documentation are retained as reference material; they do not authorize those products in P1.
 
 ## Configuration
 
@@ -8,16 +16,16 @@ Feature app settings live in the `system_configuration` settings category:
 
 | Setting             | Shared Feature Key  | Default |
 | ------------------- | ------------------- | ------- |
-| `enable_directory`  | `directoryEnabled`  | Enabled |
+| `enable_directory`  | `directoryEnabled`  | Excluded in P1 |
 | `enable_blog`       | `blogEnabled`       | Enabled |
-| `enable_events`     | `eventsEnabled`     | Enabled |
+| `enable_events`     | `eventsEnabled`     | Disabled in P1 |
 | `enable_crm`        | `crmEnabled`        | Enabled |
-| `enable_ecommerce`  | `ecommerceEnabled`  | Enabled |
-| `enable_membership` | `membershipEnabled` | Enabled |
-| `enable_careers`    | `careersEnabled`    | Enabled |
-| `enable_portfolio`  | `portfolioEnabled`  | Enabled |
+| `enable_ecommerce`  | `ecommerceEnabled`  | Excluded in P1 |
+| `enable_membership` | `membershipEnabled` | Excluded in P1 |
+| `enable_careers`    | `careersEnabled`    | Disabled in P1 |
+| `enable_portfolio`  | `portfolioEnabled`  | Excluded in P1 |
 
-Admins manage these toggles in `Admin > Settings > System Configuration`.
+P1 administrators can manage only the retained and explicitly installable features. The excluded-module values are forced off at runtime and are not a future toggle.
 
 ## Runtime Contract
 
