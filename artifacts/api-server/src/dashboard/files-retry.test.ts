@@ -65,6 +65,26 @@ test("mounted image upload limits and immutable retry metadata with real databas
   const upload = (id: string, extra: Record<string, string> = {}, body: Uint8Array = bytes) => fetch(`${base}/files/${id}`, {
     method: "POST", headers: { "content-type": "image/png", "x-test-user": manager, "x-p1-property": property, "x-p1-work": work, "x-p1-classification": "before", ...extra }, body: body as unknown as NonNullable<Parameters<typeof fetch>[1]>["body"],
   });
+  const serviceRequest = randomUUID();
+  await pool.query(
+    "INSERT INTO service_request(id,property_id,user_id,description) VALUES($1,$2,$3,'Synthetic attachment request')",
+    [serviceRequest, property, manager],
+  );
+  const uploadAttachment = (
+    id: string,
+    extra: Record<string, string> = {},
+    body: Uint8Array = Buffer.from("synthetic attachment"),
+  ) =>
+    fetch(`${base}/requests/${serviceRequest}/attachments/${id}`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/pdf",
+        "x-test-user": manager,
+        "x-p1-file-name": "scope.pdf",
+        ...extra,
+      },
+      body: body as unknown as NonNullable<Parameters<typeof fetch>[1]>["body"],
+    });
   try {
     await t.test("oversized raw image returns local 413; unauthorized request is rejected before parsing", async () => {
       const big = Buffer.alloc(15 * 1024 * 1024 + 1);
@@ -138,6 +158,53 @@ test("mounted image upload limits and immutable retry metadata with real databas
       assert.equal(response.status, 200); assert.match(response.headers.get("content-type")!, /image\/webp/);
       assert.equal(response.headers.get("cache-control"), "no-store");
       assert.ok((await response.arrayBuffer()).byteLength > 0); assert.equal(writes, count);
+    });
+    await t.test("request attachments restrict type, preserve retries, and remain private downloads", async () => {
+      const attachmentId = randomUUID();
+      const before = writes;
+      assert.equal(
+        (
+          await uploadAttachment(randomUUID(), { "content-type": "text/html" })
+        ).status,
+        400,
+      );
+      let response = await uploadAttachment(attachmentId);
+      assert.equal(response.status, 201);
+      assert.deepEqual(await response.json(), { id: attachmentId, status: "accepted" });
+      assert.equal(writes, before + 1);
+      response = await uploadAttachment(attachmentId);
+      assert.equal(response.status, 200);
+      assert.deepEqual(await response.json(), { id: attachmentId, status: "accepted" });
+      assert.equal(writes, before + 1);
+      assert.equal(
+        (
+          await uploadAttachment(attachmentId, { "x-test-user": other })
+        ).status,
+        409,
+      );
+      response = await fetch(`${base}/requests/${serviceRequest}/attachments`, {
+        headers: { "x-test-user": manager },
+      });
+      assert.equal(response.status, 200);
+      assert.deepEqual(
+        ((await response.json()) as { id: string }[]).map((file) => file.id),
+        [attachmentId],
+      );
+      response = await fetch(`${base}/files/${attachmentId}/content`, {
+        headers: { "x-test-user": manager },
+      });
+      assert.equal(response.status, 200);
+      assert.equal(response.headers.get("cache-control"), "no-store");
+      assert.match(response.headers.get("content-disposition")!, /^attachment;/);
+      assert.equal(await response.text(), "synthetic attachment");
+      assert.equal(
+        (
+          await fetch(`${base}/files/${attachmentId}/content`, {
+            headers: { "x-test-user": "" },
+          })
+        ).status,
+        401,
+      );
     });
   } finally {
     await new Promise<void>((resolve, reject) => server.close(error => error ? reject(error) : resolve()));
