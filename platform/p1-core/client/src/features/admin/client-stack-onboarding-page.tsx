@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { AdminSidebar } from "./admin-sidebar";
 
 type RecordType = "A" | "AAAA" | "ALIAS" | "ANAME" | "CNAME";
 type ReadinessState = "pass" | "pending" | "fail";
@@ -184,248 +185,250 @@ export default function ClientStackOnboardingPage() {
   };
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6 p-4 md:p-6">
-      <div>
-        <h1 className="flex items-center gap-2 text-2xl font-semibold">
-          <Globe2 className="h-6 w-6" /> Client stack onboarding
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Generate a manual DNS plan and record read-only launch evidence. This workflow never
-          requests provider credentials or changes DNS.
-        </p>
-      </div>
-      <Card>
-        <CardHeader>
-          <CardTitle>1. Domain plan</CardTitle>
-          <CardDescription>
-            Enter the approved names and hosting targets. Record the current DNS values with the
-            provider before applying this plan.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form className="grid gap-4 md:grid-cols-2" onSubmit={generatePlan}>
-            <Field
-              label="Client stack ID"
-              value={stackId}
-              onChange={setStackId}
-              placeholder="better-farms-foundation"
-            />
-            <Field
-              label="Public apex domain"
-              value={publicDomain}
-              onChange={setPublicDomain}
-              placeholder="betterfarms.org"
-            />
-            <Field
-              label="Protected admin domain"
-              value={adminDomain}
-              onChange={setAdminDomain}
-              placeholder="admin.betterfarms.org"
-            />
-            <Field
-              label="Public-site target"
-              value={publicTarget}
-              onChange={setPublicTarget}
-              placeholder="sites.example-host.com"
-            />
-            <Field
-              label="Admin/backend target"
-              value={adminTarget}
-              onChange={setAdminTarget}
-              placeholder="core-platform.up.railway.app"
-            />
-            <Field
-              label="Manual DNS operator"
-              value={dnsOperator}
-              onChange={setDnsOperator}
-              placeholder="Named operator"
-            />
-            <Field
-              label="Launch owner"
-              value={launchOwner}
-              onChange={setLaunchOwner}
-              placeholder="Named approver"
-            />
-            <div className="space-y-2">
-              <Label>Apex record type</Label>
-              <Select
-                value={apexRecordType}
-                onValueChange={(value) => setApexRecordType(value as RecordType)}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {["A", "AAAA", "ALIAS", "ANAME"].map((value) => (
-                    <SelectItem key={value} value={value}>
-                      {value}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label>Canonical public host</Label>
-              <RadioGroup
-                className="flex gap-5 pt-2"
-                value={canonicalHost}
-                onValueChange={(value) => setCanonicalHost(value as "apex" | "www")}
-              >
-                <label className="flex items-center gap-2">
-                  <RadioGroupItem value="apex" />
-                  Apex
-                </label>
-                <label className="flex items-center gap-2">
-                  <RadioGroupItem value="www" />
-                  www
-                </label>
-              </RadioGroup>
-            </div>
-            <div className="md:col-span-2">
-              <Button type="submit" disabled={planMutation.isPending}>
-                {planMutation.isPending ? "Generating…" : "Generate manual plan"}
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
-      {plan && (
+    <AdminSidebar>
+      <main className="mx-auto max-w-5xl space-y-6 p-4 md:p-6">
+        <div>
+          <h1 className="flex items-center gap-2 text-2xl font-semibold">
+            <Globe2 className="h-6 w-6" /> Client stack onboarding
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Generate a manual DNS plan and record read-only launch evidence. This workflow never
+            requests provider credentials or changes DNS.
+          </p>
+        </div>
         <Card>
           <CardHeader>
-            <CardTitle>Generated instructions</CardTitle>
+            <CardTitle>1. Domain plan</CardTitle>
             <CardDescription>
-              Public origin: {plan.publicOrigin} · Admin origin: {plan.adminOrigin}
+              Enter the approved names and hosting targets. Record the current DNS values with the
+              provider before applying this plan.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-5 text-sm">
-            <InstructionList title="Manual DNS instructions" items={plan.manualInstructions} />
-            <InstructionList title="Rollback preparation" items={plan.rollbackInstructions} />
-            <InstructionList title="Required verification" items={plan.requiredVerification} />
-            <div className="space-y-3 rounded-md border p-4">
-              <div>
-                <h3 className="font-medium">Read-only DNS propagation check</h3>
-                <p className="mt-1 text-muted-foreground">
-                  Queries public DNS only. It never sends provider credentials or changes records.
-                  ALIAS and ANAME records require provider read-only evidence because they are not
-                  standard DNS types.
-                </p>
-              </div>
-              <Button
-                variant="outline"
-                onClick={() => dnsVerificationMutation.mutate()}
-                disabled={dnsVerificationMutation.isPending}
-              >
-                {dnsVerificationMutation.isPending ? "Verifying DNS…" : "Verify published DNS"}
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => evidenceMutation.mutate()}
-                disabled={evidenceMutation.isPending}
-              >
-                {evidenceMutation.isPending ? "Loading evidence…" : "View recorded evidence"}
-              </Button>
-              {dnsVerification && (
-                <div className="space-y-2">
-                  <p className="font-medium">
-                    DNS status:{" "}
-                    {dnsVerification.status === "ready" ? "ready" : dnsVerification.status}
-                  </p>
-                  {dnsVerification.records.map((record) => (
-                    <div className="rounded border p-3" key={`${record.fqdn}-${record.type}`}>
-                      <p className="font-medium">
-                        {record.fqdn} {record.type}: {record.status}
-                      </p>
-                      <p className="text-muted-foreground">{record.message}</p>
-                      {record.observedValues.length > 0 && (
-                        <p className="text-muted-foreground">
-                          Observed: {record.observedValues.join(", ")}
-                        </p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-              {evidenceRecords.length > 0 && (
-                <div className="space-y-1 text-sm text-muted-foreground">
-                  <p className="font-medium text-foreground">Recorded evidence</p>
-                  {evidenceRecords.map((record) => (
-                    <p key={record.id}>
-                      {record.kind.replaceAll("_", " ")} —{" "}
-                      {new Date(record.recordedAt).toLocaleString()}
-                    </p>
-                  ))}
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-      {plan && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <ClipboardCheck className="h-5 w-5" />
-              2. Record read-only readiness evidence
-            </CardTitle>
-            <CardDescription>
-              Set each observed check after the DNS operator completes their verification. Pending
-              does not authorize a cutover.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {Object.entries(readinessLabels).map(([key, label]) => (
-              <div
-                className="flex flex-col justify-between gap-2 border-b pb-3 sm:flex-row sm:items-center"
-                key={key}
-              >
-                <Label>{label}</Label>
+          <CardContent>
+            <form className="grid gap-4 md:grid-cols-2" onSubmit={generatePlan}>
+              <Field
+                label="Client stack ID"
+                value={stackId}
+                onChange={setStackId}
+                placeholder="better-farms-foundation"
+              />
+              <Field
+                label="Public apex domain"
+                value={publicDomain}
+                onChange={setPublicDomain}
+                placeholder="betterfarms.org"
+              />
+              <Field
+                label="Protected admin domain"
+                value={adminDomain}
+                onChange={setAdminDomain}
+                placeholder="admin.betterfarms.org"
+              />
+              <Field
+                label="Public-site target"
+                value={publicTarget}
+                onChange={setPublicTarget}
+                placeholder="sites.example-host.com"
+              />
+              <Field
+                label="Admin/backend target"
+                value={adminTarget}
+                onChange={setAdminTarget}
+                placeholder="core-platform.up.railway.app"
+              />
+              <Field
+                label="Manual DNS operator"
+                value={dnsOperator}
+                onChange={setDnsOperator}
+                placeholder="Named operator"
+              />
+              <Field
+                label="Launch owner"
+                value={launchOwner}
+                onChange={setLaunchOwner}
+                placeholder="Named approver"
+              />
+              <div className="space-y-2">
+                <Label>Apex record type</Label>
                 <Select
-                  value={readiness[key]}
-                  onValueChange={(value) =>
-                    setReadiness((current) => ({ ...current, [key]: value as ReadinessState }))
-                  }
+                  value={apexRecordType}
+                  onValueChange={(value) => setApexRecordType(value as RecordType)}
                 >
-                  <SelectTrigger className="w-full sm:w-40">
+                  <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="pass">Pass</SelectItem>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="fail">Fail</SelectItem>
+                    {["A", "AAAA", "ALIAS", "ANAME"].map((value) => (
+                      <SelectItem key={value} value={value}>
+                        {value}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
-            ))}
-            <Button
-              onClick={() => readinessMutation.mutate()}
-              disabled={readinessMutation.isPending}
-            >
-              {readinessMutation.isPending ? "Evaluating…" : "Evaluate release readiness"}
-            </Button>
-            {readinessResult && (
-              <div
-                className={
-                  readinessResult.status === "ready"
-                    ? "rounded-md bg-emerald-50 p-3 text-emerald-900"
-                    : "rounded-md bg-amber-50 p-3 text-amber-900"
-                }
-              >
-                <div className="flex items-center gap-2 font-medium">
-                  <ShieldCheck className="h-4 w-4" />
-                  Status: {readinessResult.status}
-                </div>
-                {readinessResult.pending.length > 0 && (
-                  <p className="mt-1">Pending: {readinessResult.pending.join(", ")}</p>
-                )}
-                {readinessResult.failed.length > 0 && (
-                  <p className="mt-1">Blocked: {readinessResult.failed.join(", ")}</p>
-                )}
+              <div className="space-y-2">
+                <Label>Canonical public host</Label>
+                <RadioGroup
+                  className="flex gap-5 pt-2"
+                  value={canonicalHost}
+                  onValueChange={(value) => setCanonicalHost(value as "apex" | "www")}
+                >
+                  <label className="flex items-center gap-2">
+                    <RadioGroupItem value="apex" />
+                    Apex
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <RadioGroupItem value="www" />
+                    www
+                  </label>
+                </RadioGroup>
               </div>
-            )}
+              <div className="md:col-span-2">
+                <Button type="submit" disabled={planMutation.isPending}>
+                  {planMutation.isPending ? "Generating…" : "Generate manual plan"}
+                </Button>
+              </div>
+            </form>
           </CardContent>
         </Card>
-      )}
-    </div>
+        {plan && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Generated instructions</CardTitle>
+              <CardDescription>
+                Public origin: {plan.publicOrigin} · Admin origin: {plan.adminOrigin}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-5 text-sm">
+              <InstructionList title="Manual DNS instructions" items={plan.manualInstructions} />
+              <InstructionList title="Rollback preparation" items={plan.rollbackInstructions} />
+              <InstructionList title="Required verification" items={plan.requiredVerification} />
+              <div className="space-y-3 rounded-md border p-4">
+                <div>
+                  <h3 className="font-medium">Read-only DNS propagation check</h3>
+                  <p className="mt-1 text-muted-foreground">
+                    Queries public DNS only. It never sends provider credentials or changes records.
+                    ALIAS and ANAME records require provider read-only evidence because they are not
+                    standard DNS types.
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={() => dnsVerificationMutation.mutate()}
+                  disabled={dnsVerificationMutation.isPending}
+                >
+                  {dnsVerificationMutation.isPending ? "Verifying DNS…" : "Verify published DNS"}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => evidenceMutation.mutate()}
+                  disabled={evidenceMutation.isPending}
+                >
+                  {evidenceMutation.isPending ? "Loading evidence…" : "View recorded evidence"}
+                </Button>
+                {dnsVerification && (
+                  <div className="space-y-2">
+                    <p className="font-medium">
+                      DNS status:{" "}
+                      {dnsVerification.status === "ready" ? "ready" : dnsVerification.status}
+                    </p>
+                    {dnsVerification.records.map((record) => (
+                      <div className="rounded border p-3" key={`${record.fqdn}-${record.type}`}>
+                        <p className="font-medium">
+                          {record.fqdn} {record.type}: {record.status}
+                        </p>
+                        <p className="text-muted-foreground">{record.message}</p>
+                        {record.observedValues.length > 0 && (
+                          <p className="text-muted-foreground">
+                            Observed: {record.observedValues.join(", ")}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {evidenceRecords.length > 0 && (
+                  <div className="space-y-1 text-sm text-muted-foreground">
+                    <p className="font-medium text-foreground">Recorded evidence</p>
+                    {evidenceRecords.map((record) => (
+                      <p key={record.id}>
+                        {record.kind.replaceAll("_", " ")} —{" "}
+                        {new Date(record.recordedAt).toLocaleString()}
+                      </p>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+        {plan && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <ClipboardCheck className="h-5 w-5" />
+                2. Record read-only readiness evidence
+              </CardTitle>
+              <CardDescription>
+                Set each observed check after the DNS operator completes their verification. Pending
+                does not authorize a cutover.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {Object.entries(readinessLabels).map(([key, label]) => (
+                <div
+                  className="flex flex-col justify-between gap-2 border-b pb-3 sm:flex-row sm:items-center"
+                  key={key}
+                >
+                  <Label>{label}</Label>
+                  <Select
+                    value={readiness[key]}
+                    onValueChange={(value) =>
+                      setReadiness((current) => ({ ...current, [key]: value as ReadinessState }))
+                    }
+                  >
+                    <SelectTrigger className="w-full sm:w-40">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pass">Pass</SelectItem>
+                      <SelectItem value="pending">Pending</SelectItem>
+                      <SelectItem value="fail">Fail</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              ))}
+              <Button
+                onClick={() => readinessMutation.mutate()}
+                disabled={readinessMutation.isPending}
+              >
+                {readinessMutation.isPending ? "Evaluating…" : "Evaluate release readiness"}
+              </Button>
+              {readinessResult && (
+                <div
+                  className={
+                    readinessResult.status === "ready"
+                      ? "rounded-md bg-emerald-50 p-3 text-emerald-900"
+                      : "rounded-md bg-amber-50 p-3 text-amber-900"
+                  }
+                >
+                  <div className="flex items-center gap-2 font-medium">
+                    <ShieldCheck className="h-4 w-4" />
+                    Status: {readinessResult.status}
+                  </div>
+                  {readinessResult.pending.length > 0 && (
+                    <p className="mt-1">Pending: {readinessResult.pending.join(", ")}</p>
+                  )}
+                  {readinessResult.failed.length > 0 && (
+                    <p className="mt-1">Blocked: {readinessResult.failed.join(", ")}</p>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+      </main>
+    </AdminSidebar>
   );
 }
 
