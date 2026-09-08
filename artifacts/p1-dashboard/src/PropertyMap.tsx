@@ -3,7 +3,6 @@ import Map, { Marker, NavigationControl, type MapRef } from "react-map-gl/maplib
 import "maplibre-gl/dist/maplibre-gl.css";
 import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import { MapPin } from "lucide-react";
-import type { StyleSpecification } from "maplibre-gl";
 
 const MAP_STYLE_URL = "https://tiles.openfreemap.org/styles/positron";
 const P1_REGION: [number, number] = [34.95, -80.78];
@@ -25,23 +24,6 @@ function hasCoordinates(property: PropertyPoint) {
     Number.isFinite(longitude) &&
     Math.abs(longitude) <= 180
   );
-}
-
-function applyOperationsPalette(style: StyleSpecification): StyleSpecification {
-  return {
-    ...style,
-    layers: style.layers.map((layer) => {
-      if (layer.type === "background")
-        return { ...layer, paint: { ...layer.paint, "background-color": "#f4f7f4" } };
-      if (layer.id === "water" && layer.type === "fill")
-        return { ...layer, paint: { ...layer.paint, "fill-color": "#cce7f4" } };
-      if (layer.id === "waterway" && layer.type === "line")
-        return { ...layer, paint: { ...layer.paint, "line-color": "#8eb4c4" } };
-      if (layer.id.startsWith("boundary_") && layer.type === "line")
-        return { ...layer, paint: { ...layer.paint, "line-color": "#b4c7cd" } };
-      return layer;
-    }),
-  };
 }
 
 export function PropertyMap({
@@ -97,18 +79,6 @@ export function PropertyMap({
         touchPitch={false}
         style={{ height: "100%", width: "100%" }}
         onLoad={({ target }) => {
-          const original = target.getStyle();
-          const styled = applyOperationsPalette(original);
-          styled.layers.forEach((layer, index) => {
-            if (layer === original.layers[index] || !layer.paint) return;
-            Object.entries(layer.paint).forEach(([property, value]) =>
-              target.setPaintProperty(
-                layer.id,
-                property as Parameters<typeof target.setPaintProperty>[1],
-                value,
-              ),
-            );
-          });
           if (mappedProperties.length === 1) {
             target.jumpTo({
               center: [
