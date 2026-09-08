@@ -10,7 +10,7 @@ export async function generateRecurring() {
     );
     for (const s of services.rows) {
       await c.query(
-        "INSERT INTO work_order(id,property_id,title,scope,assigned_to,scheduled_at,recurring_service_id,occurrence_date) VALUES($1,$2,$3,$4,$5,($6::date+$7::time) AT TIME ZONE 'America/New_York',$8,$6) ON CONFLICT(recurring_service_id,occurrence_date) DO NOTHING",
+        "INSERT INTO work_order(id,property_id,title,scope,assigned_to,scheduled_at,recurring_service_id,occurrence_date,project_id,job_kind) VALUES($1,$2,$3,$4,$5,($6::date+$7::time) AT TIME ZONE 'America/New_York',$8,$6,$9,'recurring_visit') ON CONFLICT(recurring_service_id,occurrence_date) DO NOTHING",
         [
           randomUUID(),
           s.property_id,
@@ -20,6 +20,7 @@ export async function generateRecurring() {
           s.occurrence,
           s.local_time,
           s.id,
+          s.project_id,
         ],
       );
       await c.query(

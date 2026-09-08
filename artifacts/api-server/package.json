@@ -11,6 +11,7 @@
     "dev:dashboard": "tsx watch src/dashboard/main.ts",
     "build:dashboard": "node build-dashboard.mjs",
     "test:dashboard": "tsx --test src/dashboard/*.test.ts",
+    "test:dashboard:jobs": "tsx --test src/dashboard/jobs-lifecycle.test.ts",
     "migrate:dashboard": "tsx src/dashboard/migrate.ts",
     "worker:dashboard": "tsx src/dashboard/worker.ts"
   },

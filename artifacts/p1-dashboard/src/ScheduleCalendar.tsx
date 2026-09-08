@@ -127,7 +127,7 @@ export function ScheduleCalendar({
     );
   }
   return (
-    <section className="panel schedule-calendar" aria-label="Work calendar">
+    <section className="panel schedule-calendar" aria-label="Job schedule">
       <div className="panel-heading">
         <h2>Work calendar</h2>
         <span>America/New_York</span>
@@ -344,7 +344,7 @@ export function ScheduleCalendar({
       {canManage && (
         <details>
           <summary>
-            Unscheduled work ({visible.filter((w) => !w.scheduled_at).length})
+            Unscheduled Jobs ({visible.filter((w) => !w.scheduled_at).length})
           </summary>
           <div className="calendar-unscheduled">
             {visible.filter((w) => !w.scheduled_at).map(card)}

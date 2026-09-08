@@ -25,6 +25,7 @@ import {
 import { onboardClient, updateClient } from "./client-onboarding";
 import { agreementPreparationHealth } from "./agreement-preparation";
 import { geocodePropertyAddress } from "./property-geocoding";
+import { notifyRoles } from "./job-notifications";
 export const api = Router();
 const office: Role[] = ["owner", "manager", "dispatch", "sales", "finance"];
 const operations: Role[] = ["owner", "manager", "dispatch"];
@@ -973,20 +974,26 @@ api.get("/requests", async (req, res) => {
 api.post("/requests", async (req, res) => {
   const a = await actor(req);
   requireRole(a.role, [...office, "client"]);
-  const b = z.object({ propertyId: id, description: text }).parse(req.body);
+  const b = z.object({ propertyId: id, description: text, requesterContactId: id.optional(), source: z.enum(["portal", "manual"]).optional() }).parse(req.body);
+  const source = a.role === "client" ? "portal" : (b.source || "manual");
   await propertyAccess(a, b.propertyId);
   const key = randomUUID();
   await transaction(async (c) => {
     await requireOperationalProperty(c, b.propertyId);
+    if (b.requesterContactId) {
+      const contact = await c.query("SELECT 1 FROM contact c JOIN property p ON p.client_id=c.client_id WHERE c.id=$1 AND p.id=$2 AND c.archived=false", [b.requesterContactId, b.propertyId]);
+      if (!contact.rowCount) throw new HttpError(400, "Choose an active contact for this property");
+    }
     await c.query(
-      "INSERT INTO service_request(id,property_id,user_id,description) VALUES($1,$2,$3,$4)",
-      [key, b.propertyId, a.id, b.description],
+      "INSERT INTO service_request(id,property_id,user_id,description,source,requester_contact_id) VALUES($1,$2,$3,$4,$5,$6)",
+      [key, b.propertyId, a.id, b.description, source, b.requesterContactId || null],
     );
     await c.query(
       "INSERT INTO service_request_event(id,service_request_id,actor_id,event_type,prior_version,resulting_version,to_status,details) VALUES($1,$2,$3,'created',NULL,1,'new',$4)",
       [randomUUID(), key, a.id, JSON.stringify({ source: "requests" })],
     );
     await audit(c, a.id, "service_request.created", key);
+    await notifyRoles(c, ["owner", "manager", "sales"], "New service request", `A new ${source} request was received for service review.`, `service-request:${key}`);
   });
   res.status(201).json({ id: key });
 });

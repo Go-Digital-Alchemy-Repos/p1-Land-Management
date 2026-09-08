@@ -4,6 +4,7 @@ import { z } from "zod";
 import { pool, transaction } from "./database";
 import { HttpError } from "./policy";
 import type { Actor } from "./access";
+import { notifyClientContacts, notifyStaff } from "./job-notifications";
 export const scheduleQuery = z.object({
   from: z.string().date(),
   through: z.string().date(),
@@ -139,6 +140,8 @@ export async function rescheduleWork(
       "UPDATE work_order SET scheduled_at=$2,assigned_to=$3,version=version+1 WHERE id=$1 RETURNING id,version",
       [id, b.scheduledAt, assigned],
     );
+    await notifyStaff(c, assigned, "Job schedule updated", `${w.title} is scheduled for ${b.scheduledAt}.`, `job-schedule-staff:${id}:${r.rows[0].version}`);
+    await notifyClientContacts(c, w.property_id, "Job schedule updated", `${w.title} is scheduled for ${b.scheduledAt}.`, `job-schedule-client:${id}:${r.rows[0].version}`);
     await c.query(
       "INSERT INTO audit_event(id,user_id,action,entity_id,details) VALUES($1,$2,$3,$4,$5)",
       [

@@ -113,7 +113,14 @@ operationsApi.get("/projects", async (req, res) => {
   res.json(
     (
       await pool.query(
-        "SELECT j.*,p.name AS property_name FROM project j JOIN property p ON p.id=j.property_id AND p.lifecycle='operational' ORDER BY j.created_at DESC",
+        `SELECT j.*,COALESCE(string_agg(DISTINCT c.name,', '),'') AS client_names,
+          COALESCE(string_agg(DISTINCT p.name,', '),'') AS property_names
+         FROM project j
+         LEFT JOIN project_client pc ON pc.project_id=j.id
+         LEFT JOIN client c ON c.id=pc.client_id
+         LEFT JOIN project_property pp ON pp.project_id=j.id
+         LEFT JOIN property p ON p.id=pp.property_id AND p.lifecycle='operational'
+         GROUP BY j.id ORDER BY j.created_at DESC`,
       )
     ).rows,
   );
@@ -123,7 +130,8 @@ operationsApi.post("/projects", async (req, res) => {
   requireRole(a.role, ["owner", "manager"]);
   const b = z
     .object({
-      propertyId: id,
+      propertyId: id.optional(),
+      propertyIds: z.array(id).min(1).max(100).optional(),
       name: text,
       scope: text,
       phases: z
@@ -132,11 +140,19 @@ operationsApi.post("/projects", async (req, res) => {
         .default([]),
     })
     .parse(req.body);
+  const propertyIds = [...new Set(b.propertyIds || (b.propertyId ? [b.propertyId] : []))];
+  if (!propertyIds.length) throw new HttpError(400, "Choose at least one participating property");
   const key = randomUUID();
-  await operationalQuery(b.propertyId,
-    "INSERT INTO project(id,property_id,name,scope,phases) VALUES($1,$2,$3,$4,$5)",
-    [key, b.propertyId, b.name, b.scope, JSON.stringify(b.phases)],
-  );
+  await transaction(async (c) => {
+    const properties = (await c.query("SELECT id,client_id FROM property WHERE id=ANY($1::uuid[]) AND lifecycle='operational' FOR SHARE", [propertyIds])).rows;
+    if (properties.length !== propertyIds.length) throw new HttpError(400, "Choose operational participating properties");
+    await c.query("INSERT INTO project(id,property_id,name,scope,phases) VALUES($1,$2,$3,$4,$5)", [key, propertyIds[0], b.name, b.scope, JSON.stringify(b.phases)]);
+    for (const property of properties) {
+      await c.query("INSERT INTO project_property(project_id,property_id) VALUES($1,$2)", [key, property.id]);
+      await c.query("INSERT INTO project_client(project_id,client_id) VALUES($1,$2) ON CONFLICT DO NOTHING", [key, property.client_id]);
+    }
+    await c.query("INSERT INTO audit_event(id,user_id,action,entity_id) VALUES($1,$2,'project.created',$3)", [randomUUID(), a.id, key]);
+  });
   res.status(201).json({ id: key });
 });
 operationsApi.post("/projects/:id", async (req, res) => {

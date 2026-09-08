@@ -8,7 +8,13 @@
 import type { LegacyProjectPhase } from './legacyProjectPhase';
 
 export interface CreateProject {
-  propertyId: string;
+  propertyId?: string;
+  /**
+     * Participating client properties. The server derives client membership and never grants cross-client access.
+     * @minItems 1
+     * @maxItems 100
+     */
+  propertyIds?: string[];
   /**
      * @minLength 1
      * @maxLength 10000

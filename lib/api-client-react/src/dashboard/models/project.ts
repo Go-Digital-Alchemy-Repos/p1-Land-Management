@@ -8,8 +8,9 @@
 import type { LegacyProjectPhase } from './legacyProjectPhase';
 
 export interface Project {
-  id: string;
-  property_id: string;
+  /** @nullable */
+  id: string | null;
+  property_id?: string;
   name: string;
   scope: string;
   /** Legacy project status. The project-phase lifecycle is the authoritative detailed execution state. */
@@ -18,5 +19,9 @@ export interface Project {
   /** @minimum 1 */
   version: number;
   created_at: string;
-  property_name: string;
+  property_name?: string;
+  /** Staff-only participating-property summary. */
+  property_names: string;
+  /** Staff-only participating-client summary. */
+  client_names?: string;
 }

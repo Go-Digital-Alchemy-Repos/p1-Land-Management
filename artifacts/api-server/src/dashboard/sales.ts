@@ -80,10 +80,13 @@ salesApi.post("/estimates/:id/revise", async (req, res) => {
         409,
         "Approved scope is immutable; create a change order",
       );
+    const existingLines = await c.query("SELECT description,unit,quantity,unit_price_cents,position FROM estimate_line_item WHERE estimate_id=$1 ORDER BY position", [key]);
+    if (existingLines.rowCount && Number(e.amount_cents) !== b.amountCents)
+      throw new HttpError(409, "Revise estimate line items before changing the total");
     await c.query("UPDATE estimate SET is_current=false WHERE id=$1", [key]);
     const next = randomUUID();
     await c.query(
-      "INSERT INTO estimate(id,property_id,title,scope,amount_cents,revision,series_id,change_order_for) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
+      "INSERT INTO estimate(id,property_id,title,scope,amount_cents,revision,series_id,change_order_for,request_id,created_by,project_id,kind,terms,expires_at,recurring_config,agreement_template_id,agreement_template_version,agreement_template_snapshot) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,now()+interval '30 days',$14,$15,$16,$17)",
       [
         next,
         e.property_id,
@@ -93,8 +96,19 @@ salesApi.post("/estimates/:id/revise", async (req, res) => {
         e.revision + 1,
         e.series_id,
         e.change_order_for,
+        e.request_id,
+        e.created_by,
+        e.project_id,
+        e.kind,
+        e.terms,
+        e.recurring_config,
+        e.agreement_template_id,
+        e.agreement_template_version,
+        e.agreement_template_snapshot,
       ],
     );
+    for (const line of existingLines.rows)
+      await c.query("INSERT INTO estimate_line_item(id,estimate_id,position,description,unit,quantity,unit_price_cents) VALUES($1,$2,$3,$4,$5,$6,$7)", [randomUUID(), next, line.position, line.description, line.unit, line.quantity, line.unit_price_cents]);
     await c.query(
       "INSERT INTO audit_event(id,user_id,action,entity_id) VALUES($1,$2,$3,$4)",
       [randomUUID(), a.id, "estimate.revised", next],

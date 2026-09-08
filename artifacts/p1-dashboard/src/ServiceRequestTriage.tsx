@@ -1,9 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import {
-  canPrepareServiceRequestDraft,
-  serviceRequestTransitionTargets,
-  serviceRequestUiPolicy,
-} from "./service-request-triage.policy";
+import { serviceRequestTransitionTargets, serviceRequestUiPolicy } from "./service-request-triage.policy";
 import "./service-request-triage.css";
 import { RichTextEditor } from "./RichTextEditor";
 
@@ -39,11 +35,13 @@ export function ServiceRequestTriage({
   role,
   api,
   onRefresh,
+  onGenerateEstimate,
 }: {
   records: RequestRow[];
   role: string | null | undefined;
   api: Api;
   onRefresh: () => Promise<void>;
+  onGenerateEstimate?: (request: RequestRow) => void;
 }) {
   const policy = serviceRequestUiPolicy(role);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -65,7 +63,11 @@ export function ServiceRequestTriage({
   );
   const current = detail || selected;
   const targets = serviceRequestTransitionTargets(current?.status || "");
-  const canConvert = canPrepareServiceRequestDraft(role, current?.status);
+  // Normal client work moves through a client-approved estimate. The legacy
+  // planning-draft control remains in the component only for compatibility,
+  // but is not exposed by the Jobs lifecycle.
+  const canConvert = false;
+  const canGenerateEstimate = ["owner", "manager", "sales"].includes(role || "") && Boolean(current) && !["closed", "cancelled", "converted"].includes(current!.status);
 
   useEffect(() => {
     if (policy !== "read" && policy !== "manage") return;
@@ -236,6 +238,12 @@ export function ServiceRequestTriage({
                   This role can review request details but cannot change triage,
                   create work, or schedule service.
                 </p>
+              )}
+
+              {canGenerateEstimate && (
+                <button type="button" className="primary" onClick={() => onGenerateEstimate?.(current!)}>
+                  Generate estimate
+                </button>
               )}
 
               {policy === "manage" && targets.length > 0 && (

@@ -8,6 +8,7 @@
 import type {
   AccountMfaPolicy,
   AccountMfaPolicyUpdate,
+  ActivateRecurringJob,
   AgreementActivationPreview,
   AgreementChargeHistory,
   AgreementChargePreview,
@@ -28,6 +29,7 @@ import type {
   AgreementPreparationRetryPreviewInput,
   AgreementPreparationRetryReceipt,
   AgreementRecurrenceOption,
+  AgreementTemplate,
   AgreementVersion,
   AssessmentAvailability,
   AssessmentAvailabilityConfiguration,
@@ -50,12 +52,14 @@ import type {
   CommercialInquiry,
   CommercialInquiryDetail,
   CommercialInquiryPage,
+  CreateAgreementTemplate,
   CreateAssessmentBlackout,
   CreateBillingDraft,
   CreateClientContact,
   CreateClientNote,
   CreateDashboardClient,
   CreateDashboardProperty,
+  CreateEstimate,
   CreateExpense,
   CreateInspectionReport,
   CreateManualAssessmentSlot,
@@ -63,7 +67,6 @@ import type {
   CreateProjectPhase,
   CreatePropertyArea,
   CreateRecurringService,
-  CreateSalesEstimate,
   CreateSalesLead,
   CreateServiceAgreement,
   CreateServiceRequest,
@@ -113,6 +116,7 @@ import type {
   PublicationReceipt,
   ReadinessResult,
   ReadinessUpdate,
+  RecurringJob,
   RecurringServicePause,
   RescheduleWork,
   SalesLead,
@@ -2619,7 +2623,7 @@ export const listAgreementEstimates = async ( options?: RequestInit): Promise<Ag
 
 
 
-export const getCreateSalesEstimateUrl = () => {
+export const getCreateLifecycleEstimateUrl = () => {
 
 
 
@@ -2630,15 +2634,15 @@ export const getCreateSalesEstimateUrl = () => {
 /**
  * Owner, manager, or sales only. Creates a draft estimate for an operational property. It does not send, approve, schedule, dispatch, publish, post billing, or collect payment.
  */
-export const createSalesEstimate = async (createSalesEstimate: CreateSalesEstimate, options?: RequestInit): Promise<CreatedResource> => {
+export const createLifecycleEstimate = async (createEstimate: CreateEstimate, options?: RequestInit): Promise<CreatedResource> => {
 
-  return customFetch<CreatedResource>(getCreateSalesEstimateUrl(),
+  return customFetch<CreatedResource>(getCreateLifecycleEstimateUrl(),
   {
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
-      createSalesEstimate,)
+      createEstimate,)
   }
 );}
 
@@ -2799,6 +2803,116 @@ export const archiveCommercialAssessmentBaseline = async (id: string,
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
       commercialAssessmentArchive,)
+  }
+);}
+
+
+
+export const getCreateEstimateFromRequestUrl = (requestId: string,) => {
+
+
+
+
+  return `/api/v1/requests/${requestId}/estimates`
+}
+
+export const createEstimateFromRequest = async (requestId: string,
+    createEstimate: CreateEstimate, options?: RequestInit): Promise<CreatedResource> => {
+
+  return customFetch<CreatedResource>(getCreateEstimateFromRequestUrl(requestId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createEstimate,)
+  }
+);}
+
+
+
+export const getListRecurringJobsUrl = () => {
+
+
+
+
+  return `/api/v1/recurring-jobs`
+}
+
+export const listRecurringJobs = async ( options?: RequestInit): Promise<RecurringJob[]> => {
+
+  return customFetch<RecurringJob[]>(getListRecurringJobsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getActivateRecurringJobUrl = (recurringJobId: string,) => {
+
+
+
+
+  return `/api/v1/recurring-jobs/${recurringJobId}/activate`
+}
+
+export const activateRecurringJob = async (recurringJobId: string,
+    activateRecurringJob: ActivateRecurringJob, options?: RequestInit): Promise<OperationReceipt> => {
+
+  return customFetch<OperationReceipt>(getActivateRecurringJobUrl(recurringJobId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      activateRecurringJob,)
+  }
+);}
+
+
+
+export const getListAgreementTemplatesUrl = () => {
+
+
+
+
+  return `/api/v1/agreement-templates`
+}
+
+export const listAgreementTemplates = async ( options?: RequestInit): Promise<AgreementTemplate[]> => {
+
+  return customFetch<AgreementTemplate[]>(getListAgreementTemplatesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateAgreementTemplateUrl = () => {
+
+
+
+
+  return `/api/v1/agreement-templates`
+}
+
+export const createAgreementTemplate = async (createAgreementTemplate: CreateAgreementTemplate, options?: RequestInit): Promise<CreatedResource> => {
+
+  return customFetch<CreatedResource>(getCreateAgreementTemplateUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createAgreementTemplate,)
   }
 );}
 
