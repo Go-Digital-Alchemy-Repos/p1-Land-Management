@@ -2,7 +2,7 @@
 
 `/api/v1` endpoints use verified Better Auth sessions. Browser cookie mutations require the configured dashboard Origin. Future iOS/Android clients use the same account's signed bearer session token in `Authorization`; a valid bearer request is allowed without a browser Origin and is still subject to the same verified-email, MFA, role and property authorization checks. Errors use HTTP status and an error message; callers must preserve pending operations on failure.
 
-`lib/api-spec/dashboard.openapi.json` specifies selected shared dashboard contracts, including setup/identity, client contacts, field work, assessment availability and booking, integration health, property reads, project-phase and service-request lifecycles, scheduling, commercial intake, agreement work and binary photos. `pnpm --filter @workspace/api-spec codegen:dashboard` generates the isolated dashboard fetch client. The UI consumes its field methods. Other routes currently validate with Zod at the server and still require full OpenAPI coverage.
+`lib/api-spec/dashboard.openapi.json` specifies selected shared dashboard contracts, including setup/identity, client contacts, field work, assessment availability and booking, integration health, property reads, sales, project-phase and service-request lifecycles, scheduling, commercial intake, agreement work and binary photos. `pnpm --filter @workspace/api-spec codegen:dashboard` generates the isolated dashboard fetch client. The UI consumes its field methods. Other routes currently validate with Zod at the server and still require full OpenAPI coverage.
 
 | Domain                | Routes beneath /api/v1                                                                                                                       |
 | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -35,6 +35,12 @@ Billing creation requires `operationId` (UUID), `propertyId`, `estimateId`, `tit
 `POST /project-phases/:id/publish` is an owner/manager action for manager-review or accepted work and records a client-safe summary only. `POST /project-phases/:id/billing-intents` is owner/manager/finance-only. It requires an accepted phase, approved estimate, current phase version and UUID operation ID. The server stores one immutable intent and one draft billing record on an identical retry, enforces the estimate cap, and returns409 for a changed operation replay. It never posts to QuickBooks, sends an invoice, creates a payment link, records a payment, or publishes crew material.
 
 The phase list/detail, create/update, transition, publication, history, and billing-intent endpoints are generated from the shared OpenAPI contract. The generated types keep client publications and crew assignment views minimized; office-only event history and billing-intent records remain server-authorized.
+
+## Sales lifecycle
+
+The generated sales contract covers office lead listing and creation, eligible lead conversion, draft estimate creation, staff sending, client approval/decline, revisions, and change orders. The established `listAgreementEstimates` read method remains the shared typed reader for `/estimates`, so agreement callers retain their existing operation name and response model.
+
+Lead conversion makes a client/property linkage only. Estimate creation, revision, and change order creation do not send an estimate, schedule work, dispatch a crew, publish client material, post a QuickBooks invoice, create a payment link, or record a payment. An estimate approval remains a current-revision decision by an authorized client for an accessible property; office roles may only move a draft to `sent`.
 
 ## Client service requests (deployed migration 0021)
 

@@ -49,12 +49,18 @@ import type {
   CreateInspectionReport,
   CreateManualAssessmentSlot,
   CreateProjectPhase,
+  CreateSalesEstimate,
+  CreateSalesLead,
   CreateServiceAgreement,
   CreateServiceRequest,
   CreatedResource,
   DashboardMe,
   DashboardProperty,
   EditServiceAgreement,
+  EstimateChangeOrder,
+  EstimateDecision,
+  EstimateDecisionReceipt,
+  EstimateRevision,
   FieldSyncResponse,
   GenerateAssessmentAvailability,
   GeneratedAssessmentAvailability,
@@ -87,6 +93,9 @@ import type {
   ReadinessResult,
   ReadinessUpdate,
   RescheduleWork,
+  SalesLead,
+  SalesLeadConversion,
+  SalesLeadConversionReceipt,
   SchedulePage,
   ServiceAgreement,
   ServiceAgreementFinancial,
@@ -1212,6 +1221,159 @@ export const createProjectPhaseBillingIntent = async (id: string,
 
 
 
+export const getListSalesLeadsUrl = () => {
+
+
+
+
+  return `/api/v1/leads`
+}
+
+/**
+ * Office-only lead list. Owner, manager, and sales can see commercial assessment inquiries; dispatch and finance receive the ordinary operational lead list.
+ */
+export const listSalesLeads = async ( options?: RequestInit): Promise<SalesLead[]> => {
+
+  return customFetch<SalesLead[]>(getListSalesLeadsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateSalesLeadUrl = () => {
+
+
+
+
+  return `/api/v1/leads`
+}
+
+/**
+ * Office-only manual lead creation. It records intake only; it does not create a client, property, assessment, estimate, job, or billing record.
+ */
+export const createSalesLead = async (createSalesLead: CreateSalesLead, options?: RequestInit): Promise<CreatedResource> => {
+
+  return customFetch<CreatedResource>(getCreateSalesLeadUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createSalesLead,)
+  }
+);}
+
+
+
+export const getConvertSalesLeadUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/leads/${id}/convert`
+}
+
+/**
+ * Owner, manager, or sales only. Converts one eligible lead into a linked client and property. Repeating a completed conversion returns the existing linkage. It does not create an estimate, schedule work, dispatch, publish, bill, or call a provider.
+ */
+export const convertSalesLead = async (id: string,
+    salesLeadConversion: SalesLeadConversion, options?: RequestInit): Promise<SalesLeadConversionReceipt> => {
+
+  return customFetch<SalesLeadConversionReceipt>(getConvertSalesLeadUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      salesLeadConversion,)
+  }
+);}
+
+
+
+export const getRecordEstimateDecisionUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/estimates/${id}/decision`
+}
+
+/**
+ * Office staff may move a draft estimate to sent. Only an authorized client may approve or decline a current sent estimate for an accessible property. A recorded approval includes the approving identity and timestamp; stale or repeated decisions fail.
+ */
+export const recordEstimateDecision = async (id: string,
+    estimateDecision: EstimateDecision, options?: RequestInit): Promise<EstimateDecisionReceipt> => {
+
+  return customFetch<EstimateDecisionReceipt>(getRecordEstimateDecisionUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      estimateDecision,)
+  }
+);}
+
+
+
+export const getReviseEstimateUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/estimates/${id}/revise`
+}
+
+/**
+ * Owner, manager, or sales only. Creates the next revision in the same estimate series. Current revision and draft/sent state are required; an approved scope is immutable and requires a change order.
+ */
+export const reviseEstimate = async (id: string,
+    estimateRevision: EstimateRevision, options?: RequestInit): Promise<CreatedResource> => {
+
+  return customFetch<CreatedResource>(getReviseEstimateUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      estimateRevision,)
+  }
+);}
+
+
+
+export const getCreateEstimateChangeOrderUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/estimates/${id}/change-order`
+}
+
+/**
+ * Owner, manager, or sales only. Creates a separate draft change order only from an approved estimate. It does not alter the approved scope, post billing, send an invoice, or collect payment.
+ */
+export const createEstimateChangeOrder = async (id: string,
+    estimateChangeOrder: EstimateChangeOrder, options?: RequestInit): Promise<CreatedResource> => {
+
+  return customFetch<CreatedResource>(getCreateEstimateChangeOrderUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      estimateChangeOrder,)
+  }
+);}
+
+
+
 export const getListInspectionReportsUrl = () => {
 
 
@@ -2000,6 +2162,31 @@ export const listAgreementEstimates = async ( options?: RequestInit): Promise<Ag
     method: 'GET'
 
 
+  }
+);}
+
+
+
+export const getCreateSalesEstimateUrl = () => {
+
+
+
+
+  return `/api/v1/estimates`
+}
+
+/**
+ * Owner, manager, or sales only. Creates a draft estimate for an operational property. It does not send, approve, schedule, dispatch, publish, post billing, or collect payment.
+ */
+export const createSalesEstimate = async (createSalesEstimate: CreateSalesEstimate, options?: RequestInit): Promise<CreatedResource> => {
+
+  return customFetch<CreatedResource>(getCreateSalesEstimateUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createSalesEstimate,)
   }
 );}
 
