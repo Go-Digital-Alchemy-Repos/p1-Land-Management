@@ -12,6 +12,8 @@ Dashboard web deployment `0acd5ca3-35bd-4809-bce6-fba8f0a6ca7e` was released fro
 
 This is a dashboard presentation/performance release only. It introduces no schema or migration change, worker update, authentication or role change, provider call, billing action, customer communication, or business-data write. The subsequent `ccfcba2` OpenAPI/generated-client change is contract-only and does not require a runtime rollout.
 
+The same visual source line then shipped `f135e49`, `d398c8c`, and `1a88fe4`. It keeps the overview card treatment scoped to Overview, honors reduced-motion preferences, makes the application header sticky, and adds keyboard-equivalent row feedback for rows that contain a quiet action. Production deployment `a3022542-1d74-4215-8242-c9019fa660ee` reached `SUCCESS` from `1a88fe4` (image `sha256:75d86d9452d5d242c6f57fe8b42b8723c6f1bbd4e8c8de2a267b84448fded3c2`). The live bundle references the same WebP asset and CSS rules; health remained `200`. These changes also have no data, API, worker, provider, or authorization effect.
+
 Railway project: `e83f79dd-d901-4ab1-836b-bdf272b58dc2` (p1-Land-Management).
 
 | Resource                             | Identifier                           |
