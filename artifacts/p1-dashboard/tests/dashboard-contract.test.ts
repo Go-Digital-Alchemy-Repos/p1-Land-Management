@@ -31,6 +31,10 @@ import {
   recordEstimateDecision,
   reviseEstimate,
   createEstimateChangeOrder,
+  listDashboardClients,
+  createDashboardClient,
+  updateDashboardClient,
+  createDashboardProperty,
 } from "@workspace/api-client-react/dashboard";
 test("generated dashboard client preserves cursor filters, explicit nulls and conflict errors", async () => {
   const original = globalThis.fetch;
@@ -341,6 +345,57 @@ test("generated dashboard client preserves cursor filters, explicit nulls and co
       `/api/v1/estimates/${estimateId}/change-order`,
     );
     assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), changeOrder);
+    const clientId = "00000000-0000-4000-8000-000000000013";
+    await listDashboardClients();
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      "/api/v1/clients",
+    );
+    const primaryContact = {
+      firstName: "Avery",
+      lastName: "Morgan",
+      email: "avery@example.test",
+      position: "Property manager",
+      phone: "803-555-0199",
+    };
+    await createDashboardClient({
+      name: "Pine Ridge Holdings",
+      address: "123 Fieldstone Road",
+      phone: "803-555-0199",
+      primaryContact,
+    });
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), {
+      name: "Pine Ridge Holdings",
+      address: "123 Fieldstone Road",
+      phone: "803-555-0199",
+      primaryContact,
+    });
+    await updateDashboardClient(clientId, {
+      name: "Pine Ridge Holdings",
+      address: "123 Fieldstone Road",
+      phone: "803-555-0199",
+      email: null,
+      version: 1,
+      primaryContact,
+    });
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      `/api/v1/clients/${clientId}`,
+    );
+    await createDashboardProperty({
+      clientId,
+      name: "Pine Ridge",
+      address: "123 Fieldstone Road",
+      acreage: 125,
+      accessInstructions: "Call before entry.",
+    });
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), {
+      clientId,
+      name: "Pine Ridge",
+      address: "123 Fieldstone Road",
+      acreage: 125,
+      accessInstructions: "Call before entry.",
+    });
     fail = true;
     await assert.rejects(
       listCommercialInquiries(),

@@ -37,6 +37,7 @@ import type {
   BookAssessmentSlot,
   CancelServiceAgreement,
   ClientContact,
+  ClientOnboardingReceipt,
   ClientWorkspace,
   CommercialFollowUp,
   CommercialInquiry,
@@ -46,6 +47,8 @@ import type {
   CreateBillingDraft,
   CreateClientContact,
   CreateClientNote,
+  CreateDashboardClient,
+  CreateDashboardProperty,
   CreateInspectionReport,
   CreateManualAssessmentSlot,
   CreateProjectPhase,
@@ -54,6 +57,7 @@ import type {
   CreateServiceAgreement,
   CreateServiceRequest,
   CreatedResource,
+  DashboardClient,
   DashboardMe,
   DashboardProperty,
   EditServiceAgreement,
@@ -112,6 +116,7 @@ import type {
   SyncFieldEventsBody,
   UpdateAccountMfaPolicy,
   UpdateClientContact,
+  UpdateDashboardClient,
   UpdateProjectPhase,
   UploadFieldPhotoHeaders,
   WorkOrder,
@@ -639,6 +644,81 @@ export const bookAssessmentSlot = async (id: string,
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
       bookAssessmentSlot,)
+  }
+);}
+
+
+
+export const getListDashboardClientsUrl = () => {
+
+
+
+
+  return `/api/v1/clients`
+}
+
+/**
+ * Office roles receive active client records and primary-contact summary fields. Client accounts receive only their own IDs and names; crew cannot access this route.
+ */
+export const listDashboardClients = async ( options?: RequestInit): Promise<DashboardClient[]> => {
+
+  return customFetch<DashboardClient[]>(getListDashboardClientsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateDashboardClientUrl = () => {
+
+
+
+
+  return `/api/v1/clients`
+}
+
+/**
+ * Office-only client creation. Supplying primaryContact uses atomic onboarding and requires the business address and phone. Without it, the endpoint creates a minimal client record. Neither mode sends invitations, creates a property, schedules work, or posts billing.
+ */
+export const createDashboardClient = async (createDashboardClient: CreateDashboardClient, options?: RequestInit): Promise<CreatedResource | ClientOnboardingReceipt> => {
+
+  return customFetch<CreatedResource | ClientOnboardingReceipt>(getCreateDashboardClientUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createDashboardClient,)
+  }
+);}
+
+
+
+export const getUpdateDashboardClientUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/clients/${id}`
+}
+
+/**
+ * Office-only optimistic client update. The supplied version must be current; the primary contact is updated or created in the same transaction. A stale version fails without overwriting either record.
+ */
+export const updateDashboardClient = async (id: string,
+    updateDashboardClient: UpdateDashboardClient, options?: RequestInit): Promise<DashboardClient> => {
+
+  return customFetch<DashboardClient>(getUpdateDashboardClientUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      updateDashboardClient,)
   }
 );}
 
@@ -1515,6 +1595,31 @@ export const listDashboardProperties = async ( options?: RequestInit): Promise<D
     method: 'GET'
 
 
+  }
+);}
+
+
+
+export const getCreateDashboardPropertyUrl = () => {
+
+
+
+
+  return `/api/v1/properties`
+}
+
+/**
+ * Office-only property creation for a client. It records a property only; it does not schedule work, grant client access, publish material, or create billing.
+ */
+export const createDashboardProperty = async (createDashboardProperty: CreateDashboardProperty, options?: RequestInit): Promise<CreatedResource> => {
+
+  return customFetch<CreatedResource>(getCreateDashboardPropertyUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createDashboardProperty,)
   }
 );}
 
