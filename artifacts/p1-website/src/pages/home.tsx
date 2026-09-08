@@ -10,7 +10,7 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import heroImg from "@/assets/hero-bg.png";
 import featureImg from "@/assets/features/grading-construction.png";
-import testimonialImg from "@/assets/commercial-property.png";
+import propertyPlanningImg from "@/assets/commercial-property.png";
 import {
   Phone,
   ArrowUpRight,
@@ -274,7 +274,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* TESTIMONIAL */}
+      {/* PROPERTY PLANNING */}
       <section className="relative bg-background py-24">
         <div className="mx-auto max-w-[1100px] px-6">
           <div className="grid grid-cols-12 items-center gap-10">
@@ -282,7 +282,7 @@ export default function Home() {
               <div className="relative">
                 <div className="absolute -left-3 -top-3 h-full w-full rounded-[4px] bg-clay" style={{ opacity: 0.9 }} />
                 <div className="relative overflow-hidden rounded-[4px] border-4 border-white" style={{ boxShadow: "0 30px 60px -28px hsl(215 45% 15%)" }}>
-                  <img src={testimonialImg} alt="Illustrative commercial property" loading="lazy" decoding="async" {...responsiveImageProps(testimonialImg)} className="h-[340px] w-full object-cover" />
+                  <img src={propertyPlanningImg} alt="Illustrative commercial property" loading="lazy" decoding="async" {...responsiveImageProps(propertyPlanningImg)} className="h-[340px] w-full object-cover" />
                 </div>
               </div>
             </div>

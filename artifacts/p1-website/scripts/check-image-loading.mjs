@@ -8,7 +8,7 @@ const source = (path) => readFileSync(resolve(root, path), "utf8");
 
 const home = source("src/pages/home.tsx");
 assert.match(home, /src=\{heroImg\}[\s\S]*?fetchPriority="high"[\s\S]*?decoding="async"/, "homepage hero must keep high loading priority");
-for (const image of ["featureImg", "testimonialImg"]) {
+for (const image of ["featureImg", "propertyPlanningImg"]) {
   assert.match(home, new RegExp(`src=\\{${image.replace(".", "\\.")}\\}[\\s\\S]{0,180}?loading="lazy"[\\s\\S]{0,80}?decoding="async"`), `homepage ${image} must defer below-fold media`);
 }
 
