@@ -45,7 +45,7 @@ const services = [
   { n: "02", title: "Industrial & Agricultural Land", desc: "Heavy-duty care for farms, industrial sites and working rural acreage.", img: serviceIndustrial, icon: Tractor, slug: "industrial-agricultural" },
   { n: "03", title: "Land Clearing & Mulching", desc: "Selective clearing and forestry mulching that opens up acreage responsibly.", img: serviceClearing, icon: Trees, slug: "land-clearing" },
   { n: "04", title: "Fine Grading & Site Prep", desc: "Precision cut-and-fill that gives every project a true, build-ready foundation.", img: serviceGrading, icon: Mountain, slug: "grading-site-preparation" },
-  { n: "05", title: "Drainage Solutions", desc: "Engineered French drains, swales and retention to move water away for good.", img: serviceDrainage, icon: Droplets, slug: "drainage" },
+  { n: "05", title: "Drainage Solutions", desc: "French drains, swales and retention work planned around the property's water-management needs.", img: serviceDrainage, icon: Droplets, slug: "drainage" },
   { n: "06", title: "Turf Installation & Seeding", desc: "Sod and seed installation built for large-scale acreage and lasting cover.", img: serviceTurf, icon: Sprout, slug: "turf-installation-seeding" },
   { n: "07", title: "Tree & Brush Management", desc: "Removal, trimming and stump grinding handled with the right heavy iron.", img: serviceTree, icon: Trees, slug: "tree-services" },
   { n: "08", title: "Pond & Waterway Management", desc: "Design, excavation and long-term care of ponds and working waterways.", img: servicePond, icon: Waves, slug: "pond-waterway-management" },
@@ -55,7 +55,7 @@ const services = [
 const values = [
   { n: "01", title: "Heavy Equipment Fleet", desc: "Discuss the equipment and access requirements for your grading, clearing, and property maintenance work.", icon: Truck },
   { n: "02", title: "Large-Acreage Expertise", desc: "Built around properties most crews can't handle — farms, estates, HOAs and commercial sites.", icon: Ruler },
-  { n: "03", title: "Drainage Engineering", desc: "We read the land's slope and water like a survey, then solve it at the grade level.", icon: Droplets },
+  { n: "03", title: "Drainage Planning", desc: "We assess slope and water movement, then discuss grade-level work and any specialist involvement.", icon: Droplets },
   { n: "04", title: "Dependable Scheduling", desc: "Crews that show up, communicate and finish on the timeline we commit to.", icon: CalendarCheck },
 ];
 
@@ -260,9 +260,9 @@ export default function Home() {
             </p>
             <ul className="mt-6 space-y-3">
               {[
-                "Engineered cut-and-fill balancing",
-                "Pad compaction & sub-grade prep",
-                "Positive drainage built into every grade",
+                "Cut-and-fill planning within the agreed scope",
+                "Pad and sub-grade preparation",
+                "Drainage considerations coordinated with the project team",
               ].map((t) => (
                 <li key={t} className="flex items-start gap-3">
                   <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full" style={{ background: "hsl(145 40% 35% / 0.14)" }}>
@@ -297,7 +297,7 @@ export default function Home() {
                 <span className="text-tan" style={{ fontStyle: "italic" }}>groundwork.</span>
               </h2>
               <p className="mt-5 max-w-sm text-[15px] leading-relaxed" style={{ color: "hsl(40 20% 92% / 0.7)" }}>
-                Owners choose P1 because we bring the equipment, expertise and discipline that big properties demand — and we stand behind every grade we cut.
+                Discuss the equipment, scope, documentation and delivery responsibilities needed for your property before work begins.
               </p>
               <div className="mt-8 inline-flex items-center gap-2 rounded-[3px] px-4 py-2 font-sans text-[12px] font-bold uppercase" style={{ background: "hsl(145 40% 35% / 0.18)", color: "hsl(145 45% 70%)", letterSpacing: "0.16em" }}>
                 <ShieldCheck className="h-4 w-4" />

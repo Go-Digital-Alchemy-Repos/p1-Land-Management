@@ -76,7 +76,7 @@ export default function Drainage() {
               Poor drainage is one of the most common — and most costly — problems facing large property owners in the Carolinas. Heavy clay soils, compacted ground, improper grading, and flat topography create conditions where water sits, roots suffocate, structures erode, and maintenance costs multiply.
             </p>
             <p>
-              P1 approaches drainage the way engineers do: we assess the whole system, identify where water enters and where it needs to go, design a solution that moves it efficiently, and install it with the right materials for your soil type and site conditions.
+              P1 starts drainage work by reviewing the visible site conditions, where water enters and where it needs to go. The agreed scope identifies the work P1 will perform and any civil, engineering, permitting or specialist responsibilities that require separate confirmation.
             </p>
           </FeatureRow>
 

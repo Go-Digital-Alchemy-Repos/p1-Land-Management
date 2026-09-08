@@ -77,7 +77,7 @@ export default function TurfInstallationSeeding() {
               A healthy stand of turf — whether it's a commercial property lawn, a farm pasture, a sports field, or a residential estate — begins with proper site preparation. Bad grade, poor soil, improper species selection, and inadequate establishment practices are the reasons most large-acreage turf jobs fail within two to three years.
             </p>
             <p>
-              P1 handles the full process: soil testing, site grading, soil amendment, species selection appropriate to your use and location, and professional seeding or sod installation. When we're responsible for everything, we can stand behind the result.
+              Discuss soil testing, site grading, amendment, species selection and seeding or sod installation with P1 as part of the agreed scope. Establishment practices, responsibilities and any result commitments should be confirmed in writing before work begins.
             </p>
           </FeatureRow>
 

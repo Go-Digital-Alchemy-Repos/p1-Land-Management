@@ -26,7 +26,7 @@ const FAQS = [
   {
     question: "Does P1 grade sites for new construction?",
     answer:
-      "Yes. P1 prepares building pads, roads, and full sites for new homes, neighborhoods, and commercial developments across Upstate SC and Charlotte NC — delivering grade that meets engineered plans, using GPS-guided equipment where precision tolerances demand it.",
+      "P1 discusses building pads, roads, and site preparation for new homes, neighborhoods, and commercial developments across Upstate SC and Charlotte NC. Confirm approved plans, tolerances, equipment and any licensed specialist involvement before work begins.",
   },
   {
     question: "Why does grading matter before installing turf?",
@@ -116,7 +116,7 @@ export default function GradingSitePreparation() {
 
           <FeatureRow heading="Grading for New Construction" image={constructionImg} imageAlt="New residential neighborhood under construction on freshly graded land" reverse>
             <p>
-              Every building starts with the ground beneath it. Before foundations are poured, roads are paved, or utilities go in, the site has to be graded to spec — level pads, correct slopes for drainage, and a stable, compacted surface that holds up under construction traffic. P1 prepares sites for new homes, neighborhoods, and commercial developments across Upstate SC and Charlotte NC, delivering grade that meets engineered plans and keeps your project on schedule.
+              Every building starts with the ground beneath it. Before foundations are poured, roads are paved, or utilities go in, grading must be coordinated with the approved plans and project team. P1 discusses building pads, slopes, drainage and sub-grade preparation for new homes, neighborhoods and commercial developments across Upstate South Carolina and the Charlotte, NC region.
             </p>
           </FeatureRow>
 
