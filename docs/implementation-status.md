@@ -149,3 +149,10 @@ Native implementation `f12f752` additionally passed bundled Android emulator pro
 - **Public deployment:** Railway `3141af18-bdfe-469f-a5aa-baa2c14e80eb` succeeded.
 - **Live verification:** `https://www.p1landmanagement.com/` and `https://dashboard.p1landmanagement.com/api/healthz` returned HTTP 200 after deployment.
 - **Validation before release:** isolated synthetic PostgreSQL dashboard suite (33/33 including migration replay), dashboard API build, dashboard production build, and type checks passed.
+
+
+## September 12, 2026 — commercial assessment appointment staging candidate
+
+Branch `codex/commercial-assessment-sprint` adds migration `0028_commercial_assessment_appointments.sql`, a generated API contract and a dashboard scheduling panel. The candidate reserves an existing availability slot only for the baseline's exact linked prospect property; `assessment_slot.property_id` stays null, and the established operational booking API remains unchanged. Sales-role booking/cancellation use operation IDs, fingerprints, optimistic versions and audit records. Cancellation releases the slot while retaining history, and archiving rejects a confirmed appointment.
+
+A fresh disposable PostgreSQL database applied the entire dashboard migration chain and passed the commercial baseline/appointment test, including role denial, create and booking retries, slot isolation, cancellation, rebooking, immutable review evidence and archive protection. API-client type checking, dashboard type checking, the API bundle and dashboard production bundle passed. The dashboard build still reports existing MapLibre chunk-size warnings (map library gzip 265.40 KiB); performance work is tracked separately. No Railway staging or production deployment has occurred for this candidate. Remaining gate: deploy this exact commit only to the isolated staging dashboard, then complete real browser acceptance, authorization/recovery checks, backup/restore and rollback evidence.

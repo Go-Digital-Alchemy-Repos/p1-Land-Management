@@ -76,7 +76,7 @@ export async function saveAvailability(userId: string, input: unknown) {
     if (!r.rowCount)
       throw new HttpError(409, "Availability changed; reload before saving");
     await c.query(
-      "UPDATE assessment_slot SET cancelled=true WHERE managed=true AND property_id IS NULL AND starts_at>now()",
+      "UPDATE assessment_slot SET cancelled=true WHERE managed=true AND property_id IS NULL AND commercial_assessment_id IS NULL AND starts_at>now()",
     );
     await c.query(
       "INSERT INTO audit_event(id,user_id,action,entity_id) VALUES($1,$2,$3,$4)",
@@ -100,7 +100,7 @@ export async function addBlackout(
   return transaction(async (c) => {
     await c.query("SELECT pg_advisory_xact_lock(918278)");
     const conflict = await c.query(
-      "SELECT 1 FROM assessment_slot WHERE property_id IS NOT NULL AND cancelled=false AND starts_at-buffer_before*interval '1 minute'<$2 AND ends_at+buffer_after*interval '1 minute'>$1",
+      "SELECT 1 FROM assessment_slot WHERE (property_id IS NOT NULL OR commercial_assessment_id IS NOT NULL) AND cancelled=false AND starts_at-buffer_before*interval '1 minute'<$2 AND ends_at+buffer_after*interval '1 minute'>$1",
       [startsAt, endsAt],
     );
     if (conflict.rowCount)
@@ -137,7 +137,7 @@ export async function removeBlackout(userId: string, id: string) {
 export async function availableSlots() {
   return (
     await pool.query(
-      "SELECT s.id,s.starts_at,s.ends_at FROM assessment_slot s WHERE s.property_id IS NULL AND s.cancelled=false AND s.starts_at>now() AND NOT EXISTS(SELECT 1 FROM assessment_blackout b WHERE b.archived=false AND b.starts_at<s.ends_at+s.buffer_after*interval '1 minute' AND b.ends_at>s.starts_at-s.buffer_before*interval '1 minute') ORDER BY s.starts_at LIMIT 100",
+      "SELECT s.id,s.starts_at,s.ends_at FROM assessment_slot s WHERE s.property_id IS NULL AND s.commercial_assessment_id IS NULL AND s.cancelled=false AND s.starts_at>now() AND NOT EXISTS(SELECT 1 FROM assessment_blackout b WHERE b.archived=false AND b.starts_at<s.ends_at+s.buffer_after*interval '1 minute' AND b.ends_at>s.starts_at-s.buffer_before*interval '1 minute') ORDER BY s.starts_at LIMIT 100",
     )
   ).rows;
 }
@@ -150,7 +150,7 @@ export async function bookAssessment(
     await c.query("SELECT pg_advisory_xact_lock(918278)");
     await requireOperationalProperty(c,propertyId);
     const r = await c.query(
-      "UPDATE assessment_slot s SET property_id=$2,booked_by=$3 WHERE s.id=$1 AND s.property_id IS NULL AND s.cancelled=false AND s.starts_at>now() AND NOT EXISTS(SELECT 1 FROM assessment_blackout b WHERE b.archived=false AND b.starts_at<s.ends_at+s.buffer_after*interval '1 minute' AND b.ends_at>s.starts_at-s.buffer_before*interval '1 minute') RETURNING id",
+      "UPDATE assessment_slot s SET property_id=$2,booked_by=$3 WHERE s.id=$1 AND s.property_id IS NULL AND s.commercial_assessment_id IS NULL AND s.cancelled=false AND s.starts_at>now() AND NOT EXISTS(SELECT 1 FROM assessment_blackout b WHERE b.archived=false AND b.starts_at<s.ends_at+s.buffer_after*interval '1 minute' AND b.ends_at>s.starts_at-s.buffer_before*interval '1 minute') RETURNING id",
       [id, propertyId, userId],
     );
     if (!r.rowCount)
@@ -217,7 +217,7 @@ export async function generateAvailability(
     AND to_char(finish AT TIME ZONE 'America/New_York','YYYY-MM-DD HH24:MI')=to_char($1::timestamp+$2*interval '1 minute','YYYY-MM-DD HH24:MI')
     AND NOT EXISTS(SELECT 1 FROM assessment_blackout b WHERE b.archived=false AND b.starts_at<occupied_end AND b.ends_at>occupied_start)
     AND NOT EXISTS(SELECT 1 FROM assessment_slot s WHERE s.cancelled=false AND s.starts_at-s.buffer_before*interval '1 minute'<occupied_end AND s.ends_at+s.buffer_after*interval '1 minute'>occupied_start)
-    ON CONFLICT(starts_at) DO UPDATE SET ends_at=excluded.ends_at,buffer_before=excluded.buffer_before,buffer_after=excluded.buffer_after,cancelled=false,managed=true WHERE assessment_slot.cancelled=true AND assessment_slot.property_id IS NULL RETURNING id`,
+    ON CONFLICT(starts_at) DO UPDATE SET ends_at=excluded.ends_at,buffer_before=excluded.buffer_before,buffer_after=excluded.buffer_after,cancelled=false,managed=true WHERE assessment_slot.cancelled=true AND assessment_slot.property_id IS NULL AND assessment_slot.commercial_assessment_id IS NULL RETURNING id`,
             [
               local,
               config.duration_minutes,
@@ -271,7 +271,7 @@ export async function createManualAssessment(
     )
       throw new HttpError(409, "Slot overlaps a blackout");
     const r = await c.query(
-      "INSERT INTO assessment_slot(id,starts_at,ends_at) VALUES($1,$2,$3) ON CONFLICT(starts_at) DO UPDATE SET ends_at=excluded.ends_at,cancelled=false,managed=false,buffer_before=0,buffer_after=0 WHERE assessment_slot.cancelled=true AND assessment_slot.property_id IS NULL RETURNING id",
+      "INSERT INTO assessment_slot(id,starts_at,ends_at) VALUES($1,$2,$3) ON CONFLICT(starts_at) DO UPDATE SET ends_at=excluded.ends_at,cancelled=false,managed=false,buffer_before=0,buffer_after=0 WHERE assessment_slot.cancelled=true AND assessment_slot.property_id IS NULL AND assessment_slot.commercial_assessment_id IS NULL RETURNING id",
       [randomUUID(), startsAt, endsAt],
     );
     if (!r.rowCount) throw new HttpError(409, "Appointment is unavailable");

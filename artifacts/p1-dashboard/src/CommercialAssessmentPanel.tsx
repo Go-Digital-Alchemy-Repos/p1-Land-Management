@@ -1,8 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import {
   archiveCommercialAssessmentBaseline,
+  bookCommercialAssessmentAppointment,
+  cancelCommercialAssessmentAppointment,
   createCommercialAssessmentBaseline,
   getCommercialAssessmentBaseline,
+  listAvailableAssessmentSlots,
   listCommercialAssessmentBaselines,
   reviewCommercialAssessmentBaseline,
   updateCommercialAssessmentBaseline,
@@ -22,6 +25,9 @@ type AssessmentApi = {
   update: typeof updateCommercialAssessmentBaseline;
   review: typeof reviewCommercialAssessmentBaseline;
   archive: typeof archiveCommercialAssessmentBaseline;
+  listSlots: typeof listAvailableAssessmentSlots;
+  bookAppointment: typeof bookCommercialAssessmentAppointment;
+  cancelAppointment: typeof cancelCommercialAssessmentAppointment;
 };
 const defaultApi: AssessmentApi = {
   list: listCommercialAssessmentBaselines,
@@ -30,6 +36,9 @@ const defaultApi: AssessmentApi = {
   update: updateCommercialAssessmentBaseline,
   review: reviewCommercialAssessmentBaseline,
   archive: archiveCommercialAssessmentBaseline,
+  listSlots: listAvailableAssessmentSlots,
+  bookAppointment: bookCommercialAssessmentAppointment,
+  cancelAppointment: cancelCommercialAssessmentAppointment,
 };
 const categories = [
   ["grounds_vegetation", "Grounds & vegetation"], ["stormwater_drainage", "Stormwater & drainage"],
@@ -54,6 +63,8 @@ export function CommercialAssessmentPanel({ leadId, leadVersion, disabled, onLea
   const [findings, setFindings] = useState<Finding[]>([]), [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [loading, setLoading] = useState(false), [saving, setSaving] = useState(false), [error, setError] = useState("");
   const [archiveOpen, setArchiveOpen] = useState(false), [archiveReason, setArchiveReason] = useState("");
+  const [slots, setSlots] = useState<Awaited<ReturnType<typeof listAvailableAssessmentSlots>>>([]), [selectedSlotId, setSelectedSlotId] = useState("");
+  const [cancellingAppointmentId, setCancellingAppointmentId] = useState<string | null>(null), [cancellationReason, setCancellationReason] = useState("");
   const requestGeneration = useRef(0);
   const active = items.find((item) => item.status !== "archived");
   async function loadList() {
@@ -91,6 +102,29 @@ export function CommercialAssessmentPanel({ leadId, leadVersion, disabled, onLea
     try { const detail = await api.review(leadId, selected.id, { expectedVersion: selected.version }); setSelected(detail); await loadList(); }
     catch (e) { setError((e as Error).message); } finally { setSaving(false); }
   }
+  async function loadSlots() {
+    setSaving(true); setError("");
+    try { setSlots(await api.listSlots()); setSelectedSlotId(""); }
+    catch (e) { setError((e as Error).message); } finally { setSaving(false); }
+  }
+  async function bookAppointment() {
+    if (!selected || !selectedSlotId) return;
+    setSaving(true); setError("");
+    try {
+      await api.bookAppointment(leadId, selected.id, { operationId: crypto.randomUUID(), expectedAssessmentVersion: selected.version, slotId: selectedSlotId });
+      setSelectedSlotId(""); setSlots([]); await select(selected.id);
+    } catch (e) { setError((e as Error).message); } finally { setSaving(false); }
+  }
+  async function cancelAppointment() {
+    if (!selected || !cancellingAppointmentId || !cancellationReason.trim()) return;
+    const appointment = selected.appointments.find((item) => item.id === cancellingAppointmentId);
+    if (!appointment) return;
+    setSaving(true); setError("");
+    try {
+      await api.cancelAppointment(leadId, selected.id, appointment.id, { operationId: crypto.randomUUID(), expectedAppointmentVersion: appointment.version, reason: cancellationReason.trim() });
+      setCancellingAppointmentId(null); setCancellationReason(""); await select(selected.id);
+    } catch (e) { setError((e as Error).message); } finally { setSaving(false); }
+  }
   async function archive() {
     if (!selected || !archiveReason.trim()) return;
     setSaving(true); setError("");
@@ -120,6 +154,17 @@ export function CommercialAssessmentPanel({ leadId, leadVersion, disabled, onLea
       <h4>Recommended actions</h4>
       {recommendations.map((item, index) => <fieldset key={index} disabled={locked}><legend>Recommendation {index + 1}</legend><label>Related finding<select value={item.findingIndex ?? ""} onChange={(event) => setRecommendations((current) => current.map((value, itemIndex) => itemIndex === index ? { ...value, findingIndex: event.target.value === "" ? null : Number(event.target.value) } : value))}><option value="">General recommendation</option>{findings.map((finding, findingIndex) => <option key={findingIndex} value={findingIndex}>Finding {findingIndex + 1}: {finding.observation.slice(0, 60) || "Untitled"}</option>)}</select></label><label>Recommendation<textarea value={item.recommendation} maxLength={4000} onChange={(event) => setRecommendations((current) => current.map((value, itemIndex) => itemIndex === index ? { ...value, recommendation: event.target.value } : value))} /></label><label>Priority<select value={item.priority || ""} onChange={(event) => setRecommendations((current) => current.map((value, itemIndex) => itemIndex === index ? { ...value, priority: (event.target.value || null) as Priority | null } : value))}><option value="">Not assigned</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select></label><button type="button" onClick={() => setRecommendations((current) => current.filter((_, itemIndex) => itemIndex !== index))}>Remove recommendation</button></fieldset>)}
       {selected.status === "draft" && <button type="button" disabled={locked} onClick={() => setRecommendations((current) => [...current, emptyRecommendation()])}>Add recommendation</button>}
+      <section className="assessment-appointments" aria-label="Commercial assessment appointment">
+        <h4>Site-assessment appointment</h4>
+        {!selected.property_id && <p>Link this inquiry to a prospect property before reserving a site assessment.</p>}
+        {selected.property_id && selected.status !== "archived" && <>
+          <button type="button" disabled={disabled || saving} onClick={() => void loadSlots()}>{saving ? "Loading…" : "Find available times"}</button>
+          {slots.length > 0 && <div className="appointment-booking"><label>Available time<select value={selectedSlotId} onChange={(event) => setSelectedSlotId(event.target.value)} disabled={saving}><option value="">Choose an available time</option>{slots.map((slot) => <option key={slot.id} value={slot.id}>{new Date(slot.starts_at).toLocaleString()} – {new Date(slot.ends_at).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</option>)}</select></label><button type="button" className="primary" disabled={saving || !selectedSlotId} onClick={() => void bookAppointment()}>Reserve site assessment</button></div>}
+          {slots.length === 0 && <p className="appointment-help">Availability is loaded only when requested. Reserving a time does not create a client, proposal, work order, or invoice.</p>}
+        </>}
+        {selected.appointments.map((appointment) => <div className="appointment-history" key={appointment.id}><span><strong>{appointment.status === "confirmed" ? "Confirmed" : "Cancelled"}</strong> · appointment {appointment.id.slice(0, 8)}</span>{appointment.status === "confirmed" && <button type="button" disabled={disabled || saving} onClick={() => { setCancellingAppointmentId(appointment.id); setCancellationReason(""); }}>Cancel appointment</button>}{appointment.status === "cancelled" && <small>{appointment.cancellation_reason || "Cancelled"}</small>}</div>)}
+        {cancellingAppointmentId && <form className="assessment-archive" onSubmit={(event) => { event.preventDefault(); void cancelAppointment(); }}><label>Cancellation reason<textarea value={cancellationReason} maxLength={2000} required disabled={saving} onChange={(event) => setCancellationReason(event.target.value)} /></label><div><button type="submit" disabled={saving || !cancellationReason.trim()}>{saving ? "Cancelling…" : "Confirm cancellation"}</button><button type="button" disabled={saving} onClick={() => { setCancellingAppointmentId(null); setCancellationReason(""); }}>Keep appointment</button></div></form>}
+      </section>
       <div className="assessment-actions">{selected.status === "draft" && <><button type="button" className="primary" disabled={locked || !title.trim()} onClick={() => void save()}>{saving ? "Saving…" : "Save draft"}</button><button type="button" disabled={locked} onClick={() => void review()}>Mark reviewed and lock snapshot</button></>}{selected.status !== "archived" && <button type="button" disabled={disabled || saving} onClick={() => { setArchiveOpen(true); setArchiveReason(""); }}>Archive assessment</button>}</div>
       {archiveOpen && selected.status !== "archived" && <form className="assessment-archive" onSubmit={(event) => { event.preventDefault(); void archive(); }}>
         <p>Archiving preserves this private record and any reviewed snapshot. It does not create a proposal, booking, or work order.</p>

@@ -2,6 +2,7 @@ import { after, test } from "node:test";
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import { pool } from "./database";
+import { availableSlots, bookAssessment } from "./assessments";
 
 const testUrl = process.env.COMMERCIAL_TEST_DATABASE_URL;
 if (testUrl) {
@@ -28,10 +29,16 @@ test("commercial assessment baselines are sales-only, idempotent, versioned and 
     );
     await pool.query("INSERT INTO staff_profile(user_id,role) VALUES($1,$2)", [userId, role]);
   }
-  const leadId = randomUUID();
+  const leadId = randomUUID(), prospectPropertyId = randomUUID(), operationalClientId = randomUUID(), operationalPropertyId = randomUUID();
+  await pool.query("INSERT INTO client(id,name) VALUES($1,'Assessment operational client')", [operationalClientId]);
+  await pool.query("INSERT INTO property(id,client_id,name,address,lifecycle) VALUES($1,$2,'Assessment operational property','Synthetic','operational')", [operationalPropertyId, operationalClientId]);
   await pool.query(
-    "INSERT INTO lead(id,name,email,location,description,inquiry_type) VALUES($1,'Commercial assessor','assessment@example.test','Carolinas','Assessment request','commercial_site_assessment')",
-    [leadId],
+    "INSERT INTO property(id,client_id,name,address,lifecycle) VALUES($1,NULL,'Assessment prospect property','Synthetic','prospect')",
+    [prospectPropertyId],
+  );
+  await pool.query(
+    "INSERT INTO lead(id,name,email,location,description,inquiry_type,property_id) VALUES($1,'Commercial assessor','assessment@example.test','Carolinas','Assessment request','commercial_site_assessment',$2)",
+    [leadId, prospectPropertyId],
   );
   const original = auth.api.getSession;
   (auth.api as any).getSession = async ({ headers }: any) => ({
@@ -93,6 +100,41 @@ test("commercial assessment baselines are sales-only, idempotent, versioned and 
     assert.equal(reviewed.version, 3);
     assert.equal(reviewed.reviews.length, 1);
     assert.match(reviewed.reviews[0].snapshot_sha256, /^[a-f0-9]{64}$/);
+    const slotId = randomUUID();
+    await pool.query(
+      "INSERT INTO assessment_slot(id,starts_at,ends_at) VALUES($1,now()+interval '2 days',now()+interval '2 days 1 hour')",
+      [slotId],
+    );
+    const appointmentPath = `${path}/${receipt.assessmentId}/appointment`;
+    assert.equal((await call("dispatch", appointmentPath, { operationId: randomUUID(), expectedAssessmentVersion: 3, slotId })).status, 403);
+    const appointmentOperationId = randomUUID();
+    const booked = await call("sales", appointmentPath, { operationId: appointmentOperationId, expectedAssessmentVersion: 3, slotId });
+    assert.equal(booked.status, 201);
+    const bookedReceipt = await booked.json() as any;
+    assert.equal(bookedReceipt.propertyId, prospectPropertyId);
+    assert.equal(bookedReceipt.slotId, slotId);
+    const bookedRetry = await call("sales", appointmentPath, { operationId: appointmentOperationId, expectedAssessmentVersion: 3, slotId });
+    assert.equal(bookedRetry.status, 201);
+    assert.deepEqual(await bookedRetry.json(), bookedReceipt);
+    assert.deepEqual((await pool.query("SELECT property_id,commercial_assessment_id FROM assessment_slot WHERE id=$1", [slotId])).rows[0], { property_id: null, commercial_assessment_id: receipt.assessmentId });
+    assert.equal((await pool.query("SELECT count(*) FROM commercial_assessment_appointment WHERE assessment_id=$1 AND status='confirmed'", [receipt.assessmentId])).rows[0].count, "1");
+    assert.equal((await availableSlots()).some((slot) => slot.id === slotId), false);
+    await assert.rejects(bookAssessment(slotId, operationalPropertyId, actors.sales), /no longer available/);
+    assert.equal((await call("sales", `${path}/${receipt.assessmentId}/archive`, { expectedVersion: 3, reason: "Should not archive a confirmed appointment" })).status, 409);
+    const cancelOperationId = randomUUID();
+    const cancelPath = `${appointmentPath}/${bookedReceipt.appointmentId}/cancel`;
+    const cancelled = await call("manager", cancelPath, { operationId: cancelOperationId, expectedAppointmentVersion: 1, reason: "Schedule changed" });
+    assert.equal(cancelled.status, 200);
+    assert.deepEqual(await cancelled.json(), { appointmentId: bookedReceipt.appointmentId, assessmentId: receipt.assessmentId, status: "cancelled", version: 2 });
+    const cancelRetry = await call("manager", cancelPath, { operationId: cancelOperationId, expectedAppointmentVersion: 1, reason: "Schedule changed" });
+    assert.equal(cancelRetry.status, 200);
+    assert.equal((await pool.query("SELECT commercial_assessment_id FROM assessment_slot WHERE id=$1", [slotId])).rows[0].commercial_assessment_id, null);
+    const rebooked = await call("sales", appointmentPath, { operationId: randomUUID(), expectedAssessmentVersion: 3, slotId });
+    assert.equal(rebooked.status, 201);
+    const rebookedReceipt = await rebooked.json() as any;
+    const recancel = await call("sales", `${appointmentPath}/${rebookedReceipt.appointmentId}/cancel`, { operationId: randomUUID(), expectedAppointmentVersion: 1, reason: "Confirmed recovery path" });
+    assert.equal(recancel.status, 200);
+    assert.equal((await pool.query("SELECT count(*) FROM commercial_assessment_appointment WHERE assessment_id=$1", [receipt.assessmentId])).rows[0].count, "2");
     assert.equal((await call("sales", `${path}/${receipt.assessmentId}`, { expectedVersion: 3, title: "Initial site assessment", scopeNote: null, findings: [], recommendations: [] }, "PUT")).status, 409);
     await assert.rejects(
       pool.query("UPDATE commercial_assessment_review SET snapshot='{}' WHERE assessment_id=$1", [receipt.assessmentId]),
