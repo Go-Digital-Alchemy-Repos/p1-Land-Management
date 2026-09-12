@@ -1,5 +1,13 @@
 # P1 implementation status — September 7, 2026
 
+## September 12 — fresh shared-identity staging acceptance
+
+A new Railway `staging` environment (`ab648ea4-43a8-4181-bef1-0a40bdf94c3d`) was created without copying production variables, databases, users, or credentials. It has distinct Core and Dashboard PostgreSQL services plus fresh staging-only confidential-client, session, setup, bootstrap, and Better Auth material. The Core and Dashboard federation services each deployed GitHub `main` source `9c76d9bd0b48d3fb7780c9e2951ebe8280836f36` successfully as `86b52a95-4e8d-41e5-b16d-0ba6c419d94a` and `bd4da9dc-bdc6-4dc1-8647-7fbb12bbedd6`.
+
+A disposable staging Dashboard owner completed verified-email setup and MFA enrollment. A real Core bootstrap then passed exact HTTPS issuer/callback validation, S256 PKCE, fixed purpose, Dashboard authorization, explicit Core-admin linking, and authenticated CMS reads. Dashboard sign-out immediately made an existing Core privileged request return `401`; Core readiness remained `200`. This proves the paired handoff and revocation boundary in staging, not production authorization.
+
+Still required before a production enablement decision: owner-facing browser acceptance, MFA-policy-change denial, provider-outage fail-closed behavior with published-content availability, preview authorization, backup/restore and rollback rehearsal, and removal of the temporary staging bootstrap window.
+
 Historical implementation branch: `codex/p1-cms-crm`. Current integration and production source: GitHub `main`. Original public baseline: `5303da0`; copied Core source: `aad2057ca53e0a55a873bcbe9c62a73e267be541`. The [master plan](MASTER_PLAN.md) remains the full scope; a deployed dashboard slice does not complete it.
 
 ## September 8 — verified-source release record
