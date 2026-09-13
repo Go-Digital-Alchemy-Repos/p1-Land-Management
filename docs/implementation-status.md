@@ -1,5 +1,24 @@
 # P1 implementation status — September 7, 2026
 
+## September 12 — fresh shared-identity staging acceptance
+
+A new Railway `staging` environment (`ab648ea4-43a8-4181-bef1-0a40bdf94c3d`) was created without copying production variables, databases, users, or credentials. It has distinct Core and Dashboard PostgreSQL services plus fresh staging-only confidential-client, session, setup, bootstrap, and Better Auth material. The Core and Dashboard federation services each deployed GitHub `main` source `9c76d9bd0b48d3fb7780c9e2951ebe8280836f36` successfully as `86b52a95-4e8d-41e5-b16d-0ba6c419d94a` and `bd4da9dc-bdc6-4dc1-8647-7fbb12bbedd6`.
+
+A disposable staging Dashboard owner completed verified-email setup and MFA enrollment. A real Core bootstrap then passed exact HTTPS issuer/callback validation, S256 PKCE, fixed purpose, Dashboard authorization, explicit Core-admin linking, and authenticated CMS reads. Dashboard sign-out immediately made an existing Core privileged request return `401`; Core readiness remained `200`. This proves the paired handoff and revocation boundary in staging, not production authorization.
+
+On September 13, additional live isolated-staging checks passed with disposable fixtures only: an assured owner session was denied when attempting to disable owner MFA through both policy endpoints, and the database confirmed the requirement remained enabled. A linked Core admin could create a draft-only CMS page, obtain and read its preview, while the same preview returned `401` anonymously and the draft's public-slug route returned `404`. Revoking the synthetic Dashboard session made the existing Core CMS session return `401` while `www.p1landmanagement.com` remained `200`. During a scoped restart of the isolated Dashboard service, that same Core request returned fail-closed `503`; the public site remained `200`, and Core access resumed only after Dashboard recovered. A restricted staging dashboard backup restored into a disposable PostgreSQL 18 instance with the expected migration ledger and commercial-appointment tables. The three temporary Core bootstrap variables were then removed; the retired bootstrap path returns `403 bootstrap_unavailable` while linked federation remains active.
+
+Before a production enablement decision, complete designated-owner browser acceptance of the shared sign-in and CMS/editor journey, browser acceptance of the commercial assessment panel, and a production-specific backup/rollback rehearsal tied to the exact approved release revision. Production federation remains disabled.
+
+The remaining designated-owner staging browser journey is [scripted here](dashboard/SHARED_IDENTITY_OWNER_ACCEPTANCE.md).
+The bounded commercial appointment promotion procedure is [documented here](dashboard/COMMERCIAL_ASSESSMENT_RELEASE.md); it preserves migration, sales-history, and identity boundaries during any application rollback.
+
+## September 13 — live Core owner-route verification
+
+Live production requests confirm that the legacy owner link `https://www.p1landmanagement.com/setup` returns a noindex `308` to `/admin/setup` while preserving its query string. The protected CMS setup page and `/admin/login` both serve successfully. The non-secret Core status response now reports `needsSetup:false`, so first-admin setup is already consumed and must not be attempted again. The correct owner entry point is `/admin/login`; a forgotten password must use the existing reset process, since passwords and setup authorization codes are never recoverable from application data or configuration hashes.
+
+This is route and setup-state evidence only. It does not establish a successful owner sign-in, MFA recovery/enrollment, shared Dashboard/Core session, CMS editorial acceptance, or production federation enablement.
+
 Historical implementation branch: `codex/p1-cms-crm`. Current integration and production source: GitHub `main`. Original public baseline: `5303da0`; copied Core source: `aad2057ca53e0a55a873bcbe9c62a73e267be541`. The [master plan](MASTER_PLAN.md) remains the full scope; a deployed dashboard slice does not complete it.
 
 ## September 8 — verified-source release record
@@ -141,3 +160,14 @@ Native implementation `f12f752` additionally passed bundled Android emulator pro
 - **Public deployment:** Railway `3141af18-bdfe-469f-a5aa-baa2c14e80eb` succeeded.
 - **Live verification:** `https://www.p1landmanagement.com/` and `https://dashboard.p1landmanagement.com/api/healthz` returned HTTP 200 after deployment.
 - **Validation before release:** isolated synthetic PostgreSQL dashboard suite (33/33 including migration replay), dashboard API build, dashboard production build, and type checks passed.
+
+
+## September 12, 2026 — commercial assessment appointment staging candidate
+
+Branch `codex/commercial-assessment-sprint` adds migration `0028_commercial_assessment_appointments.sql`, a generated API contract and a dashboard scheduling panel. The candidate reserves an existing availability slot only for the baseline's exact linked prospect property; `assessment_slot.property_id` stays null, and the established operational booking API remains unchanged. Sales-role booking/cancellation use operation IDs, fingerprints, optimistic versions and audit records. Cancellation releases the slot while retaining history, and archiving rejects a confirmed appointment.
+
+A fresh disposable PostgreSQL database applied the entire dashboard migration chain and passed the commercial baseline/appointment test, including role denial, create and booking retries, slot isolation, cancellation, rebooking, immutable review evidence and archive protection. API-client type checking, dashboard type checking, the API bundle and dashboard production bundle passed. The dashboard build still reports existing MapLibre chunk-size warnings (map library gzip 265.40 KiB); performance work is tracked separately.
+
+On September 12, the exact candidate commit `c0b86e88032c55ec2ac69ea7c49e6fbdcfbcdcf7` deployed successfully to the isolated federation staging dashboard as Railway deployment `c89703a1-b3c9-4603-a6df-42d784a87385`; its health endpoint returned `200` and the migration ledger includes `0028_commercial_assessment_appointments.sql`. A restricted local PostgreSQL dump of the isolated staging database restored successfully into a disposable PostgreSQL 18 instance, where the migration ledger and both appointment tables were verified. A staging-only sales fixture then completed the deployed API flow: baseline create and exact retry, save, review, appointment booking and exact retry, cancellation and exact retry. The post-cancellation check confirmed the slot's operational `property_id` remained null, its commercial reservation was released, and the private appointment history contained no confirmed record.
+
+This is API-level staging and recovery evidence only. It does not constitute browser acceptance, owner authorization acceptance, preview/outage validation, a production deployment, or a production-promotion decision. Those gates remain open.

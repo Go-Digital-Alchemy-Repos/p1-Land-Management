@@ -9,7 +9,8 @@ export default defineConfig({
       client: "fetch",
       mode: "split",
       baseUrl: "/api/v1",
-      clean: true,
+      // Keep hand-written dashboard exports beside generated API files.
+      clean: false,
       headers: true,
       override: {
         fetch: { includeHttpResponseReturnType: false },

@@ -41,6 +41,10 @@ import type {
   ClientContact,
   ClientOnboardingReceipt,
   ClientWorkspace,
+  CommercialAssessmentAppointmentBooking,
+  CommercialAssessmentAppointmentBookingReceipt,
+  CommercialAssessmentAppointmentCancellation,
+  CommercialAssessmentAppointmentCancellationReceipt,
   CommercialAssessmentArchive,
   CommercialAssessmentCreate,
   CommercialAssessmentCreateReceipt,
@@ -67,6 +71,7 @@ import type {
   CreateProjectPhase,
   CreatePropertyArea,
   CreateRecurringService,
+  CreateSalesEstimate,
   CreateSalesLead,
   CreateServiceAgreement,
   CreateServiceRequest,
@@ -2632,9 +2637,9 @@ export const getCreateLifecycleEstimateUrl = () => {
 }
 
 /**
- * Owner, manager, or sales only. Creates a draft estimate for an operational property. It does not send, approve, schedule, dispatch, publish, post billing, or collect payment.
+ * Owner, manager, or sales only. Creates a draft estimate for an operational property. New callers send itemized CreateEstimate input. The amount-only CreateSalesEstimate input remains supported for compatibility and becomes one line item. It does not send, approve, schedule, dispatch, publish, post billing, or collect payment.
  */
-export const createLifecycleEstimate = async (createEstimate: CreateEstimate, options?: RequestInit): Promise<CreatedResource> => {
+export const createLifecycleEstimate = async (createEstimateCreateSalesEstimate: CreateEstimate | CreateSalesEstimate, options?: RequestInit): Promise<CreatedResource> => {
 
   return customFetch<CreatedResource>(getCreateLifecycleEstimateUrl(),
   {
@@ -2642,7 +2647,7 @@ export const createLifecycleEstimate = async (createEstimate: CreateEstimate, op
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
-      createEstimate,)
+      createEstimateCreateSalesEstimate,)
   }
 );}
 
@@ -2913,6 +2918,64 @@ export const createAgreementTemplate = async (createAgreementTemplate: CreateAgr
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
       createAgreementTemplate,)
+  }
+);}
+
+
+
+export const getBookCommercialAssessmentAppointmentUrl = (id: string,
+    assessmentId: string,) => {
+
+
+
+
+  return `/api/v1/commercial-inquiries/${id}/assessment-baselines/${assessmentId}/appointment`
+}
+
+/**
+ * Owner, manager, and sales only. Atomically reserves shared availability for a linked prospect property. It does not create an operational appointment, work order, client record, proposal, or invoice. A stable operation UUID returns the original receipt on retry.
+ */
+export const bookCommercialAssessmentAppointment = async (id: string,
+    assessmentId: string,
+    commercialAssessmentAppointmentBooking: CommercialAssessmentAppointmentBooking, options?: RequestInit): Promise<CommercialAssessmentAppointmentBookingReceipt> => {
+
+  return customFetch<CommercialAssessmentAppointmentBookingReceipt>(getBookCommercialAssessmentAppointmentUrl(id,assessmentId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      commercialAssessmentAppointmentBooking,)
+  }
+);}
+
+
+
+export const getCancelCommercialAssessmentAppointmentUrl = (id: string,
+    assessmentId: string,
+    appointmentId: string,) => {
+
+
+
+
+  return `/api/v1/commercial-inquiries/${id}/assessment-baselines/${assessmentId}/appointment/${appointmentId}/cancel`
+}
+
+/**
+ * Owner, manager, and sales only. Cancels a confirmed commercial assessment appointment, releases its availability slot, and preserves the appointment history and audit record. It does not change the prospect property lifecycle.
+ */
+export const cancelCommercialAssessmentAppointment = async (id: string,
+    assessmentId: string,
+    appointmentId: string,
+    commercialAssessmentAppointmentCancellation: CommercialAssessmentAppointmentCancellation, options?: RequestInit): Promise<CommercialAssessmentAppointmentCancellationReceipt> => {
+
+  return customFetch<CommercialAssessmentAppointmentCancellationReceipt>(getCancelCommercialAssessmentAppointmentUrl(id,assessmentId,appointmentId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      commercialAssessmentAppointmentCancellation,)
   }
 );}
 

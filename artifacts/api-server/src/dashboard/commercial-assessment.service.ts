@@ -51,6 +51,11 @@ const archiveInput = z.object({
   expectedVersion: z.number().int().positive(),
   reason: z.string().trim().min(1).max(2000),
 }).strict();
+const cancelAppointmentInput = z.object({
+  operationId: id,
+  expectedAppointmentVersion: z.number().int().positive(),
+  reason: z.string().trim().min(1).max(2000),
+}).strict();
 
 function digest(value: unknown) {
   return createHash("sha256").update(JSON.stringify(value)).digest("hex");
@@ -87,7 +92,11 @@ async function detail(c: { query: typeof pool.query }, leadId: string, assessmen
     "SELECT id,assessment_version,snapshot_sha256,reviewed_by,created_at FROM commercial_assessment_review WHERE assessment_id=$1 ORDER BY assessment_version DESC",
     [assessmentId],
   );
-  return { ...item, findings: findings.rows, recommendations: recommendations.rows, reviews: reviews.rows };
+  const appointments = await c.query(
+    "SELECT id,slot_id,property_id,status,version,created_by,cancelled_by,cancelled_at,cancellation_reason,created_at,updated_at FROM commercial_assessment_appointment WHERE assessment_id=$1 ORDER BY created_at DESC",
+    [assessmentId],
+  );
+  return { ...item, findings: findings.rows, recommendations: recommendations.rows, reviews: reviews.rows, appointments: appointments.rows };
 }
 
 export async function listCommercialAssessmentBaselines(a: Actor, leadId: string) {
@@ -170,8 +179,83 @@ export async function archiveCommercialAssessmentBaseline(a: Actor, leadId: stri
   return transaction(async (c) => {
     await commercialLead(c, leadId, true); const current = await assessment(c, leadId, assessmentId, true);
     if (current.status === "archived" || current.version !== body.expectedVersion) throw new HttpError(409, "Assessment changed; refresh before archiving");
+    if ((await c.query("SELECT id FROM commercial_assessment_appointment WHERE assessment_id=$1 AND status='confirmed' FOR UPDATE", [assessmentId])).rowCount)
+      throw new HttpError(409, "Cancel the confirmed appointment before archiving this assessment");
     const updated = (await c.query("UPDATE commercial_assessment SET status='archived',version=version+1,updated_by=$2,updated_at=now(),archived_by=$2,archived_at=now(),archive_reason=$3 WHERE id=$1 RETURNING version", [assessmentId, a.id, body.reason])).rows[0];
     await c.query("INSERT INTO audit_event(id,user_id,action,entity_id,details) VALUES($1,$2,'commercial.assessment_archived',$3,$4)", [randomUUID(), a.id, assessmentId, { leadId, version: updated.version }]);
     return detail(c, leadId, assessmentId);
+  });
+}
+
+const appointmentInput = z.object({
+  operationId: id,
+  expectedAssessmentVersion: z.number().int().positive(),
+  slotId: id,
+}).strict();
+
+/** Reserve existing availability for a commercial prospect without converting it
+ * to an operational property or exposing it through operational appointment APIs. */
+export async function bookCommercialAssessmentAppointment(a: Actor, leadId: string, assessmentId: string, input: unknown) {
+  sales(a); id.parse(leadId); id.parse(assessmentId); const body = appointmentInput.parse(input);
+  const fingerprint = digest({ leadId, assessmentId, ...body });
+  return transaction(async (c) => {
+    await c.query("SELECT pg_advisory_xact_lock(918278)");
+    const replay = (await c.query("SELECT * FROM commercial_assessment_appointment_operation WHERE id=$1", [body.operationId])).rows[0];
+    if (replay) {
+      if (replay.actor_id !== a.id || replay.assessment_id !== assessmentId || replay.fingerprint !== fingerprint) throw new HttpError(409, "Operation conflict");
+      return replay.result;
+    }
+    const lead = await commercialLead(c, leadId, true);
+    const current = await assessment(c, leadId, assessmentId, true);
+    if (current.version !== body.expectedAssessmentVersion) throw new HttpError(409, "Assessment changed; refresh before booking");
+    if (current.status === "archived") throw new HttpError(409, "Archived assessment cannot be booked");
+    if (!lead.property_id || current.property_id !== lead.property_id) throw new HttpError(409, "A linked prospect property is required before booking");
+    const property = await c.query("SELECT id,lifecycle,archived FROM property WHERE id=$1 FOR SHARE", [lead.property_id]);
+    if (!property.rowCount || property.rows[0].archived || property.rows[0].lifecycle !== "prospect") throw new HttpError(409, "A current prospect property is required before booking");
+    const existing = await c.query("SELECT id FROM commercial_assessment_appointment WHERE assessment_id=$1 AND status='confirmed' FOR UPDATE", [assessmentId]);
+    if (existing.rowCount) throw new HttpError(409, "Assessment already has a confirmed appointment");
+    const slot = await c.query(
+      "UPDATE assessment_slot s SET commercial_assessment_id=$2 WHERE s.id=$1 AND s.property_id IS NULL AND s.commercial_assessment_id IS NULL AND s.cancelled=false AND s.starts_at>now() AND NOT EXISTS(SELECT 1 FROM assessment_blackout b WHERE b.archived=false AND b.starts_at<s.ends_at+s.buffer_after*interval '1 minute' AND b.ends_at>s.starts_at-s.buffer_before*interval '1 minute') RETURNING id,starts_at,ends_at",
+      [body.slotId, assessmentId],
+    );
+    if (!slot.rowCount) throw new HttpError(409, "This appointment is no longer available");
+    const appointmentId = randomUUID(), result = { appointmentId, assessmentId, propertyId: lead.property_id, slotId: body.slotId, startsAt: slot.rows[0].starts_at, endsAt: slot.rows[0].ends_at };
+    await c.query("INSERT INTO commercial_assessment_appointment(id,assessment_id,slot_id,property_id,created_by) VALUES($1,$2,$3,$4,$5)", [appointmentId, assessmentId, body.slotId, lead.property_id, a.id]);
+    await c.query("INSERT INTO audit_event(id,user_id,action,entity_id,details) VALUES($1,$2,'commercial.assessment_appointment_booked',$3,$4)", [randomUUID(), a.id, appointmentId, { leadId, assessmentId, slotId: body.slotId }]);
+    await c.query("INSERT INTO commercial_assessment_appointment_operation(id,actor_id,assessment_id,fingerprint,result) VALUES($1,$2,$3,$4,$5)", [body.operationId, a.id, assessmentId, fingerprint, result]);
+    return result;
+  });
+}
+
+
+export async function cancelCommercialAssessmentAppointment(a: Actor, leadId: string, assessmentId: string, appointmentId: string, input: unknown) {
+  sales(a); id.parse(leadId); id.parse(assessmentId); id.parse(appointmentId); const body = cancelAppointmentInput.parse(input);
+  const fingerprint = digest({ action: "cancel", leadId, assessmentId, appointmentId, ...body });
+  return transaction(async (c) => {
+    await c.query("SELECT pg_advisory_xact_lock(918278)");
+    const replay = (await c.query("SELECT * FROM commercial_assessment_appointment_operation WHERE id=$1", [body.operationId])).rows[0];
+    if (replay) {
+      if (replay.actor_id !== a.id || replay.assessment_id !== assessmentId || replay.fingerprint !== fingerprint) throw new HttpError(409, "Operation conflict");
+      return replay.result;
+    }
+    await commercialLead(c, leadId, true);
+    await assessment(c, leadId, assessmentId, true);
+    const appointment = (await c.query(
+      "SELECT id,slot_id,status,version FROM commercial_assessment_appointment WHERE id=$1 AND assessment_id=$2 FOR UPDATE",
+      [appointmentId, assessmentId],
+    )).rows[0] as { id: string; slot_id: string; status: string; version: number } | undefined;
+    if (!appointment) throw new HttpError(404, "Commercial assessment appointment not found");
+    if (appointment.version !== body.expectedAppointmentVersion) throw new HttpError(409, "Appointment changed; refresh before cancelling");
+    if (appointment.status !== "confirmed") throw new HttpError(409, "Only a confirmed appointment can be cancelled");
+    const updated = await c.query(
+      "UPDATE commercial_assessment_appointment SET status='cancelled',version=version+1,cancelled_by=$2,cancelled_at=now(),cancellation_reason=$3,updated_at=now() WHERE id=$1 AND status='confirmed' RETURNING version",
+      [appointmentId, a.id, body.reason],
+    );
+    if (!updated.rowCount) throw new HttpError(409, "Appointment changed; refresh before cancelling");
+    await c.query("UPDATE assessment_slot SET commercial_assessment_id=NULL WHERE id=$1 AND commercial_assessment_id=$2", [appointment.slot_id, assessmentId]);
+    const result = { appointmentId, assessmentId, status: "cancelled", version: updated.rows[0].version };
+    await c.query("INSERT INTO audit_event(id,user_id,action,entity_id,details) VALUES($1,$2,'commercial.assessment_appointment_cancelled',$3,$4)", [randomUUID(), a.id, appointmentId, { leadId, assessmentId, slotId: appointment.slot_id, reason: body.reason }]);
+    await c.query("INSERT INTO commercial_assessment_appointment_operation(id,actor_id,assessment_id,fingerprint,result) VALUES($1,$2,$3,$4,$5)", [body.operationId, a.id, assessmentId, fingerprint, result]);
+    return result;
   });
 }

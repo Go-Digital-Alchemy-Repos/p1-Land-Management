@@ -5,6 +5,7 @@
  * Shared field, scheduling and commercial inbox contract. Other office routes remain documented in docs/dashboard/API.md.
  * OpenAPI spec version: 0.1.0
  */
+import type { CommercialAssessmentAppointment } from './commercialAssessmentAppointment';
 import type { CommercialAssessmentDetailReviewsItem } from './commercialAssessmentDetailReviewsItem';
 import type { CommercialAssessmentFinding } from './commercialAssessmentFinding';
 import type { CommercialAssessmentRecommendation } from './commercialAssessmentRecommendation';
@@ -16,4 +17,5 @@ export type CommercialAssessmentDetail = CommercialAssessmentSummary & ({
   findings: CommercialAssessmentFinding[];
   recommendations: CommercialAssessmentRecommendation[];
   reviews: CommercialAssessmentDetailReviewsItem[];
+  appointments: CommercialAssessmentAppointment[];
 });

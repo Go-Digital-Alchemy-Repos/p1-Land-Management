@@ -21,6 +21,10 @@ An operator read-only SSH check confirmed the deployed manifest source revision 
 
 Build origins and full source revision were set explicitly and verified before upload. Runtime uses dedicated P1 PostgreSQL, storage and secrets. The original Core repository, deployment and database remain untouched.
 
+## September 13 — owner access route
+
+The legacy `/setup` URL now redirects `308` to `/admin/setup` with its query string intact. The public Core status endpoint reports only `needsSetup:false` and `setupTokenRequired:true`; it does not reveal a credential or setup value. First-admin setup has therefore been consumed. Direct owners to `/admin/login` and use the existing password-reset workflow if needed; never retry setup or attempt to retrieve the original password or authorization code.
+
 ## Remaining release and recovery gates
 
 The existing public website remains on its previous release. Shared CMS/dashboard identity, fresh authorized owner access, production public-form delivery acceptance, public gateway/cache provisioning, final content/browser checks and production closeout remain unfinished. Do not create an alternate production owner or relax MFA to bypass the pending shared-identity review.

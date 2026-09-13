@@ -36,11 +36,41 @@ and may reference its linked prospect or operational property. It must never
 appear in shared property lists, maps, client/crew views, dispatch queues,
 financial workflows, exports, search, notifications, or the public CMS.
 
-The initial release has no attachment upload, customer/third-party sharing,
-calendar booking, dispatch assignment, fee, quote, agreement, work order,
-recurring service, invoice, QuickBooks, outbound email/SMS, identity, or access
-side effect. Existing `assessment_slot` APIs continue to require an
-operational property and are not broadened by this work.
+The September 8 baseline release had no attachment upload, customer/third-party
+sharing, calendar booking, dispatch assignment, fee, quote, agreement, work
+order, recurring service, invoice, QuickBooks, outbound email/SMS, identity, or
+access side effect. Existing `assessment_slot` APIs continue to require an
+operational property and are not broadened by that release.
+
+## Appointment scheduling addendum — staging candidate
+
+The September 12 implementation candidate adds an explicit sales-only booking
+step, not a broad prospect scheduling exception. It uses a linked **prospect**
+property and its commercial baseline to reserve an existing available
+`assessment_slot`, while deliberately leaving `assessment_slot.property_id`
+null. The reservation instead references `commercial_assessment_id`; ordinary
+operational booking, client views, work orders, estimates, maps and dispatch
+queues still have no prospect access.
+
+`commercial_assessment_appointment` is an additive, private history table. A
+confirmed appointment has one assessment and one slot at a time. Cancellation
+requires its own optimistic version, bounded reason and stable operation ID;
+it releases the slot, retains the cancelled history and audit event, and allows
+a later explicit rebooking. A baseline with a confirmed appointment cannot be
+archived until staff cancel it. Booking and cancellation both use a transaction
+advisory lock, idempotency fingerprint and server-side role/property/lifecycle
+checks. They do not change a lead stage, create a client, create a work order,
+assign a crew, promise a response time, or grant dispatch access.
+
+The generated dashboard panel exposes available times only on request, records
+appointment history, and makes cancellation explicit. The exact appointment
+candidate passed isolated staging API acceptance and a restricted backup/restore
+rehearsal on September 12. The shared identity authorization, preview, revocation
+and provider-outage checks subsequently passed in the same isolated environment.
+It is not production promotion evidence: commercial-panel browser acceptance and
+an exact-revision production backup/rollback rehearsal remain required.
+
+The promotion procedure and evidence checklist are maintained in [Commercial assessment appointment release gate](../dashboard/COMMERCIAL_ASSESSMENT_RELEASE.md).
 
 ## Data ownership and additive schema
 
@@ -126,7 +156,9 @@ Generate the OpenAPI client only after the routes and DTOs are final.
 | `GET /assessment-baselines/:id` | Sales-role-only detail with current version, findings, recommendations, review metadata, and no public-report URL. |
 | `PUT /assessment-baselines/:id` | CAS update of title/scope/findings/recommendations. The request submits the complete bounded ordered collections so deletion is explicit and auditable. |
 | `POST /assessment-baselines/:id/review` | CAS transition from draft to reviewed and creates an immutable review snapshot. A no-op or duplicate review is an explicit conflict/replay receipt, never silent re-review. |
-| `POST /assessment-baselines/:id/archive` | CAS archive with bounded reason. Archiving never deletes review history. |
+| `POST /assessment-baselines/:id/archive` | CAS archive with bounded reason. Archiving never deletes review history and rejects a still-confirmed commercial appointment. |
+| `POST /assessment-baselines/:id/appointment` | Sales-role-only, retry-safe reservation of an available slot for the assessment's exact prospect property. The operational slot booking endpoint remains unchanged. |
+| `POST /assessment-baselines/:id/appointment/:appointmentId/cancel` | Sales-role-only CAS cancellation with a bounded reason. Releases the reservation while retaining appointment/audit history. |
 
 The Commercial Inbox now includes a sales-only assessment panel alongside the
 existing intake, follow-up, and prospect-context panels. It exposes
@@ -149,16 +181,22 @@ owner, next action, and conflict-safe follow-up behavior.
 - Create replay, changed-operation conflict, stale update/review/archive,
   finding/recommendation ordering, immutable review snapshot, and audit tests.
 - Browser checks for labels, keyboard flow, retained draft after 409, clear
-  review status, and no raw payload exposure. Run a production build and route
-  security checks before staging.
+  review status, available-time selection, retry/cancellation feedback and no
+  raw payload exposure. Run a production build and route security checks before
+  staging.
+- Appointment tests: exact prospect-property/lifecycle binding; operational
+  `property_id` remains null; role/anonymous denial; stale assessment and
+  appointment versions; booking replay/fingerprint conflict; one-winner slot
+  race; blackout conflict; cancellation/rebooking history; archive denial while
+  confirmed; ordinary operational booking/listing remains isolated.
 - Fresh isolated database backup, staging health/auth-boundary checks, synthetic
   fixture cleanup, exact-source deployment receipt, and a documented compatible
   rollback path that retains created baselines.
 
 ## Later decisions deliberately excluded
 
-The owner must separately approve assessment fee/payer terms, appointment
-confirmation and dispatch projection, approved report audience/distribution,
+The owner must separately approve assessment fee/payer terms, dispatch
+projection, approved report audience/distribution,
 attachments/photos/maps and retention/quarantine, proposal authority and
 external acceptance, customer onboarding, recurring-service/work-order handoff,
 and any marketing use of assessment content. Those decisions cannot be inferred

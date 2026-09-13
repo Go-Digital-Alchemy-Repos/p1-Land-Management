@@ -5343,6 +5343,45 @@
     "/agreement-templates": {
       "get": { "operationId": "listAgreementTemplates", "responses": { "200": { "description": "Versioned templates", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/AgreementTemplate" } } } } }, "401": { "description": "Verified session required" }, "403": { "description": "Office role required" } } },
       "post": { "operationId": "createAgreementTemplate", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateAgreementTemplate" } } } }, "responses": { "201": { "description": "Created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreatedResource" } } } }, "400": { "description": "Invalid template" }, "401": { "description": "Verified session required" }, "403": { "description": "Manager role required" } } }
+    },
+    "/commercial-inquiries/{id}/assessment-baselines/{assessmentId}/appointment": {
+      "post": {
+        "operationId": "bookCommercialAssessmentAppointment",
+        "description": "Owner, manager, and sales only. Atomically reserves shared availability for a linked prospect property. It does not create an operational appointment, work order, client record, proposal, or invoice. A stable operation UUID returns the original receipt on retry.",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } },
+          { "name": "assessmentId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommercialAssessmentAppointmentBooking" } } } },
+        "responses": {
+          "201": { "description": "Commercial assessment appointment reserved", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommercialAssessmentAppointmentBookingReceipt" } } } },
+          "400": { "description": "Invalid request" },
+          "401": { "description": "Verified session required" },
+          "403": { "description": "Owner, manager, or sales role required" },
+          "404": { "description": "Commercial inquiry, assessment, or appointment not found" },
+          "409": { "description": "Stale version, unavailable slot, or operation conflict" }
+        }
+      }
+    },
+    "/commercial-inquiries/{id}/assessment-baselines/{assessmentId}/appointment/{appointmentId}/cancel": {
+      "post": {
+        "operationId": "cancelCommercialAssessmentAppointment",
+        "description": "Owner, manager, and sales only. Cancels a confirmed commercial assessment appointment, releases its availability slot, and preserves the appointment history and audit record. It does not change the prospect property lifecycle.",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } },
+          { "name": "assessmentId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } },
+          { "name": "appointmentId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommercialAssessmentAppointmentCancellation" } } } },
+        "responses": {
+          "200": { "description": "Commercial assessment appointment cancelled", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CommercialAssessmentAppointmentCancellationReceipt" } } } },
+          "400": { "description": "Invalid request" },
+          "401": { "description": "Verified session required" },
+          "403": { "description": "Owner, manager, or sales role required" },
+          "404": { "description": "Commercial inquiry, assessment, or appointment not found" },
+          "409": { "description": "Stale version, unavailable slot, or operation conflict" }
+        }
+      }
     }
   },
   "components": {
@@ -11334,7 +11373,8 @@
             "required": [
               "findings",
               "recommendations",
-              "reviews"
+              "reviews",
+              "appointments"
             ],
             "properties": {
               "scope_note": {
@@ -11378,6 +11418,10 @@
                     }
                   }
                 }
+              },
+              "appointments": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/CommercialAssessmentAppointment" }
               }
             }
           }
@@ -11524,6 +11568,62 @@
             }
           }
         ]
+      },
+      "CommercialAssessmentAppointmentStatus": { "type": "string", "enum": ["confirmed", "cancelled"] },
+      "CommercialAssessmentAppointment": {
+        "type": "object", "additionalProperties": true,
+        "required": ["id", "slot_id", "property_id", "status", "version", "created_at", "updated_at"],
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "slot_id": { "type": "string", "format": "uuid" },
+          "property_id": { "type": "string", "format": "uuid" },
+          "status": { "$ref": "#/components/schemas/CommercialAssessmentAppointmentStatus" },
+          "version": { "type": "integer", "minimum": 1 },
+          "created_by": { "type": "string" },
+          "cancelled_by": { "type": "string", "nullable": true },
+          "cancelled_at": { "type": "string", "format": "date-time", "nullable": true },
+          "cancellation_reason": { "type": "string", "maxLength": 2000, "nullable": true },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "CommercialAssessmentAppointmentBooking": {
+        "type": "object", "additionalProperties": false,
+        "required": ["operationId", "expectedAssessmentVersion", "slotId"],
+        "properties": {
+          "operationId": { "type": "string", "format": "uuid" },
+          "expectedAssessmentVersion": { "type": "integer", "minimum": 1 },
+          "slotId": { "type": "string", "format": "uuid" }
+        }
+      },
+      "CommercialAssessmentAppointmentBookingReceipt": {
+        "type": "object", "required": ["appointmentId", "assessmentId", "propertyId", "slotId", "startsAt", "endsAt"],
+        "properties": {
+          "appointmentId": { "type": "string", "format": "uuid" },
+          "assessmentId": { "type": "string", "format": "uuid" },
+          "propertyId": { "type": "string", "format": "uuid" },
+          "slotId": { "type": "string", "format": "uuid" },
+          "startsAt": { "type": "string", "format": "date-time" },
+          "endsAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "CommercialAssessmentAppointmentCancellation": {
+        "type": "object", "additionalProperties": false,
+        "required": ["operationId", "expectedAppointmentVersion", "reason"],
+        "properties": {
+          "operationId": { "type": "string", "format": "uuid" },
+          "expectedAppointmentVersion": { "type": "integer", "minimum": 1 },
+          "reason": { "type": "string", "minLength": 1, "maxLength": 2000 }
+        }
+      },
+      "CommercialAssessmentAppointmentCancellationReceipt": {
+        "type": "object", "required": ["appointmentId", "assessmentId", "status", "version"],
+        "properties": {
+          "appointmentId": { "type": "string", "format": "uuid" },
+          "assessmentId": { "type": "string", "format": "uuid" },
+          "status": { "$ref": "#/components/schemas/CommercialAssessmentAppointmentStatus" },
+          "version": { "type": "integer", "minimum": 1 }
+        }
       }
     }
   }

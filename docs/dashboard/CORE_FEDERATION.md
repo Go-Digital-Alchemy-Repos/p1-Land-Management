@@ -16,6 +16,8 @@ Root integration preserved the exact provider source and contract. The combined 
 
 ## Remaining release work
 
-The Core consumer, explicit identity linking, restricted first-owner setup and authenticated draft previews are being implemented separately. Before enabling federation, review the paired implementation, back up both P1 databases and test the complete browser flow, revocation, MFA changes, outage behavior and published-content availability in staging. Use separate environment credentials and exact callback origins. No original Core Platform deployment, database, users or credentials are part of this integration.
+The Core consumer and provider are paired in a fresh isolated P1 staging environment. Live staging now verifies an MFA-backed Dashboard owner, explicit bootstrap link, S256 PKCE, exact callback, Core-admin session, owner-MFA self-disable denial on both policy endpoints, private CMS preview authorization, Dashboard-session revocation, provider-restart fail-closed behavior, published-site availability, and a restricted dashboard backup/restore rehearsal. The temporary Core bootstrap configuration has been removed after use; linked federation remains active. Before production enablement, complete designated-owner browser acceptance of shared sign-in/editor flows, commercial-panel browser acceptance, and a production-specific backup/rollback rehearsal for the exact approved revision. Production remains disabled; no original Core Platform deployment, database, users, or credentials are part of this integration.
+
+The designated-owner browser script is [Shared CMS and Dashboard owner acceptance](SHARED_IDENTITY_OWNER_ACCEPTANCE.md).
 
 Rollback and retention follow the versioned contract. Disabling federation must not restore a local password bypass for a previously linked CMS account. Broader website publication, financial workflows, native device acceptance and full project completion remain separate requirements.
