@@ -65,8 +65,10 @@ assign a crew, promise a response time, or grant dispatch access.
 The generated dashboard panel exposes available times only on request, records
 appointment history, and makes cancellation explicit. The exact appointment
 candidate passed isolated staging API acceptance and a restricted backup/restore
-rehearsal on September 12. It is not production promotion evidence: browser
-acceptance, authorization/preview and outage/rollback checks remain required.
+rehearsal on September 12. The shared identity authorization, preview, revocation
+and provider-outage checks subsequently passed in the same isolated environment.
+It is not production promotion evidence: commercial-panel browser acceptance and
+an exact-revision production backup/rollback rehearsal remain required.
 
 ## Data ownership and additive schema
 
