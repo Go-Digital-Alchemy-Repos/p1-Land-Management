@@ -10,6 +10,8 @@ On September 13, additional live isolated-staging checks passed with disposable 
 
 Before a production enablement decision, complete designated-owner browser acceptance of the shared sign-in and CMS/editor journey, browser acceptance of the commercial assessment panel, and a production-specific backup/rollback rehearsal tied to the exact approved release revision. Production federation remains disabled.
 
+The bounded commercial appointment promotion procedure is [documented here](dashboard/COMMERCIAL_ASSESSMENT_RELEASE.md); it preserves migration, sales-history, and identity boundaries during any application rollback.
+
 Historical implementation branch: `codex/p1-cms-crm`. Current integration and production source: GitHub `main`. Original public baseline: `5303da0`; copied Core source: `aad2057ca53e0a55a873bcbe9c62a73e267be541`. The [master plan](MASTER_PLAN.md) remains the full scope; a deployed dashboard slice does not complete it.
 
 ## September 8 — verified-source release record

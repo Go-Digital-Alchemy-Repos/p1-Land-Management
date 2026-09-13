@@ -70,6 +70,8 @@ and provider-outage checks subsequently passed in the same isolated environment.
 It is not production promotion evidence: commercial-panel browser acceptance and
 an exact-revision production backup/rollback rehearsal remain required.
 
+The promotion procedure and evidence checklist are maintained in [Commercial assessment appointment release gate](../dashboard/COMMERCIAL_ASSESSMENT_RELEASE.md).
+
 ## Data ownership and additive schema
 
 Allocate the next dashboard migration number only during integration; do not
