@@ -12,6 +12,12 @@ Before a production enablement decision, complete designated-owner browser accep
 
 The bounded commercial appointment promotion procedure is [documented here](dashboard/COMMERCIAL_ASSESSMENT_RELEASE.md); it preserves migration, sales-history, and identity boundaries during any application rollback.
 
+## September 13 — live Core owner-route verification
+
+Live production requests confirm that the legacy owner link `https://www.p1landmanagement.com/setup` returns a noindex `308` to `/admin/setup` while preserving its query string. The protected CMS setup page and `/admin/login` both serve successfully. The non-secret Core status response now reports `needsSetup:false`, so first-admin setup is already consumed and must not be attempted again. The correct owner entry point is `/admin/login`; a forgotten password must use the existing reset process, since passwords and setup authorization codes are never recoverable from application data or configuration hashes.
+
+This is route and setup-state evidence only. It does not establish a successful owner sign-in, MFA recovery/enrollment, shared Dashboard/Core session, CMS editorial acceptance, or production federation enablement.
+
 Historical implementation branch: `codex/p1-cms-crm`. Current integration and production source: GitHub `main`. Original public baseline: `5303da0`; copied Core source: `aad2057ca53e0a55a873bcbe9c62a73e267be541`. The [master plan](MASTER_PLAN.md) remains the full scope; a deployed dashboard slice does not complete it.
 
 ## September 8 — verified-source release record
