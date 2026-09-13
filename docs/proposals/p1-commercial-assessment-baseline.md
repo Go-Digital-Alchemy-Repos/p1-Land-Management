@@ -63,8 +63,10 @@ checks. They do not change a lead stage, create a client, create a work order,
 assign a crew, promise a response time, or grant dispatch access.
 
 The generated dashboard panel exposes available times only on request, records
-appointment history, and makes cancellation explicit. It is ready for isolated
-staging acceptance; it is not production promotion evidence.
+appointment history, and makes cancellation explicit. The exact appointment
+candidate passed isolated staging API acceptance and a restricted backup/restore
+rehearsal on September 12. It is not production promotion evidence: browser
+acceptance, authorization/preview and outage/rollback checks remain required.
 
 ## Data ownership and additive schema
 
