@@ -10,6 +10,7 @@ On September 13, additional live isolated-staging checks passed with disposable 
 
 Before a production enablement decision, complete designated-owner browser acceptance of the shared sign-in and CMS/editor journey, browser acceptance of the commercial assessment panel, and a production-specific backup/rollback rehearsal tied to the exact approved release revision. Production federation remains disabled.
 
+The remaining designated-owner staging browser journey is [scripted here](dashboard/SHARED_IDENTITY_OWNER_ACCEPTANCE.md).
 The bounded commercial appointment promotion procedure is [documented here](dashboard/COMMERCIAL_ASSESSMENT_RELEASE.md); it preserves migration, sales-history, and identity boundaries during any application rollback.
 
 ## September 13 — live Core owner-route verification
