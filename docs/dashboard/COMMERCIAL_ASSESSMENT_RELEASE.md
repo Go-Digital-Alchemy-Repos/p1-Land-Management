@@ -8,6 +8,19 @@ The candidate on `codex/commercial-assessment-sprint` passed API lifecycle, migr
 
 The production gate remains incomplete until a designated P1 owner accepts the authenticated browser journey and the candidate is merged at an approved, immutable revision.
 
+## Read-only production recovery inventory — September 12, 2026
+
+This inventory was captured without changing production. It establishes the recovery baseline that must be refreshed after the approved `main` revision is known; it is not a deployment authorization.
+
+| Service | Current source | Deployment | Image identity | Health path |
+| --- | --- | --- | --- | --- |
+| `p1-dashboard` | `main` at `9c76d9bd0b48d3fb7780c9e2951ebe8280836f36` | `6e3fab73-7306-4cff-8f69-844afd4224fc` | `sha256:ec43f5adc8e5d2b036de933af8b91f8b23ce3cb98452f52bc51cf22c233957d6` | `/api/healthz` |
+| `p1-dashboard-worker` | managed worker image | `773c0a1f-f5d8-48dc-b265-a38e716b6a8a` | `sha256:558a22df1db5e2b35139f341319c4e665ae1244e17d8d68f634966f1da20ca2d` | — |
+| `p1-core` | `main` at `9c76d9bd0b48d3fb7780c9e2951ebe8280836f36` | `96871421-6fbd-4fbe-9f80-c43319fb5135` | `sha256:53536079a44bf7d663e56716d32273bce5b352b3632cc7103aa05133b38bf8c5` | `/api/health/ready` |
+| `p1-land-management` | `main` at `9c76d9bd0b48d3fb7780c9e2951ebe8280836f36` | `c9caab69-7c94-46e0-8e59-436521b04e64` | `sha256:0072603a6b652a6fa19a00850a6fd4a27633dcc7bc3575cb07431f5f35d071a6` | — |
+
+All four deployments reported `SUCCESS` at capture time. The eventual promotion record must replace this baseline with the exact approved release SHA, fresh database recovery checkpoint, migration ledger, and post-deploy evidence.
+
 ## Staging browser acceptance
 
 Use an authorized, non-customer staging sales, manager, or owner account. This walkthrough creates only a clearly labelled synthetic lead, prospect property, baseline, availability slot, and appointment. Remove only those labelled test records afterward.
