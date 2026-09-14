@@ -147,7 +147,7 @@ export default function CommercialSnowIceManagement() {
           <div className="rounded-2xl bg-secondary p-8 text-white lg:p-12">
             <div className="max-w-3xl"><p className="text-xs font-bold uppercase tracking-[0.24em] text-tan">Seasonal readiness</p><h2 className="mt-3 text-3xl font-serif font-bold">How our seasonal service works</h2></div>
             <ol className="mt-9 grid gap-6 lg:grid-cols-5">
-              {STEPS.map(([title, body], index) => <li key={title}><span className="text-sm font-bold text-tan">{String(index + 1).padStart(2, "0")}</span><h3 className="mt-2 text-lg font-bold">{title}</h3><p className="mt-2 text-sm leading-relaxed text-white/70">{body}</p></li>)}
+              {STEPS.map(([title, body], index) => <li key={title} className="border-t border-white/15 pt-5"><span className="block font-display text-5xl font-semibold leading-none tabular-nums text-tan">{String(index + 1).padStart(2, "0")}</span><h3 className="mt-5 text-lg font-bold text-white">{title}</h3><p className="mt-3 text-sm leading-relaxed text-white/70">{body}</p></li>)}
             </ol>
             <div className="mt-9 flex flex-col items-start gap-4 border-t border-white/15 pt-7 sm:flex-row sm:items-center sm:justify-between"><p className="font-bold">Priority contracts are limited and fill before winter.</p><Button asChild className="rounded-full bg-primary font-bold"><Link href="/contact">Request Your Site Assessment</Link></Button></div>
           </div>
