@@ -6,7 +6,7 @@
     "displayName": "P1 Land & Property Management",
     "source": {
       "repository": "https://github.com/Go-Digital-Alchemy-Repos/p1-Land-Management.git",
-      "revision": "9c76d9bd0b48d3fb7780c9e2951ebe8280836f36"
+      "revision": "c44fcf1f57357daa0e9773ab292971f0043231fb"
     },
     "owners": [
       {
@@ -11093,15 +11093,15 @@
             "maxLength": 2000
           },
           {
-            "path": "f1h1ifc2",
-            "label": "Image: /assets/service-reconstruction-1280-7a4gsZkc.webp",
+            "path": "f1cxyjfe",
+            "label": "Image: /assets/service-reconstruction-smaller-scale-1280-DgtCeNAn.webp",
             "type": "image",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "f1ppu6hd",
-            "label": "Image description: Massive land reconstruction with equipment",
+            "path": "fewgu2m",
+            "label": "Image description: Compact equipment restoring drainage and grade on a smaller rural property",
             "type": "imageAlt",
             "required": false,
             "maxLength": 2000
@@ -11261,15 +11261,15 @@
             "maxLength": 12000
           },
           {
-            "path": "f1rl89e5",
-            "label": "Image: /assets/reconstruction-1280-D3zOoX-s.webp",
+            "path": "fohhgin",
+            "label": "Image: /assets/reconstruction-smaller-scale-1280-exQo5fDu.webp",
             "type": "image",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "f18v4nsc",
-            "label": "Image description: Heavy machinery rebuilding a neglected, eroded property",
+            "path": "fa5oeih",
+            "label": "Image description: Compact excavator restoring a smaller property edge with drainage rock and fresh grading",
             "type": "imageAlt",
             "required": false,
             "maxLength": 2000
@@ -11616,8 +11616,8 @@
           "seoTitle": "Property Reconstruction & Large-Scale Land Restoration | P1 Land & Property Management",
           "seoDescription": "Full-scope property reconstruction including land clearing, regrading, drainage overhaul, and turf establishment. Serving commercial and agricultural landowners in Upstate SC and Charlotte NC. Call (704) 221-8928.",
           "seoImage": "/opengraph.jpg",
-          "f1h1ifc2": "/assets/service-reconstruction-1280-7a4gsZkc.webp",
-          "f1ppu6hd": "Massive land reconstruction with equipment",
+          "f1cxyjfe": "/assets/service-reconstruction-smaller-scale-1280-DgtCeNAn.webp",
+          "fewgu2m": "Compact equipment restoring drainage and grade on a smaller rural property",
           "f1xtoq0z": "Property Reconstruction",
           "f2svx6u": "From Overgrown to Operational",
           "f1j0hgpa": "When a property needs more than maintenance — when it needs to be fundamentally reworked — P1 is the contractor to call. We handle the full scope of land reconstruction, from initial clearing to finished turf, under one roof.",
@@ -11640,8 +11640,8 @@
           "fs4q456": "When Maintenance Isn't Enough",
           "f2wggsh": "Some properties have gone too long without the right care. Drainage has failed. Erosion has carved up slopes and fields. Invasive vegetation has taken over. Ponds have silted in. Grade has shifted. What was once a functional, productive piece of land is now costing its owner more than it's worth.",
           "fri5gz9": "Property reconstruction is P1's answer for clients who need a complete reset — a full-scope project that addresses the root causes of a property's problems and rebuilds it to perform.",
-          "f1rl89e5": "/assets/reconstruction-1280-D3zOoX-s.webp",
-          "f18v4nsc": "Heavy machinery rebuilding a neglected, eroded property",
+          "fohhgin": "/assets/reconstruction-smaller-scale-1280-exQo5fDu.webp",
+          "fa5oeih": "Compact excavator restoring a smaller property edge with drainage rock and fresh grading",
           "f1jbvifd": "What Full Property Reconstruction Includes",
           "f1fporww": "Every reconstruction project is scoped to the specific property and its specific problems. A typical full reconstruction project may include:",
           "f1g27ji0": "Complete land clearing — removal of all unwanted vegetation, trees, stumps, and debris",
