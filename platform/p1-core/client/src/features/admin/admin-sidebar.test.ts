@@ -27,9 +27,7 @@ describe("buildNavGroups", () => {
     expect(content.items.filter((item) => item.title === "P1 Website")).toMatchObject([
       { title: "P1 Website", href: "/admin/cms/website" },
     ]);
-    expect(content.items.filter((item) => item.title === "Private proof")).toMatchObject([
-      { title: "Private proof", href: "/admin/cms/private-proof" },
-    ]);
+    expect(content.items.some((item) => item.title === "Private proof")).toBe(false);
     expect(content.items.map((item) => item.title)).toEqual(
       expect.arrayContaining(["Events", "Careers", "Team"]),
     );
@@ -42,9 +40,7 @@ describe("buildNavGroups", () => {
       ).toHaveLength(1);
     }
     expect(
-      buildNavGroups(enabled, adminUser, () => false).some(
-        (group) => group.label === "Content",
-      ),
+      buildNavGroups(enabled, adminUser, () => false).some((group) => group.label === "Content"),
     ).toBe(false);
     const disabled = buildNavGroups(
       { ...enabled, cmsEnabled: false, eventsEnabled: false, careersEnabled: false },
@@ -54,7 +50,7 @@ describe("buildNavGroups", () => {
     expect(
       disabled
         .flatMap((group) => group.items)
-        .some((item) => ["Private proof", "P1 Website", "Events", "Careers", "Team"].includes(item.title)),
+        .some((item) => ["P1 Website", "Events", "Careers", "Team"].includes(item.title)),
     ).toBe(false);
   });
   it("places Event Settings under Content after Create Event", () => {

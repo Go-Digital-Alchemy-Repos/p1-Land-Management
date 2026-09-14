@@ -26,7 +26,7 @@ it.skipIf(!url)(
   "encrypted CAS serializes absent-row writers, rolls back conflicts and bypasses cache",
   async () => {
     const settings = new SettingsStorage(60000, drizzle(pool, { schema }));
-    const key = "p1-private-proof-test-" + crypto.randomUUID();
+    const key = "private-json-cas-test-" + crypto.randomUUID();
     try {
       const results = await Promise.allSettled(
         Array.from({ length: 8 }, () =>

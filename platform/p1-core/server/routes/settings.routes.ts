@@ -1,4 +1,3 @@
-import { isPrivateProofSetting } from "@shared/p1-private-proof";
 import { getBaseUrl } from "../utils/route-helpers";
 import { CRM_PIPELINE_SETTING_KEY } from "@shared/crm-pipeline-settings";
 import { Router, type NextFunction, type Request, type Response } from "express";
@@ -25,6 +24,18 @@ import { isDesignEditableBrandingSetting } from "../utils/branding-settings-poli
 const router = Router();
 
 const MAX_BRANDING_IMAGE_SIZE = 10 * 1024 * 1024;
+const RETIRED_PRIVATE_PROOF_KEY = "p1_private_proof_inventory";
+const RETIRED_PRIVATE_PROOF_CATEGORY = "p1_private_proof";
+
+function isRetiredPrivateProofSetting(key: unknown, category?: unknown) {
+  return [key, category].some(
+    (value) =>
+      typeof value === "string" &&
+      [RETIRED_PRIVATE_PROOF_KEY, RETIRED_PRIVATE_PROOF_CATEGORY].includes(
+        value.trim().toLowerCase(),
+      ),
+  );
+}
 
 const brandingUpload = multer({
   storage: multer.memoryStorage(),
@@ -72,7 +83,7 @@ router.get(
     const grouped: Record<string, Record<string, { value: string; isSecret: boolean }>> = {};
 
     for (const s of settings) {
-      if (isPrivateProofSetting(s.key, s.category)) continue;
+      if (isRetiredPrivateProofSetting(s.key, s.category)) continue;
       if (_req.user?.role !== "admin" && s.category !== "branding") continue;
       if (!grouped[s.category]) grouped[s.category] = {};
       grouped[s.category][s.key] = {
@@ -109,10 +120,10 @@ router.put(
       (s) => s.key === data.key,
     );
     if (
-      isPrivateProofSetting(data.key, data.category) ||
-      isPrivateProofSetting(existingPrivate?.key, existingPrivate?.category)
+      isRetiredPrivateProofSetting(data.key, data.category) ||
+      isRetiredPrivateProofSetting(existingPrivate?.key, existingPrivate?.category)
     )
-      return res.status(403).json({ message: "Use the private proof editor" });
+      return res.status(403).json({ message: "This retired private proof setting is protected" });
     if (req.user?.role !== "admin") {
       const existing = (await storage.settings.getAllSettings()).find(
         (setting) => setting.key === data.key,
@@ -200,8 +211,8 @@ router.delete(
     const existing = (await storage.settings.getAllSettings()).find(
       (s) => s.key === paramString(req.params.key),
     );
-    if (isPrivateProofSetting(paramString(req.params.key), existing?.category))
-      return res.status(403).json({ message: "Use the private proof editor" });
+    if (isRetiredPrivateProofSetting(paramString(req.params.key), existing?.category))
+      return res.status(403).json({ message: "This retired private proof setting is protected" });
     await storage.settings.deleteSetting(paramString(req.params.key));
     res.json({ message: "Setting deleted" });
   }),
