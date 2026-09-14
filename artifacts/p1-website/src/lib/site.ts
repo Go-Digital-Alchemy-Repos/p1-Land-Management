@@ -5,7 +5,7 @@ export const PHONE_HREF = "tel:+17042218928";
 export const PHONE_E164 = "+17042218928";
 
 export const BUSINESS_DESCRIPTION =
-  "Full-service land and property management for commercial, agricultural, industrial, and large residential properties 1 acre and larger. Serving Upstate South Carolina and the greater Charlotte, North Carolina region.";
+  "Full-service land and property management for commercial, agricultural, industrial, equestrian, municipal, and institutional properties 1 acre and larger. Serving Upstate South Carolina and the greater Charlotte, North Carolina region.";
 
 // Social cards need a broad photographic image, while structured data needs
 // the actual P1 mark supplied for the company's icon and favicon.

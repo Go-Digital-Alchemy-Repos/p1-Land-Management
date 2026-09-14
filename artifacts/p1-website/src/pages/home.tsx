@@ -28,7 +28,7 @@ const TAN = "hsl(32 42% 62%)";
 
 const values = [
   { n: "01", title: "Heavy Equipment Fleet", desc: "Discuss the equipment and access requirements for your grading, clearing, and property maintenance work.", icon: Truck },
-  { n: "02", title: "Large-Acreage Expertise", desc: "Built around properties most crews can't handle — farms, estates, HOAs and commercial sites.", icon: Ruler },
+  { n: "02", title: "Large-Acreage Expertise", desc: "Built around properties most crews can't handle — farms, industrial grounds, public sites, and commercial campuses.", icon: Ruler },
   { n: "03", title: "Drainage Planning", desc: "We assess slope and water movement, then discuss grade-level work and any specialist involvement.", icon: Droplets },
   { n: "04", title: "Dependable Scheduling", desc: "Crews that show up, communicate and finish on the timeline we commit to.", icon: CalendarCheck },
 ];
@@ -44,7 +44,7 @@ const FAQS = [
   {
     question: "Is there a minimum property size for P1's services?",
     answer:
-      "Yes. P1 specializes in properties 1 acre and larger — commercial sites, industrial and agricultural land, HOAs, farms, estates, and large residential acreage. That focus lets us bring the heavy equipment and expertise that big properties demand.",
+      "Yes. P1 specializes in properties 1 acre and larger — commercial sites, industrial facilities, agricultural and equestrian land, municipal grounds, and institutional campuses. We do not provide residential services. That focus lets us bring the heavy equipment and expertise that large properties demand.",
   },
   {
     question: "What areas does P1 Land & Property Management serve?",
@@ -114,7 +114,7 @@ export default function Home() {
               </em>
             </h1>
             <p className="mt-7 max-w-xl text-lg leading-relaxed" style={{ color: "hsl(40 20% 92% / 0.82)" }}>
-              Grading, drainage, clearing and ponds for big properties across Upstate South Carolina and the Charlotte metro. Heavy-equipment professionals for farms, estates, HOAs and commercial sites.
+              Grading, drainage, clearing and ponds for large properties across Upstate South Carolina and the Charlotte metro. Heavy-equipment professionals for commercial, industrial, agricultural, equestrian, municipal, and institutional sites.
             </p>
             <div className="mt-9 flex flex-wrap items-center gap-4">
               <Button asChild size="lg" className="group h-12 rounded-[3px] border-0 bg-primary px-7 font-sans text-[15px] font-bold text-primary-foreground hover:bg-primary/90" style={{ boxShadow: "0 18px 40px -14px hsl(206 70% 48%)" }}>

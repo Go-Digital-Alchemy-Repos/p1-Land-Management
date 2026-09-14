@@ -26,7 +26,7 @@ const FAQS = [
   {
     question: "Does P1 clear land for new construction?",
     answer:
-      "Yes. P1 clears residential and commercial construction sites — trees, stumps, brush, and debris — and can continue through rough grading, fine grading, drainage installation, and turf establishment so your site is fully build-ready under one contractor.",
+      "Yes. P1 clears commercial, industrial, agricultural, municipal, and institutional construction sites — trees, stumps, brush, and debris — and can continue through rough grading, fine grading, drainage installation, and turf establishment so your site is fully build-ready under one contractor.",
   },
   {
     question: "What size land clearing projects does P1 take on?",
@@ -40,9 +40,9 @@ export default function LandClearing() {
     <Layout>
       <SEO 
         title="Land Clearing Upstate SC & Charlotte NC | P1 Land & Property Management"
-        description="Professional land clearing for commercial, agricultural, and large residential properties. Trees, brush, stumps, and vegetation removed efficiently. Serving Upstate SC and Charlotte NC. Call (704) 221-8928."
+        description="Professional land clearing for commercial, industrial, agricultural, equestrian, municipal, and institutional properties. Trees, brush, stumps, and vegetation removed efficiently. Serving Upstate SC and Charlotte NC. Call (704) 221-8928."
         jsonLd={[
-          serviceSchema({ name: "Land Clearing", description: "Professional land clearing for commercial, agricultural, and large residential properties. Trees, brush, stumps, and vegetation removed efficiently. Serving Upstate SC and Charlotte NC. Call (704) 221-8928.", path: "/services/land-clearing" }),
+          serviceSchema({ name: "Land Clearing", description: "Professional land clearing for commercial, industrial, agricultural, equestrian, municipal, and institutional properties. Trees, brush, stumps, and vegetation removed efficiently. Serving Upstate SC and Charlotte NC. Call (704) 221-8928.", path: "/services/land-clearing" }),
           breadcrumbSchema([
             { name: "Home", path: "/" },
             { name: "Services", path: "/services" },
@@ -79,7 +79,7 @@ export default function LandClearing() {
               Whether you're preparing land for construction, expanding agricultural acreage, eliminating invasive vegetation, or simply reclaiming overgrown land you've let go, P1 delivers professional clearing that leaves your property ready for its next use.
             </p>
             <p>
-              We handle the full clearing process — trees, stumps, brush, vines, briars, and debris — using the right equipment for each site and each soil type. We serve commercial developers, farmers, rural landowners, and property managers across Upstate South Carolina and the greater Charlotte, North Carolina area.
+              We handle the full clearing process — trees, stumps, brush, vines, briars, and debris — using the right equipment for each site and each soil type. We serve commercial developers, farmers, equestrian operators, industrial facilities, municipalities, institutions, and property managers across Upstate South Carolina and the greater Charlotte, North Carolina area.
             </p>
           </FeatureRow>
 

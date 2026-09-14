@@ -13,22 +13,22 @@ const FAQS = [
   {
     question: "What parts of Charlotte does P1 serve?",
     answer:
-      "P1 serves all of Charlotte and Mecklenburg County — from uptown commercial and industrial corridors to the large residential properties of south Charlotte, Steele Creek, and the surrounding metro — for properties 1 acre and larger.",
+      "P1 serves all of Charlotte and Mecklenburg County — from uptown commercial corridors and industrial districts to institutional campuses, municipal properties, and surrounding agricultural operations — for properties 1 acre and larger.",
   },
   {
     question: "Does P1 offer commercial property maintenance contracts in Charlotte?",
     answer:
-      "Yes. P1 provides year-round commercial grounds maintenance programs for office parks, industrial facilities, HOAs, and property management companies throughout Charlotte, keeping large sites presentable and compliant long after initial site work is complete.",
+      "Yes. P1 provides year-round grounds maintenance programs for office parks, industrial facilities, municipal sites, institutional campuses, and commercial property management companies throughout Charlotte, keeping large sites presentable and compliant long after initial site work is complete.",
   },
   {
     question: "Can P1 clear and grade land for development in Charlotte?",
     answer:
-      "Yes. P1 handles land clearing, forestry mulching, fine grading, site preparation, and stormwater drainage installation for commercial and residential development across the Charlotte metro — including large, complex sites that require heavy equipment and experienced crews.",
+      "Yes. P1 handles land clearing, forestry mulching, fine grading, site preparation, and stormwater drainage installation for commercial, industrial, municipal, and institutional development across the Charlotte metro — including large, complex sites that require heavy equipment and experienced crews.",
   },
   {
     question: "What size properties does P1 work on in Charlotte?",
     answer:
-      "P1 focuses on properties 1 acre and larger — commercial, industrial, and large residential — which lets us bring the right equipment and expertise to jobs that standard landscaping companies can't handle.",
+      "P1 focuses on commercial, industrial, agricultural, equestrian, municipal, and institutional properties 1 acre and larger, which lets us bring the right equipment and expertise to large-scale jobs. P1 does not provide residential services.",
   },
 ];
 
@@ -59,7 +59,7 @@ export default function CharlotteNC() {
             </em>
           </>
         }
-        subtitle="P1 Land & Property Management delivers full-service land and property management for commercial, industrial, and large residential properties throughout Charlotte, NC and Mecklenburg County. As Charlotte continues its rapid growth, demand for professional large-acreage property contractors has never been higher — and P1 fills that gap with a complete range of services from initial land clearing through ongoing maintenance."
+        subtitle="P1 Land & Property Management delivers full-service land and property management for commercial, industrial, municipal, and institutional properties throughout Charlotte, NC and Mecklenburg County. As Charlotte continues its rapid growth, demand for professional large-acreage property contractors has never been higher — and P1 fills that gap with a complete range of services from initial land clearing through ongoing maintenance."
         image={heroImg}
         imageAlt="Land Clearing & Commercial Landscaping in Charlotte, NC"
       />
@@ -75,7 +75,7 @@ export default function CharlotteNC() {
                   "Land clearing and forestry mulching",
                   "Fine grading and site preparation for development",
                   "Stormwater and drainage system installation",
-                  "Turf installation for commercial and large residential sites",
+                  "Turf installation for commercial, municipal, and institutional sites",
                   "Tree services and canopy management",
                   "Pond and retention basin management",
                   "Full site reconstruction and restoration"
@@ -91,7 +91,7 @@ export default function CharlotteNC() {
             <div className="space-y-6 flex flex-col justify-center">
               <div className="prose prose-lg prose-p:text-secondary/80 max-w-none">
                 <p>
-                  Charlotte's commercial and industrial property market requires contractors with the scale, equipment, and experience to manage complex, large-acreage sites. P1 serves commercial developers, property management companies, industrial facility managers, and large residential landowners throughout the Charlotte metro.
+                  Charlotte's commercial and industrial property market requires contractors with the scale, equipment, and experience to manage complex, large-acreage sites. P1 serves commercial developers, property management companies, industrial facility managers, municipalities, and institutions throughout the Charlotte metro.
                 </p>
                 <p className="font-bold text-secondary mt-6 border-l-4 border-primary pl-4">
                   Call <a href="tel:7042218928" className="text-primary hover:underline">+1 (704) 221-8928</a> or <Link href="/contact" className="text-primary hover:underline">request a free estimate online</Link> to discuss your property.

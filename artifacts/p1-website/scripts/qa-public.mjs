@@ -16,6 +16,8 @@ assert.equal((headerSource.match(/Service Areas/g) || []).length, 2, 'Desktop an
 assert(/services\.map\([\s\S]*?Service Areas/.test(headerSource), 'Service Areas must follow the services list');
 assert(/font-bold text-primary[\s\S]*?Service Areas/.test(headerSource), 'Service Areas must retain its emphasized blue styling');
 const commercialInquirySource = readFileSync(resolve(root, 'src/lib/commercial-inquiry.ts'), 'utf8');
+const residentialOfferPattern = /\b(?:large residential|(?<!non-)residential (?:properties|development|acreage|estate)|HOAs?|estate (?:maintenance|lawns?)|waterfront estates?|rural estates?|new homes?|neighborhoods?)\b/i;
+assert(!residentialOfferPattern.test(readFileSync(resolve(root, 'public/llms.txt'), 'utf8')), 'AI-facing site summary must not advertise residential work');
 const expectedPublicForms = [
   { id: 'p1-estimate', routeId: 'contact', endpoint: '/api/forms/p1-estimate/submit', method: 'POST', authentication: 'public', handlerOwner: 'platform' },
   { id: 'p1-commercial-assessment', routeId: 'commercial', endpoint: '/api/forms/p1-commercial-assessment/submit', method: 'POST', authentication: 'public', handlerOwner: 'platform' },
@@ -45,6 +47,7 @@ try {
     assert(!/Marcus T\.|50-Acre Forestry|P1 took over our|fill-current|Est\. 2009|±0\.1/.test(result.html), `${path}: unverified proof`);
     assert(!/Yes\. P1 is licensed and insured for commercial work|Licensed and insured for commercial work/.test(result.html), `${path}: unsupported commercial credential claim`);
     assert(!/never need to call anyone else|Free on-site property assessments|One contractor\. No gaps\./.test(result.html), `${path}: unsupported universal service claim`);
+    assert(!residentialOfferPattern.test(result.html), `${path}: must not advertise residential work`);
     for (const match of result.html.matchAll(/href="([^"#]+)(?:#[^"]*)?"/g)) {
       const href = match[1].replaceAll('&amp;', '&');
       if (!href.startsWith('/') || href.startsWith('//')) continue;

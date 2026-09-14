@@ -51,7 +51,7 @@ export default function BlogPost() {
               Drainage problems don't announce themselves with a clear label. They show up as inconveniences — a soggy corner of the field, a driveway that washes out after every storm, a patch of turf that never seems to dry out — until the underlying problem is serious enough that small fixes won't cut it.
             </p>
             <p>
-              For large commercial, agricultural, and rural residential properties, drainage failures are especially costly: they damage structures, reduce the productive capacity of fields, create erosion and additional maintenance work.
+              For large commercial, industrial, agricultural, municipal, and institutional properties, drainage failures are especially costly: they damage structures, reduce the productive capacity of fields, create erosion and additional maintenance work.
             </p>
             <p>
               Here are five signs that your property has a drainage problem that deserves a professional look — and what your options are when you find one.
@@ -105,7 +105,7 @@ export default function BlogPost() {
               A proper drainage assessment evaluates the overall topography, existing drainage infrastructure, soil type and permeability, and sources of the water causing the problem. From that assessment, a targeted solution can be designed — whether that's regrading, installing drainage pipes or swales, improving ditch capacity, or a combination.
             </p>
             <p>
-              P1 Land & Property Management provides on-site drainage assessments and installs custom drainage solutions for large commercial, agricultural, and residential properties throughout Upstate South Carolina and the Charlotte, NC region.
+              P1 Land & Property Management provides on-site drainage assessments and installs custom drainage solutions for large commercial, industrial, agricultural, equestrian, municipal, and institutional properties throughout Upstate South Carolina and the Charlotte, NC region. P1 does not provide residential services.
             </p>
             <p>
               Call <strong><a href="tel:7042218928">+1 (704) 221-8928</a></strong> or request a free estimate online — P1 Land & Property Management, serving Upstate SC and Charlotte NC.

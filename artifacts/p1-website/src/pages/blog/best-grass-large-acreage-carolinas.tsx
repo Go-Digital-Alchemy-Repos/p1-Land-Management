@@ -76,7 +76,7 @@ export default function BlogPost() {
               A dense, slow-growing warm-season grass that produces a tight, attractive turf with fewer inputs than Bermuda once established. Shade and cold tolerance vary by cultivar; match the selection to the site. The downside is slow establishment and relatively high cost if sodded.
             </p>
             <ul>
-              <li><strong>Best for:</strong> Commercial properties, HOA common areas, estate lawns</li>
+              <li><strong>Best for:</strong> Commercial properties, institutional campuses, and municipal grounds</li>
               <li><strong>Establishment:</strong> Sod or plugs (slow from seed)</li>
               <li><strong>Maintenance:</strong> Low to moderate once established</li>
             </ul>
@@ -86,7 +86,7 @@ export default function BlogPost() {
               A low-input warm-season option for acidic, lower-fertility soils common in much of the Carolinas Piedmont. Centipede requires minimal fertilization and grows slowly, which means less mowing. It's not suitable for high-traffic or heavy-use areas.
             </p>
             <ul>
-              <li><strong>Best for:</strong> Low-maintenance rural and residential acreage, utility areas</li>
+              <li><strong>Best for:</strong> Low-maintenance agricultural acreage, utility areas, and industrial grounds</li>
               <li><strong>Establishment:</strong> Seed or sod</li>
               <li><strong>Maintenance:</strong> Very low</li>
             </ul>
@@ -98,7 +98,7 @@ export default function BlogPost() {
               The most widely used cool-season grass in the Carolinas transition zone. Tall fescue stays green through winter, tolerates moderate shade, and performs well in the cooler temperatures of fall, winter, and spring. It struggles in the intense heat and drought of Carolinas summers — requiring irrigation or overseeding after summer stress.
             </p>
             <ul>
-              <li><strong>Best for:</strong> Commercial grounds, shaded areas, residential estates, cooler Upstate SC elevations</li>
+              <li><strong>Best for:</strong> Commercial and institutional grounds, shaded areas, and cooler Upstate SC elevations</li>
               <li><strong>Establishment:</strong> Seed (fall is ideal)</li>
               <li><strong>Maintenance:</strong> Moderate — annual overseeding often needed after summer stress</li>
             </ul>

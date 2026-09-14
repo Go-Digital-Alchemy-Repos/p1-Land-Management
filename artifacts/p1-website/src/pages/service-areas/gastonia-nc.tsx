@@ -28,7 +28,7 @@ const FAQS = [
   {
     question: "What size properties does P1 work on in Gastonia?",
     answer:
-      "P1 focuses on properties 1 acre and larger — industrial, commercial, agricultural, and large residential — bringing heavy equipment and experienced crews that standard landscapers can't provide.",
+      "P1 focuses on commercial, industrial, agricultural, equestrian, municipal, and institutional properties 1 acre and larger, bringing heavy equipment and experienced crews that small-scale landscapers can't provide. P1 does not provide residential services.",
   },
 ];
 

@@ -26,7 +26,7 @@ const FAQS = [
   {
     question: "Is there a minimum property size for commercial programs?",
     answer:
-      "Yes — P1 focuses on properties 1 acre and larger. We're built for business campuses, industrial sites, HOA common areas, and large commercial landholdings, not small lawns.",
+      "Yes — P1 focuses on properties 1 acre and larger. We're built for business campuses, industrial sites, municipal grounds, institutional properties, and large commercial landholdings. We do not provide residential services.",
   },
   {
     question: "How are insurance, licensing and procurement documents handled?",
@@ -78,7 +78,7 @@ export default function CommercialLandscaping() {
               A well-maintained commercial property supports a professional presentation, protects the work already invested in the site and helps your team identify exterior needs early. P1 Land & Property Management helps large properties define and maintain an agreed exterior-work scope.
             </p>
             <p>
-              We work with commercial developers, property managers, business campus owners, HOAs managing significant acreage, industrial facility managers, and private landowners who hold commercial-use land across both our markets.
+              We work with commercial developers, property managers, business campus operators, industrial facility managers, municipalities, institutions, and agricultural or equestrian operators across both our markets.
             </p>
           </FeatureRow>
 

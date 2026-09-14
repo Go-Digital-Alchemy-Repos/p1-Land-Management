@@ -28,7 +28,7 @@ const FAQS = [
   {
     question: "Does P1 grade sites for new construction?",
     answer:
-      "P1 discusses building pads, roads, and site preparation for new homes, neighborhoods, and commercial developments across Upstate SC and Charlotte NC. Confirm approved plans, tolerances, equipment and any licensed specialist involvement before work begins.",
+      "P1 discusses building pads, roads, and site preparation for commercial, industrial, municipal, institutional, and agricultural developments across Upstate SC and Charlotte NC. Confirm approved plans, tolerances, equipment and any licensed specialist involvement before work begins.",
   },
   {
     question: "Why does grading matter before installing turf?",
@@ -42,9 +42,9 @@ export default function GradingSitePreparation() {
     <Layout>
       <SEO 
         title="Fine Grading & Site Preparation Upstate SC & Charlotte NC | P1 Land & Property Management"
-        description="Precision grading and site preparation for commercial, agricultural, and large residential properties. Serving Greenville, Spartanburg, and Charlotte NC. Call (704) 221-8928."
+        description="Precision grading and site preparation for commercial, industrial, agricultural, municipal, and institutional properties. Serving Greenville, Spartanburg, and Charlotte NC. Call (704) 221-8928."
         jsonLd={[
-          serviceSchema({ name: "Fine Grading & Site Preparation", description: "Precision grading and site preparation for commercial, agricultural, and large residential properties. Serving Greenville, Spartanburg, and Charlotte NC. Call (704) 221-8928.", path: "/services/grading-site-preparation" }),
+          serviceSchema({ name: "Fine Grading & Site Preparation", description: "Precision grading and site preparation for commercial, industrial, agricultural, municipal, and institutional properties. Serving Greenville, Spartanburg, and Charlotte NC. Call (704) 221-8928.", path: "/services/grading-site-preparation" }),
           breadcrumbSchema([
             { name: "Home", path: "/" },
             { name: "Services", path: "/services" },
@@ -116,9 +116,9 @@ export default function GradingSitePreparation() {
             </p>
           </FeatureRow>
 
-          <FeatureRow heading="Grading for New Construction" image={constructionImg} imageAlt="New residential neighborhood under construction on freshly graded land" reverse>
+          <FeatureRow heading="Grading for New Construction" image={constructionImg} imageAlt="Large commercial construction site on freshly graded land" reverse>
             <p>
-              Every building starts with the ground beneath it. Before foundations are poured, roads are paved, or utilities go in, grading must be coordinated with the approved plans and project team. P1 discusses building pads, slopes, drainage and sub-grade preparation for new homes, neighborhoods and commercial developments across Upstate South Carolina and the Charlotte, NC region.
+              Every building starts with the ground beneath it. Before foundations are poured, roads are paved, or utilities go in, grading must be coordinated with the approved plans and project team. P1 discusses building pads, slopes, drainage and sub-grade preparation for commercial, industrial, municipal, institutional, and agricultural developments across Upstate South Carolina and the Charlotte, NC region.
             </p>
           </FeatureRow>
 

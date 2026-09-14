@@ -39,9 +39,9 @@ export default function Drainage() {
     <Layout>
       <SEO 
         title="Drainage Solutions for Large Properties | P1 Land & Property Management | Upstate SC & Charlotte NC"
-        description="Custom drainage solutions for commercial, agricultural, and large residential properties. French drains, retention systems, swales, and more. Serving Upstate SC and Charlotte NC. Call (704) 221-8928."
+        description="Custom drainage solutions for commercial, industrial, agricultural, equestrian, municipal, and institutional properties. French drains, retention systems, swales, and more. Serving Upstate SC and Charlotte NC. Call (704) 221-8928."
         jsonLd={[
-          serviceSchema({ name: "Drainage Solutions", description: "Custom drainage solutions for commercial, agricultural, and large residential properties. French drains, retention systems, swales, and more. Serving Upstate SC and Charlotte NC. Call (704) 221-8928.", path: "/services/drainage" }),
+          serviceSchema({ name: "Drainage Solutions", description: "Custom drainage solutions for commercial, industrial, agricultural, equestrian, municipal, and institutional properties. French drains, retention systems, swales, and more. Serving Upstate SC and Charlotte NC. Call (704) 221-8928.", path: "/services/drainage" }),
           breadcrumbSchema([
             { name: "Home", path: "/" },
             { name: "Services", path: "/services" },
@@ -113,7 +113,7 @@ export default function Drainage() {
             </h2>
             <ul className="space-y-4">
               {[
-                "Standing water in fields, yards, or near structures after rain",
+                "Standing water in fields, commercial grounds, or near structures after rain",
                 "Soggy, compacted soil that won't grow healthy turf",
                 "Erosion on slopes, embankments, or around ponds",
                 "Flooded access roads or driveways",

@@ -112,7 +112,7 @@ export default function BlogPost() {
               DIY pond maintenance has limits. If you're dealing with a serious algae problem, significant erosion, dam integrity concerns, or a commercial pond with regulatory implications, a professional pond management contractor has the equipment, chemicals, and expertise to solve the problem correctly.
             </p>
             <p>
-              P1 provides pond and waterway management throughout Upstate South Carolina and the Charlotte, NC region. We work with farm ponds, commercial retention basins, residential estate ponds, and waterfront properties.
+              P1 provides pond and waterway management throughout Upstate South Carolina and the Charlotte, NC region. We work with farm ponds, commercial and industrial retention basins, municipal stormwater ponds, institutional water features, and qualifying waterfront commercial properties.
             </p>
             <p>
               Call <strong><a href="tel:7042218928">+1 (704) 221-8928</a></strong> or request a free estimate online — P1 Land & Property Management, serving Upstate SC and Charlotte NC.

@@ -15,7 +15,7 @@ const FAQS = [
   {
     question: "What tree services does P1 provide?",
     answer:
-      "P1 discusses tree trimming, canopy management, dead-wood and tree removal, stump work, selective clearing, windbreak and tree-line management, and storm cleanup for commercial, agricultural and large residential properties. Confirm scope, access and any specialist requirements before work begins.",
+      "P1 discusses tree trimming, canopy management, dead-wood and tree removal, stump work, selective clearing, windbreak and tree-line management, and storm cleanup for commercial, industrial, agricultural, equestrian, municipal, and institutional properties. Confirm scope, access and any specialist requirements before work begins.",
   },
   {
     question: "Does P1 handle storm damage cleanup?",
@@ -28,7 +28,7 @@ const FAQS = [
       "Selective clearing can retain identified trees while removing agreed vegetation. Review the marked limits, tree condition, access and disposal approach with P1 and any required specialist before work begins.",
   },
   {
-    question: "How is P1 different from a residential tree company?",
+    question: "What types of properties does P1 serve?",
     answer:
       "For larger-acreage tree and vegetation scopes, P1 reviews the proposed equipment, staffing, access and safety plan with the property team. Confirm the work plan and responsibilities before scheduling.",
   },
@@ -39,9 +39,9 @@ export default function TreeServices() {
     <Layout>
       <SEO 
         title="Tree Services for Large Properties | P1 Land & Property Management | Upstate SC & Charlotte NC"
-        description="Professional tree trimming, removal, stump grinding, and tree management for commercial and large residential properties. Serving Upstate SC and Charlotte NC. Call (704) 221-8928."
+        description="Professional tree trimming, removal, stump grinding, and tree management for commercial, industrial, agricultural, equestrian, municipal, and institutional properties. Serving Upstate SC and Charlotte NC. Call (704) 221-8928."
         jsonLd={[
-          serviceSchema({ name: "Tree Services", description: "Professional tree trimming, removal, stump grinding, and tree management for commercial and large residential properties. Serving Upstate SC and Charlotte NC. Call (704) 221-8928.", path: "/services/tree-services" }),
+          serviceSchema({ name: "Tree Services", description: "Professional tree trimming, removal, stump grinding, and tree management for commercial, industrial, agricultural, equestrian, municipal, and institutional properties. Serving Upstate SC and Charlotte NC. Call (704) 221-8928.", path: "/services/tree-services" }),
           breadcrumbSchema([
             { name: "Home", path: "/" },
             { name: "Services", path: "/services" },
@@ -61,10 +61,10 @@ export default function TreeServices() {
             <em className="font-semibold not-italic text-tan" style={{ fontStyle: "italic" }}>
               Commercial, Agricultural
             </em>{" "}
-            & Large Residential Properties
+            & Institutional Properties
           </>
         }
-        subtitle="Large properties carry large trees — and large liability when those trees aren't properly managed. P1 provides professional tree services for landowners who need more than a residential tree crew."
+        subtitle="Large properties carry large trees — and large liability when those trees aren't properly managed. P1 provides professional tree services for organizations that need commercial-scale crews and equipment."
         image={heroImg}
         imageAlt="Heavy machinery tree limb removal"
       />
@@ -78,7 +78,7 @@ export default function TreeServices() {
               Trees on commercial and agricultural properties serve important functions — shade, windbreaks, aesthetics, wildlife habitat — but they also require active management to remain healthy and safe. Untrimmed canopies, dead wood, crowded stands, and storm-damaged trees create hazards for structures, fences, livestock, and people.
             </p>
             <p>
-              P1 provides professional tree services sized for large-acreage properties. We work with commercial property managers, farm owners, rural landowners, and residential estate owners across Upstate South Carolina and the greater Charlotte, NC region.
+              P1 provides professional tree services sized for large-acreage properties. We work with commercial property managers, industrial facilities, farm and equestrian operators, municipalities, and institutions across Upstate South Carolina and the greater Charlotte, NC region.
             </p>
           </FeatureRow>
 

@@ -101,7 +101,7 @@ export default function BlogPost() {
 
             <h2>Ready to Get Your Land Cleared in Upstate SC or Charlotte NC?</h2>
             <p>
-              P1 Land & Property Management provides land clearing for commercial, agricultural, and large residential properties throughout Upstate South Carolina and the Charlotte, NC region. We offer free on-site assessments and transparent, written estimates.
+              P1 Land & Property Management provides land clearing for commercial, industrial, agricultural, equestrian, municipal, and institutional properties throughout Upstate South Carolina and the Charlotte, NC region. We offer free on-site assessments and transparent, written estimates. P1 does not provide residential services.
             </p>
             <p>
               Call <strong><a href="tel:7042218928">+1 (704) 221-8928</a></strong> or request a free estimate online — P1 Land & Property Management, serving Upstate SC and Charlotte NC.

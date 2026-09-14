@@ -31,7 +31,7 @@ const FAQS = [
   {
     question: "What size properties does P1 work on in the Charlotte region?",
     answer:
-      "P1 focuses on properties 1 acre and larger — commercial, industrial, agricultural, and large residential — which lets us bring the right equipment and expertise to jobs that standard landscaping companies can't handle.",
+      "P1 focuses on commercial, industrial, agricultural, equestrian, municipal, and institutional properties 1 acre and larger, which lets us bring the right equipment and expertise to large-scale jobs. P1 does not provide residential services.",
   },
 ];
 
@@ -40,9 +40,9 @@ export default function CharlotteRegionNC() {
     <Layout>
       <SEO 
         title="Land & Property Management Charlotte NC | P1 | Concord, Mooresville, Lake Norman & Surrounding Areas"
-        description="P1 Land & Property Management serves commercial, agricultural, and large residential properties in the Charlotte, NC region. Land clearing, grading, drainage, turf, and pond management. Call (704) 221-8928."
+        description="P1 Land & Property Management serves commercial, industrial, agricultural, equestrian, municipal, and institutional properties in the Charlotte, NC region. Land clearing, grading, drainage, turf, and pond management. Call (704) 221-8928."
         jsonLd={[
-          serviceAreaSchema({ areaName: "Charlotte Region, North Carolina", areaType: "AdministrativeArea", description: "P1 Land & Property Management serves commercial, agricultural, and large residential properties in the Charlotte, NC region. Land clearing, grading, drainage, turf, and pond management. Call (704) 221-8928.", path: "/service-areas/charlotte-north-carolina" }),
+          serviceAreaSchema({ areaName: "Charlotte Region, North Carolina", areaType: "AdministrativeArea", description: "P1 Land & Property Management serves commercial, industrial, agricultural, equestrian, municipal, and institutional properties in the Charlotte, NC region. Land clearing, grading, drainage, turf, and pond management. Call (704) 221-8928.", path: "/service-areas/charlotte-north-carolina" }),
           breadcrumbSchema([
             { name: "Home", path: "/" },
             { name: "Service Areas", path: "/service-areas" },
@@ -62,7 +62,7 @@ export default function CharlotteRegionNC() {
             </em>
           </>
         }
-        subtitle="P1 provides professional land and property management for commercial, agricultural, and large residential properties throughout the Charlotte metro and surrounding areas — from land clearing and grading to weekly maintenance and full property reconstruction."
+        subtitle="P1 provides professional land and property management for commercial, industrial, agricultural, equestrian, municipal, and institutional properties throughout the Charlotte metro and surrounding areas — from land clearing and grading to weekly maintenance and full property reconstruction."
         image={heroImg}
         imageAlt="Land & Property Management in the Charlotte, NC Region"
       />
@@ -72,10 +72,10 @@ export default function CharlotteRegionNC() {
           
           <FeatureRow heading="Serving the Charlotte Region's Growing Demand for Large-Acreage Property Management" image={charlotteImg} imageAlt="Large-acreage property development in the Charlotte NC region">
             <p>
-              The Charlotte, NC region is one of the most rapidly developing markets in the country — and that growth is pushing commercial, agricultural, and large residential property owners to find contractors who can manage land at the scale and standard these properties require. P1 Land & Property Management is that contractor.
+              The Charlotte, NC region is one of the most rapidly developing markets in the country — and that growth is pushing commercial developers, industrial facilities, agricultural operations, municipalities, and institutions to find contractors who can manage land at the scale and standard these properties require. P1 Land & Property Management is that contractor.
             </p>
             <p>
-              From the Mecklenburg County commercial core to the waterfront estates of Lake Norman, the working farms of Cabarrus County, and the rural acreage of Union and Gaston Counties, P1 brings full-service land management to properties that are too large and too complex for standard landscaping companies.
+              From the Mecklenburg County commercial core and Lake Norman business campuses to the working farms of Cabarrus County and the agricultural acreage of Union and Gaston Counties, P1 brings full-service land management to qualifying non-residential properties that require commercial-scale crews and equipment.
             </p>
           </FeatureRow>
 

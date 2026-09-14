@@ -13,7 +13,7 @@ export function SiteFooter() {
             <img src={logo} alt="P1 Land & Property Management" className="h-12 w-auto brightness-0 invert" />
           </Link>
           <p className="text-secondary-foreground/70 text-sm leading-relaxed max-w-xs">
-            Full-service land and property management for commercial, agricultural, and large residential properties 1 acre and larger across Upstate SC and the Charlotte, NC region.
+            Full-service land and property management for commercial, agricultural, industrial, equestrian, municipal, and institutional properties 1 acre and larger across Upstate SC and the Charlotte, NC region.
           </p>
           <div className="space-y-2 pt-2">
             <a href="tel:7042218928" className="flex items-center gap-2 text-xl font-sans font-bold hover:text-primary transition-colors">

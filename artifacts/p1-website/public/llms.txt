@@ -1,6 +1,6 @@
 # P1 Land & Property Management
 
-> Full-service land and property management for commercial, agricultural, industrial, equestrian, and large residential properties 1 acre and larger. Serving Upstate South Carolina and the greater Charlotte, North Carolina region.
+> Full-service land and property management for commercial, agricultural, industrial, equestrian, municipal, and institutional properties 1 acre and larger. Serving Upstate South Carolina and the greater Charlotte, North Carolina region.
 
 P1 Land & Property Management is a Carolinas-based land management contractor. One contractor for the entire life of your land — from initial clearing and reconstruction through ongoing weekly and seasonal care.
 
@@ -12,10 +12,10 @@ P1 Land & Property Management is a Carolinas-based land management contractor. O
 
 ## Services
 
-- [Commercial Landscaping](https://www.p1landmanagement.com/services/commercial-landscaping): Year-round exterior grounds maintenance for commercial sites, HOAs, and facilities
+- [Commercial Landscaping](https://www.p1landmanagement.com/services/commercial-landscaping): Year-round exterior grounds maintenance for commercial, industrial, municipal, and institutional sites
 - [Industrial & Agricultural](https://www.p1landmanagement.com/services/industrial-agricultural): Land maintenance for industrial sites, farms, pasture, and working acreage
 - [Land Clearing](https://www.p1landmanagement.com/services/land-clearing): Lot clearing, forestry mulching, right-of-way, and rural acreage
-- [Grading & Site Preparation](https://www.p1landmanagement.com/services/grading-site-preparation): Fine grading and site prep for commercial and residential development
+- [Grading & Site Preparation](https://www.p1landmanagement.com/services/grading-site-preparation): Fine grading and site prep for commercial, industrial, agricultural, and institutional development
 - [Drainage Solutions](https://www.p1landmanagement.com/services/drainage): French drains, retention, stormwater, and erosion control
 - [Turf Installation & Seeding](https://www.p1landmanagement.com/services/turf-installation-seeding): Sod and large-acreage seeding for Piedmont soils
 - [Tree Services](https://www.p1landmanagement.com/services/tree-services): Trimming, removal, and selective clearing

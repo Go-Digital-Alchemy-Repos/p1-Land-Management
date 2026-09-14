@@ -28,7 +28,7 @@ const FAQS = [
   {
     question: "What size properties does P1 work on in Anderson?",
     answer:
-      "P1 focuses on properties 1 acre and larger — agricultural, commercial, and large residential — bringing the equipment and expertise that standard landscaping companies can't provide.",
+      "P1 focuses on commercial, industrial, agricultural, equestrian, municipal, and institutional properties 1 acre and larger, bringing the equipment and expertise that small-scale landscaping companies can't provide. P1 does not provide residential services.",
   },
 ];
 
@@ -59,7 +59,7 @@ export default function AndersonSC() {
             </em>
           </>
         }
-        subtitle="P1 Land & Property Management provides comprehensive land and property services for commercial, agricultural, and large residential properties throughout Anderson, SC and Anderson County. Anderson's growing commercial base and strong agricultural heritage make it a natural fit for P1's full-service model — from land clearing and drainage to ongoing agricultural land maintenance and pond management."
+        subtitle="P1 Land & Property Management provides comprehensive land and property services for commercial, industrial, agricultural, equestrian, municipal, and institutional properties throughout Anderson, SC and Anderson County. Anderson's growing commercial base and strong agricultural heritage make it a natural fit for P1's full-service model — from land clearing and drainage to ongoing agricultural land maintenance and pond management."
         image={heroImg}
         imageAlt="Land Clearing & Property Management in Anderson, SC"
       />

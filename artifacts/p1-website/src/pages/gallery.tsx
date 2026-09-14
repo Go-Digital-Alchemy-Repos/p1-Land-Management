@@ -76,7 +76,7 @@ export default function Gallery() {
             </em>
           </>
         }
-        subtitle="Explore the land management services P1 provides for commercial, agricultural, and large residential properties across the Carolinas."
+        subtitle="Explore the land management services P1 provides for commercial, industrial, agricultural, equestrian, municipal, and institutional properties across the Carolinas."
         image={heroImg}
         imageAlt="Illustration of land management services"
       />
