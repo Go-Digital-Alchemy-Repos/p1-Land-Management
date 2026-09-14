@@ -76,7 +76,7 @@ export default function Gallery() {
             </em>
           </>
         }
-        subtitle="Illustrative imagery showing types of land management services. These images are not verified photographs of completed P1 projects."
+        subtitle="Explore the land management services P1 provides for commercial, agricultural, and large residential properties across the Carolinas."
         image={heroImg}
         imageAlt="Illustration of land management services"
       />
@@ -126,7 +126,6 @@ export default function Gallery() {
                       {p.service}
                     </span>
                     <h3 className="font-serif font-bold text-secondary leading-snug">{p.title}</h3>
-                    <p className="text-sm text-secondary/60">Illustrative image</p>
                   </div>
                 </div>
               ))}

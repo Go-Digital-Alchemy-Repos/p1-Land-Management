@@ -119,7 +119,6 @@ export default function CommercialSnowIceManagement() {
             <p>Because measurable snow is infrequent, many facilities are not prepared when an overnight ice event glazes a large parking lot, loading docks, and walkways before the first employee arrives.</p>
             <p>For distribution centers, that can interrupt truck staging and dock access. For mission-critical facilities, it can restrict staff and emergency access. For retail and office properties, it creates safety and liability exposure for customers, tenants, and employees.</p>
             <p>P1 is a commercial and industrial snow and ice management contractor. We assess the property before the season, monitor developing weather, and execute a site-specific plan under a defined seasonal agreement.</p>
-            <p className="text-sm italic text-muted-foreground">Illustrative imagery — not a P1 project photo.</p>
           </FeatureRow>
 
           <div className="space-y-8">
@@ -140,7 +139,6 @@ export default function CommercialSnowIceManagement() {
           <FeatureRow heading="Why large properties across the Carolinas choose P1" image={loadingDockImg} imageAlt="Large pickup truck with a front-mounted snowplow clearing a distribution center loading dock" reverse>
             <p>P1 approaches winter work as a planned commercial operation: the site is reviewed, priority areas are mapped, and response expectations are defined before weather arrives.</p>
             <p>Large lots, truck courts, entrances, walkways, and relocation needs are coordinated through one site plan and one point of contact.</p>
-            <p className="text-sm italic text-muted-foreground">Illustrative imagery — not a P1 project photo.</p>
           </FeatureRow>
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {REASONS.map(([title, body]) => <article key={title} className="rounded-xl border border-border bg-white p-6"><ShieldCheck className="h-6 w-6 text-primary" /><h3 className="mt-4 text-lg font-bold text-secondary">{title}</h3><p className="mt-2 leading-relaxed text-secondary/75">{body}</p></article>)}

@@ -6,7 +6,7 @@
     "displayName": "P1 Land & Property Management",
     "source": {
       "repository": "https://github.com/Go-Digital-Alchemy-Repos/p1-Land-Management.git",
-      "revision": "c44fcf1f57357daa0e9773ab292971f0043231fb"
+      "revision": "ac7c93bd54645b4627b92b2c94806e3b8cc3e378"
     },
     "owners": [
       {
@@ -2265,13 +2265,6 @@
             "maxLength": 2000
           },
           {
-            "path": "f1igxshz",
-            "label": "Text: Illustrative imagery — not a documented P1 client property.",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
             "path": "fp8i8qg",
             "label": "Text: One exterior partner",
             "type": "text",
@@ -2671,16 +2664,9 @@
             "maxLength": 2000
           },
           {
-            "path": "f18z5khl",
-            "label": "Image description: Illustrative aerial view of a data-center campus with maintained green space, tree buffers and ",
+            "path": "fw8lmzn",
+            "label": "Image description: Aerial view of a data-center campus with maintained green space, tree buffers and a stormwater ",
             "type": "imageAlt",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f3u7o20",
-            "label": "Text: Illustrative imagery — not a P1 project or evidence of P1 data-center experience.",
-            "type": "text",
             "required": false,
             "maxLength": 2000
           },
@@ -3057,7 +3043,6 @@
           "f26jm1m": "Discuss Your Property",
           "f1u26c9a": "tel:+17042218928",
           "f10sfgd1": "Upstate South Carolina & greater Charlotte · Property location and serviceability confirmed during review",
-          "f1igxshz": "Illustrative imagery — not a documented P1 client property.",
           "fp8i8qg": "One exterior partner",
           "fyehnd6": "A connected plan for a complex property.",
           "f1bzv3tx": "Grounds, water, land and access affect one another. Bring them into one scope discussion, with practical coordination and clear responsibility for the work agreed with P1.",
@@ -3115,8 +3100,7 @@
           "f1rhk3bl": "Explore pond & waterway maintenance",
           "fv11gbc": "/services/pond-waterway-management",
           "fascy0n": "/assets/data-center-campus-1280-BDyegjDb.webp",
-          "f18z5khl": "Illustrative aerial view of a data-center campus with maintained green space, tree buffers and a stormwater pond",
-          "f3u7o20": "Illustrative imagery — not a P1 project or evidence of P1 data-center experience.",
+          "fw8lmzn": "Aerial view of a data-center campus with maintained green space, tree buffers and a stormwater pond",
           "f1kt7gl0": "Perimeter vegetation & buffers",
           "f1k18yz4": "Drainage, erosion & ponds",
           "f14vjff2": "Service roads & access areas",
@@ -3457,13 +3441,6 @@
             "type": "textarea",
             "required": false,
             "maxLength": 12000
-          },
-          {
-            "path": "fv23mzk",
-            "label": "Text: Illustrative imagery — not a P1 project photo.",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
           },
           {
             "path": "fyk0ud9",
@@ -4261,7 +4238,6 @@
           "f49hmz6": "Because measurable snow is infrequent, many facilities are not prepared when an overnight ice event glazes a large parking lot, loading docks, and walkways before the first employee arrives.",
           "fda3jvm": "For distribution centers, that can interrupt truck staging and dock access. For mission-critical facilities, it can restrict staff and emergency access. For retail and office properties, it creates safety and liability exposure for customers, tenants, and employees.",
           "f15b48db": "P1 is a commercial and industrial snow and ice management contractor. We assess the property before the season, monitor developing weather, and execute a site-specific plan under a defined seasonal agreement.",
-          "fv23mzk": "Illustrative imagery — not a P1 project photo.",
           "fyk0ud9": "/assets/commercial-snow-pretreatment-1280-DgdKcu8Q.webp",
           "f8c2gvd": "Large pickup truck with a front plow and anti-icing equipment treating an industrial parking lot",
           "f1106bs7": "Who we serve",
@@ -4965,8 +4941,8 @@
             "maxLength": 2000
           },
           {
-            "path": "ffz5ynh",
-            "label": "Text: Illustrative imagery showing types of land management services. These images are not verified p",
+            "path": "fwz3u5a",
+            "label": "Text: Explore the land management services P1 provides for commercial, agricultural, and large reside",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -5072,13 +5048,6 @@
           {
             "path": "fhkvg84",
             "label": "Text: Forestry Mulching & Clearing",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1l0skmr",
-            "label": "Text: Illustrative image",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -5338,7 +5307,7 @@
           "f19kc7rj": "Illustration of land management services",
           "fqvb1zc": "Service Illustrations",
           "faj733m": "Gallery",
-          "ffz5ynh": "Illustrative imagery showing types of land management services. These images are not verified photographs of completed P1 projects.",
+          "fwz3u5a": "Explore the land management services P1 provides for commercial, agricultural, and large residential properties across the Carolinas.",
           "f7td0ou": "Illustrated service categories",
           "fg8ivbr": "All",
           "foa1vas": "Land Clearing",
@@ -5354,7 +5323,6 @@
           "ffhuwyj": "/assets/service-clearing-1280-ChQ3RvyP.webp",
           "f1r4tpxi": "Illustration: Forestry Mulching & Clearing",
           "fhkvg84": "Forestry Mulching & Clearing",
-          "f1l0skmr": "Illustrative image",
           "f1u1km71": "/assets/fine-grading-1280-CWwHPN9f.webp",
           "f1y132vx": "Illustration: Commercial Site Fine Grading",
           "fi8y9hf": "Commercial Site Fine Grading",
