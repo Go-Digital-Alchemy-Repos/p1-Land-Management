@@ -2,6 +2,7 @@ import { Link, useLocation } from "wouter";
 
 const CATALOG: [string, string][] = [
   ["Commercial Landscaping", "/services/commercial-landscaping"],
+  ["Commercial Snow & Ice", "/commercial-snow-ice-management"],
   ["Grading & Site Preparation", "/services/grading-site-preparation"],
   ["Drainage Solutions", "/services/drainage"],
   ["Land Clearing", "/services/land-clearing"],

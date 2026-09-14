@@ -428,6 +428,72 @@
       }
     ]
   },
+  "features/commercial-snow-loading-dock.png": {
+    "sourceBytes": 2501702,
+    "sourceHash": "ebd6ea299e106aee61481f5df0d946a311323b4ea22749137ba2770059d46c95",
+    "width": 1672,
+    "height": 941,
+    "default": "optimized/features/commercial-snow-loading-dock-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/features/commercial-snow-loading-dock-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 270,
+        "bytes": 27336,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/commercial-snow-loading-dock-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 432,
+        "bytes": 64132,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/commercial-snow-loading-dock-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 720,
+        "bytes": 144712,
+        "quality": 78
+      }
+    ]
+  },
+  "features/commercial-snow-pretreatment.png": {
+    "sourceBytes": 2353494,
+    "sourceHash": "9b3b8fc16653545eec0bafb7550a7ed6000d38d224bd864be5e3e14596621f63",
+    "width": 1672,
+    "height": 941,
+    "default": "optimized/features/commercial-snow-pretreatment-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/features/commercial-snow-pretreatment-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 270,
+        "bytes": 19246,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/commercial-snow-pretreatment-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 432,
+        "bytes": 44482,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/commercial-snow-pretreatment-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 720,
+        "bytes": 107654,
+        "quality": 78
+      }
+    ]
+  },
   "features/drainage-fix.png": {
     "sourceBytes": 2223752,
     "sourceHash": "342cbc3dacbfb119df659ee7594d580042504e58559d9679cf4a6819454648e3",
@@ -1084,6 +1150,39 @@
         "width": 1280,
         "height": 698,
         "bytes": 167278,
+        "quality": 78
+      }
+    ]
+  },
+  "hero-commercial-snow-ice.png": {
+    "sourceBytes": 2253909,
+    "sourceHash": "51a6f8877e1283cd7c1ea3a4b28258b8e44ce9bec711d44d599146a651f271aa",
+    "width": 1672,
+    "height": 941,
+    "default": "optimized/hero-commercial-snow-ice-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/hero-commercial-snow-ice-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 270,
+        "bytes": 20862,
+        "quality": 78
+      },
+      {
+        "path": "optimized/hero-commercial-snow-ice-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 432,
+        "bytes": 48854,
+        "quality": 78
+      },
+      {
+        "path": "optimized/hero-commercial-snow-ice-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 720,
+        "bytes": 109272,
         "quality": 78
       }
     ]

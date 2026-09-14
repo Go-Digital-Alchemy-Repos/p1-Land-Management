@@ -11,8 +11,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CheckCircle2, Phone, Mail, Clock, MapPin } from "lucide-react";
-import { EMAIL, PHONE_DISPLAY, PHONE_HREF } from "@/lib/site";
+import { CheckCircle2, Phone, Clock, MapPin } from "lucide-react";
+import { PHONE_DISPLAY, PHONE_HREF } from "@/lib/site";
 
 const SERVICES = [
   "Land Clearing", "Grading & Site Prep", "Drainage", "Turf & Seeding",
@@ -242,13 +242,7 @@ export default function Contact() {
                     <p className="text-white/60 text-sm">Call us direct</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-4">
-                  <Mail className="w-6 h-6 text-primary mt-1" />
-                  <div>
-                    <a className="font-bold text-lg" href={`mailto:${EMAIL}`}>{EMAIL}</a>
-                    <p className="text-white/60 text-sm">Email us</p>
-                  </div>
-                </div>
+                <p className="text-white/80">To protect our team from spam, please use the secure estimate form on this page.</p>
                 <div className="flex items-start gap-4">
                   <MapPin className="w-6 h-6 text-primary mt-1" />
                   <div>

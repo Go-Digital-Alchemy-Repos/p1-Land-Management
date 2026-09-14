@@ -5,12 +5,16 @@ import helmet from "helmet";
 import { loadClientSiteManifest } from "../services/client-site-manifest.service";
 import rateLimit from "express-rate-limit";
 import { logger } from "../utils/logger";
+import { readP1FormNotificationRecipients } from "../services/p1-form-notification-recipients";
 
 const isDev = process.env.NODE_ENV !== "production";
 const originCheckExemptPaths = new Set<string>();
 
 export function enforceRequiredSecrets() {
-  if (federationEnabled()) { federationConfig(); readBootstrapProofConfig(process.env); }
+  if (federationEnabled()) {
+    federationConfig();
+    readBootstrapProofConfig(process.env);
+  }
   if (isDev) return;
 
   const required: Record<string, string | undefined> = {
@@ -18,6 +22,7 @@ export function enforceRequiredSecrets() {
     DATABASE_URL: process.env.DATABASE_URL,
     SETUP_TOKEN: process.env.SETUP_TOKEN,
     APP_URL: process.env.APP_URL,
+    P1_FORM_NOTIFICATION_RECIPIENTS: process.env.P1_FORM_NOTIFICATION_RECIPIENTS,
   };
 
   const missing = Object.entries(required)
@@ -29,8 +34,20 @@ export function enforceRequiredSecrets() {
     process.exit(1);
   }
 
-  if (process.env.SESSION_SECRET === "dev-secret-change-me" || (process.env.SESSION_SECRET?.length ?? 0) < 32) {
+  if (
+    process.env.SESSION_SECRET === "dev-secret-change-me" ||
+    (process.env.SESSION_SECRET?.length ?? 0) < 32
+  ) {
     logger.app.error("FATAL: SESSION_SECRET must not use the dev default in production");
+    process.exit(1);
+  }
+
+  try {
+    readP1FormNotificationRecipients();
+  } catch (error) {
+    logger.app.error(
+      `FATAL: ${error instanceof Error ? error.message : "Invalid private form recipient configuration"}`,
+    );
     process.exit(1);
   }
 }
@@ -104,12 +121,7 @@ function createSecurityHeaders(publicSiteOrigin?: string): RequestHandler {
           "https://analytics.twitter.com",
           "https://static.ads-twitter.com",
         ],
-        frameSrc: [
-          "'self'",
-
-
-          ...(publicSiteOrigin ? [publicSiteOrigin] : []),
-        ],
+        frameSrc: ["'self'", ...(publicSiteOrigin ? [publicSiteOrigin] : [])],
         objectSrc: ["'none'"],
         baseUri: ["'self'"],
         formAction: ["'self'"],

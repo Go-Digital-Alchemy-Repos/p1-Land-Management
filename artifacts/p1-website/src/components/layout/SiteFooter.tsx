@@ -1,7 +1,7 @@
 import { Link } from "wouter";
 import logo from "@assets/Asset_1_1782329698014.svg";
 import { Button } from "@/components/ui/button";
-import { Phone, Mail } from "lucide-react";
+import { Phone } from "lucide-react";
 
 export function SiteFooter() {
   return (
@@ -20,10 +20,7 @@ export function SiteFooter() {
               <Phone className="h-5 w-5 text-primary" />
               (704) 221-8928
             </a>
-            <a href="mailto:info@p1landmanagement.com" className="flex items-center gap-2 text-sm text-secondary-foreground/70 hover:text-primary transition-colors">
-              <Mail className="h-4 w-4 text-primary" />
-              info@p1landmanagement.com
-            </a>
+            <Link href="/contact" className="inline-block text-sm font-semibold text-secondary-foreground/70 hover:text-primary transition-colors">Send a secure inquiry</Link>
           </div>
         </div>
 
@@ -32,6 +29,7 @@ export function SiteFooter() {
           <h4 className="font-serif text-[11px] font-bold uppercase tracking-[0.2em] text-tan mb-6">Services</h4>
           <ul className="space-y-3 text-sm text-secondary-foreground/70">
             <li><Link href="/services/commercial-landscaping" className="hover:text-primary transition-colors">Commercial Landscaping</Link></li>
+            <li><Link href="/commercial-snow-ice-management" className="hover:text-primary transition-colors">Commercial Snow & Ice</Link></li>
             <li><Link href="/services/industrial-agricultural" className="hover:text-primary transition-colors">Industrial & Agricultural</Link></li>
             <li><Link href="/services/land-clearing" className="hover:text-primary transition-colors">Land Clearing</Link></li>
             <li><Link href="/services/grading-site-preparation" className="hover:text-primary transition-colors">Grading & Site Prep</Link></li>

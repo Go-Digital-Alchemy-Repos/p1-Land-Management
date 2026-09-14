@@ -12,6 +12,9 @@ export function createSiteRoutes(page: ResolvePage): ComponentType {
     Home = page("./pages/home.tsx"),
     About = page("./pages/about.tsx"),
     Commercial = page("./pages/commercial.tsx"),
+    CommercialSnowIceManagement = page(
+      "./pages/commercial-snow-ice-management.tsx",
+    ),
     Contact = page("./pages/contact.tsx"),
     Gallery = page("./pages/gallery.tsx");
   const ServicesIndex = page("./pages/services/index.tsx"),
@@ -73,6 +76,10 @@ export function createSiteRoutes(page: ResolvePage): ComponentType {
         <Route path="/" component={Home} />
         <Route path="/about" component={About} />
         <Route path="/commercial" component={Commercial} />
+        <Route
+          path="/commercial-snow-ice-management"
+          component={CommercialSnowIceManagement}
+        />
         <Route path="/contact" component={Contact} />
         <Route path="/gallery" component={Gallery} />
         <Route path="/services" component={ServicesIndex} />

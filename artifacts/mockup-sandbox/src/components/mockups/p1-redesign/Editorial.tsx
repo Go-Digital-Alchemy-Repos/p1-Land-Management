@@ -893,12 +893,12 @@ export function Editorial() {
                 </li>
                 <li>
                   <a
-                    href="mailto:info@p1landmanagement.com"
+                    href="/contact"
                     className="flex items-center gap-3 text-[14px]"
                     style={{ color: "hsl(40 20% 92% / 0.8)" }}
                   >
                     <Mail className="h-4 w-4" style={{ color: BLUE_BRIGHT }} />
-                    info@p1landmanagement.com
+                    Send a secure inquiry
                   </a>
                 </li>
                 <li

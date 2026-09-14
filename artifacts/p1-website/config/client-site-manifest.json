@@ -6,7 +6,7 @@
     "displayName": "P1 Land & Property Management",
     "source": {
       "repository": "https://github.com/Go-Digital-Alchemy-Repos/p1-Land-Management.git",
-      "revision": "dbd8e411b0b441d7a3b86b2c971073dc13c507ee"
+      "revision": "9c76d9bd0b48d3fb7780c9e2951ebe8280836f36"
     },
     "owners": [
       {
@@ -78,6 +78,21 @@
       "componentRef": "src/pages/commercial.tsx",
       "editableRegions": [
         "commercial",
+        "global"
+      ],
+      "lockedBehaviors": [
+        "routing",
+        "validation",
+        "accessibility"
+      ]
+    },
+    {
+      "id": "commercial-snow-ice-management",
+      "path": "/commercial-snow-ice-management",
+      "owner": "site",
+      "componentRef": "src/pages/commercial-snow-ice-management.tsx",
+      "editableRegions": [
+        "commercial-snow-ice-management",
         "global"
       ],
       "lockedBehaviors": [
@@ -722,8 +737,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fgwkxig",
-            "label": "Link: /services/grading-site-preparation",
+            "path": "f4hmc0n",
+            "label": "Link: /commercial-snow-ice-management",
             "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
@@ -731,6 +746,27 @@
           {
             "path": "f1c0uauq",
             "label": "Text: 02",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fhxv1ro",
+            "label": "Text: Commercial Snow & Ice",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fgwkxig",
+            "label": "Link: /services/grading-site-preparation",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1catwjp",
+            "label": "Text: 03",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -750,8 +786,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1catwjp",
-            "label": "Text: 03",
+            "path": "f1acwoow",
+            "label": "Text: 04",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -771,27 +807,6 @@
             "maxLength": 2000
           },
           {
-            "path": "f1acwoow",
-            "label": "Text: 04",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "foa1vas",
-            "label": "Text: Land Clearing",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "fv11gbc",
-            "label": "Link: /services/pond-waterway-management",
-            "type": "ctaTarget",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
             "path": "f1amwadv",
             "label": "Text: 05",
             "type": "text",
@@ -799,8 +814,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fitsipf",
-            "label": "Text: Ponds & Waterway Management",
+            "path": "foa1vas",
+            "label": "Text: Land Clearing",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -878,6 +893,27 @@
           {
             "path": "fzgodm2",
             "label": "Image description: Commercial Landscaping",
+            "type": "imageAlt",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1sn6cpk",
+            "label": "Text: Seasonal plowing, anti-icing, and documented storm response for large commercial sites.",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f104xy60",
+            "label": "Image: /assets/hero-commercial-snow-ice-1280-_3Y3jnUX.webp",
+            "type": "image",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f4pcymu",
+            "label": "Image description: Commercial Snow & Ice",
             "type": "imageAlt",
             "required": false,
             "maxLength": 2000
@@ -1077,6 +1113,13 @@
             "type": "textarea",
             "required": false,
             "maxLength": 12000
+          },
+          {
+            "path": "fv11gbc",
+            "label": "Link: /services/pond-waterway-management",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
           },
           {
             "path": "f1j9al4f",
@@ -1588,18 +1631,18 @@
           "fwwr8hd": "/services/commercial-landscaping",
           "f1bqup5r": "01",
           "ffzg0ag": "Commercial Landscaping",
-          "fgwkxig": "/services/grading-site-preparation",
+          "f4hmc0n": "/commercial-snow-ice-management",
           "f1c0uauq": "02",
+          "fhxv1ro": "Commercial Snow & Ice",
+          "fgwkxig": "/services/grading-site-preparation",
+          "f1catwjp": "03",
           "f1i5fdfo": "Grading & Site Preparation",
           "f1cn1znt": "/services/drainage",
-          "f1catwjp": "03",
+          "f1acwoow": "04",
           "f1itpl39": "Drainage Solutions",
           "f14gqnzz": "/services/land-clearing",
-          "f1acwoow": "04",
-          "foa1vas": "Land Clearing",
-          "fv11gbc": "/services/pond-waterway-management",
           "f1amwadv": "05",
-          "fitsipf": "Ponds & Waterway Management",
+          "foa1vas": "Land Clearing",
           "f1c661rd": "Land & Property Care",
           "f11c77d4": "Upstate SC + Charlotte NC",
           "f1bqkijr": "1-Acre Minimum",
@@ -1611,6 +1654,9 @@
           "f10v9k0a": "Scheduled exterior grounds maintenance that keeps large sites pristine year-round.",
           "fj88j4j": "/assets/service-commercial-1280-L65U2NEr.webp",
           "fzgodm2": "Commercial Landscaping",
+          "f1sn6cpk": "Seasonal plowing, anti-icing, and documented storm response for large commercial sites.",
+          "f104xy60": "/assets/hero-commercial-snow-ice-1280-_3Y3jnUX.webp",
+          "f4pcymu": "Commercial Snow & Ice",
           "f19vd1b5": "Industrial & Agricultural Land",
           "f1n4wpqe": "Heavy-duty care for farms, industrial sites and working rural acreage.",
           "f1gkmumd": "/services/industrial-agricultural",
@@ -1639,6 +1685,7 @@
           "foqr11b": "Tree & Brush Management",
           "fr3noro": "Pond & Waterway Management",
           "fnvm2lx": "Design, excavation and long-term care of ponds and working waterways.",
+          "fv11gbc": "/services/pond-waterway-management",
           "f1j9al4f": "/assets/service-pond-1280-DHTzyRYV.webp",
           "fe6fch2": "Pond & Waterway Management",
           "f1xtoq0z": "Property Reconstruction",
@@ -2806,16 +2853,9 @@
             "maxLength": 2000
           },
           {
-            "path": "ffuz26q",
-            "label": "Text: info@p1landmanagement.com",
+            "path": "f1pkz3xb",
+            "label": "Text: To protect our team from spam, please use the secure form on this page.",
             "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f10kkf1c",
-            "label": "Link: mailto:info@p1landmanagement.com",
-            "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
           },
@@ -3101,8 +3141,7 @@
           "f1xwx13e": "Start the conversation",
           "f1ar2azd": "Tell us about the exterior work, the property and the relationship you are looking for. We will use these details to review the request and discuss the next step.",
           "f15oz4jr": "(704) 221-8928",
-          "ffuz26q": "info@p1landmanagement.com",
-          "f10kkf1c": "mailto:info@p1landmanagement.com",
+          "f1pkz3xb": "To protect our team from spam, please use the secure form on this page.",
           "fssacfb": "Review our service areas",
           "fooltxx": "/service-areas",
           "f9mzc3q": "Your name",
@@ -3129,6 +3168,1208 @@
           "f1azqvfo": "Prefer to talk? ",
           "f1w00rmf": "Call P1",
           "f1gkxqyn": "Site Assessment"
+        },
+        "lockedBehaviors": [
+          "routing",
+          "form-validation",
+          "authentication",
+          "responsive-layout"
+        ]
+      },
+      {
+        "key": "commercial-snow-ice-management-content",
+        "version": "1.0.0",
+        "rendererRef": "src/lib/cms-jsx-runtime.ts",
+        "fieldSchemaRef": "src/lib/cms.tsx",
+        "allowedRegions": [
+          "commercial-snow-ice-management"
+        ],
+        "editableFields": [
+          "heading",
+          "copy",
+          "image",
+          "imageAlt",
+          "ctaTarget"
+        ],
+        "fields": [
+          {
+            "path": "fum15fc",
+            "label": "Text: Skip to main content",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "seoTitle",
+            "label": "SEO title",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "seoDescription",
+            "label": "SEO description",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "seoImage",
+            "label": "Image: /opengraph.jpg",
+            "type": "image",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f104xy60",
+            "label": "Image: /assets/hero-commercial-snow-ice-1280-_3Y3jnUX.webp",
+            "type": "image",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f198obqz",
+            "label": "Image description: Large pickup truck with a front-mounted snowplow clearing a commercial distribution center",
+            "type": "imageAlt",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f44gi1z",
+            "label": "Text: Commercial Snow & Ice Management",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f71wofi",
+            "label": "Text: Carolinas",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fvjqqrc",
+            "label": "Text: Keep your distribution center, data center, retail center, or industrial campus open, safe, and",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1fc34zh",
+            "label": "Text: Request a Site Assessment",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fmggb4x",
+            "label": "Link: /contact",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fxg9ge8",
+            "label": "Text: Call for Priority Availability",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f9spy6u",
+            "label": "Link: tel:7042218928",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1ke7dc6",
+            "label": "Text: Index of Work",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f4hmc0n",
+            "label": "Link: /commercial-snow-ice-management",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1bqup5r",
+            "label": "Text: 01",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fhxv1ro",
+            "label": "Text: Commercial Snow & Ice",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fwwr8hd",
+            "label": "Link: /services/commercial-landscaping",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1c0uauq",
+            "label": "Text: 02",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "ffzg0ag",
+            "label": "Text: Commercial Landscaping",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fgwkxig",
+            "label": "Link: /services/grading-site-preparation",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1catwjp",
+            "label": "Text: 03",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1i5fdfo",
+            "label": "Text: Grading & Site Preparation",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1cn1znt",
+            "label": "Link: /services/drainage",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1acwoow",
+            "label": "Text: 04",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1itpl39",
+            "label": "Text: Drainage Solutions",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f14gqnzz",
+            "label": "Link: /services/land-clearing",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1amwadv",
+            "label": "Text: 05",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "foa1vas",
+            "label": "Text: Land Clearing",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f2s5lhj",
+            "label": "Text: Commercial & Industrial Only",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1y1jk0h",
+            "label": "Text: Large-Site Plow Fleet",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fkb9rb9",
+            "label": "Text: 24/7 Storm Monitoring",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1sg84q5",
+            "label": "Text: Insurance Documentation Available",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fia0h0n",
+            "label": "Text: Seasonal Priority Contracts",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fv9r7zi",
+            "label": "Text: In the Carolinas, the risk isn't the snowfall — it's the ice event no one saw coming",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f49hmz6",
+            "label": "Text: Because measurable snow is infrequent, many facilities are not prepared when an overnight ice e",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "fda3jvm",
+            "label": "Text: For distribution centers, that can interrupt truck staging and dock access. For mission-critica",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f15b48db",
+            "label": "Text: P1 is a commercial and industrial snow and ice management contractor. We assess the property be",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "fv23mzk",
+            "label": "Text: Illustrative imagery — not a P1 project photo.",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fyk0ud9",
+            "label": "Image: /assets/commercial-snow-pretreatment-1280-DgdKcu8Q.webp",
+            "type": "image",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f8c2gvd",
+            "label": "Image description: Large pickup truck with a front plow and anti-icing equipment treating an industrial parking lo",
+            "type": "imageAlt",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1106bs7",
+            "label": "Text: Who we serve",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1iqye3v",
+            "label": "Text: Built for large commercial and industrial properties",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fdan1nl",
+            "label": "Text: We work with properties of scale where downtime and safety carry real cost. We do not service r",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1uj6cac",
+            "label": "Text: Distribution & fulfillment centers",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f4bwfgi",
+            "label": "Text: Dock aprons, truck courts, staging lanes, and employee lots cleared on a schedule that protects",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1un24r9",
+            "label": "Text: Data centers & mission-critical facilities",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f8ghbm5",
+            "label": "Text: Access for staff, security, and emergency vehicles, with ice management around entrances and ge",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fodpdxf",
+            "label": "Text: Shopping centers & retail complexes",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1jglsuf",
+            "label": "Text: Storefront walkways, fire lanes, and high-traffic lots kept safe and open during business hours",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fo8behk",
+            "label": "Text: Corporate & office campuses",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1bfl38a",
+            "label": "Text: Multi-building sites with parking areas, connector walkways, and main entrances treated for ten",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "ft6xv1n",
+            "label": "Text: Industrial & manufacturing plants",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fmq064n",
+            "label": "Text: Large yards, rail sidings, loading zones, and shift-change parking managed around your operatio",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1fka0mb",
+            "label": "Text: Warehouse & logistics parks",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1k2jybd",
+            "label": "Text: Multi-tenant industrial parks maintained under one coordinated plan.",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "ff3zio9",
+            "label": "Text: Medical, institutional & large-format commercial",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fa1kvl6",
+            "label": "Text: Properties where continuous, safe access is non-negotiable.",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fcaj2l6",
+            "label": "Text: If your site is one acre or larger and downtime isn't an option, this service is built for you.",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "ffjeiux",
+            "label": "Text: One coordinated plan",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fplgm9o",
+            "label": "Text: Complete commercial snow and ice services — from a single contractor",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fcz6i6i",
+            "label": "Text: The full scope is coordinated under one contract, one point of contact, and one plan built for ",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1w7uuly",
+            "label": "Text: Snow Plowing & Clearing",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f194gmki",
+            "label": "Text: Large pickup-mounted plowing for parking lots, truck courts, access roads, and fire lanes, with",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f101ivmn",
+            "label": "Text: Anti-Icing & Pre-Treatment",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1pz1wx5",
+            "label": "Text: Proactive brine and de-icing application before a storm arrives, helping prevent ice from fully",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1qlfsro",
+            "label": "Text: De-Icing & Salting",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fidhxyo",
+            "label": "Text: Post-storm granular and liquid de-icing on lots, drive lanes, ramps, and high-traffic zones as ",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1izs701",
+            "label": "Text: Sidewalk, Walkway & Entrance Clearing",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1svp6gd",
+            "label": "Text: Hand crews and walk-behind equipment for entrances, crosswalks, ADA ramps, and pedestrian paths",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1l5nfkj",
+            "label": "Text: Snow Hauling & Relocation",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1lzoezb",
+            "label": "Text: Snow relocated from critical areas to preserve parking, sightlines, loading zones, and fire lan",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f13gnmt8",
+            "label": "Text: Loading Dock & Truck Court Management",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1pbwhb7",
+            "label": "Text: Specialized clearing around dock doors, aprons, and staging lanes so freight can keep moving.",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f19hntad",
+            "label": "Text: 24/7 Storm Monitoring & Emergency Response",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1n2g8xj",
+            "label": "Text: Developing systems are monitored so contracted sites can be staged and serviced according to th",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f36nqim",
+            "label": "Text: Why large properties across the Carolinas choose P1",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1w2oijc",
+            "label": "Text: P1 approaches winter work as a planned commercial operation: the site is reviewed, priority are",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "frlj9tj",
+            "label": "Text: Large lots, truck courts, entrances, walkways, and relocation needs are coordinated through one",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f4w27oa",
+            "label": "Image: /assets/commercial-snow-loading-dock-1280-DRRyAFjA.webp",
+            "type": "image",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1a3sld8",
+            "label": "Image description: Large pickup truck with a front-mounted snowplow clearing a distribution center loading dock",
+            "type": "imageAlt",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1jbrvha",
+            "label": "Text: Commercial and industrial focus",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1wwowly",
+            "label": "Text: Your site is not a big driveway. Crews, equipment, and plans are organized around large-format ",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "ft6tw2y",
+            "label": "Text: Large-site operating capacity",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f19nkue4",
+            "label": "Text: P1's land-management background supports coordinated snow clearing and relocation across acreag",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "fwbwadj",
+            "label": "Text: Year-round property perspective",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "ftgbe29",
+            "label": "Text: Existing knowledge of a site's drainage, grades, curbs, landscape edges, and stacking constrain",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1ef2z90",
+            "label": "Text: Planning before the season",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f12vyej9",
+            "label": "Text: A pre-season assessment maps plow routes, stacking zones, priority areas, and treatment trigger",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1xmnyqj",
+            "label": "Text: Liability-aware service",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f12895tq",
+            "label": "Text: Service timing and documentation are organized around safer walkways and lots and a cleaner ope",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fd0z3k9",
+            "label": "Text: One plan and one point of contact",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1m7mc7l",
+            "label": "Text: Snow, ice, walkways, hauling, and emergency response can be coordinated under one seasonal agre",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f3ayngc",
+            "label": "Text: Seasonal readiness",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1c9qxzh",
+            "label": "Text: How our seasonal service works",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fmf459b",
+            "label": "Text: Site assessment",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1koe1cn",
+            "label": "Text: We walk the property, map priority zones, identify stacking and hauling needs, and flag high-li",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fkix894",
+            "label": "Text: Custom seasonal plan",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fbbmcmr",
+            "label": "Text: You receive a written plan with response triggers, service standards, and priority-response com",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1083yzg",
+            "label": "Text: Pre-season staging",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fvaa600",
+            "label": "Text: Equipment, materials, and crews are organized before the first freeze, with contract priority e",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f2e9zph",
+            "label": "Text: 24/7 storm monitoring",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f9l4s19",
+            "label": "Text: Forecasts are tracked so pre-treatment and mobilization can follow the agreed plan.",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1jozhdw",
+            "label": "Text: Documented service & follow-up",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1npsfsj",
+            "label": "Text: Visits are logged and timestamped to support operations and risk management.",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f18fldsn",
+            "label": "Text: Priority contracts are limited and fill before winter.",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f10mufaf",
+            "label": "Text: Request Your Site Assessment",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f13q15vg",
+            "label": "Text: Serving the Charlotte region and Upstate South Carolina",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fh89ybc",
+            "label": "Text: P1 provides commercial and industrial snow and ice management across the greater Charlotte metr",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "fp9g0y9",
+            "label": "Text: Charlotte, Huntersville, Concord, Gastonia, Monroe, Matthews, Mint Hill, Ballantyne, Pineville,",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "fv4e8o2",
+            "label": "Text: North Carolina:",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1gczo42",
+            "label": "Text: Rock Hill, Fort Mill, Indian Land, Lancaster, York, and the I-77 / I-85 industrial and distribu",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "fgqsclo",
+            "label": "Text: South Carolina:",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f19yx49e",
+            "label": "Text: Not sure whether your property is in range?",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1u810sm",
+            "label": "Text: .",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f184jbth",
+            "label": "Text: Ask about current coverage",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f63lakw",
+            "label": "Text: Charlotte region",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f11009l2",
+            "label": "Link: /service-areas/charlotte-north-carolina",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f5hsmub",
+            "label": "Text: Union County",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f10m3m5y",
+            "label": "Link: /service-areas/union-county-nc",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1mwc14n",
+            "label": "Text: York County",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1xhnnaj",
+            "label": "Link: /service-areas/york-county-sc",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1aorfov",
+            "label": "Text: Lancaster County",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1dmyinn",
+            "label": "Link: /service-areas/lancaster-county-sc",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f11z8noq",
+            "label": "Text: Commercial snow and ice management — frequently asked questions",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fflchjd",
+            "label": "Text: Do you provide residential snow removal?",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fabva1h",
+            "label": "Text: No. P1 works exclusively with commercial and industrial properties — distribution centers, data",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1lg4kwe",
+            "label": "Text: Why does a region that barely gets snow need a commercial snow contractor?",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1v9jb2",
+            "label": "Text: Because the danger here is not only accumulation; it is unpredictability. An overnight ice even",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f12l79am",
+            "label": "Text: What size properties do you service?",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fh41t3r",
+            "label": "Text: Commercial and industrial sites of roughly one acre and larger, up to multi-building campuses a",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1m74fm1",
+            "label": "Text: What's the difference between snow plowing and snow removal (hauling)?",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f543je7",
+            "label": "Text: Plowing pushes snow aside to clear driving and parking surfaces. Removal, or hauling, physicall",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f12pbq5z",
+            "label": "Text: What is pre-treatment (anti-icing), and do I need it?",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1ltx7u6",
+            "label": "Text: Pre-treatment applies brine or de-icer before a storm so ice is less able to bond to pavement. ",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1xqd4n7",
+            "label": "Text: How fast do you respond during a storm?",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f13483pw",
+            "label": "Text: Response windows are defined in the service agreement, and priority-contract sites are schedule",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1esisew",
+            "label": "Text: Are you insured?",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1naycjy",
+            "label": "Text: Ask P1 for current commercial insurance documentation during qualification. Applicable coverage",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f9vsslx",
+            "label": "Text: When should I set up a contract?",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fp105nv",
+            "label": "Text: Before winter. Priority-response capacity and pre-season site assessments are limited, so late ",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f7f1uuq",
+            "label": "Text: Protect your property before the first freeze",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f8aegp7",
+            "label": "Text: Lock in a commercial snow and ice management plan built around your site, operations, and risk ",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1ux4719",
+            "label": "Text: Request Your Free Site Assessment",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1w00rmf",
+            "label": "Text: Call P1",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1u26c9a",
+            "label": "Link: tel:+17042218928",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1qryswv",
+            "label": "Text: Get an Estimate",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          }
+        ],
+        "defaultContent": {
+          "fum15fc": "Skip to main content",
+          "seoTitle": "Commercial Snow & Ice Management | Charlotte & Upstate SC | P1",
+          "seoDescription": "Commercial and industrial snow and ice management for distribution centers and data centers across Charlotte NC and Upstate SC. Request a site assessment.",
+          "seoImage": "/opengraph.jpg",
+          "f104xy60": "/assets/hero-commercial-snow-ice-1280-_3Y3jnUX.webp",
+          "f198obqz": "Large pickup truck with a front-mounted snowplow clearing a commercial distribution center",
+          "f44gi1z": "Commercial Snow & Ice Management",
+          "f71wofi": "Carolinas",
+          "fvjqqrc": "Keep your distribution center, data center, retail center, or industrial campus open, safe, and ready all winter with a dedicated commercial snow and ice plan for large-acreage sites across the Charlotte region and Upstate South Carolina.",
+          "f1fc34zh": "Request a Site Assessment",
+          "fmggb4x": "/contact",
+          "fxg9ge8": "Call for Priority Availability",
+          "f9spy6u": "tel:7042218928",
+          "f1ke7dc6": "Index of Work",
+          "f4hmc0n": "/commercial-snow-ice-management",
+          "f1bqup5r": "01",
+          "fhxv1ro": "Commercial Snow & Ice",
+          "fwwr8hd": "/services/commercial-landscaping",
+          "f1c0uauq": "02",
+          "ffzg0ag": "Commercial Landscaping",
+          "fgwkxig": "/services/grading-site-preparation",
+          "f1catwjp": "03",
+          "f1i5fdfo": "Grading & Site Preparation",
+          "f1cn1znt": "/services/drainage",
+          "f1acwoow": "04",
+          "f1itpl39": "Drainage Solutions",
+          "f14gqnzz": "/services/land-clearing",
+          "f1amwadv": "05",
+          "foa1vas": "Land Clearing",
+          "f2s5lhj": "Commercial & Industrial Only",
+          "f1y1jk0h": "Large-Site Plow Fleet",
+          "fkb9rb9": "24/7 Storm Monitoring",
+          "f1sg84q5": "Insurance Documentation Available",
+          "fia0h0n": "Seasonal Priority Contracts",
+          "fv9r7zi": "In the Carolinas, the risk isn't the snowfall — it's the ice event no one saw coming",
+          "f49hmz6": "Because measurable snow is infrequent, many facilities are not prepared when an overnight ice event glazes a large parking lot, loading docks, and walkways before the first employee arrives.",
+          "fda3jvm": "For distribution centers, that can interrupt truck staging and dock access. For mission-critical facilities, it can restrict staff and emergency access. For retail and office properties, it creates safety and liability exposure for customers, tenants, and employees.",
+          "f15b48db": "P1 is a commercial and industrial snow and ice management contractor. We assess the property before the season, monitor developing weather, and execute a site-specific plan under a defined seasonal agreement.",
+          "fv23mzk": "Illustrative imagery — not a P1 project photo.",
+          "fyk0ud9": "/assets/commercial-snow-pretreatment-1280-DgdKcu8Q.webp",
+          "f8c2gvd": "Large pickup truck with a front plow and anti-icing equipment treating an industrial parking lot",
+          "f1106bs7": "Who we serve",
+          "f1iqye3v": "Built for large commercial and industrial properties",
+          "fdan1nl": "We work with properties of scale where downtime and safety carry real cost. We do not service residential driveways or small lots.",
+          "f1uj6cac": "Distribution & fulfillment centers",
+          "f4bwfgi": "Dock aprons, truck courts, staging lanes, and employee lots cleared on a schedule that protects throughput.",
+          "f1un24r9": "Data centers & mission-critical facilities",
+          "f8ghbm5": "Access for staff, security, and emergency vehicles, with ice management around entrances and generator yards.",
+          "fodpdxf": "Shopping centers & retail complexes",
+          "f1jglsuf": "Storefront walkways, fire lanes, and high-traffic lots kept safe and open during business hours.",
+          "fo8behk": "Corporate & office campuses",
+          "f1bfl38a": "Multi-building sites with parking areas, connector walkways, and main entrances treated for tenants and employees.",
+          "ft6xv1n": "Industrial & manufacturing plants",
+          "fmq064n": "Large yards, rail sidings, loading zones, and shift-change parking managed around your operations.",
+          "f1fka0mb": "Warehouse & logistics parks",
+          "f1k2jybd": "Multi-tenant industrial parks maintained under one coordinated plan.",
+          "ff3zio9": "Medical, institutional & large-format commercial",
+          "fa1kvl6": "Properties where continuous, safe access is non-negotiable.",
+          "fcaj2l6": "If your site is one acre or larger and downtime isn't an option, this service is built for you.",
+          "ffjeiux": "One coordinated plan",
+          "fplgm9o": "Complete commercial snow and ice services — from a single contractor",
+          "fcz6i6i": "The full scope is coordinated under one contract, one point of contact, and one plan built for your site.",
+          "f1w7uuly": "Snow Plowing & Clearing",
+          "f194gmki": "Large pickup-mounted plowing for parking lots, truck courts, access roads, and fire lanes, with routes planned around your site.",
+          "f101ivmn": "Anti-Icing & Pre-Treatment",
+          "f1pz1wx5": "Proactive brine and de-icing application before a storm arrives, helping prevent ice from fully bonding to pavement.",
+          "f1qlfsro": "De-Icing & Salting",
+          "fidhxyo": "Post-storm granular and liquid de-icing on lots, drive lanes, ramps, and high-traffic zones as temperatures fluctuate.",
+          "f1izs701": "Sidewalk, Walkway & Entrance Clearing",
+          "f1svp6gd": "Hand crews and walk-behind equipment for entrances, crosswalks, ADA ramps, and pedestrian paths, coordinated with lot service.",
+          "f1l5nfkj": "Snow Hauling & Relocation",
+          "f1lzoezb": "Snow relocated from critical areas to preserve parking, sightlines, loading zones, and fire lanes when on-site stacking is not enough.",
+          "f13gnmt8": "Loading Dock & Truck Court Management",
+          "f1pbwhb7": "Specialized clearing around dock doors, aprons, and staging lanes so freight can keep moving.",
+          "f19hntad": "24/7 Storm Monitoring & Emergency Response",
+          "f1n2g8xj": "Developing systems are monitored so contracted sites can be staged and serviced according to the response windows in their agreement.",
+          "f36nqim": "Why large properties across the Carolinas choose P1",
+          "f1w2oijc": "P1 approaches winter work as a planned commercial operation: the site is reviewed, priority areas are mapped, and response expectations are defined before weather arrives.",
+          "frlj9tj": "Large lots, truck courts, entrances, walkways, and relocation needs are coordinated through one site plan and one point of contact.",
+          "f4w27oa": "/assets/commercial-snow-loading-dock-1280-DRRyAFjA.webp",
+          "f1a3sld8": "Large pickup truck with a front-mounted snowplow clearing a distribution center loading dock",
+          "f1jbrvha": "Commercial and industrial focus",
+          "f1wwowly": "Your site is not a big driveway. Crews, equipment, and plans are organized around large-format commercial and industrial properties.",
+          "ft6tw2y": "Large-site operating capacity",
+          "f19nkue4": "P1's land-management background supports coordinated snow clearing and relocation across acreage, truck courts, and broad paved areas.",
+          "fwbwadj": "Year-round property perspective",
+          "ftgbe29": "Existing knowledge of a site's drainage, grades, curbs, landscape edges, and stacking constraints can support faster, safer execution.",
+          "f1ef2z90": "Planning before the season",
+          "f12vyej9": "A pre-season assessment maps plow routes, stacking zones, priority areas, and treatment triggers before weather arrives.",
+          "f1xmnyqj": "Liability-aware service",
+          "f12895tq": "Service timing and documentation are organized around safer walkways and lots and a cleaner operational record.",
+          "fd0z3k9": "One plan and one point of contact",
+          "f1m7mc7l": "Snow, ice, walkways, hauling, and emergency response can be coordinated under one seasonal agreement.",
+          "f3ayngc": "Seasonal readiness",
+          "f1c9qxzh": "How our seasonal service works",
+          "fmf459b": "Site assessment",
+          "f1koe1cn": "We walk the property, map priority zones, identify stacking and hauling needs, and flag high-liability areas.",
+          "fkix894": "Custom seasonal plan",
+          "fbbmcmr": "You receive a written plan with response triggers, service standards, and priority-response commitments.",
+          "f1083yzg": "Pre-season staging",
+          "fvaa600": "Equipment, materials, and crews are organized before the first freeze, with contract priority established in advance.",
+          "f2e9zph": "24/7 storm monitoring",
+          "f9l4s19": "Forecasts are tracked so pre-treatment and mobilization can follow the agreed plan.",
+          "f1jozhdw": "Documented service & follow-up",
+          "f1npsfsj": "Visits are logged and timestamped to support operations and risk management.",
+          "f18fldsn": "Priority contracts are limited and fill before winter.",
+          "f10mufaf": "Request Your Site Assessment",
+          "f13q15vg": "Serving the Charlotte region and Upstate South Carolina",
+          "fh89ybc": "P1 provides commercial and industrial snow and ice management across the greater Charlotte metro and the Upstate SC corridor.",
+          "fp9g0y9": " Charlotte, Huntersville, Concord, Gastonia, Monroe, Matthews, Mint Hill, Ballantyne, Pineville, Indian Trail, and surrounding industrial corridors.",
+          "fv4e8o2": "North Carolina:",
+          "f1gczo42": " Rock Hill, Fort Mill, Indian Land, Lancaster, York, and the I-77 / I-85 industrial and distribution corridors through the Upstate.",
+          "fgqsclo": "South Carolina:",
+          "f19yx49e": "Not sure whether your property is in range? ",
+          "f1u810sm": ".",
+          "f184jbth": "Ask about current coverage",
+          "f63lakw": "Charlotte region",
+          "f11009l2": "/service-areas/charlotte-north-carolina",
+          "f5hsmub": "Union County",
+          "f10m3m5y": "/service-areas/union-county-nc",
+          "f1mwc14n": "York County",
+          "f1xhnnaj": "/service-areas/york-county-sc",
+          "f1aorfov": "Lancaster County",
+          "f1dmyinn": "/service-areas/lancaster-county-sc",
+          "f11z8noq": "Commercial snow and ice management — frequently asked questions",
+          "fflchjd": "Do you provide residential snow removal?",
+          "fabva1h": "No. P1 works exclusively with commercial and industrial properties — distribution centers, data centers, shopping centers, office and industrial campuses, and similar large-format sites. We do not service residential driveways or small lots.",
+          "f1lg4kwe": "Why does a region that barely gets snow need a commercial snow contractor?",
+          "f1v9jb2": "Because the danger here is not only accumulation; it is unpredictability. An overnight ice event can affect an entire property with little warning. A seasonal contract puts the site plan, service priorities, and response expectations in place before winter weather arrives.",
+          "f12l79am": "What size properties do you service?",
+          "fh41t3r": "Commercial and industrial sites of roughly one acre and larger, up to multi-building campuses and industrial parks. Our operating model is built for large parking lots, truck courts, and yards.",
+          "f1m74fm1": "What's the difference between snow plowing and snow removal (hauling)?",
+          "f543je7": "Plowing pushes snow aside to clear driving and parking surfaces. Removal, or hauling, physically relocates snow when there is too much to stack, freeing parking, sightlines, fire lanes, and loading zones. P1 can scope both services for a site.",
+          "f12pbq5z": "What is pre-treatment (anti-icing), and do I need it?",
+          "f1ltx7u6": "Pre-treatment applies brine or de-icer before a storm so ice is less able to bond to pavement. In the Carolinas' freeze-thaw climate, it can be a critical part of a site-specific seasonal plan.",
+          "f1xqd4n7": "How fast do you respond during a storm?",
+          "f13483pw": "Response windows are defined in the service agreement, and priority-contract sites are scheduled according to those commitments. Monitoring and pre-season planning allow equipment and crews to be organized before conditions deteriorate.",
+          "f1esisew": "Are you insured?",
+          "f1naycjy": "Ask P1 for current commercial insurance documentation during qualification. Applicable coverage, site requirements, service records, and procurement documents should be reviewed before work is scheduled.",
+          "f9vsslx": "When should I set up a contract?",
+          "fp105nv": "Before winter. Priority-response capacity and pre-season site assessments are limited, so late summer or early fall gives the best opportunity to map the property and confirm a plan before the first freeze.",
+          "f7f1uuq": "Protect your property before the first freeze",
+          "f8aegp7": "Lock in a commercial snow and ice management plan built around your site, operations, and risk priorities.",
+          "f1ux4719": "Request Your Free Site Assessment",
+          "f1w00rmf": "Call P1",
+          "f1u26c9a": "tel:+17042218928",
+          "f1qryswv": "Get an Estimate"
         },
         "lockedBehaviors": [
           "routing",
@@ -3385,22 +4626,8 @@
             "maxLength": 2000
           },
           {
-            "path": "ffuz26q",
-            "label": "Text: info@p1landmanagement.com",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f10kkf1c",
-            "label": "Link: mailto:info@p1landmanagement.com",
-            "type": "ctaTarget",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "fxp5m2g",
-            "label": "Text: Email us",
+            "path": "f1gukqhr",
+            "label": "Text: To protect our team from spam, please use the secure estimate form on this page.",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -3629,9 +4856,7 @@
           "f15oz4jr": "(704) 221-8928",
           "f1u26c9a": "tel:+17042218928",
           "f1wuresx": "Call us direct",
-          "ffuz26q": "info@p1landmanagement.com",
-          "f10kkf1c": "mailto:info@p1landmanagement.com",
-          "fxp5m2g": "Email us",
+          "f1gukqhr": "To protect our team from spam, please use the secure estimate form on this page.",
           "f1ynqkk5": "Service Areas:",
           "f10ey25k": "Upstate South Carolina",
           "fx9q02m": "Greater Charlotte, North Carolina",
@@ -4295,6 +5520,41 @@
             "maxLength": 2000
           },
           {
+            "path": "fhxv1ro",
+            "label": "Text: Commercial Snow & Ice",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1sn6cpk",
+            "label": "Text: Seasonal plowing, anti-icing, and documented storm response for large commercial sites.",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f4hmc0n",
+            "label": "Link: /commercial-snow-ice-management",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f104xy60",
+            "label": "Image: /assets/hero-commercial-snow-ice-1280-_3Y3jnUX.webp",
+            "type": "image",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f4pcymu",
+            "label": "Image description: Commercial Snow & Ice",
+            "type": "imageAlt",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
             "path": "f19vd1b5",
             "label": "Text: Industrial & Agricultural Land",
             "type": "text",
@@ -4668,6 +5928,11 @@
           "fwwr8hd": "/services/commercial-landscaping",
           "fj88j4j": "/assets/service-commercial-1280-L65U2NEr.webp",
           "fzgodm2": "Commercial Landscaping",
+          "fhxv1ro": "Commercial Snow & Ice",
+          "f1sn6cpk": "Seasonal plowing, anti-icing, and documented storm response for large commercial sites.",
+          "f4hmc0n": "/commercial-snow-ice-management",
+          "f104xy60": "/assets/hero-commercial-snow-ice-1280-_3Y3jnUX.webp",
+          "f4pcymu": "Commercial Snow & Ice",
           "f19vd1b5": "Industrial & Agricultural Land",
           "f1n4wpqe": "Heavy-duty care for farms, industrial sites and working rural acreage.",
           "f1gkmumd": "/services/industrial-agricultural",
@@ -4828,8 +6093,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fgwkxig",
-            "label": "Link: /services/grading-site-preparation",
+            "path": "f4hmc0n",
+            "label": "Link: /commercial-snow-ice-management",
             "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
@@ -4837,6 +6102,27 @@
           {
             "path": "f1c0uauq",
             "label": "Text: 02",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fhxv1ro",
+            "label": "Text: Commercial Snow & Ice",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fgwkxig",
+            "label": "Link: /services/grading-site-preparation",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1catwjp",
+            "label": "Text: 03",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -4856,8 +6142,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1catwjp",
-            "label": "Text: 03",
+            "path": "f1acwoow",
+            "label": "Text: 04",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -4877,27 +6163,6 @@
             "maxLength": 2000
           },
           {
-            "path": "f1acwoow",
-            "label": "Text: 04",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "foa1vas",
-            "label": "Text: Land Clearing",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "fv11gbc",
-            "label": "Link: /services/pond-waterway-management",
-            "type": "ctaTarget",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
             "path": "f1amwadv",
             "label": "Text: 05",
             "type": "text",
@@ -4905,8 +6170,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fitsipf",
-            "label": "Text: Ponds & Waterway Management",
+            "path": "foa1vas",
+            "label": "Text: Land Clearing",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -5220,8 +6485,22 @@
             "maxLength": 2000
           },
           {
-            "path": "fqv61d7",
-            "label": "Text: Explore how commercial landscaping, drainage, land and corrective work can fit an agreed exteri",
+            "path": "fcvdvuv",
+            "label": "Text: Explore how commercial landscaping, drainage, land, corrective work, and",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1wyfltu",
+            "label": "Text: can fit an agreed exterior-work scope.",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1xazi9y",
+            "label": "Text: commercial snow and ice management",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -5317,18 +6596,18 @@
           "f1ke7dc6": "Index of Work",
           "fwwr8hd": "/services/commercial-landscaping",
           "f1bqup5r": "01",
-          "fgwkxig": "/services/grading-site-preparation",
+          "f4hmc0n": "/commercial-snow-ice-management",
           "f1c0uauq": "02",
+          "fhxv1ro": "Commercial Snow & Ice",
+          "fgwkxig": "/services/grading-site-preparation",
+          "f1catwjp": "03",
           "f1i5fdfo": "Grading & Site Preparation",
           "f1cn1znt": "/services/drainage",
-          "f1catwjp": "03",
+          "f1acwoow": "04",
           "f1itpl39": "Drainage Solutions",
           "f14gqnzz": "/services/land-clearing",
-          "f1acwoow": "04",
-          "foa1vas": "Land Clearing",
-          "fv11gbc": "/services/pond-waterway-management",
           "f1amwadv": "05",
-          "fitsipf": "Ponds & Waterway Management",
+          "foa1vas": "Land Clearing",
           "f1l5dbf": "Your Commercial Property. Our Full Attention.",
           "fxavif": "A well-maintained commercial property supports a professional presentation, protects the work already invested in the site and helps your team identify exterior needs early. P1 Land & Property Management helps large properties define and maintain an agreed exterior-work scope.",
           "fd41nr8": "We work with commercial developers, property managers, business campus owners, HOAs managing significant acreage, industrial facility managers, and private landowners who hold commercial-use land across both our markets.",
@@ -5373,7 +6652,9 @@
           "fatly8t": "request a free estimate online",
           "fmggb4x": "/contact",
           "fmiy0jn": "Looking for a connected exterior site plan?",
-          "fqv61d7": "Explore how commercial landscaping, drainage, land and corrective work can fit an agreed exterior-work scope.",
+          "fcvdvuv": "Explore how commercial landscaping, drainage, land, corrective work, and ",
+          "f1wyfltu": " can fit an agreed exterior-work scope.",
+          "f1xazi9y": "commercial snow and ice management",
           "f811gyl": "Commercial Site Management & Site Assessment",
           "f4ap5vh": "/commercial",
           "f1u1km71": "/assets/fine-grading-1280-CWwHPN9f.webp",
@@ -5515,8 +6796,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fgwkxig",
-            "label": "Link: /services/grading-site-preparation",
+            "path": "f4hmc0n",
+            "label": "Link: /commercial-snow-ice-management",
             "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
@@ -5524,6 +6805,27 @@
           {
             "path": "f1catwjp",
             "label": "Text: 03",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fhxv1ro",
+            "label": "Text: Commercial Snow & Ice",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fgwkxig",
+            "label": "Link: /services/grading-site-preparation",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1acwoow",
+            "label": "Text: 04",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -5543,27 +6845,6 @@
             "maxLength": 2000
           },
           {
-            "path": "f1acwoow",
-            "label": "Text: 04",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1itpl39",
-            "label": "Text: Drainage Solutions",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f14gqnzz",
-            "label": "Link: /services/land-clearing",
-            "type": "ctaTarget",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
             "path": "f1amwadv",
             "label": "Text: 05",
             "type": "text",
@@ -5571,8 +6852,8 @@
             "maxLength": 2000
           },
           {
-            "path": "foa1vas",
-            "label": "Text: Land Clearing",
+            "path": "f1itpl39",
+            "label": "Text: Drainage Solutions",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -5944,15 +7225,15 @@
           "fwwr8hd": "/services/commercial-landscaping",
           "f1c0uauq": "02",
           "ffzg0ag": "Commercial Landscaping",
-          "fgwkxig": "/services/grading-site-preparation",
+          "f4hmc0n": "/commercial-snow-ice-management",
           "f1catwjp": "03",
+          "fhxv1ro": "Commercial Snow & Ice",
+          "fgwkxig": "/services/grading-site-preparation",
+          "f1acwoow": "04",
           "f1i5fdfo": "Grading & Site Preparation",
           "f1cn1znt": "/services/drainage",
-          "f1acwoow": "04",
-          "f1itpl39": "Drainage Solutions",
-          "f14gqnzz": "/services/land-clearing",
           "f1amwadv": "05",
-          "foa1vas": "Land Clearing",
+          "f1itpl39": "Drainage Solutions",
           "f1q4rsnu": "Land That Works Needs Maintenance That Matches",
           "fdram20": "Industrial facilities, working farms, and rural landholdings have maintenance needs that go far beyond what a standard landscaping company can handle. Overgrown fence lines, failing drainage ditches, eroded slopes, silted ponds, and encroaching vegetation don't just look bad — they cost money, create liability, and reduce the productive capacity of your land.",
           "f1pwgst1": "P1 brings heavy equipment, experienced operators, and the full range of land services needed to keep industrial and agricultural properties in working order — from routine inspections and cleanup to major earthwork and reconstruction.",
@@ -6133,8 +7414,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fgwkxig",
-            "label": "Link: /services/grading-site-preparation",
+            "path": "f4hmc0n",
+            "label": "Link: /commercial-snow-ice-management",
             "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
@@ -6142,6 +7423,27 @@
           {
             "path": "f1catwjp",
             "label": "Text: 03",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fhxv1ro",
+            "label": "Text: Commercial Snow & Ice",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fgwkxig",
+            "label": "Link: /services/grading-site-preparation",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1acwoow",
+            "label": "Text: 04",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -6161,27 +7463,6 @@
             "maxLength": 2000
           },
           {
-            "path": "f1acwoow",
-            "label": "Text: 04",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1itpl39",
-            "label": "Text: Drainage Solutions",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "fv11gbc",
-            "label": "Link: /services/pond-waterway-management",
-            "type": "ctaTarget",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
             "path": "f1amwadv",
             "label": "Text: 05",
             "type": "text",
@@ -6189,8 +7470,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fitsipf",
-            "label": "Text: Ponds & Waterway Management",
+            "path": "f1itpl39",
+            "label": "Text: Drainage Solutions",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -6548,15 +7829,15 @@
           "fwwr8hd": "/services/commercial-landscaping",
           "f1c0uauq": "02",
           "ffzg0ag": "Commercial Landscaping",
-          "fgwkxig": "/services/grading-site-preparation",
+          "f4hmc0n": "/commercial-snow-ice-management",
           "f1catwjp": "03",
+          "fhxv1ro": "Commercial Snow & Ice",
+          "fgwkxig": "/services/grading-site-preparation",
+          "f1acwoow": "04",
           "f1i5fdfo": "Grading & Site Preparation",
           "f1cn1znt": "/services/drainage",
-          "f1acwoow": "04",
-          "f1itpl39": "Drainage Solutions",
-          "fv11gbc": "/services/pond-waterway-management",
           "f1amwadv": "05",
-          "fitsipf": "Ponds & Waterway Management",
+          "f1itpl39": "Drainage Solutions",
           "fuu5ij2": "Professional Land Clearing That Prepares Your Property for What's Next",
           "f11bpwz6": "Whether you're preparing land for construction, expanding agricultural acreage, eliminating invasive vegetation, or simply reclaiming overgrown land you've let go, P1 delivers professional clearing that leaves your property ready for its next use.",
           "f19ol3e5": "We handle the full clearing process — trees, stumps, brush, vines, briars, and debris — using the right equipment for each site and each soil type. We serve commercial developers, farmers, rural landowners, and property managers across Upstate South Carolina and the greater Charlotte, North Carolina area.",
@@ -6735,8 +8016,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1cn1znt",
-            "label": "Link: /services/drainage",
+            "path": "f4hmc0n",
+            "label": "Link: /commercial-snow-ice-management",
             "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
@@ -6744,6 +8025,27 @@
           {
             "path": "f1catwjp",
             "label": "Text: 03",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fhxv1ro",
+            "label": "Text: Commercial Snow & Ice",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1cn1znt",
+            "label": "Link: /services/drainage",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1acwoow",
+            "label": "Text: 04",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -6763,27 +8065,6 @@
             "maxLength": 2000
           },
           {
-            "path": "f1acwoow",
-            "label": "Text: 04",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "foa1vas",
-            "label": "Text: Land Clearing",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "fv11gbc",
-            "label": "Link: /services/pond-waterway-management",
-            "type": "ctaTarget",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
             "path": "f1amwadv",
             "label": "Text: 05",
             "type": "text",
@@ -6791,8 +8072,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fitsipf",
-            "label": "Text: Ponds & Waterway Management",
+            "path": "foa1vas",
+            "label": "Text: Land Clearing",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -7171,15 +8452,15 @@
           "fwwr8hd": "/services/commercial-landscaping",
           "f1c0uauq": "02",
           "ffzg0ag": "Commercial Landscaping",
-          "f1cn1znt": "/services/drainage",
+          "f4hmc0n": "/commercial-snow-ice-management",
           "f1catwjp": "03",
+          "fhxv1ro": "Commercial Snow & Ice",
+          "f1cn1znt": "/services/drainage",
+          "f1acwoow": "04",
           "f1itpl39": "Drainage Solutions",
           "f14gqnzz": "/services/land-clearing",
-          "f1acwoow": "04",
-          "foa1vas": "Land Clearing",
-          "fv11gbc": "/services/pond-waterway-management",
           "f1amwadv": "05",
-          "fitsipf": "Ponds & Waterway Management",
+          "foa1vas": "Land Clearing",
           "fwmi7j5": "Get Your Land Level — and Keep It That Way",
           "f11dbv5x": "Poorly graded land can contribute to standing water, erosion, foundation pressure, turf problems and drainage issues. Whether you are preparing a construction site, reviewing drainage concerns or establishing grade for turf, discuss the approved plans, site conditions, equipment and delivery scope with P1 before work begins.",
           "fcw9jq8": "/assets/grading-level-1280-CyraN_zA.webp",
@@ -7361,8 +8642,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fgwkxig",
-            "label": "Link: /services/grading-site-preparation",
+            "path": "f4hmc0n",
+            "label": "Link: /commercial-snow-ice-management",
             "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
@@ -7370,6 +8651,27 @@
           {
             "path": "f1catwjp",
             "label": "Text: 03",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fhxv1ro",
+            "label": "Text: Commercial Snow & Ice",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fgwkxig",
+            "label": "Link: /services/grading-site-preparation",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1acwoow",
+            "label": "Text: 04",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -7389,27 +8691,6 @@
             "maxLength": 2000
           },
           {
-            "path": "f1acwoow",
-            "label": "Text: 04",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "foa1vas",
-            "label": "Text: Land Clearing",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "fv11gbc",
-            "label": "Link: /services/pond-waterway-management",
-            "type": "ctaTarget",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
             "path": "f1amwadv",
             "label": "Text: 05",
             "type": "text",
@@ -7417,8 +8698,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fitsipf",
-            "label": "Text: Ponds & Waterway Management",
+            "path": "foa1vas",
+            "label": "Text: Land Clearing",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -7797,15 +9078,15 @@
           "fwwr8hd": "/services/commercial-landscaping",
           "f1c0uauq": "02",
           "ffzg0ag": "Commercial Landscaping",
-          "fgwkxig": "/services/grading-site-preparation",
+          "f4hmc0n": "/commercial-snow-ice-management",
           "f1catwjp": "03",
+          "fhxv1ro": "Commercial Snow & Ice",
+          "fgwkxig": "/services/grading-site-preparation",
+          "f1acwoow": "04",
           "f1i5fdfo": "Grading & Site Preparation",
           "f14gqnzz": "/services/land-clearing",
-          "f1acwoow": "04",
-          "foa1vas": "Land Clearing",
-          "fv11gbc": "/services/pond-waterway-management",
           "f1amwadv": "05",
-          "fitsipf": "Ponds & Waterway Management",
+          "foa1vas": "Land Clearing",
           "fcz2rt8": "Drainage Problems Get Worse. Fix Them Right the First Time.",
           "ftgva8c": "Poor drainage is one of the most common — and most costly — problems facing large property owners in the Carolinas. Heavy clay soils, compacted ground, improper grading, and flat topography create conditions where water sits, roots suffocate, structures erode, and maintenance costs multiply.",
           "f1acqx8k": "P1 starts drainage work by reviewing the visible site conditions, where water enters and where it needs to go. The agreed scope identifies the work P1 will perform and any civil, engineering, permitting or specialist responsibilities that require separate confirmation.",
@@ -7994,8 +9275,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fgwkxig",
-            "label": "Link: /services/grading-site-preparation",
+            "path": "f4hmc0n",
+            "label": "Link: /commercial-snow-ice-management",
             "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
@@ -8003,6 +9284,27 @@
           {
             "path": "f1catwjp",
             "label": "Text: 03",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fhxv1ro",
+            "label": "Text: Commercial Snow & Ice",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fgwkxig",
+            "label": "Link: /services/grading-site-preparation",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1acwoow",
+            "label": "Text: 04",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -8022,27 +9324,6 @@
             "maxLength": 2000
           },
           {
-            "path": "f1acwoow",
-            "label": "Text: 04",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1itpl39",
-            "label": "Text: Drainage Solutions",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f14gqnzz",
-            "label": "Link: /services/land-clearing",
-            "type": "ctaTarget",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
             "path": "f1amwadv",
             "label": "Text: 05",
             "type": "text",
@@ -8050,8 +9331,8 @@
             "maxLength": 2000
           },
           {
-            "path": "foa1vas",
-            "label": "Text: Land Clearing",
+            "path": "f1itpl39",
+            "label": "Text: Drainage Solutions",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -8487,15 +9768,15 @@
           "fwwr8hd": "/services/commercial-landscaping",
           "f1c0uauq": "02",
           "ffzg0ag": "Commercial Landscaping",
-          "fgwkxig": "/services/grading-site-preparation",
+          "f4hmc0n": "/commercial-snow-ice-management",
           "f1catwjp": "03",
+          "fhxv1ro": "Commercial Snow & Ice",
+          "fgwkxig": "/services/grading-site-preparation",
+          "f1acwoow": "04",
           "f1i5fdfo": "Grading & Site Preparation",
           "f1cn1znt": "/services/drainage",
-          "f1acwoow": "04",
-          "f1itpl39": "Drainage Solutions",
-          "f14gqnzz": "/services/land-clearing",
           "f1amwadv": "05",
-          "foa1vas": "Land Clearing",
+          "f1itpl39": "Drainage Solutions",
           "fnhf3ir": "Turf Done Right Starts Before the First Seed",
           "fwmnl97": "A healthy stand of turf — whether it's a commercial property lawn, a farm pasture, a sports field, or a residential estate — begins with proper site preparation. Bad grade, poor soil, improper species selection, and inadequate establishment practices are the reasons most large-acreage turf jobs fail within two to three years.",
           "finsmqr": "Discuss soil testing, site grading, amendment, species selection and seeding or sod installation with P1 as part of the agreed scope. Establishment practices, responsibilities and any result commitments should be confirmed in writing before work begins.",
@@ -8685,8 +9966,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fgwkxig",
-            "label": "Link: /services/grading-site-preparation",
+            "path": "f4hmc0n",
+            "label": "Link: /commercial-snow-ice-management",
             "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
@@ -8694,6 +9975,27 @@
           {
             "path": "f1catwjp",
             "label": "Text: 03",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fhxv1ro",
+            "label": "Text: Commercial Snow & Ice",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fgwkxig",
+            "label": "Link: /services/grading-site-preparation",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1acwoow",
+            "label": "Text: 04",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -8713,27 +10015,6 @@
             "maxLength": 2000
           },
           {
-            "path": "f1acwoow",
-            "label": "Text: 04",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1itpl39",
-            "label": "Text: Drainage Solutions",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f14gqnzz",
-            "label": "Link: /services/land-clearing",
-            "type": "ctaTarget",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
             "path": "f1amwadv",
             "label": "Text: 05",
             "type": "text",
@@ -8741,8 +10022,8 @@
             "maxLength": 2000
           },
           {
-            "path": "foa1vas",
-            "label": "Text: Land Clearing",
+            "path": "f1itpl39",
+            "label": "Text: Drainage Solutions",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -9058,15 +10339,15 @@
           "fwwr8hd": "/services/commercial-landscaping",
           "f1c0uauq": "02",
           "ffzg0ag": "Commercial Landscaping",
-          "fgwkxig": "/services/grading-site-preparation",
+          "f4hmc0n": "/commercial-snow-ice-management",
           "f1catwjp": "03",
+          "fhxv1ro": "Commercial Snow & Ice",
+          "fgwkxig": "/services/grading-site-preparation",
+          "f1acwoow": "04",
           "f1i5fdfo": "Grading & Site Preparation",
           "f1cn1znt": "/services/drainage",
-          "f1acwoow": "04",
-          "f1itpl39": "Drainage Solutions",
-          "f14gqnzz": "/services/land-clearing",
           "f1amwadv": "05",
-          "foa1vas": "Land Clearing",
+          "f1itpl39": "Drainage Solutions",
           "fsb5b4f": "Comprehensive Tree Management for Large Acreage",
           "fgx68t2": "Trees on commercial and agricultural properties serve important functions — shade, windbreaks, aesthetics, wildlife habitat — but they also require active management to remain healthy and safe. Untrimmed canopies, dead wood, crowded stands, and storm-damaged trees create hazards for structures, fences, livestock, and people.",
           "f1y2jpr": "P1 provides professional tree services sized for large-acreage properties. We work with commercial property managers, farm owners, rural landowners, and residential estate owners across Upstate South Carolina and the greater Charlotte, NC region.",
@@ -9246,8 +10527,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fgwkxig",
-            "label": "Link: /services/grading-site-preparation",
+            "path": "f4hmc0n",
+            "label": "Link: /commercial-snow-ice-management",
             "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
@@ -9255,6 +10536,27 @@
           {
             "path": "f1catwjp",
             "label": "Text: 03",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fhxv1ro",
+            "label": "Text: Commercial Snow & Ice",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fgwkxig",
+            "label": "Link: /services/grading-site-preparation",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1acwoow",
+            "label": "Text: 04",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -9274,27 +10576,6 @@
             "maxLength": 2000
           },
           {
-            "path": "f1acwoow",
-            "label": "Text: 04",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1itpl39",
-            "label": "Text: Drainage Solutions",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f14gqnzz",
-            "label": "Link: /services/land-clearing",
-            "type": "ctaTarget",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
             "path": "f1amwadv",
             "label": "Text: 05",
             "type": "text",
@@ -9302,8 +10583,8 @@
             "maxLength": 2000
           },
           {
-            "path": "foa1vas",
-            "label": "Text: Land Clearing",
+            "path": "f1itpl39",
+            "label": "Text: Drainage Solutions",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -9697,15 +10978,15 @@
           "fwwr8hd": "/services/commercial-landscaping",
           "f1c0uauq": "02",
           "ffzg0ag": "Commercial Landscaping",
-          "fgwkxig": "/services/grading-site-preparation",
+          "f4hmc0n": "/commercial-snow-ice-management",
           "f1catwjp": "03",
+          "fhxv1ro": "Commercial Snow & Ice",
+          "fgwkxig": "/services/grading-site-preparation",
+          "f1acwoow": "04",
           "f1i5fdfo": "Grading & Site Preparation",
           "f1cn1znt": "/services/drainage",
-          "f1acwoow": "04",
-          "f1itpl39": "Drainage Solutions",
-          "f14gqnzz": "/services/land-clearing",
           "f1amwadv": "05",
-          "foa1vas": "Land Clearing",
+          "f1itpl39": "Drainage Solutions",
           "fkjpvfk": "Professional Pond and Waterway Care at Property Scale",
           "fllg4r0": "Ponds and waterways on large properties do more than look good. They manage stormwater runoff, support agricultural operations, provide wildlife habitat, and contribute significantly to property value. But without active maintenance, they silt up, become overgrown, develop water quality problems, and eventually fail to perform their function.",
           "f57brd4": "P1 provides ongoing pond management and one-time pond restoration services across Upstate South Carolina and the Charlotte, NC region — including waterway clearing, shoreline management, and drainage integration.",
@@ -9896,8 +11177,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fgwkxig",
-            "label": "Link: /services/grading-site-preparation",
+            "path": "f4hmc0n",
+            "label": "Link: /commercial-snow-ice-management",
             "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
@@ -9905,6 +11186,27 @@
           {
             "path": "f1catwjp",
             "label": "Text: 03",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fhxv1ro",
+            "label": "Text: Commercial Snow & Ice",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fgwkxig",
+            "label": "Link: /services/grading-site-preparation",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1acwoow",
+            "label": "Text: 04",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -9924,27 +11226,6 @@
             "maxLength": 2000
           },
           {
-            "path": "f1acwoow",
-            "label": "Text: 04",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1itpl39",
-            "label": "Text: Drainage Solutions",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f14gqnzz",
-            "label": "Link: /services/land-clearing",
-            "type": "ctaTarget",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
             "path": "f1amwadv",
             "label": "Text: 05",
             "type": "text",
@@ -9952,8 +11233,8 @@
             "maxLength": 2000
           },
           {
-            "path": "foa1vas",
-            "label": "Text: Land Clearing",
+            "path": "f1itpl39",
+            "label": "Text: Drainage Solutions",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -10347,15 +11628,15 @@
           "fwwr8hd": "/services/commercial-landscaping",
           "f1c0uauq": "02",
           "ffzg0ag": "Commercial Landscaping",
-          "fgwkxig": "/services/grading-site-preparation",
+          "f4hmc0n": "/commercial-snow-ice-management",
           "f1catwjp": "03",
+          "fhxv1ro": "Commercial Snow & Ice",
+          "fgwkxig": "/services/grading-site-preparation",
+          "f1acwoow": "04",
           "f1i5fdfo": "Grading & Site Preparation",
           "f1cn1znt": "/services/drainage",
-          "f1acwoow": "04",
-          "f1itpl39": "Drainage Solutions",
-          "f14gqnzz": "/services/land-clearing",
           "f1amwadv": "05",
-          "foa1vas": "Land Clearing",
+          "f1itpl39": "Drainage Solutions",
           "fs4q456": "When Maintenance Isn't Enough",
           "f2wggsh": "Some properties have gone too long without the right care. Drainage has failed. Erosion has carved up slopes and fields. Invasive vegetation has taken over. Ponds have silted in. Grade has shifted. What was once a functional, productive piece of land is now costing its owner more than it's worth.",
           "fri5gz9": "Property reconstruction is P1's answer for clients who need a complete reset — a full-scope project that addresses the root causes of a property's problems and rebuilds it to perform.",
@@ -12209,8 +13490,22 @@
             "maxLength": 12000
           },
           {
-            "path": "f1menulx",
-            "label": "Text: to discuss scope and availability.",
+            "path": "f1xhvh0c",
+            "label": "Text: , review",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fn4kqbr",
+            "label": "Text: , or",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1u810sm",
+            "label": "Text: .",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -12225,6 +13520,20 @@
           {
             "path": "f958gr",
             "label": "Link: /services",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1xazi9y",
+            "label": "Text: commercial snow and ice management",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f4hmc0n",
+            "label": "Link: /commercial-snow-ice-management",
             "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
@@ -12362,9 +13671,13 @@
           "fs7cdwp": "Yes. P1 provides shoreline maintenance, pond and waterway care, drainage management on sloped terrain, and turf establishment for the large waterfront and rural properties concentrated around Lake Norman.",
           "flyte6r": "What size properties does P1 work on in the Charlotte region?",
           "f1fehcbq": "P1 focuses on properties 1 acre and larger — commercial, industrial, agricultural, and large residential — which lets us bring the right equipment and expertise to jobs that standard landscaping companies can't handle.",
-          "f1menulx": " to discuss scope and availability.",
+          "f1xhvh0c": ", review ",
+          "fn4kqbr": ", or ",
+          "f1u810sm": ".",
           "f1gklu8p": "Compare land management services",
           "f958gr": "/services",
+          "f1xazi9y": "commercial snow and ice management",
+          "f4hmc0n": "/commercial-snow-ice-management",
           "f1th3tkk": "tell us about your property",
           "f1u1km71": "/assets/fine-grading-1280-CWwHPN9f.webp",
           "f5dus4q": "Start the Conversation",
@@ -15643,8 +16956,22 @@
             "maxLength": 2000
           },
           {
-            "path": "f1menulx",
-            "label": "Text: to discuss scope and availability.",
+            "path": "f1xhvh0c",
+            "label": "Text: , review",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fn4kqbr",
+            "label": "Text: , or",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1u810sm",
+            "label": "Text: .",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -15659,6 +16986,20 @@
           {
             "path": "f958gr",
             "label": "Link: /services",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1xazi9y",
+            "label": "Text: commercial snow and ice management",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f4hmc0n",
+            "label": "Link: /commercial-snow-ice-management",
             "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
@@ -15794,9 +17135,13 @@
           "f9spy6u": "tel:7042218928",
           "fatly8t": "request a free estimate online",
           "fmggb4x": "/contact",
-          "f1menulx": " to discuss scope and availability.",
+          "f1xhvh0c": ", review ",
+          "fn4kqbr": ", or ",
+          "f1u810sm": ".",
           "f1gklu8p": "Compare land management services",
           "f958gr": "/services",
+          "f1xazi9y": "commercial snow and ice management",
+          "f4hmc0n": "/commercial-snow-ice-management",
           "f1th3tkk": "tell us about your property",
           "f1u1km71": "/assets/fine-grading-1280-CWwHPN9f.webp",
           "f5dus4q": "Start the Conversation",
@@ -16245,8 +17590,22 @@
             "maxLength": 2000
           },
           {
-            "path": "f1menulx",
-            "label": "Text: to discuss scope and availability.",
+            "path": "f1xhvh0c",
+            "label": "Text: , review",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fn4kqbr",
+            "label": "Text: , or",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1u810sm",
+            "label": "Text: .",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -16261,6 +17620,20 @@
           {
             "path": "f958gr",
             "label": "Link: /services",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1xazi9y",
+            "label": "Text: commercial snow and ice management",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f4hmc0n",
+            "label": "Link: /commercial-snow-ice-management",
             "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
@@ -16396,9 +17769,13 @@
           "f9spy6u": "tel:7042218928",
           "fatly8t": "request a free estimate online",
           "fmggb4x": "/contact",
-          "f1menulx": " to discuss scope and availability.",
+          "f1xhvh0c": ", review ",
+          "fn4kqbr": ", or ",
+          "f1u810sm": ".",
           "f1gklu8p": "Compare land management services",
           "f958gr": "/services",
+          "f1xazi9y": "commercial snow and ice management",
+          "f4hmc0n": "/commercial-snow-ice-management",
           "f1th3tkk": "tell us about your property",
           "f1u1km71": "/assets/fine-grading-1280-CWwHPN9f.webp",
           "f5dus4q": "Start the Conversation",
@@ -16882,8 +18259,22 @@
             "maxLength": 2000
           },
           {
-            "path": "f1menulx",
-            "label": "Text: to discuss scope and availability.",
+            "path": "f1xhvh0c",
+            "label": "Text: , review",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fn4kqbr",
+            "label": "Text: , or",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1u810sm",
+            "label": "Text: .",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -16898,6 +18289,20 @@
           {
             "path": "f958gr",
             "label": "Link: /services",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1xazi9y",
+            "label": "Text: commercial snow and ice management",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f4hmc0n",
+            "label": "Link: /commercial-snow-ice-management",
             "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
@@ -17038,9 +18443,13 @@
           "f9spy6u": "tel:7042218928",
           "fatly8t": "request a free estimate online",
           "fmggb4x": "/contact",
-          "f1menulx": " to discuss scope and availability.",
+          "f1xhvh0c": ", review ",
+          "fn4kqbr": ", or ",
+          "f1u810sm": ".",
           "f1gklu8p": "Compare land management services",
           "f958gr": "/services",
+          "f1xazi9y": "commercial snow and ice management",
+          "f4hmc0n": "/commercial-snow-ice-management",
           "f1th3tkk": "tell us about your property",
           "f1u1km71": "/assets/fine-grading-1280-CWwHPN9f.webp",
           "f5dus4q": "Start the Conversation",
@@ -20058,16 +21467,9 @@
             "maxLength": 12000
           },
           {
-            "path": "ffuz26q",
-            "label": "Text: info@p1landmanagement.com",
+            "path": "fmme39j",
+            "label": "Text: Send a secure inquiry",
             "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f10kkf1c",
-            "label": "Link: mailto:info@p1landmanagement.com",
-            "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
           },
@@ -20088,6 +21490,20 @@
           {
             "path": "fwwr8hd",
             "label": "Link: /services/commercial-landscaping",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fhxv1ro",
+            "label": "Text: Commercial Snow & Ice",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f4hmc0n",
+            "label": "Link: /commercial-snow-ice-management",
             "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
@@ -20514,11 +21930,12 @@
           "f16ax4gv": "Get a Free Estimate",
           "ft83pm7": "Toggle Menu",
           "f2yadva": "Full-service land and property management for commercial, agricultural, and large residential properties 1 acre and larger across Upstate SC and the Charlotte, NC region.",
-          "ffuz26q": "info@p1landmanagement.com",
-          "f10kkf1c": "mailto:info@p1landmanagement.com",
+          "fmme39j": "Send a secure inquiry",
           "f1hf0vxg": "Services",
           "ffzg0ag": "Commercial Landscaping",
           "fwwr8hd": "/services/commercial-landscaping",
+          "fhxv1ro": "Commercial Snow & Ice",
+          "f4hmc0n": "/commercial-snow-ice-management",
           "fly9gd8": "Industrial & Agricultural",
           "f1gkmumd": "/services/industrial-agricultural",
           "foa1vas": "Land Clearing",
@@ -20595,7 +22012,9 @@
       "method": "POST",
       "authentication": "public",
       "handlerOwner": "platform",
-      "secretRefs": []
+      "secretRefs": [
+        "p1-form-notification-recipients"
+      ]
     },
     {
       "id": "p1-commercial-assessment",
@@ -20604,7 +22023,9 @@
       "method": "POST",
       "authentication": "public",
       "handlerOwner": "platform",
-      "secretRefs": []
+      "secretRefs": [
+        "p1-form-notification-recipients"
+      ]
     }
   ],
   "apiIntegrations": [
@@ -20628,6 +22049,7 @@
         "home",
         "about",
         "commercial",
+        "commercial-snow-ice-management",
         "contact",
         "gallery",
         "services",
@@ -20676,5 +22098,12 @@
       "secretRefs": []
     }
   ],
-  "secretReferences": []
+  "secretReferences": [
+    {
+      "id": "p1-form-notification-recipients",
+      "environmentVariable": "P1_FORM_NOTIFICATION_RECIPIENTS",
+      "purpose": "Private recipients for P1 public form notifications",
+      "required": true
+    }
+  ]
 }

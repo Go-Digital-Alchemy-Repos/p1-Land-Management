@@ -25,6 +25,7 @@ export function SiteHeader({ assessmentCta = false }: { assessmentCta?: boolean 
   const services = [
     { name: "Commercial Site Management", href: "/commercial" },
     { name: "Commercial Landscaping", href: "/services/commercial-landscaping" },
+    { name: "Commercial Snow & Ice", href: "/commercial-snow-ice-management" },
     { name: "Industrial & Agricultural Land", href: "/services/industrial-agricultural" },
     { name: "Land Clearing", href: "/services/land-clearing" },
     { name: "Grading & Site Preparation", href: "/services/grading-site-preparation" },
@@ -61,12 +62,16 @@ export function SiteHeader({ assessmentCta = false }: { assessmentCta?: boolean 
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-[280px]">
               {services.map((s) => (
-                <DropdownMenuItem key={s.href} asChild>
-                  <Link href={s.href} className="cursor-pointer">{s.name}</Link>
+                <DropdownMenuItem key={s.href} asChild className="focus:bg-primary/5 focus:text-foreground focus-visible:outline-none">
+                  <Link href={s.href} className="cursor-pointer hover:bg-primary/5 focus:bg-primary/5 focus:outline-none focus-visible:outline-none">
+                    {s.name}
+                  </Link>
                 </DropdownMenuItem>
               ))}
-              <DropdownMenuItem asChild className="font-bold text-primary mt-2 border-t border-[#ededed]">
-                <Link href="/service-areas" className="cursor-pointer">Service Areas</Link>
+              <DropdownMenuItem asChild className="font-bold text-primary mt-2 border-t border-[#ededed] focus:bg-primary/5 focus:text-primary focus-visible:outline-none">
+                <Link href="/service-areas" className="cursor-pointer hover:bg-primary/5 focus:bg-primary/5 focus:outline-none focus-visible:outline-none">
+                  Service Areas
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

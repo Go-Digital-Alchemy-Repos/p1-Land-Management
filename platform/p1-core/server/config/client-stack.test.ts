@@ -17,6 +17,7 @@ function completeEnvironment(): NodeJS.ProcessEnv {
     SMTP_USER: "mailer",
     SMTP_PASS: "placeholder",
     SMTP_FROM: "Shop <orders@example.com>",
+    P1_FORM_NOTIFICATION_RECIPIENTS: "owner-one@example.test,owner-two@example.test",
     SYSTEM_BACKUPS_ENABLED: "true",
     BACKUP_R2_ACCOUNT_ID: "account",
     BACKUP_R2_ACCESS_KEY_ID: "access",
@@ -78,6 +79,7 @@ describe("validateClientStackEnvironment", () => {
     const env = completeEnvironment();
     delete env.STRIPE_WEBHOOK_SECRET;
     delete env.SMTP_PASS;
+    delete env.P1_FORM_NOTIFICATION_RECIPIENTS;
     delete env.BACKUP_R2_BUCKET_NAME;
     delete env.METRICS_BEARER_TOKEN;
     delete env.CLIENT_FORM_PROXY_TOKEN;
@@ -96,6 +98,7 @@ describe("validateClientStackEnvironment", () => {
       expect.arrayContaining([
         "STRIPE_WEBHOOK_SECRET is required",
         "SMTP_PASS is required",
+        "P1_FORM_NOTIFICATION_RECIPIENTS is required",
         "SYSTEM_BACKUPS_ENABLED must be true",
         "BACKUP_R2_BUCKET_NAME is required",
         "METRICS_BEARER_TOKEN is required",
