@@ -3,7 +3,11 @@
 import React, { act } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createRoot, type Root } from "react-dom/client";
-import AdminCrmPage from "@/features/admin/crm-page";
+import AdminCrmPage, {
+  getSubmissionFields,
+  LeadSubmissionDetails,
+} from "@/features/admin/crm-page";
+import type { CrmLead } from "@shared/schema";
 
 const useQueryMock = vi.fn();
 const useMutationMock = vi.fn();
@@ -107,5 +111,61 @@ describe("AdminCrmPage", () => {
     expect(container.textContent).toContain("Lost");
     expect(container.querySelector('[data-testid="card-crm-lead-lead-1"]')).not.toBeNull();
     expect(container.querySelector('[data-testid="select-move-crm-lead-lead-1"]')).not.toBeNull();
+  });
+
+  it("formats every submitted form field for the lead profile", () => {
+    expect(
+      getSubmissionFields({
+        propertyType: "Commercial",
+        services: ["grading", "drainage"],
+        contactByPhone: true,
+        message: "Please assess the south field.",
+      }),
+    ).toEqual([
+      { label: "Property Type", value: "Commercial" },
+      { label: "Services", value: "grading, drainage" },
+      { label: "Contact By Phone", value: "Yes" },
+      { label: "Message", value: "Please assess the south field." },
+    ]);
+  });
+
+  it("shows contact information, the original message, and all form data together", () => {
+    const lead: CrmLead = {
+      id: "lead-submission",
+      name: "Grace Hopper",
+      email: "grace@example.com",
+      phone: "555-0101",
+      company: "Compiler Co",
+      message: "Please assess the south field.",
+      stage: "new",
+      source: "website_form",
+      externalId: null,
+      formSubmissionId: "submission-1",
+      formData: {
+        name: "Grace Hopper",
+        email: "grace@example.com",
+        address: "123 Main Street",
+        acreage: "12 acres",
+        message: "Please assess the south field.",
+      },
+      metadata: { formName: "P1 Estimate Request" },
+      ownerId: null,
+      nextFollowUpAt: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    act(() => {
+      root = createRoot(container);
+      root.render(<LeadSubmissionDetails lead={lead} />);
+    });
+
+    expect(container.textContent).toContain("Grace Hopper");
+    expect(container.textContent).toContain("grace@example.com");
+    expect(container.textContent).toContain("555-0101");
+    expect(container.textContent).toContain("Please assess the south field.");
+    expect(container.textContent).toContain("123 Main Street");
+    expect(container.textContent).toContain("12 acres");
+    expect(container.textContent).toContain("P1 Estimate Request");
   });
 });
