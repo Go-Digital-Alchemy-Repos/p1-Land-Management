@@ -39,8 +39,8 @@ export default function PondWaterwayManagement() {
   return (
     <Layout>
       <SEO 
-        title="Pond & Waterway Management | P1 Land & Property Management | Upstate SC & Charlotte NC"
-        description="Professional pond management, waterway clearing, shoreline restoration, and water quality maintenance for large properties. Serving Upstate SC and Charlotte NC. Call (704) 221-8928."
+        title="Pond & Waterway Management in SC & NC | P1"
+        description="Pond management, waterway clearing, shoreline work, and maintenance for qualifying large properties in Upstate SC and Charlotte. Call (704) 221-8928."
         jsonLd={[
           serviceSchema({ name: "Pond & Waterway Management", description: "Professional pond management, waterway clearing, shoreline restoration, and water quality maintenance for large properties. Serving Upstate SC and Charlotte NC. Call (704) 221-8928.", path: "/services/pond-waterway-management" }),
           breadcrumbSchema([

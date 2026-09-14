@@ -7,7 +7,7 @@ import { gzipSync } from 'node:zlib';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const { render } = await import(pathToFileURL(resolve(root, 'dist/server/entry-server.js')).href);
 const paths = [...readFileSync(resolve(root, 'src/app-routes.tsx'), 'utf8').matchAll(/<Route\s+path="([^"]+)"/g)].map(match => match[1]);
-assert.equal(paths.length, 35, 'Review route inventory when adding or removing pages');
+assert.equal(paths.length, 34, 'Review route inventory when adding or removing pages');
 const companyIconUrl = 'https://www.p1landmanagement.com/p1-symbol.svg';
 const headerSource = readFileSync(resolve(root, 'src/components/layout/SiteHeader.tsx'), 'utf8');
 assert(!headerSource.includes('View All Services'), 'Header must not restore the retired View All Services item');
@@ -41,6 +41,8 @@ try {
   for (const path of paths) {
     const result = render(path);
     assert(result.head?.title && result.head.description, `${path}: metadata`);
+    assert(result.head.title.length <= 60, `${path}: title must be 60 characters or fewer (${result.head.title.length})`);
+    assert(result.head.description.length <= 160, `${path}: description must be 160 characters or fewer (${result.head.description.length})`);
     assert.equal((result.html.match(/<h1(?:\s|>)/g) || []).length, 1, `${path}: one heading`);
     assert(result.fields.page.seoTitle && result.fields.page.seoDescription && result.fields.page.seoImage, `${path}: editable SEO`);
     if (path === "/") assert(/href="\/contact"[^>]*class="[^"]*inline-flex|class="[^"]*inline-flex[^>]*href="\/contact"/.test(result.html), "Slot CTA must retain button styling");

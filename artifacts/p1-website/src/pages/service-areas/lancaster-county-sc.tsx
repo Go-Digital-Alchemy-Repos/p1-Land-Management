@@ -38,8 +38,8 @@ export default function LancasterCountySC() {
   return (
     <Layout>
       <SEO
-        title="Land Clearing & Property Management Lancaster County SC | P1 | Indian Land, Van Wyck, Kershaw & Heath Springs"
-        description="P1 Land & Property Management serves commercial, industrial, agricultural, equestrian, municipal, and institutional properties across Lancaster County, SC. Land clearing, grading, drainage, pasture, turf, and pond management in Indian Land, Van Wyck, Kershaw, Heath Springs, Lancaster & more. Call (704) 221-8928."
+        title="Land Management in Lancaster County, SC | P1"
+        description="Clearing, grading, drainage, pasture, turf, and pond management for qualifying Lancaster County, SC properties. Call (704) 221-8928."
         jsonLd={[
           serviceAreaSchema({
             areaName: "Lancaster County, South Carolina",

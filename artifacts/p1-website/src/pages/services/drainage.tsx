@@ -38,8 +38,8 @@ export default function Drainage() {
   return (
     <Layout>
       <SEO 
-        title="Drainage Solutions for Large Properties | P1 Land & Property Management | Upstate SC & Charlotte NC"
-        description="Custom drainage solutions for commercial, industrial, agricultural, equestrian, municipal, and institutional properties. French drains, retention systems, swales, and more. Serving Upstate SC and Charlotte NC. Call (704) 221-8928."
+        title="Large-Property Drainage Solutions in SC & NC | P1"
+        description="Drainage assessment and scoped work for qualifying Carolina properties, including swales, French drains, grading, and retention systems. Call (704) 221-8928."
         jsonLd={[
           serviceSchema({ name: "Drainage Solutions", description: "Custom drainage solutions for commercial, industrial, agricultural, equestrian, municipal, and institutional properties. French drains, retention systems, swales, and more. Serving Upstate SC and Charlotte NC. Call (704) 221-8928.", path: "/services/drainage" }),
           breadcrumbSchema([

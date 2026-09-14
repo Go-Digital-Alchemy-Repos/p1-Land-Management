@@ -38,8 +38,8 @@ export default function UnionCountyNC() {
   return (
     <Layout>
       <SEO
-        title="Land Clearing & Property Management Union County NC | P1 | Monroe, Waxhaw, Indian Trail & Weddington"
-        description="P1 Land & Property Management serves commercial, industrial, agricultural, equestrian, municipal, and institutional properties across Union County, NC. Land clearing, grading, drainage, pasture, turf, and pond management in Monroe, Waxhaw, Indian Trail, Weddington & more. Call (704) 221-8928."
+        title="Land Management in Union County, NC | P1"
+        description="Clearing, grading, drainage, pasture, turf, and pond management for qualifying sites across Union County, NC. Call (704) 221-8928."
         jsonLd={[
           serviceAreaSchema({
             areaName: "Union County, North Carolina",

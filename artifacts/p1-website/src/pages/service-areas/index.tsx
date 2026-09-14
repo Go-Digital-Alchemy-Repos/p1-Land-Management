@@ -40,7 +40,7 @@ export default function ServiceAreasIndex() {
     <Layout>
       <SEO 
         title="Service Areas | P1 Land & Property Management"
-        description="P1 Land & Property Management serves commercial, industrial, agricultural, equestrian, municipal, and institutional properties across Upstate South Carolina and the Charlotte, NC region."
+        description="Explore P1 service areas for 1-acre-plus commercial, industrial, agricultural, municipal, and institutional properties across Upstate SC and Charlotte."
         jsonLd={[
           breadcrumbSchema([
             { name: "Home", path: "/" },
@@ -119,9 +119,6 @@ export default function ServiceAreasIndex() {
                 <div className="space-y-3 mb-8">
                   <Link href="/service-areas/charlotte-north-carolina" className="flex items-center gap-2 text-primary font-bold hover:underline">
                     → Charlotte NC Regional Overview
-                  </Link>
-                  <Link href="/service-areas/charlotte-nc" className="flex items-center gap-2 text-secondary hover:text-primary font-medium">
-                    <MapPin className="w-4 h-4 text-primary" /> Charlotte, NC
                   </Link>
                   <Link href="/service-areas/concord-nc" className="flex items-center gap-2 text-secondary hover:text-primary font-medium">
                     <MapPin className="w-4 h-4 text-primary" /> Concord, NC

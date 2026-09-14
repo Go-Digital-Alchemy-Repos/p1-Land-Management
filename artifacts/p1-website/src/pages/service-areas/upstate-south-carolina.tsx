@@ -39,8 +39,8 @@ export default function UpstateSC() {
   return (
     <Layout>
       <SEO 
-        title="Land & Property Management Upstate South Carolina | P1 | Greenville, Spartanburg & Surrounding Areas"
-        description="P1 Land & Property Management serves commercial, industrial, agricultural, equestrian, municipal, and institutional properties throughout Upstate South Carolina. Land clearing, grading, drainage, turf, ponds, and more. Call (704) 221-8928."
+        title="Land Management in Upstate South Carolina | P1"
+        description="Clearing, grading, drainage, turf, pond, and property management for qualifying commercial and working sites across Upstate SC. Call (704) 221-8928."
         jsonLd={[
           serviceAreaSchema({ areaName: "Upstate South Carolina", areaType: "AdministrativeArea", description: "P1 Land & Property Management serves commercial, industrial, agricultural, equestrian, municipal, and institutional properties throughout Upstate South Carolina. Land clearing, grading, drainage, turf, ponds, and more. Call (704) 221-8928.", path: "/service-areas/upstate-south-carolina" }),
           breadcrumbSchema([

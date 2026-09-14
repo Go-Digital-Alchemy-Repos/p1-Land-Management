@@ -43,8 +43,8 @@ export default function YorkCountySC() {
   return (
     <Layout>
       <SEO
-        title="Land Clearing & Property Management York County SC | P1 | Rock Hill, Fort Mill, Tega Cay, Clover & York"
-        description="P1 Land & Property Management serves commercial, industrial, agricultural, equestrian, municipal, and institutional properties across York County, SC. Land clearing, grading, drainage, pasture, turf, and pond management in Rock Hill, Fort Mill, Tega Cay, Lake Wylie, Clover, York & more. Call (704) 221-8928."
+        title="Land Management in York County, SC | P1"
+        description="Clearing, grading, drainage, turf, pasture, and pond management for qualifying sites across York County, SC. Call (704) 221-8928."
         jsonLd={[
           serviceAreaSchema({
             areaName: "York County, South Carolina",

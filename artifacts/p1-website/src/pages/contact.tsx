@@ -90,7 +90,7 @@ export default function Contact() {
     <Layout>
       <SEO 
         title="Get a Free Estimate | P1 Land & Property Management"
-        description="Request a free on-site estimate for land clearing, grading, drainage, turf, pond management, or property maintenance. Serving Upstate SC and Charlotte NC. Call (704) 221-8928."
+        description="Request a free estimate for clearing, grading, drainage, turf, pond, or property maintenance work in Upstate SC and Charlotte. Call (704) 221-8928."
         jsonLd={[
           localBusinessSchema(), faqSchema(FAQS),
           breadcrumbSchema([

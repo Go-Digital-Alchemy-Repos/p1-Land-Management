@@ -39,8 +39,8 @@ export default function TurfInstallationSeeding() {
   return (
     <Layout>
       <SEO 
-        title="Turf Installation & Seeding for Large Acreage | P1 Land & Property Management | Upstate SC & Charlotte NC"
-        description="Large-acreage sod and seed installation for commercial, industrial, agricultural, equestrian, municipal, and institutional properties. Bermuda, fescue, zoysia, and more. Serving Upstate SC and Charlotte NC. Call (704) 221-8928."
+        title="Large-Acreage Turf Installation in SC & NC | P1"
+        description="Sod and seed installation for qualifying commercial, industrial, agricultural, municipal, and institutional properties. Call (704) 221-8928."
         jsonLd={[
           serviceSchema({ name: "Turf Installation & Seeding", description: "Large-acreage sod and seed installation for commercial, industrial, agricultural, equestrian, municipal, and institutional properties. Bermuda, fescue, zoysia, and more. Serving Upstate SC and Charlotte NC. Call (704) 221-8928.", path: "/services/turf-installation-seeding" }),
           breadcrumbSchema([

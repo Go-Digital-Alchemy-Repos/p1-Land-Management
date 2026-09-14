@@ -39,8 +39,8 @@ export default function CharlotteRegionNC() {
   return (
     <Layout>
       <SEO 
-        title="Land & Property Management Charlotte NC | P1 | Concord, Mooresville, Lake Norman & Surrounding Areas"
-        description="P1 Land & Property Management serves commercial, industrial, agricultural, equestrian, municipal, and institutional properties in the Charlotte, NC region. Land clearing, grading, drainage, turf, and pond management. Call (704) 221-8928."
+        title="Land Management in the Charlotte, NC Region | P1"
+        description="Clearing, grading, drainage, turf, pond, and property management for qualifying commercial and working sites in greater Charlotte. Call (704) 221-8928."
         jsonLd={[
           serviceAreaSchema({ areaName: "Charlotte Region, North Carolina", areaType: "AdministrativeArea", description: "P1 Land & Property Management serves commercial, industrial, agricultural, equestrian, municipal, and institutional properties in the Charlotte, NC region. Land clearing, grading, drainage, turf, and pond management. Call (704) 221-8928.", path: "/service-areas/charlotte-north-carolina" }),
           breadcrumbSchema([
@@ -137,6 +137,19 @@ export default function CharlotteRegionNC() {
               <p className="font-bold text-secondary mt-6 border-l-4 border-primary pl-4">
                 Call <a href="tel:7042218928" className="text-primary hover:underline">+1 (704) 221-8928</a> or <Link href="/contact" className="text-primary hover:underline">request a free estimate online</Link> to discuss your property.
               </p>
+            </div>
+          </div>
+
+          <div className="grid gap-10 border-y border-border py-12 md:grid-cols-2">
+            <div className="space-y-4">
+              <h2 className="text-2xl font-serif font-bold text-secondary">Charlotte and Mecklenburg County</h2>
+              <p className="leading-relaxed text-secondary/80">Within Charlotte, P1 focuses on qualifying commercial, industrial, municipal, and institutional properties where acreage, operating complexity, or connected exterior needs call for more than a small landscape crew. The scope may involve an active campus, development tract, retention area, access route, or a combination of land preparation and recurring care.</p>
+              <p className="leading-relaxed text-secondary/80">Charlotte operators can use this regional overview to compare available services and follow the more specific county and community links below. One assessment can account for both the immediate work area and connected site needs.</p>
+            </div>
+            <div className="space-y-4">
+              <h2 className="text-2xl font-serif font-bold text-secondary">A regional scope with local constraints</h2>
+              <p className="leading-relaxed text-secondary/80">Across the metro, project planning changes with site access, active operations, visible water movement, surrounding uses, and the property’s next purpose. P1 reviews those conditions before proposing work and flags engineering, permitting, utility, survey, or specialist responsibilities where they may apply.</p>
+              <p className="leading-relaxed text-secondary/80">Share plans, known utilities, drainage history, access windows, and target timing when requesting an assessment. The more complete the operating context, the more clearly the estimate can define work areas, assumptions, exclusions, and coordination.</p>
             </div>
           </div>
 

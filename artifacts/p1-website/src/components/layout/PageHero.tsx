@@ -5,28 +5,30 @@ import { responsiveImageProps } from "@/lib/responsive-images";
 
 const TAN = "hsl(32 42% 62%)";
 
-interface PageHeroProps {
+interface PageHeroBaseProps {
   /** Small uppercase kicker shown above the headline. */
   eyebrow: string;
   /** Main headline. Pass a string, or a node with an <em className="text-tan"> accent. */
   title: ReactNode;
   /** Optional supporting paragraph under the headline. */
   subtitle?: ReactNode;
-  /** Optional background image (rendered at low opacity behind the editorial wash). */
-  image?: string;
-  imageAlt?: string;
   /** Optional extra content (badges, CTAs) rendered below the subtitle. */
   children?: ReactNode;
   /** Show the "Index of Work" side panel (desktop only). */
   indexOfWork?: boolean;
 }
 
+type PageHeroProps = PageHeroBaseProps & (
+  | { image: string; imageAlt: string }
+  | { image?: undefined; imageAlt?: never }
+);
+
 /**
  * Editorial page hero — the topographic / navy treatment used across the site.
  * Mirrors the home hero: low-opacity image, diagonal navy wash, contour-line
  * texture, kicker eyebrow and a left-aligned Fraunces display headline.
  */
-export function PageHero({ eyebrow, title, subtitle, image, imageAlt = "", children, indexOfWork }: PageHeroProps) {
+export function PageHero({ eyebrow, title, subtitle, image, imageAlt, children, indexOfWork }: PageHeroProps) {
   return (
     <section className="relative overflow-hidden bg-navy-deep">
       {image && (

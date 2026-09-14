@@ -36,8 +36,8 @@ export default function AndersonSC() {
   return (
     <Layout>
       <SEO 
-        title="Land Clearing & Property Management Anderson SC | P1 Land & Property Management"
-        description="Professional land clearing, grading, drainage, and agricultural property management in Anderson, SC. Properties 1 acre and larger. Call (704) 221-8928."
+        title="Land Management in Anderson, SC | P1"
+        description="Land clearing, grading, drainage, pond, turf, and property management for qualifying 1-acre-plus sites in Anderson, SC. Call (704) 221-8928."
         jsonLd={[
           serviceAreaSchema({ areaName: "Anderson, South Carolina", areaType: "City", description: "Professional land clearing, grading, drainage, and agricultural property management in Anderson, SC. Properties 1 acre and larger. Call (704) 221-8928.", path: "/service-areas/anderson-sc" }),
           breadcrumbSchema([
@@ -94,6 +94,21 @@ export default function AndersonSC() {
                   Call <a href="tel:7042218928" className="text-primary hover:underline">+1 (704) 221-8928</a> or <Link href="/contact" className="text-primary hover:underline">request a free estimate online</Link> to discuss your property.
                 </p>
               </div>
+            </div>
+          </div>
+
+          <div className="grid gap-10 border-y border-border py-12 md:grid-cols-2">
+            <div className="space-y-4">
+              <h2 className="text-2xl font-serif font-bold text-secondary">Planning work around Anderson County terrain</h2>
+              <p className="leading-relaxed text-secondary/80">A property near the I-85 corridor can have very different operating constraints from agricultural acreage toward Belton, Pendleton, or Lake Hartwell. Commercial access, active operations, slopes, water movement, existing utilities, and the intended next use all affect how clearing, grading, or maintenance should be sequenced.</p>
+              <p className="leading-relaxed text-secondary/80">P1 starts by reviewing the visible site conditions and the requested outcome. The resulting estimate identifies the proposed work, access assumptions, exclusions, and any engineering, permitting, utility-location, or specialist responsibilities that must be handled separately.</p>
+            </div>
+            <div className="space-y-4">
+              <h2 className="text-2xl font-serif font-bold text-secondary">From working land to managed sites</h2>
+              <p className="leading-relaxed text-secondary/80">Agricultural and equestrian properties may need pasture access, brush control, pond edges, drainage routes, or reseeding coordinated around animals and ongoing operations. Commercial, municipal, and institutional sites often place more emphasis on traffic flow, public access, appearance, and documented maintenance intervals.</p>
+              <p className="leading-relaxed text-secondary/80">For either setting, defining the problem before equipment arrives reduces rework. Share current plans, known drainage history, access limitations, and the property’s next use when requesting an assessment.</p>
+              <p className="leading-relaxed text-secondary/80">A practical first visit also separates immediate corrective work from longer-term maintenance. Standing water, unstable access, overgrowth, eroding banks, or failed turf may be related, but they do not always belong in one phase. P1 can organize the proposed work into a sequence that reflects site priorities and current availability, giving the owner or facility team a clearer basis for budgeting and scheduling. The written estimate—not a generic city-page promise—controls the services, timing, and responsibilities for a specific Anderson County property.</p>
+              <p className="leading-relaxed text-secondary/80">Photos of problem areas and notes about when water, access, or vegetation issues appear can make the first conversation more useful and help the site visit focus on the right locations.</p>
             </div>
           </div>
 

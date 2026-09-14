@@ -3,6 +3,7 @@ import { FinalCTA } from "@/components/layout/FinalCTA";
 import { FeatureRow } from "@/components/layout/FeatureRow";
 import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
+import { localBusinessSchema } from "@/lib/structured-data";
 import heroImg from "@/assets/commercial-property.png";
 import whoImg from "@/assets/features/about-who.png";
 import { CheckCircle2 } from "lucide-react";
@@ -11,8 +12,9 @@ export default function About() {
   return (
     <Layout>
       <SEO 
-        title="About P1 Land & Property Management | Upstate SC & Charlotte NC"
-        description="P1 Land & Property Management is a full-service land and property contractor serving commercial, industrial, and agricultural landowners across Upstate South Carolina and the Charlotte, NC region."
+        title="About P1 Land Management | Carolinas"
+        description="Meet P1, a land and property contractor for 1-acre-plus commercial, industrial, agricultural, municipal, and institutional sites in the Carolinas."
+        jsonLd={localBusinessSchema()}
       />
 
       {/* PAGE HERO */}
@@ -96,11 +98,11 @@ export default function About() {
           </div>
           <div className="space-y-6">
             <h2 className="text-3xl font-serif font-bold text-secondary border-b border-border pb-4">
-              Discuss Your Property With P1
+              What to Expect From P1
             </h2>
             <ul className="space-y-4">
               {[
-                "Discuss project requirements and documentation with our team",
+                "Project requirements and documentation defined before work begins",
                 "Commercial and agricultural property experience",
                 "Equipped for large-scale earthwork and fine maintenance",
                 "Serving both Upstate SC and Charlotte NC markets",

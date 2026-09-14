@@ -39,8 +39,8 @@ export default function CommercialLandscaping() {
   return (
     <Layout>
       <SEO 
-        title="Commercial Landscaping | P1 Land & Property Management | Upstate SC & Charlotte NC"
-        description="Commercial landscaping and exterior grounds maintenance for 1-acre-plus properties across Upstate SC and Charlotte NC. Turf, drainage, land clearing, ponds, and more. Call (704) 221-8928."
+        title="Commercial Landscaping in SC & NC | P1"
+        description="Commercial landscaping and exterior grounds maintenance for 1-acre-plus properties across Upstate SC and Charlotte. Call (704) 221-8928."
         jsonLd={[
           serviceSchema({ name: "Commercial Landscaping", description: "Commercial landscaping and exterior grounds maintenance for 1-acre-plus properties across Upstate SC and Charlotte NC. Turf, drainage, land clearing, ponds, and more. Call (704) 221-8928.", path: "/services/commercial-landscaping" }),
           breadcrumbSchema([

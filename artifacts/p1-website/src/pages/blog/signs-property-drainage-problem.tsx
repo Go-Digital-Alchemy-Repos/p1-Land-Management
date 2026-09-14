@@ -3,28 +3,22 @@ import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
-import { LOGO_URL } from "@/lib/site";
+import { articleSchema } from "@/lib/structured-data";
 import heroImg from "@/assets/blog-drainage.png";
 
 export default function BlogPost() {
   return (
     <Layout>
       <SEO 
-        title="5 Signs Your Property Has a Drainage Problem (And What to Do About It) | P1 Land & Property Management"
-        description="Standing water, soggy soil, and erosion are signs of a drainage problem that will get worse. Learn to spot the signs early and understand your options. Serving Upstate SC and Charlotte NC."
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "Article",
+        title="5 Signs of a Property Drainage Problem | P1"
+        description="Learn to recognize standing water, erosion, soggy ground, washouts, and other drainage warning signs before they cause more property damage."
+        jsonLd={articleSchema({
           headline: "5 Signs Your Property Has a Drainage Problem (And What to Do About It)",
           description: "Standing water, soggy soil, and erosion are signs of a drainage problem that will get worse. Learn to spot the signs early.",
-          image: "https://www.p1landmanagement.com/opengraph.jpg",
-          author: { "@type": "Organization", name: "P1 Land & Property Management" },
-          publisher: {
-            "@type": "Organization",
-            name: "P1 Land & Property Management",
-            logo: { "@type": "ImageObject", url: LOGO_URL },
-          },
-        }}
+          path: "/blog/signs-property-drainage-problem",
+          datePublished: "2026-06-24",
+          dateModified: "2026-09-14",
+        })}
       />
 
       <article className="pb-24">

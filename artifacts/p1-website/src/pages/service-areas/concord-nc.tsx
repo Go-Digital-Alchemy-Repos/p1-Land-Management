@@ -36,8 +36,8 @@ export default function ConcordNC() {
   return (
     <Layout>
       <SEO 
-        title="Land Clearing & Property Management Concord NC | P1 Land & Property Management"
-        description="Professional land clearing, grading, drainage, and property management in Concord, NC. Properties 1 acre and larger. Call (704) 221-8928."
+        title="Land Management in Concord, NC | P1"
+        description="Land clearing, grading, drainage, turf, and property management for qualifying 1-acre-plus sites in Concord and Cabarrus County. Call (704) 221-8928."
         jsonLd={[
           serviceAreaSchema({ areaName: "Concord, North Carolina", areaType: "City", description: "Professional land clearing, grading, drainage, and property management in Concord, NC. Properties 1 acre and larger. Call (704) 221-8928.", path: "/service-areas/concord-nc" }),
           breadcrumbSchema([
@@ -93,6 +93,21 @@ export default function ConcordNC() {
                   Call <a href="tel:7042218928" className="text-primary hover:underline">+1 (704) 221-8928</a> or <Link href="/contact" className="text-primary hover:underline">request a free estimate online</Link> to discuss your property.
                 </p>
               </div>
+            </div>
+          </div>
+
+          <div className="grid gap-10 border-y border-border py-12 md:grid-cols-2">
+            <div className="space-y-4">
+              <h2 className="text-2xl font-serif font-bold text-secondary">Large-site work in Concord and Cabarrus County</h2>
+              <p className="leading-relaxed text-secondary/80">Concord combines active commercial and industrial corridors with institutional grounds and working acreage outside the urban core. Each setting changes the practical sequence: busy sites may require phased access and careful coordination, while agricultural land may prioritize drainage, equipment routes, soil protection, and the next productive use.</p>
+              <p className="leading-relaxed text-secondary/80">P1 evaluates the requested work in that site context. Clearing, grading, drainage, turf, tree, and recurring grounds needs can be considered together so one improvement does not create a problem for the next.</p>
+            </div>
+            <div className="space-y-4">
+              <h2 className="text-2xl font-serif font-bold text-secondary">What to prepare for an assessment</h2>
+              <p className="leading-relaxed text-secondary/80">Bring any available site plans, known utility information, drainage history, access restrictions, and target use for the property. P1 uses those details and the visible conditions to define the proposed scope, assumptions, exclusions, and schedule.</p>
+              <p className="leading-relaxed text-secondary/80">Work that requires engineering, permitting, surveys, utility coordination, or another licensed specialty is identified during qualification rather than silently folded into a broad promise. That gives property teams a clearer basis for comparing estimates and planning mobilization.</p>
+              <p className="leading-relaxed text-secondary/80">The assessment can also distinguish urgent corrective work from improvements that can be phased. A washed access route, active erosion, or blocked drainage path may need attention before finish grading, seeding, or recurring maintenance begins. For occupied Concord properties, that sequence can be coordinated around traffic, staff, tenants, or public access. The final written scope establishes what P1 will perform, how work areas will be accessed, and what the property team must complete before mobilization.</p>
+              <p className="leading-relaxed text-secondary/80">Before the visit, mark priority areas and collect photos showing how conditions change after rain or during normal operations. That context helps connect a visible symptom to the surrounding site.</p>
             </div>
           </div>
 

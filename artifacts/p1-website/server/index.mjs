@@ -17,6 +17,7 @@ const content = createContentStore({ manifest, origin, cacheDir: process.env.P1_
 const canonical = 'https://www.p1landmanagement.com';
 const legacyPublicRoutes = new Map([
   ['/services/commercial-property-management', '/services/commercial-landscaping'],
+  ['/service-areas/charlotte-nc', '/service-areas/charlotte-north-carolina'],
 ]);
 // The CMS is served behind the protected /admin gateway. Keep the original
 // owner setup link useful without creating a separate public setup surface.
@@ -108,8 +109,9 @@ const server=http.createServer(async(req,res)=>{
     }
     const replacement = retiredRoutes.get(normalized);
     if (replacement) {res.writeHead(301,{Location:`${redirectToCanonicalHost?canonical:''}${replacement}${url.search}`});return res.end();}
-    const redirectPath = legacyPublicRoutes.get(normalized) || normalized;
-    if(redirectToCanonicalHost || redirectPath!==pathname) {res.writeHead(308,{Location:`${redirectToCanonicalHost?canonical:''}${redirectPath}${url.search}`});return res.end();}
+    const legacyDestination = legacyPublicRoutes.get(normalized);
+    if (legacyDestination) {res.writeHead(301,{Location:`${redirectToCanonicalHost?canonical:''}${legacyDestination}${url.search}`});return res.end();}
+    if(redirectToCanonicalHost || normalized!==pathname) {res.writeHead(308,{Location:`${redirectToCanonicalHost?canonical:''}${normalized}${url.search}`});return res.end();}
     if(pathname==='/api/p1/page-content' && ['GET','HEAD'].includes(req.method)) {const snapshot=await content.snapshot(url.searchParams.get('path')||'/');return send(req,res,snapshot?200:404,JSON.stringify(snapshot||{error:'Not found'}),'application/json','no-store');}
     if(pathname==='/healthz')return send(req,res,200,'{"status":"ok"}','application/json','no-store');
     if(backendPath)return proxy(req,res);

@@ -41,8 +41,8 @@ export default function GradingSitePreparation() {
   return (
     <Layout>
       <SEO 
-        title="Fine Grading & Site Preparation Upstate SC & Charlotte NC | P1 Land & Property Management"
-        description="Precision grading and site preparation for commercial, industrial, agricultural, municipal, and institutional properties. Serving Greenville, Spartanburg, and Charlotte NC. Call (704) 221-8928."
+        title="Fine Grading & Site Preparation in SC & NC | P1"
+        description="Fine grading and site preparation for qualifying commercial, industrial, agricultural, municipal, and institutional properties. Call (704) 221-8928."
         jsonLd={[
           serviceSchema({ name: "Fine Grading & Site Preparation", description: "Precision grading and site preparation for commercial, industrial, agricultural, municipal, and institutional properties. Serving Greenville, Spartanburg, and Charlotte NC. Call (704) 221-8928.", path: "/services/grading-site-preparation" }),
           breadcrumbSchema([
@@ -127,7 +127,7 @@ export default function GradingSitePreparation() {
               Equipment & Precision
             </h2>
             <p className="text-lg text-secondary/80 leading-relaxed">
-              Discuss the equipment, operators and accuracy targets needed for your grading scope before work begins. P1 reviews rough shaping, finish work and access requirements for commercial and agricultural properties during qualification.
+              P1 defines the equipment, operators, accuracy targets, rough shaping, finish work, and access requirements for the proposed grading scope during qualification.
             </p>
           </div>
 

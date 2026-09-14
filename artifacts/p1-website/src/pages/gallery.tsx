@@ -16,24 +16,22 @@ import imgCommercial from "@/assets/commercial-property.png";
 import imgIndustrial from "@/assets/service-industrial.png";
 import imgTree from "@/assets/service-tree.png";
 
-interface Project {
+interface ServiceIllustration {
   title: string;
-  location: string;
   service: string;
-  market: "Upstate SC" | "Charlotte NC";
   image: string;
 }
 
-const projects: Project[] = [
-  { title: "Forestry Mulching & Clearing", location: "Spartanburg County, SC", service: "Land Clearing", market: "Upstate SC", image: imgClearing },
-  { title: "Commercial Site Fine Grading", location: "Greenville, SC", service: "Grading & Site Prep", market: "Upstate SC", image: imgGrading },
-  { title: "French Drain & Regrade Drainage Fix", location: "Charlotte, NC", service: "Drainage Solutions", market: "Charlotte NC", image: imgDrainage },
-  { title: "Large-Acreage Turf Installation", location: "Anderson, SC", service: "Turf & Seeding", market: "Upstate SC", image: imgTurf },
-  { title: "Pond Restoration & Shoreline Repair", location: "Mooresville, NC", service: "Pond & Waterway", market: "Charlotte NC", image: imgPond },
-  { title: "Full Property Reconstruction", location: "Gastonia, NC", service: "Property Reconstruction", market: "Charlotte NC", image: imgReconstruction },
-  { title: "Commercial Campus Grounds Management", location: "Greenville, SC", service: "Commercial Landscaping", market: "Upstate SC", image: imgCommercial },
-  { title: "Agricultural Land Preparation", location: "Concord, NC", service: "Industrial & Agricultural", market: "Charlotte NC", image: imgIndustrial },
-  { title: "Tree Removal & Stump Grinding", location: "Spartanburg, SC", service: "Tree Services", market: "Upstate SC", image: imgTree },
+const projects: ServiceIllustration[] = [
+  { title: "Forestry Mulching & Clearing", service: "Land Clearing", image: imgClearing },
+  { title: "Commercial Site Fine Grading", service: "Grading & Site Prep", image: imgGrading },
+  { title: "French Drain & Regrade Drainage Work", service: "Drainage Solutions", image: imgDrainage },
+  { title: "Large-Acreage Turf Installation", service: "Turf & Seeding", image: imgTurf },
+  { title: "Pond Restoration & Shoreline Repair", service: "Pond & Waterway", image: imgPond },
+  { title: "Full Property Reconstruction", service: "Property Reconstruction", image: imgReconstruction },
+  { title: "Commercial Campus Grounds Management", service: "Commercial Landscaping", image: imgCommercial },
+  { title: "Agricultural Land Preparation", service: "Industrial & Agricultural", image: imgIndustrial },
+  { title: "Tree Removal & Stump Grinding", service: "Tree Services", image: imgTree },
 ];
 
 const serviceFilters = [
@@ -61,8 +59,8 @@ export default function Gallery() {
   return (
     <Layout>
       <SEO
-        title="Service Gallery | P1 Land & Property Management"
-        description="Explore illustrative examples of land clearing, grading, drainage, turf, pond, and property reconstruction services."
+        title="Land Management Service Gallery | P1"
+        description="See the land clearing, grading, drainage, turf, pond, tree, grounds, and reconstruction capabilities P1 offers for qualifying Carolina properties."
       />
 
       {/* PAGE HERO */}
@@ -84,7 +82,10 @@ export default function Gallery() {
       {/* FILTERS + GRID */}
       <section className="py-20 bg-background">
         <div className="site-shell space-y-10">
-          <h2 className="sr-only">Illustrated service categories</h2>
+          <div className="mx-auto max-w-3xl text-center">
+            <h2 className="font-display text-3xl font-semibold text-secondary md:text-4xl">Find the capability your property needs</h2>
+            <p className="mt-4 text-lg leading-relaxed text-secondary/75">Use the filters to compare P1's service categories, then open the relevant service page for scope details, common applications, and next steps. Owner-approved project photography and case studies will be added separately when available.</p>
+          </div>
           {/* Service filters */}
           <div className="flex flex-wrap justify-center gap-3">
             {serviceFilters.map((f) => (
@@ -132,7 +133,7 @@ export default function Gallery() {
             </div>
           ) : (
             <p className="text-center text-secondary/60 py-12">
-              No projects match that combination. Try a different filter.
+              No service illustrations match that filter. Try another category.
             </p>
           )}
 

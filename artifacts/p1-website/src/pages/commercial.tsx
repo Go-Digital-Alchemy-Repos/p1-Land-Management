@@ -85,7 +85,7 @@ function AssessmentForm() {
 
 export default function Commercial() {
   return <Layout assessmentCta>
-    <SEO title="Commercial & Industrial Site Management | P1 Land Management" description="Coordinate grounds, drainage, land and exterior site needs across your commercial property. Request a P1 Commercial Site Assessment in Upstate SC and greater Charlotte." />
+    <SEO title="Commercial & Industrial Site Management | P1 Land Management" description="Coordinate grounds, drainage, land, and exterior work across your commercial property. Request a P1 site assessment in Upstate SC or greater Charlotte." />
     <section className="relative isolate overflow-hidden bg-secondary text-white">
       <img src={hero} alt="Illustrative aerial view of maintained commercial grounds" fetchPriority="high" decoding="async" {...responsiveImageProps(hero, "100vw")} className="absolute inset-0 -z-20 h-full w-full object-cover" />
       <div className="absolute inset-0 -z-10 bg-slate-950/80" />

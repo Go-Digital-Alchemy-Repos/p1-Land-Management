@@ -47,7 +47,6 @@ export function createSiteRoutes(page: ResolvePage): ComponentType {
     GreenvilleSc = page("./pages/service-areas/greenville-sc.tsx"),
     SpartanburgSc = page("./pages/service-areas/spartanburg-sc.tsx"),
     AndersonSc = page("./pages/service-areas/anderson-sc.tsx"),
-    CharlotteNc = page("./pages/service-areas/charlotte-nc.tsx"),
     ConcordNc = page("./pages/service-areas/concord-nc.tsx"),
     MooresvilleLakeNormanNc = page(
       "./pages/service-areas/mooresville-lake-norman-nc.tsx",
@@ -122,7 +121,6 @@ export function createSiteRoutes(page: ResolvePage): ComponentType {
         <Route path="/service-areas/greenville-sc" component={GreenvilleSc} />
         <Route path="/service-areas/spartanburg-sc" component={SpartanburgSc} />
         <Route path="/service-areas/anderson-sc" component={AndersonSc} />
-        <Route path="/service-areas/charlotte-nc" component={CharlotteNc} />
         <Route path="/service-areas/concord-nc" component={ConcordNc} />
         <Route
           path="/service-areas/mooresville-lake-norman-nc"

@@ -6,7 +6,7 @@
     "displayName": "P1 Land & Property Management",
     "source": {
       "repository": "https://github.com/Go-Digital-Alchemy-Repos/p1-Land-Management.git",
-      "revision": "a1015591c4179013b7d7e4bb99adff5749cdda01"
+      "revision": "41e4c925c748880b6889b25a2d8d50817e861788"
     },
     "owners": [
       {
@@ -363,21 +363,6 @@
       "componentRef": "src/pages/service-areas/anderson-sc.tsx",
       "editableRegions": [
         "service-areas-anderson-sc",
-        "global"
-      ],
-      "lockedBehaviors": [
-        "routing",
-        "validation",
-        "accessibility"
-      ]
-    },
-    {
-      "id": "service-areas-charlotte-nc",
-      "path": "/service-areas/charlotte-nc",
-      "owner": "site",
-      "componentRef": "src/pages/service-areas/charlotte-nc.tsx",
-      "editableRegions": [
-        "service-areas-charlotte-nc",
         "global"
       ],
       "lockedBehaviors": [
@@ -870,8 +855,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f5mk31y",
-            "label": "Text: From the first cut to ongoing care, discuss your property’s needs and coordinate the scope with",
+            "path": "f7ithod",
+            "label": "Text: From the first cut to ongoing care, P1 connects the services your large property needs under a ",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -1269,29 +1254,29 @@
             "maxLength": 2000
           },
           {
-            "path": "fu6hma",
-            "label": "Text: Discuss the equipment, scope, documentation and delivery responsibilities needed for your prope",
+            "path": "fkt85z1",
+            "label": "Text: P1 brings land preparation, water management, turf, tree care, and recurring exterior work into",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "fo5nnfr",
+            "label": "Text: Plan Your Project",
             "type": "text",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "fvvbhcg",
-            "label": "Text: Discuss Your Project",
+            "path": "f1g868ab",
+            "label": "Text: Equipment Matched to the Work",
             "type": "text",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "f1rltir7",
-            "label": "Text: Heavy Equipment Fleet",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "fhtpi9b",
-            "label": "Text: Discuss the equipment and access requirements for your grading, clearing, and property maintena",
+            "path": "f68rfez",
+            "label": "Text: We plan access and match equipment to the approved grading, clearing, or maintenance scope.",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -1318,22 +1303,22 @@
             "maxLength": 2000
           },
           {
-            "path": "f1ubn16f",
-            "label": "Text: We assess slope and water movement, then discuss grade-level work and any specialist involvemen",
+            "path": "fs3lkw4",
+            "label": "Text: We assess visible slope and water movement, define the proposed work, and identify specialist n",
             "type": "text",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "f13zs1c8",
-            "label": "Text: Dependable Scheduling",
+            "path": "f1244nrx",
+            "label": "Text: Defined Scheduling",
             "type": "text",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "fculwgr",
-            "label": "Text: Crews that show up, communicate and finish on the timeline we commit to.",
+            "path": "f1vn98b2",
+            "label": "Text: Every approved scope establishes coordination, responsibilities, and the working schedule befor",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -1615,7 +1600,7 @@
         "defaultContent": {
           "fum15fc": "Skip to main content",
           "seoTitle": "P1 Land & Property Management | Upstate SC & Charlotte NC",
-          "seoDescription": "Grading, drainage, clearing, ponds and full property management for large acreage across Upstate South Carolina and the Charlotte, NC region. Call (704) 221-8928.",
+          "seoDescription": "Grading, drainage, clearing, ponds, and property management for qualifying acreage across Upstate SC and the Charlotte region. Call (704) 221-8928.",
           "seoImage": "/opengraph.jpg",
           "f1cebf": "/assets/hero-bg-1280-BGEwVfkG.webp",
           "fzw6d7c": "Heavy equipment shaping large acreage",
@@ -1650,7 +1635,7 @@
           "fhdjdpj": "What We Do",
           "f5kskz3": "A full field of capabilities,",
           "f1k6cbi6": "one accountable crew.",
-          "f5mk31y": "From the first cut to ongoing care, discuss your property’s needs and coordinate the scope with P1.",
+          "f7ithod": "From the first cut to ongoing care, P1 connects the services your large property needs under a clearly defined scope.",
           "f10v9k0a": "Scheduled exterior grounds maintenance that keeps large sites pristine year-round.",
           "fj88j4j": "/assets/service-commercial-1280-L65U2NEr.webp",
           "fzgodm2": "Commercial Landscaping",
@@ -1707,16 +1692,16 @@
           "f5mnubp": "Why P1",
           "f18ibqym": "The difference is in the",
           "f1xe5030": "groundwork.",
-          "fu6hma": "Discuss the equipment, scope, documentation and delivery responsibilities needed for your property before work begins.",
-          "fvvbhcg": "Discuss Your Project",
-          "f1rltir7": "Heavy Equipment Fleet",
-          "fhtpi9b": "Discuss the equipment and access requirements for your grading, clearing, and property maintenance work.",
+          "fkt85z1": "P1 brings land preparation, water management, turf, tree care, and recurring exterior work into one coordinated property plan.",
+          "fo5nnfr": "Plan Your Project",
+          "f1g868ab": "Equipment Matched to the Work",
+          "f68rfez": "We plan access and match equipment to the approved grading, clearing, or maintenance scope.",
           "frf7v61": "Large-Acreage Expertise",
           "f1823w5v": "Built around properties most crews can't handle — farms, industrial grounds, public sites, and commercial campuses.",
           "f3iqcrm": "Drainage Planning",
-          "f1ubn16f": "We assess slope and water movement, then discuss grade-level work and any specialist involvement.",
-          "f13zs1c8": "Dependable Scheduling",
-          "fculwgr": "Crews that show up, communicate and finish on the timeline we commit to.",
+          "fs3lkw4": "We assess visible slope and water movement, define the proposed work, and identify specialist needs before construction.",
+          "f1244nrx": "Defined Scheduling",
+          "f1vn98b2": "Every approved scope establishes coordination, responsibilities, and the working schedule before mobilization.",
           "frepd5q": "/assets/commercial-property-1280-DHKZ--xC.webp",
           "fxv6a3r": "Illustrative commercial property",
           "f3344a0": "A coordinated approach to your property",
@@ -1977,15 +1962,15 @@
             "maxLength": 12000
           },
           {
-            "path": "f1mhfw0x",
-            "label": "Text: Discuss Your Property With P1",
+            "path": "fvexs6r",
+            "label": "Text: What to Expect From P1",
             "type": "text",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "f1dt5p3x",
-            "label": "Text: Discuss project requirements and documentation with our team",
+            "path": "f1huqgyd",
+            "label": "Text: Project requirements and documentation defined before work begins",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -2098,8 +2083,8 @@
         ],
         "defaultContent": {
           "fum15fc": "Skip to main content",
-          "seoTitle": "About P1 Land & Property Management | Upstate SC & Charlotte NC",
-          "seoDescription": "P1 Land & Property Management is a full-service land and property contractor serving commercial, industrial, and agricultural landowners across Upstate South Carolina and the Charlotte, NC region.",
+          "seoTitle": "About P1 Land Management | Carolinas",
+          "seoDescription": "Meet P1, a land and property contractor for 1-acre-plus commercial, industrial, agricultural, municipal, and institutional sites in the Carolinas.",
           "seoImage": "/opengraph.jpg",
           "frepd5q": "/assets/commercial-property-1280-DHKZ--xC.webp",
           "fk4j1z1": "Commercial property",
@@ -2125,8 +2110,8 @@
           "fhc6lm7": "Full property reconstruction — from drainage overhaul to complete regrading and reseeding",
           "fo0rn06": "Where We Work",
           "f1wc6ahx": "P1 serves commercial, industrial, agricultural, equestrian, municipal, and institutional properties throughout Upstate South Carolina — including Greenville, Spartanburg, Anderson, Gaffney, Greer, Simpsonville, and surrounding counties — and the greater Charlotte, North Carolina region, including Concord, Mooresville, Lake Norman, Gastonia, Huntersville, and the Mecklenburg County area.",
-          "f1mhfw0x": "Discuss Your Property With P1",
-          "f1dt5p3x": "Discuss project requirements and documentation with our team",
+          "fvexs6r": "What to Expect From P1",
+          "f1huqgyd": "Project requirements and documentation defined before work begins",
           "f13vhr91": "Commercial and agricultural property experience",
           "f1mbbbbl": "Equipped for large-scale earthwork and fine maintenance",
           "ff3bodm": "Serving both Upstate SC and Charlotte NC markets",
@@ -3031,7 +3016,7 @@
         "defaultContent": {
           "fum15fc": "Skip to main content",
           "seoTitle": "Commercial & Industrial Site Management | P1 Land Management",
-          "seoDescription": "Coordinate grounds, drainage, land and exterior site needs across your commercial property. Request a P1 Commercial Site Assessment in Upstate SC and greater Charlotte.",
+          "seoDescription": "Coordinate grounds, drainage, land, and exterior work across your commercial property. Request a P1 site assessment in Upstate SC or greater Charlotte.",
           "seoImage": "/opengraph.jpg",
           "fj88j4j": "/assets/service-commercial-1280-L65U2NEr.webp",
           "f11x7kam": "Illustrative aerial view of maintained commercial grounds",
@@ -4201,7 +4186,7 @@
         ],
         "defaultContent": {
           "fum15fc": "Skip to main content",
-          "seoTitle": "Commercial Snow & Ice Management | Charlotte & Upstate SC | P1",
+          "seoTitle": "Commercial Snow & Ice Management in the Carolinas | P1",
           "seoDescription": "Commercial and industrial snow and ice management for distribution centers and data centers across Charlotte NC and Upstate SC. Request a site assessment.",
           "seoImage": "/opengraph.jpg",
           "f104xy60": "/assets/hero-commercial-snow-ice-1280-_3Y3jnUX.webp",
@@ -4801,7 +4786,7 @@
         "defaultContent": {
           "fum15fc": "Skip to main content",
           "seoTitle": "Get a Free Estimate | P1 Land & Property Management",
-          "seoDescription": "Request a free on-site estimate for land clearing, grading, drainage, turf, pond management, or property maintenance. Serving Upstate SC and Charlotte NC. Call (704) 221-8928.",
+          "seoDescription": "Request a free estimate for clearing, grading, drainage, turf, pond, or property maintenance work in Upstate SC and Charlotte. Call (704) 221-8928.",
           "seoImage": "/opengraph.jpg",
           "f10ls8uw": "Get In Touch",
           "f1flocmb": "On-Site Estimate",
@@ -4948,11 +4933,18 @@
             "maxLength": 12000
           },
           {
-            "path": "f7td0ou",
-            "label": "Text: Illustrated service categories",
+            "path": "f14jkatb",
+            "label": "Text: Find the capability your property needs",
             "type": "text",
             "required": false,
             "maxLength": 2000
+          },
+          {
+            "path": "f1a5fril",
+            "label": "Text: Use the filters to compare P1's service categories, then open the relevant service page for sco",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
           },
           {
             "path": "fg8ivbr",
@@ -5081,15 +5073,15 @@
             "maxLength": 2000
           },
           {
-            "path": "figui68",
-            "label": "Image description: Illustration: French Drain & Regrade Drainage Fix",
+            "path": "f16zse6w",
+            "label": "Image description: Illustration: French Drain & Regrade Drainage Work",
             "type": "imageAlt",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "f1kh9bbi",
-            "label": "Text: French Drain & Regrade Drainage Fix",
+            "path": "f1xlpazi",
+            "label": "Text: French Drain & Regrade Drainage Work",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -5300,15 +5292,16 @@
         ],
         "defaultContent": {
           "fum15fc": "Skip to main content",
-          "seoTitle": "Service Gallery | P1 Land & Property Management",
-          "seoDescription": "Explore illustrative examples of land clearing, grading, drainage, turf, pond, and property reconstruction services.",
+          "seoTitle": "Land Management Service Gallery | P1",
+          "seoDescription": "See the land clearing, grading, drainage, turf, pond, tree, grounds, and reconstruction capabilities P1 offers for qualifying Carolina properties.",
           "seoImage": "/opengraph.jpg",
           "fz3he8x": "/assets/services-hero-1280-DWAqudpn.webp",
           "f19kc7rj": "Illustration of land management services",
           "fqvb1zc": "Service Illustrations",
           "faj733m": "Gallery",
           "f56o8v8": "Explore the land management services P1 provides for commercial, industrial, agricultural, equestrian, municipal, and institutional properties across the Carolinas.",
-          "f7td0ou": "Illustrated service categories",
+          "f14jkatb": "Find the capability your property needs",
+          "f1a5fril": "Use the filters to compare P1's service categories, then open the relevant service page for scope details, common applications, and next steps. Owner-approved project photography and case studies will be added separately when available.",
           "fg8ivbr": "All",
           "foa1vas": "Land Clearing",
           "f18l26bw": "Grading & Site Prep",
@@ -5327,8 +5320,8 @@
           "f1y132vx": "Illustration: Commercial Site Fine Grading",
           "fi8y9hf": "Commercial Site Fine Grading",
           "f1f2xdki": "/assets/service-drainage-1280-DBaNqUrR.webp",
-          "figui68": "Illustration: French Drain & Regrade Drainage Fix",
-          "f1kh9bbi": "French Drain & Regrade Drainage Fix",
+          "f16zse6w": "Illustration: French Drain & Regrade Drainage Work",
+          "f1xlpazi": "French Drain & Regrade Drainage Work",
           "f1aqc58w": "/assets/service-turf-1280-SpHI1yov.webp",
           "f1ry1ftp": "Illustration: Large-Acreage Turf Installation",
           "fi0xxjb": "Large-Acreage Turf Installation",
@@ -5439,18 +5432,25 @@
             "maxLength": 2000
           },
           {
-            "path": "f1cbjdtd",
-            "label": "Text: From early land clearing to ongoing property maintenance, discuss the work your large-acreage p",
+            "path": "fayiv1r",
+            "label": "Text: From early land clearing to ongoing property maintenance, P1 helps large-acreage operators defi",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
           },
           {
-            "path": "f1u6jl7i",
-            "label": "Text: P1 land and property services",
+            "path": "f4pru0l",
+            "label": "Text: One property plan, from rough ground to ongoing care",
             "type": "text",
             "required": false,
             "maxLength": 2000
+          },
+          {
+            "path": "f1e8b8s6",
+            "label": "Text: Large sites rarely have one isolated need. Clearing changes access, grading affects drainage, a",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
           },
           {
             "path": "ffzg0ag",
@@ -5803,6 +5803,48 @@
             "maxLength": 2000
           },
           {
+            "path": "f1nzld4p",
+            "label": "Text: For qualifying properties",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "filgaaw",
+            "label": "Text: P1 serves commercial, industrial, agricultural, equestrian, municipal, and institutional proper",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1sqyxok",
+            "label": "Text: Scope before mobilization",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fzbgmfd",
+            "label": "Text: Site conditions, access, proposed work, exclusions, documentation, and any specialist responsib",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "forbp3u",
+            "label": "Text: Across two regions",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1vcaxs4",
+            "label": "Text: Service coverage centers on Upstate South Carolina and the greater Charlotte, North Carolina re",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
             "path": "f1u1km71",
             "label": "Image: /assets/fine-grading-1280-CWwHPN9f.webp",
             "type": "image",
@@ -5882,15 +5924,16 @@
         ],
         "defaultContent": {
           "fum15fc": "Skip to main content",
-          "seoTitle": "Services | P1 Land & Property Management | Upstate SC & Charlotte NC",
-          "seoDescription": "Comprehensive land and property management services for large-acreage properties. Commercial maintenance, land clearing, grading, drainage, turf, and more.",
+          "seoTitle": "Land Management Services in SC & NC | P1",
+          "seoDescription": "Compare P1 land clearing, grading, drainage, turf, tree, pond, reconstruction, and recurring property services for 1-acre-plus sites in SC and NC.",
           "seoImage": "/opengraph.jpg",
           "fz3he8x": "/assets/services-hero-1280-DWAqudpn.webp",
           "f1cg8l8r": "Heavy equipment on a large property",
           "fhdjdpj": "What We Do",
           "f1238i19": "Your Property Needs",
-          "f1cbjdtd": "From early land clearing to ongoing property maintenance, discuss the work your large-acreage property needs in the Carolinas and define a connected scope with P1.",
-          "f1u6jl7i": "P1 land and property services",
+          "fayiv1r": "From early land clearing to ongoing property maintenance, P1 helps large-acreage operators define and coordinate the work their sites need across the Carolinas.",
+          "f4pru0l": "One property plan, from rough ground to ongoing care",
+          "f1e8b8s6": "Large sites rarely have one isolated need. Clearing changes access, grading affects drainage, and drainage determines whether turf and roads hold up. Start with the service that brought you here, then use the connected capabilities below to build a practical scope around the property.",
           "ffzg0ag": "Commercial Landscaping",
           "f10v9k0a": "Scheduled exterior grounds maintenance that keeps large sites pristine year-round.",
           "fwwr8hd": "/services/commercial-landscaping",
@@ -5941,6 +5984,12 @@
           "f1h3mhh4": "/services/property-reconstruction",
           "f1h1ifc2": "/assets/service-reconstruction-1280-7a4gsZkc.webp",
           "fntxnsd": "Property Reconstruction",
+          "f1nzld4p": "For qualifying properties",
+          "filgaaw": "P1 serves commercial, industrial, agricultural, equestrian, municipal, and institutional properties of 1 acre or more. Residential work is outside our service model.",
+          "f1sqyxok": "Scope before mobilization",
+          "fzbgmfd": "Site conditions, access, proposed work, exclusions, documentation, and any specialist responsibilities are defined before approved work begins.",
+          "forbp3u": "Across two regions",
+          "f1vcaxs4": "Service coverage centers on Upstate South Carolina and the greater Charlotte, North Carolina region. Confirm your property and current availability with the P1 team.",
           "f1u1km71": "/assets/fine-grading-1280-CWwHPN9f.webp",
           "f5dus4q": "Start the Conversation",
           "f19zqrt0": "Have acreage that needs shaping? Let's walk it together.",
@@ -6553,8 +6602,8 @@
         ],
         "defaultContent": {
           "fum15fc": "Skip to main content",
-          "seoTitle": "Commercial Landscaping | P1 Land & Property Management | Upstate SC & Charlotte NC",
-          "seoDescription": "Commercial landscaping and exterior grounds maintenance for 1-acre-plus properties across Upstate SC and Charlotte NC. Turf, drainage, land clearing, ponds, and more. Call (704) 221-8928.",
+          "seoTitle": "Commercial Landscaping in SC & NC | P1",
+          "seoDescription": "Commercial landscaping and exterior grounds maintenance for 1-acre-plus properties across Upstate SC and Charlotte. Call (704) 221-8928.",
           "seoImage": "/opengraph.jpg",
           "fj88j4j": "/assets/service-commercial-1280-L65U2NEr.webp",
           "fkqkjey": "Manicured commercial property landscape",
@@ -7058,8 +7107,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f6gw595",
-            "label": "Text: Discuss the equipment, operator availability and access plan required for your industrial or ag",
+            "path": "fhkydbg",
+            "label": "Text: P1 matches the proposed equipment, operator availability, and access plan to the industrial or ",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -7179,8 +7228,8 @@
         ],
         "defaultContent": {
           "fum15fc": "Skip to main content",
-          "seoTitle": "Industrial & Agricultural Land Maintenance | P1 Land & Property Management",
-          "seoDescription": "Heavy-duty land maintenance for industrial sites, farms, and rural acreage in Upstate SC and Charlotte NC. Land clearing, grading, drainage, turf, and more. Call (704) 221-8928.",
+          "seoTitle": "Industrial & Agricultural Land Maintenance | P1",
+          "seoDescription": "Land maintenance for industrial sites, farms, and working acreage in Upstate SC and Charlotte, including clearing, grading, drainage, and turf.",
           "seoImage": "/opengraph.jpg",
           "f1ff7yus": "/assets/service-industrial-1280-DHwKA5iR.webp",
           "f1nd5fws": "Tractor on agricultural farm land",
@@ -7235,7 +7284,7 @@
           "fh2sd1v": "Can P1 clear land to add pasture or crop acreage?",
           "f185km97": "P1 can discuss selective clearing, brush and stump work to open additional acreage. Forestry mulching, grading, drainage, soil preparation and seeding are scoped by property, access, approvals and the project team.",
           "f12gyakv": "What equipment does P1 operate?",
-          "f6gw595": "Discuss the equipment, operator availability and access plan required for your industrial or agricultural property. P1 confirms the proposed equipment and delivery scope during qualification.",
+          "fhkydbg": "P1 matches the proposed equipment, operator availability, and access plan to the industrial or agricultural property during qualification.",
           "f3quld0": "Call ",
           "fr6htqz": " or ",
           "fwzei3c": " to discuss your working property.",
@@ -7783,8 +7832,8 @@
         ],
         "defaultContent": {
           "fum15fc": "Skip to main content",
-          "seoTitle": "Land Clearing Upstate SC & Charlotte NC | P1 Land & Property Management",
-          "seoDescription": "Professional land clearing for commercial, industrial, agricultural, equestrian, municipal, and institutional properties. Trees, brush, stumps, and vegetation removed efficiently. Serving Upstate SC and Charlotte NC. Call (704) 221-8928.",
+          "seoTitle": "Land Clearing in Upstate SC & Charlotte | P1",
+          "seoDescription": "Land clearing and forestry mulching for qualifying commercial, industrial, agricultural, municipal, and institutional sites. Call (704) 221-8928.",
           "seoImage": "/opengraph.jpg",
           "ffhuwyj": "/assets/service-clearing-1280-ChQ3RvyP.webp",
           "f1psr507": "Excavator clearing brush in woods",
@@ -8222,8 +8271,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f4557d9",
-            "label": "Text: Discuss the equipment, operators and accuracy targets needed for your grading scope before work",
+            "path": "f19j6242",
+            "label": "Text: P1 defines the equipment, operators, accuracy targets, rough shaping, finish work, and access r",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -8406,8 +8455,8 @@
         ],
         "defaultContent": {
           "fum15fc": "Skip to main content",
-          "seoTitle": "Fine Grading & Site Preparation Upstate SC & Charlotte NC | P1 Land & Property Management",
-          "seoDescription": "Precision grading and site preparation for commercial, industrial, agricultural, municipal, and institutional properties. Serving Greenville, Spartanburg, and Charlotte NC. Call (704) 221-8928.",
+          "seoTitle": "Fine Grading & Site Preparation in SC & NC | P1",
+          "seoDescription": "Fine grading and site preparation for qualifying commercial, industrial, agricultural, municipal, and institutional properties. Call (704) 221-8928.",
           "seoImage": "/opengraph.jpg",
           "f1cjy9l7": "/assets/service-grading-1280-B0ka5_58.webp",
           "f7aumzw": "Bulldozer grading a dirt site",
@@ -8454,7 +8503,7 @@
           "fhb2ye9": "/assets/grading-construction-1280-CaX7duMl.webp",
           "f18qv3k7": "Large commercial construction site on freshly graded land",
           "f1jej5xi": "Equipment & Precision",
-          "f4557d9": "Discuss the equipment, operators and accuracy targets needed for your grading scope before work begins. P1 reviews rough shaping, finish work and access requirements for commercial and agricultural properties during qualification.",
+          "f19j6242": "P1 defines the equipment, operators, accuracy targets, rough shaping, finish work, and access requirements for the proposed grading scope during qualification.",
           "f101rf8l": "Grading & Site Preparation FAQs",
           "fc5ntzf": "What's the difference between rough grading and fine grading?",
           "fvnikui": "Rough grading is the initial shaping and leveling of a site after clearing. Fine grading is the finish work that prepares the site for its approved drainage, turf or construction plan. Discuss the required tolerances, equipment and delivery scope with P1 before work begins.",
@@ -9032,8 +9081,8 @@
         ],
         "defaultContent": {
           "fum15fc": "Skip to main content",
-          "seoTitle": "Drainage Solutions for Large Properties | P1 Land & Property Management | Upstate SC & Charlotte NC",
-          "seoDescription": "Custom drainage solutions for commercial, industrial, agricultural, equestrian, municipal, and institutional properties. French drains, retention systems, swales, and more. Serving Upstate SC and Charlotte NC. Call (704) 221-8928.",
+          "seoTitle": "Large-Property Drainage Solutions in SC & NC | P1",
+          "seoDescription": "Drainage assessment and scoped work for qualifying Carolina properties, including swales, French drains, grading, and retention systems. Call (704) 221-8928.",
           "seoImage": "/opengraph.jpg",
           "f1f2xdki": "/assets/service-drainage-1280-DBaNqUrR.webp",
           "f1q8j59x": "Drainage swale in grassy field",
@@ -9721,8 +9770,8 @@
         ],
         "defaultContent": {
           "fum15fc": "Skip to main content",
-          "seoTitle": "Turf Installation & Seeding for Large Acreage | P1 Land & Property Management | Upstate SC & Charlotte NC",
-          "seoDescription": "Large-acreage sod and seed installation for commercial, industrial, agricultural, equestrian, municipal, and institutional properties. Bermuda, fescue, zoysia, and more. Serving Upstate SC and Charlotte NC. Call (704) 221-8928.",
+          "seoTitle": "Large-Acreage Turf Installation in SC & NC | P1",
+          "seoDescription": "Sod and seed installation for qualifying commercial, industrial, agricultural, municipal, and institutional properties. Call (704) 221-8928.",
           "seoImage": "/opengraph.jpg",
           "f1aqc58w": "/assets/service-turf-1280-SpHI1yov.webp",
           "fedf3o9": "Lush new sod and grass",
@@ -10293,8 +10342,8 @@
         ],
         "defaultContent": {
           "fum15fc": "Skip to main content",
-          "seoTitle": "Tree Services for Large Properties | P1 Land & Property Management | Upstate SC & Charlotte NC",
-          "seoDescription": "Professional tree trimming, removal, stump grinding, and tree management for commercial, industrial, agricultural, equestrian, municipal, and institutional properties. Serving Upstate SC and Charlotte NC. Call (704) 221-8928.",
+          "seoTitle": "Tree Services for Large Properties in SC & NC | P1",
+          "seoDescription": "Tree trimming, removal, stump grinding, and selective clearing for qualifying commercial and working properties. Call (704) 221-8928.",
           "seoImage": "/opengraph.jpg",
           "fb3xzm3": "/assets/service-tree-1280-DIDNuEDJ.webp",
           "f1xjs649": "Heavy machinery tree limb removal",
@@ -10931,8 +10980,8 @@
         ],
         "defaultContent": {
           "fum15fc": "Skip to main content",
-          "seoTitle": "Pond & Waterway Management | P1 Land & Property Management | Upstate SC & Charlotte NC",
-          "seoDescription": "Professional pond management, waterway clearing, shoreline restoration, and water quality maintenance for large properties. Serving Upstate SC and Charlotte NC. Call (704) 221-8928.",
+          "seoTitle": "Pond & Waterway Management in SC & NC | P1",
+          "seoDescription": "Pond management, waterway clearing, shoreline work, and maintenance for qualifying large properties in Upstate SC and Charlotte. Call (704) 221-8928.",
           "seoImage": "/opengraph.jpg",
           "f1j9al4f": "/assets/service-pond-1280-DHTzyRYV.webp",
           "fpzeh3a": "Pristine retention pond with banks",
@@ -11581,8 +11630,8 @@
         ],
         "defaultContent": {
           "fum15fc": "Skip to main content",
-          "seoTitle": "Property Reconstruction & Large-Scale Land Restoration | P1 Land & Property Management",
-          "seoDescription": "Full-scope property reconstruction including land clearing, regrading, drainage overhaul, and turf establishment. Serving commercial and agricultural landowners in Upstate SC and Charlotte NC. Call (704) 221-8928.",
+          "seoTitle": "Property Reconstruction & Land Restoration | P1",
+          "seoDescription": "Coordinate clearing, regrading, drainage, and turf establishment for qualifying property reconstruction work in Upstate SC and Charlotte. Call (704) 221-8928.",
           "seoImage": "/opengraph.jpg",
           "f1cxyjfe": "/assets/service-reconstruction-smaller-scale-1280-DgtCeNAn.webp",
           "fewgu2m": "Compact equipment restoring drainage and grade on a smaller rural property",
@@ -11867,20 +11916,6 @@
           {
             "path": "f11009l2",
             "label": "Link: /service-areas/charlotte-north-carolina",
-            "type": "ctaTarget",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1gsh2mj",
-            "label": "Text: Charlotte, NC",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "fs6d0te",
-            "label": "Link: /service-areas/charlotte-nc",
             "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
@@ -12288,7 +12323,7 @@
         "defaultContent": {
           "fum15fc": "Skip to main content",
           "seoTitle": "Service Areas | P1 Land & Property Management",
-          "seoDescription": "P1 Land & Property Management serves commercial, industrial, agricultural, equestrian, municipal, and institutional properties across Upstate South Carolina and the Charlotte, NC region.",
+          "seoDescription": "Explore P1 service areas for 1-acre-plus commercial, industrial, agricultural, municipal, and institutional properties across Upstate SC and Charlotte.",
           "seoImage": "/opengraph.jpg",
           "flltbvi": "/assets/hero-service-areas-1280-C8Hz91M9.webp",
           "fm75bel": "Heavy equipment clearing land in the Carolinas",
@@ -12313,8 +12348,6 @@
           "f13f96fi": "Serving commercial and industrial developments, working farms, equestrian operations, municipalities, and institutions throughout the greater Charlotte metropolitan area.",
           "f139rpsl": "→ Charlotte NC Regional Overview",
           "f11009l2": "/service-areas/charlotte-north-carolina",
-          "f1gsh2mj": " Charlotte, NC",
-          "fs6d0te": "/service-areas/charlotte-nc",
           "f186t9yj": " Concord, NC",
           "fl85hm6": "/service-areas/concord-nc",
           "fz5imgm": " Mooresville & Lake Norman, NC",
@@ -12931,8 +12964,8 @@
         ],
         "defaultContent": {
           "fum15fc": "Skip to main content",
-          "seoTitle": "Land & Property Management Upstate South Carolina | P1 | Greenville, Spartanburg & Surrounding Areas",
-          "seoDescription": "P1 Land & Property Management serves commercial, industrial, agricultural, equestrian, municipal, and institutional properties throughout Upstate South Carolina. Land clearing, grading, drainage, turf, ponds, and more. Call (704) 221-8928.",
+          "seoTitle": "Land Management in Upstate South Carolina | P1",
+          "seoDescription": "Clearing, grading, drainage, turf, pond, and property management for qualifying commercial and working sites across Upstate SC. Call (704) 221-8928.",
           "seoImage": "/opengraph.jpg",
           "fke2qno": "/assets/hero-upstate-sc-1280-CiME1G4Z.webp",
           "fojrkgs": "Land & Property Management in Upstate South Carolina",
@@ -13339,6 +13372,41 @@
             "maxLength": 2000
           },
           {
+            "path": "fgis5zl",
+            "label": "Text: Within Charlotte, P1 focuses on qualifying commercial, industrial, municipal, and institutional",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1gj0vp6",
+            "label": "Text: Charlotte operators can use this regional overview to compare available services and follow the",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "fjg8fb7",
+            "label": "Text: A regional scope with local constraints",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1ok1ybf",
+            "label": "Text: Across the metro, project planning changes with site access, active operations, visible water m",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1j7wn4y",
+            "label": "Text: Share plans, known utilities, drainage history, access windows, and target timing when requesti",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
             "path": "ff275em",
             "label": "Text: County Spotlight",
             "type": "text",
@@ -13579,8 +13647,8 @@
         ],
         "defaultContent": {
           "fum15fc": "Skip to main content",
-          "seoTitle": "Land & Property Management Charlotte NC | P1 | Concord, Mooresville, Lake Norman & Surrounding Areas",
-          "seoDescription": "P1 Land & Property Management serves commercial, industrial, agricultural, equestrian, municipal, and institutional properties in the Charlotte, NC region. Land clearing, grading, drainage, turf, and pond management. Call (704) 221-8928.",
+          "seoTitle": "Land Management in the Charlotte, NC Region | P1",
+          "seoDescription": "Clearing, grading, drainage, turf, pond, and property management for qualifying commercial and working sites in greater Charlotte. Call (704) 221-8928.",
           "seoImage": "/opengraph.jpg",
           "f1n2ww05": "/assets/hero-charlotte-region-1280-BaySFBdJ.webp",
           "f16wvxq0": "Land & Property Management in the Charlotte, NC Region",
@@ -13622,6 +13690,11 @@
           "f9spy6u": "tel:7042218928",
           "fatly8t": "request a free estimate online",
           "fmggb4x": "/contact",
+          "fgis5zl": "Within Charlotte, P1 focuses on qualifying commercial, industrial, municipal, and institutional properties where acreage, operating complexity, or connected exterior needs call for more than a small landscape crew. The scope may involve an active campus, development tract, retention area, access route, or a combination of land preparation and recurring care.",
+          "f1gj0vp6": "Charlotte operators can use this regional overview to compare available services and follow the more specific county and community links below. One assessment can account for both the immediate work area and connected site needs.",
+          "fjg8fb7": "A regional scope with local constraints",
+          "f1ok1ybf": "Across the metro, project planning changes with site access, active operations, visible water movement, surrounding uses, and the property’s next purpose. P1 reviews those conditions before proposing work and flags engineering, permitting, utility, survey, or specialist responsibilities where they may apply.",
+          "f1j7wn4y": "Share plans, known utilities, drainage history, access windows, and target timing when requesting an assessment. The more complete the operating context, the more clearly the estimate can define work areas, assumptions, exclusions, and coordination.",
           "ff275em": "County Spotlight",
           "f10m3m5y": "/service-areas/union-county-nc",
           "f50ahzr": "/assets/union-county-equestrian-1280-BaEgPKeV.webp",
@@ -13863,6 +13936,62 @@
             "maxLength": 2000
           },
           {
+            "path": "f2j7qv1",
+            "label": "Text: A connected plan for Greenville-area sites",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fj6jpp5",
+            "label": "Text: Greenville-area properties range from active commercial and industrial campuses to institutiona",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1u4agah",
+            "label": "Text: P1 reviews the property’s current condition and next use before defining work. That review can ",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f18ng9p",
+            "label": "Text: Plan around operations and water movement",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1r5bmj5",
+            "label": "Text: On occupied sites, access routes, business hours, tenants, public use, and protected areas infl",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f9z0rsn",
+            "label": "Text: Provide available plans, known utility information, problem locations, access constraints, and ",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1uv1jih",
+            "label": "Text: The assessment can then separate immediate concerns—such as unstable access, active erosion, bl",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f49mihf",
+            "label": "Text: Marking priority areas on a plan and sharing photos from wet-weather or peak-use conditions can",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
             "path": "f1xk40b3",
             "label": "Text: Greenville, SC Land & Property Management FAQs",
             "type": "text",
@@ -14019,8 +14148,8 @@
         ],
         "defaultContent": {
           "fum15fc": "Skip to main content",
-          "seoTitle": "Land Clearing & Property Management Greenville SC | P1 Land & Property Management",
-          "seoDescription": "Professional land clearing, grading, drainage, turf, and property management in Greenville, SC. Serving commercial, industrial, agricultural, equestrian, municipal, and institutional properties 1 acre+. Call (704) 221-8928.",
+          "seoTitle": "Land Management in Greenville, SC | P1",
+          "seoDescription": "Land clearing, grading, drainage, turf, and property management for qualifying 1-acre-plus Greenville, SC sites. Call (704) 221-8928.",
           "seoImage": "/opengraph.jpg",
           "f397xt7": "/assets/hero-upstate-cities-1280-ISUIoyKw.webp",
           "f14k79ru": "Land Clearing & Property Management in Greenville, SC",
@@ -14044,6 +14173,14 @@
           "f9spy6u": "tel:7042218928",
           "fatly8t": "request a free estimate online",
           "fmggb4x": "/contact",
+          "f2j7qv1": "A connected plan for Greenville-area sites",
+          "fj6jpp5": "Greenville-area properties range from active commercial and industrial campuses to institutional grounds and working acreage beyond the urban core. Clearing, grades, drainage paths, access, turf, and ongoing maintenance interact differently in each setting, so the sequence matters as much as the individual service.",
+          "f1u4agah": "P1 reviews the property’s current condition and next use before defining work. That review can connect initial land preparation with stabilization and recurring care, while keeping approved responsibilities and exclusions explicit.",
+          "f18ng9p": "Plan around operations and water movement",
+          "f1r5bmj5": "On occupied sites, access routes, business hours, tenants, public use, and protected areas influence mobilization. On sloped or clay-heavy ground, drainage history and erosion signs should be reviewed before grading or turf work begins.",
+          "f9z0rsn": "Provide available plans, known utility information, problem locations, access constraints, and schedule needs when requesting an estimate. If the proposed outcome requires engineering, permits, surveys, or specialist work, those responsibilities can be identified during qualification rather than left ambiguous.",
+          "f1uv1jih": "The assessment can then separate immediate concerns—such as unstable access, active erosion, blocked drainage, or unmanaged vegetation—from later finish work and recurring care. On an occupied Greenville property, those phases can be coordinated around vehicles, employees, tenants, and public areas. The written estimate defines the property-specific work, timing assumptions, and exclusions, giving the owner or facility team a practical document for budgeting and internal coordination.",
+          "f49mihf": "Marking priority areas on a plan and sharing photos from wet-weather or peak-use conditions can make the assessment more efficient and reveal patterns that are not visible on a dry visit.",
           "f1xk40b3": "Greenville, SC Land & Property Management FAQs",
           "f1kbh4py": "What areas around Greenville does P1 serve?",
           "f1qq0f4o": "P1 serves Greenville and all of Greenville County — including Greer, Taylors, Travelers Rest, Simpsonville, Mauldin, and Fountain Inn — for commercial, industrial, agricultural, equestrian, municipal, and institutional properties 1 acre and larger.",
@@ -14273,6 +14410,62 @@
             "maxLength": 2000
           },
           {
+            "path": "f2lbsg1",
+            "label": "Text: Land management along a working corridor",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fj7iekb",
+            "label": "Text: Spartanburg’s manufacturing, logistics, commercial, and institutional sites operate alongside r",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "fp9x6t9",
+            "label": "Text: P1 defines the proposed work around those operating conditions, not just the acreage. That make",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f17idh18",
+            "label": "Text: Build a scope that can be compared",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "ffpb72s",
+            "label": "Text: A useful estimate should state the work area, intended result, access assumptions, debris handl",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1scbqab",
+            "label": "Text: Engineering, surveys, permits, utility coordination, and licensed specialty work are confirmed ",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f6l7ix3",
+            "label": "Text: The same review can organize a large scope into sensible phases. Access or drainage corrections",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1gfxoaj",
+            "label": "Text: Photos, drainage history, and a marked plan of recurring problem areas help the assessment conc",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
             "path": "fwxhwsz",
             "label": "Text: Spartanburg, SC Land & Property Management FAQs",
             "type": "text",
@@ -14429,8 +14622,8 @@
         ],
         "defaultContent": {
           "fum15fc": "Skip to main content",
-          "seoTitle": "Land Clearing & Property Management Spartanburg SC | P1 Land & Property Management",
-          "seoDescription": "Full-service land clearing, grading, drainage, and property management in Spartanburg, SC. Properties 1 acre and larger. Call (704) 221-8928.",
+          "seoTitle": "Land Management in Spartanburg, SC | P1",
+          "seoDescription": "Land clearing, grading, drainage, turf, and property management for qualifying 1-acre-plus Spartanburg, SC sites. Call (704) 221-8928.",
           "seoImage": "/opengraph.jpg",
           "f397xt7": "/assets/hero-upstate-cities-1280-ISUIoyKw.webp",
           "fzyejmc": "Land Clearing & Property Management in Spartanburg, SC",
@@ -14454,6 +14647,14 @@
           "f9spy6u": "tel:7042218928",
           "fatly8t": "request a free estimate online",
           "fmggb4x": "/contact",
+          "f2lbsg1": "Land management along a working corridor",
+          "fj7iekb": "Spartanburg’s manufacturing, logistics, commercial, and institutional sites operate alongside rural acreage and agricultural land. Active sites often require phased access and coordination around vehicles, shifts, tenants, or public use. Working land may place more emphasis on equipment routes, vegetation, field drainage, pond access, and soil protection.",
+          "fp9x6t9": "P1 defines the proposed work around those operating conditions, not just the acreage. That makes it easier to coordinate clearing, grading, drainage, stabilization, and ongoing care in the right order.",
+          "f17idh18": "Build a scope that can be compared",
+          "ffpb72s": "A useful estimate should state the work area, intended result, access assumptions, debris handling, exclusions, schedule, and responsibilities. Available plans, known utilities, drainage history, and current site constraints help make those details more accurate.",
+          "f1scbqab": "Engineering, surveys, permits, utility coordination, and licensed specialty work are confirmed separately when needed. P1’s site review is the place to identify those boundaries before equipment and crews are scheduled.",
+          "f6l7ix3": "The same review can organize a large scope into sensible phases. Access or drainage corrections may need to precede clearing, finish grading, stabilization, seeding, or recurring grounds work. For an active Spartanburg County site, phases can be planned around shifts, deliveries, tenant access, animals, or seasonal land use. The property-specific written estimate establishes the approved work and assumptions, giving the owner or facilities team a clearer foundation for budgeting and scheduling.",
+          "f1gfxoaj": "Photos, drainage history, and a marked plan of recurring problem areas help the assessment concentrate on site behavior that may not be obvious during one visit.",
           "fwxhwsz": "Spartanburg, SC Land & Property Management FAQs",
           "frzjda8": "What areas around Spartanburg does P1 serve?",
           "f16wwx96": "P1 serves Spartanburg and all of Spartanburg County — including Duncan, Inman, Boiling Springs, Landrum, and the I-85 industrial corridor — for properties 1 acre and larger.",
@@ -14676,6 +14877,62 @@
             "maxLength": 2000
           },
           {
+            "path": "fcavd42",
+            "label": "Text: Planning work around Anderson County terrain",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fe7qwmq",
+            "label": "Text: A property near the I-85 corridor can have very different operating constraints from agricultur",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f10pzra0",
+            "label": "Text: P1 starts by reviewing the visible site conditions and the requested outcome. The resulting est",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "fgl4jdo",
+            "label": "Text: From working land to managed sites",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1fkl9p0",
+            "label": "Text: Agricultural and equestrian properties may need pasture access, brush control, pond edges, drai",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1bojwhw",
+            "label": "Text: For either setting, defining the problem before equipment arrives reduces rework. Share current",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1uwlvcx",
+            "label": "Text: A practical first visit also separates immediate corrective work from longer-term maintenance. ",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1wd2qmd",
+            "label": "Text: Photos of problem areas and notes about when water, access, or vegetation issues appear can mak",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
             "path": "fu27td8",
             "label": "Text: Anderson, SC Land & Property Management FAQs",
             "type": "text",
@@ -14832,8 +15089,8 @@
         ],
         "defaultContent": {
           "fum15fc": "Skip to main content",
-          "seoTitle": "Land Clearing & Property Management Anderson SC | P1 Land & Property Management",
-          "seoDescription": "Professional land clearing, grading, drainage, and agricultural property management in Anderson, SC. Properties 1 acre and larger. Call (704) 221-8928.",
+          "seoTitle": "Land Management in Anderson, SC | P1",
+          "seoDescription": "Land clearing, grading, drainage, pond, turf, and property management for qualifying 1-acre-plus sites in Anderson, SC. Call (704) 221-8928.",
           "seoImage": "/opengraph.jpg",
           "f397xt7": "/assets/hero-upstate-cities-1280-ISUIoyKw.webp",
           "f15ud7wx": "Land Clearing & Property Management in Anderson, SC",
@@ -14856,6 +15113,14 @@
           "f9spy6u": "tel:7042218928",
           "fatly8t": "request a free estimate online",
           "fmggb4x": "/contact",
+          "fcavd42": "Planning work around Anderson County terrain",
+          "fe7qwmq": "A property near the I-85 corridor can have very different operating constraints from agricultural acreage toward Belton, Pendleton, or Lake Hartwell. Commercial access, active operations, slopes, water movement, existing utilities, and the intended next use all affect how clearing, grading, or maintenance should be sequenced.",
+          "f10pzra0": "P1 starts by reviewing the visible site conditions and the requested outcome. The resulting estimate identifies the proposed work, access assumptions, exclusions, and any engineering, permitting, utility-location, or specialist responsibilities that must be handled separately.",
+          "fgl4jdo": "From working land to managed sites",
+          "f1fkl9p0": "Agricultural and equestrian properties may need pasture access, brush control, pond edges, drainage routes, or reseeding coordinated around animals and ongoing operations. Commercial, municipal, and institutional sites often place more emphasis on traffic flow, public access, appearance, and documented maintenance intervals.",
+          "f1bojwhw": "For either setting, defining the problem before equipment arrives reduces rework. Share current plans, known drainage history, access limitations, and the property’s next use when requesting an assessment.",
+          "f1uwlvcx": "A practical first visit also separates immediate corrective work from longer-term maintenance. Standing water, unstable access, overgrowth, eroding banks, or failed turf may be related, but they do not always belong in one phase. P1 can organize the proposed work into a sequence that reflects site priorities and current availability, giving the owner or facility team a clearer basis for budgeting and scheduling. The written estimate—not a generic city-page promise—controls the services, timing, and responsibilities for a specific Anderson County property.",
+          "f1wd2qmd": "Photos of problem areas and notes about when water, access, or vegetation issues appear can make the first conversation more useful and help the site visit focus on the right locations.",
           "fu27td8": "Anderson, SC Land & Property Management FAQs",
           "f1b1cpen": "What areas around Anderson does P1 serve?",
           "finnrow": "P1 serves Anderson and all of Anderson County — including Belton, Williamston, Pendleton, Powdersville, and the surrounding rural communities — for properties 1 acre and larger.",
@@ -14865,416 +15130,6 @@
           "f1fid5td": "Yes. P1 handles land clearing, selective tree management, drainage on sloped terrain, and shoreline and pond maintenance for the large rural and waterfront properties around Lake Hartwell and the western side of Anderson County.",
           "fvm4wce": "What size properties does P1 work on in Anderson?",
           "fii64q9": "P1 focuses on commercial, industrial, agricultural, equestrian, municipal, and institutional properties 1 acre and larger, bringing the equipment and expertise that small-scale landscaping companies can't provide. P1 does not provide residential services.",
-          "f1menulx": " to discuss scope and availability.",
-          "f1gklu8p": "Compare land management services",
-          "f958gr": "/services",
-          "f1th3tkk": "tell us about your property",
-          "f1u1km71": "/assets/fine-grading-1280-CWwHPN9f.webp",
-          "f5dus4q": "Start the Conversation",
-          "f19zqrt0": "Have acreage that needs shaping? Let's walk it together.",
-          "f1uh3yw6": "Free, no-pressure quotes across Upstate SC and the Charlotte metro.",
-          "f1odvf8f": "Get a Free Quote",
-          "f1d192in": "Call (704) 221-8928",
-          "f1w00rmf": "Call P1",
-          "f1u26c9a": "tel:+17042218928",
-          "f1qryswv": "Get an Estimate"
-        },
-        "lockedBehaviors": [
-          "routing",
-          "form-validation",
-          "authentication",
-          "responsive-layout"
-        ]
-      },
-      {
-        "key": "service-areas-charlotte-nc-content",
-        "version": "1.0.0",
-        "rendererRef": "src/lib/cms-jsx-runtime.ts",
-        "fieldSchemaRef": "src/lib/cms.tsx",
-        "allowedRegions": [
-          "service-areas-charlotte-nc"
-        ],
-        "editableFields": [
-          "heading",
-          "copy",
-          "image",
-          "imageAlt",
-          "ctaTarget"
-        ],
-        "fields": [
-          {
-            "path": "fum15fc",
-            "label": "Text: Skip to main content",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "seoTitle",
-            "label": "SEO title",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "seoDescription",
-            "label": "SEO description",
-            "type": "textarea",
-            "required": false,
-            "maxLength": 12000
-          },
-          {
-            "path": "seoImage",
-            "label": "Image: /opengraph.jpg",
-            "type": "image",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "fkelb9o",
-            "label": "Image: /assets/hero-charlotte-metro-1280-BEZot7VN.webp",
-            "type": "image",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1xzm6bo",
-            "label": "Image description: Land Clearing & Commercial Landscaping in Charlotte, NC",
-            "type": "imageAlt",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1uwh9f8",
-            "label": "Text: Service Area · NC",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "fnev383",
-            "label": "Text: Charlotte, NC",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f3b7rlq",
-            "label": "Text: P1 Land & Property Management delivers full-service land and property management for commercial",
-            "type": "textarea",
-            "required": false,
-            "maxLength": 12000
-          },
-          {
-            "path": "f1i9l80t",
-            "label": "Text: Charlotte NC Services",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "fubo3m5",
-            "label": "Text: Commercial landscaping and exterior grounds maintenance contracts",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "fxm4gre",
-            "label": "Text: Land clearing and forestry mulching",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1393vcn",
-            "label": "Text: Fine grading and site preparation for development",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1y3g3w5",
-            "label": "Text: Stormwater and drainage system installation",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "fltn6p6",
-            "label": "Text: Turf installation for commercial, municipal, and institutional sites",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1mdoify",
-            "label": "Text: Tree services and canopy management",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f128ci28",
-            "label": "Text: Pond and retention basin management",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "fji6uah",
-            "label": "Text: Full site reconstruction and restoration",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "fqlonfp",
-            "label": "Text: Charlotte's commercial and industrial property market requires contractors with the scale, equi",
-            "type": "textarea",
-            "required": false,
-            "maxLength": 12000
-          },
-          {
-            "path": "f3quld0",
-            "label": "Text: Call",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "fr6htqz",
-            "label": "Text: or",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1gh9giv",
-            "label": "Text: to discuss your property.",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1o2isa7",
-            "label": "Text: +1 (704) 221-8928",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f9spy6u",
-            "label": "Link: tel:7042218928",
-            "type": "ctaTarget",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "fatly8t",
-            "label": "Text: request a free estimate online",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "fmggb4x",
-            "label": "Link: /contact",
-            "type": "ctaTarget",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f15bvwm7",
-            "label": "Text: Charlotte, NC Land & Property Management FAQs",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f5afaaj",
-            "label": "Text: What parts of Charlotte does P1 serve?",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1os531u",
-            "label": "Text: P1 serves all of Charlotte and Mecklenburg County — from uptown commercial corridors and indust",
-            "type": "textarea",
-            "required": false,
-            "maxLength": 12000
-          },
-          {
-            "path": "f1yfi3o5",
-            "label": "Text: Does P1 offer commercial property maintenance contracts in Charlotte?",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "fu257uf",
-            "label": "Text: Yes. P1 provides year-round grounds maintenance programs for office parks, industrial facilitie",
-            "type": "textarea",
-            "required": false,
-            "maxLength": 12000
-          },
-          {
-            "path": "f1802v0p",
-            "label": "Text: Can P1 clear and grade land for development in Charlotte?",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "fnxzspk",
-            "label": "Text: Yes. P1 handles land clearing, forestry mulching, fine grading, site preparation, and stormwate",
-            "type": "textarea",
-            "required": false,
-            "maxLength": 12000
-          },
-          {
-            "path": "f21cr2",
-            "label": "Text: What size properties does P1 work on in Charlotte?",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1la870t",
-            "label": "Text: P1 focuses on commercial, industrial, agricultural, equestrian, municipal, and institutional pr",
-            "type": "textarea",
-            "required": false,
-            "maxLength": 12000
-          },
-          {
-            "path": "f1menulx",
-            "label": "Text: to discuss scope and availability.",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1gklu8p",
-            "label": "Text: Compare land management services",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f958gr",
-            "label": "Link: /services",
-            "type": "ctaTarget",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1th3tkk",
-            "label": "Text: tell us about your property",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1u1km71",
-            "label": "Image: /assets/fine-grading-1280-CWwHPN9f.webp",
-            "type": "image",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f5dus4q",
-            "label": "Text: Start the Conversation",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f19zqrt0",
-            "label": "Text: Have acreage that needs shaping? Let's walk it together.",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1uh3yw6",
-            "label": "Text: Free, no-pressure quotes across Upstate SC and the Charlotte metro.",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1odvf8f",
-            "label": "Text: Get a Free Quote",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1d192in",
-            "label": "Text: Call (704) 221-8928",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1w00rmf",
-            "label": "Text: Call P1",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1u26c9a",
-            "label": "Link: tel:+17042218928",
-            "type": "ctaTarget",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1qryswv",
-            "label": "Text: Get an Estimate",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          }
-        ],
-        "defaultContent": {
-          "fum15fc": "Skip to main content",
-          "seoTitle": "Land Clearing & Commercial Landscaping Charlotte NC | P1 Land & Property Management",
-          "seoDescription": "Professional land clearing, grading, drainage, and commercial landscaping in Charlotte, NC. Properties 1 acre and larger. Call (704) 221-8928.",
-          "seoImage": "/opengraph.jpg",
-          "fkelb9o": "/assets/hero-charlotte-metro-1280-BEZot7VN.webp",
-          "f1xzm6bo": "Land Clearing & Commercial Landscaping in Charlotte, NC",
-          "f1uwh9f8": "Service Area · NC",
-          "fnev383": "Charlotte, NC",
-          "f3b7rlq": "P1 Land & Property Management delivers full-service land and property management for commercial, industrial, municipal, and institutional properties throughout Charlotte, NC and Mecklenburg County. As Charlotte continues its rapid growth, demand for professional large-acreage property contractors has never been higher — and P1 fills that gap with a complete range of services from initial land clearing through ongoing maintenance.",
-          "f1i9l80t": "Charlotte NC Services",
-          "fubo3m5": "Commercial landscaping and exterior grounds maintenance contracts",
-          "fxm4gre": "Land clearing and forestry mulching",
-          "f1393vcn": "Fine grading and site preparation for development",
-          "f1y3g3w5": "Stormwater and drainage system installation",
-          "fltn6p6": "Turf installation for commercial, municipal, and institutional sites",
-          "f1mdoify": "Tree services and canopy management",
-          "f128ci28": "Pond and retention basin management",
-          "fji6uah": "Full site reconstruction and restoration",
-          "fqlonfp": "Charlotte's commercial and industrial property market requires contractors with the scale, equipment, and experience to manage complex, large-acreage sites. P1 serves commercial developers, property management companies, industrial facility managers, municipalities, and institutions throughout the Charlotte metro.",
-          "f3quld0": "Call ",
-          "fr6htqz": " or ",
-          "f1gh9giv": " to discuss your property.",
-          "f1o2isa7": "+1 (704) 221-8928",
-          "f9spy6u": "tel:7042218928",
-          "fatly8t": "request a free estimate online",
-          "fmggb4x": "/contact",
-          "f15bvwm7": "Charlotte, NC Land & Property Management FAQs",
-          "f5afaaj": "What parts of Charlotte does P1 serve?",
-          "f1os531u": "P1 serves all of Charlotte and Mecklenburg County — from uptown commercial corridors and industrial districts to institutional campuses, municipal properties, and surrounding agricultural operations — for properties 1 acre and larger.",
-          "f1yfi3o5": "Does P1 offer commercial property maintenance contracts in Charlotte?",
-          "fu257uf": "Yes. P1 provides year-round grounds maintenance programs for office parks, industrial facilities, municipal sites, institutional campuses, and commercial property management companies throughout Charlotte, keeping large sites presentable and compliant long after initial site work is complete.",
-          "f1802v0p": "Can P1 clear and grade land for development in Charlotte?",
-          "fnxzspk": "Yes. P1 handles land clearing, forestry mulching, fine grading, site preparation, and stormwater drainage installation for commercial, industrial, municipal, and institutional development across the Charlotte metro — including large, complex sites that require heavy equipment and experienced crews.",
-          "f21cr2": "What size properties does P1 work on in Charlotte?",
-          "f1la870t": "P1 focuses on commercial, industrial, agricultural, equestrian, municipal, and institutional properties 1 acre and larger, which lets us bring the right equipment and expertise to large-scale jobs. P1 does not provide residential services.",
           "f1menulx": " to discuss scope and availability.",
           "f1gklu8p": "Compare land management services",
           "f958gr": "/services",
@@ -15481,6 +15336,62 @@
             "maxLength": 2000
           },
           {
+            "path": "fgadlyd",
+            "label": "Text: Large-site work in Concord and Cabarrus County",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fhazsuz",
+            "label": "Text: Concord combines active commercial and industrial corridors with institutional grounds and work",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f4oee4d",
+            "label": "Text: P1 evaluates the requested work in that site context. Clearing, grading, drainage, turf, tree, ",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1t2js6s",
+            "label": "Text: What to prepare for an assessment",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fo8vhgh",
+            "label": "Text: Bring any available site plans, known utility information, drainage history, access restriction",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "fmxiuud",
+            "label": "Text: Work that requires engineering, permitting, surveys, utility coordination, or another licensed ",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "fdqdvkm",
+            "label": "Text: The assessment can also distinguish urgent corrective work from improvements that can be phased",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1lb5d1b",
+            "label": "Text: Before the visit, mark priority areas and collect photos showing how conditions change after ra",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
             "path": "f1tyb3hb",
             "label": "Text: Concord, NC Land & Property Management FAQs",
             "type": "text",
@@ -15637,8 +15548,8 @@
         ],
         "defaultContent": {
           "fum15fc": "Skip to main content",
-          "seoTitle": "Land Clearing & Property Management Concord NC | P1 Land & Property Management",
-          "seoDescription": "Professional land clearing, grading, drainage, and property management in Concord, NC. Properties 1 acre and larger. Call (704) 221-8928.",
+          "seoTitle": "Land Management in Concord, NC | P1",
+          "seoDescription": "Land clearing, grading, drainage, turf, and property management for qualifying 1-acre-plus sites in Concord and Cabarrus County. Call (704) 221-8928.",
           "seoImage": "/opengraph.jpg",
           "fkelb9o": "/assets/hero-charlotte-metro-1280-BEZot7VN.webp",
           "f1ohdwrs": "Land Clearing & Property Management in Concord, NC",
@@ -15660,6 +15571,14 @@
           "f9spy6u": "tel:7042218928",
           "fatly8t": "request a free estimate online",
           "fmggb4x": "/contact",
+          "fgadlyd": "Large-site work in Concord and Cabarrus County",
+          "fhazsuz": "Concord combines active commercial and industrial corridors with institutional grounds and working acreage outside the urban core. Each setting changes the practical sequence: busy sites may require phased access and careful coordination, while agricultural land may prioritize drainage, equipment routes, soil protection, and the next productive use.",
+          "f4oee4d": "P1 evaluates the requested work in that site context. Clearing, grading, drainage, turf, tree, and recurring grounds needs can be considered together so one improvement does not create a problem for the next.",
+          "f1t2js6s": "What to prepare for an assessment",
+          "fo8vhgh": "Bring any available site plans, known utility information, drainage history, access restrictions, and target use for the property. P1 uses those details and the visible conditions to define the proposed scope, assumptions, exclusions, and schedule.",
+          "fmxiuud": "Work that requires engineering, permitting, surveys, utility coordination, or another licensed specialty is identified during qualification rather than silently folded into a broad promise. That gives property teams a clearer basis for comparing estimates and planning mobilization.",
+          "fdqdvkm": "The assessment can also distinguish urgent corrective work from improvements that can be phased. A washed access route, active erosion, or blocked drainage path may need attention before finish grading, seeding, or recurring maintenance begins. For occupied Concord properties, that sequence can be coordinated around traffic, staff, tenants, or public access. The final written scope establishes what P1 will perform, how work areas will be accessed, and what the property team must complete before mobilization.",
+          "f1lb5d1b": "Before the visit, mark priority areas and collect photos showing how conditions change after rain or during normal operations. That context helps connect a visible symptom to the surrounding site.",
           "f1tyb3hb": "Concord, NC Land & Property Management FAQs",
           "f1m3v2bf": "What areas around Concord does P1 serve?",
           "f1n8b859": "P1 serves Concord and all of Cabarrus County — including Kannapolis, Harrisburg, Mount Pleasant, and Midland — as well as the surrounding rural acreage, for properties 1 acre and larger.",
@@ -15889,6 +15808,55 @@
             "maxLength": 2000
           },
           {
+            "path": "f14fmmbc",
+            "label": "Text: Plan for slopes, water, and occupied sites",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1hfr7uc",
+            "label": "Text: Around Mooresville and Lake Norman, commercial campuses, institutional grounds, municipal prope",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f7dsmwt",
+            "label": "Text: P1 reviews access, visible grades, drainage patterns, vegetation, shore or pond edges, and the ",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1via05h",
+            "label": "Text: Clear boundaries for waterfront work",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f144mzmd",
+            "label": "Text: Shoreline and stormwater-adjacent work may involve property-specific restrictions, protected ar",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f3egkbs",
+            "label": "Text: Bring available plans, known utilities, drainage history, operating-hour limits, and the desire",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "fi9zeg4",
+            "label": "Text: That review can also divide urgent stabilization, access, or drainage concerns from finish work",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
             "path": "fv1f93p",
             "label": "Text: Mooresville & Lake Norman Land & Property Management FAQs",
             "type": "text",
@@ -16045,8 +16013,8 @@
         ],
         "defaultContent": {
           "fum15fc": "Skip to main content",
-          "seoTitle": "Land & Property Management Mooresville & Lake Norman NC | P1 Land & Property Management",
-          "seoDescription": "Full-service land clearing, drainage, pond management, and property maintenance for large properties near Mooresville and Lake Norman, NC. Call (704) 221-8928.",
+          "seoTitle": "Land Management in Mooresville & Lake Norman | P1",
+          "seoDescription": "Clearing, drainage, pond, turf, and property management for qualifying large sites near Mooresville and Lake Norman, NC. Call (704) 221-8928.",
           "seoImage": "/opengraph.jpg",
           "frouzso": "/assets/hero-lake-norman-1280-B68_HP7r.webp",
           "f1awwezn": "Land & Property Management Near Mooresville & Lake Norman, NC",
@@ -16070,6 +16038,13 @@
           "f9spy6u": "tel:7042218928",
           "fatly8t": "request a free estimate online",
           "fmggb4x": "/contact",
+          "f14fmmbc": "Plan for slopes, water, and occupied sites",
+          "f1hfr7uc": "Around Mooresville and Lake Norman, commercial campuses, institutional grounds, municipal property, and working land often sit on sloped terrain influenced by coves, tributaries, ponds, and concentrated runoff. Clearing or grading without considering where water moves can shift erosion and maintenance problems elsewhere on the site.",
+          "f7dsmwt": "P1 reviews access, visible grades, drainage patterns, vegetation, shore or pond edges, and the property’s intended use before defining a proposed sequence of work.",
+          "f1via05h": "Clear boundaries for waterfront work",
+          "f144mzmd": "Shoreline and stormwater-adjacent work may involve property-specific restrictions, protected areas, engineered plans, permits, or other specialist responsibilities. Those requirements should be confirmed before vegetation removal, earthwork, stabilization, or access changes begin.",
+          "f3egkbs": "Bring available plans, known utilities, drainage history, operating-hour limits, and the desired outcome to the assessment. P1 can scope the work it will perform, identify exclusions, and coordinate the schedule around an active large-format property.",
+          "fi9zeg4": "That review can also divide urgent stabilization, access, or drainage concerns from finish work and recurring care. Phasing helps reduce rework when the same slope or work area needs clearing, earthwork, erosion control, and vegetation establishment. The written estimate defines the property-specific work and assumptions so owners and facility teams can coordinate budgets, operations, and any outside approvals before mobilization.",
           "fv1f93p": "Mooresville & Lake Norman Land & Property Management FAQs",
           "f6kil2v": "What areas around Lake Norman does P1 serve?",
           "f1s0sn32": "P1 serves the entire Lake Norman region — Mooresville, Davidson, Cornelius, Huntersville, Troutman, Sherrills Ford, and Denver — for commercial, industrial, agricultural, equestrian, municipal, and institutional properties 1 acre and larger.",
@@ -16285,6 +16260,62 @@
             "maxLength": 2000
           },
           {
+            "path": "f1qikmxx",
+            "label": "Text: Property work shaped by Gaston County ground",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1mk96ga",
+            "label": "Text: Rolling terrain and clay-heavy soils make water movement and access central to many Gastonia-ar",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f11udpke",
+            "label": "Text: P1 reviews these connected conditions before defining the work. The goal is a clear sequence bu",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "fgc9lev",
+            "label": "Text: Commercial corridors and working acreage",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f4u7gyh",
+            "label": "Text: Industrial and commercial sites near Gastonia’s primary transportation corridors often need wor",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "fmhn9rl",
+            "label": "Text: Share site plans, known utilities, problem areas, access windows, and the desired result during",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1hrh1w9",
+            "label": "Text: A site review can separate stabilization or access work that should happen first from finish wo",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1pa538l",
+            "label": "Text: Recent photos after rainfall, notes about recurring washouts, and a map of priority work areas ",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
             "path": "f173ckez",
             "label": "Text: Gastonia, NC Land & Property Management FAQs",
             "type": "text",
@@ -16441,8 +16472,8 @@
         ],
         "defaultContent": {
           "fum15fc": "Skip to main content",
-          "seoTitle": "Land Clearing & Property Management Gastonia NC | P1 Land & Property Management",
-          "seoDescription": "Professional land clearing, grading, drainage, and property management in Gastonia, NC. Properties 1 acre and larger. Call (704) 221-8928.",
+          "seoTitle": "Land Management in Gastonia, NC | P1",
+          "seoDescription": "Land clearing, grading, drainage, turf, and property management for qualifying 1-acre-plus sites in Gastonia and Gaston County. Call (704) 221-8928.",
           "seoImage": "/opengraph.jpg",
           "fkelb9o": "/assets/hero-charlotte-metro-1280-BEZot7VN.webp",
           "f1v5ntbu": "Land Clearing & Property Management in Gastonia, NC",
@@ -16464,6 +16495,14 @@
           "f9spy6u": "tel:7042218928",
           "fatly8t": "request a free estimate online",
           "fmggb4x": "/contact",
+          "f1qikmxx": "Property work shaped by Gaston County ground",
+          "f1mk96ga": "Rolling terrain and clay-heavy soils make water movement and access central to many Gastonia-area scopes. A clearing project can expose grades that need stabilization; a turf project can fail if surface drainage and soil preparation are not addressed first; recurring maintenance must account for the way the site is actually used.",
+          "f11udpke": "P1 reviews these connected conditions before defining the work. The goal is a clear sequence built around the property’s intended use, not a menu of isolated services.",
+          "fgc9lev": "Commercial corridors and working acreage",
+          "f4u7gyh": "Industrial and commercial sites near Gastonia’s primary transportation corridors often need work phased around vehicles, employees, tenants, and operating hours. Agricultural, municipal, and institutional properties elsewhere in Gaston County may instead prioritize durable access, vegetation control, pond edges, field drainage, or manageable maintenance cycles.",
+          "fmhn9rl": "Share site plans, known utilities, problem areas, access windows, and the desired result during qualification. P1 can then identify scope boundaries and flag any permitting, engineering, or specialist coordination needed before mobilization.",
+          "f1hrh1w9": "A site review can separate stabilization or access work that should happen first from finish work and recurring care that follows. That sequencing is especially useful where runoff, exposed soil, vehicle movement, and vegetation management affect the same area. For each Gaston County property, the written estimate records the proposed work and assumptions rather than relying on generic service-page language. Owners and facility teams can use that document to compare options, coordinate internal responsibilities, and plan around active operations.",
+          "f1pa538l": "Recent photos after rainfall, notes about recurring washouts, and a map of priority work areas can help P1 focus the assessment and distinguish isolated maintenance from a broader site issue.",
           "f173ckez": "Gastonia, NC Land & Property Management FAQs",
           "f1hwkkv9": "What areas around Gastonia does P1 serve?",
           "f1b0l7ik": "P1 serves Gastonia and all of Gaston County — including Belmont, Mount Holly, Cramerton, Dallas, Bessemer City, Stanley, and Cherryville — for properties 1 acre and larger.",
@@ -17045,8 +17084,8 @@
         ],
         "defaultContent": {
           "fum15fc": "Skip to main content",
-          "seoTitle": "Land Clearing & Property Management Union County NC | P1 | Monroe, Waxhaw, Indian Trail & Weddington",
-          "seoDescription": "P1 Land & Property Management serves commercial, industrial, agricultural, equestrian, municipal, and institutional properties across Union County, NC. Land clearing, grading, drainage, pasture, turf, and pond management in Monroe, Waxhaw, Indian Trail, Weddington & more. Call (704) 221-8928.",
+          "seoTitle": "Land Management in Union County, NC | P1",
+          "seoDescription": "Clearing, grading, drainage, pasture, turf, and pond management for qualifying sites across Union County, NC. Call (704) 221-8928.",
           "seoImage": "/opengraph.jpg",
           "fkvmh6x": "/assets/hero-union-county-1280-DcQBPkHY.webp",
           "f1gnbzn9": "Land Clearing & Property Management in Union County, NC",
@@ -17679,8 +17718,8 @@
         ],
         "defaultContent": {
           "fum15fc": "Skip to main content",
-          "seoTitle": "Land Clearing & Property Management Lancaster County SC | P1 | Indian Land, Van Wyck, Kershaw & Heath Springs",
-          "seoDescription": "P1 Land & Property Management serves commercial, industrial, agricultural, equestrian, municipal, and institutional properties across Lancaster County, SC. Land clearing, grading, drainage, pasture, turf, and pond management in Indian Land, Van Wyck, Kershaw, Heath Springs, Lancaster & more. Call (704) 221-8928.",
+          "seoTitle": "Land Management in Lancaster County, SC | P1",
+          "seoDescription": "Clearing, grading, drainage, pasture, turf, and pond management for qualifying Lancaster County, SC properties. Call (704) 221-8928.",
           "seoImage": "/opengraph.jpg",
           "fqz5n0y": "/assets/hero-lancaster-county-1280-CLa-3Z69.webp",
           "fu4rdao": "Land Clearing & Property Management in Lancaster County, SC",
@@ -18348,8 +18387,8 @@
         ],
         "defaultContent": {
           "fum15fc": "Skip to main content",
-          "seoTitle": "Land Clearing & Property Management York County SC | P1 | Rock Hill, Fort Mill, Tega Cay, Clover & York",
-          "seoDescription": "P1 Land & Property Management serves commercial, industrial, agricultural, equestrian, municipal, and institutional properties across York County, SC. Land clearing, grading, drainage, pasture, turf, and pond management in Rock Hill, Fort Mill, Tega Cay, Lake Wylie, Clover, York & more. Call (704) 221-8928.",
+          "seoTitle": "Land Management in York County, SC | P1",
+          "seoDescription": "Clearing, grading, drainage, turf, pasture, and pond management for qualifying sites across York County, SC. Call (704) 221-8928.",
           "seoImage": "/opengraph.jpg",
           "fithrko": "/assets/hero-york-county-1280-B0LHoNzr.webp",
           "f173qi6i": "Land Clearing & Property Management in York County, SC",
@@ -19212,8 +19251,8 @@
         ],
         "defaultContent": {
           "fum15fc": "Skip to main content",
-          "seoTitle": "How Much Does Land Clearing Cost Per Acre in South Carolina? | P1 Land & Property Management",
-          "seoDescription": "Understand what drives land clearing costs in South Carolina. From forestry mulching to full clearing with grubbing, we break down what you can expect to pay per acre. Call (704) 221-8928.",
+          "seoTitle": "Land Clearing Cost Per Acre in South Carolina | P1",
+          "seoDescription": "Learn what drives land clearing cost in South Carolina, from vegetation and access to grading, debris handling, and the work planned after clearing.",
           "seoImage": "/opengraph.jpg",
           "f1w4s7zb": "/assets/blog-land-clearing-1280-CmoqPBJK.webp",
           "flop9xh": "Heavy equipment clearing land",
@@ -19711,8 +19750,8 @@
         ],
         "defaultContent": {
           "fum15fc": "Skip to main content",
-          "seoTitle": "How to Manage a Retention Pond on Your Property in SC & NC | P1 Land & Property Management",
-          "seoDescription": "A retention pond that isn't maintained becomes a liability. Learn what routine pond management involves, what to watch for, and when to call a professional. Serving Upstate SC and Charlotte NC.",
+          "seoTitle": "Retention Pond Management in SC & NC | P1",
+          "seoDescription": "Learn the routine inspections, vegetation control, sediment review, shoreline care, and professional coordination involved in retention pond management.",
           "seoImage": "/opengraph.jpg",
           "f1oiw3nh": "/assets/blog-retention-pond-1280-CZQ1fZOn.webp",
           "f11i2sgj": "Well maintained retention pond",
@@ -20294,8 +20333,8 @@
         ],
         "defaultContent": {
           "fum15fc": "Skip to main content",
-          "seoTitle": "Best Grass Types for Large Acreage Properties in the Carolinas | P1 Land & Property Management",
-          "seoDescription": "Choosing the right grass for large acreage in SC and NC depends on sun, soil, use, and maintenance commitment. Here's how to make the right call. Call (704) 221-8928.",
+          "seoTitle": "Best Grass for Large Acreage in the Carolinas | P1",
+          "seoDescription": "Compare grass options for large Carolina properties based on climate, sunlight, soil, intended use, establishment method, and maintenance needs.",
           "seoImage": "/opengraph.jpg",
           "fgbo624": "/assets/blog-grass-acreage-1280-Cm0fx389.webp",
           "f1dijm90": "Lush green pasture land",
@@ -20741,8 +20780,8 @@
         ],
         "defaultContent": {
           "fum15fc": "Skip to main content",
-          "seoTitle": "5 Signs Your Property Has a Drainage Problem (And What to Do About It) | P1 Land & Property Management",
-          "seoDescription": "Standing water, soggy soil, and erosion are signs of a drainage problem that will get worse. Learn to spot the signs early and understand your options. Serving Upstate SC and Charlotte NC.",
+          "seoTitle": "5 Signs of a Property Drainage Problem | P1",
+          "seoDescription": "Learn to recognize standing water, erosion, soggy ground, washouts, and other drainage warning signs before they cause more property damage.",
           "seoImage": "/opengraph.jpg",
           "f1su9oda": "/assets/blog-drainage-1280-Cou-c1US.webp",
           "f122y5mg": "Heavy equipment drainage trench",
@@ -21251,8 +21290,8 @@
         ],
         "defaultContent": {
           "fum15fc": "Skip to main content",
-          "seoTitle": "How to Prepare Raw Land for Agricultural Use in the Carolinas | P1 Land & Property Management",
-          "seoDescription": "Turning raw or neglected land into productive agricultural acreage requires the right sequence of clearing, grading, drainage, and seeding. Here's how to do it right in SC and NC. Call (704) 221-8928.",
+          "seoTitle": "Preparing Land for Agricultural Use | Carolinas | P1",
+          "seoDescription": "Plan the sequence for preparing Carolina acreage for agricultural use: soil testing, clearing, grading, drainage, amendments, and establishment.",
           "seoImage": "/opengraph.jpg",
           "f1u80i9t": "/assets/blog-ag-land-1280-BV9gijsF.webp",
           "fimp5bd": "Tractor grading agricultural land",
@@ -21694,15 +21733,15 @@
             "maxLength": 2000
           },
           {
-            "path": "f1b4rvw4",
-            "label": "Text: Charlotte",
+            "path": "fb9r7hs",
+            "label": "Text: Charlotte Region",
             "type": "text",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "fs6d0te",
-            "label": "Link: /service-areas/charlotte-nc",
+            "path": "f11009l2",
+            "label": "Link: /service-areas/charlotte-north-carolina",
             "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
@@ -21935,8 +21974,8 @@
           "f1mwc14n": "York County",
           "f1xhnnaj": "/service-areas/york-county-sc",
           "f104ic59": "Greater Charlotte NC",
-          "f1b4rvw4": "Charlotte",
-          "fs6d0te": "/service-areas/charlotte-nc",
+          "fb9r7hs": "Charlotte Region",
+          "f11009l2": "/service-areas/charlotte-north-carolina",
           "f1ihj1ro": "Concord",
           "fl85hm6": "/service-areas/concord-nc",
           "f1v7w9u1": "Mooresville & Lake Norman",
@@ -22036,7 +22075,6 @@
         "service-areas-greenville-sc",
         "service-areas-spartanburg-sc",
         "service-areas-anderson-sc",
-        "service-areas-charlotte-nc",
         "service-areas-concord-nc",
         "service-areas-mooresville-lake-norman-nc",
         "service-areas-gastonia-nc",

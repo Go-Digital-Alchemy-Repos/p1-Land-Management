@@ -36,8 +36,8 @@ export default function SpartanburgSC() {
   return (
     <Layout>
       <SEO 
-        title="Land Clearing & Property Management Spartanburg SC | P1 Land & Property Management"
-        description="Full-service land clearing, grading, drainage, and property management in Spartanburg, SC. Properties 1 acre and larger. Call (704) 221-8928."
+        title="Land Management in Spartanburg, SC | P1"
+        description="Land clearing, grading, drainage, turf, and property management for qualifying 1-acre-plus Spartanburg, SC sites. Call (704) 221-8928."
         jsonLd={[
           serviceAreaSchema({ areaName: "Spartanburg, South Carolina", areaType: "City", description: "Full-service land clearing, grading, drainage, and property management in Spartanburg, SC. Properties 1 acre and larger. Call (704) 221-8928.", path: "/service-areas/spartanburg-sc" }),
           breadcrumbSchema([
@@ -97,6 +97,21 @@ export default function SpartanburgSC() {
                   Call <a href="tel:7042218928" className="text-primary hover:underline">+1 (704) 221-8928</a> or <Link href="/contact" className="text-primary hover:underline">request a free estimate online</Link> to discuss your property.
                 </p>
               </div>
+            </div>
+          </div>
+
+          <div className="grid gap-10 border-y border-border py-12 md:grid-cols-2">
+            <div className="space-y-4">
+              <h2 className="text-2xl font-serif font-bold text-secondary">Land management along a working corridor</h2>
+              <p className="leading-relaxed text-secondary/80">Spartanburg’s manufacturing, logistics, commercial, and institutional sites operate alongside rural acreage and agricultural land. Active sites often require phased access and coordination around vehicles, shifts, tenants, or public use. Working land may place more emphasis on equipment routes, vegetation, field drainage, pond access, and soil protection.</p>
+              <p className="leading-relaxed text-secondary/80">P1 defines the proposed work around those operating conditions, not just the acreage. That makes it easier to coordinate clearing, grading, drainage, stabilization, and ongoing care in the right order.</p>
+            </div>
+            <div className="space-y-4">
+              <h2 className="text-2xl font-serif font-bold text-secondary">Build a scope that can be compared</h2>
+              <p className="leading-relaxed text-secondary/80">A useful estimate should state the work area, intended result, access assumptions, debris handling, exclusions, schedule, and responsibilities. Available plans, known utilities, drainage history, and current site constraints help make those details more accurate.</p>
+              <p className="leading-relaxed text-secondary/80">Engineering, surveys, permits, utility coordination, and licensed specialty work are confirmed separately when needed. P1’s site review is the place to identify those boundaries before equipment and crews are scheduled.</p>
+              <p className="leading-relaxed text-secondary/80">The same review can organize a large scope into sensible phases. Access or drainage corrections may need to precede clearing, finish grading, stabilization, seeding, or recurring grounds work. For an active Spartanburg County site, phases can be planned around shifts, deliveries, tenant access, animals, or seasonal land use. The property-specific written estimate establishes the approved work and assumptions, giving the owner or facilities team a clearer foundation for budgeting and scheduling.</p>
+              <p className="leading-relaxed text-secondary/80">Photos, drainage history, and a marked plan of recurring problem areas help the assessment concentrate on site behavior that may not be obvious during one visit.</p>
             </div>
           </div>
 

@@ -36,8 +36,8 @@ export default function MooresvilleLakeNormanNC() {
   return (
     <Layout>
       <SEO 
-        title="Land & Property Management Mooresville & Lake Norman NC | P1 Land & Property Management"
-        description="Full-service land clearing, drainage, pond management, and property maintenance for large properties near Mooresville and Lake Norman, NC. Call (704) 221-8928."
+        title="Land Management in Mooresville & Lake Norman | P1"
+        description="Clearing, drainage, pond, turf, and property management for qualifying large sites near Mooresville and Lake Norman, NC. Call (704) 221-8928."
         jsonLd={[
           serviceAreaSchema({ areaName: "Mooresville & Lake Norman, North Carolina", areaType: "City", description: "Full-service land clearing, drainage, pond management, and property maintenance for large properties near Mooresville and Lake Norman, NC. Call (704) 221-8928.", path: "/service-areas/mooresville-lake-norman-nc" }),
           breadcrumbSchema([
@@ -97,6 +97,20 @@ export default function MooresvilleLakeNormanNC() {
                   Call <a href="tel:7042218928" className="text-primary hover:underline">+1 (704) 221-8928</a> or <Link href="/contact" className="text-primary hover:underline">request a free estimate online</Link> to discuss your property.
                 </p>
               </div>
+            </div>
+          </div>
+
+          <div className="grid gap-10 border-y border-border py-12 md:grid-cols-2">
+            <div className="space-y-4">
+              <h2 className="text-2xl font-serif font-bold text-secondary">Plan for slopes, water, and occupied sites</h2>
+              <p className="leading-relaxed text-secondary/80">Around Mooresville and Lake Norman, commercial campuses, institutional grounds, municipal property, and working land often sit on sloped terrain influenced by coves, tributaries, ponds, and concentrated runoff. Clearing or grading without considering where water moves can shift erosion and maintenance problems elsewhere on the site.</p>
+              <p className="leading-relaxed text-secondary/80">P1 reviews access, visible grades, drainage patterns, vegetation, shore or pond edges, and the property’s intended use before defining a proposed sequence of work.</p>
+            </div>
+            <div className="space-y-4">
+              <h2 className="text-2xl font-serif font-bold text-secondary">Clear boundaries for waterfront work</h2>
+              <p className="leading-relaxed text-secondary/80">Shoreline and stormwater-adjacent work may involve property-specific restrictions, protected areas, engineered plans, permits, or other specialist responsibilities. Those requirements should be confirmed before vegetation removal, earthwork, stabilization, or access changes begin.</p>
+              <p className="leading-relaxed text-secondary/80">Bring available plans, known utilities, drainage history, operating-hour limits, and the desired outcome to the assessment. P1 can scope the work it will perform, identify exclusions, and coordinate the schedule around an active large-format property.</p>
+              <p className="leading-relaxed text-secondary/80">That review can also divide urgent stabilization, access, or drainage concerns from finish work and recurring care. Phasing helps reduce rework when the same slope or work area needs clearing, earthwork, erosion control, and vegetation establishment. The written estimate defines the property-specific work and assumptions so owners and facility teams can coordinate budgets, operations, and any outside approvals before mobilization.</p>
             </div>
           </div>
 

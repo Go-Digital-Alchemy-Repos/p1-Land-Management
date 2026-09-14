@@ -3,28 +3,22 @@ import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
-import { LOGO_URL } from "@/lib/site";
+import { articleSchema } from "@/lib/structured-data";
 import heroImg from "@/assets/blog-retention-pond.png";
 
 export default function BlogPost() {
   return (
     <Layout>
       <SEO 
-        title="How to Manage a Retention Pond on Your Property in SC & NC | P1 Land & Property Management"
-        description="A retention pond that isn't maintained becomes a liability. Learn what routine pond management involves, what to watch for, and when to call a professional. Serving Upstate SC and Charlotte NC."
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "Article",
+        title="Retention Pond Management in SC & NC | P1"
+        description="Learn the routine inspections, vegetation control, sediment review, shoreline care, and professional coordination involved in retention pond management."
+        jsonLd={articleSchema({
           headline: "How to Manage a Retention Pond on Your Property in SC & NC",
           description: "A retention pond that isn't maintained becomes a liability. Learn what routine pond management involves and when to call a professional.",
-          image: "https://www.p1landmanagement.com/opengraph.jpg",
-          author: { "@type": "Organization", name: "P1 Land & Property Management" },
-          publisher: {
-            "@type": "Organization",
-            name: "P1 Land & Property Management",
-            logo: { "@type": "ImageObject", url: LOGO_URL },
-          },
-        }}
+          path: "/blog/how-to-manage-retention-pond-south-carolina",
+          datePublished: "2026-06-24",
+          dateModified: "2026-09-14",
+        })}
       />
 
       <article className="pb-24">

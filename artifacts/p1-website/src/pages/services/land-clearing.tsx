@@ -39,8 +39,8 @@ export default function LandClearing() {
   return (
     <Layout>
       <SEO 
-        title="Land Clearing Upstate SC & Charlotte NC | P1 Land & Property Management"
-        description="Professional land clearing for commercial, industrial, agricultural, equestrian, municipal, and institutional properties. Trees, brush, stumps, and vegetation removed efficiently. Serving Upstate SC and Charlotte NC. Call (704) 221-8928."
+        title="Land Clearing in Upstate SC & Charlotte | P1"
+        description="Land clearing and forestry mulching for qualifying commercial, industrial, agricultural, municipal, and institutional sites. Call (704) 221-8928."
         jsonLd={[
           serviceSchema({ name: "Land Clearing", description: "Professional land clearing for commercial, industrial, agricultural, equestrian, municipal, and institutional properties. Trees, brush, stumps, and vegetation removed efficiently. Serving Upstate SC and Charlotte NC. Call (704) 221-8928.", path: "/services/land-clearing" }),
           breadcrumbSchema([

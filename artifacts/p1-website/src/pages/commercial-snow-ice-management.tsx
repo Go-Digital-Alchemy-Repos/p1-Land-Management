@@ -80,7 +80,7 @@ export default function CommercialSnowIceManagement() {
   return (
     <Layout>
       <SEO
-        title="Commercial Snow & Ice Management | Charlotte & Upstate SC | P1"
+        title="Commercial Snow & Ice Management in the Carolinas | P1"
         description={description}
         jsonLd={[
           serviceSchema({ name: "Commercial Snow and Ice Management", description, path: PATH }),

@@ -27,10 +27,10 @@ import {
 const TAN = "hsl(32 42% 62%)";
 
 const values = [
-  { n: "01", title: "Heavy Equipment Fleet", desc: "Discuss the equipment and access requirements for your grading, clearing, and property maintenance work.", icon: Truck },
+  { n: "01", title: "Equipment Matched to the Work", desc: "We plan access and match equipment to the approved grading, clearing, or maintenance scope.", icon: Truck },
   { n: "02", title: "Large-Acreage Expertise", desc: "Built around properties most crews can't handle — farms, industrial grounds, public sites, and commercial campuses.", icon: Ruler },
-  { n: "03", title: "Drainage Planning", desc: "We assess slope and water movement, then discuss grade-level work and any specialist involvement.", icon: Droplets },
-  { n: "04", title: "Dependable Scheduling", desc: "Crews that show up, communicate and finish on the timeline we commit to.", icon: CalendarCheck },
+  { n: "03", title: "Drainage Planning", desc: "We assess visible slope and water movement, define the proposed work, and identify specialist needs before construction.", icon: Droplets },
+  { n: "04", title: "Defined Scheduling", desc: "Every approved scope establishes coordination, responsibilities, and the working schedule before mobilization.", icon: CalendarCheck },
 ];
 
 import { FaqAccordion } from "@/components/content/FaqAccordion";
@@ -84,7 +84,7 @@ export default function Home() {
     <Layout>
       <SEO
         title="P1 Land & Property Management | Upstate SC & Charlotte NC"
-        description="Grading, drainage, clearing, ponds and full property management for large acreage across Upstate South Carolina and the Charlotte, NC region. Call (704) 221-8928."
+        description="Grading, drainage, clearing, ponds, and property management for qualifying acreage across Upstate SC and the Charlotte region. Call (704) 221-8928."
         jsonLd={[localBusinessSchema(), faqSchema(FAQS)]}
       />
 
@@ -170,7 +170,7 @@ export default function Home() {
               </h2>
             </div>
             <p className="max-w-xs text-[15px] leading-relaxed" style={{ color: "hsl(215 20% 35%)" }}>
-              From the first cut to ongoing care, discuss your property’s needs and coordinate the scope with P1.
+              From the first cut to ongoing care, P1 connects the services your large property needs under a clearly defined scope.
             </p>
           </div>
 
@@ -245,11 +245,11 @@ export default function Home() {
                 <span className="text-tan" style={{ fontStyle: "italic" }}>groundwork.</span>
               </h2>
               <p className="mt-5 max-w-sm text-[15px] leading-relaxed" style={{ color: "hsl(40 20% 92% / 0.7)" }}>
-                Discuss the equipment, scope, documentation and delivery responsibilities needed for your property before work begins.
+                P1 brings land preparation, water management, turf, tree care, and recurring exterior work into one coordinated property plan.
               </p>
               <div className="mt-8 inline-flex items-center gap-2 rounded-[3px] px-4 py-2 font-sans text-[12px] font-bold uppercase" style={{ background: "hsl(145 40% 35% / 0.18)", color: "hsl(145 45% 70%)", letterSpacing: "0.16em" }}>
                 <ShieldCheck className="h-4 w-4" />
-                Discuss Your Project
+                Plan Your Project
               </div>
             </div>
 

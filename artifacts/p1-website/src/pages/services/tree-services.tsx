@@ -38,8 +38,8 @@ export default function TreeServices() {
   return (
     <Layout>
       <SEO 
-        title="Tree Services for Large Properties | P1 Land & Property Management | Upstate SC & Charlotte NC"
-        description="Professional tree trimming, removal, stump grinding, and tree management for commercial, industrial, agricultural, equestrian, municipal, and institutional properties. Serving Upstate SC and Charlotte NC. Call (704) 221-8928."
+        title="Tree Services for Large Properties in SC & NC | P1"
+        description="Tree trimming, removal, stump grinding, and selective clearing for qualifying commercial and working properties. Call (704) 221-8928."
         jsonLd={[
           serviceSchema({ name: "Tree Services", description: "Professional tree trimming, removal, stump grinding, and tree management for commercial, industrial, agricultural, equestrian, municipal, and institutional properties. Serving Upstate SC and Charlotte NC. Call (704) 221-8928.", path: "/services/tree-services" }),
           breadcrumbSchema([

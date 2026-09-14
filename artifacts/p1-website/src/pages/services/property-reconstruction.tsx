@@ -38,8 +38,8 @@ export default function PropertyReconstruction() {
   return (
     <Layout>
       <SEO 
-        title="Property Reconstruction & Large-Scale Land Restoration | P1 Land & Property Management"
-        description="Full-scope property reconstruction including land clearing, regrading, drainage overhaul, and turf establishment. Serving commercial and agricultural landowners in Upstate SC and Charlotte NC. Call (704) 221-8928."
+        title="Property Reconstruction & Land Restoration | P1"
+        description="Coordinate clearing, regrading, drainage, and turf establishment for qualifying property reconstruction work in Upstate SC and Charlotte. Call (704) 221-8928."
         jsonLd={[
           serviceSchema({ name: "Property Reconstruction", description: "Full-scope property reconstruction including land clearing, regrading, drainage overhaul, and turf establishment. Serving commercial and agricultural landowners in Upstate SC and Charlotte NC. Call (704) 221-8928.", path: "/services/property-reconstruction" }),
           breadcrumbSchema([

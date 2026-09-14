@@ -3,28 +3,22 @@ import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
-import { LOGO_URL } from "@/lib/site";
+import { articleSchema } from "@/lib/structured-data";
 import heroImg from "@/assets/blog-grass-acreage.png";
 
 export default function BlogPost() {
   return (
     <Layout>
       <SEO 
-        title="Best Grass Types for Large Acreage Properties in the Carolinas | P1 Land & Property Management"
-        description="Choosing the right grass for large acreage in SC and NC depends on sun, soil, use, and maintenance commitment. Here's how to make the right call. Call (704) 221-8928."
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "Article",
+        title="Best Grass for Large Acreage in the Carolinas | P1"
+        description="Compare grass options for large Carolina properties based on climate, sunlight, soil, intended use, establishment method, and maintenance needs."
+        jsonLd={articleSchema({
           headline: "Best Grass Types for Large Acreage Properties in the Carolinas",
           description: "Choosing the right grass for large acreage in SC and NC depends on sun, soil, use, and maintenance commitment.",
-          image: "https://www.p1landmanagement.com/opengraph.jpg",
-          author: { "@type": "Organization", name: "P1 Land & Property Management" },
-          publisher: {
-            "@type": "Organization",
-            name: "P1 Land & Property Management",
-            logo: { "@type": "ImageObject", url: LOGO_URL },
-          },
-        }}
+          path: "/blog/best-grass-large-acreage-carolinas",
+          datePublished: "2026-06-24",
+          dateModified: "2026-09-14",
+        })}
       />
 
       <article className="pb-24">
