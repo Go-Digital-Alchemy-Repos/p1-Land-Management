@@ -28,7 +28,7 @@ const FAQS = [
   {
     question: "What size properties does P1 work on in Spartanburg?",
     answer:
-      "P1 focuses on commercial, industrial, agricultural, equestrian, municipal, and institutional properties 1 acre and larger, with the heavy equipment and crews that large-acreage work demands. P1 does not provide residential services.",
+      "P1 focuses on commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger, with the heavy equipment and crews that large-acreage work demands. P1 does not provide residential services.",
   },
 ];
 

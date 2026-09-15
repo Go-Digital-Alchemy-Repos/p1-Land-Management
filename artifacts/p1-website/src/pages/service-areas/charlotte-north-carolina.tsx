@@ -7,7 +7,7 @@ import { Link } from "wouter";
 import { FeatureRow } from "@/components/layout/FeatureRow";
 import heroImg from "@/assets/hero-charlotte-region.png";
 import charlotteImg from "@/assets/features/charlotte-region.png";
-import unionCountyImg from "@/assets/features/union-county-equestrian.png";
+import unionCountyImg from "@/assets/features/union-county-agriculture.png";
 import { CheckCircle2, ArrowRight } from "lucide-react";
 
 import { FaqAccordion } from "@/components/content/FaqAccordion";
@@ -31,7 +31,7 @@ const FAQS = [
   {
     question: "What size properties does P1 work on in the Charlotte region?",
     answer:
-      "P1 focuses on commercial, industrial, agricultural, equestrian, municipal, and institutional properties 1 acre and larger, which lets us bring the right equipment and expertise to large-scale jobs. P1 does not provide residential services.",
+      "P1 focuses on commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger, which lets us bring the right equipment and expertise to large-scale jobs. P1 does not provide residential services.",
   },
 ];
 
@@ -42,7 +42,7 @@ export default function CharlotteRegionNC() {
         title="Land Management in the Charlotte, NC Region | P1"
         description="Clearing, grading, drainage, turf, pond, and property management for qualifying commercial and working sites in greater Charlotte. Call (704) 221-8928."
         jsonLd={[
-          serviceAreaSchema({ areaName: "Charlotte Region, North Carolina", areaType: "AdministrativeArea", description: "P1 Land & Property Management serves commercial, industrial, agricultural, equestrian, municipal, and institutional properties in the Charlotte, NC region. Land clearing, grading, drainage, turf, and pond management. Call (704) 221-8928.", path: "/service-areas/charlotte-north-carolina" }),
+          serviceAreaSchema({ areaName: "Charlotte Region, North Carolina", areaType: "AdministrativeArea", description: "P1 Land & Property Management serves commercial, industrial, agricultural, municipal, and institutional properties in the Charlotte, NC region. Land clearing, grading, drainage, turf, and pond management. Call (704) 221-8928.", path: "/service-areas/charlotte-north-carolina" }),
           breadcrumbSchema([
             { name: "Home", path: "/" },
             { name: "Service Areas", path: "/service-areas" },
@@ -62,7 +62,7 @@ export default function CharlotteRegionNC() {
             </em>
           </>
         }
-        subtitle="P1 provides professional land and property management for commercial, industrial, agricultural, equestrian, municipal, and institutional properties throughout the Charlotte metro and surrounding areas — from land clearing and grading to weekly maintenance and full property reconstruction."
+        subtitle="P1 provides professional land and property management for commercial, industrial, agricultural, municipal, and institutional properties throughout the Charlotte metro and surrounding areas — from land clearing and grading to weekly maintenance and full property reconstruction."
         image={heroImg}
         imageAlt="Land & Property Management in the Charlotte, NC Region"
       />
@@ -163,7 +163,7 @@ export default function CharlotteRegionNC() {
               <div className="md:w-2/5 aspect-[16/9] md:aspect-auto overflow-hidden">
                 <img
                   src={unionCountyImg}
-                  alt="Equestrian pasture and fencing on a horse farm in Union County, NC"
+                  alt="Working pasture and fencing on agricultural land in Union County, NC"
                   loading="lazy"
                   decoding="async"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -173,7 +173,7 @@ export default function CharlotteRegionNC() {
                 <p className="text-primary font-bold uppercase tracking-wider text-xs mb-2">Charlotte Region · NC</p>
                 <h3 className="text-2xl font-serif font-bold text-secondary mb-3">Union County, NC</h3>
                 <p className="text-secondary/80 leading-relaxed mb-6 flex-1">
-                  Horse farms, working land, and fast-growing development from Monroe and Indian Trail to Waxhaw, Marvin, and Weddington — see how P1 serves Union County's large properties.
+                  Working farms, agricultural land, and fast-growing development from Monroe and Indian Trail to Waxhaw, Marvin, and Weddington — see how P1 serves Union County's large properties.
                 </p>
                 <span className="flex items-center gap-2 text-primary font-bold">
                   Explore Union County <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

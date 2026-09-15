@@ -22,7 +22,7 @@ const SERVICES = [
 const FAQS = [
   {
     question: "What is your minimum property size?",
-    answer: "P1 specializes in commercial, industrial, agricultural, equestrian, municipal, and institutional properties 1 acre and larger. We do not provide residential services.",
+    answer: "P1 specializes in commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger. We do not provide residential services.",
   },
   {
     question: "Do you serve both South Carolina and North Carolina?",
@@ -34,7 +34,7 @@ const FAQS = [
   },
   {
     question: "Do you offer ongoing maintenance contracts?",
-    answer: "Yes. We offer weekly, bi-weekly, and monthly maintenance programs for commercial, industrial, agricultural, equestrian, municipal, and institutional properties.",
+    answer: "Yes. We offer weekly, bi-weekly, and monthly maintenance programs for commercial, industrial, agricultural, municipal, and institutional properties.",
   },
   {
     question: "Are you licensed and insured?",
@@ -193,7 +193,6 @@ export default function Contact() {
                         <SelectItem value="commercial">Commercial</SelectItem>
                         <SelectItem value="industrial">Industrial</SelectItem>
                         <SelectItem value="agricultural">Agricultural</SelectItem>
-                        <SelectItem value="equestrian">Equestrian</SelectItem>
                         <SelectItem value="municipal">Municipal</SelectItem>
                         <SelectItem value="institutional">Institutional</SelectItem>
                         <SelectItem value="other">Other</SelectItem>

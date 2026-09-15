@@ -5,7 +5,7 @@ import { SEO } from "@/components/seo";
 import { breadcrumbSchema, faqSchema } from "@/lib/structured-data";
 import { Link } from "wouter";
 import heroImg from "@/assets/hero-service-areas.png";
-import unionCountyImg from "@/assets/features/union-county-equestrian.png";
+import unionCountyImg from "@/assets/features/union-county-agriculture.png";
 import lancasterCountyImg from "@/assets/features/lancaster-sitework.png";
 import yorkCountyImg from "@/assets/features/york-county-lakewylie.png";
 import { MapPin, Map, ArrowRight } from "lucide-react";
@@ -113,7 +113,7 @@ export default function ServiceAreasIndex() {
                 </div>
                 <h2 className="text-3xl font-serif font-bold text-secondary mb-4">Charlotte Region, NC</h2>
                 <p className="text-secondary/80 leading-relaxed mb-8">
-                  Serving commercial and industrial developments, working farms, equestrian operations, municipalities, and institutions throughout the greater Charlotte metropolitan area.
+                  Serving commercial and industrial developments, working farms and agricultural operations, municipalities, and institutions throughout the greater Charlotte metropolitan area.
                 </p>
                 
                 <div className="space-y-3 mb-8">
@@ -153,7 +153,7 @@ export default function ServiceAreasIndex() {
                 <div className="aspect-[16/9] overflow-hidden">
                   <img
                     src={unionCountyImg}
-                    alt="Equestrian pasture and fencing on a horse farm in Union County, NC"
+                    alt="Working pasture and fencing on agricultural land in Union County, NC"
                     loading="lazy"
                     decoding="async"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -163,7 +163,7 @@ export default function ServiceAreasIndex() {
                   <p className="text-primary font-bold uppercase tracking-wider text-xs mb-2">Charlotte Region · NC</p>
                   <h3 className="text-2xl font-serif font-bold text-secondary mb-3">Union County, NC</h3>
                   <p className="text-secondary/80 leading-relaxed mb-6 flex-1">
-                    Horse farms, working land, and fast-growing development from Monroe and Indian Trail to Waxhaw, Marvin, and Weddington.
+                    Working farms, agricultural land, and fast-growing development from Monroe and Indian Trail to Waxhaw, Marvin, and Weddington.
                   </p>
                   <span className="flex items-center gap-2 text-primary font-bold">
                     Explore Union County <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -215,7 +215,7 @@ export default function ServiceAreasIndex() {
                   <p className="text-primary font-bold uppercase tracking-wider text-xs mb-2">Charlotte Metro · SC</p>
                   <h3 className="text-2xl font-serif font-bold text-secondary mb-3">York County, SC</h3>
                   <p className="text-secondary/80 leading-relaxed mb-6 flex-1">
-                    Lake Wylie commercial waterfront sites, I-77 corridor development, and western-county horse farms from Rock Hill and Fort Mill to Clover and York.
+                    Lake Wylie commercial waterfront sites, I-77 corridor development, and western-county working farms from Rock Hill and Fort Mill to Clover and York.
                   </p>
                   <span className="flex items-center gap-2 text-primary font-bold">
                     Explore York County <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

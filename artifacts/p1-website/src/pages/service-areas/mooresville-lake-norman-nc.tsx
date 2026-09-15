@@ -13,7 +13,7 @@ const FAQS = [
   {
     question: "What areas around Lake Norman does P1 serve?",
     answer:
-      "P1 serves the entire Lake Norman region — Mooresville, Davidson, Cornelius, Huntersville, Troutman, Sherrills Ford, and Denver — for commercial, industrial, agricultural, equestrian, municipal, and institutional properties 1 acre and larger.",
+      "P1 serves the entire Lake Norman region — Mooresville, Davidson, Cornelius, Huntersville, Troutman, Sherrills Ford, and Denver — for commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger.",
   },
   {
     question: "Can P1 help with shoreline erosion on Lake Norman properties?",
@@ -28,7 +28,7 @@ const FAQS = [
   {
     question: "What size properties does P1 work on near Lake Norman?",
     answer:
-      "P1 focuses on commercial, industrial, agricultural, equestrian, municipal, and institutional properties 1 acre and larger, bringing the equipment and expertise that sloped, lakeside land demands. P1 does not provide residential services.",
+      "P1 focuses on commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger, bringing the equipment and expertise that sloped, lakeside land demands. P1 does not provide residential services.",
   },
 ];
 
@@ -59,7 +59,7 @@ export default function MooresvilleLakeNormanNC() {
             </em>
           </>
         }
-        subtitle="P1 Land & Property Management serves commercial, industrial, agricultural, equestrian, municipal, and institutional properties in the Mooresville and Lake Norman area. The region's commercial waterfront sites, business campuses, public properties, and working land — combined with the drainage and terrain challenges of sloped, lakeside ground — make it an ideal market for P1's specialized services."
+        subtitle="P1 Land & Property Management serves commercial, industrial, agricultural, municipal, and institutional properties in the Mooresville and Lake Norman area. The region's commercial waterfront sites, business campuses, public properties, and working land — combined with the drainage and terrain challenges of sloped, lakeside ground — make it an ideal market for P1's specialized services."
         image={heroImg}
         imageAlt="Land & Property Management Near Mooresville & Lake Norman, NC"
       />

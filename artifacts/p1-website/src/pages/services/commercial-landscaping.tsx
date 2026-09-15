@@ -78,7 +78,7 @@ export default function CommercialLandscaping() {
               A well-maintained commercial property supports a professional presentation, protects the work already invested in the site and helps your team identify exterior needs early. P1 Land & Property Management helps large properties define and maintain an agreed exterior-work scope.
             </p>
             <p>
-              We work with commercial developers, property managers, business campus operators, industrial facility managers, municipalities, institutions, and agricultural or equestrian operators across both our markets.
+              We work with commercial developers, property managers, business campus operators, industrial facility managers, municipalities, institutions, and agricultural operators across both our markets.
             </p>
           </FeatureRow>
 

@@ -28,7 +28,7 @@ const FAQS = [
   {
     question: "What size properties does P1 work on in Anderson?",
     answer:
-      "P1 focuses on commercial, industrial, agricultural, equestrian, municipal, and institutional properties 1 acre and larger, bringing the equipment and expertise that small-scale landscaping companies can't provide. P1 does not provide residential services.",
+      "P1 focuses on commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger, bringing the equipment and expertise that small-scale landscaping companies can't provide. P1 does not provide residential services.",
   },
 ];
 
@@ -59,7 +59,7 @@ export default function AndersonSC() {
             </em>
           </>
         }
-        subtitle="P1 Land & Property Management provides comprehensive land and property services for commercial, industrial, agricultural, equestrian, municipal, and institutional properties throughout Anderson, SC and Anderson County. Anderson's growing commercial base and strong agricultural heritage make it a natural fit for P1's full-service model — from land clearing and drainage to ongoing agricultural land maintenance and pond management."
+        subtitle="P1 Land & Property Management provides comprehensive land and property services for commercial, industrial, agricultural, municipal, and institutional properties throughout Anderson, SC and Anderson County. Anderson's growing commercial base and strong agricultural heritage make it a natural fit for P1's full-service model — from land clearing and drainage to ongoing agricultural land maintenance and pond management."
         image={heroImg}
         imageAlt="Land Clearing & Property Management in Anderson, SC"
       />
@@ -105,7 +105,7 @@ export default function AndersonSC() {
             </div>
             <div className="space-y-4">
               <h2 className="text-2xl font-serif font-bold text-secondary">From working land to managed sites</h2>
-              <p className="leading-relaxed text-secondary/80">Agricultural and equestrian properties may need pasture access, brush control, pond edges, drainage routes, or reseeding coordinated around animals and ongoing operations. Commercial, municipal, and institutional sites often place more emphasis on traffic flow, public access, appearance, and documented maintenance intervals.</p>
+              <p className="leading-relaxed text-secondary/80">Agricultural properties may need pasture access, brush control, pond edges, drainage routes, or reseeding coordinated around animals and ongoing operations. Commercial, municipal, and institutional sites often place more emphasis on traffic flow, public access, appearance, and documented maintenance intervals.</p>
               <p className="leading-relaxed text-secondary/80">For either setting, defining the problem before equipment arrives reduces rework. Share current plans, known drainage history, access limitations, and the property’s next use when requesting an assessment.</p>
               <p className="leading-relaxed text-secondary/80">A practical first visit also separates immediate corrective work from longer-term maintenance. Standing water, unstable access, overgrowth, eroding banks, or failed turf may be related, but they do not always belong in one phase. P1 can organize the proposed work into a sequence that reflects site priorities and current availability, giving the owner or facility team a clearer basis for budgeting and scheduling. The written estimate—not a generic city-page promise—controls the services, timing, and responsibilities for a specific Anderson County property.</p>
               <p className="leading-relaxed text-secondary/80">Photos of problem areas and notes about when water, access, or vegetation issues appear can make the first conversation more useful and help the site visit focus on the right locations.</p>

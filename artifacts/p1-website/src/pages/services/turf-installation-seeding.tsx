@@ -42,7 +42,7 @@ export default function TurfInstallationSeeding() {
         title="Large-Acreage Turf Installation in SC & NC | P1"
         description="Sod and seed installation for qualifying commercial, industrial, agricultural, municipal, and institutional properties. Call (704) 221-8928."
         jsonLd={[
-          serviceSchema({ name: "Turf Installation & Seeding", description: "Large-acreage sod and seed installation for commercial, industrial, agricultural, equestrian, municipal, and institutional properties. Bermuda, fescue, zoysia, and more. Serving Upstate SC and Charlotte NC. Call (704) 221-8928.", path: "/services/turf-installation-seeding" }),
+          serviceSchema({ name: "Turf Installation & Seeding", description: "Large-acreage sod and seed installation for commercial, industrial, agricultural, municipal, and institutional properties. Bermuda, fescue, zoysia, and more. Serving Upstate SC and Charlotte NC. Call (704) 221-8928.", path: "/services/turf-installation-seeding" }),
           breadcrumbSchema([
             { name: "Home", path: "/" },
             { name: "Services", path: "/services" },

@@ -23,14 +23,14 @@ const FAQS = [
       "Yes. P1 provides land clearing, forestry mulching, fine grading, and site preparation for commercial, industrial, municipal, and institutional development throughout Lancaster County, including drainage and erosion control to get sites build-ready — which matters especially in the fast-developing Indian Land panhandle.",
   },
   {
-    question: "Can P1 maintain horse farms and equestrian properties?",
+    question: "Can P1 maintain working farms and agricultural properties?",
     answer:
-      "Yes. P1 offers pasture management, field reseeding, drainage, ring and paddock grading, selective clearing, and pond maintenance for horse farms and equestrian operations around Van Wyck and northern Lancaster County.",
+      "Yes. P1 offers pasture management, field reseeding, drainage correction, access-road grading, selective clearing, and pond maintenance for working farms and agricultural properties across Lancaster County.",
   },
   {
     question: "What size properties does P1 work on?",
     answer:
-      "P1 focuses on commercial, industrial, agricultural, equestrian, municipal, and institutional properties 1 acre and larger, which lets us bring the right equipment and expertise to large-scale jobs. P1 does not provide residential services.",
+      "P1 focuses on commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger, which lets us bring the right equipment and expertise to large-scale jobs. P1 does not provide residential services.",
   },
 ];
 
@@ -45,7 +45,7 @@ export default function LancasterCountySC() {
             areaName: "Lancaster County, South Carolina",
             areaType: "AdministrativeArea",
             description:
-              "P1 Land & Property Management serves commercial, industrial, agricultural, equestrian, municipal, and institutional properties across Lancaster County, SC. Land clearing, grading, drainage, pasture, turf, and pond management in Indian Land, Van Wyck, Kershaw, Heath Springs, Lancaster & more. Call (704) 221-8928.",
+              "P1 Land & Property Management serves commercial, industrial, agricultural, municipal, and institutional properties across Lancaster County, SC. Land clearing, grading, drainage, pasture, turf, and pond management in Indian Land, Van Wyck, Kershaw, Heath Springs, Lancaster & more. Call (704) 221-8928.",
             path: "/service-areas/lancaster-county-sc",
           }),
           breadcrumbSchema([
@@ -67,7 +67,7 @@ export default function LancasterCountySC() {
             </em>
           </>
         }
-        subtitle="P1 Land & Property Management serves commercial, industrial, agricultural, equestrian, municipal, and institutional properties 1 acre and larger throughout Lancaster County, SC — from the fast-growing Indian Land panhandle and Van Wyck to the City of Lancaster, Kershaw, and Heath Springs. Full-service land management, from land clearing and grading to weekly maintenance and complete property reconstruction."
+        subtitle="P1 Land & Property Management serves commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger throughout Lancaster County, SC — from the fast-growing Indian Land panhandle and Van Wyck to the City of Lancaster, Kershaw, and Heath Springs. Full-service land management, from land clearing and grading to weekly maintenance and complete property reconstruction."
         image={heroImg}
         imageAlt="Land Clearing & Property Management in Lancaster County, SC"
       />
@@ -77,10 +77,10 @@ export default function LancasterCountySC() {
 
           <FeatureRow heading="Your Lancaster County Property Partner" image={featureImg} imageAlt="Large-acreage property management in Lancaster County, SC">
             <p>
-              Lancaster County is one of the fastest-growing counties in the Charlotte region. Its northern panhandle around Indian Land and Van Wyck has seen major commercial, industrial, and institutional development — while the central and southern reaches around Lancaster, Kershaw, and Heath Springs remain defined by working farmland, pasture, timber, and equestrian operations.
+              Lancaster County is one of the fastest-growing counties in the Charlotte region. Its northern panhandle around Indian Land and Van Wyck has seen major commercial, industrial, and institutional development — while the central and southern reaches around Lancaster, Kershaw, and Heath Springs remain defined by working farmland, pasture, and timber.
             </p>
             <p>
-              That combination is exactly what P1 Land & Property Management is built for. Whether you manage a commercial site in Indian Land, a developing tract along the U.S. 521 corridor, an equestrian property near Van Wyck, or working agricultural acreage outside Kershaw, P1 delivers the equipment, expertise, and reliability that large Lancaster County properties demand.
+              That combination is exactly what P1 Land & Property Management is built for. Whether you manage a commercial site in Indian Land, a developing tract along the U.S. 521 corridor, or working agricultural acreage outside Kershaw, P1 delivers the equipment, expertise, and reliability that large Lancaster County properties demand.
             </p>
           </FeatureRow>
 
@@ -92,7 +92,7 @@ export default function LancasterCountySC() {
                   "Land clearing and forestry mulching — lot clearing, right-of-way, and rural acreage",
                   "Fine grading and site preparation for commercial, industrial, municipal, and institutional development",
                   "Drainage planning and scoped French-drain, retention and erosion work",
-                  "Pasture and equestrian property maintenance — fields, paddocks, and riding areas",
+                  "Agricultural property maintenance — pastures, fields, fence lines, and access roads",
                   "Turf installation — sod and large-acreage seeding for Piedmont soils",
                   "Tree services — trimming, removal, and selective clearing",
                   "Pond and waterway management — construction, restoration, and water quality",
@@ -133,13 +133,13 @@ export default function LancasterCountySC() {
           </div>
 
           <div className="bg-muted p-8 rounded-xl border border-border shadow-sm space-y-4">
-            <h2 className="text-2xl font-serif font-bold text-secondary">Equestrian & Agricultural Property Management in Lancaster County</h2>
+            <h2 className="text-2xl font-serif font-bold text-secondary">Agricultural Property Management in Lancaster County</h2>
             <div className="prose prose-lg prose-p:text-secondary/80 max-w-none space-y-4">
               <p>
-                The Waxhaws region straddling the North Carolina line — including Van Wyck and northern Lancaster County — has a strong concentration of horse farms, barns, and equestrian operations, and agriculture remains a genuine part of the county's identity south toward Kershaw and Heath Springs. These properties need commercial-scale care: pasture management and reseeding, drainage across large fenced tracts, footing and grading for rings and paddocks, selective clearing along fence lines, and pond maintenance for livestock and irrigation.
+                Agriculture remains a genuine part of Lancaster County's identity, from Van Wyck and the northern panhandle south toward Kershaw and Heath Springs. Working farms and large agricultural properties need commercial-scale care, including pasture management and reseeding, drainage across large tracts, access-road grading, selective clearing along fence lines, and pond maintenance for livestock and irrigation.
               </p>
               <p>
-                From row crops and hay ground to cattle, poultry, and boarding operations, P1 works with Lancaster County farm and ranch owners on pasture renovation, land clearing, access-road grading, drainage correction, and pond construction — the earthwork and ongoing maintenance that keep working land productive. Our combined expertise in earthmoving and land maintenance makes us a natural fit for the county's agricultural and equestrian landowners.
+                From row crops and hay ground to cattle and poultry operations, P1 works with Lancaster County farm and ranch owners on pasture renovation, land clearing, access-road grading, drainage correction, and pond construction — the earthwork and ongoing maintenance that keep working land productive. Our combined expertise in earthmoving and land maintenance makes us a natural fit for the county's agricultural landowners.
               </p>
             </div>
           </div>
@@ -163,7 +163,7 @@ export default function LancasterCountySC() {
                 We're not a regional franchise or a national chain applying a one-size-fits-all approach to your property. P1 is built for the Carolinas — we understand the red clay soils of the Lancaster County Piedmont, the drainage challenges of the area's rolling terrain and the creek- and river-fed bottomland along the Catawba, the grass and pasture species that thrive here, and the seasonal patterns that drive maintenance needs throughout the year.
               </p>
               <p>
-                From single land-clearing and grading projects to full-service maintenance contracts, P1 gives Lancaster County commercial, industrial, agricultural, equestrian, municipal, and institutional property teams one contractor for the entire life of their land — from initial clearing and reconstruction through ongoing weekly and seasonal care.
+                From single land-clearing and grading projects to full-service maintenance contracts, P1 gives Lancaster County commercial, industrial, agricultural, municipal, and institutional property teams one contractor for the entire life of their land — from initial clearing and reconstruction through ongoing weekly and seasonal care.
               </p>
             </div>
           </div>

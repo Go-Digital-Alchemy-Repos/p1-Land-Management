@@ -43,7 +43,7 @@ export default function ServicesIndex() {
           </div>
           <ServicesGrid />
           <div className="mx-auto mt-16 grid max-w-5xl gap-8 border-t border-border pt-12 md:grid-cols-3">
-            <div><h2 className="text-xl font-bold text-secondary">For qualifying properties</h2><p className="mt-3 leading-relaxed text-secondary/75">P1 serves commercial, industrial, agricultural, equestrian, municipal, and institutional properties of 1 acre or more. Residential work is outside our service model.</p></div>
+            <div><h2 className="text-xl font-bold text-secondary">For qualifying properties</h2><p className="mt-3 leading-relaxed text-secondary/75">P1 serves commercial, industrial, agricultural, municipal, and institutional properties of 1 acre or more. Residential work is outside our service model.</p></div>
             <div><h2 className="text-xl font-bold text-secondary">Scope before mobilization</h2><p className="mt-3 leading-relaxed text-secondary/75">Site conditions, access, proposed work, exclusions, documentation, and any specialist responsibilities are defined before approved work begins.</p></div>
             <div><h2 className="text-xl font-bold text-secondary">Across two regions</h2><p className="mt-3 leading-relaxed text-secondary/75">Service coverage centers on Upstate South Carolina and the greater Charlotte, North Carolina region. Confirm your property and current availability with the P1 team.</p></div>
           </div>

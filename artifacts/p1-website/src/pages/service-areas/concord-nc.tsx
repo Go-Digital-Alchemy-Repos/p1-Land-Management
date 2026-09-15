@@ -23,12 +23,12 @@ const FAQS = [
   {
     question: "Can P1 maintain agricultural and rural land in Cabarrus County?",
     answer:
-      "Yes. P1 works with farm and equestrian operators across Cabarrus County on pasture maintenance, land clearing, access-road grading, drainage correction, and pond management — the earthwork and upkeep that keep working land productive.",
+      "Yes. P1 works with farm operators across Cabarrus County on pasture maintenance, land clearing, access-road grading, drainage correction, and pond management — the earthwork and upkeep that keep working land productive.",
   },
   {
     question: "What size properties does P1 work on in Concord?",
     answer:
-      "P1 focuses on commercial, industrial, agricultural, equestrian, municipal, and institutional properties 1 acre and larger, bringing equipment and expertise that small-scale landscaping companies can't match. P1 does not provide residential services.",
+      "P1 focuses on commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger, bringing equipment and expertise that small-scale landscaping companies can't match. P1 does not provide residential services.",
   },
 ];
 
@@ -59,7 +59,7 @@ export default function ConcordNC() {
             </em>
           </>
         }
-        subtitle="P1 Land & Property Management serves commercial, industrial, agricultural, equestrian, municipal, and institutional properties throughout Concord, NC and Cabarrus County. Concord's growing commercial corridor and surrounding agricultural acreage create strong demand for professional land management at scale — and P1 delivers the full range of services from initial clearing through ongoing maintenance."
+        subtitle="P1 Land & Property Management serves commercial, industrial, agricultural, municipal, and institutional properties throughout Concord, NC and Cabarrus County. Concord's growing commercial corridor and surrounding agricultural acreage create strong demand for professional land management at scale — and P1 delivers the full range of services from initial clearing through ongoing maintenance."
         image={heroImg}
         imageAlt="Land Clearing & Property Management in Concord, NC"
       />

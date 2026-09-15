@@ -923,15 +923,15 @@
       }
     ]
   },
-  "features/union-county-equestrian.png": {
+  "features/union-county-agriculture.png": {
     "sourceBytes": 2301646,
     "sourceHash": "a6aacd0fdd268b2bb5167ab8a298d2384901b255ba3b49917c0e509ad6dad9bc",
     "width": 1280,
     "height": 896,
-    "default": "optimized/features/union-county-equestrian-1280.webp",
+    "default": "optimized/features/union-county-agriculture-1280.webp",
     "variants": [
       {
-        "path": "optimized/features/union-county-equestrian-480.webp",
+        "path": "optimized/features/union-county-agriculture-480.webp",
         "format": "webp",
         "width": 480,
         "height": 336,
@@ -939,7 +939,7 @@
         "quality": 78
       },
       {
-        "path": "optimized/features/union-county-equestrian-768.webp",
+        "path": "optimized/features/union-county-agriculture-768.webp",
         "format": "webp",
         "width": 768,
         "height": 538,
@@ -947,7 +947,7 @@
         "quality": 73
       },
       {
-        "path": "optimized/features/union-county-equestrian-1280.webp",
+        "path": "optimized/features/union-county-agriculture-1280.webp",
         "format": "webp",
         "width": 1280,
         "height": 896,

@@ -41,7 +41,7 @@ export default function Drainage() {
         title="Large-Property Drainage Solutions in SC & NC | P1"
         description="Drainage assessment and scoped work for qualifying Carolina properties, including swales, French drains, grading, and retention systems. Call (704) 221-8928."
         jsonLd={[
-          serviceSchema({ name: "Drainage Solutions", description: "Custom drainage solutions for commercial, industrial, agricultural, equestrian, municipal, and institutional properties. French drains, retention systems, swales, and more. Serving Upstate SC and Charlotte NC. Call (704) 221-8928.", path: "/services/drainage" }),
+          serviceSchema({ name: "Drainage Solutions", description: "Custom drainage solutions for commercial, industrial, agricultural, municipal, and institutional properties. French drains, retention systems, swales, and more. Serving Upstate SC and Charlotte NC. Call (704) 221-8928.", path: "/services/drainage" }),
           breadcrumbSchema([
             { name: "Home", path: "/" },
             { name: "Services", path: "/services" },
