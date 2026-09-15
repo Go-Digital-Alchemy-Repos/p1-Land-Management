@@ -37,9 +37,9 @@ export default function GreenvilleSC() {
     <Layout>
       <SEO 
         title="Land Management in Greenville, SC | P1"
-        description="Land clearing, grading, drainage, turf, and property management for qualifying 1-acre-plus Greenville, SC sites. Call (704) 221-8928."
+        description="Commercial landscaping, grounds maintenance, land clearing, grading & drainage for qualifying 1-acre-plus Greenville, SC sites. Call (704) 221-8928."
         jsonLd={[
-          serviceAreaSchema({ areaName: "Greenville, South Carolina", areaType: "City", description: "Professional land clearing, grading, drainage, turf, and property management in Greenville, SC. Serving commercial, industrial, agricultural, municipal, and institutional properties 1 acre+. Call (704) 221-8928.", path: "/service-areas/greenville-sc" }),
+          serviceAreaSchema({ areaName: "Greenville, South Carolina", areaType: "City", description: "Commercial landscaping, grounds maintenance, land clearing, grading, drainage, and turf services for qualifying Greenville, SC properties 1 acre and larger.", path: "/service-areas/greenville-sc" }),
           breadcrumbSchema([
             { name: "Home", path: "/" },
             { name: "Service Areas", path: "/service-areas" },
@@ -59,7 +59,7 @@ export default function GreenvilleSC() {
             </em>
           </>
         }
-        subtitle="P1 Land & Property Management provides full-service land and property care for commercial, industrial, agricultural, municipal, and institutional properties throughout Greenville, SC and Greenville County. From one-time land clearing and grading projects to ongoing weekly maintenance programs, P1 has the equipment and experience to manage Greenville properties at any scale."
+        subtitle="P1 Land & Property Management provides full-service care for commercial, industrial, agricultural, municipal, and institutional properties throughout Greenville and Greenville County. From ongoing commercial landscaping and grounds maintenance to land clearing, grading, and complete property reconstruction, P1 has the equipment and experience to manage qualifying sites at scale."
         image={heroImg}
         imageAlt="Land Clearing & Property Management in Greenville, SC"
       />
@@ -71,10 +71,10 @@ export default function GreenvilleSC() {
               <h2 className="text-3xl font-serif font-bold text-secondary border-b border-border pb-4">Greenville SC Services</h2>
               <ul className="space-y-3">
                 {[
+                  "Commercial landscaping and grounds maintenance",
                   "Land clearing and forestry mulching",
                   "Fine grading and site preparation",
                   "Drainage installation and correction",
-                  "Commercial grounds maintenance",
                   "Turf installation — sod and seeding",
                   "Tree services",
                   "Pond and waterway management",

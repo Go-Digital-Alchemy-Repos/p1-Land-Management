@@ -11,7 +11,7 @@ export default function ServicesIndex() {
     <Layout>
       <SEO 
         title="Land Management Services in SC & NC | P1"
-        description="Compare P1 land clearing, grading, drainage, turf, tree, pond, reconstruction, and recurring property services for 1-acre-plus sites in SC and NC."
+        description="Commercial landscaping, grounds maintenance, land clearing, grading, drainage, turf, tree, pond & property reconstruction for 1-acre-plus sites in SC & NC."
         jsonLd={breadcrumbSchema([
           { name: "Home", path: "/" },
           { name: "Services", path: "/services" },
@@ -29,7 +29,7 @@ export default function ServicesIndex() {
             </em>
           </>
         }
-        subtitle="From early land clearing to ongoing property maintenance, P1 helps large-acreage operators define and coordinate the work their sites need across the Carolinas."
+        subtitle="From ongoing commercial landscaping and grounds care to land clearing, grading, and complete property reconstruction, P1 helps large-acreage operators coordinate the work their sites need across the Carolinas."
         image={heroImg}
         imageAlt="Heavy equipment on a large property"
       />

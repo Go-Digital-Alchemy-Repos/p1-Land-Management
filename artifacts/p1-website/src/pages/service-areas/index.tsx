@@ -40,7 +40,7 @@ export default function ServiceAreasIndex() {
     <Layout>
       <SEO 
         title="Service Areas | P1 Land & Property Management"
-        description="Explore P1 service areas for 1-acre-plus commercial, industrial, agricultural, municipal, and institutional properties across Upstate SC and Charlotte."
+        description="Commercial landscaping, grounds maintenance, land clearing, grading & drainage for 1-acre-plus sites across Upstate SC and greater Charlotte."
         jsonLd={[
           breadcrumbSchema([
             { name: "Home", path: "/" },
@@ -61,7 +61,7 @@ export default function ServiceAreasIndex() {
             </em>
           </>
         }
-        subtitle="From the Greenville-Spartanburg corridor to the greater Charlotte metro area, we provide full-service land and property management for properties 1 acre and larger."
+        subtitle="Commercial landscaping and grounds maintenance lead our full-service property care for sites 1 acre and larger from the Greenville-Spartanburg corridor to greater Charlotte."
         image={heroImg}
         imageAlt="Heavy equipment clearing land in the Carolinas"
       />
@@ -189,7 +189,7 @@ export default function ServiceAreasIndex() {
                   <p className="text-primary font-bold uppercase tracking-wider text-xs mb-2">Upstate & Midlands · SC</p>
                   <h3 className="text-2xl font-serif font-bold text-secondary mb-3">Lancaster County, SC</h3>
                   <p className="text-secondary/80 leading-relaxed mb-6 flex-1">
-                    From the booming Indian Land panhandle to rural acreage around Kershaw and Heath Springs — clearing, grading, and full property management.
+                    Commercial landscaping and grounds care, plus clearing, grading, and full property management from the Indian Land panhandle to Kershaw and Heath Springs.
                   </p>
                   <span className="flex items-center gap-2 text-primary font-bold">
                     Explore Lancaster County <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

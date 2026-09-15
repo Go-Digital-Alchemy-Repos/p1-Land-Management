@@ -21,7 +21,7 @@ const FAQS = [
   {
     question: "Does P1 handle both one-time projects and ongoing maintenance?",
     answer:
-      "Yes. P1 covers the full life of a property — from initial land clearing, grading, and drainage installation through weekly and seasonal maintenance contracts and complete property reconstruction.",
+      "Yes. P1 covers the full life of a property — from commercial landscaping and grounds maintenance through land clearing, grading, drainage, and complete property reconstruction.",
   },
   {
     question: "Can P1 manage waterfront properties on Lake Norman?",
@@ -40,9 +40,9 @@ export default function CharlotteRegionNC() {
     <Layout>
       <SEO 
         title="Land Management in the Charlotte, NC Region | P1"
-        description="Clearing, grading, drainage, turf, pond, and property management for qualifying commercial and working sites in greater Charlotte. Call (704) 221-8928."
+        description="Commercial landscaping, grounds maintenance, land clearing, grading & drainage for qualifying sites in greater Charlotte. Call (704) 221-8928."
         jsonLd={[
-          serviceAreaSchema({ areaName: "Charlotte Region, North Carolina", areaType: "AdministrativeArea", description: "P1 Land & Property Management serves commercial, industrial, agricultural, municipal, and institutional properties in the Charlotte, NC region. Land clearing, grading, drainage, turf, and pond management. Call (704) 221-8928.", path: "/service-areas/charlotte-north-carolina" }),
+          serviceAreaSchema({ areaName: "Charlotte Region, North Carolina", areaType: "AdministrativeArea", description: "Commercial landscaping, grounds maintenance, land clearing, grading, drainage, turf, tree, pond, and reconstruction services for qualifying properties in greater Charlotte.", path: "/service-areas/charlotte-north-carolina" }),
           breadcrumbSchema([
             { name: "Home", path: "/" },
             { name: "Service Areas", path: "/service-areas" },
@@ -62,7 +62,7 @@ export default function CharlotteRegionNC() {
             </em>
           </>
         }
-        subtitle="P1 provides professional land and property management for commercial, industrial, agricultural, municipal, and institutional properties throughout the Charlotte metro and surrounding areas — from land clearing and grading to weekly maintenance and full property reconstruction."
+        subtitle="P1 provides commercial landscaping and grounds maintenance for commercial, industrial, agricultural, municipal, and institutional properties throughout the Charlotte metro. Connected services include land clearing, grading, drainage, turf, tree, pond, and complete property reconstruction for qualifying sites."
         image={heroImg}
         imageAlt="Land & Property Management in the Charlotte, NC Region"
       />

@@ -44,13 +44,13 @@ export default function YorkCountySC() {
     <Layout>
       <SEO
         title="Land Management in York County, SC | P1"
-        description="Clearing, grading, drainage, turf, pasture, and pond management for qualifying sites across York County, SC. Call (704) 221-8928."
+        description="Commercial landscaping, grounds maintenance, land clearing, grading & drainage for qualifying York County, SC sites. Call (704) 221-8928."
         jsonLd={[
           serviceAreaSchema({
             areaName: "York County, South Carolina",
             areaType: "AdministrativeArea",
             description:
-              "P1 Land & Property Management serves commercial, industrial, agricultural, municipal, and institutional properties across York County, SC. Land clearing, grading, drainage, pasture, turf, and pond management in Rock Hill, Fort Mill, Tega Cay, Lake Wylie, Clover, York & more. Call (704) 221-8928.",
+              "Commercial landscaping, grounds maintenance, agricultural land care, land clearing, grading, drainage, turf, and pond services for qualifying properties across York County, SC.",
             path: "/service-areas/york-county-sc",
           }),
           breadcrumbSchema([
@@ -72,7 +72,7 @@ export default function YorkCountySC() {
             </em>
           </>
         }
-        subtitle="P1 Land & Property Management serves commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger throughout York County, SC — from Rock Hill, Fort Mill, and Tega Cay to Lake Wylie, Clover, York, and the agricultural western county. Full-service land management, from land clearing and grading to weekly maintenance and complete property reconstruction."
+        subtitle="P1 Land & Property Management provides commercial landscaping and grounds maintenance for commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger throughout York County, from Rock Hill, Fort Mill, and Tega Cay to Lake Wylie, Clover, and York. Connected services extend through agricultural land care, clearing, grading, drainage, and complete reconstruction."
         image={heroImg}
         imageAlt="Land Clearing & Property Management in York County, SC"
       />
@@ -94,14 +94,14 @@ export default function YorkCountySC() {
               <h2 className="text-2xl font-serif font-bold text-secondary">Land & Property Management Services Throughout York County</h2>
               <ul className="space-y-3">
                 {[
+                  "Commercial landscaping and exterior grounds maintenance contracts",
+                  "Agricultural property maintenance — pastures, fields, fence lines, and access roads",
                   "Land clearing and forestry mulching — lot clearing, right-of-way, and rural acreage",
                   "Fine grading and site preparation for commercial, industrial, municipal, and institutional development",
                   "Drainage planning and scoped French-drain, retention and erosion work",
-                  "Agricultural property maintenance — pastures, fields, fence lines, and access roads",
                   "Turf installation — sod and large-acreage seeding for Piedmont soils",
                   "Tree services — trimming, removal, and selective clearing",
                   "Pond and waterway management — construction, restoration, and water quality",
-                  "Commercial landscaping and exterior grounds maintenance contracts",
                   "Full property reconstruction",
                 ].map((item, i) => (
                   <li key={i} className="flex items-start gap-3 text-secondary/80 font-medium">
@@ -115,7 +115,7 @@ export default function YorkCountySC() {
             <div className="space-y-6">
               <h2 className="text-2xl font-serif font-bold text-secondary">Communities We Serve in York County</h2>
               <p className="text-secondary/80">
-                P1 provides land clearing, grading, drainage, turf, and property management services throughout York County, SC, including:
+                P1 provides commercial landscaping, grounds maintenance, land clearing, grading, drainage, turf, and property management services throughout York County, SC, including:
               </p>
               <ul className="space-y-3">
                 {[
@@ -178,7 +178,7 @@ export default function YorkCountySC() {
                 We're not a regional franchise or a national chain applying a one-size-fits-all approach to your property. P1 is built for the Carolinas — we understand the red clay soils of the York County Piedmont, the drainage challenges of the area's rolling terrain and the creek- and river-fed bottomland along the Catawba, the grass and pasture species that thrive here, and the seasonal patterns that drive maintenance needs throughout the year.
               </p>
               <p>
-                From single land-clearing and grading projects to full-service maintenance contracts, P1 gives York County commercial, industrial, agricultural, municipal, and institutional property teams one contractor for the entire life of their land — from initial clearing and reconstruction through ongoing weekly and seasonal care.
+                From commercial landscaping and grounds maintenance contracts to land clearing, grading, drainage, and full reconstruction, P1 gives York County property teams one contractor for the full life of their land.
               </p>
             </div>
           </div>
@@ -195,7 +195,7 @@ export default function YorkCountySC() {
       </section>
 
       <aside className="site-shell pb-12 text-lg">
-        <p><Link href="/services" className="text-primary underline">Compare land management services</Link>, review <Link href="/commercial-snow-ice-management" className="text-primary underline">commercial snow and ice management</Link>, or <Link href="/contact" className="text-primary underline">tell us about your property</Link>.</p>
+        <p>Explore <Link href="/services/commercial-landscaping" className="text-primary underline">commercial landscaping</Link>, review <Link href="/commercial-snow-ice-management" className="text-primary underline">commercial snow and ice management</Link>, compare <Link href="/services" className="text-primary underline">all land management services</Link>, or <Link href="/contact" className="text-primary underline">tell us about your property</Link>.</p>
       </aside>
       <FinalCTA />
     </Layout>

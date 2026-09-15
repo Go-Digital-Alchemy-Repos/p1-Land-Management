@@ -18,7 +18,7 @@ const FAQS = [
   {
     question: "Does P1 handle industrial site vegetation management in Gaston County?",
     answer:
-      "Yes. P1 provides land clearing, vegetation management, and ongoing grounds maintenance for industrial facilities and manufacturing sites throughout Gaston County, keeping large properties safe, accessible, and compliant.",
+      "Yes. P1 provides ongoing grounds maintenance, vegetation management, and land clearing for industrial facilities and manufacturing sites throughout Gaston County, keeping large properties safe, accessible, and compliant.",
   },
   {
     question: "Can P1 fix drainage problems on Gastonia properties?",
@@ -37,9 +37,9 @@ export default function GastoniaNC() {
     <Layout>
       <SEO 
         title="Land Management in Gastonia, NC | P1"
-        description="Land clearing, grading, drainage, turf, and property management for qualifying 1-acre-plus sites in Gastonia and Gaston County. Call (704) 221-8928."
+        description="Commercial landscaping, grounds maintenance, land clearing, grading & drainage for 1-acre-plus Gastonia and Gaston County sites. Call (704) 221-8928."
         jsonLd={[
-          serviceAreaSchema({ areaName: "Gastonia, North Carolina", areaType: "City", description: "Professional land clearing, grading, drainage, and property management in Gastonia, NC. Properties 1 acre and larger. Call (704) 221-8928.", path: "/service-areas/gastonia-nc" }),
+          serviceAreaSchema({ areaName: "Gastonia, North Carolina", areaType: "City", description: "Commercial landscaping, grounds maintenance, industrial land care, land clearing, grading, drainage, and turf services for qualifying Gastonia properties.", path: "/service-areas/gastonia-nc" }),
           breadcrumbSchema([
             { name: "Home", path: "/" },
             { name: "Service Areas", path: "/service-areas" },
@@ -59,7 +59,7 @@ export default function GastoniaNC() {
             </em>
           </>
         }
-        subtitle="P1 Land & Property Management provides comprehensive land and property services for commercial, industrial, and agricultural properties throughout Gastonia, NC and Gaston County. Gaston County's mix of industrial properties, agricultural land, and growing commercial development creates consistent demand for professional large-acreage property management — and P1 delivers the full range of services to meet it."
+        subtitle="P1 Land & Property Management provides commercial landscaping and grounds maintenance for commercial, industrial, and agricultural properties throughout Gastonia and Gaston County. Our large-acreage services also include industrial and agricultural land care, land clearing, grading, drainage, turf, tree, and pond management."
         image={heroImg}
         imageAlt="Land Clearing & Property Management in Gastonia, NC"
       />
@@ -71,9 +71,9 @@ export default function GastoniaNC() {
               <h2 className="text-3xl font-serif font-bold text-secondary border-b border-border pb-4">Gastonia NC Services</h2>
               <ul className="space-y-3">
                 {[
-                  "Industrial site land clearing and vegetation management",
-                  "Commercial property maintenance programs",
+                  "Commercial landscaping and grounds maintenance programs",
                   "Agricultural and rural land maintenance",
+                  "Industrial site land clearing and vegetation management",
                   "Land clearing, grading, and drainage installation",
                   "Turf installation and seeding",
                   "Tree services",

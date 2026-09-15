@@ -26,7 +26,7 @@ const FAQS = [
   {
     question: "Does P1 offer both project work and ongoing maintenance in Upstate SC?",
     answer:
-      "Yes. P1 handles one-time projects like land clearing, grading, and drainage installation as well as weekly and seasonal maintenance contracts for commercial campuses, industrial facilities, municipalities, and institutions.",
+      "Yes. P1 handles weekly and seasonal commercial landscaping and grounds maintenance contracts as well as land clearing, grading, and drainage projects for commercial campuses, industrial facilities, municipalities, and institutions.",
   },
   {
     question: "What size properties does P1 work on in Upstate South Carolina?",
@@ -40,9 +40,9 @@ export default function UpstateSC() {
     <Layout>
       <SEO 
         title="Land Management in Upstate South Carolina | P1"
-        description="Clearing, grading, drainage, turf, pond, and property management for qualifying commercial and working sites across Upstate SC. Call (704) 221-8928."
+        description="Commercial landscaping, grounds maintenance, land clearing, grading & drainage for qualifying sites across Upstate SC. Call (704) 221-8928."
         jsonLd={[
-          serviceAreaSchema({ areaName: "Upstate South Carolina", areaType: "AdministrativeArea", description: "P1 Land & Property Management serves commercial, industrial, agricultural, municipal, and institutional properties throughout Upstate South Carolina. Land clearing, grading, drainage, turf, ponds, and more. Call (704) 221-8928.", path: "/service-areas/upstate-south-carolina" }),
+          serviceAreaSchema({ areaName: "Upstate South Carolina", areaType: "AdministrativeArea", description: "Commercial landscaping, grounds maintenance, land clearing, grading, drainage, turf, tree, pond, and reconstruction services for qualifying properties across Upstate South Carolina.", path: "/service-areas/upstate-south-carolina" }),
           breadcrumbSchema([
             { name: "Home", path: "/" },
             { name: "Service Areas", path: "/service-areas" },
@@ -62,7 +62,7 @@ export default function UpstateSC() {
             </em>
           </>
         }
-        subtitle="P1 serves commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger throughout the Greenville-Spartanburg corridor and surrounding Upstate South Carolina counties. Full-service land management — from weekly maintenance to complete property reconstruction."
+        subtitle="Commercial landscaping and grounds maintenance lead P1's full-service care for commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger throughout Upstate South Carolina. Connected services extend through land clearing, grading, drainage, and complete property reconstruction."
         image={heroImg}
         imageAlt="Land & Property Management in Upstate South Carolina"
       />
@@ -164,7 +164,7 @@ export default function UpstateSC() {
                 <p className="text-primary font-bold uppercase tracking-wider text-xs mb-2">Upstate & Midlands · SC</p>
                 <h3 className="text-2xl font-serif font-bold text-secondary mb-3">Lancaster County, SC</h3>
                 <p className="text-secondary/80 leading-relaxed mb-6 flex-1">
-                  From the booming Indian Land panhandle to rural acreage around Kershaw and Heath Springs — clearing, grading, and full property management across Lancaster County.
+                  Commercial landscaping and grounds care, plus clearing, grading, and full property management from the Indian Land panhandle to Kershaw and Heath Springs.
                 </p>
                 <span className="flex items-center gap-2 text-primary font-bold">
                   Explore Lancaster County <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

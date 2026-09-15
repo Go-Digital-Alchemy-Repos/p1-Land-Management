@@ -37,9 +37,9 @@ export default function MooresvilleLakeNormanNC() {
     <Layout>
       <SEO 
         title="Land Management in Mooresville & Lake Norman | P1"
-        description="Clearing, drainage, pond, turf, and property management for qualifying large sites near Mooresville and Lake Norman, NC. Call (704) 221-8928."
+        description="Commercial landscaping, grounds maintenance, land clearing, drainage & pond care for large sites near Mooresville and Lake Norman. Call (704) 221-8928."
         jsonLd={[
-          serviceAreaSchema({ areaName: "Mooresville & Lake Norman, North Carolina", areaType: "City", description: "Full-service land clearing, drainage, pond management, and property maintenance for large properties near Mooresville and Lake Norman, NC. Call (704) 221-8928.", path: "/service-areas/mooresville-lake-norman-nc" }),
+          serviceAreaSchema({ areaName: "Mooresville & Lake Norman, North Carolina", areaType: "City", description: "Commercial landscaping, grounds maintenance, land clearing, grading, drainage, turf, and pond services for qualifying Mooresville and Lake Norman properties.", path: "/service-areas/mooresville-lake-norman-nc" }),
           breadcrumbSchema([
             { name: "Home", path: "/" },
             { name: "Service Areas", path: "/service-areas" },
@@ -59,7 +59,7 @@ export default function MooresvilleLakeNormanNC() {
             </em>
           </>
         }
-        subtitle="P1 Land & Property Management serves commercial, industrial, agricultural, municipal, and institutional properties in the Mooresville and Lake Norman area. The region's commercial waterfront sites, business campuses, public properties, and working land — combined with the drainage and terrain challenges of sloped, lakeside ground — make it an ideal market for P1's specialized services."
+        subtitle="P1 Land & Property Management provides commercial landscaping and grounds maintenance for commercial, industrial, agricultural, municipal, and institutional properties in the Mooresville and Lake Norman area. Our connected services extend through land clearing, grading, drainage, turf, tree, shoreline, and pond care for qualifying sites."
         image={heroImg}
         imageAlt="Land & Property Management Near Mooresville & Lake Norman, NC"
       />
@@ -71,13 +71,13 @@ export default function MooresvilleLakeNormanNC() {
               <h2 className="text-3xl font-serif font-bold text-secondary border-b border-border pb-4">Mooresville & Lake Norman Services</h2>
               <ul className="space-y-3">
                 {[
-                  "Pond and waterway management — including shoreline restoration and water quality maintenance",
-                  "Drainage planning and scoped installation work for sloped and waterfront terrain",
+                  "Commercial landscaping and grounds maintenance",
+                  "Commercial and institutional property maintenance programs",
                   "Land clearing and selective tree management",
                   "Grading and site preparation",
+                  "Drainage planning and scoped installation work for sloped and waterfront terrain",
                   "Large-acreage turf installation and seeding",
-                  "Commercial property maintenance",
-                  "Commercial and institutional property maintenance programs",
+                  "Pond and waterway management — including shoreline restoration and water quality maintenance",
                   "Stormwater and erosion management"
                 ].map((item, i) => (
                   <li key={i} className="flex items-start gap-3 text-secondary/80 font-medium">

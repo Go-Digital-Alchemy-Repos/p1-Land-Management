@@ -37,9 +37,9 @@ export default function ConcordNC() {
     <Layout>
       <SEO 
         title="Land Management in Concord, NC | P1"
-        description="Land clearing, grading, drainage, turf, and property management for qualifying 1-acre-plus sites in Concord and Cabarrus County. Call (704) 221-8928."
+        description="Commercial landscaping, grounds maintenance, land clearing, grading & drainage for 1-acre-plus Concord and Cabarrus County sites. Call (704) 221-8928."
         jsonLd={[
-          serviceAreaSchema({ areaName: "Concord, North Carolina", areaType: "City", description: "Professional land clearing, grading, drainage, and property management in Concord, NC. Properties 1 acre and larger. Call (704) 221-8928.", path: "/service-areas/concord-nc" }),
+          serviceAreaSchema({ areaName: "Concord, North Carolina", areaType: "City", description: "Commercial landscaping, grounds maintenance, land clearing, grading, drainage, and turf services for qualifying Concord and Cabarrus County properties.", path: "/service-areas/concord-nc" }),
           breadcrumbSchema([
             { name: "Home", path: "/" },
             { name: "Service Areas", path: "/service-areas" },
@@ -59,7 +59,7 @@ export default function ConcordNC() {
             </em>
           </>
         }
-        subtitle="P1 Land & Property Management serves commercial, industrial, agricultural, municipal, and institutional properties throughout Concord, NC and Cabarrus County. Concord's growing commercial corridor and surrounding agricultural acreage create strong demand for professional land management at scale — and P1 delivers the full range of services from initial clearing through ongoing maintenance."
+        subtitle="P1 Land & Property Management leads with commercial landscaping and grounds maintenance for commercial, industrial, agricultural, municipal, and institutional properties throughout Concord and Cabarrus County. P1 also coordinates land clearing, grading, drainage, turf, tree, and pond services for qualifying sites at scale."
         image={heroImg}
         imageAlt="Land Clearing & Property Management in Concord, NC"
       />
@@ -71,13 +71,13 @@ export default function ConcordNC() {
               <h2 className="text-3xl font-serif font-bold text-secondary border-b border-border pb-4">Concord NC Services</h2>
               <ul className="space-y-3">
                 {[
+                  "Commercial landscaping and grounds maintenance programs",
+                  "Agricultural and rural land maintenance",
                   "Land clearing and site preparation for commercial development",
                   "Fine grading and drainage installation",
-                  "Agricultural and rural land maintenance",
                   "Turf installation and seeding",
                   "Tree services",
                   "Pond and waterway management",
-                  "Commercial grounds maintenance programs"
                 ].map((item, i) => (
                   <li key={i} className="flex items-start gap-3 text-secondary/80 font-medium">
                     <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />

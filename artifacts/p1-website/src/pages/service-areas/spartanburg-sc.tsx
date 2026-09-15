@@ -18,7 +18,7 @@ const FAQS = [
   {
     question: "Does P1 handle industrial site work along the I-85 corridor?",
     answer:
-      "Yes. Spartanburg County's I-85 corridor is one of the most active industrial markets in the Southeast, and P1 provides land clearing, grading, drainage installation, and ongoing grounds maintenance for manufacturing and distribution facilities throughout the area.",
+      "Yes. Spartanburg County's I-85 corridor is one of the most active industrial markets in the Southeast, and P1 provides ongoing grounds maintenance, land clearing, grading, and drainage work for manufacturing and distribution facilities throughout the area.",
   },
   {
     question: "Can P1 maintain farms and pasture in Spartanburg County?",
@@ -37,9 +37,9 @@ export default function SpartanburgSC() {
     <Layout>
       <SEO 
         title="Land Management in Spartanburg, SC | P1"
-        description="Land clearing, grading, drainage, turf, and property management for qualifying 1-acre-plus Spartanburg, SC sites. Call (704) 221-8928."
+        description="Commercial landscaping, grounds maintenance, land clearing, grading & drainage for qualifying 1-acre-plus Spartanburg, SC sites. Call (704) 221-8928."
         jsonLd={[
-          serviceAreaSchema({ areaName: "Spartanburg, South Carolina", areaType: "City", description: "Full-service land clearing, grading, drainage, and property management in Spartanburg, SC. Properties 1 acre and larger. Call (704) 221-8928.", path: "/service-areas/spartanburg-sc" }),
+          serviceAreaSchema({ areaName: "Spartanburg, South Carolina", areaType: "City", description: "Commercial landscaping, grounds maintenance, land clearing, grading, and drainage services for qualifying Spartanburg, SC properties 1 acre and larger.", path: "/service-areas/spartanburg-sc" }),
           breadcrumbSchema([
             { name: "Home", path: "/" },
             { name: "Service Areas", path: "/service-areas" },
@@ -59,7 +59,7 @@ export default function SpartanburgSC() {
             </em>
           </>
         }
-        subtitle="P1 Land & Property Management serves commercial, industrial, and agricultural properties throughout Spartanburg, SC and Spartanburg County. Our full-service land management programs cover everything from initial land clearing and site preparation through ongoing weekly or monthly maintenance — all with the equipment and crew to handle large-acreage properties that standard contractors can't."
+        subtitle="P1 Land & Property Management serves commercial, industrial, and agricultural properties throughout Spartanburg and Spartanburg County. Our full-service programs begin with commercial landscaping and grounds maintenance, then extend through land clearing, grading, drainage, and complete property reconstruction for qualifying large-acreage sites."
         image={heroImg}
         imageAlt="Land Clearing & Property Management in Spartanburg, SC"
       />
@@ -71,10 +71,11 @@ export default function SpartanburgSC() {
               <h2 className="text-3xl font-serif font-bold text-secondary border-b border-border pb-4">Spartanburg SC Services</h2>
               <ul className="space-y-3">
                 {[
+                  "Commercial landscaping and grounds maintenance",
+                  "Agricultural land maintenance and pasture management",
                   "Land clearing and forestry mulching",
                   "Grading and site preparation for commercial and industrial sites",
                   "Drainage system installation and correction",
-                  "Agricultural land maintenance and pasture management",
                   "Turf installation and large-acreage seeding",
                   "Tree management and clearing",
                   "Pond and waterway management",

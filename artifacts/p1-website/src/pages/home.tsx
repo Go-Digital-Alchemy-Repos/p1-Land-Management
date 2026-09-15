@@ -39,7 +39,7 @@ const FAQS = [
   {
     question: "What does P1 Land & Property Management do?",
     answer:
-      "P1 is a full-service land and property management company. We handle land clearing and forestry mulching, fine grading and site preparation, drainage solutions, turf installation and seeding, tree and brush management, pond and waterway management, commercial landscaping, and complete property reconstruction.",
+      "P1 is a full-service land and property management company. We provide commercial landscaping and grounds maintenance, along with land clearing and forestry mulching, fine grading and site preparation, drainage solutions, turf installation and seeding, tree and brush management, pond and waterway management, and complete property reconstruction.",
   },
   {
     question: "Is there a minimum property size for P1's services?",
@@ -84,7 +84,7 @@ export default function Home() {
     <Layout>
       <SEO
         title="P1 Land & Property Management | Upstate SC & Charlotte NC"
-        description="Grading, drainage, clearing, ponds, and property management for qualifying acreage across Upstate SC and the Charlotte region. Call (704) 221-8928."
+        description="Commercial landscaping & grounds maintenance, plus grading, drainage, clearing & ponds for large commercial & industrial sites in Upstate SC & Charlotte NC."
         jsonLd={[localBusinessSchema(), faqSchema(FAQS)]}
       />
 
@@ -114,7 +114,7 @@ export default function Home() {
               </em>
             </h1>
             <p className="mt-7 max-w-xl text-lg leading-relaxed" style={{ color: "hsl(40 20% 92% / 0.82)" }}>
-              Grading, drainage, clearing and ponds for large properties across Upstate South Carolina and the Charlotte metro. Heavy-equipment professionals for commercial, industrial, agricultural, municipal, and institutional sites.
+              Commercial landscaping and grounds care, plus grading, drainage, clearing and ponds for large properties across Upstate South Carolina and the Charlotte metro. Heavy-equipment professionals for commercial, industrial, agricultural, municipal, and institutional sites.
             </p>
             <div className="mt-9 flex flex-wrap items-center gap-4">
               <Button asChild size="lg" className="group h-12 rounded-[3px] border-0 bg-primary px-7 font-sans text-[15px] font-bold text-primary-foreground hover:bg-primary/90" style={{ boxShadow: "0 18px 40px -14px hsl(206 70% 48%)" }}>

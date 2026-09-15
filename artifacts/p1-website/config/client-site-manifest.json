@@ -6,7 +6,7 @@
     "displayName": "P1 Land & Property Management",
     "source": {
       "repository": "https://github.com/Go-Digital-Alchemy-Repos/p1-Land-Management.git",
-      "revision": "e5584309a85e0f7efea1cec2bd8b3c2e7836d349"
+      "revision": "56acadb837b9277fa0c1fbfa211312eeaecc5822"
     },
     "owners": [
       {
@@ -674,8 +674,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fle7j8x",
-            "label": "Text: Grading, drainage, clearing and ponds for large properties across Upstate South Carolina and th",
+            "path": "f1n115cf",
+            "label": "Text: Commercial landscaping and grounds care, plus grading, drainage, clearing and ponds for large p",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -1451,8 +1451,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f33ix2n",
-            "label": "Text: P1 is a full-service land and property management company. We handle land clearing and forestry",
+            "path": "f1cxbu3b",
+            "label": "Text: P1 is a full-service land and property management company. We provide commercial landscaping an",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -1629,14 +1629,14 @@
         "defaultContent": {
           "fum15fc": "Skip to main content",
           "seoTitle": "P1 Land & Property Management | Upstate SC & Charlotte NC",
-          "seoDescription": "Grading, drainage, clearing, ponds, and property management for qualifying acreage across Upstate SC and the Charlotte region. Call (704) 221-8928.",
+          "seoDescription": "Commercial landscaping & grounds maintenance, plus grading, drainage, clearing & ponds for large commercial & industrial sites in Upstate SC & Charlotte NC.",
           "seoImage": "/opengraph.jpg",
           "f1cebf": "/assets/hero-bg-1280-BGEwVfkG.webp",
           "fzw6d7c": "Heavy equipment shaping large acreage",
           "f11v7ef6": "The Land Specialists",
           "f1awf3gu": "Your first impression",
           "f1owtgu3": "starts at the curb.",
-          "fle7j8x": "Grading, drainage, clearing and ponds for large properties across Upstate South Carolina and the Charlotte metro. Heavy-equipment professionals for commercial, industrial, agricultural, municipal, and institutional sites.",
+          "f1n115cf": "Commercial landscaping and grounds care, plus grading, drainage, clearing and ponds for large properties across Upstate South Carolina and the Charlotte metro. Heavy-equipment professionals for commercial, industrial, agricultural, municipal, and institutional sites.",
           "f1odvf8f": "Get a Free Quote",
           "fmggb4x": "/contact",
           "f1d192in": "Call (704) 221-8928",
@@ -1747,7 +1747,7 @@
           "f2vn0sw": "Common Questions",
           "f1edgxzi": "Frequently asked questions.",
           "f1o2eben": "What does P1 Land & Property Management do?",
-          "f33ix2n": "P1 is a full-service land and property management company. We handle land clearing and forestry mulching, fine grading and site preparation, drainage solutions, turf installation and seeding, tree and brush management, pond and waterway management, commercial landscaping, and complete property reconstruction.",
+          "f1cxbu3b": "P1 is a full-service land and property management company. We provide commercial landscaping and grounds maintenance, along with land clearing and forestry mulching, fine grading and site preparation, drainage solutions, turf installation and seeding, tree and brush management, pond and waterway management, and complete property reconstruction.",
           "f1m254w": "Is there a minimum property size for P1's services?",
           "fehdmhr": "Yes. P1 specializes in properties 1 acre and larger — commercial sites, industrial facilities, agricultural land, municipal grounds, and institutional campuses. We do not provide residential services. That focus lets us bring the heavy equipment and expertise that large properties demand.",
           "f11iczzd": "What areas does P1 Land & Property Management serve?",
@@ -6641,8 +6641,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fayiv1r",
-            "label": "Text: From early land clearing to ongoing property maintenance, P1 helps large-acreage operators defi",
+            "path": "f102oli1",
+            "label": "Text: From ongoing commercial landscaping and grounds care to land clearing, grading, and complete pr",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -7134,13 +7134,13 @@
         "defaultContent": {
           "fum15fc": "Skip to main content",
           "seoTitle": "Land Management Services in SC & NC | P1",
-          "seoDescription": "Compare P1 land clearing, grading, drainage, turf, tree, pond, reconstruction, and recurring property services for 1-acre-plus sites in SC and NC.",
+          "seoDescription": "Commercial landscaping, grounds maintenance, land clearing, grading, drainage, turf, tree, pond & property reconstruction for 1-acre-plus sites in SC & NC.",
           "seoImage": "/opengraph.jpg",
           "fz3he8x": "/assets/services-hero-1280-DWAqudpn.webp",
           "f1cg8l8r": "Heavy equipment on a large property",
           "fhdjdpj": "What We Do",
           "f1238i19": "Your Property Needs",
-          "fayiv1r": "From early land clearing to ongoing property maintenance, P1 helps large-acreage operators define and coordinate the work their sites need across the Carolinas.",
+          "f102oli1": "From ongoing commercial landscaping and grounds care to land clearing, grading, and complete property reconstruction, P1 helps large-acreage operators coordinate the work their sites need across the Carolinas.",
           "f4pru0l": "One property plan, from rough ground to ongoing care",
           "f1e8b8s6": "Large sites rarely have one isolated need. Clearing changes access, grading affects drainage, and drainage determines whether turf and roads hold up. Start with the service that brought you here, then use the connected capabilities below to build a practical scope around the property.",
           "ffzg0ag": "Commercial Landscaping",
@@ -13101,8 +13101,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fha7xdi",
-            "label": "Text: From the Greenville-Spartanburg corridor to the greater Charlotte metro area, we provide full-s",
+            "path": "fajaf51",
+            "label": "Text: Commercial landscaping and grounds maintenance lead our full-service property care for sites 1 ",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -13374,8 +13374,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fawnpds",
-            "label": "Text: From the booming Indian Land panhandle to rural acreage around Kershaw and Heath Springs — clea",
+            "path": "f5kxmuc",
+            "label": "Text: Commercial landscaping and grounds care, plus clearing, grading, and full property management f",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -13636,13 +13636,13 @@
         "defaultContent": {
           "fum15fc": "Skip to main content",
           "seoTitle": "Service Areas | P1 Land & Property Management",
-          "seoDescription": "Explore P1 service areas for 1-acre-plus commercial, industrial, agricultural, municipal, and institutional properties across Upstate SC and Charlotte.",
+          "seoDescription": "Commercial landscaping, grounds maintenance, land clearing, grading & drainage for 1-acre-plus sites across Upstate SC and greater Charlotte.",
           "seoImage": "/opengraph.jpg",
           "flltbvi": "/assets/hero-service-areas-1280-C8Hz91M9.webp",
           "fm75bel": "Heavy equipment clearing land in the Carolinas",
           "fo0rn06": "Where We Work",
           "folrmcb": "Fastest-Growing Markets",
-          "fha7xdi": "From the Greenville-Spartanburg corridor to the greater Charlotte metro area, we provide full-service land and property management for properties 1 acre and larger.",
+          "fajaf51": "Commercial landscaping and grounds maintenance lead our full-service property care for sites 1 acre and larger from the Greenville-Spartanburg corridor to greater Charlotte.",
           "f10ey25k": "Upstate South Carolina",
           "f1xa6kvw": "Serving commercial, industrial, and agricultural properties throughout the Greenville-Spartanburg corridor and surrounding counties.",
           "fqm965m": "→ Upstate SC Regional Overview",
@@ -13681,7 +13681,7 @@
           "faefhh4": "Heavy equipment performing sitework on a development site in Lancaster County, SC",
           "f19rk2kl": "Upstate & Midlands · SC",
           "f52v5tt": "Lancaster County, SC",
-          "fawnpds": "From the booming Indian Land panhandle to rural acreage around Kershaw and Heath Springs — clearing, grading, and full property management.",
+          "f5kxmuc": "Commercial landscaping and grounds care, plus clearing, grading, and full property management from the Indian Land panhandle to Kershaw and Heath Springs.",
           "f1si9r1i": "Explore Lancaster County ",
           "f1qd192h": "/assets/york-county-lakewylie-1280-Bo-5z2xx.webp",
           "fq9r0qa": "Commercial lakeside grounds maintenance near Lake Wylie in York County, SC",
@@ -13799,8 +13799,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1i26nes",
-            "label": "Text: P1 serves commercial, industrial, agricultural, municipal, and institutional properties 1 acre ",
+            "path": "f168khne",
+            "label": "Text: Commercial landscaping and grounds maintenance lead P1's full-service care for commercial, indu",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -14107,8 +14107,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f5j3hcg",
-            "label": "Text: From the booming Indian Land panhandle to rural acreage around Kershaw and Heath Springs — clea",
+            "path": "f5kxmuc",
+            "label": "Text: Commercial landscaping and grounds care, plus clearing, grading, and full property management f",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -14163,8 +14163,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fi9h34e",
-            "label": "Text: Yes. P1 handles one-time projects like land clearing, grading, and drainage installation as wel",
+            "path": "f9eo6wi",
+            "label": "Text: Yes. P1 handles weekly and seasonal commercial landscaping and grounds maintenance contracts as",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -14278,13 +14278,13 @@
         "defaultContent": {
           "fum15fc": "Skip to main content",
           "seoTitle": "Land Management in Upstate South Carolina | P1",
-          "seoDescription": "Clearing, grading, drainage, turf, pond, and property management for qualifying commercial and working sites across Upstate SC. Call (704) 221-8928.",
+          "seoDescription": "Commercial landscaping, grounds maintenance, land clearing, grading & drainage for qualifying sites across Upstate SC. Call (704) 221-8928.",
           "seoImage": "/opengraph.jpg",
           "fke2qno": "/assets/hero-upstate-sc-1280-CiME1G4Z.webp",
           "fojrkgs": "Land & Property Management in Upstate South Carolina",
           "f1juroz5": "Service Area · SC",
           "f10ey25k": "Upstate South Carolina",
-          "f1i26nes": "P1 serves commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger throughout the Greenville-Spartanburg corridor and surrounding Upstate South Carolina counties. Full-service land management — from weekly maintenance to complete property reconstruction.",
+          "f168khne": "Commercial landscaping and grounds maintenance lead P1's full-service care for commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger throughout Upstate South Carolina. Connected services extend through land clearing, grading, drainage, and complete property reconstruction.",
           "fessnno": "Your Upstate SC Property Partner",
           "fwma3f4": "Upstate South Carolina is one of the fastest-growing regions in the Southeast — and with that growth comes increasing demand for professional land and property management at commercial, industrial, and agricultural scale. P1 Land & Property Management has built its operations around serving this market with the full range of services that large properties actually need.",
           "f18p7g9o": "Whether you manage a commercial campus in Greenville, agricultural acreage in Anderson County, an industrial facility near Spartanburg, or a municipal property in the foothills, P1 delivers the expertise, equipment, and reliability your property demands.",
@@ -14328,7 +14328,7 @@
           "faefhh4": "Heavy equipment performing sitework on a development site in Lancaster County, SC",
           "f19rk2kl": "Upstate & Midlands · SC",
           "f52v5tt": "Lancaster County, SC",
-          "f5j3hcg": "From the booming Indian Land panhandle to rural acreage around Kershaw and Heath Springs — clearing, grading, and full property management across Lancaster County.",
+          "f5kxmuc": "Commercial landscaping and grounds care, plus clearing, grading, and full property management from the Indian Land panhandle to Kershaw and Heath Springs.",
           "f1si9r1i": "Explore Lancaster County ",
           "fmsdovc": "Upstate South Carolina Land & Property Management FAQs",
           "f1wshhgo": "Which parts of Upstate South Carolina does P1 serve?",
@@ -14336,7 +14336,7 @@
           "f1afsw4k": "Does P1 work with farms and agricultural land in the Upstate?",
           "fk93j58": "Yes. P1 works with farm operators across the Upstate on pasture maintenance, land clearing, access-road grading, drainage correction, and pond construction and management.",
           "f30mepc": "Does P1 offer both project work and ongoing maintenance in Upstate SC?",
-          "fi9h34e": "Yes. P1 handles one-time projects like land clearing, grading, and drainage installation as well as weekly and seasonal maintenance contracts for commercial campuses, industrial facilities, municipalities, and institutions.",
+          "f9eo6wi": "Yes. P1 handles weekly and seasonal commercial landscaping and grounds maintenance contracts as well as land clearing, grading, and drainage projects for commercial campuses, industrial facilities, municipalities, and institutions.",
           "f1etfwuc": "What size properties does P1 work on in Upstate South Carolina?",
           "ft6mj4u": "P1 focuses on commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger, bringing the equipment and expertise that small-scale landscaping companies can't provide. P1 does not provide residential services.",
           "f1menulx": " to discuss scope and availability.",
@@ -14433,8 +14433,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1ei6b67",
-            "label": "Text: P1 provides professional land and property management for commercial, industrial, agricultural,",
+            "path": "fw2lwc7",
+            "label": "Text: P1 provides commercial landscaping and grounds maintenance for commercial, industrial, agricult",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -14804,8 +14804,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1sa670n",
-            "label": "Text: Yes. P1 covers the full life of a property — from initial land clearing, grading, and drainage ",
+            "path": "ftmwlhw",
+            "label": "Text: Yes. P1 covers the full life of a property — from commercial landscaping and grounds maintenanc",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -14961,13 +14961,13 @@
         "defaultContent": {
           "fum15fc": "Skip to main content",
           "seoTitle": "Land Management in the Charlotte, NC Region | P1",
-          "seoDescription": "Clearing, grading, drainage, turf, pond, and property management for qualifying commercial and working sites in greater Charlotte. Call (704) 221-8928.",
+          "seoDescription": "Commercial landscaping, grounds maintenance, land clearing, grading & drainage for qualifying sites in greater Charlotte. Call (704) 221-8928.",
           "seoImage": "/opengraph.jpg",
           "f1n2ww05": "/assets/hero-charlotte-region-1280-BaySFBdJ.webp",
           "f16wvxq0": "Land & Property Management in the Charlotte, NC Region",
           "f1uwh9f8": "Service Area · NC",
           "fnjcjox": "Charlotte, NC Region",
-          "f1ei6b67": "P1 provides professional land and property management for commercial, industrial, agricultural, municipal, and institutional properties throughout the Charlotte metro and surrounding areas — from land clearing and grading to weekly maintenance and full property reconstruction.",
+          "fw2lwc7": "P1 provides commercial landscaping and grounds maintenance for commercial, industrial, agricultural, municipal, and institutional properties throughout the Charlotte metro. Connected services include land clearing, grading, drainage, turf, tree, pond, and complete property reconstruction for qualifying sites.",
           "fqzl2yw": "Serving the Charlotte Region's Growing Demand for Large-Acreage Property Management",
           "fi8tn26": "The Charlotte, NC region is one of the most rapidly developing markets in the country — and that growth is pushing commercial developers, industrial facilities, agricultural operations, municipalities, and institutions to find contractors who can manage land at the scale and standard these properties require. P1 Land & Property Management is that contractor.",
           "fv1kufj": "From the Mecklenburg County commercial core and Lake Norman business campuses to the working farms of Cabarrus County and the agricultural acreage of Union and Gaston Counties, P1 brings full-service land management to qualifying non-residential properties that require commercial-scale crews and equipment.",
@@ -15020,7 +15020,7 @@
           "f5t0zms": "Which communities in the Charlotte region does P1 serve?",
           "f13j284i": "P1 serves the entire Charlotte metro — Charlotte and Mecklenburg County, Concord and Cabarrus County, Mooresville and Lake Norman, Gastonia and Gaston County, Monroe and Union County, plus Huntersville, Cornelius, Davidson, Matthews, Waxhaw, Kannapolis, and the surrounding communities.",
           "flgsf5b": "Does P1 handle both one-time projects and ongoing maintenance?",
-          "f1sa670n": "Yes. P1 covers the full life of a property — from initial land clearing, grading, and drainage installation through weekly and seasonal maintenance contracts and complete property reconstruction.",
+          "ftmwlhw": "Yes. P1 covers the full life of a property — from commercial landscaping and grounds maintenance through land clearing, grading, drainage, and complete property reconstruction.",
           "f1397hit": "Can P1 manage waterfront properties on Lake Norman?",
           "fs7cdwp": "Yes. P1 provides shoreline maintenance, pond and waterway care, drainage management on sloped terrain, and turf establishment for the large waterfront and rural properties concentrated around Lake Norman.",
           "flyte6r": "What size properties does P1 work on in the Charlotte region?",
@@ -15123,8 +15123,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f14zxpzd",
-            "label": "Text: P1 Land & Property Management provides full-service land and property care for commercial, indu",
+            "path": "f1abwiee",
+            "label": "Text: P1 Land & Property Management provides full-service care for commercial, industrial, agricultur",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -15132,6 +15132,13 @@
           {
             "path": "fgmz3hz",
             "label": "Text: Greenville SC Services",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fvbyhim",
+            "label": "Text: Commercial landscaping and grounds maintenance",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -15153,13 +15160,6 @@
           {
             "path": "f1101xuy",
             "label": "Text: Drainage installation and correction",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f36aga9",
-            "label": "Text: Commercial grounds maintenance",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -15462,18 +15462,18 @@
         "defaultContent": {
           "fum15fc": "Skip to main content",
           "seoTitle": "Land Management in Greenville, SC | P1",
-          "seoDescription": "Land clearing, grading, drainage, turf, and property management for qualifying 1-acre-plus Greenville, SC sites. Call (704) 221-8928.",
+          "seoDescription": "Commercial landscaping, grounds maintenance, land clearing, grading & drainage for qualifying 1-acre-plus Greenville, SC sites. Call (704) 221-8928.",
           "seoImage": "/opengraph.jpg",
           "f397xt7": "/assets/hero-upstate-cities-1280-ISUIoyKw.webp",
           "f14k79ru": "Land Clearing & Property Management in Greenville, SC",
           "f1juroz5": "Service Area · SC",
           "f12ow8o3": "Greenville, SC",
-          "f14zxpzd": "P1 Land & Property Management provides full-service land and property care for commercial, industrial, agricultural, municipal, and institutional properties throughout Greenville, SC and Greenville County. From one-time land clearing and grading projects to ongoing weekly maintenance programs, P1 has the equipment and experience to manage Greenville properties at any scale.",
+          "f1abwiee": "P1 Land & Property Management provides full-service care for commercial, industrial, agricultural, municipal, and institutional properties throughout Greenville and Greenville County. From ongoing commercial landscaping and grounds maintenance to land clearing, grading, and complete property reconstruction, P1 has the equipment and experience to manage qualifying sites at scale.",
           "fgmz3hz": "Greenville SC Services",
+          "fvbyhim": "Commercial landscaping and grounds maintenance",
           "fxm4gre": "Land clearing and forestry mulching",
           "f1dotjd1": "Fine grading and site preparation",
           "f1101xuy": "Drainage installation and correction",
-          "f36aga9": "Commercial grounds maintenance",
           "fhm3b7x": "Turf installation — sod and seeding",
           "f1h96tbw": "Tree services",
           "fh3h93n": "Pond and waterway management",
@@ -15597,7 +15597,7 @@
             "maxLength": 2000
           },
           {
-            "path": "f1w9u2su",
+            "path": "f1ajlxgp",
             "label": "Text: P1 Land & Property Management serves commercial, industrial, and agricultural properties throug",
             "type": "textarea",
             "required": false,
@@ -15606,6 +15606,20 @@
           {
             "path": "f1nwlf4r",
             "label": "Text: Spartanburg SC Services",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fvbyhim",
+            "label": "Text: Commercial landscaping and grounds maintenance",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fhnwam3",
+            "label": "Text: Agricultural land maintenance and pasture management",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -15627,13 +15641,6 @@
           {
             "path": "fgu9l7h",
             "label": "Text: Drainage system installation and correction",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "fhnwam3",
-            "label": "Text: Agricultural land maintenance and pasture management",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -15807,7 +15814,7 @@
             "maxLength": 2000
           },
           {
-            "path": "fiangi0",
+            "path": "fzu5r65",
             "label": "Text: Yes. Spartanburg County's I-85 corridor is one of the most active industrial markets in the Sou",
             "type": "textarea",
             "required": false,
@@ -15936,18 +15943,19 @@
         "defaultContent": {
           "fum15fc": "Skip to main content",
           "seoTitle": "Land Management in Spartanburg, SC | P1",
-          "seoDescription": "Land clearing, grading, drainage, turf, and property management for qualifying 1-acre-plus Spartanburg, SC sites. Call (704) 221-8928.",
+          "seoDescription": "Commercial landscaping, grounds maintenance, land clearing, grading & drainage for qualifying 1-acre-plus Spartanburg, SC sites. Call (704) 221-8928.",
           "seoImage": "/opengraph.jpg",
           "f397xt7": "/assets/hero-upstate-cities-1280-ISUIoyKw.webp",
           "fzyejmc": "Land Clearing & Property Management in Spartanburg, SC",
           "f1juroz5": "Service Area · SC",
           "fpg82mv": "Spartanburg, SC",
-          "f1w9u2su": "P1 Land & Property Management serves commercial, industrial, and agricultural properties throughout Spartanburg, SC and Spartanburg County. Our full-service land management programs cover everything from initial land clearing and site preparation through ongoing weekly or monthly maintenance — all with the equipment and crew to handle large-acreage properties that standard contractors can't.",
+          "f1ajlxgp": "P1 Land & Property Management serves commercial, industrial, and agricultural properties throughout Spartanburg and Spartanburg County. Our full-service programs begin with commercial landscaping and grounds maintenance, then extend through land clearing, grading, drainage, and complete property reconstruction for qualifying large-acreage sites.",
           "f1nwlf4r": "Spartanburg SC Services",
+          "fvbyhim": "Commercial landscaping and grounds maintenance",
+          "fhnwam3": "Agricultural land maintenance and pasture management",
           "fxm4gre": "Land clearing and forestry mulching",
           "f1i6v95g": "Grading and site preparation for commercial and industrial sites",
           "fgu9l7h": "Drainage system installation and correction",
-          "fhnwam3": "Agricultural land maintenance and pasture management",
           "f1e9a2fd": "Turf installation and large-acreage seeding",
           "f8vgq1x": "Tree management and clearing",
           "fh3h93n": "Pond and waterway management",
@@ -15972,7 +15980,7 @@
           "frzjda8": "What areas around Spartanburg does P1 serve?",
           "f16wwx96": "P1 serves Spartanburg and all of Spartanburg County — including Duncan, Inman, Boiling Springs, Landrum, and the I-85 industrial corridor — for properties 1 acre and larger.",
           "f1uwtz6j": "Does P1 handle industrial site work along the I-85 corridor?",
-          "fiangi0": "Yes. Spartanburg County's I-85 corridor is one of the most active industrial markets in the Southeast, and P1 provides land clearing, grading, drainage installation, and ongoing grounds maintenance for manufacturing and distribution facilities throughout the area.",
+          "fzu5r65": "Yes. Spartanburg County's I-85 corridor is one of the most active industrial markets in the Southeast, and P1 provides ongoing grounds maintenance, land clearing, grading, and drainage work for manufacturing and distribution facilities throughout the area.",
           "f15vu95t": "Can P1 maintain farms and pasture in Spartanburg County?",
           "frqi7a5": "Yes. P1 works with farm owners across Spartanburg County on pasture management, field reseeding, land clearing, access-road grading, drainage correction, and pond management.",
           "f1hbcux9": "What size properties does P1 work on in Spartanburg?",
@@ -16071,8 +16079,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1xnb48b",
-            "label": "Text: P1 Land & Property Management provides comprehensive land and property services for commercial,",
+            "path": "f1sklen7",
+            "label": "Text: P1 Land & Property Management provides commercial landscaping and grounds maintenance, plus com",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -16080,6 +16088,13 @@
           {
             "path": "fzlxbck",
             "label": "Text: Anderson SC Services",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fvbyhim",
+            "label": "Text: Commercial landscaping and grounds maintenance",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -16099,13 +16114,6 @@
             "maxLength": 2000
           },
           {
-            "path": "f1dp60lx",
-            "label": "Text: Drainage and waterway management",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
             "path": "f17doexn",
             "label": "Text: Grading for fields, access roads, and construction pads",
             "type": "text",
@@ -16113,8 +16121,8 @@
             "maxLength": 2000
           },
           {
-            "path": "ffkgutn",
-            "label": "Text: Pond management and pond construction",
+            "path": "f1dp60lx",
+            "label": "Text: Drainage and waterway management",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -16127,8 +16135,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f96ok9x",
-            "label": "Text: Commercial grounds management",
+            "path": "ffkgutn",
+            "label": "Text: Pond management and pond construction",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -16403,21 +16411,21 @@
         "defaultContent": {
           "fum15fc": "Skip to main content",
           "seoTitle": "Land Management in Anderson, SC | P1",
-          "seoDescription": "Land clearing, grading, drainage, pond, turf, and property management for qualifying 1-acre-plus sites in Anderson, SC. Call (704) 221-8928.",
+          "seoDescription": "Commercial landscaping, grounds maintenance, land clearing, grading & drainage for qualifying 1-acre-plus Anderson, SC sites. Call (704) 221-8928.",
           "seoImage": "/opengraph.jpg",
           "f397xt7": "/assets/hero-upstate-cities-1280-ISUIoyKw.webp",
           "f15ud7wx": "Land Clearing & Property Management in Anderson, SC",
           "f1juroz5": "Service Area · SC",
           "fz6h4uk": "Anderson, SC",
-          "f1xnb48b": "P1 Land & Property Management provides comprehensive land and property services for commercial, industrial, agricultural, municipal, and institutional properties throughout Anderson, SC and Anderson County. Anderson's growing commercial base and strong agricultural heritage make it a natural fit for P1's full-service model — from land clearing and drainage to ongoing agricultural land maintenance and pond management.",
+          "f1sklen7": "P1 Land & Property Management provides commercial landscaping and grounds maintenance, plus complete land and property services for commercial, industrial, agricultural, municipal, and institutional sites throughout Anderson and Anderson County. Our full-service model extends from ongoing grounds care to land clearing, grading, drainage, and pond management.",
           "fzlxbck": "Anderson SC Services",
+          "fvbyhim": "Commercial landscaping and grounds maintenance",
           "f15orzng": "Agricultural land and pasture maintenance",
           "fxm4gre": "Land clearing and forestry mulching",
-          "f1dp60lx": "Drainage and waterway management",
           "f17doexn": "Grading for fields, access roads, and construction pads",
-          "ffkgutn": "Pond management and pond construction",
+          "f1dp60lx": "Drainage and waterway management",
           "f7ju11z": "Turf and pasture establishment",
-          "f96ok9x": "Commercial grounds management",
+          "ffkgutn": "Pond management and pond construction",
           "f159y5k3": "Property reconstruction",
           "f3quld0": "Call ",
           "fr6htqz": " or ",
@@ -16537,8 +16545,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1ofwdv1",
-            "label": "Text: P1 Land & Property Management serves commercial, industrial, agricultural, municipal, and insti",
+            "path": "fp9dr9k",
+            "label": "Text: P1 Land & Property Management leads with commercial landscaping and grounds maintenance for com",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -16546,6 +16554,20 @@
           {
             "path": "f17r2p99",
             "label": "Text: Concord NC Services",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1sblaiz",
+            "label": "Text: Commercial landscaping and grounds maintenance programs",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1hgb1as",
+            "label": "Text: Agricultural and rural land maintenance",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -16560,13 +16582,6 @@
           {
             "path": "f1lh3c2",
             "label": "Text: Fine grading and drainage installation",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1hgb1as",
-            "label": "Text: Agricultural and rural land maintenance",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -16588,13 +16603,6 @@
           {
             "path": "fh3h93n",
             "label": "Text: Pond and waterway management",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "fk3599u",
-            "label": "Text: Commercial grounds maintenance programs",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -16862,21 +16870,21 @@
         "defaultContent": {
           "fum15fc": "Skip to main content",
           "seoTitle": "Land Management in Concord, NC | P1",
-          "seoDescription": "Land clearing, grading, drainage, turf, and property management for qualifying 1-acre-plus sites in Concord and Cabarrus County. Call (704) 221-8928.",
+          "seoDescription": "Commercial landscaping, grounds maintenance, land clearing, grading & drainage for 1-acre-plus Concord and Cabarrus County sites. Call (704) 221-8928.",
           "seoImage": "/opengraph.jpg",
           "fkelb9o": "/assets/hero-charlotte-metro-1280-BEZot7VN.webp",
           "f1ohdwrs": "Land Clearing & Property Management in Concord, NC",
           "f1uwh9f8": "Service Area · NC",
           "fbzsn0z": "Concord, NC",
-          "f1ofwdv1": "P1 Land & Property Management serves commercial, industrial, agricultural, municipal, and institutional properties throughout Concord, NC and Cabarrus County. Concord's growing commercial corridor and surrounding agricultural acreage create strong demand for professional land management at scale — and P1 delivers the full range of services from initial clearing through ongoing maintenance.",
+          "fp9dr9k": "P1 Land & Property Management leads with commercial landscaping and grounds maintenance for commercial, industrial, agricultural, municipal, and institutional properties throughout Concord and Cabarrus County. P1 also coordinates land clearing, grading, drainage, turf, tree, and pond services for qualifying sites at scale.",
           "f17r2p99": "Concord NC Services",
+          "f1sblaiz": "Commercial landscaping and grounds maintenance programs",
+          "f1hgb1as": "Agricultural and rural land maintenance",
           "f3642nl": "Land clearing and site preparation for commercial development",
           "f1lh3c2": "Fine grading and drainage installation",
-          "f1hgb1as": "Agricultural and rural land maintenance",
           "ftz26wn": "Turf installation and seeding",
           "f1h96tbw": "Tree services",
           "fh3h93n": "Pond and waterway management",
-          "fk3599u": "Commercial grounds maintenance programs",
           "f3quld0": "Call ",
           "fr6htqz": " or ",
           "f1gh9giv": " to discuss your property.",
@@ -16995,8 +17003,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1urpa79",
-            "label": "Text: P1 Land & Property Management serves commercial, industrial, agricultural, municipal, and insti",
+            "path": "f1w7wrk5",
+            "label": "Text: P1 Land & Property Management provides commercial landscaping and grounds maintenance for comme",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -17009,15 +17017,15 @@
             "maxLength": 2000
           },
           {
-            "path": "f1ctvgj",
-            "label": "Text: Pond and waterway management — including shoreline restoration and water quality maintenance",
+            "path": "fvbyhim",
+            "label": "Text: Commercial landscaping and grounds maintenance",
             "type": "text",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "fo1lir8",
-            "label": "Text: Drainage planning and scoped installation work for sloped and waterfront terrain",
+            "path": "f1pvi7b7",
+            "label": "Text: Commercial and institutional property maintenance programs",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -17037,6 +17045,13 @@
             "maxLength": 2000
           },
           {
+            "path": "fo1lir8",
+            "label": "Text: Drainage planning and scoped installation work for sloped and waterfront terrain",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
             "path": "f17fpbd1",
             "label": "Text: Large-acreage turf installation and seeding",
             "type": "text",
@@ -17044,15 +17059,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fznel34",
-            "label": "Text: Commercial property maintenance",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1pvi7b7",
-            "label": "Text: Commercial and institutional property maintenance programs",
+            "path": "f1ctvgj",
+            "label": "Text: Pond and waterway management — including shoreline restoration and water quality maintenance",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -17327,21 +17335,21 @@
         "defaultContent": {
           "fum15fc": "Skip to main content",
           "seoTitle": "Land Management in Mooresville & Lake Norman | P1",
-          "seoDescription": "Clearing, drainage, pond, turf, and property management for qualifying large sites near Mooresville and Lake Norman, NC. Call (704) 221-8928.",
+          "seoDescription": "Commercial landscaping, grounds maintenance, land clearing, drainage & pond care for large sites near Mooresville and Lake Norman. Call (704) 221-8928.",
           "seoImage": "/opengraph.jpg",
           "frouzso": "/assets/hero-lake-norman-1280-B68_HP7r.webp",
           "f1awwezn": "Land & Property Management Near Mooresville & Lake Norman, NC",
           "f1uwh9f8": "Service Area · NC",
           "fnzdoem": "Mooresville & Lake Norman, NC",
-          "f1urpa79": "P1 Land & Property Management serves commercial, industrial, agricultural, municipal, and institutional properties in the Mooresville and Lake Norman area. The region's commercial waterfront sites, business campuses, public properties, and working land — combined with the drainage and terrain challenges of sloped, lakeside ground — make it an ideal market for P1's specialized services.",
+          "f1w7wrk5": "P1 Land & Property Management provides commercial landscaping and grounds maintenance for commercial, industrial, agricultural, municipal, and institutional properties in the Mooresville and Lake Norman area. Our connected services extend through land clearing, grading, drainage, turf, tree, shoreline, and pond care for qualifying sites.",
           "f9gq3if": "Mooresville & Lake Norman Services",
-          "f1ctvgj": "Pond and waterway management — including shoreline restoration and water quality maintenance",
-          "fo1lir8": "Drainage planning and scoped installation work for sloped and waterfront terrain",
+          "fvbyhim": "Commercial landscaping and grounds maintenance",
+          "f1pvi7b7": "Commercial and institutional property maintenance programs",
           "ff5zyc8": "Land clearing and selective tree management",
           "f199ki65": "Grading and site preparation",
+          "fo1lir8": "Drainage planning and scoped installation work for sloped and waterfront terrain",
           "f17fpbd1": "Large-acreage turf installation and seeding",
-          "fznel34": "Commercial property maintenance",
-          "f1pvi7b7": "Commercial and institutional property maintenance programs",
+          "f1ctvgj": "Pond and waterway management — including shoreline restoration and water quality maintenance",
           "f1sl82vz": "Stormwater and erosion management",
           "f1v27pzt": "Lake Norman waterfront properties often face unique land management challenges: erosion on steep slopes, pond and shoreline maintenance, drainage across varied terrain, and turf establishment on challenging soils. P1's combined expertise in earthwork, drainage, and land maintenance makes us the right choice for these demanding sites.",
           "f3quld0": "Call ",
@@ -17461,8 +17469,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fhl229u",
-            "label": "Text: P1 Land & Property Management provides comprehensive land and property services for commercial,",
+            "path": "f1yxm9y2",
+            "label": "Text: P1 Land & Property Management provides commercial landscaping and grounds maintenance for comme",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -17475,15 +17483,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1krgto",
-            "label": "Text: Industrial site land clearing and vegetation management",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f17fgsrh",
-            "label": "Text: Commercial property maintenance programs",
+            "path": "f1sblaiz",
+            "label": "Text: Commercial landscaping and grounds maintenance programs",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -17491,6 +17492,13 @@
           {
             "path": "f1hgb1as",
             "label": "Text: Agricultural and rural land maintenance",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1krgto",
+            "label": "Text: Industrial site land clearing and vegetation management",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -17657,8 +17665,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1oco7kl",
-            "label": "Text: Yes. P1 provides land clearing, vegetation management, and ongoing grounds maintenance for indu",
+            "path": "f1eh2uq9",
+            "label": "Text: Yes. P1 provides ongoing grounds maintenance, vegetation management, and land clearing for indu",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -17786,17 +17794,17 @@
         "defaultContent": {
           "fum15fc": "Skip to main content",
           "seoTitle": "Land Management in Gastonia, NC | P1",
-          "seoDescription": "Land clearing, grading, drainage, turf, and property management for qualifying 1-acre-plus sites in Gastonia and Gaston County. Call (704) 221-8928.",
+          "seoDescription": "Commercial landscaping, grounds maintenance, land clearing, grading & drainage for 1-acre-plus Gastonia and Gaston County sites. Call (704) 221-8928.",
           "seoImage": "/opengraph.jpg",
           "fkelb9o": "/assets/hero-charlotte-metro-1280-BEZot7VN.webp",
           "f1v5ntbu": "Land Clearing & Property Management in Gastonia, NC",
           "f1uwh9f8": "Service Area · NC",
           "f1vq62nz": "Gastonia, NC",
-          "fhl229u": "P1 Land & Property Management provides comprehensive land and property services for commercial, industrial, and agricultural properties throughout Gastonia, NC and Gaston County. Gaston County's mix of industrial properties, agricultural land, and growing commercial development creates consistent demand for professional large-acreage property management — and P1 delivers the full range of services to meet it.",
+          "f1yxm9y2": "P1 Land & Property Management provides commercial landscaping and grounds maintenance for commercial, industrial, and agricultural properties throughout Gastonia and Gaston County. Our large-acreage services also include industrial and agricultural land care, land clearing, grading, drainage, turf, tree, and pond management.",
           "f1og1015": "Gastonia NC Services",
-          "f1krgto": "Industrial site land clearing and vegetation management",
-          "f17fgsrh": "Commercial property maintenance programs",
+          "f1sblaiz": "Commercial landscaping and grounds maintenance programs",
           "f1hgb1as": "Agricultural and rural land maintenance",
+          "f1krgto": "Industrial site land clearing and vegetation management",
           "fe1c502": "Land clearing, grading, and drainage installation",
           "ftz26wn": "Turf installation and seeding",
           "f1h96tbw": "Tree services",
@@ -17820,7 +17828,7 @@
           "f1hwkkv9": "What areas around Gastonia does P1 serve?",
           "f1b0l7ik": "P1 serves Gastonia and all of Gaston County — including Belmont, Mount Holly, Cramerton, Dallas, Bessemer City, Stanley, and Cherryville — for properties 1 acre and larger.",
           "f2o1z9j": "Does P1 handle industrial site vegetation management in Gaston County?",
-          "f1oco7kl": "Yes. P1 provides land clearing, vegetation management, and ongoing grounds maintenance for industrial facilities and manufacturing sites throughout Gaston County, keeping large properties safe, accessible, and compliant.",
+          "f1eh2uq9": "Yes. P1 provides ongoing grounds maintenance, vegetation management, and land clearing for industrial facilities and manufacturing sites throughout Gaston County, keeping large properties safe, accessible, and compliant.",
           "f1110lh0": "Can P1 fix drainage problems on Gastonia properties?",
           "f16bv36y": "Gaston County's red clay soils and rolling terrain can create drainage and erosion challenges. P1 reviews visible site conditions and discusses a scope for French drains, stormwater-related work or erosion control, with engineering, permitting and specialist responsibilities confirmed separately where needed.",
           "f1w8h00": "What size properties does P1 work on in Gastonia?",
@@ -17919,8 +17927,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f9jq4zc",
-            "label": "Text: P1 Land & Property Management serves commercial, industrial, agricultural, municipal, and insti",
+            "path": "fd6uut6",
+            "label": "Text: P1 Land & Property Management provides commercial landscaping and grounds maintenance for comme",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -17968,6 +17976,20 @@
             "maxLength": 2000
           },
           {
+            "path": "fubo3m5",
+            "label": "Text: Commercial landscaping and exterior grounds maintenance contracts",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1dcm0y9",
+            "label": "Text: Agricultural property maintenance — pastures, fields, fence lines, and access roads",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
             "path": "f1f395zv",
             "label": "Text: Land clearing and forestry mulching — lot clearing, right-of-way, and rural acreage",
             "type": "text",
@@ -17984,13 +18006,6 @@
           {
             "path": "f13kyl3b",
             "label": "Text: Drainage planning and scoped French-drain, retention and erosion work",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1dcm0y9",
-            "label": "Text: Agricultural property maintenance — pastures, fields, fence lines, and access roads",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -18017,13 +18032,6 @@
             "maxLength": 2000
           },
           {
-            "path": "fubo3m5",
-            "label": "Text: Commercial landscaping and exterior grounds maintenance contracts",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
             "path": "fue3vu",
             "label": "Text: Full property reconstruction",
             "type": "text",
@@ -18038,8 +18046,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f10xreb2",
-            "label": "Text: P1 provides land clearing, grading, drainage, turf, and property management services throughout",
+            "path": "fxfpnk3",
+            "label": "Text: P1 provides commercial landscaping, grounds maintenance, land clearing, grading, drainage, turf",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -18157,8 +18165,8 @@
             "maxLength": 12000
           },
           {
-            "path": "f1wihyza",
-            "label": "Text: From single land-clearing and grading projects to full-service maintenance contracts, P1 gives ",
+            "path": "fenc0fq",
+            "label": "Text: From commercial landscaping and grounds maintenance contracts to land clearing, grading, draina",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -18276,8 +18284,22 @@
             "maxLength": 2000
           },
           {
+            "path": "funnpw9",
+            "label": "Text: Explore",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
             "path": "f1xhvh0c",
             "label": "Text: , review",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f192856l",
+            "label": "Text: , compare",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -18297,15 +18319,15 @@
             "maxLength": 2000
           },
           {
-            "path": "f1gklu8p",
-            "label": "Text: Compare land management services",
+            "path": "f1g8kt14",
+            "label": "Text: commercial landscaping",
             "type": "text",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "f958gr",
-            "label": "Link: /services",
+            "path": "fwwr8hd",
+            "label": "Link: /services/commercial-landscaping",
             "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
@@ -18320,6 +18342,20 @@
           {
             "path": "f4hmc0n",
             "label": "Link: /commercial-snow-ice-management",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1xe2x25",
+            "label": "Text: all land management services",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f958gr",
+            "label": "Link: /services",
             "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
@@ -18398,30 +18434,30 @@
         "defaultContent": {
           "fum15fc": "Skip to main content",
           "seoTitle": "Land Management in Union County, NC | P1",
-          "seoDescription": "Clearing, grading, drainage, pasture, turf, and pond management for qualifying sites across Union County, NC. Call (704) 221-8928.",
+          "seoDescription": "Commercial landscaping, grounds maintenance, land clearing, grading & drainage for qualifying Union County, NC sites. Call (704) 221-8928.",
           "seoImage": "/opengraph.jpg",
           "fkvmh6x": "/assets/hero-union-county-1280-DcQBPkHY.webp",
           "f1gnbzn9": "Land Clearing & Property Management in Union County, NC",
           "f1uwh9f8": "Service Area · NC",
           "ffmbbeg": "Union County, NC",
-          "f9jq4zc": "P1 Land & Property Management serves commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger throughout Union County, NC — from Monroe and Indian Trail to Waxhaw, Weddington, and the agricultural acreage in between. Full-service land management, from land clearing and grading to weekly maintenance and complete property reconstruction.",
+          "fd6uut6": "P1 Land & Property Management provides commercial landscaping and grounds maintenance for commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger throughout Union County, from Monroe and Indian Trail to Waxhaw and Weddington. Connected services extend through agricultural land care, clearing, grading, drainage, and complete reconstruction.",
           "f3z7km9": "Your Union County Property Partner",
           "fb7pafj": "Union County is one of the fastest-growing counties in North Carolina. Growth is reshaping the land through new commercial corridors, industrial sites, public facilities, and institutional campuses around Indian Trail, Stallings, and Monroe, while the county's western and southern reaches remain defined by working farms, pasture, and rural acreage.",
           "fapa439": "That combination is exactly what P1 Land & Property Management is built for. Whether you manage a commercial site in Monroe, a developing tract in Indian Trail, or working agricultural acreage in Unionville, P1 delivers the equipment, expertise, and reliability that large Union County properties demand.",
           "ftnd3kv": "/assets/union-county-agriculture-1280-BaEgPKeV.webp",
           "f18cdl5h": "Large-acreage property management in Union County, NC",
           "f1f2wik3": "Land & Property Management Services Throughout Union County",
+          "fubo3m5": "Commercial landscaping and exterior grounds maintenance contracts",
+          "f1dcm0y9": "Agricultural property maintenance — pastures, fields, fence lines, and access roads",
           "f1f395zv": "Land clearing and forestry mulching — lot clearing, right-of-way, and rural acreage",
           "fh2at8o": "Fine grading and site preparation for commercial, industrial, municipal, and institutional development",
           "f13kyl3b": "Drainage planning and scoped French-drain, retention and erosion work",
-          "f1dcm0y9": "Agricultural property maintenance — pastures, fields, fence lines, and access roads",
           "fauliv8": "Turf installation — sod and large-acreage seeding for Piedmont soils",
           "f1t0vehh": "Tree services — trimming, removal, and selective clearing",
           "f17a0987": "Pond and waterway management — construction, restoration, and water quality",
-          "fubo3m5": "Commercial landscaping and exterior grounds maintenance contracts",
           "fue3vu": "Full property reconstruction",
           "f1vdc1hu": "Communities We Serve in Union County",
-          "f10xreb2": "P1 provides land clearing, grading, drainage, turf, and property management services throughout Union County, NC, including:",
+          "fxfpnk3": "P1 provides commercial landscaping, grounds maintenance, land clearing, grading, drainage, turf, and property management services throughout Union County, NC, including:",
           "fqcjm1i": "Monroe — the county seat and commercial hub",
           "f1lzzay5": "Indian Trail and Stallings",
           "f1ipw956": "Waxhaw and Marvin",
@@ -18438,7 +18474,7 @@
           "fakvels": "For commercial property managers, developers, industrial facilities, municipalities, and institutions, P1 also offers ongoing grounds maintenance programs that keep sites presentable and compliant year-round, long after the initial site work is complete.",
           "f1nxlyv8": "Why Union County Property Teams Choose P1",
           "f1qdds4l": "We're not a regional franchise or a national chain applying a one-size-fits-all approach to your property. P1 is built for the Carolinas — we understand the red clay soils of the Union County Piedmont, the drainage challenges of the area's rolling terrain and creek-fed bottomland, the grass and pasture species that thrive here, and the seasonal patterns that drive maintenance needs throughout the year.",
-          "f1wihyza": "From single land-clearing and grading projects to full-service maintenance contracts, P1 gives Union County commercial, industrial, agricultural, municipal, and institutional property teams one contractor for the entire life of their land — from initial clearing and reconstruction through ongoing weekly and seasonal care.",
+          "fenc0fq": "From commercial landscaping and grounds maintenance contracts to land clearing, grading, drainage, and full reconstruction, P1 gives Union County property teams one contractor for the full life of their land.",
           "f1jbnly0": "Union County, NC Land & Property Management FAQs",
           "f1qf4lg0": "What areas of Union County does P1 serve?",
           "f1mps3f7": "P1 serves the entire county — Monroe, Indian Trail, Stallings, Waxhaw, Marvin, Weddington, Wesley Chapel, Mineral Springs, Wingate, Unionville, Fairview, Marshville, and the surrounding rural areas — for properties 1 acre and larger.",
@@ -18455,13 +18491,17 @@
           "f9spy6u": "tel:7042218928",
           "fatly8t": "request a free estimate online",
           "fmggb4x": "/contact",
+          "funnpw9": "Explore ",
           "f1xhvh0c": ", review ",
+          "f192856l": ", compare ",
           "fn4kqbr": ", or ",
           "f1u810sm": ".",
-          "f1gklu8p": "Compare land management services",
-          "f958gr": "/services",
+          "f1g8kt14": "commercial landscaping",
+          "fwwr8hd": "/services/commercial-landscaping",
           "f1xazi9y": "commercial snow and ice management",
           "f4hmc0n": "/commercial-snow-ice-management",
+          "f1xe2x25": "all land management services",
+          "f958gr": "/services",
           "f1th3tkk": "tell us about your property",
           "f1u1km71": "/assets/fine-grading-1280-CWwHPN9f.webp",
           "f5dus4q": "Start the Conversation",
@@ -18553,8 +18593,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1x6hy3o",
-            "label": "Text: P1 Land & Property Management serves commercial, industrial, agricultural, municipal, and insti",
+            "path": "f3jdm4p",
+            "label": "Text: P1 Land & Property Management provides commercial landscaping and grounds maintenance for comme",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -18602,6 +18642,20 @@
             "maxLength": 2000
           },
           {
+            "path": "fubo3m5",
+            "label": "Text: Commercial landscaping and exterior grounds maintenance contracts",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1dcm0y9",
+            "label": "Text: Agricultural property maintenance — pastures, fields, fence lines, and access roads",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
             "path": "f1f395zv",
             "label": "Text: Land clearing and forestry mulching — lot clearing, right-of-way, and rural acreage",
             "type": "text",
@@ -18618,13 +18672,6 @@
           {
             "path": "f13kyl3b",
             "label": "Text: Drainage planning and scoped French-drain, retention and erosion work",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1dcm0y9",
-            "label": "Text: Agricultural property maintenance — pastures, fields, fence lines, and access roads",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -18651,13 +18698,6 @@
             "maxLength": 2000
           },
           {
-            "path": "fubo3m5",
-            "label": "Text: Commercial landscaping and exterior grounds maintenance contracts",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
             "path": "fue3vu",
             "label": "Text: Full property reconstruction",
             "type": "text",
@@ -18672,8 +18712,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fl2tawf",
-            "label": "Text: P1 provides land clearing, grading, drainage, turf, and property management services throughout",
+            "path": "fgce1wm",
+            "label": "Text: P1 provides commercial landscaping, grounds maintenance, land clearing, grading, drainage, turf",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -18791,8 +18831,8 @@
             "maxLength": 12000
           },
           {
-            "path": "f1x0ur8q",
-            "label": "Text: From single land-clearing and grading projects to full-service maintenance contracts, P1 gives ",
+            "path": "f1jgq1di",
+            "label": "Text: From commercial landscaping and grounds maintenance contracts to land clearing, grading, draina",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -18910,8 +18950,22 @@
             "maxLength": 2000
           },
           {
+            "path": "funnpw9",
+            "label": "Text: Explore",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
             "path": "f1xhvh0c",
             "label": "Text: , review",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f192856l",
+            "label": "Text: , compare",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -18931,15 +18985,15 @@
             "maxLength": 2000
           },
           {
-            "path": "f1gklu8p",
-            "label": "Text: Compare land management services",
+            "path": "f1g8kt14",
+            "label": "Text: commercial landscaping",
             "type": "text",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "f958gr",
-            "label": "Link: /services",
+            "path": "fwwr8hd",
+            "label": "Link: /services/commercial-landscaping",
             "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
@@ -18954,6 +19008,20 @@
           {
             "path": "f4hmc0n",
             "label": "Link: /commercial-snow-ice-management",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1xe2x25",
+            "label": "Text: all land management services",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f958gr",
+            "label": "Link: /services",
             "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
@@ -19032,30 +19100,30 @@
         "defaultContent": {
           "fum15fc": "Skip to main content",
           "seoTitle": "Land Management in Lancaster County, SC | P1",
-          "seoDescription": "Clearing, grading, drainage, pasture, turf, and pond management for qualifying Lancaster County, SC properties. Call (704) 221-8928.",
+          "seoDescription": "Commercial landscaping, grounds maintenance, land clearing, grading & drainage for qualifying Lancaster County, SC sites. Call (704) 221-8928.",
           "seoImage": "/opengraph.jpg",
           "fqz5n0y": "/assets/hero-lancaster-county-1280-CLa-3Z69.webp",
           "fu4rdao": "Land Clearing & Property Management in Lancaster County, SC",
           "f1juroz5": "Service Area · SC",
           "f52v5tt": "Lancaster County, SC",
-          "f1x6hy3o": "P1 Land & Property Management serves commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger throughout Lancaster County, SC — from the fast-growing Indian Land panhandle and Van Wyck to the City of Lancaster, Kershaw, and Heath Springs. Full-service land management, from land clearing and grading to weekly maintenance and complete property reconstruction.",
+          "f3jdm4p": "P1 Land & Property Management provides commercial landscaping and grounds maintenance for commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger throughout Lancaster County, from Indian Land and Van Wyck to Lancaster, Kershaw, and Heath Springs. Connected services extend through agricultural land care, clearing, grading, drainage, and complete reconstruction.",
           "f1kwtjsx": "Your Lancaster County Property Partner",
           "f1dso5sw": "Lancaster County is one of the fastest-growing counties in the Charlotte region. Its northern panhandle around Indian Land and Van Wyck has seen major commercial, industrial, and institutional development — while the central and southern reaches around Lancaster, Kershaw, and Heath Springs remain defined by working farmland, pasture, and timber.",
           "fn2ktjj": "That combination is exactly what P1 Land & Property Management is built for. Whether you manage a commercial site in Indian Land, a developing tract along the U.S. 521 corridor, or working agricultural acreage outside Kershaw, P1 delivers the equipment, expertise, and reliability that large Lancaster County properties demand.",
           "fg451en": "/assets/lancaster-sitework-1280-C9JrSHFJ.webp",
           "fm8qofk": "Large-acreage property management in Lancaster County, SC",
           "f1yq7cv": "Land & Property Management Services Throughout Lancaster County",
+          "fubo3m5": "Commercial landscaping and exterior grounds maintenance contracts",
+          "f1dcm0y9": "Agricultural property maintenance — pastures, fields, fence lines, and access roads",
           "f1f395zv": "Land clearing and forestry mulching — lot clearing, right-of-way, and rural acreage",
           "fh2at8o": "Fine grading and site preparation for commercial, industrial, municipal, and institutional development",
           "f13kyl3b": "Drainage planning and scoped French-drain, retention and erosion work",
-          "f1dcm0y9": "Agricultural property maintenance — pastures, fields, fence lines, and access roads",
           "fauliv8": "Turf installation — sod and large-acreage seeding for Piedmont soils",
           "f1t0vehh": "Tree services — trimming, removal, and selective clearing",
           "f17a0987": "Pond and waterway management — construction, restoration, and water quality",
-          "fubo3m5": "Commercial landscaping and exterior grounds maintenance contracts",
           "fue3vu": "Full property reconstruction",
           "f153tqpe": "Communities We Serve in Lancaster County",
-          "fl2tawf": "P1 provides land clearing, grading, drainage, turf, and property management services throughout Lancaster County, SC, including:",
+          "fgce1wm": "P1 provides commercial landscaping, grounds maintenance, land clearing, grading, drainage, turf, and property management services throughout Lancaster County, SC, including:",
           "fctux2m": "Indian Land — the county's fastest-growing community",
           "fyqt6dy": "Van Wyck and the panhandle",
           "f7g8qfv": "Lancaster — the county seat",
@@ -19072,7 +19140,7 @@
           "fakvels": "For commercial property managers, developers, industrial facilities, municipalities, and institutions, P1 also offers ongoing grounds maintenance programs that keep sites presentable and compliant year-round, long after the initial site work is complete.",
           "f69chl0": "Why Lancaster County Property Teams Choose P1",
           "f1dbv4hn": "We're not a regional franchise or a national chain applying a one-size-fits-all approach to your property. P1 is built for the Carolinas — we understand the red clay soils of the Lancaster County Piedmont, the drainage challenges of the area's rolling terrain and the creek- and river-fed bottomland along the Catawba, the grass and pasture species that thrive here, and the seasonal patterns that drive maintenance needs throughout the year.",
-          "f1x0ur8q": "From single land-clearing and grading projects to full-service maintenance contracts, P1 gives Lancaster County commercial, industrial, agricultural, municipal, and institutional property teams one contractor for the entire life of their land — from initial clearing and reconstruction through ongoing weekly and seasonal care.",
+          "f1jgq1di": "From commercial landscaping and grounds maintenance contracts to land clearing, grading, drainage, and full reconstruction, P1 gives Lancaster County property teams one contractor for the full life of their land.",
           "f4niz3h": "Lancaster County, SC Land & Property Management FAQs",
           "f1f42nj0": "What areas of Lancaster County does P1 serve?",
           "f1so8su6": "P1 serves the entire county — Indian Land, Van Wyck, Lancaster, Kershaw, Heath Springs, and the surrounding rural areas — for properties 1 acre and larger.",
@@ -19089,13 +19157,17 @@
           "f9spy6u": "tel:7042218928",
           "fatly8t": "request a free estimate online",
           "fmggb4x": "/contact",
+          "funnpw9": "Explore ",
           "f1xhvh0c": ", review ",
+          "f192856l": ", compare ",
           "fn4kqbr": ", or ",
           "f1u810sm": ".",
-          "f1gklu8p": "Compare land management services",
-          "f958gr": "/services",
+          "f1g8kt14": "commercial landscaping",
+          "fwwr8hd": "/services/commercial-landscaping",
           "f1xazi9y": "commercial snow and ice management",
           "f4hmc0n": "/commercial-snow-ice-management",
+          "f1xe2x25": "all land management services",
+          "f958gr": "/services",
           "f1th3tkk": "tell us about your property",
           "f1u1km71": "/assets/fine-grading-1280-CWwHPN9f.webp",
           "f5dus4q": "Start the Conversation",
@@ -19187,8 +19259,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fw8q7mo",
-            "label": "Text: P1 Land & Property Management serves commercial, industrial, agricultural, municipal, and insti",
+            "path": "f3c3jpe",
+            "label": "Text: P1 Land & Property Management provides commercial landscaping and grounds maintenance for comme",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -19236,6 +19308,20 @@
             "maxLength": 2000
           },
           {
+            "path": "fubo3m5",
+            "label": "Text: Commercial landscaping and exterior grounds maintenance contracts",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1dcm0y9",
+            "label": "Text: Agricultural property maintenance — pastures, fields, fence lines, and access roads",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
             "path": "f1f395zv",
             "label": "Text: Land clearing and forestry mulching — lot clearing, right-of-way, and rural acreage",
             "type": "text",
@@ -19252,13 +19338,6 @@
           {
             "path": "f13kyl3b",
             "label": "Text: Drainage planning and scoped French-drain, retention and erosion work",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1dcm0y9",
-            "label": "Text: Agricultural property maintenance — pastures, fields, fence lines, and access roads",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -19285,13 +19364,6 @@
             "maxLength": 2000
           },
           {
-            "path": "fubo3m5",
-            "label": "Text: Commercial landscaping and exterior grounds maintenance contracts",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
             "path": "fue3vu",
             "label": "Text: Full property reconstruction",
             "type": "text",
@@ -19306,8 +19378,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1q34271",
-            "label": "Text: P1 provides land clearing, grading, drainage, turf, and property management services throughout",
+            "path": "f1bvh3i",
+            "label": "Text: P1 provides commercial landscaping, grounds maintenance, land clearing, grading, drainage, turf",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -19446,8 +19518,8 @@
             "maxLength": 12000
           },
           {
-            "path": "ftx4wfw",
-            "label": "Text: From single land-clearing and grading projects to full-service maintenance contracts, P1 gives ",
+            "path": "f1pq47r2",
+            "label": "Text: From commercial landscaping and grounds maintenance contracts to land clearing, grading, draina",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -19579,8 +19651,22 @@
             "maxLength": 2000
           },
           {
+            "path": "funnpw9",
+            "label": "Text: Explore",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
             "path": "f1xhvh0c",
             "label": "Text: , review",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f192856l",
+            "label": "Text: , compare",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -19600,15 +19686,15 @@
             "maxLength": 2000
           },
           {
-            "path": "f1gklu8p",
-            "label": "Text: Compare land management services",
+            "path": "f1g8kt14",
+            "label": "Text: commercial landscaping",
             "type": "text",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "f958gr",
-            "label": "Link: /services",
+            "path": "fwwr8hd",
+            "label": "Link: /services/commercial-landscaping",
             "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
@@ -19623,6 +19709,20 @@
           {
             "path": "f4hmc0n",
             "label": "Link: /commercial-snow-ice-management",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1xe2x25",
+            "label": "Text: all land management services",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f958gr",
+            "label": "Link: /services",
             "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
@@ -19701,30 +19801,30 @@
         "defaultContent": {
           "fum15fc": "Skip to main content",
           "seoTitle": "Land Management in York County, SC | P1",
-          "seoDescription": "Clearing, grading, drainage, turf, pasture, and pond management for qualifying sites across York County, SC. Call (704) 221-8928.",
+          "seoDescription": "Commercial landscaping, grounds maintenance, land clearing, grading & drainage for qualifying York County, SC sites. Call (704) 221-8928.",
           "seoImage": "/opengraph.jpg",
           "fithrko": "/assets/hero-york-county-1280-B0LHoNzr.webp",
           "f173qi6i": "Land Clearing & Property Management in York County, SC",
           "f1juroz5": "Service Area · SC",
           "fhxfs0p": "York County, SC",
-          "fw8q7mo": "P1 Land & Property Management serves commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger throughout York County, SC — from Rock Hill, Fort Mill, and Tega Cay to Lake Wylie, Clover, York, and the agricultural western county. Full-service land management, from land clearing and grading to weekly maintenance and complete property reconstruction.",
+          "f3c3jpe": "P1 Land & Property Management provides commercial landscaping and grounds maintenance for commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger throughout York County, from Rock Hill, Fort Mill, and Tega Cay to Lake Wylie, Clover, and York. Connected services extend through agricultural land care, clearing, grading, drainage, and complete reconstruction.",
           "f1exwt7z": "Your York County Property Partner",
           "f9o495x": "York County is one of South Carolina's fastest-growing counties and the seventh-most populous in the state. Its eastern side along the I-77 corridor — Fort Mill, Tega Cay, Rock Hill, and Lake Wylie — has become one of the region's most active commercial and industrial markets, drawing corporate relocations and major public investment across the state line from Charlotte. Meanwhile, the western half around York, Clover, Sharon, Hickory Grove, and McConnells retains its agricultural character, with working farmland, pasture, and timber stretching between the Catawba and Broad Rivers.",
           "f6hyunu": "That combination is exactly what P1 Land & Property Management is built for. Whether you manage a commercial site in Rock Hill, a developing tract near Fort Mill, a waterfront commercial property on Lake Wylie, or working agricultural acreage outside York, P1 delivers the equipment, expertise, and reliability that large York County properties demand.",
           "f1qd192h": "/assets/york-county-lakewylie-1280-Bo-5z2xx.webp",
           "f6udc65": "Commercial lakeside property maintenance near Lake Wylie in York County, SC",
           "ftgf093": "Land & Property Management Services Throughout York County",
+          "fubo3m5": "Commercial landscaping and exterior grounds maintenance contracts",
+          "f1dcm0y9": "Agricultural property maintenance — pastures, fields, fence lines, and access roads",
           "f1f395zv": "Land clearing and forestry mulching — lot clearing, right-of-way, and rural acreage",
           "fh2at8o": "Fine grading and site preparation for commercial, industrial, municipal, and institutional development",
           "f13kyl3b": "Drainage planning and scoped French-drain, retention and erosion work",
-          "f1dcm0y9": "Agricultural property maintenance — pastures, fields, fence lines, and access roads",
           "fauliv8": "Turf installation — sod and large-acreage seeding for Piedmont soils",
           "f1t0vehh": "Tree services — trimming, removal, and selective clearing",
           "f17a0987": "Pond and waterway management — construction, restoration, and water quality",
-          "fubo3m5": "Commercial landscaping and exterior grounds maintenance contracts",
           "fue3vu": "Full property reconstruction",
           "f13r2bys": "Communities We Serve in York County",
-          "f1q34271": "P1 provides land clearing, grading, drainage, turf, and property management services throughout York County, SC, including:",
+          "f1bvh3i": "P1 provides commercial landscaping, grounds maintenance, land clearing, grading, drainage, turf, and property management services throughout York County, SC, including:",
           "f1rpw3ag": "Rock Hill — the county's largest city",
           "f1g3doqg": "Fort Mill and Tega Cay",
           "f6tyui2": "Lake Wylie and River Hills",
@@ -19744,7 +19844,7 @@
           "f12yhwms": "Lake Wylie and the Catawba River corridor along York County's eastern edge include commercial waterfront sites, municipal properties, institutional grounds, and working agricultural land that require specialized management: shoreline maintenance, pond and waterway care, drainage on sloped lakeside terrain, and turf establishment on challenging sites. P1's pond and waterway management program, combined with our drainage and grading expertise, makes us a natural fit for these demanding non-residential waterfront properties.",
           "f1263cr0": "Why York County Property Teams Choose P1",
           "f1aw6lfn": "We're not a regional franchise or a national chain applying a one-size-fits-all approach to your property. P1 is built for the Carolinas — we understand the red clay soils of the York County Piedmont, the drainage challenges of the area's rolling terrain and the creek- and river-fed bottomland along the Catawba, the grass and pasture species that thrive here, and the seasonal patterns that drive maintenance needs throughout the year.",
-          "ftx4wfw": "From single land-clearing and grading projects to full-service maintenance contracts, P1 gives York County commercial, industrial, agricultural, municipal, and institutional property teams one contractor for the entire life of their land — from initial clearing and reconstruction through ongoing weekly and seasonal care.",
+          "f1pq47r2": "From commercial landscaping and grounds maintenance contracts to land clearing, grading, drainage, and full reconstruction, P1 gives York County property teams one contractor for the full life of their land.",
           "ficlykl": "York County, SC Land & Property Management FAQs",
           "f1pwb62i": "What areas of York County does P1 serve?",
           "fgpccsm": "P1 serves the entire county — Rock Hill, Fort Mill, Tega Cay, Lake Wylie, York, Clover, Sharon, Hickory Grove, McConnells, Smyrna, and the surrounding rural areas — for properties 1 acre and larger.",
@@ -19763,13 +19863,17 @@
           "f9spy6u": "tel:7042218928",
           "fatly8t": "request a free estimate online",
           "fmggb4x": "/contact",
+          "funnpw9": "Explore ",
           "f1xhvh0c": ", review ",
+          "f192856l": ", compare ",
           "fn4kqbr": ", or ",
           "f1u810sm": ".",
-          "f1gklu8p": "Compare land management services",
-          "f958gr": "/services",
+          "f1g8kt14": "commercial landscaping",
+          "fwwr8hd": "/services/commercial-landscaping",
           "f1xazi9y": "commercial snow and ice management",
           "f4hmc0n": "/commercial-snow-ice-management",
+          "f1xe2x25": "all land management services",
+          "f958gr": "/services",
           "f1th3tkk": "tell us about your property",
           "f1u1km71": "/assets/fine-grading-1280-CWwHPN9f.webp",
           "f5dus4q": "Start the Conversation",

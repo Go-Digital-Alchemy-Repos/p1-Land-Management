@@ -37,9 +37,9 @@ export default function AndersonSC() {
     <Layout>
       <SEO 
         title="Land Management in Anderson, SC | P1"
-        description="Land clearing, grading, drainage, pond, turf, and property management for qualifying 1-acre-plus sites in Anderson, SC. Call (704) 221-8928."
+        description="Commercial landscaping, grounds maintenance, land clearing, grading & drainage for qualifying 1-acre-plus Anderson, SC sites. Call (704) 221-8928."
         jsonLd={[
-          serviceAreaSchema({ areaName: "Anderson, South Carolina", areaType: "City", description: "Professional land clearing, grading, drainage, and agricultural property management in Anderson, SC. Properties 1 acre and larger. Call (704) 221-8928.", path: "/service-areas/anderson-sc" }),
+          serviceAreaSchema({ areaName: "Anderson, South Carolina", areaType: "City", description: "Commercial landscaping, grounds maintenance, agricultural land care, land clearing, grading, drainage, and pond services for qualifying Anderson, SC properties.", path: "/service-areas/anderson-sc" }),
           breadcrumbSchema([
             { name: "Home", path: "/" },
             { name: "Service Areas", path: "/service-areas" },
@@ -59,7 +59,7 @@ export default function AndersonSC() {
             </em>
           </>
         }
-        subtitle="P1 Land & Property Management provides comprehensive land and property services for commercial, industrial, agricultural, municipal, and institutional properties throughout Anderson, SC and Anderson County. Anderson's growing commercial base and strong agricultural heritage make it a natural fit for P1's full-service model — from land clearing and drainage to ongoing agricultural land maintenance and pond management."
+        subtitle="P1 Land & Property Management provides commercial landscaping and grounds maintenance, plus complete land and property services for commercial, industrial, agricultural, municipal, and institutional sites throughout Anderson and Anderson County. Our full-service model extends from ongoing grounds care to land clearing, grading, drainage, and pond management."
         image={heroImg}
         imageAlt="Land Clearing & Property Management in Anderson, SC"
       />
@@ -71,13 +71,13 @@ export default function AndersonSC() {
               <h2 className="text-3xl font-serif font-bold text-secondary border-b border-border pb-4">Anderson SC Services</h2>
               <ul className="space-y-3">
                 {[
+                  "Commercial landscaping and grounds maintenance",
                   "Agricultural land and pasture maintenance",
                   "Land clearing and forestry mulching",
-                  "Drainage and waterway management",
                   "Grading for fields, access roads, and construction pads",
-                  "Pond management and pond construction",
+                  "Drainage and waterway management",
                   "Turf and pasture establishment",
-                  "Commercial grounds management",
+                  "Pond management and pond construction",
                   "Property reconstruction"
                 ].map((item, i) => (
                   <li key={i} className="flex items-start gap-3 text-secondary/80 font-medium">
