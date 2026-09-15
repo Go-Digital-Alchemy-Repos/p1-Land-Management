@@ -6,7 +6,7 @@
     "displayName": "P1 Land & Property Management",
     "source": {
       "repository": "https://github.com/Go-Digital-Alchemy-Repos/p1-Land-Management.git",
-      "revision": "e87c1b9fa19aa647b0f3bc61394d23ed35c403a0"
+      "revision": "a108ace200de740e63a7dc0a85f34c966db3a7a8"
     },
     "owners": [
       {
@@ -10137,13 +10137,6 @@
             "maxLength": 2000
           },
           {
-            "path": "f1bmxqbi",
-            "label": "Text: Orchard and agricultural tree management",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
             "path": "fn6e76y",
             "label": "Text: Tree Clearing at Scale",
             "type": "text",
@@ -10378,7 +10371,6 @@
           "f1xqjn8t": "Storm-damage cleanup, subject to confirmed availability and safety conditions",
           "f12c9jw1": "Windbreak and tree line management",
           "fifkqqi": "Tree line clearing for fence installation and access",
-          "f1bmxqbi": "Orchard and agricultural tree management",
           "fn6e76y": "Tree Clearing at Scale",
           "f1ac8mlu": "When a land clearing project calls for removing significant tree stands, P1 handles it efficiently with forestry mulching and heavy clearing equipment. When a client wants strategic preservation of mature trees while opening up surrounding land, we have the experience to execute selective clearing with precision.",
           "fdt4mvr": "Either way, the goal is the same: your land configured the way you want it, with the trees that belong there and without the ones that don't.",

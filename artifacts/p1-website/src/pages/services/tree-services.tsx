@@ -96,7 +96,6 @@ export default function TreeServices() {
                 "Storm-damage cleanup, subject to confirmed availability and safety conditions",
                 "Windbreak and tree line management",
                 "Tree line clearing for fence installation and access",
-                "Orchard and agricultural tree management"
               ].map((item, i) => (
                 <li key={i} className="flex items-start gap-3 bg-muted p-4 rounded-lg">
                   <CheckCircle2 className="w-6 h-6 text-primary shrink-0 mt-0.5" />
