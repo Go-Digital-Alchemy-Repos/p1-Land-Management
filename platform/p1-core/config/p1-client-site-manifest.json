@@ -6,7 +6,7 @@
     "displayName": "P1 Land & Property Management",
     "source": {
       "repository": "https://github.com/Go-Digital-Alchemy-Repos/p1-Land-Management.git",
-      "revision": "3b169f141adf23c5ca81f2d3205db9690921235e"
+      "revision": "bb037624776410f9ac61e0c9c601ec92f51c084a"
     },
     "owners": [
       {
@@ -2327,8 +2327,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1xw1r2c",
-            "label": "Text: Seven connected capabilities",
+            "path": "fb9xh26",
+            "label": "Text: Eight connected capabilities",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -2533,6 +2533,34 @@
             "path": "f168iovj",
             "label": "Text: Ongoing commercial landscaping",
             "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f44gi1z",
+            "label": "Text: Commercial Snow & Ice Management",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1m6vcgh",
+            "label": "Text: Plan seasonal plowing, anti-icing and documented storm response around your site, access priori",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1mckwfc",
+            "label": "Text: Snow and ice management",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f4hmc0n",
+            "label": "Link: /commercial-snow-ice-management",
+            "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
           },
@@ -3039,7 +3067,7 @@
           "f1s8afp": "Corrective work",
           "f1q1pc35": "P1 coordination / one agreed work plan",
           "f9gxh4k": "Defined scope · site priorities · communication · follow-up",
-          "f1xw1r2c": "Seven connected capabilities",
+          "fb9xh26": "Eight connected capabilities",
           "fko5hly": "Start with the whole site. Define the work precisely.",
           "fuimk70": "These groups help organize your assessment. Specific tasks, delivery method and availability are confirmed for each property; they are not a blanket promise of every trade or service.",
           "f2emmus": "0",
@@ -3069,6 +3097,10 @@
           "fdwwhxp": "Recurring Site Management",
           "fwhjsnt": "Build an agreed maintenance schedule with inspection priorities, communication and follow-up expectations defined together.",
           "f168iovj": "Ongoing commercial landscaping",
+          "f44gi1z": "Commercial Snow & Ice Management",
+          "f1m6vcgh": "Plan seasonal plowing, anti-icing and documented storm response around your site, access priorities and winter risk.",
+          "f1mckwfc": "Snow and ice management",
+          "f4hmc0n": "/commercial-snow-ice-management",
           "fwy4o7t": "Property lifecycle",
           "foc9u5l": "Continuity from development to daily operations.",
           "fdpg9qj": "PHASE 0",
