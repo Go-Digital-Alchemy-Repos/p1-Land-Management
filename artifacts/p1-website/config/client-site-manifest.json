@@ -6,7 +6,7 @@
     "displayName": "P1 Land & Property Management",
     "source": {
       "repository": "https://github.com/Go-Digital-Alchemy-Repos/p1-Land-Management.git",
-      "revision": "bb037624776410f9ac61e0c9c601ec92f51c084a"
+      "revision": "e5584309a85e0f7efea1cec2bd8b3c2e7836d349"
     },
     "owners": [
       {
@@ -93,6 +93,21 @@
       "componentRef": "src/pages/commercial-snow-ice-management.tsx",
       "editableRegions": [
         "commercial-snow-ice-management",
+        "global"
+      ],
+      "lockedBehaviors": [
+        "routing",
+        "validation",
+        "accessibility"
+      ]
+    },
+    {
+      "id": "commercial-data-centers-secure-facilities",
+      "path": "/commercial/data-centers-secure-facilities",
+      "owner": "site",
+      "componentRef": "src/pages/commercial/data-centers-secure-facilities.tsx",
+      "editableRegions": [
+        "commercial-data-centers-secure-facilities",
         "global"
       ],
       "lockedBehaviors": [
@@ -1548,6 +1563,20 @@
             "maxLength": 2000
           },
           {
+            "path": "f1el7f4d",
+            "label": "Text: Data center & secure facility grounds",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1feoon5",
+            "label": "Link: /commercial/data-centers-secure-facilities",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
             "path": "f1u1km71",
             "label": "Image: /assets/fine-grading-1280-CWwHPN9f.webp",
             "type": "image",
@@ -1734,6 +1763,8 @@
           "fvdad7b": "Bring grounds, drainage, land and recurring exterior work into one scope discussion.",
           "f18bzt15": "Explore Commercial Site Management",
           "f4ap5vh": "/commercial",
+          "f1el7f4d": "Data center & secure facility grounds",
+          "f1feoon5": "/commercial/data-centers-secure-facilities",
           "f1u1km71": "/assets/fine-grading-1280-CWwHPN9f.webp",
           "f5dus4q": "Start the Conversation",
           "f19zqrt0": "Have acreage that needs shaping? Let's walk it together.",
@@ -2656,15 +2687,15 @@
             "maxLength": 12000
           },
           {
-            "path": "f1rhk3bl",
-            "label": "Text: Explore pond & waterway maintenance",
+            "path": "f1oaw3nq",
+            "label": "Text: Explore data center & secure facility grounds",
             "type": "text",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "fv11gbc",
-            "label": "Link: /services/pond-waterway-management",
+            "path": "f1feoon5",
+            "label": "Link: /commercial/data-centers-secure-facilities",
             "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
@@ -2719,11 +2750,25 @@
             "maxLength": 2000
           },
           {
-            "path": "f1mqd111",
-            "label": "Text: Use the assessment to discuss fit for manufacturing and automotive-supplier campuses, distribut",
+            "path": "f10gannn",
+            "label": "Text: Use the assessment to discuss fit for manufacturing and automotive-supplier campuses,",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fd4x7b8",
+            "label": "Text: , industrial parks, biopharmaceutical and corporate campuses, mixed-use developments, utility p",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
+          },
+          {
+            "path": "f1ylf5pv",
+            "label": "Text: data centers, distribution and logistics facilities",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
           },
           {
             "path": "fbi8aem",
@@ -3114,8 +3159,8 @@
           "f8dhmb4": "The land outside a secure facility still needs a clear plan.",
           "fs8o4nc": "Perimeter vegetation, berms, buffer areas and undeveloped acreage sit alongside drainage, ponds, trees and service roads. Consider those exterior needs together when defining a property scope.",
           "fqr6xnt": "Discuss access coordination, work windows, safety expectations, communication and documentation with your site team. The agreed plan must fit the customer’s protocols; no security clearance, uptime guarantee or response commitment is implied.",
-          "f1rhk3bl": "Explore pond & waterway maintenance",
-          "fv11gbc": "/services/pond-waterway-management",
+          "f1oaw3nq": "Explore data center & secure facility grounds",
+          "f1feoon5": "/commercial/data-centers-secure-facilities",
           "fascy0n": "/assets/data-center-campus-1280-BDyegjDb.webp",
           "fw8lmzn": "Aerial view of a data-center campus with maintained green space, tree buffers and a stormwater pond",
           "f1kt7gl0": "Perimeter vegetation & buffers",
@@ -3123,7 +3168,9 @@
           "f14vjff2": "Service roads & access areas",
           "fm7csbr": "Restoration & storm cleanup",
           "f1pf40m8": "Site management shaped around your property.",
-          "f1mqd111": "Use the assessment to discuss fit for manufacturing and automotive-supplier campuses, distribution and logistics centers, industrial parks, biopharmaceutical and corporate campuses, mixed-use developments, utility properties and managed commercial acreage.",
+          "f10gannn": "Use the assessment to discuss fit for manufacturing and automotive-supplier campuses, ",
+          "fd4x7b8": ", industrial parks, biopharmaceutical and corporate campuses, mixed-use developments, utility properties and managed commercial acreage.",
+          "f1ylf5pv": "data centers, distribution and logistics facilities",
           "fbi8aem": "Define what recurring management means for your site.",
           "fzisbtn": "Agree inspection areas, priorities and a practical service schedule.",
           "f1fs0lui": "Specify the observations, photos and updates your team needs.",
@@ -4055,6 +4102,34 @@
             "maxLength": 2000
           },
           {
+            "path": "fmbpgnn",
+            "label": "Text: Managing a data center, secure facility, or distribution campus?",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1fj4xdy",
+            "label": "Text: Connect winter readiness with the year-round perimeter, stormwater, grading, and access needs a",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1i68p40",
+            "label": "Text: Explore secure facility exterior grounds management",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1feoon5",
+            "label": "Link: /commercial/data-centers-secure-facilities",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
             "path": "f11z8noq",
             "label": "Text: Commercial snow and ice management — frequently asked questions",
             "type": "text",
@@ -4340,6 +4415,10 @@
           "f1xhnnaj": "/service-areas/york-county-sc",
           "f1aorfov": "Lancaster County",
           "f1dmyinn": "/service-areas/lancaster-county-sc",
+          "fmbpgnn": "Managing a data center, secure facility, or distribution campus?",
+          "f1fj4xdy": "Connect winter readiness with the year-round perimeter, stormwater, grading, and access needs around the same facility.",
+          "f1i68p40": "Explore secure facility exterior grounds management",
+          "f1feoon5": "/commercial/data-centers-secure-facilities",
           "f11z8noq": "Commercial snow and ice management — frequently asked questions",
           "fflchjd": "Do you provide residential snow removal?",
           "fabva1h": "No. P1 works exclusively with commercial and industrial properties — distribution centers, data centers, shopping centers, office and industrial campuses, and similar large-format sites. We do not service residential driveways or small lots.",
@@ -4360,6 +4439,1104 @@
           "f7f1uuq": "Protect your property before the first freeze",
           "f8aegp7": "Lock in a commercial snow and ice management plan built around your site, operations, and risk priorities.",
           "f1ux4719": "Request Your Free Site Assessment",
+          "f1w00rmf": "Call P1",
+          "f1u26c9a": "tel:+17042218928",
+          "f1qryswv": "Get an Estimate"
+        },
+        "lockedBehaviors": [
+          "routing",
+          "form-validation",
+          "authentication",
+          "responsive-layout"
+        ]
+      },
+      {
+        "key": "commercial-data-centers-secure-facilities-content",
+        "version": "1.0.0",
+        "rendererRef": "src/lib/cms-jsx-runtime.ts",
+        "fieldSchemaRef": "src/lib/cms.tsx",
+        "allowedRegions": [
+          "commercial-data-centers-secure-facilities"
+        ],
+        "editableFields": [
+          "heading",
+          "copy",
+          "image",
+          "imageAlt",
+          "ctaTarget"
+        ],
+        "fields": [
+          {
+            "path": "fum15fc",
+            "label": "Text: Skip to main content",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "seoTitle",
+            "label": "SEO title",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "seoDescription",
+            "label": "SEO description",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "seoImage",
+            "label": "Image: /opengraph.jpg",
+            "type": "image",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fn4frkq",
+            "label": "Image: /assets/hero-data-center-secure-facility-1280-DhHYTpWA.webp",
+            "type": "image",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1tn5z4d",
+            "label": "Image description: Managed stormwater pond, service road, and perimeter grounds surrounding a modern data center c",
+            "type": "imageAlt",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f14du0qv",
+            "label": "Text: Data Centers · Secure Facilities · Distribution Campuses",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1wgt6dt",
+            "label": "Text: Exterior Grounds & Land Management for",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f11sboa1",
+            "label": "Text: Data Centers, Secure Facilities & Distribution Campuses",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fp2klkh",
+            "label": "Text: P1 manages perimeter vegetation, stormwater ponds, buffers, service roads, and undeveloped acre",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1fc34zh",
+            "label": "Text: Request a Site Assessment",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fmggb4x",
+            "label": "Link: /contact",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1d192in",
+            "label": "Text: Call (704) 221-8928",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f9spy6u",
+            "label": "Link: tel:7042218928",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1ke7dc6",
+            "label": "Text: Index of Work",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fwwr8hd",
+            "label": "Link: /services/commercial-landscaping",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1bqup5r",
+            "label": "Text: 01",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "ffzg0ag",
+            "label": "Text: Commercial Landscaping",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f4hmc0n",
+            "label": "Link: /commercial-snow-ice-management",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1c0uauq",
+            "label": "Text: 02",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fhxv1ro",
+            "label": "Text: Commercial Snow & Ice",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fgwkxig",
+            "label": "Link: /services/grading-site-preparation",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1catwjp",
+            "label": "Text: 03",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1i5fdfo",
+            "label": "Text: Grading & Site Preparation",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1cn1znt",
+            "label": "Link: /services/drainage",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1acwoow",
+            "label": "Text: 04",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1itpl39",
+            "label": "Text: Drainage Solutions",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f14gqnzz",
+            "label": "Link: /services/land-clearing",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1amwadv",
+            "label": "Text: 05",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "foa1vas",
+            "label": "Text: Land Clearing",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1oiog0u",
+            "label": "Text: Heavy-Equipment Land Management",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fcrd7e9",
+            "label": "Text: One Accountable Exterior Partner",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fbrczue",
+            "label": "Text: Works Within Your Site Protocols",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f2s5lhj",
+            "label": "Text: Commercial & Industrial Only",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f15ur8f8",
+            "label": "Text: Outside the building envelope",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f10gesuz",
+            "label": "Text: A secure facility ends at the wall. The property doesn't.",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fgkvwtq",
+            "label": "Text: A data center, controlled-access plant, or large distribution hub may have acres of perimeter b",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "fozj1h6",
+            "label": "Text: That land has to drain correctly, hold its grade, preserve clear perimeter sightlines, and pres",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f178v9go",
+            "label": "Text: P1 brings heavy equipment, acreage-scale vegetation management, drainage and grading knowledge,",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1106bs7",
+            "label": "Text: Who we serve",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fwvay9v",
+            "label": "Text: Built for the campuses most crews can't take on",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f16o2atu",
+            "label": "Text: For large, complex sites, the property outside the building is an operation in itself.",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fg8qxrd",
+            "label": "Text: Data centers & mission-critical campuses",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1ogbmc0",
+            "label": "Text: Perimeter buffers, stormwater ponds, security setbacks, utility-yard surrounds, and extensive m",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f171kug5",
+            "label": "Text: Secure & regulated facilities",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f3gv46q",
+            "label": "Text: Utility, biopharmaceutical, manufacturing, and controlled-access sites where exterior work must",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1356kiq",
+            "label": "Text: Distribution, logistics & fulfillment campuses",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1j6sl5a",
+            "label": "Text: Truck-court surrounds, retention basins, swales, service roads, and graded acreage kept clear, ",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f16y6f9t",
+            "label": "Text: Corporate & industrial parks",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f163qaxu",
+            "label": "Text: Multi-building properties that need one team coordinating grounds, drainage, land, and exterior",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1pce7iy",
+            "label": "Text: If your facility exterior is measured in acres and downtime or non-compliance carries real cost",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1tcmfly",
+            "label": "Text: One coordinated scope",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f17alm81",
+            "label": "Text: Everything outside the building envelope",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fu9odfd",
+            "label": "Text: Bring the property's connected grounds, water, land, access, and corrective needs into one prac",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1g2kjq",
+            "label": "Text: Perimeter & security-aware vegetation",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fqhu8zx",
+            "label": "Text: Buffer areas, tree lines, fence lines, and setbacks kept controlled so vegetation does not obst",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f96ok9x",
+            "label": "Text: Commercial grounds management",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fa7k3vk",
+            "label": "Text: Stormwater ponds & SCM maintenance",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fpd7zxv",
+            "label": "Text: Detention and retention ponds, basins, swales, embankments, and inlet or outlet areas maintaine",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1njeos0",
+            "label": "Text: Stormwater pond maintenance",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fv11gbc",
+            "label": "Link: /services/pond-waterway-management",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fr54qrn",
+            "label": "Text: Grading, erosion & slope stabilization",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f16gbrua",
+            "label": "Text: Washouts corrected, grades re-established, and slopes or pond embankments stabilized to protect",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f199ki65",
+            "label": "Text: Grading and site preparation",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1ixegla",
+            "label": "Text: Land clearing, buffers & overgrowth",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1m7k1ia",
+            "label": "Text: Selective clearing and forestry mulching to manage encroachment, preserve useful buffers, and k",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1d99glw",
+            "label": "Text: Land clearing services",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1q979zy",
+            "label": "Text: Service roads & exterior access",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fdfyclp",
+            "label": "Text: Gravel access roads, service drives, drainage crossings, and exterior graded areas maintained s",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f19m4n6t",
+            "label": "Text: Drainage solutions",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fesicls",
+            "label": "Text: Storm & corrective response",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1erdedy",
+            "label": "Text: Downed trees, storm debris, washed-out ground, and damaged grades cleared and restored within t",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1y9nwzi",
+            "label": "Text: Corrective property work",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1h3mhh4",
+            "label": "Link: /services/property-reconstruction",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f6k3xu5",
+            "label": "Text: Recurring site management",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fuw3qdc",
+            "label": "Text: A coordinated program with defined priorities, inspection points, communication, and documentat",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f17ztrtk",
+            "label": "Text: Commercial site management",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f4ap5vh",
+            "label": "Link: /commercial",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f51i0mf",
+            "label": "Text: Your grounds carry obligations. We manage to them.",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fhjn3k3",
+            "label": "Text: Detention and retention ponds, swales, embankments, and outlet areas need ongoing attention to ",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f19mn3eh",
+            "label": "Text: P1 maintains accessible stormwater features, corrects exterior erosion, and documents the land ",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f159s3zp",
+            "label": "Text: P1 is a land and grounds contractor, not the facility's compliance authority. Inspection, engin",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "fo7w683",
+            "label": "Image: /assets/data-center-stormwater-maintenance-1280-Dft__knY.webp",
+            "type": "image",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1o3ied8",
+            "label": "Image description: Compact excavator maintaining vegetation beside a commercial stormwater pond and outlet structu",
+            "type": "imageAlt",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fu6lcf7",
+            "label": "Text: Coordinated scope. Your site's rules.",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fj0bxnp",
+            "label": "Text: Secure and mission-critical facilities run on protocols. Before work begins, we coordinate acce",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f30cy0l",
+            "label": "Text: Our scope is exterior land and grounds management. We do not imply security clearances, guarant",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f26jm1m",
+            "label": "Text: Discuss Your Property",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1cosuz2",
+            "label": "Image: /assets/data-center-perimeter-management-1280-C8W7LYCW.webp",
+            "type": "image",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1ngmpcp",
+            "label": "Image description: Compact land-management equipment controlling vegetation along a fenced commercial service road",
+            "type": "imageAlt",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f15if04i",
+            "label": "Text: Built for the land around the facility",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fpv2pcz",
+            "label": "Text: Why complex campuses choose P1",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fizkddb",
+            "label": "Text: Heavy-equipment land capability",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fsa57kb",
+            "label": "Text: Pond embankments, eroded slopes, overgrown buffers, and perimeter acreage require real machines",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1dqqowh",
+            "label": "Text: One accountable exterior partner",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "faia7vw",
+            "label": "Text: Grounds, drainage, ponds, land, roads, and corrective work can be coordinated through a single ",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f18xqgui",
+            "label": "Text: Regional land knowledge",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fqefjnk",
+            "label": "Text: P1 works across Upstate South Carolina and the Charlotte region, with practical experience of l",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f18gec6j",
+            "label": "Text: Your protocols shape the plan",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "frxnejj",
+            "label": "Text: Access, work windows, safety expectations, communication, and documentation are agreed with you",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f12wv9od",
+            "label": "Text: Serving complex campuses across Upstate SC and greater Charlotte",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f13yc8uc",
+            "label": "Text: P1 serves large commercial and industrial properties throughout Greenville, Spartanburg, Anders",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1cwridi",
+            "label": "Text: Our coverage includes the I-85 and I-77 industrial and logistics corridors where regional data ",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f63lakw",
+            "label": "Text: Charlotte region",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f11009l2",
+            "label": "Link: /service-areas/charlotte-north-carolina",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f5hsmub",
+            "label": "Text: Union County",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f10m3m5y",
+            "label": "Link: /service-areas/union-county-nc",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1mwc14n",
+            "label": "Text: York County",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1xhnnaj",
+            "label": "Link: /service-areas/york-county-sc",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1aorfov",
+            "label": "Text: Lancaster County",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1dmyinn",
+            "label": "Link: /service-areas/lancaster-county-sc",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1r8nvw5",
+            "label": "Text: Seasonal planning matters too. Review",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f8o3ad5",
+            "label": "Text: for large campuses.",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1xazi9y",
+            "label": "Text: commercial snow and ice management",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1b24htn",
+            "label": "Text: Data center & secure facility grounds — frequently asked questions",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1hbv04c",
+            "label": "Text: What exactly does P1 manage at a data center or secure facility?",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fjxo1xg",
+            "label": "Text: P1 manages the exterior land and grounds outside the building, including perimeter and buffer v",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1gt93cw",
+            "label": "Text: Do you need security clearance or access to secure areas?",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1to8k9i",
+            "label": "Text: Our work is on the exterior grounds, and we work within your facility's access, safety, and doc",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1d89p2g",
+            "label": "Text: Can you maintain our stormwater detention or retention ponds?",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1f0nm9p",
+            "label": "Text: Yes. P1 can clear, mow, and maintain detention and retention ponds, basins, swales, embankments",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1iyl6xy",
+            "label": "Text: How does grounds work relate to site security?",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1reznni",
+            "label": "Text: Vegetation that blocks cameras, lighting, fencing, or sightlines can weaken perimeter visibilit",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1iwlle3",
+            "label": "Text: Do you guarantee an emergency response time?",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "ft4ais3",
+            "label": "Text: Storm and corrective response is provided according to scope and availability agreed in advance",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f17vnuu7",
+            "label": "Text: What size and type of properties do you take on?",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fbur9fb",
+            "label": "Text: P1 serves commercial and industrial properties of roughly one acre and larger, including data c",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "fgjzne4",
+            "label": "Text: Can you handle the whole exterior instead of just one task?",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1rq91p0",
+            "label": "Text: Yes. P1 can coordinate grounds, vegetation, stormwater, grading, land clearing, roads, and stor",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1fuvscq",
+            "label": "Text: One partner for everything outside the building envelope",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f13ei7o0",
+            "label": "Text: From perimeter vegetation and stormwater ponds to grading, buffers, and corrective response, bu",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1w00rmf",
+            "label": "Text: Call P1",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1u26c9a",
+            "label": "Link: tel:+17042218928",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1qryswv",
+            "label": "Text: Get an Estimate",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          }
+        ],
+        "defaultContent": {
+          "fum15fc": "Skip to main content",
+          "seoTitle": "Data Center & Secure Facility Grounds | P1 Land Mgmt",
+          "seoDescription": "Exterior grounds, stormwater ponds, buffers & land management for data centers, secure facilities & distribution campuses in Upstate SC & Charlotte NC.",
+          "seoImage": "/opengraph.jpg",
+          "fn4frkq": "/assets/hero-data-center-secure-facility-1280-DhHYTpWA.webp",
+          "f1tn5z4d": "Managed stormwater pond, service road, and perimeter grounds surrounding a modern data center campus",
+          "f14du0qv": "Data Centers · Secure Facilities · Distribution Campuses",
+          "f1wgt6dt": "Exterior Grounds & Land Management for ",
+          "f11sboa1": "Data Centers, Secure Facilities & Distribution Campuses",
+          "fp2klkh": "P1 manages perimeter vegetation, stormwater ponds, buffers, service roads, and undeveloped acreage around large commercial and industrial campuses across Upstate South Carolina and the Charlotte region.",
+          "f1fc34zh": "Request a Site Assessment",
+          "fmggb4x": "/contact",
+          "f1d192in": "Call (704) 221-8928",
+          "f9spy6u": "tel:7042218928",
+          "f1ke7dc6": "Index of Work",
+          "fwwr8hd": "/services/commercial-landscaping",
+          "f1bqup5r": "01",
+          "ffzg0ag": "Commercial Landscaping",
+          "f4hmc0n": "/commercial-snow-ice-management",
+          "f1c0uauq": "02",
+          "fhxv1ro": "Commercial Snow & Ice",
+          "fgwkxig": "/services/grading-site-preparation",
+          "f1catwjp": "03",
+          "f1i5fdfo": "Grading & Site Preparation",
+          "f1cn1znt": "/services/drainage",
+          "f1acwoow": "04",
+          "f1itpl39": "Drainage Solutions",
+          "f14gqnzz": "/services/land-clearing",
+          "f1amwadv": "05",
+          "foa1vas": "Land Clearing",
+          "f1oiog0u": "Heavy-Equipment Land Management",
+          "fcrd7e9": "One Accountable Exterior Partner",
+          "fbrczue": "Works Within Your Site Protocols",
+          "f2s5lhj": "Commercial & Industrial Only",
+          "f15ur8f8": "Outside the building envelope",
+          "f10gesuz": "A secure facility ends at the wall. The property doesn't.",
+          "fgkvwtq": "A data center, controlled-access plant, or large distribution hub may have acres of perimeter buffer, stormwater ponds, graded slopes, service roads, tree lines, and undeveloped land beyond the building itself.",
+          "fozj1h6": "That land has to drain correctly, hold its grade, preserve clear perimeter sightlines, and present a controlled, maintained exterior. These are connected land-management needs that require more than routine turf and shrub care.",
+          "f178v9go": "P1 brings heavy equipment, acreage-scale vegetation management, drainage and grading knowledge, and one accountable scope for the exterior property.",
+          "f1106bs7": "Who we serve",
+          "fwvay9v": "Built for the campuses most crews can't take on",
+          "f16o2atu": "For large, complex sites, the property outside the building is an operation in itself.",
+          "fg8qxrd": "Data centers & mission-critical campuses",
+          "f1ogbmc0": "Perimeter buffers, stormwater ponds, security setbacks, utility-yard surrounds, and extensive maintained or undeveloped acreage.",
+          "f171kug5": "Secure & regulated facilities",
+          "f3gv46q": "Utility, biopharmaceutical, manufacturing, and controlled-access sites where exterior work must follow defined access and documentation protocols.",
+          "f1356kiq": "Distribution, logistics & fulfillment campuses",
+          "f1j6sl5a": "Truck-court surrounds, retention basins, swales, service roads, and graded acreage kept clear, draining, and stable.",
+          "f16y6f9t": "Corporate & industrial parks",
+          "f163qaxu": "Multi-building properties that need one team coordinating grounds, drainage, land, and exterior infrastructure.",
+          "f1pce7iy": "If your facility exterior is measured in acres and downtime or non-compliance carries real cost, this service is built for your team.",
+          "f1tcmfly": "One coordinated scope",
+          "f17alm81": "Everything outside the building envelope",
+          "fu9odfd": "Bring the property's connected grounds, water, land, access, and corrective needs into one practical plan.",
+          "f1g2kjq": "Perimeter & security-aware vegetation",
+          "fqhu8zx": "Buffer areas, tree lines, fence lines, and setbacks kept controlled so vegetation does not obstruct cameras, lighting, fencing, or patrol sightlines.",
+          "f96ok9x": "Commercial grounds management",
+          "fa7k3vk": "Stormwater ponds & SCM maintenance",
+          "fpd7zxv": "Detention and retention ponds, basins, swales, embankments, and inlet or outlet areas maintained to support function and inspection readiness.",
+          "f1njeos0": "Stormwater pond maintenance",
+          "fv11gbc": "/services/pond-waterway-management",
+          "fr54qrn": "Grading, erosion & slope stabilization",
+          "f16gbrua": "Washouts corrected, grades re-established, and slopes or pond embankments stabilized to protect pavement, drainage systems, and structures.",
+          "f199ki65": "Grading and site preparation",
+          "f1ixegla": "Land clearing, buffers & overgrowth",
+          "f1m7k1ia": "Selective clearing and forestry mulching to manage encroachment, preserve useful buffers, and keep undeveloped acreage controlled.",
+          "f1d99glw": "Land clearing services",
+          "f1q979zy": "Service roads & exterior access",
+          "fdfyclp": "Gravel access roads, service drives, drainage crossings, and exterior graded areas maintained so operational teams can reach the site.",
+          "f19m4n6t": "Drainage solutions",
+          "fesicls": "Storm & corrective response",
+          "f1erdedy": "Downed trees, storm debris, washed-out ground, and damaged grades cleared and restored within the scope and availability agreed in advance.",
+          "f1y9nwzi": "Corrective property work",
+          "f1h3mhh4": "/services/property-reconstruction",
+          "f6k3xu5": "Recurring site management",
+          "fuw3qdc": "A coordinated program with defined priorities, inspection points, communication, and documentation for the full exterior property.",
+          "f17ztrtk": "Commercial site management",
+          "f4ap5vh": "/commercial",
+          "f51i0mf": "Your grounds carry obligations. We manage to them.",
+          "fhjn3k3": "Detention and retention ponds, swales, embankments, and outlet areas need ongoing attention to stay functional and ready for required inspections. Sediment, overgrowth, eroded banks, and blocked drainage paths can become both operational and compliance concerns.",
+          "f19mn3eh": "P1 maintains accessible stormwater features, corrects exterior erosion, and documents the land and grounds work performed so it can support your site's own records.",
+          "f159s3zp": "P1 is a land and grounds contractor, not the facility's compliance authority. Inspection, engineering, and regulatory responsibilities are confirmed with the owner and appropriate professionals.",
+          "fo7w683": "/assets/data-center-stormwater-maintenance-1280-Dft__knY.webp",
+          "f1o3ied8": "Compact excavator maintaining vegetation beside a commercial stormwater pond and outlet structure",
+          "fu6lcf7": "Coordinated scope. Your site's rules.",
+          "fj0bxnp": "Secure and mission-critical facilities run on protocols. Before work begins, we coordinate access, work windows, safety expectations, communication, and documentation with your site team.",
+          "f30cy0l": "Our scope is exterior land and grounds management. We do not imply security clearances, guaranteed uptime, or a blanket emergency response time. Those requirements are defined by your facility and the agreement established with P1.",
+          "f26jm1m": "Discuss Your Property",
+          "f1cosuz2": "/assets/data-center-perimeter-management-1280-C8W7LYCW.webp",
+          "f1ngmpcp": "Compact land-management equipment controlling vegetation along a fenced commercial service road",
+          "f15if04i": "Built for the land around the facility",
+          "fpv2pcz": "Why complex campuses choose P1",
+          "fizkddb": "Heavy-equipment land capability",
+          "fsa57kb": "Pond embankments, eroded slopes, overgrown buffers, and perimeter acreage require real machines and operators who work land for a living.",
+          "f1dqqowh": "One accountable exterior partner",
+          "faia7vw": "Grounds, drainage, ponds, land, roads, and corrective work can be coordinated through a single scope and point of contact.",
+          "f18xqgui": "Regional land knowledge",
+          "fqefjnk": "P1 works across Upstate South Carolina and the Charlotte region, with practical experience of local terrain, vegetation, water, and seasonal conditions.",
+          "f18gec6j": "Your protocols shape the plan",
+          "frxnejj": "Access, work windows, safety expectations, communication, and documentation are agreed with your facility team before work begins.",
+          "f12wv9od": "Serving complex campuses across Upstate SC and greater Charlotte",
+          "f13yc8uc": "P1 serves large commercial and industrial properties throughout Greenville, Spartanburg, Anderson, Charlotte, Concord, Mooresville, Lake Norman, Gastonia, and the Union, Lancaster, and York County corridors.",
+          "f1cwridi": "Our coverage includes the I-85 and I-77 industrial and logistics corridors where regional data centers, secure facilities, and distribution campuses are concentrated.",
+          "f63lakw": "Charlotte region",
+          "f11009l2": "/service-areas/charlotte-north-carolina",
+          "f5hsmub": "Union County",
+          "f10m3m5y": "/service-areas/union-county-nc",
+          "f1mwc14n": "York County",
+          "f1xhnnaj": "/service-areas/york-county-sc",
+          "f1aorfov": "Lancaster County",
+          "f1dmyinn": "/service-areas/lancaster-county-sc",
+          "f1r8nvw5": "Seasonal planning matters too. Review ",
+          "f8o3ad5": " for large campuses.",
+          "f1xazi9y": "commercial snow and ice management",
+          "f1b24htn": "Data center & secure facility grounds — frequently asked questions",
+          "f1hbv04c": "What exactly does P1 manage at a data center or secure facility?",
+          "fjxo1xg": "P1 manages the exterior land and grounds outside the building, including perimeter and buffer vegetation, stormwater detention and retention ponds, graded slopes and erosion, undeveloped acreage, tree lines, service roads, and storm cleanup. We coordinate these needs as one scope so your team is not managing separate vendors for grounds, drainage, and land.",
+          "f1gt93cw": "Do you need security clearance or access to secure areas?",
+          "f1to8k9i": "Our work is on the exterior grounds, and we work within your facility's access, safety, and documentation protocols. We do not claim security clearances or access we do not have; scope, scheduling, and site rules are coordinated with your team before work begins.",
+          "f1d89p2g": "Can you maintain our stormwater detention or retention ponds?",
+          "f1f0nm9p": "Yes. P1 can clear, mow, and maintain detention and retention ponds, basins, swales, embankments, and accessible inlet and outlet areas. Inspection requirements, engineering decisions, regulatory responsibility, and specialist work remain with the property owner and the appropriate professionals.",
+          "f1iyl6xy": "How does grounds work relate to site security?",
+          "f1reznni": "Vegetation that blocks cameras, lighting, fencing, or sightlines can weaken perimeter visibility. P1 manages perimeter and buffer vegetation with clear sightlines and maintained canopies in mind, coordinated with your security team's requirements.",
+          "f1iwlle3": "Do you guarantee an emergency response time?",
+          "ft4ais3": "Storm and corrective response is provided according to scope and availability agreed in advance as part of the site plan. Any response commitments must be defined in the service agreement; P1 does not imply a blanket guaranteed response time.",
+          "f17vnuu7": "What size and type of properties do you take on?",
+          "fbur9fb": "P1 serves commercial and industrial properties of roughly one acre and larger, including data centers, secure and regulated facilities, distribution and logistics parks, manufacturing and utility sites, and corporate campuses. We do not provide residential services.",
+          "fgjzne4": "Can you handle the whole exterior instead of just one task?",
+          "f1rq91p0": "Yes. P1 can coordinate grounds, vegetation, stormwater, grading, land clearing, roads, and storm response under one recurring program and one point of contact, based on an agreed site-specific scope.",
+          "f1fuvscq": "One partner for everything outside the building envelope",
+          "f13ei7o0": "From perimeter vegetation and stormwater ponds to grading, buffers, and corrective response, build one controlled exterior plan around your facility.",
           "f1w00rmf": "Call P1",
           "f1u26c9a": "tel:+17042218928",
           "f1qryswv": "Get an Estimate"
@@ -6569,6 +7746,20 @@
             "maxLength": 2000
           },
           {
+            "path": "f1el7f4d",
+            "label": "Text: Data center & secure facility grounds",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1feoon5",
+            "label": "Link: /commercial/data-centers-secure-facilities",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
             "path": "f1u1km71",
             "label": "Image: /assets/fine-grading-1280-CWwHPN9f.webp",
             "type": "image",
@@ -6706,6 +7897,8 @@
           "f1xazi9y": "commercial snow and ice management",
           "f811gyl": "Commercial Site Management & Site Assessment",
           "f4ap5vh": "/commercial",
+          "f1el7f4d": "Data center & secure facility grounds",
+          "f1feoon5": "/commercial/data-centers-secure-facilities",
           "f1u1km71": "/assets/fine-grading-1280-CWwHPN9f.webp",
           "f5dus4q": "Start the Conversation",
           "f19zqrt0": "Have acreage that needs shaping? Let's walk it together.",
@@ -7799,6 +8992,34 @@
             "maxLength": 2000
           },
           {
+            "path": "f7awg9a",
+            "label": "Text: Controlling perimeter acreage around an active facility?",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1landr3",
+            "label": "Text: Connect selective clearing and buffer management with drainage, sightlines, service roads, and ",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fmcvkl9",
+            "label": "Text: Secure campus land and grounds management",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1feoon5",
+            "label": "Link: /commercial/data-centers-secure-facilities",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
             "path": "f1u1km71",
             "label": "Image: /assets/fine-grading-1280-CWwHPN9f.webp",
             "type": "image",
@@ -7926,6 +9147,10 @@
           "f9spy6u": "tel:7042218928",
           "fatly8t": "request a free estimate online",
           "fmggb4x": "/contact",
+          "f7awg9a": "Controlling perimeter acreage around an active facility?",
+          "f1landr3": "Connect selective clearing and buffer management with drainage, sightlines, service roads, and scheduled exterior care.",
+          "fmcvkl9": "Secure campus land and grounds management",
+          "f1feoon5": "/commercial/data-centers-secure-facilities",
           "f1u1km71": "/assets/fine-grading-1280-CWwHPN9f.webp",
           "f5dus4q": "Start the Conversation",
           "f19zqrt0": "Have acreage that needs shaping? Let's walk it together.",
@@ -9048,6 +10273,34 @@
             "maxLength": 2000
           },
           {
+            "path": "f1a8ntjb",
+            "label": "Text: Drainage is one part of the campus exterior.",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fcb2kz",
+            "label": "Text: Coordinate swales, ponds, erosion, perimeter vegetation, and exterior access through a site pla",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f1pep89w",
+            "label": "Text: Explore secure facility exterior management",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1feoon5",
+            "label": "Link: /commercial/data-centers-secure-facilities",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
             "path": "f1u1km71",
             "label": "Image: /assets/fine-grading-1280-CWwHPN9f.webp",
             "type": "image",
@@ -9178,6 +10431,10 @@
           "f9spy6u": "tel:7042218928",
           "fatly8t": "request a free estimate online",
           "fmggb4x": "/contact",
+          "f1a8ntjb": "Drainage is one part of the campus exterior.",
+          "fcb2kz": "Coordinate swales, ponds, erosion, perimeter vegetation, and exterior access through a site plan built for large operational facilities.",
+          "f1pep89w": "Explore secure facility exterior management",
+          "f1feoon5": "/commercial/data-centers-secure-facilities",
           "f1u1km71": "/assets/fine-grading-1280-CWwHPN9f.webp",
           "f5dus4q": "Start the Conversation",
           "f19zqrt0": "Have acreage that needs shaping? Let's walk it together.",
@@ -10939,6 +12196,34 @@
             "maxLength": 2000
           },
           {
+            "path": "fkqohtc",
+            "label": "Text: Managing stormwater across a complex campus?",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1j2t86w",
+            "label": "Text: See how pond and SCM maintenance connects with perimeter vegetation, grading, access roads, and",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
+          },
+          {
+            "path": "f14cvxe4",
+            "label": "Text: Data center & secure facility grounds management",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1feoon5",
+            "label": "Link: /commercial/data-centers-secure-facilities",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
             "path": "f1u1km71",
             "label": "Image: /assets/fine-grading-1280-CWwHPN9f.webp",
             "type": "image",
@@ -11072,6 +12357,10 @@
           "f9spy6u": "tel:7042218928",
           "fatly8t": "request a free estimate online",
           "fmggb4x": "/contact",
+          "fkqohtc": "Managing stormwater across a complex campus?",
+          "f1j2t86w": "See how pond and SCM maintenance connects with perimeter vegetation, grading, access roads, and recurring exterior work for large facilities.",
+          "f14cvxe4": "Data center & secure facility grounds management",
+          "f1feoon5": "/commercial/data-centers-secure-facilities",
           "f1u1km71": "/assets/fine-grading-1280-CWwHPN9f.webp",
           "f5dus4q": "Start the Conversation",
           "f19zqrt0": "Have acreage that needs shaping? Let's walk it together.",
@@ -22081,6 +23370,7 @@
         "about",
         "commercial",
         "commercial-snow-ice-management",
+        "commercial-data-centers-secure-facilities",
         "contact",
         "gallery",
         "services",

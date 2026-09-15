@@ -494,6 +494,72 @@
       }
     ]
   },
+  "features/data-center-perimeter-management.png": {
+    "sourceBytes": 3551873,
+    "sourceHash": "04096d60770b1ddeb9e1387bbc5a818e5bcedb390abb23d27f926b7e10286bfa",
+    "width": 1536,
+    "height": 1024,
+    "default": "optimized/features/data-center-perimeter-management-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/features/data-center-perimeter-management-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 35030,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/data-center-perimeter-management-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 512,
+        "bytes": 90572,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/data-center-perimeter-management-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 853,
+        "bytes": 241034,
+        "quality": 78
+      }
+    ]
+  },
+  "features/data-center-stormwater-maintenance.png": {
+    "sourceBytes": 2628413,
+    "sourceHash": "1a17dfca37d36976bf4255403e7cdc8e6d992973cd484fb81ded162ba9e09e3a",
+    "width": 1448,
+    "height": 1086,
+    "default": "optimized/features/data-center-stormwater-maintenance-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/features/data-center-stormwater-maintenance-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 360,
+        "bytes": 30278,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/data-center-stormwater-maintenance-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 576,
+        "bytes": 72872,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/data-center-stormwater-maintenance-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 960,
+        "bytes": 171784,
+        "quality": 78
+      }
+    ]
+  },
   "features/drainage-fix.png": {
     "sourceBytes": 2223752,
     "sourceHash": "342cbc3dacbfb119df659ee7594d580042504e58559d9679cf4a6819454648e3",
@@ -788,6 +854,39 @@
         "height": 896,
         "bytes": 239400,
         "quality": 68
+      }
+    ]
+  },
+  "features/reconstruction-smaller-scale.png": {
+    "sourceBytes": 3446296,
+    "sourceHash": "7e57473a121a1f489cacbf49c21da338c040b22868e3a1a2d5da047c0354cee4",
+    "width": 1448,
+    "height": 1086,
+    "default": "optimized/features/reconstruction-smaller-scale-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/features/reconstruction-smaller-scale-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 360,
+        "bytes": 57946,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/reconstruction-smaller-scale-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 576,
+        "bytes": 97722,
+        "quality": 48
+      },
+      {
+        "path": "optimized/features/reconstruction-smaller-scale-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 960,
+        "bytes": 240734,
+        "quality": 53
       }
     ]
   },
@@ -1183,6 +1282,39 @@
         "width": 1280,
         "height": 720,
         "bytes": 109272,
+        "quality": 78
+      }
+    ]
+  },
+  "hero-data-center-secure-facility.png": {
+    "sourceBytes": 2628040,
+    "sourceHash": "b730d84282035017c19d918e094e7f96e80b6cc497d5e5c9bbc3fc245d07b235",
+    "width": 1672,
+    "height": 941,
+    "default": "optimized/hero-data-center-secure-facility-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/hero-data-center-secure-facility-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 270,
+        "bytes": 23930,
+        "quality": 78
+      },
+      {
+        "path": "optimized/hero-data-center-secure-facility-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 432,
+        "bytes": 57084,
+        "quality": 78
+      },
+      {
+        "path": "optimized/hero-data-center-secure-facility-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 720,
+        "bytes": 146128,
         "quality": 78
       }
     ]
@@ -1649,6 +1781,39 @@
       }
     ]
   },
+  "service-reconstruction-smaller-scale.png": {
+    "sourceBytes": 2917003,
+    "sourceHash": "287636074322f50420d3ae487be412331b5ca150d806865764a0ebb5e8981711",
+    "width": 1672,
+    "height": 941,
+    "default": "optimized/service-reconstruction-smaller-scale-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/service-reconstruction-smaller-scale-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 270,
+        "bytes": 37286,
+        "quality": 78
+      },
+      {
+        "path": "optimized/service-reconstruction-smaller-scale-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 432,
+        "bytes": 85962,
+        "quality": 78
+      },
+      {
+        "path": "optimized/service-reconstruction-smaller-scale-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 720,
+        "bytes": 197562,
+        "quality": 78
+      }
+    ]
+  },
   "service-reconstruction.png": {
     "sourceBytes": 1883898,
     "sourceHash": "ee8d826d9f2c62d0887c877ad3c6191d1ee2d875d3c139712822517257c0d795",
@@ -1778,72 +1943,6 @@
         "height": 698,
         "bytes": 106346,
         "quality": 78
-      }
-    ]
-  },
-  "service-reconstruction-smaller-scale.png": {
-    "sourceBytes": 2917003,
-    "sourceHash": "287636074322f50420d3ae487be412331b5ca150d806865764a0ebb5e8981711",
-    "width": 1672,
-    "height": 941,
-    "default": "optimized/service-reconstruction-smaller-scale-1280.webp",
-    "variants": [
-      {
-        "path": "optimized/service-reconstruction-smaller-scale-480.webp",
-        "format": "webp",
-        "width": 480,
-        "height": 270,
-        "bytes": 37286,
-        "quality": 78
-      },
-      {
-        "path": "optimized/service-reconstruction-smaller-scale-768.webp",
-        "format": "webp",
-        "width": 768,
-        "height": 432,
-        "bytes": 85962,
-        "quality": 78
-      },
-      {
-        "path": "optimized/service-reconstruction-smaller-scale-1280.webp",
-        "format": "webp",
-        "width": 1280,
-        "height": 720,
-        "bytes": 197562,
-        "quality": 78
-      }
-    ]
-  },
-  "features/reconstruction-smaller-scale.png": {
-    "sourceBytes": 3446296,
-    "sourceHash": "7e57473a121a1f489cacbf49c21da338c040b22868e3a1a2d5da047c0354cee4",
-    "width": 1448,
-    "height": 1086,
-    "default": "optimized/features/reconstruction-smaller-scale-1280.webp",
-    "variants": [
-      {
-        "path": "optimized/features/reconstruction-smaller-scale-480.webp",
-        "format": "webp",
-        "width": 480,
-        "height": 360,
-        "bytes": 57946,
-        "quality": 78
-      },
-      {
-        "path": "optimized/features/reconstruction-smaller-scale-768.webp",
-        "format": "webp",
-        "width": 768,
-        "height": 576,
-        "bytes": 97722,
-        "quality": 48
-      },
-      {
-        "path": "optimized/features/reconstruction-smaller-scale-1280.webp",
-        "format": "webp",
-        "width": 1280,
-        "height": 960,
-        "bytes": 240734,
-        "quality": 53
       }
     ]
   }

@@ -149,7 +149,7 @@ export default function CommercialLandscaping() {
         </div>
       </section>
 
-      <section className="site-shell py-12"><h2 className="text-2xl font-bold">Looking for a connected exterior site plan?</h2><p className="mt-4 text-muted-foreground">Explore how commercial landscaping, drainage, land, corrective work, and <Link href="/commercial-snow-ice-management" className="font-bold text-primary underline">commercial snow and ice management</Link> can fit an agreed exterior-work scope.</p><Link href="/commercial" className="mt-5 inline-block font-bold text-primary underline">Commercial Site Management & Site Assessment</Link></section>
+      <section className="site-shell py-12"><h2 className="text-2xl font-bold">Looking for a connected exterior site plan?</h2><p className="mt-4 text-muted-foreground">Explore how commercial landscaping, drainage, land, corrective work, and <Link href="/commercial-snow-ice-management" className="font-bold text-primary underline">commercial snow and ice management</Link> can fit an agreed exterior-work scope.</p><div className="mt-5 flex flex-wrap gap-x-6 gap-y-3"><Link href="/commercial" className="font-bold text-primary underline">Commercial Site Management & Site Assessment</Link><Link href="/commercial/data-centers-secure-facilities" className="font-bold text-primary underline">Data center & secure facility grounds</Link></div></section>
       <FinalCTA />
     </Layout>
   );

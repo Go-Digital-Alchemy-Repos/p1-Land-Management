@@ -345,7 +345,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="site-shell py-12"><div className="border-l-4 border-primary bg-muted p-7"><h2 className="text-2xl font-bold">Managing a commercial or industrial property?</h2><p className="mt-3 text-muted-foreground">Bring grounds, drainage, land and recurring exterior work into one scope discussion.</p><Link href="/commercial" className="mt-5 inline-block font-bold text-primary underline">Explore Commercial Site Management</Link></div></section>
+      <section className="site-shell py-12"><div className="border-l-4 border-primary bg-muted p-7"><h2 className="text-2xl font-bold">Managing a commercial or industrial property?</h2><p className="mt-3 text-muted-foreground">Bring grounds, drainage, land and recurring exterior work into one scope discussion.</p><div className="mt-5 flex flex-wrap gap-x-6 gap-y-3"><Link href="/commercial" className="font-bold text-primary underline">Explore Commercial Site Management</Link><Link href="/commercial/data-centers-secure-facilities" className="font-bold text-primary underline">Data center & secure facility grounds</Link></div></div></section>
       <FinalCTA />
     </Layout>
   );

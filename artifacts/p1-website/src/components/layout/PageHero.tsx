@@ -16,6 +16,8 @@ interface PageHeroBaseProps {
   children?: ReactNode;
   /** Show the "Index of Work" side panel (desktop only). */
   indexOfWork?: boolean;
+  /** Reduce mobile spacing for unusually long service-page headlines. */
+  compactMobile?: boolean;
 }
 
 type PageHeroProps = PageHeroBaseProps & (
@@ -28,7 +30,7 @@ type PageHeroProps = PageHeroBaseProps & (
  * Mirrors the home hero: low-opacity image, diagonal navy wash, contour-line
  * texture, kicker eyebrow and a left-aligned Fraunces display headline.
  */
-export function PageHero({ eyebrow, title, subtitle, image, imageAlt, children, indexOfWork }: PageHeroProps) {
+export function PageHero({ eyebrow, title, subtitle, image, imageAlt, children, indexOfWork, compactMobile }: PageHeroProps) {
   return (
     <section className="relative overflow-hidden bg-navy-deep">
       {image && (
@@ -51,7 +53,7 @@ export function PageHero({ eyebrow, title, subtitle, image, imageAlt, children, 
         style={{ background: "linear-gradient(to bottom, transparent, hsl(40 20% 98%))" }}
       />
 
-      <div className="site-shell relative grid grid-cols-12 gap-8 pb-24 pt-24 lg:pb-28 lg:pt-28">
+      <div className={`site-shell relative grid grid-cols-12 gap-8 ${compactMobile ? "pb-14 pt-14 sm:pb-24 sm:pt-24" : "pb-24 pt-24"} lg:pb-28 lg:pt-28`}>
         <div className={indexOfWork ? "col-span-12 lg:col-span-8" : "col-span-12"}>
           <span
             className="inline-flex items-center gap-2 font-sans text-[11px] font-bold uppercase text-clay"
@@ -60,15 +62,15 @@ export function PageHero({ eyebrow, title, subtitle, image, imageAlt, children, 
             <span className="inline-block h-px w-7 bg-clay" />
             {eyebrow}
           </span>
-          <h1 className="mt-6 max-w-4xl font-display text-[clamp(2.3rem,5vw,4.2rem)] font-light leading-[1.02] tracking-[-0.02em] text-white">
+          <h1 className={`mt-6 max-w-4xl font-display font-light leading-[1.02] tracking-[-0.02em] text-white ${compactMobile ? "text-[2rem] sm:text-[clamp(2.3rem,5vw,4.2rem)]" : "text-[clamp(2.3rem,5vw,4.2rem)]"}`}>
             {title}
           </h1>
           {subtitle && (
-            <p className="mt-6 max-w-2xl text-lg leading-relaxed" style={{ color: "hsl(40 20% 92% / 0.82)" }}>
+            <p className={`mt-6 max-w-2xl leading-relaxed ${compactMobile ? "text-base sm:text-lg" : "text-lg"}`} style={{ color: "hsl(40 20% 92% / 0.82)" }}>
               {subtitle}
             </p>
           )}
-          {children && <div className="mt-9">{children}</div>}
+          {children && <div className={compactMobile ? "mt-6 sm:mt-9" : "mt-9"}>{children}</div>}
         </div>
         {indexOfWork && (
           <div className="col-span-12 hidden lg:col-span-4 lg:flex lg:items-end lg:justify-end">

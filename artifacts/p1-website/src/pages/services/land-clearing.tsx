@@ -141,6 +141,7 @@ export default function LandClearing() {
         </div>
       </section>
 
+      <section className="site-shell py-12"><h2 className="text-2xl font-bold">Controlling perimeter acreage around an active facility?</h2><p className="mt-4 text-muted-foreground">Connect selective clearing and buffer management with drainage, sightlines, service roads, and scheduled exterior care.</p><Link href="/commercial/data-centers-secure-facilities" className="mt-5 inline-block font-bold text-primary underline">Secure campus land and grounds management</Link></section>
       <FinalCTA />
     </Layout>
   );
