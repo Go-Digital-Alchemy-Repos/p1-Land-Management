@@ -6,7 +6,7 @@
     "displayName": "P1 Land & Property Management",
     "source": {
       "repository": "https://github.com/Go-Digital-Alchemy-Repos/p1-Land-Management.git",
-      "revision": "a108ace200de740e63a7dc0a85f34c966db3a7a8"
+      "revision": "a4c992ada68d185919e3a57b9d45baa00be7aa6e"
     },
     "owners": [
       {
@@ -9509,8 +9509,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f18juj0q",
-            "label": "Text: Bermudagrass",
+            "path": "f1ebnxl6",
+            "label": "Text: Bermuda Grass",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -9537,8 +9537,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f4ys40d",
-            "label": "Text: Zoysiagrass",
+            "path": "f1row47f",
+            "label": "Text: Zoysia Grass",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -9551,8 +9551,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1t9tbel",
-            "label": "Text: Centipedegrass",
+            "path": "f1obg2fv",
+            "label": "Text: Centipede Grass",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -9565,8 +9565,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f17c759p",
-            "label": "Text: Bahiagrass",
+            "path": "f1oh1d0r",
+            "label": "Text: Bahia Grass",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -9607,7 +9607,7 @@
             "maxLength": 2000
           },
           {
-            "path": "f1w1wnuw",
+            "path": "f1jv3j46",
             "label": "Text: The Carolinas sit in the transition zone between warm- and cool-season grasses, so species sele",
             "type": "textarea",
             "required": false,
@@ -9816,21 +9816,21 @@
           "f15dwxmg": "Upstate South Carolina and the Charlotte NC region span the transition zone between warm- and cool-season grasses, which means species selection matters more here than almost anywhere. P1 recommends the right species for your specific use, sun exposure, soil type, and maintenance commitment:",
           "f1g6fqib": "/assets/turf-species-1280-uS6ICNzS.webp",
           "fwb2yoz": "Close-up of lush, healthy established turf grass",
-          "f18juj0q": "Bermudagrass",
+          "f1ebnxl6": "Bermuda Grass",
           "f1912vu3": "Best for high-traffic commercial turf, sports fields, and sunny pastures",
           "f1n9auek": "Tall Fescue",
           "f13p8b0m": "Ideal for transition zone lawns, commercial grounds, and shaded areas",
-          "f4ys40d": "Zoysiagrass",
+          "f1row47f": "Zoysia Grass",
           "f19z6h0e": "Dense, low-maintenance warm-season option for commercial and institutional sites",
-          "f1t9tbel": "Centipedegrass",
+          "f1obg2fv": "Centipede Grass",
           "f1lyre6y": "Low-input warm-season grass for lower-fertility acidic soils",
-          "f17c759p": "Bahiagrass",
+          "f1oh1d0r": "Bahia Grass",
           "fxxmnr7": "Drought-tolerant pasture and erosion control option for coarser soils",
           "f1mghde1": "From Cleared Ground to Established Turf",
           "f17b3aft": "If P1 cleared your land, graded it, and installed drainage — we can take you all the way to a thriving stand of turf. That continuity eliminates finger-pointing between contractors, ensures grade is correct for both drainage and turf health, and gives you a single team responsible for the outcome.",
           "f1ikb3hh": "Turf Installation & Seeding FAQs",
           "f18e0gn5": "What grass species grow best in Upstate SC and Charlotte NC?",
-          "f1w1wnuw": "The Carolinas sit in the transition zone between warm- and cool-season grasses, so species selection matters. Bermudagrass suits high-traffic sunny sites, Tall Fescue handles shade and transition-zone lawns, Zoysia offers dense low-maintenance turf, Centipede fits low-fertility acidic soils, and Bahia works for drought-prone pastures.",
+          "f1jv3j46": "The Carolinas sit in the transition zone between warm- and cool-season grasses, so species selection matters. Bermuda grass suits high-traffic sunny sites, Tall Fescue handles shade and transition-zone lawns, Zoysia grass offers dense low-maintenance turf, Centipede grass fits low-fertility acidic soils, and Bahia grass works for drought-prone pastures.",
           "f1qe3v8m": "Should I choose sod or seed for my property?",
           "f19qowej": "Sod gives instant coverage and is best for commercial grounds and high-visibility areas; seeding — including broadcast, drill, and hydroseed — is more economical at large acreage and the standard choice for pastures, hay fields, and erosion control. P1 recommends the right method for your use, budget, and timeline.",
           "fnxzytf": "How large an area can P1 seed or sod?",
@@ -19938,8 +19938,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f18juj0q",
-            "label": "Text: Bermudagrass",
+            "path": "f1ebnxl6",
+            "label": "Text: Bermuda Grass",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -19994,8 +19994,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f4ys40d",
-            "label": "Text: Zoysiagrass",
+            "path": "f1row47f",
+            "label": "Text: Zoysia Grass",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -20029,8 +20029,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1t9tbel",
-            "label": "Text: Centipedegrass",
+            "path": "f1obg2fv",
+            "label": "Text: Centipede Grass",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -20141,8 +20141,8 @@
             "maxLength": 12000
           },
           {
-            "path": "f17c759p",
-            "label": "Text: Bahiagrass",
+            "path": "f1oh1d0r",
+            "label": "Text: Bahia Grass",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -20340,7 +20340,7 @@
           "f18jixo9": "The Transition Zone Challenge",
           "fx7zepc": "Upstate South Carolina and the Charlotte, NC region sit in what turfgrass scientists call the transition zone — a band across the mid-South where neither warm-season nor cool-season grasses perform optimally year-round. Warm-season grasses go dormant and brown in winter. Cool-season grasses suffer in summer heat. Neither is perfect. The goal is to choose the species that performs best for your specific use during the seasons that matter most.",
           "f12xvcvn": "Warm-Season Grasses for Large Acreage",
-          "f18juj0q": "Bermudagrass",
+          "f1ebnxl6": "Bermuda Grass",
           "f1shlr3w": "The dominant choice for high-traffic commercial turf, athletic fields, and active pastures throughout the region. Bermuda is aggressive, drought-tolerant, and recovers quickly from damage. It goes fully dormant and brown in winter — which is acceptable for most commercial and agricultural applications. It requires full sun and performs poorly in shade.",
           "f194yucs": " Commercial grounds, athletic fields, sunny pastures, golf course roughs",
           "fz6kdwt": "Best for:",
@@ -20348,12 +20348,12 @@
           "fqlnhr3": "Establishment:",
           "f1y8tw2p": " Moderate to high — requires regular fertilization and mowing during growing season",
           "f1sbfz4r": "Maintenance:",
-          "f4ys40d": "Zoysiagrass",
+          "f1row47f": "Zoysia Grass",
           "f1n99nl2": "A dense, slow-growing warm-season grass that produces a tight, attractive turf with fewer inputs than Bermuda once established. Shade and cold tolerance vary by cultivar; match the selection to the site. The downside is slow establishment and relatively high cost if sodded.",
           "feyceqw": " Commercial properties, institutional campuses, and municipal grounds",
           "f748ga1": " Sod or plugs (slow from seed)",
           "f15zm1jv": " Low to moderate once established",
-          "f1t9tbel": "Centipedegrass",
+          "f1obg2fv": "Centipede Grass",
           "fl1s22f": "A low-input warm-season option for acidic, lower-fertility soils common in much of the Carolinas Piedmont. Centipede requires minimal fertilization and grows slowly, which means less mowing. It's not suitable for high-traffic or heavy-use areas.",
           "f1q0ep87": " Low-maintenance agricultural acreage, utility areas, and industrial grounds",
           "f1jhx8ks": " Seed or sod",
@@ -20369,7 +20369,7 @@
           "f19jl5yu": " — The primary hay and pasture grass for the Carolinas. High yield, good quality forage, drought-tolerant.",
           "f15ceijk": " — The dominant cool-season pasture grass. Widely grown for beef cattle across the region, though endophyte toxicity in older varieties is a consideration for breeding stock.",
           "f12ady3n": " — Drought-tolerant, low-input pasture grass for sandier, lower-fertility soils. Excellent for erosion control on rough terrain.",
-          "f17c759p": "Bahiagrass",
+          "f1oh1d0r": "Bahia Grass",
           "f1rn2eqg": " — Many productive pastures use a warm/cool season mix to extend the grazing season and reduce seasonal gaps in forage availability.",
           "f1xvkv0l": "Mixed species",
           "f1k4jhd8": "The Bottom Line",

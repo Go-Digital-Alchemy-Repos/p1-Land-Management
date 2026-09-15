@@ -16,7 +16,7 @@ const FAQS = [
   {
     question: "What grass species grow best in Upstate SC and Charlotte NC?",
     answer:
-      "The Carolinas sit in the transition zone between warm- and cool-season grasses, so species selection matters. Bermudagrass suits high-traffic sunny sites, Tall Fescue handles shade and transition-zone lawns, Zoysia offers dense low-maintenance turf, Centipede fits low-fertility acidic soils, and Bahia works for drought-prone pastures.",
+      "The Carolinas sit in the transition zone between warm- and cool-season grasses, so species selection matters. Bermuda grass suits high-traffic sunny sites, Tall Fescue handles shade and transition-zone lawns, Zoysia grass offers dense low-maintenance turf, Centipede grass fits low-fertility acidic soils, and Bahia grass works for drought-prone pastures.",
   },
   {
     question: "Should I choose sod or seed for my property?",
@@ -135,11 +135,11 @@ export default function TurfInstallationSeeding() {
           <div className="space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
             <div className="grid grid-cols-1 gap-4">
               {[
-                { title: "Bermudagrass", desc: "Best for high-traffic commercial turf, sports fields, and sunny pastures" },
+                { title: "Bermuda Grass", desc: "Best for high-traffic commercial turf, sports fields, and sunny pastures" },
                 { title: "Tall Fescue", desc: "Ideal for transition zone lawns, commercial grounds, and shaded areas" },
-                { title: "Zoysiagrass", desc: "Dense, low-maintenance warm-season option for commercial and institutional sites" },
-                { title: "Centipedegrass", desc: "Low-input warm-season grass for lower-fertility acidic soils" },
-                { title: "Bahiagrass", desc: "Drought-tolerant pasture and erosion control option for coarser soils" }
+                { title: "Zoysia Grass", desc: "Dense, low-maintenance warm-season option for commercial and institutional sites" },
+                { title: "Centipede Grass", desc: "Low-input warm-season grass for lower-fertility acidic soils" },
+                { title: "Bahia Grass", desc: "Drought-tolerant pasture and erosion control option for coarser soils" }
               ].map((item, i) => (
                 <div key={i} className="bg-card border border-border p-6 rounded-lg">
                   <h3 className="text-xl font-bold text-secondary mb-2">{item.title}</h3>

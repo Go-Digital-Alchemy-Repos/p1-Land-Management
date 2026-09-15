@@ -55,7 +55,7 @@ export default function BlogPost() {
 
             <h2>Warm-Season Grasses for Large Acreage</h2>
             
-            <h3>Bermudagrass</h3>
+            <h3>Bermuda Grass</h3>
             <p>
               The dominant choice for high-traffic commercial turf, athletic fields, and active pastures throughout the region. Bermuda is aggressive, drought-tolerant, and recovers quickly from damage. It goes fully dormant and brown in winter — which is acceptable for most commercial and agricultural applications. It requires full sun and performs poorly in shade.
             </p>
@@ -65,7 +65,7 @@ export default function BlogPost() {
               <li><strong>Maintenance:</strong> Moderate to high — requires regular fertilization and mowing during growing season</li>
             </ul>
 
-            <h3>Zoysiagrass</h3>
+            <h3>Zoysia Grass</h3>
             <p>
               A dense, slow-growing warm-season grass that produces a tight, attractive turf with fewer inputs than Bermuda once established. Shade and cold tolerance vary by cultivar; match the selection to the site. The downside is slow establishment and relatively high cost if sodded.
             </p>
@@ -75,7 +75,7 @@ export default function BlogPost() {
               <li><strong>Maintenance:</strong> Low to moderate once established</li>
             </ul>
 
-            <h3>Centipedegrass</h3>
+            <h3>Centipede Grass</h3>
             <p>
               A low-input warm-season option for acidic, lower-fertility soils common in much of the Carolinas Piedmont. Centipede requires minimal fertilization and grows slowly, which means less mowing. It's not suitable for high-traffic or heavy-use areas.
             </p>
@@ -102,9 +102,9 @@ export default function BlogPost() {
               For farm pastures, hay fields, and food plots, the calculus is different — productivity and forage quality matter more than aesthetics. Common choices in the region include:
             </p>
             <ul>
-              <li><strong>Bermudagrass</strong> — The primary hay and pasture grass for the Carolinas. High yield, good quality forage, drought-tolerant.</li>
+              <li><strong>Bermuda Grass</strong> — The primary hay and pasture grass for the Carolinas. High yield, good quality forage, drought-tolerant.</li>
               <li><strong>Tall Fescue</strong> — The dominant cool-season pasture grass. Widely grown for beef cattle across the region, though endophyte toxicity in older varieties is a consideration for breeding stock.</li>
-              <li><strong>Bahiagrass</strong> — Drought-tolerant, low-input pasture grass for sandier, lower-fertility soils. Excellent for erosion control on rough terrain.</li>
+              <li><strong>Bahia Grass</strong> — Drought-tolerant, low-input pasture grass for sandier, lower-fertility soils. Excellent for erosion control on rough terrain.</li>
               <li><strong>Mixed species</strong> — Many productive pastures use a warm/cool season mix to extend the grazing season and reduce seasonal gaps in forage availability.</li>
             </ul>
 
