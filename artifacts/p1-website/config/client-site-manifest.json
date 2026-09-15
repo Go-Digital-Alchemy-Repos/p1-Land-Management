@@ -6,7 +6,7 @@
     "displayName": "P1 Land & Property Management",
     "source": {
       "repository": "https://github.com/Go-Digital-Alchemy-Repos/p1-Land-Management.git",
-      "revision": "0486ecd845a4af821783b9f06c9a42ed170812e9"
+      "revision": "3b169f141adf23c5ca81f2d3205db9690921235e"
     },
     "owners": [
       {
@@ -1142,8 +1142,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1h1ifc2",
-            "label": "Image: /assets/service-reconstruction-1280-7a4gsZkc.webp",
+            "path": "f1cxyjfe",
+            "label": "Image: /assets/service-reconstruction-smaller-scale-1280-DgtCeNAn.webp",
             "type": "image",
             "required": false,
             "maxLength": 2000
@@ -1676,7 +1676,7 @@
           "f1xtoq0z": "Property Reconstruction",
           "fui1nab": "Full-scale rebuilds from drainage overhaul to complete site regrading.",
           "f1h3mhh4": "/services/property-reconstruction",
-          "f1h1ifc2": "/assets/service-reconstruction-1280-7a4gsZkc.webp",
+          "f1cxyjfe": "/assets/service-reconstruction-smaller-scale-1280-DgtCeNAn.webp",
           "fntxnsd": "Property Reconstruction",
           "fhb2ye9": "/assets/grading-construction-1280-CaX7duMl.webp",
           "fx12ycg": "Grading for new construction",
@@ -5129,8 +5129,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1h1ifc2",
-            "label": "Image: /assets/service-reconstruction-1280-7a4gsZkc.webp",
+            "path": "f1cxyjfe",
+            "label": "Image: /assets/service-reconstruction-smaller-scale-1280-DgtCeNAn.webp",
             "type": "image",
             "required": false,
             "maxLength": 2000
@@ -5328,7 +5328,7 @@
           "fcmyddd": "/assets/pond-management-1280-wAkP6M3E.webp",
           "fyqcfz9": "Illustration: Pond Restoration & Shoreline Repair",
           "f1lhjow7": "Pond Restoration & Shoreline Repair",
-          "f1h1ifc2": "/assets/service-reconstruction-1280-7a4gsZkc.webp",
+          "f1cxyjfe": "/assets/service-reconstruction-smaller-scale-1280-DgtCeNAn.webp",
           "f5wludg": "Illustration: Full Property Reconstruction",
           "fgh6b3e": "Full Property Reconstruction",
           "frepd5q": "/assets/commercial-property-1280-DHKZ--xC.webp",
@@ -5789,8 +5789,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1h1ifc2",
-            "label": "Image: /assets/service-reconstruction-1280-7a4gsZkc.webp",
+            "path": "f1cxyjfe",
+            "label": "Image: /assets/service-reconstruction-smaller-scale-1280-DgtCeNAn.webp",
             "type": "image",
             "required": false,
             "maxLength": 2000
@@ -5982,7 +5982,7 @@
           "f1xtoq0z": "Property Reconstruction",
           "fui1nab": "Full-scale rebuilds from drainage overhaul to complete site regrading.",
           "f1h3mhh4": "/services/property-reconstruction",
-          "f1h1ifc2": "/assets/service-reconstruction-1280-7a4gsZkc.webp",
+          "f1cxyjfe": "/assets/service-reconstruction-smaller-scale-1280-DgtCeNAn.webp",
           "fntxnsd": "Property Reconstruction",
           "f1nzld4p": "For qualifying properties",
           "fyhcluv": "P1 serves commercial, industrial, agricultural, municipal, and institutional properties of 1 acre or more. Residential work is outside our service model.",

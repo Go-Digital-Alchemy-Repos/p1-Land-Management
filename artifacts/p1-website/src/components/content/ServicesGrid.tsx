@@ -21,7 +21,7 @@ import serviceDrainage from "@/assets/service-drainage.png";
 import serviceTurf from "@/assets/service-turf.png";
 import serviceTree from "@/assets/service-tree.png";
 import servicePond from "@/assets/service-pond.png";
-import serviceReconstruction from "@/assets/service-reconstruction.png";
+import serviceReconstruction from "@/assets/service-reconstruction-smaller-scale.png";
 import { cmsValue, useCms } from "@/lib/cms";
 import { responsiveImageProps } from "@/lib/responsive-images";
 

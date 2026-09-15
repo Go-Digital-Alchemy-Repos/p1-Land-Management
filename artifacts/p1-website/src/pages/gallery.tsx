@@ -11,7 +11,7 @@ import imgGrading from "@/assets/fine-grading.png";
 import imgDrainage from "@/assets/service-drainage.png";
 import imgTurf from "@/assets/service-turf.png";
 import imgPond from "@/assets/pond-management.png";
-import imgReconstruction from "@/assets/service-reconstruction.png";
+import imgReconstruction from "@/assets/service-reconstruction-smaller-scale.png";
 import imgCommercial from "@/assets/commercial-property.png";
 import imgIndustrial from "@/assets/service-industrial.png";
 import imgTree from "@/assets/service-tree.png";
