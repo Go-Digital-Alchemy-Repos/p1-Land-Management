@@ -3,6 +3,7 @@ import { FinalCTA } from "@/components/layout/FinalCTA";
 import { ContourField } from "@/components/layout/ContourField";
 import { IndexOfWork } from "@/components/layout/IndexOfWork";
 import { ServicesGrid } from "@/components/content/ServicesGrid";
+import { GoogleReviewShowcase } from "@/components/content/GoogleReviewShowcase";
 import { SEO } from "@/components/seo";
 import { localBusinessSchema, faqSchema } from "@/lib/structured-data";
 import { responsiveImageProps } from "@/lib/responsive-images";
@@ -156,6 +157,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <GoogleReviewShowcase />
 
       {/* SERVICES */}
       <section className="relative bg-background py-24">

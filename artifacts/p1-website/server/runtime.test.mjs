@@ -111,6 +111,14 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
     assert(!/<script[^>]+src="[^"]*(?:admin|dashboard)/.test(response.body));
     const preview = await request(port, '/?cmsPreview=1'); assert.equal(preview.headers['x-robots-tag'], 'noindex, nofollow');
   });
+  await t.test('Google reviews endpoint fails closed until server credentials are configured', async () => {
+    const response = await request(port, '/api/p1/google-reviews');
+    assert.equal(response.status, 503);
+    assert.equal(response.headers['content-type'], 'application/json');
+    assert.equal(response.headers['cache-control'], 'no-store');
+    assert.equal(response.headers['x-robots-tag'], 'noindex, nofollow');
+    assert.deepEqual(JSON.parse(response.body), { error: 'Reviews are temporarily unavailable.' });
+  });
   await t.test('favicon MIME, security headers and hashed-asset caching', async () => {
     const favicon = await request(port, '/favicon.svg'); assert.equal(favicon.status, 200); assert.equal(favicon.headers['content-type'], 'image/svg+xml');
     assert.equal(favicon.headers['x-content-type-options'], 'nosniff');
@@ -167,6 +175,7 @@ test('staging manifest blocks indexing across public and proxied responses regar
   await copyFile(resolve(root, 'server/index.mjs'), resolve(temporary, 'server/index.mjs'));
   await copyFile(resolve(root, 'server/content.mjs'), resolve(temporary, 'server/content.mjs'));
   await copyFile(resolve(root, 'server/client-ip.mjs'), resolve(temporary, 'server/client-ip.mjs')); 
+  await copyFile(resolve(root, 'server/google-reviews.mjs'), resolve(temporary, 'server/google-reviews.mjs'));
   await symlink(resolve(root, 'dist'), resolve(temporary, 'dist'), 'dir');
   const manifest = JSON.parse(await readFile(resolve(root, 'config/client-site-manifest.json'), 'utf8'));
   manifest.origins.publicSite = 'https://p1-staging-example.up.railway.app';

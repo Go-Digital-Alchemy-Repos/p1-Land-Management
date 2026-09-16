@@ -7,6 +7,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createGzip, createBrotliCompress } from 'node:zlib';
 import { createContentStore } from './content.mjs';
 import { clientIp } from './client-ip.mjs';
+import { createGoogleReviewsStore } from './google-reviews.mjs';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const publicDir = path.join(root,'dist/public');
 const manifest = JSON.parse(await readFile(path.join(root,'config/client-site-manifest.json'),'utf8'));
@@ -14,6 +15,7 @@ const template = await readFile(path.join(publicDir,'index.html'),'utf8');
 const { render } = await import(pathToFileURL(path.join(root,'dist/server/entry-server.js')).href);
 const origin = process.env.P1_CORE_ORIGIN?.replace(/\/$/,'');
 const content = createContentStore({ manifest, origin, cacheDir: process.env.P1_CONTENT_CACHE_DIR });
+const googleReviews = createGoogleReviewsStore();
 const canonical = 'https://www.p1landmanagement.com';
 const legacyPublicRoutes = new Map([
   ['/services/commercial-property-management', '/services/commercial-landscaping'],
@@ -113,6 +115,15 @@ const server=http.createServer(async(req,res)=>{
     if (legacyDestination) {res.writeHead(301,{Location:`${redirectToCanonicalHost?canonical:''}${legacyDestination}${url.search}`});return res.end();}
     if(redirectToCanonicalHost || normalized!==pathname) {res.writeHead(308,{Location:`${redirectToCanonicalHost?canonical:''}${normalized}${url.search}`});return res.end();}
     if(pathname==='/api/p1/page-content' && ['GET','HEAD'].includes(req.method)) {const snapshot=await content.snapshot(url.searchParams.get('path')||'/');return send(req,res,snapshot?200:404,JSON.stringify(snapshot||{error:'Not found'}),'application/json','no-store');}
+    if(pathname==='/api/p1/google-reviews' && ['GET','HEAD'].includes(req.method)) {
+      try {
+        const snapshot=await googleReviews.snapshot();
+        return send(req,res,200,JSON.stringify(snapshot),'application/json','public, max-age=300, stale-while-revalidate=21600');
+      } catch (error) {
+        const unavailable = error?.code === 'NOT_CONFIGURED' || [401, 403, 429, 503].includes(error?.status);
+        return send(req,res,unavailable?503:502,JSON.stringify({ error: 'Reviews are temporarily unavailable.' }),'application/json','no-store');
+      }
+    }
     if(pathname==='/healthz')return send(req,res,200,'{"status":"ok"}','application/json','no-store');
     if(backendPath)return proxy(req,res);
     if(!['GET','HEAD'].includes(req.method))return send(req,res,405,'Method not allowed');
