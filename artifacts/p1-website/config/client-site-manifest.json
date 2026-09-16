@@ -6,7 +6,7 @@
     "displayName": "P1 Land & Property Management",
     "source": {
       "repository": "https://github.com/Go-Digital-Alchemy-Repos/p1-Land-Management.git",
-      "revision": "56acadb837b9277fa0c1fbfa211312eeaecc5822"
+      "revision": "241b92b10770e2ef8de5fd3f1314fdbfe9dd60d7"
     },
     "owners": [
       {
@@ -16975,8 +16975,8 @@
             "maxLength": 2000
           },
           {
-            "path": "frouzso",
-            "label": "Image: /assets/hero-lake-norman-1280-B68_HP7r.webp",
+            "path": "f1tun8ax",
+            "label": "Image: /assets/hero-lake-norman-1280-B-oxSxwS.webp",
             "type": "image",
             "required": false,
             "maxLength": 2000
@@ -17337,7 +17337,7 @@
           "seoTitle": "Land Management in Mooresville & Lake Norman | P1",
           "seoDescription": "Commercial landscaping, grounds maintenance, land clearing, drainage & pond care for large sites near Mooresville and Lake Norman. Call (704) 221-8928.",
           "seoImage": "/opengraph.jpg",
-          "frouzso": "/assets/hero-lake-norman-1280-B68_HP7r.webp",
+          "f1tun8ax": "/assets/hero-lake-norman-1280-B-oxSxwS.webp",
           "f1awwezn": "Land & Property Management Near Mooresville & Lake Norman, NC",
           "f1uwh9f8": "Service Area · NC",
           "fnzdoem": "Mooresville & Lake Norman, NC",
@@ -22891,6 +22891,20 @@
             "maxLength": 12000
           },
           {
+            "path": "fosntup",
+            "label": "Text: Find us on Google",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1jhcqx9",
+            "label": "Link: https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
             "path": "fmme39j",
             "label": "Text: Send a secure inquiry",
             "type": "text",
@@ -23354,6 +23368,8 @@
           "f16ax4gv": "Get a Free Estimate",
           "ft83pm7": "Toggle Menu",
           "f12qgro7": "Full-service land and property management for commercial, agricultural, industrial, municipal, and institutional properties 1 acre and larger across Upstate SC and the Charlotte, NC region.",
+          "fosntup": "Find us on Google",
+          "f1jhcqx9": "https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4m6!3m5!1s0x8855cd2b88976525:0x49c378cdfdecac9a!8m2!3d34.8311381!4d-80.6194367!16s%2Fg%2F11nw0vxpb_?entry=ttu&g_ep=EgoyMDI2MDkxMy4wIKXMDSoASAFQAw%3D%3D",
           "fmme39j": "Send a secure inquiry",
           "f1hf0vxg": "Services",
           "ffzg0ag": "Commercial Landscaping",

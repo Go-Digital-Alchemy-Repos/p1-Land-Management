@@ -20,6 +20,14 @@ export function SiteFooter() {
               <Phone className="h-5 w-5 text-primary" />
               (704) 221-8928
             </a>
+            <a
+              href="https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4m6!3m5!1s0x8855cd2b88976525:0x49c378cdfdecac9a!8m2!3d34.8311381!4d-80.6194367!16s%2Fg%2F11nw0vxpb_?entry=ttu&g_ep=EgoyMDI2MDkxMy4wIKXMDSoASAFQAw%3D%3D"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block w-fit text-sm font-semibold text-secondary-foreground/70 transition-colors hover:text-primary"
+            >
+              Find us on Google
+            </a>
             <Link href="/contact" className="inline-block text-sm font-semibold text-secondary-foreground/70 hover:text-primary transition-colors">Send a secure inquiry</Link>
           </div>
         </div>

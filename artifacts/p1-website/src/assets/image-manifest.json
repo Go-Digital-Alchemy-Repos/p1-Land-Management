@@ -1320,34 +1320,34 @@
     ]
   },
   "hero-lake-norman.png": {
-    "sourceBytes": 1858669,
-    "sourceHash": "0f38621d5db069062d55615fa921307375ad977c6b396234f0ea7726e0257d0f",
-    "width": 1408,
-    "height": 768,
+    "sourceBytes": 2711525,
+    "sourceHash": "0f47e022fe7fcac39251bd3d980eee81cb735230e0d15438a3ca3c608379a280",
+    "width": 1672,
+    "height": 941,
     "default": "optimized/hero-lake-norman-1280.webp",
     "variants": [
       {
         "path": "optimized/hero-lake-norman-480.webp",
         "format": "webp",
         "width": 480,
-        "height": 262,
-        "bytes": 24202,
+        "height": 270,
+        "bytes": 22120,
         "quality": 78
       },
       {
         "path": "optimized/hero-lake-norman-768.webp",
         "format": "webp",
         "width": 768,
-        "height": 419,
-        "bytes": 55084,
+        "height": 432,
+        "bytes": 54552,
         "quality": 78
       },
       {
         "path": "optimized/hero-lake-norman-1280.webp",
         "format": "webp",
         "width": 1280,
-        "height": 698,
-        "bytes": 132750,
+        "height": 720,
+        "bytes": 142192,
         "quality": 78
       }
     ]
