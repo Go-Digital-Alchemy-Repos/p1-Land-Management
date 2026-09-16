@@ -1221,34 +1221,34 @@
     ]
   },
   "hero-charlotte-region.png": {
-    "sourceBytes": 1948767,
-    "sourceHash": "7d3edf1746a455059440e16347a4a5c5958b80c19689a64a53f91b02598bc90f",
-    "width": 1408,
-    "height": 768,
+    "sourceBytes": 2709215,
+    "sourceHash": "d647e9e66b1f55ce29ce843d4e80ea3daacd38dc7490aa158406ba70312c1806",
+    "width": 1672,
+    "height": 941,
     "default": "optimized/hero-charlotte-region-1280.webp",
     "variants": [
       {
         "path": "optimized/hero-charlotte-region-480.webp",
         "format": "webp",
         "width": 480,
-        "height": 262,
-        "bytes": 29710,
+        "height": 270,
+        "bytes": 28706,
         "quality": 78
       },
       {
         "path": "optimized/hero-charlotte-region-768.webp",
         "format": "webp",
         "width": 768,
-        "height": 419,
-        "bytes": 69918,
+        "height": 432,
+        "bytes": 68830,
         "quality": 78
       },
       {
         "path": "optimized/hero-charlotte-region-1280.webp",
         "format": "webp",
         "width": 1280,
-        "height": 698,
-        "bytes": 167278,
+        "height": 720,
+        "bytes": 167866,
         "quality": 78
       }
     ]

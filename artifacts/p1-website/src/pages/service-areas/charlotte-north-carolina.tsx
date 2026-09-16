@@ -14,9 +14,9 @@ import { FaqAccordion } from "@/components/content/FaqAccordion";
 
 const FAQS = [
   {
-    question: "Which communities in the Charlotte region does P1 serve?",
+    question: "What areas around Charlotte does P1 serve?",
     answer:
-      "P1 serves the entire Charlotte metro — Charlotte and Mecklenburg County, Concord and Cabarrus County, Mooresville and Lake Norman, Gastonia and Gaston County, Monroe and Union County, plus Huntersville, Cornelius, Davidson, Matthews, Waxhaw, Kannapolis, and the surrounding communities.",
+      "P1 serves qualifying properties throughout Charlotte and Mecklenburg County, including commercial and industrial corridors near Uptown, University City, Pineville, Matthews, Huntersville, and the surrounding Charlotte metro.",
   },
   {
     question: "Does P1 handle both one-time projects and ongoing maintenance?",
@@ -24,29 +24,29 @@ const FAQS = [
       "Yes. P1 covers the full life of a property — from commercial landscaping and grounds maintenance through land clearing, grading, drainage, and complete property reconstruction.",
   },
   {
-    question: "Can P1 manage waterfront properties on Lake Norman?",
+    question: "Does P1 provide commercial landscaping in Charlotte?",
     answer:
-      "Yes. P1 provides shoreline maintenance, pond and waterway care, drainage management on sloped terrain, and turf establishment for the large waterfront and rural properties concentrated around Lake Norman.",
+      "Yes. Commercial landscaping and grounds maintenance are core P1 services for qualifying Charlotte properties. Programs can include turf and vegetation care, tree services, drainage and pond attention, seasonal planning, and corrective exterior work under a defined scope.",
   },
   {
-    question: "What size properties does P1 work on in the Charlotte region?",
+    question: "What size properties does P1 work on in Charlotte?",
     answer:
       "P1 focuses on commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger, which lets us bring the right equipment and expertise to large-scale jobs. P1 does not provide residential services.",
   },
 ];
 
-export default function CharlotteRegionNC() {
+export default function CharlotteNorthCarolina() {
   return (
     <Layout>
       <SEO 
-        title="Land Management in the Charlotte, NC Region | P1"
-        description="Commercial landscaping, grounds maintenance, land clearing, grading & drainage for qualifying sites in greater Charlotte. Call (704) 221-8928."
+        title="Land Management in Charlotte, NC | P1"
+        description="Commercial landscaping, grounds maintenance, land clearing, grading and drainage for qualifying Charlotte and Mecklenburg County sites. Call (704) 221-8928."
         jsonLd={[
-          serviceAreaSchema({ areaName: "Charlotte Region, North Carolina", areaType: "AdministrativeArea", description: "Commercial landscaping, grounds maintenance, land clearing, grading, drainage, turf, tree, pond, and reconstruction services for qualifying properties in greater Charlotte.", path: "/service-areas/charlotte-north-carolina" }),
+          serviceAreaSchema({ areaName: "Charlotte, North Carolina", areaType: "City", description: "Commercial landscaping, grounds maintenance, land clearing, grading, drainage, turf, tree, pond, and reconstruction services for qualifying Charlotte and Mecklenburg County properties.", path: "/service-areas/charlotte-north-carolina" }),
           breadcrumbSchema([
             { name: "Home", path: "/" },
             { name: "Service Areas", path: "/service-areas" },
-            { name: "Charlotte, NC Region", path: "/service-areas/charlotte-north-carolina" },
+            { name: "Charlotte, NC", path: "/service-areas/charlotte-north-carolina" },
           ]),
           faqSchema(FAQS),
         ]}
@@ -56,32 +56,32 @@ export default function CharlotteRegionNC() {
         eyebrow="Service Area · NC"
         title={
           <>
-            Land & Property Management in the{" "}
+            Land & Property Management in{" "}
             <em className="font-semibold not-italic text-tan" style={{ fontStyle: "italic" }}>
-              Charlotte, NC Region
+              Charlotte, NC
             </em>
           </>
         }
-        subtitle="P1 provides commercial landscaping and grounds maintenance for commercial, industrial, agricultural, municipal, and institutional properties throughout the Charlotte metro. Connected services include land clearing, grading, drainage, turf, tree, pond, and complete property reconstruction for qualifying sites."
+        subtitle="P1 provides commercial landscaping and grounds maintenance for commercial, industrial, municipal, and institutional properties throughout Charlotte and Mecklenburg County. Connected services include land clearing, grading, drainage, turf, tree, pond, and property reconstruction for qualifying sites 1 acre and larger."
         image={heroImg}
-        imageAlt="Land & Property Management in the Charlotte, NC Region"
+        imageAlt="Charlotte, North Carolina skyline and surrounding commercial districts"
       />
 
       <section className="py-24 bg-background">
         <div className="site-shell space-y-16">
           
-          <FeatureRow heading="Serving the Charlotte Region's Growing Demand for Large-Acreage Property Management" image={charlotteImg} imageAlt="Large-acreage property development in the Charlotte NC region">
+          <FeatureRow heading="Commercial-Scale Property Management for Charlotte" image={charlotteImg} imageAlt="Large-acreage property development in the Charlotte NC region">
             <p>
-              The Charlotte, NC region is one of the most rapidly developing markets in the country — and that growth is pushing commercial developers, industrial facilities, agricultural operations, municipalities, and institutions to find contractors who can manage land at the scale and standard these properties require. P1 Land & Property Management is that contractor.
+              Charlotte properties often combine visible landscaping, active operations, stormwater infrastructure, access routes, and undeveloped acreage within one site. P1 helps owners and facility teams coordinate those connected exterior needs under a clearly defined scope.
             </p>
             <p>
-              From the Mecklenburg County commercial core and Lake Norman business campuses to the working farms of Cabarrus County and the agricultural acreage of Union and Gaston Counties, P1 brings full-service land management to qualifying non-residential properties that require commercial-scale crews and equipment.
+              From commercial campuses and industrial facilities to municipal and institutional grounds, P1 brings the crews, equipment, and planning needed for qualifying non-residential properties throughout Charlotte and Mecklenburg County.
             </p>
           </FeatureRow>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             <div className="space-y-6">
-              <h2 className="text-2xl font-serif font-bold text-secondary">Services Available Throughout the Charlotte Region</h2>
+              <h2 className="text-2xl font-serif font-bold text-secondary">Services Available in Charlotte</h2>
               <ul className="space-y-3">
                 {[
                   "Commercial landscaping and exterior grounds maintenance contracts",
@@ -103,19 +103,17 @@ export default function CharlotteRegionNC() {
             </div>
 
             <div className="space-y-6">
-              <h2 className="text-2xl font-serif font-bold text-secondary">Communities We Serve in the Charlotte Region</h2>
+              <h2 className="text-2xl font-serif font-bold text-secondary">Charlotte and Nearby Communities</h2>
               <ul className="space-y-3">
                 {[
                   "Charlotte and Mecklenburg County",
-                  "Concord and Cabarrus County",
-                  "Mooresville and Lake Norman",
-                  "Gastonia and Gaston County",
+                  "Pineville and Matthews",
                   "Huntersville, Cornelius, and Davidson",
-                  "Matthews and Waxhaw",
-                  "Kannapolis and Harrisburg",
+                  "Concord and Cabarrus County",
+                  "Gastonia and Gaston County",
+                  "Mooresville and Lake Norman",
                   "Monroe and Union County",
-                  "Belmont and Mount Holly",
-                  "Surrounding communities in the greater Charlotte area"
+                  "Surrounding communities in the Charlotte metro"
                 ].map((item, i) => (
                   <li key={i} className="flex items-center gap-3 text-secondary/80 font-medium">
                     <div className="w-2 h-2 rounded-full bg-primary" />
@@ -128,11 +126,11 @@ export default function CharlotteRegionNC() {
 
           <div className="bg-muted p-8 rounded-xl border border-border shadow-sm space-y-4">
             <h2 className="text-2xl font-serif font-bold text-secondary">
-              Lake Norman and Waterfront Properties
+              Connected Care for Active Charlotte Properties
             </h2>
             <div className="prose prose-lg prose-p:text-secondary/80 max-w-none">
               <p>
-                Lake Norman and the surrounding area have a high concentration of large-acreage waterfront and rural properties that require specialized management — shoreline maintenance, pond and waterway care, drainage management on sloped terrain, and turf establishment on challenging sites. P1's pond and waterway management program, combined with our drainage and grading expertise, makes us a natural fit for this market.
+                Charlotte commercial and institutional properties rarely have a single exterior need. Routine grounds care may connect to drainage trouble, aging vegetation, pond maintenance, erosion, access improvements, or a larger site reconstruction project. P1 evaluates those relationships so immediate work and longer-term maintenance can be sequenced without creating avoidable rework.
               </p>
               <p className="font-bold text-secondary mt-6 border-l-4 border-primary pl-4">
                 Call <a href="tel:7042218928" className="text-primary hover:underline">+1 (704) 221-8928</a> or <Link href="/contact" className="text-primary hover:underline">request a free estimate online</Link> to discuss your property.
@@ -142,9 +140,9 @@ export default function CharlotteRegionNC() {
 
           <div className="grid gap-10 border-y border-border py-12 md:grid-cols-2">
             <div className="space-y-4">
-              <h2 className="text-2xl font-serif font-bold text-secondary">Charlotte and Mecklenburg County</h2>
+              <h2 className="text-2xl font-serif font-bold text-secondary">Built around Charlotte operations</h2>
               <p className="leading-relaxed text-secondary/80">Within Charlotte, P1 focuses on qualifying commercial, industrial, municipal, and institutional properties where acreage, operating complexity, or connected exterior needs call for more than a small landscape crew. The scope may involve an active campus, development tract, retention area, access route, or a combination of land preparation and recurring care.</p>
-              <p className="leading-relaxed text-secondary/80">Charlotte operators can use this regional overview to compare available services and follow the more specific county and community links below. One assessment can account for both the immediate work area and connected site needs.</p>
+              <p className="leading-relaxed text-secondary/80">One assessment can account for the immediate work area, connected drainage and access conditions, and the recurring care the property may need after corrective work is complete.</p>
             </div>
             <div className="space-y-4">
               <h2 className="text-2xl font-serif font-bold text-secondary">A regional scope with local constraints</h2>
@@ -183,7 +181,7 @@ export default function CharlotteRegionNC() {
           </div>
 
           <div className="space-y-6">
-            <h2 className="text-2xl font-serif font-bold text-secondary border-b border-border pb-4">Charlotte, NC Region Land & Property Management FAQs</h2>
+            <h2 className="text-2xl font-serif font-bold text-secondary border-b border-border pb-4">Charlotte, NC Land & Property Management FAQs</h2>
             <FaqAccordion items={FAQS} />
           </div>
 

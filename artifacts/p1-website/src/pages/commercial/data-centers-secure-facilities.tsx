@@ -1,4 +1,5 @@
 import { FaqAccordion } from "@/components/content/FaqAccordion";
+import { ContextualLinks } from "@/components/content/ContextualLinks";
 import { FeatureRow } from "@/components/layout/FeatureRow";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
@@ -277,6 +278,8 @@ export default function DataCentersSecureFacilities() {
           <div className="space-y-6"><h2 className="border-b border-border pb-4 text-3xl font-serif font-bold text-secondary">Data center & secure facility grounds — frequently asked questions</h2><FaqAccordion items={FAQS} /></div>
         </div>
       </section>
+
+      <ContextualLinks />
 
       <section className="bg-navy-deep py-20 text-white">
         <div className="site-shell flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between"><div className="max-w-2xl"><h2 className="text-3xl font-serif font-bold text-white">One partner for everything outside the building envelope</h2><p className="mt-4 text-lg leading-relaxed text-white/75">From perimeter vegetation and stormwater ponds to grading, buffers, and corrective response, build one controlled exterior plan around your facility.</p></div><div className="flex flex-col gap-3 sm:flex-row"><Button asChild size="lg" className="rounded-full bg-primary font-bold"><Link href="/contact">Request a Site Assessment</Link></Button><Button asChild size="lg" variant="outline" className="rounded-full border-white/30 bg-transparent font-bold text-white hover:bg-white/10 hover:text-white"><a href="tel:7042218928"><Phone className="mr-2 h-4 w-4" />Call (704) 221-8928</a></Button></div></div>

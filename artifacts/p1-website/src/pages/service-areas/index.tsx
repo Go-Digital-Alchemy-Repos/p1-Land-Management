@@ -118,7 +118,7 @@ export default function ServiceAreasIndex() {
                 
                 <div className="space-y-3 mb-8">
                   <Link href="/service-areas/charlotte-north-carolina" className="flex items-center gap-2 text-primary font-bold hover:underline">
-                    → Charlotte NC Regional Overview
+                    → Charlotte, NC
                   </Link>
                   <Link href="/service-areas/concord-nc" className="flex items-center gap-2 text-secondary hover:text-primary font-medium">
                     <MapPin className="w-4 h-4 text-primary" /> Concord, NC

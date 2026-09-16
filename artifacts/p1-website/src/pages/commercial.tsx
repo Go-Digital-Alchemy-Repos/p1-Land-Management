@@ -6,6 +6,8 @@ import { PHONE_DISPLAY, PHONE_HREF } from '@/lib/site';
 import { acquisitionSource, trackAcquisition } from '@/lib/acquisition';
 import { commercialPayload, commercialErrors, commercialErrorSummary, inquiryAttempt, sendCommercialInquiry } from '@/lib/commercial-inquiry';
 import { responsiveImageProps } from '@/lib/responsive-images';
+import { breadcrumbSchema } from '@/lib/structured-data';
+import { ContextualLinks } from '@/components/content/ContextualLinks';
 import hero from '@/assets/service-commercial.png';
 import dataCenterCampus from '@/assets/data-center-campus.png';
 
@@ -86,7 +88,14 @@ function AssessmentForm() {
 
 export default function Commercial() {
   return <Layout assessmentCta>
-    <SEO title="Commercial & Industrial Site Management | P1 Land Management" description="Coordinate grounds, drainage, land, and exterior work across your commercial property. Request a P1 site assessment in Upstate SC or greater Charlotte." />
+    <SEO
+      title="Commercial & Industrial Site Management | P1 Land Management"
+      description="Coordinate grounds, drainage, land, and exterior work across your commercial property. Request a P1 site assessment in Upstate SC or greater Charlotte."
+      jsonLd={breadcrumbSchema([
+        { name: 'Home', path: '/' },
+        { name: 'Commercial Site Management', path: '/commercial' },
+      ])}
+    />
     <section className="relative isolate overflow-hidden bg-secondary text-white">
       <img src={hero} alt="Illustrative aerial view of maintained commercial grounds" fetchPriority="high" decoding="async" {...responsiveImageProps(hero, "100vw")} className="absolute inset-0 -z-20 h-full w-full object-cover" />
       <div className="absolute inset-0 -z-10 bg-slate-950/80" />
@@ -117,5 +126,6 @@ export default function Commercial() {
       ['3. Agree the next steps', 'Discuss a reviewed baseline of observations, priorities and recommended work. The assessment deliverable and recurring or corrective proposal are agreed with you.'],
     ].map(([title, text]) => <div key={title}><h3 className="text-xl font-bold">{title}</h3><p className="mt-4 leading-relaxed text-muted-foreground">{text}</p></div>)}</div><p className="mt-8 max-w-3xl text-sm text-muted-foreground">Agree the assessment scope, reviewed observations and proposed next steps with P1. Discuss procurement requirements and supporting evidence privately during qualification.</p></div></section>
     <section tabIndex={-1} aria-labelledby="assessment-request-heading" id="assessment-request" className="site-shell scroll-mt-24 py-20"><div className="grid items-start gap-12 lg:grid-cols-[0.8fr_1.2fr]"><div className="lg:sticky lg:top-28"><p className="text-sm font-bold uppercase tracking-widest text-primary">Start the conversation</p><h2 id="assessment-request-heading" className="mt-4 text-3xl font-bold md:text-4xl">Request a Site Assessment</h2><p className="mt-6 text-lg leading-relaxed text-muted-foreground">Tell us about the exterior work, the property and the relationship you are looking for. We will use these details to review the request and discuss the next step.</p><div className="mt-8 space-y-4"><p><a href={PHONE_HREF} className="text-xl font-bold text-primary underline">{PHONE_DISPLAY}</a></p><p className="text-muted-foreground">To protect our team from spam, please use the secure form on this page.</p><Link href="/service-areas" className="inline-block font-bold text-primary underline">Review our service areas</Link></div></div><AssessmentForm /></div></section>
+    <ContextualLinks />
   </Layout>;
 }

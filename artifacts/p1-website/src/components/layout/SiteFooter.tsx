@@ -2,6 +2,7 @@ import { Link } from "wouter";
 import logo from "@assets/Asset_1_1782329698014.svg";
 import { Button } from "@/components/ui/button";
 import { Phone } from "lucide-react";
+import { GOOGLE_BUSINESS_URL } from "@/lib/site";
 
 export function SiteFooter() {
   return (
@@ -21,7 +22,7 @@ export function SiteFooter() {
               (704) 221-8928
             </a>
             <a
-              href="https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4m6!3m5!1s0x8855cd2b88976525:0x49c378cdfdecac9a!8m2!3d34.8311381!4d-80.6194367!16s%2Fg%2F11nw0vxpb_?entry=ttu&g_ep=EgoyMDI2MDkxMy4wIKXMDSoASAFQAw%3D%3D"
+              href={GOOGLE_BUSINESS_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="block w-fit text-sm font-semibold text-secondary-foreground/70 transition-colors hover:text-primary"
@@ -61,7 +62,7 @@ export function SiteFooter() {
             <li><Link href="/service-areas/lancaster-county-sc" className="hover:text-primary transition-colors">Lancaster County</Link></li>
             <li><Link href="/service-areas/york-county-sc" className="hover:text-primary transition-colors">York County</Link></li>
             <li className="font-bold text-secondary-foreground/90 pt-3">Greater Charlotte NC</li>
-            <li><Link href="/service-areas/charlotte-north-carolina" className="hover:text-primary transition-colors">Charlotte Region</Link></li>
+            <li><Link href="/service-areas/charlotte-north-carolina" className="hover:text-primary transition-colors">Charlotte, NC</Link></li>
             <li><Link href="/service-areas/concord-nc" className="hover:text-primary transition-colors">Concord</Link></li>
             <li><Link href="/service-areas/mooresville-lake-norman-nc" className="hover:text-primary transition-colors">Mooresville & Lake Norman</Link></li>
             <li><Link href="/service-areas/gastonia-nc" className="hover:text-primary transition-colors">Gastonia</Link></li>

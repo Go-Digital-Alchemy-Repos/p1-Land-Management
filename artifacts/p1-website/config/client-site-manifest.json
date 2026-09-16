@@ -6,7 +6,7 @@
     "displayName": "P1 Land & Property Management",
     "source": {
       "repository": "https://github.com/Go-Digital-Alchemy-Repos/p1-Land-Management.git",
-      "revision": "241b92b10770e2ef8de5fd3f1314fdbfe9dd60d7"
+      "revision": "6d7c0d32d869e0d469dd1f3c73a615081e2cab39"
     },
     "owners": [
       {
@@ -13220,8 +13220,8 @@
             "maxLength": 12000
           },
           {
-            "path": "f139rpsl",
-            "label": "Text: → Charlotte NC Regional Overview",
+            "path": "f18knys5",
+            "label": "Text: → Charlotte, NC",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -13659,7 +13659,7 @@
           "f1xhnnaj": "/service-areas/york-county-sc",
           "f15piq6n": "Charlotte Region, NC",
           "f13h4ph9": "Serving commercial and industrial developments, working farms and agricultural operations, municipalities, and institutions throughout the greater Charlotte metropolitan area.",
-          "f139rpsl": "→ Charlotte NC Regional Overview",
+          "f18knys5": "→ Charlotte, NC",
           "f11009l2": "/service-areas/charlotte-north-carolina",
           "f186t9yj": " Concord, NC",
           "fl85hm6": "/service-areas/concord-nc",
@@ -14405,15 +14405,15 @@
             "maxLength": 2000
           },
           {
-            "path": "f1n2ww05",
-            "label": "Image: /assets/hero-charlotte-region-1280-BaySFBdJ.webp",
+            "path": "f1rwr6fr",
+            "label": "Image: /assets/hero-charlotte-region-1280-Cq3EqePA.webp",
             "type": "image",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "f16wvxq0",
-            "label": "Image description: Land & Property Management in the Charlotte, NC Region",
+            "path": "f1xnv1cn",
+            "label": "Image description: Charlotte, North Carolina skyline and surrounding commercial districts",
             "type": "imageAlt",
             "required": false,
             "maxLength": 2000
@@ -14426,36 +14426,36 @@
             "maxLength": 2000
           },
           {
-            "path": "fnjcjox",
-            "label": "Text: Charlotte, NC Region",
+            "path": "fnev383",
+            "label": "Text: Charlotte, NC",
             "type": "text",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "fw2lwc7",
-            "label": "Text: P1 provides commercial landscaping and grounds maintenance for commercial, industrial, agricult",
+            "path": "fwy253r",
+            "label": "Text: P1 provides commercial landscaping and grounds maintenance for commercial, industrial, municipa",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
           },
           {
-            "path": "fqzl2yw",
-            "label": "Text: Serving the Charlotte Region's Growing Demand for Large-Acreage Property Management",
+            "path": "f18gyqz6",
+            "label": "Text: Commercial-Scale Property Management for Charlotte",
             "type": "text",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "fi8tn26",
-            "label": "Text: The Charlotte, NC region is one of the most rapidly developing markets in the country — and tha",
+            "path": "f1leoeml",
+            "label": "Text: Charlotte properties often combine visible landscaping, active operations, stormwater infrastru",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
           },
           {
-            "path": "fv1kufj",
-            "label": "Text: From the Mecklenburg County commercial core and Lake Norman business campuses to the working fa",
+            "path": "f1wuxil7",
+            "label": "Text: From commercial campuses and industrial facilities to municipal and institutional grounds, P1 b",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -14475,8 +14475,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fd6lfp7",
-            "label": "Text: Services Available Throughout the Charlotte Region",
+            "path": "ffcgjle",
+            "label": "Text: Services Available in Charlotte",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -14545,8 +14545,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1950dz8",
-            "label": "Text: Communities We Serve in the Charlotte Region",
+            "path": "fm8mjep",
+            "label": "Text: Charlotte and Nearby Communities",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -14559,22 +14559,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f64b6y8",
-            "label": "Text: Concord and Cabarrus County",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1fjnd8y",
-            "label": "Text: Mooresville and Lake Norman",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1n7ak9l",
-            "label": "Text: Gastonia and Gaston County",
+            "path": "f156po4q",
+            "label": "Text: Pineville and Matthews",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -14587,15 +14573,22 @@
             "maxLength": 2000
           },
           {
-            "path": "f1chox82",
-            "label": "Text: Matthews and Waxhaw",
+            "path": "f64b6y8",
+            "label": "Text: Concord and Cabarrus County",
             "type": "text",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "fso11fw",
-            "label": "Text: Kannapolis and Harrisburg",
+            "path": "f1n7ak9l",
+            "label": "Text: Gastonia and Gaston County",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1fjnd8y",
+            "label": "Text: Mooresville and Lake Norman",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -14608,29 +14601,22 @@
             "maxLength": 2000
           },
           {
-            "path": "f1r9bh1",
-            "label": "Text: Belmont and Mount Holly",
+            "path": "f1w2037k",
+            "label": "Text: Surrounding communities in the Charlotte metro",
             "type": "text",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "f10lzwb0",
-            "label": "Text: Surrounding communities in the greater Charlotte area",
+            "path": "far3tjk",
+            "label": "Text: Connected Care for Active Charlotte Properties",
             "type": "text",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "f1lzr3sy",
-            "label": "Text: Lake Norman and Waterfront Properties",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f2ljf1l",
-            "label": "Text: Lake Norman and the surrounding area have a high concentration of large-acreage waterfront and ",
+            "path": "f1p7e6wy",
+            "label": "Text: Charlotte commercial and institutional properties rarely have a single exterior need. Routine g",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -14685,6 +14671,13 @@
             "maxLength": 2000
           },
           {
+            "path": "flpj5lp",
+            "label": "Text: Built around Charlotte operations",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
             "path": "fgis5zl",
             "label": "Text: Within Charlotte, P1 focuses on qualifying commercial, industrial, municipal, and institutional",
             "type": "textarea",
@@ -14692,8 +14685,8 @@
             "maxLength": 12000
           },
           {
-            "path": "f1gj0vp6",
-            "label": "Text: Charlotte operators can use this regional overview to compare available services and follow the",
+            "path": "fgh5y8q",
+            "label": "Text: One assessment can account for the immediate work area, connected drainage and access condition",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -14776,22 +14769,22 @@
             "maxLength": 2000
           },
           {
-            "path": "f11mi0t",
-            "label": "Text: Charlotte, NC Region Land & Property Management FAQs",
+            "path": "f15bvwm7",
+            "label": "Text: Charlotte, NC Land & Property Management FAQs",
             "type": "text",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "f5t0zms",
-            "label": "Text: Which communities in the Charlotte region does P1 serve?",
+            "path": "f17ul273",
+            "label": "Text: What areas around Charlotte does P1 serve?",
             "type": "text",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "f13j284i",
-            "label": "Text: P1 serves the entire Charlotte metro — Charlotte and Mecklenburg County, Concord and Cabarrus C",
+            "path": "f9u350p",
+            "label": "Text: P1 serves qualifying properties throughout Charlotte and Mecklenburg County, including commerci",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -14811,22 +14804,22 @@
             "maxLength": 12000
           },
           {
-            "path": "f1397hit",
-            "label": "Text: Can P1 manage waterfront properties on Lake Norman?",
+            "path": "fhockjb",
+            "label": "Text: Does P1 provide commercial landscaping in Charlotte?",
             "type": "text",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "fs7cdwp",
-            "label": "Text: Yes. P1 provides shoreline maintenance, pond and waterway care, drainage management on sloped t",
+            "path": "f9yjfd4",
+            "label": "Text: Yes. Commercial landscaping and grounds maintenance are core P1 services for qualifying Charlot",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
           },
           {
-            "path": "flyte6r",
-            "label": "Text: What size properties does P1 work on in the Charlotte region?",
+            "path": "f21cr2",
+            "label": "Text: What size properties does P1 work on in Charlotte?",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -14960,20 +14953,20 @@
         ],
         "defaultContent": {
           "fum15fc": "Skip to main content",
-          "seoTitle": "Land Management in the Charlotte, NC Region | P1",
-          "seoDescription": "Commercial landscaping, grounds maintenance, land clearing, grading & drainage for qualifying sites in greater Charlotte. Call (704) 221-8928.",
+          "seoTitle": "Land Management in Charlotte, NC | P1",
+          "seoDescription": "Commercial landscaping, grounds maintenance, land clearing, grading and drainage for qualifying Charlotte and Mecklenburg County sites. Call (704) 221-8928.",
           "seoImage": "/opengraph.jpg",
-          "f1n2ww05": "/assets/hero-charlotte-region-1280-BaySFBdJ.webp",
-          "f16wvxq0": "Land & Property Management in the Charlotte, NC Region",
+          "f1rwr6fr": "/assets/hero-charlotte-region-1280-Cq3EqePA.webp",
+          "f1xnv1cn": "Charlotte, North Carolina skyline and surrounding commercial districts",
           "f1uwh9f8": "Service Area · NC",
-          "fnjcjox": "Charlotte, NC Region",
-          "fw2lwc7": "P1 provides commercial landscaping and grounds maintenance for commercial, industrial, agricultural, municipal, and institutional properties throughout the Charlotte metro. Connected services include land clearing, grading, drainage, turf, tree, pond, and complete property reconstruction for qualifying sites.",
-          "fqzl2yw": "Serving the Charlotte Region's Growing Demand for Large-Acreage Property Management",
-          "fi8tn26": "The Charlotte, NC region is one of the most rapidly developing markets in the country — and that growth is pushing commercial developers, industrial facilities, agricultural operations, municipalities, and institutions to find contractors who can manage land at the scale and standard these properties require. P1 Land & Property Management is that contractor.",
-          "fv1kufj": "From the Mecklenburg County commercial core and Lake Norman business campuses to the working farms of Cabarrus County and the agricultural acreage of Union and Gaston Counties, P1 brings full-service land management to qualifying non-residential properties that require commercial-scale crews and equipment.",
+          "fnev383": "Charlotte, NC",
+          "fwy253r": "P1 provides commercial landscaping and grounds maintenance for commercial, industrial, municipal, and institutional properties throughout Charlotte and Mecklenburg County. Connected services include land clearing, grading, drainage, turf, tree, pond, and property reconstruction for qualifying sites 1 acre and larger.",
+          "f18gyqz6": "Commercial-Scale Property Management for Charlotte",
+          "f1leoeml": "Charlotte properties often combine visible landscaping, active operations, stormwater infrastructure, access routes, and undeveloped acreage within one site. P1 helps owners and facility teams coordinate those connected exterior needs under a clearly defined scope.",
+          "f1wuxil7": "From commercial campuses and industrial facilities to municipal and institutional grounds, P1 brings the crews, equipment, and planning needed for qualifying non-residential properties throughout Charlotte and Mecklenburg County.",
           "f1wsdj16": "/assets/charlotte-region-1280-DBt7ZvCy.webp",
           "f95gqrx": "Large-acreage property development in the Charlotte NC region",
-          "fd6lfp7": "Services Available Throughout the Charlotte Region",
+          "ffcgjle": "Services Available in Charlotte",
           "fubo3m5": "Commercial landscaping and exterior grounds maintenance contracts",
           "fdz7oth": "Industrial and agricultural land maintenance",
           "fxm4gre": "Land clearing and forestry mulching",
@@ -14983,19 +14976,17 @@
           "f1t0vehh": "Tree services — trimming, removal, and selective clearing",
           "fh3h93n": "Pond and waterway management",
           "fue3vu": "Full property reconstruction",
-          "f1950dz8": "Communities We Serve in the Charlotte Region",
+          "fm8mjep": "Charlotte and Nearby Communities",
           "f15z9gce": "Charlotte and Mecklenburg County",
-          "f64b6y8": "Concord and Cabarrus County",
-          "f1fjnd8y": "Mooresville and Lake Norman",
-          "f1n7ak9l": "Gastonia and Gaston County",
+          "f156po4q": "Pineville and Matthews",
           "f1k0b004": "Huntersville, Cornelius, and Davidson",
-          "f1chox82": "Matthews and Waxhaw",
-          "fso11fw": "Kannapolis and Harrisburg",
+          "f64b6y8": "Concord and Cabarrus County",
+          "f1n7ak9l": "Gastonia and Gaston County",
+          "f1fjnd8y": "Mooresville and Lake Norman",
           "f16khpdc": "Monroe and Union County",
-          "f1r9bh1": "Belmont and Mount Holly",
-          "f10lzwb0": "Surrounding communities in the greater Charlotte area",
-          "f1lzr3sy": "Lake Norman and Waterfront Properties",
-          "f2ljf1l": "Lake Norman and the surrounding area have a high concentration of large-acreage waterfront and rural properties that require specialized management — shoreline maintenance, pond and waterway care, drainage management on sloped terrain, and turf establishment on challenging sites. P1's pond and waterway management program, combined with our drainage and grading expertise, makes us a natural fit for this market.",
+          "f1w2037k": "Surrounding communities in the Charlotte metro",
+          "far3tjk": "Connected Care for Active Charlotte Properties",
+          "f1p7e6wy": "Charlotte commercial and institutional properties rarely have a single exterior need. Routine grounds care may connect to drainage trouble, aging vegetation, pond maintenance, erosion, access improvements, or a larger site reconstruction project. P1 evaluates those relationships so immediate work and longer-term maintenance can be sequenced without creating avoidable rework.",
           "f3quld0": "Call ",
           "fr6htqz": " or ",
           "f1gh9giv": " to discuss your property.",
@@ -15003,8 +14994,9 @@
           "f9spy6u": "tel:7042218928",
           "fatly8t": "request a free estimate online",
           "fmggb4x": "/contact",
+          "flpj5lp": "Built around Charlotte operations",
           "fgis5zl": "Within Charlotte, P1 focuses on qualifying commercial, industrial, municipal, and institutional properties where acreage, operating complexity, or connected exterior needs call for more than a small landscape crew. The scope may involve an active campus, development tract, retention area, access route, or a combination of land preparation and recurring care.",
-          "f1gj0vp6": "Charlotte operators can use this regional overview to compare available services and follow the more specific county and community links below. One assessment can account for both the immediate work area and connected site needs.",
+          "fgh5y8q": "One assessment can account for the immediate work area, connected drainage and access conditions, and the recurring care the property may need after corrective work is complete.",
           "fjg8fb7": "A regional scope with local constraints",
           "f1ok1ybf": "Across the metro, project planning changes with site access, active operations, visible water movement, surrounding uses, and the property’s next purpose. P1 reviews those conditions before proposing work and flags engineering, permitting, utility, survey, or specialist responsibilities where they may apply.",
           "f1j7wn4y": "Share plans, known utilities, drainage history, access windows, and target timing when requesting an assessment. The more complete the operating context, the more clearly the estimate can define work areas, assumptions, exclusions, and coordination.",
@@ -15016,14 +15008,14 @@
           "ffmbbeg": "Union County, NC",
           "fgc7otl": "Working farms, agricultural land, and fast-growing development from Monroe and Indian Trail to Waxhaw, Marvin, and Weddington — see how P1 serves Union County's large properties.",
           "f1t66612": "Explore Union County ",
-          "f11mi0t": "Charlotte, NC Region Land & Property Management FAQs",
-          "f5t0zms": "Which communities in the Charlotte region does P1 serve?",
-          "f13j284i": "P1 serves the entire Charlotte metro — Charlotte and Mecklenburg County, Concord and Cabarrus County, Mooresville and Lake Norman, Gastonia and Gaston County, Monroe and Union County, plus Huntersville, Cornelius, Davidson, Matthews, Waxhaw, Kannapolis, and the surrounding communities.",
+          "f15bvwm7": "Charlotte, NC Land & Property Management FAQs",
+          "f17ul273": "What areas around Charlotte does P1 serve?",
+          "f9u350p": "P1 serves qualifying properties throughout Charlotte and Mecklenburg County, including commercial and industrial corridors near Uptown, University City, Pineville, Matthews, Huntersville, and the surrounding Charlotte metro.",
           "flgsf5b": "Does P1 handle both one-time projects and ongoing maintenance?",
           "ftmwlhw": "Yes. P1 covers the full life of a property — from commercial landscaping and grounds maintenance through land clearing, grading, drainage, and complete property reconstruction.",
-          "f1397hit": "Can P1 manage waterfront properties on Lake Norman?",
-          "fs7cdwp": "Yes. P1 provides shoreline maintenance, pond and waterway care, drainage management on sloped terrain, and turf establishment for the large waterfront and rural properties concentrated around Lake Norman.",
-          "flyte6r": "What size properties does P1 work on in the Charlotte region?",
+          "fhockjb": "Does P1 provide commercial landscaping in Charlotte?",
+          "f9yjfd4": "Yes. Commercial landscaping and grounds maintenance are core P1 services for qualifying Charlotte properties. Programs can include turf and vegetation care, tree services, drainage and pond attention, seasonal planning, and corrective exterior work under a defined scope.",
+          "f21cr2": "What size properties does P1 work on in Charlotte?",
           "fhkp9de": "P1 focuses on commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger, which lets us bring the right equipment and expertise to large-scale jobs. P1 does not provide residential services.",
           "f1xhvh0c": ", review ",
           "fn4kqbr": ", or ",
@@ -20554,8 +20546,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f71igxs",
-            "label": "Text: Planning work on your land?",
+            "path": "fuzz1hf",
+            "label": "Text: Planning work on your land? Review P1's",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -20575,8 +20567,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fq4snu",
-            "label": "Text: Explore this service",
+            "path": "f11f8wki",
+            "label": "Text: commercial land clearing services",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -20704,10 +20696,10 @@
           "fo7otnm": " or request a free estimate online — P1 Land & Property Management, serving Upstate SC and Charlotte NC.",
           "f1o2isa7": "+1 (704) 221-8928",
           "f9spy6u": "tel:7042218928",
-          "f71igxs": "Planning work on your land? ",
+          "fuzz1hf": "Planning work on your land? Review P1's ",
           "f1akxme7": " and ",
           "f1u810sm": ".",
-          "fq4snu": "Explore this service",
+          "f11f8wki": "commercial land clearing services",
           "f14gqnzz": "/services/land-clearing",
           "f17mqphn": "request a property estimate",
           "fmggb4x": "/contact",
@@ -21060,8 +21052,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f71igxs",
-            "label": "Text: Planning work on your land?",
+            "path": "fuzz1hf",
+            "label": "Text: Planning work on your land? Review P1's",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -21074,8 +21066,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fq4snu",
-            "label": "Text: Explore this service",
+            "path": "f1sbmsr5",
+            "label": "Text: pond and waterway management services",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -21211,9 +21203,9 @@
           "fo7otnm": " or request a free estimate online — P1 Land & Property Management, serving Upstate SC and Charlotte NC.",
           "f1o2isa7": "+1 (704) 221-8928",
           "f9spy6u": "tel:7042218928",
-          "f71igxs": "Planning work on your land? ",
+          "fuzz1hf": "Planning work on your land? Review P1's ",
           "f1akxme7": " and ",
-          "fq4snu": "Explore this service",
+          "f1sbmsr5": "pond and waterway management services",
           "fv11gbc": "/services/pond-waterway-management",
           "f17mqphn": "request a property estimate",
           "fmggb4x": "/contact",
@@ -21636,8 +21628,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f71igxs",
-            "label": "Text: Planning work on your land?",
+            "path": "fuzz1hf",
+            "label": "Text: Planning work on your land? Review P1's",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -21657,8 +21649,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fq4snu",
-            "label": "Text: Explore this service",
+            "path": "fhpfk85",
+            "label": "Text: large-acreage turf installation and seeding",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -21804,10 +21796,10 @@
           "fo7otnm": " or request a free estimate online — P1 Land & Property Management, serving Upstate SC and Charlotte NC.",
           "f1o2isa7": "+1 (704) 221-8928",
           "f9spy6u": "tel:7042218928",
-          "f71igxs": "Planning work on your land? ",
+          "fuzz1hf": "Planning work on your land? Review P1's ",
           "f1akxme7": " and ",
           "f1u810sm": ".",
-          "fq4snu": "Explore this service",
+          "fhpfk85": "large-acreage turf installation and seeding",
           "f1llv5ek": "/services/turf-installation-seeding",
           "f17mqphn": "request a property estimate",
           "fmggb4x": "/contact",
@@ -22083,8 +22075,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f71igxs",
-            "label": "Text: Planning work on your land?",
+            "path": "fuzz1hf",
+            "label": "Text: Planning work on your land? Review P1's",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -22104,8 +22096,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fq4snu",
-            "label": "Text: Explore this service",
+            "path": "f1wz5426",
+            "label": "Text: property drainage services",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -22230,10 +22222,10 @@
           "fo7otnm": " or request a free estimate online — P1 Land & Property Management, serving Upstate SC and Charlotte NC.",
           "f1o2isa7": "+1 (704) 221-8928",
           "f9spy6u": "tel:7042218928",
-          "f71igxs": "Planning work on your land? ",
+          "fuzz1hf": "Planning work on your land? Review P1's ",
           "f1akxme7": " and ",
           "f1u810sm": ".",
-          "fq4snu": "Explore this service",
+          "f1wz5426": "property drainage services",
           "f1cn1znt": "/services/drainage",
           "f17mqphn": "request a property estimate",
           "fmggb4x": "/contact",
@@ -22600,8 +22592,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f71igxs",
-            "label": "Text: Planning work on your land?",
+            "path": "fuzz1hf",
+            "label": "Text: Planning work on your land? Review P1's",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -22614,8 +22606,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fq4snu",
-            "label": "Text: Explore this service",
+            "path": "f190c5wu",
+            "label": "Text: industrial and agricultural land services",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -22753,9 +22745,9 @@
           "fo7otnm": " or request a free estimate online — P1 Land & Property Management, serving Upstate SC and Charlotte NC.",
           "f1o2isa7": "+1 (704) 221-8928",
           "f9spy6u": "tel:7042218928",
-          "f71igxs": "Planning work on your land? ",
+          "fuzz1hf": "Planning work on your land? Review P1's ",
           "f1akxme7": " and ",
-          "fq4snu": "Explore this service",
+          "f190c5wu": "industrial and agricultural land services",
           "f1gkmumd": "/services/industrial-agricultural",
           "f17mqphn": "request a property estimate",
           "fmggb4x": "/contact",
@@ -23164,8 +23156,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fb9r7hs",
-            "label": "Text: Charlotte Region",
+            "path": "fnev383",
+            "label": "Text: Charlotte, NC",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -23407,7 +23399,7 @@
           "f1mwc14n": "York County",
           "f1xhnnaj": "/service-areas/york-county-sc",
           "f104ic59": "Greater Charlotte NC",
-          "fb9r7hs": "Charlotte Region",
+          "fnev383": "Charlotte, NC",
           "f11009l2": "/service-areas/charlotte-north-carolina",
           "f1ihj1ro": "Concord",
           "fl85hm6": "/service-areas/concord-nc",

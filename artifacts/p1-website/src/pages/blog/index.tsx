@@ -4,6 +4,7 @@ import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
 import { Link } from "wouter";
 import { responsiveImageProps } from "@/lib/responsive-images";
+import { breadcrumbSchema } from "@/lib/structured-data";
 
 import blog1Img from "@/assets/blog-land-clearing.png";
 import blog2Img from "@/assets/blog-retention-pond.png";
@@ -50,6 +51,10 @@ export default function BlogIndex() {
       <SEO 
         title="Blog & Insights | P1 Land & Property Management"
         description="Insights, guides, and expertise on large-acreage land clearing, grading, drainage, and property management in Upstate South Carolina and Charlotte, NC."
+        jsonLd={breadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "Blog & Resources", path: "/blog" },
+        ])}
       />
       
       {/* PAGE HERO */}

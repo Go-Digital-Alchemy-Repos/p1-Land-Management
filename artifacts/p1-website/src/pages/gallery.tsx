@@ -4,6 +4,7 @@ import { FinalCTA } from "@/components/layout/FinalCTA";
 import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
 import { cn } from "@/lib/utils";
+import { breadcrumbSchema } from "@/lib/structured-data";
 import heroImg from "@/assets/services-hero.png";
 
 import imgClearing from "@/assets/service-clearing.png";
@@ -61,6 +62,10 @@ export default function Gallery() {
       <SEO
         title="Land Management Service Gallery | P1"
         description="See the land clearing, grading, drainage, turf, pond, tree, grounds, and reconstruction capabilities P1 offers for qualifying Carolina properties."
+        jsonLd={breadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "Service Gallery", path: "/gallery" },
+        ])}
       />
 
       {/* PAGE HERO */}

@@ -5,6 +5,7 @@ import {
   PHONE_E164,
   BUSINESS_IMAGE_URL,
   LOGO_URL,
+  GOOGLE_BUSINESS_URL,
   ADDRESS,
   AREAS_SERVED,
   OPENING_HOURS,
@@ -43,6 +44,7 @@ export function localBusinessSchema(): JsonLd {
     telephone: PHONE_E164,
     image: BUSINESS_IMAGE_URL,
     logo: LOGO_URL,
+    sameAs: [GOOGLE_BUSINESS_URL],
     priceRange: "$$",
     address: {
       "@type": "PostalAddress",

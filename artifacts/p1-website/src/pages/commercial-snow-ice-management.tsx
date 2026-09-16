@@ -1,4 +1,5 @@
 import { FaqAccordion } from "@/components/content/FaqAccordion";
+import { ContextualLinks } from "@/components/content/ContextualLinks";
 import { FeatureRow } from "@/components/layout/FeatureRow";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
@@ -162,6 +163,8 @@ export default function CommercialSnowIceManagement() {
           <div className="space-y-6"><h2 className="border-b border-border pb-4 text-3xl font-serif font-bold text-secondary">Commercial snow and ice management — frequently asked questions</h2><FaqAccordion items={FAQS} /></div>
         </div>
       </section>
+
+      <ContextualLinks />
 
       <section className="bg-navy-deep py-20 text-white">
         <div className="site-shell flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between"><div className="max-w-2xl"><Clock3 className="h-8 w-8 text-tan" /><h2 className="mt-4 text-3xl font-serif font-bold">Protect your property before the first freeze</h2><p className="mt-4 text-lg leading-relaxed text-white/75">Lock in a commercial snow and ice management plan built around your site, operations, and risk priorities.</p></div><div className="flex flex-col gap-3 sm:flex-row"><Button asChild size="lg" className="rounded-full bg-primary font-bold"><Link href="/contact">Request Your Free Site Assessment</Link></Button><Button asChild size="lg" variant="outline" className="rounded-full border-white/30 bg-transparent font-bold text-white hover:bg-white/10 hover:text-white"><a href="tel:7042218928"><Phone className="mr-2 h-4 w-4" />Call P1</a></Button></div></div>
