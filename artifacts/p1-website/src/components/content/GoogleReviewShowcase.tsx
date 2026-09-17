@@ -58,7 +58,7 @@ export function GoogleReviewShowcase() {
     track.current?.scrollBy({ left: direction * 340, behavior: "smooth" });
   };
 
-  if (failed || !data || !Array.isArray(data.reviews) || data.reviews.length === 0 || !Number.isFinite(data.averageRating) || !data.totalReviewCount) return null;
+  if (failed || !data || !Array.isArray(data.reviews) || data.reviews.length === 0 || !Number.isFinite(data.averageRating) || !data.totalReviewCount) return <VerifiedGoogleRating />;
 
   return (
     <section className="border-y border-border bg-white py-16" aria-labelledby="customer-reviews-heading">
@@ -113,6 +113,24 @@ export function GoogleReviewShowcase() {
             </article>
           ))}
         </div>
+      </div>
+    </section>
+  );
+}
+
+
+/** Manually verified on the public Google profile; never presented as a live feed. */
+function VerifiedGoogleRating() {
+  return (
+    <section className="border-y border-border bg-white py-10" aria-labelledby="google-rating-heading">
+      <div className="site-shell flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-clay-ink">Customer feedback</p>
+          <h2 id="google-rating-heading" className="mt-2 font-display text-2xl font-semibold text-secondary">Rated 5.0 on Google</h2>
+          <div className="mt-3 flex flex-wrap items-center gap-3"><ReviewStars /><span className="text-sm font-semibold text-secondary">7 five-star reviews</span></div>
+          <p className="mt-3 text-xs text-secondary/65">Google profile rating as of September 17, 2026. Manually updated.</p>
+        </div>
+        <a href={GOOGLE_BUSINESS_URL} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center gap-2 border border-primary px-5 py-3 text-sm font-bold text-primary transition-colors hover:bg-primary/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Read all reviews on Google <ExternalLink className="h-4 w-4" aria-hidden="true" /></a>
       </div>
     </section>
   );
