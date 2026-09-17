@@ -85,6 +85,7 @@ export function isSafeSocialUrl(value: string): boolean {
     return (
       ["https:", "http:"].includes(url.protocol) &&
       Boolean(url.hostname) &&
+      url.href.length <= 2048 &&
       !url.username &&
       !url.password
     );

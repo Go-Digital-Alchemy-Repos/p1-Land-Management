@@ -166,3 +166,10 @@
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }
+
+.site-social-links { display:flex; flex-wrap:wrap; gap:.5rem; }
+.site-social-links a { display:inline-flex; align-items:center; justify-content:center; width:44px; height:44px; border-radius:.4rem; transition:opacity .15s; }
+.site-social-links a:hover { opacity:.8; }
+.site-social-brand a { background:white; border-radius:50%; }
+.site-social-outline a { border:1px solid currentColor; }
+.site-social-solid a { background:hsl(var(--secondary-foreground)); color:hsl(var(--secondary)); }

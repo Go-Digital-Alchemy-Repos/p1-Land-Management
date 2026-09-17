@@ -1,3 +1,4 @@
+import { createWebsiteSocialStore } from "./website-social.mjs";
 import { typographyPreview } from "./typography-preview.mjs";
 import { createWebsiteFontStore } from "./website-fonts.mjs";
 import { createWebsiteColorStore } from "./website-colors.mjs";
@@ -24,6 +25,7 @@ const googleReviews = createGoogleReviewsStore();
 const headTags = createHeadTagStore({ origin });
 const websiteColors = createWebsiteColorStore({ origin });
 const websiteFonts = createWebsiteFontStore({ origin });
+const websiteSocial = createWebsiteSocialStore({ origin });
 const canonical = 'https://www.p1landmanagement.com';
 const legacyPublicRoutes = new Map([
   ['/commercial-snow-ice-management', '/services/commercial-snow-ice-management'],
@@ -124,6 +126,11 @@ const server=http.createServer(async(req,res)=>{
     if (legacyDestination) {res.writeHead(301,{Location:`${redirectToCanonicalHost?canonical:''}${legacyDestination}${url.search}`});return res.end();}
     if(redirectToCanonicalHost || normalized!==pathname) {res.writeHead(308,{Location:`${redirectToCanonicalHost?canonical:''}${normalized}${url.search}`});return res.end();}
     if(pathname==='/api/p1/page-content' && ['GET','HEAD'].includes(req.method)) {const snapshot=await content.snapshot(url.searchParams.get('path')||'/');return send(req,res,snapshot?200:404,JSON.stringify(snapshot||{error:'Not found'}),'application/json','no-store');}
+    if(pathname==='/api/p1/social-links') {
+      if(!['GET','HEAD'].includes(req.method))return send(req,res,405,'Method not allowed','text/plain; charset=utf-8','no-store');
+      if(url.search)return send(req,res,400,'Unsupported query','text/plain; charset=utf-8','no-store');
+      return send(req,res,200,JSON.stringify(await websiteSocial.snapshot()),'application/json; charset=utf-8','no-store');
+    }
     if(pathname==='/api/p1/google-reviews' && ['GET','HEAD'].includes(req.method)) {
       try {
         const snapshot=await googleReviews.snapshot();

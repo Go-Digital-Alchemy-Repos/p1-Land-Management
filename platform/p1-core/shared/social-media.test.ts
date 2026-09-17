@@ -23,6 +23,7 @@ it("retains all ten profile keys and excludes executable or credential-bearing l
     "https://example.test/\\unsafe",
     "https://example.test/\nunsafe",
     "https://example.test/" + "x".repeat(2048),
+      "https://example.test/" + "é".repeat(1000),
   ])
     expect(isSafeSocialUrl(url)).toBe(false);
   const links = getSocialMediaLinks({

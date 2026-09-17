@@ -13,7 +13,10 @@ const listen = async (server) => {
 (async () => {
   let child, browser;
   const upstream = http.createServer((req, res) => {
-    if (req.url === "/api/p1/website-fonts") {
+    if (req.url === "/api/p1/website-social") {
+      res.setHeader("Content-Type", "application/json");
+      res.end(JSON.stringify({schemaVersion:1,stackId:"p1-land-management",iconStyle:"outline",links:["facebook","instagram","linkedin","x","tiktok","youtube","pinterest","houzz","yelp","nextdoor"].map(platform=>({platform,url:"https://example.test/"+platform}))}));
+    } else if (req.url === "/api/p1/website-fonts") {
       res.setHeader("Content-Type", "application/json");
       res.end(JSON.stringify({schemaVersion:1,stackId:"p1-land-management",body:{name:"Inter",fallback:"sans-serif"},heading:{name:"Lora",fallback:"serif"}}));
     } else if (req.url === "/api/p1/website-colors") {
@@ -105,6 +108,10 @@ const listen = async (server) => {
     await page.waitForFunction(()=>getComputedStyle(document.body).fontFamily.includes("Inter"));
     assert.match(await page.locator("#p1-website-font-source").getAttribute("href"), /^https:\/\/fonts.googleapis.com\/css2\?/);
     assert.equal(await page.locator("html").evaluate(e=>getComputedStyle(e).getPropertyValue("--primary").trim()), "0 100% 50%");
+    const social=page.getByRole("navigation",{name:"Social profiles",exact:true});
+    await social.waitFor();assert.equal(await social.getByRole("link").count(),10);assert.equal(await social.locator("svg").count(),10);
+    assert.equal(await social.getByRole("link",{name:"P1 on Facebook",exact:true}).getAttribute("rel"),"noopener noreferrer");
+    await page.setViewportSize({width:390,height:844});await social.screenshot({path:"/tmp/p1-social-footer-mobile.png"});const widthAudit=await social.evaluate(e=>{const withLinks=document.documentElement.scrollWidth;e.style.display='none';const withoutLinks=document.documentElement.scrollWidth;e.style.display='';return {withLinks,withoutLinks,viewport:innerWidth,overflow:[...document.querySelectorAll('body *')].filter(node=>node instanceof HTMLElement&&node.getBoundingClientRect().right>innerWidth+1).slice(0,5).map(node=>({tag:node.tagName,className:node.className,right:node.getBoundingClientRect().right}))};});assert.equal(widthAudit.withLinks,widthAudit.withoutLinks);if(widthAudit.withLinks>widthAudit.viewport)console.log('Existing mobile overflow unchanged by social links:',JSON.stringify(widthAudit));assert(await social.evaluate(e=>e.scrollWidth<=e.clientWidth));await page.setViewportSize({width:1280,height:800});
     await page.goto(`http://127.0.0.1:${port}/service-areas/inman-sc`, {waitUntil:"domcontentloaded"});
     await page.waitForFunction(()=>{const h=document.querySelector("h1");return h && getComputedStyle(h).color === "rgb(255, 0, 0)";});
     await page.waitForFunction(()=>{const h=document.querySelector("h2");return h && getComputedStyle(h).color === "rgb(0, 255, 0)";});
@@ -143,6 +150,20 @@ const listen = async (server) => {
     assert.match(await specimen.locator("h1").evaluate(e=>getComputedStyle(e).fontFamily),/Inter/);
     assert.equal(await specimen.locator("script,form").count(),0);
     await editor.close();
+    let socialValue={links:[{platform:"facebook",url:"https://example.test/profile"}],iconStyle:"brand"},socialFailure=false;
+    await page.route("**/api/p1/social-links",route=>route.fulfill({status:socialFailure?503:200,json:socialValue}));
+    for(const style of ["brand","outline","solid"]){
+      socialValue.iconStyle=style;await page.goto(`http://127.0.0.1:${port}/`,{waitUntil:"domcontentloaded"});await social.waitFor();assert((await social.getAttribute("class")).includes(`site-social-${style}`));
+      const link=social.getByRole("link");assert.equal(await link.getAttribute("href"),"https://example.test/profile");
+      if(style==="brand")assert.equal(await link.evaluate(e=>getComputedStyle(e).backgroundColor),"rgb(255, 255, 255)");
+      if(style==="outline")assert.equal(await link.evaluate(e=>getComputedStyle(e).borderTopWidth),"1px");
+    }
+    for(const condition of ["cleared","invalid","unavailable"]){
+      socialFailure=condition==="unavailable";socialValue.links=condition==="invalid"?[{platform:"facebook",url:"javascript:bad()"}]:[];
+      const loaded=page.waitForResponse(response=>response.url().endsWith('/api/p1/social-links'));
+      await page.goto(`http://127.0.0.1:${port}/`,{waitUntil:"domcontentloaded"});await (await loaded).finished();await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
+      assert.equal(await social.count(),0);assert.equal(await page.locator("footer").count(),1);
+    }
     await page.goto(`http://127.0.0.1:${port}/admin/`, {
       waitUntil: "domcontentloaded",
     });
@@ -150,7 +171,7 @@ const listen = async (server) => {
     assert.equal(await page.locator("#p1-website-colors").count(), 0);
     assert.equal(await page.locator("#p1-website-fonts").count(), 0);
     console.log(
-      "Public branding browser passed: palette and font declarations computed on home/location/preview and stateless draft specimen, link hover, admin exclusion, head metadata, inline CSP blocking and external networking blocked.",
+      "Public branding browser passed: palette and font declarations computed on home/location/preview and stateless draft specimen, ten footer icons/styles and empty/invalid/failure behavior, link hover, admin exclusion, head metadata, inline CSP blocking and external networking blocked.",
     );
   } finally {
     if (browser) await browser.close();

@@ -1,3 +1,4 @@
+import { SiteSocialLinks } from "./SiteSocialLinks";
 import { Link } from "wouter";
 import logo from "@assets/Asset_1_1782329698014.svg";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ export function SiteFooter() {
           <p className="text-secondary-foreground/70 text-sm leading-relaxed max-w-xs">
             Full-service land and property management for commercial, agricultural, industrial, municipal, and institutional properties 1 acre and larger across Upstate SC and the Charlotte, NC region.
           </p>
+          <SiteSocialLinks />
           <div className="space-y-2 pt-2">
             <a href="tel:7042218928" className="flex items-center gap-2 text-xl font-sans font-bold hover:text-primary transition-colors">
               <Phone className="h-5 w-5 text-primary" />

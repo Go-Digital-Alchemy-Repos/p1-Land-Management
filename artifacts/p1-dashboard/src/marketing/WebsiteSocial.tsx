@@ -142,8 +142,8 @@ export default function WebsiteSocial() {
     <section className="panel" aria-label="Website social media">
       <h2>Website social media</h2>
       <p>
-        Manage your website’s social profiles and icon style. Public website
-        footer display is not available yet.
+        Manage your website’s social profiles and icon style. Saved links appear
+        in the public footer on new page loads, usually within 30 seconds.
       </p>
       <p>
         Use full HTTP or HTTPS profile addresses without sign-in credentials.

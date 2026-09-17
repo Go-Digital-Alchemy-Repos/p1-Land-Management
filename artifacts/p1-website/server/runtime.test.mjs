@@ -24,7 +24,9 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
   const upstreamRequests = [];
   const upstream = http.createServer((req, res) => {
     upstreamRequests.push({ path: req.url, headers: req.headers });
-    if (req.url === '/api/p1/website-fonts') {
+    if (req.url === '/api/p1/website-social') {
+      res.setHeader('Content-Type','application/json');res.end(JSON.stringify({schemaVersion:1,stackId:'p1-land-management',iconStyle:'outline',links:[{platform:'facebook',url:'https://example.test/profile'}]}));
+    } else if (req.url === '/api/p1/website-fonts') {
       res.setHeader('Content-Type','application/json');res.end(JSON.stringify({schemaVersion:1,stackId:'p1-land-management',body:{name:'Inter',fallback:'sans-serif'},heading:{name:'Lora',fallback:'serif'}}));
     } else if (req.url === '/api/p1/website-colors') {
       res.setHeader('Content-Type','application/json');res.end(JSON.stringify({schemaVersion:1,stackId:'p1-land-management',colors:{brand_primary_color:'#FF0000',text_h1_color:'#123456'}}));
@@ -89,6 +91,12 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
     assert.equal(upstreamRequests.length,before);
     const bad=await request(port,'/cms-preview/typography?body=%3Cscript%3E&bodyType=serif');assert.equal(bad.status,400);assert(!bad.body.includes('<script>'));
     assert.equal((await request(port,'/cms-preview/typography',{},'POST')).status,405);
+  });
+  await t.test('footer social projection is credential-free, no-store and rejects queries and writes',async()=>{
+    const response=await request(port,'/api/p1/social-links',{Cookie:'private-session',Authorization:'Bearer private'});
+    assert.equal(response.status,200);assert.equal(response.headers['cache-control'],'no-store');assert.deepEqual(JSON.parse(response.body),{iconStyle:'outline',links:[{platform:'facebook',url:'https://example.test/profile'}]});
+    const reads=upstreamRequests.filter(r=>r.path==='/api/p1/website-social');assert.equal(reads.length,1);assert.equal(reads[0].headers.cookie,undefined);assert.equal(reads[0].headers.authorization,undefined);
+    assert.equal((await request(port,'/api/p1/social-links?key=secret')).status,400);assert.equal((await request(port,'/api/p1/social-links',{},'POST')).status,405);
   });
   await t.test('absolute and network-path targets reject without forwarding credentials', async () => {
     const before = upstreamRequests.length;
@@ -225,6 +233,8 @@ test('staging manifest blocks indexing across public and proxied responses regar
   await copyFile(resolve(root, 'server/head-tags.mjs'), resolve(temporary, 'server/head-tags.mjs'));
   await copyFile(resolve(root, 'server/website-colors.mjs'), resolve(temporary, 'server/website-colors.mjs'));
   await copyFile(resolve(root, 'server/website-fonts.mjs'), resolve(temporary, 'server/website-fonts.mjs'));
+  await copyFile(resolve(root, 'server/public-settings.mjs'), resolve(temporary, 'server/public-settings.mjs'));
+  await copyFile(resolve(root, 'server/website-social.mjs'), resolve(temporary, 'server/website-social.mjs'));
   await copyFile(resolve(root, 'server/typography-preview.mjs'), resolve(temporary, 'server/typography-preview.mjs'));
   await copyFile(resolve(root, 'server/content.mjs'), resolve(temporary, 'server/content.mjs'));
   await copyFile(resolve(root, 'server/client-ip.mjs'), resolve(temporary, 'server/client-ip.mjs')); 
