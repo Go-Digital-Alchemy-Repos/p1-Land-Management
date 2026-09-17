@@ -7,15 +7,15 @@ import { cn } from "@/lib/utils";
 import { breadcrumbSchema } from "@/lib/structured-data";
 import heroImg from "@/assets/services-hero.png";
 
-import imgClearing from "@/assets/service-clearing.png";
-import imgGrading from "@/assets/fine-grading.png";
-import imgDrainage from "@/assets/service-drainage.png";
-import imgTurf from "@/assets/service-turf.png";
-import imgPond from "@/assets/pond-management.png";
-import imgReconstruction from "@/assets/service-reconstruction-smaller-scale.png";
-import imgCommercial from "@/assets/commercial-property.png";
-import imgIndustrial from "@/assets/service-industrial.png";
-import imgTree from "@/assets/service-tree.png";
+import { clearingHero as imgClearing } from "@/lib/service-images";
+import { gradingHero as imgGrading } from "@/lib/service-images";
+import { drainageHero as imgDrainage } from "@/lib/service-images";
+import { turfHero as imgTurf } from "@/lib/service-images";
+import { pondHero as imgPond } from "@/lib/service-images";
+import { reconstructionHero as imgReconstruction } from "@/lib/service-images";
+import { commercialHero as imgCommercial } from "@/lib/service-images";
+import { industrialHero as imgIndustrial } from "@/lib/service-images";
+import { treeHero as imgTree } from "@/lib/service-images";
 
 interface ServiceIllustration {
   title: string;
@@ -31,7 +31,7 @@ const projects: ServiceIllustration[] = [
   { title: "Pond Restoration & Shoreline Repair", service: "Pond & Waterway", image: imgPond },
   { title: "Full Property Reconstruction", service: "Property Reconstruction", image: imgReconstruction },
   { title: "Commercial Campus Grounds Management", service: "Commercial Landscaping", image: imgCommercial },
-  { title: "Agricultural Land Preparation", service: "Industrial & Agricultural", image: imgIndustrial },
+  { title: "Agricultural Property Care", service: "Industrial & Agricultural", image: imgIndustrial },
   { title: "Tree Removal & Stump Grinding", service: "Tree Services", image: imgTree },
 ];
 

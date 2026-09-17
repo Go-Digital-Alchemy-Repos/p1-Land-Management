@@ -6,7 +6,7 @@
     "displayName": "P1 Land & Property Management",
     "source": {
       "repository": "https://github.com/Go-Digital-Alchemy-Repos/p1-Land-Management.git",
-      "revision": "3902ac37a615bb39b2aa9dfe879fde99559291aa"
+      "revision": "c553a3771abd666d2ae679c05995dedec92c6a7c"
     },
     "owners": [
       {
@@ -5519,8 +5519,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1ff7yus",
-            "label": "Image: /assets/service-industrial-1280-DHwKA5iR.webp",
+            "path": "f1fcz82p",
+            "label": "Image: /assets/equestrian-estate-hero-1280-DQjfgIRy.webp",
             "type": "image",
             "required": false,
             "maxLength": 2000
@@ -6568,7 +6568,7 @@
           "f19vd1b5": "Industrial & Agricultural Land",
           "f1gjkqsu": "Pasture, fence-line, and grounds care for farms and industrial sites.",
           "f1gkmumd": "/services/industrial-agricultural",
-          "f1ff7yus": "/assets/service-industrial-1280-DHwKA5iR.webp",
+          "f1fcz82p": "/assets/equestrian-estate-hero-1280-DQjfgIRy.webp",
           "f16l1lvf": "Industrial & Agricultural Land",
           "f11u2429": "Land Clearing & Mulching",
           "f3f76n0": "Selective clearing and forestry mulching that opens up acreage responsibly.",
@@ -11161,8 +11161,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1u1km71",
-            "label": "Image: /assets/fine-grading-1280-CWwHPN9f.webp",
+            "path": "f1cjy9l7",
+            "label": "Image: /assets/service-grading-1280-B0ka5_58.webp",
             "type": "image",
             "required": false,
             "maxLength": 2000
@@ -11224,8 +11224,8 @@
             "maxLength": 2000
           },
           {
-            "path": "fcmyddd",
-            "label": "Image: /assets/pond-management-1280-wAkP6M3E.webp",
+            "path": "f1j9al4f",
+            "label": "Image: /assets/service-pond-1280-DHTzyRYV.webp",
             "type": "image",
             "required": false,
             "maxLength": 2000
@@ -11266,8 +11266,8 @@
             "maxLength": 2000
           },
           {
-            "path": "frepd5q",
-            "label": "Image: /assets/commercial-property-1280-DHKZ--xC.webp",
+            "path": "fj88j4j",
+            "label": "Image: /assets/service-commercial-1280-L65U2NEr.webp",
             "type": "image",
             "required": false,
             "maxLength": 2000
@@ -11287,22 +11287,22 @@
             "maxLength": 2000
           },
           {
-            "path": "f1ff7yus",
-            "label": "Image: /assets/service-industrial-1280-DHwKA5iR.webp",
+            "path": "f1fcz82p",
+            "label": "Image: /assets/equestrian-estate-hero-1280-DQjfgIRy.webp",
             "type": "image",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "f1bblpdz",
-            "label": "Image description: Illustration: Agricultural Land Preparation",
+            "path": "fg98f53",
+            "label": "Image description: Illustration: Agricultural Property Care",
             "type": "imageAlt",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "f1lt83e9",
-            "label": "Text: Agricultural Land Preparation",
+            "path": "fxftszh",
+            "label": "Text: Agricultural Property Care",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -11332,6 +11332,13 @@
             "path": "f1j9pc8b",
             "label": "Text: Gallery imagery illustrates service categories. It does not document specific completed jobs or",
             "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1u1km71",
+            "label": "Image: /assets/fine-grading-1280-CWwHPN9f.webp",
+            "type": "image",
             "required": false,
             "maxLength": 2000
           },
@@ -11425,7 +11432,7 @@
           "ffhuwyj": "/assets/service-clearing-1280-ChQ3RvyP.webp",
           "f1r4tpxi": "Illustration: Forestry Mulching & Clearing",
           "fhkvg84": "Forestry Mulching & Clearing",
-          "f1u1km71": "/assets/fine-grading-1280-CWwHPN9f.webp",
+          "f1cjy9l7": "/assets/service-grading-1280-B0ka5_58.webp",
           "f1y132vx": "Illustration: Commercial Site Fine Grading",
           "fi8y9hf": "Commercial Site Fine Grading",
           "f1f2xdki": "/assets/service-drainage-1280-DBaNqUrR.webp",
@@ -11434,22 +11441,23 @@
           "f1aqc58w": "/assets/service-turf-1280-SpHI1yov.webp",
           "f1ry1ftp": "Illustration: Large-Acreage Turf Installation",
           "fi0xxjb": "Large-Acreage Turf Installation",
-          "fcmyddd": "/assets/pond-management-1280-wAkP6M3E.webp",
+          "f1j9al4f": "/assets/service-pond-1280-DHTzyRYV.webp",
           "fyqcfz9": "Illustration: Pond Restoration & Shoreline Repair",
           "f1lhjow7": "Pond Restoration & Shoreline Repair",
           "f1cxyjfe": "/assets/service-reconstruction-smaller-scale-1280-DgtCeNAn.webp",
           "f5wludg": "Illustration: Full Property Reconstruction",
           "fgh6b3e": "Full Property Reconstruction",
-          "frepd5q": "/assets/commercial-property-1280-DHKZ--xC.webp",
+          "fj88j4j": "/assets/service-commercial-1280-L65U2NEr.webp",
           "fsxhmog": "Illustration: Commercial Campus Grounds Management",
           "fct4qea": "Commercial Campus Grounds Management",
-          "f1ff7yus": "/assets/service-industrial-1280-DHwKA5iR.webp",
-          "f1bblpdz": "Illustration: Agricultural Land Preparation",
-          "f1lt83e9": "Agricultural Land Preparation",
+          "f1fcz82p": "/assets/equestrian-estate-hero-1280-DQjfgIRy.webp",
+          "fg98f53": "Illustration: Agricultural Property Care",
+          "fxftszh": "Agricultural Property Care",
           "fb3xzm3": "/assets/service-tree-1280-DIDNuEDJ.webp",
           "f4fx1cf": "Illustration: Tree Removal & Stump Grinding",
           "fz74c2x": "Tree Removal & Stump Grinding",
           "f1j9pc8b": "Gallery imagery illustrates service categories. It does not document specific completed jobs or customer results.",
+          "f1u1km71": "/assets/fine-grading-1280-CWwHPN9f.webp",
           "f5dus4q": "Start the Conversation",
           "f1vboes9": "Let's Take a Look at Your Property",
           "f1bh5jes": "Tell us what needs attention. We'll help you plan the work, starting with a free site assessment.",
@@ -11652,8 +11660,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1ff7yus",
-            "label": "Image: /assets/service-industrial-1280-DHwKA5iR.webp",
+            "path": "f1fcz82p",
+            "label": "Image: /assets/equestrian-estate-hero-1280-DQjfgIRy.webp",
             "type": "image",
             "required": false,
             "maxLength": 2000
@@ -12048,7 +12056,7 @@
           "f19vd1b5": "Industrial & Agricultural Land",
           "f1gjkqsu": "Pasture, fence-line, and grounds care for farms and industrial sites.",
           "f1gkmumd": "/services/industrial-agricultural",
-          "f1ff7yus": "/assets/service-industrial-1280-DHwKA5iR.webp",
+          "f1fcz82p": "/assets/equestrian-estate-hero-1280-DQjfgIRy.webp",
           "f16l1lvf": "Industrial & Agricultural Land",
           "f11u2429": "Land Clearing & Mulching",
           "f3f76n0": "Selective clearing and forestry mulching that opens up acreage responsibly.",

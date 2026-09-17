@@ -6,7 +6,7 @@ import { serviceSchema, breadcrumbSchema, faqSchema } from "@/lib/structured-dat
 import { FeatureRow } from "@/components/layout/FeatureRow";
 import { CheckCircle2 } from "lucide-react";
 import { Link } from "wouter";
-import heroImg from "@/assets/service-clearing.png";
+import { clearingHero as heroImg } from "@/lib/service-images";
 import preparesImg from "@/assets/features/clearing-prepares.png";
 import mulchingImg from "@/assets/features/clearing-mulching.png";
 

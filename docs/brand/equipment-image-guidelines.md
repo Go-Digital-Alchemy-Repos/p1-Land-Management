@@ -11,3 +11,7 @@ Owner-confirmed direction — September 17, 2026.
 - Optimize website images into responsive WebP variants using the existing image pipeline.
 
 This clarification expands the heavy-equipment options. The orange Kubota mower requirement still applies.
+
+## Service Hero and Grid Consistency
+
+Service detail pages, the homepage/services grids, and the service gallery share canonical image exports in `artifacts/p1-website/src/lib/service-images.ts`. Replace a service hero there, not through a separate page-only asset import. Keep card titles and crops appropriate to the replacement image. Regenerate both CMS manifests after changes and check published CMS overrides for independently selected images before release.

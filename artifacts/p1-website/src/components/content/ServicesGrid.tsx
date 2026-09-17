@@ -13,16 +13,16 @@ import {
   Waves,
   Wrench,
 } from "lucide-react";
-import serviceCommercial from "@/assets/service-commercial.png";
-import serviceCommercialSnowIce from "@/assets/hero-commercial-snow-ice.png";
-import serviceIndustrial from "@/assets/service-industrial.png";
-import serviceClearing from "@/assets/service-clearing.png";
-import serviceGrading from "@/assets/service-grading.png";
-import serviceDrainage from "@/assets/service-drainage.png";
-import serviceTurf from "@/assets/service-turf.png";
-import serviceTree from "@/assets/service-tree.png";
-import servicePond from "@/assets/service-pond.png";
-import serviceReconstruction from "@/assets/service-reconstruction-smaller-scale.png";
+import { commercialHero as serviceCommercial } from "@/lib/service-images";
+import { snowHero as serviceCommercialSnowIce } from "@/lib/service-images";
+import { industrialHero as serviceIndustrial } from "@/lib/service-images";
+import { clearingHero as serviceClearing } from "@/lib/service-images";
+import { gradingHero as serviceGrading } from "@/lib/service-images";
+import { drainageHero as serviceDrainage } from "@/lib/service-images";
+import { turfHero as serviceTurf } from "@/lib/service-images";
+import { treeHero as serviceTree } from "@/lib/service-images";
+import { pondHero as servicePond } from "@/lib/service-images";
+import { reconstructionHero as serviceReconstruction } from "@/lib/service-images";
 import { cmsValue, useCms } from "@/lib/cms";
 import { responsiveImageProps } from "@/lib/responsive-images";
 

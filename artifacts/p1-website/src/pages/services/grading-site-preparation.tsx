@@ -6,7 +6,7 @@ import { SEO } from "@/components/seo";
 import { serviceSchema, breadcrumbSchema, faqSchema } from "@/lib/structured-data";
 import { CheckCircle2 } from "lucide-react";
 import { Link } from "wouter";
-import heroImg from "@/assets/service-grading.png";
+import { gradingHero as heroImg } from "@/lib/service-images";
 import levelImg from "@/assets/features/grading-level.png";
 import drainageImg from "@/assets/features/grading-drainage.png";
 import turfImg from "@/assets/features/grading-turf.png";

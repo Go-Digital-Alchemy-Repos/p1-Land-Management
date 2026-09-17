@@ -150,3 +150,6 @@ for (const key of Object.keys(manifest).filter(key => /^src\/pages\/.*\.tsx$/.te
 }
 console.log(`PASS ${paths.length} routes: SSR, metadata, CMS text/image/link overrides, internal links, proof, FAQ accordion/JSON-LD and no React warnings.`);
 console.log(`PASS initial JS <=150 KiB gzip; largest ${worst.route}: ${(worst.bytes / 1024).toFixed(1)} KiB.`);
+
+// A service hero replacement must also reach its discovery cards and gallery.
+await import('./check-service-images.mjs');

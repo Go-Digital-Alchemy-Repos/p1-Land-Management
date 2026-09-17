@@ -6,7 +6,7 @@ import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
 import { Button } from "@/components/ui/button";
 import { breadcrumbSchema, faqSchema, serviceSchema } from "@/lib/structured-data";
-import heroImg from "@/assets/hero-commercial-snow-ice.png";
+import { snowHero as heroImg } from "@/lib/service-images";
 import pretreatmentImg from "@/assets/features/commercial-snow-pretreatment.png";
 import loadingDockImg from "@/assets/features/commercial-snow-loading-dock.png";
 import {
