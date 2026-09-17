@@ -1877,9 +1877,11 @@ td { padding: 16px var(--atlas-surface-inset); }
 .service-agreements .agreement-list > button[aria-pressed="true"] { outline: 0; border-color: #9eb77c; background: #f0f4e5; box-shadow: inset 3px 0 #77924d; }
 .service-agreements .agreement-queue { margin: 0; padding: 22px 24px 24px; border-top-color: var(--atlas-line); }
 
-.project-phases { display: grid; gap: 16px; }
-.project-phases .section-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
-.project-phase-select { display: grid; max-width: 480px; gap: 6px; }
+.project-phases .panel-heading { align-items: flex-start; }
+.project-phases .panel-heading .muted { margin: 6px 0 0; }
+.project-phase-select { display: grid; max-width: 480px; gap: 6px; margin: 20px var(--space-6) 0; }
+.project-phases > .phase-form { margin: 16px var(--space-6) 0; }
+.project-phases > .phase-list { display: grid; gap: 10px; padding: 16px var(--space-6) var(--space-6); }
 .phase-list { display: grid; gap: 10px; }
 .phase-card { display: grid; gap: 12px; padding: 18px; border: 1px solid #dbe2d3; border-radius: 12px; background: #fff; }
 .phase-card h3 { margin: 0; color: #294537; }
@@ -1950,5 +1952,6 @@ td { padding: 16px var(--atlas-surface-inset); }
   .note-list article { padding: 16px; }
   .note-list time { width: 100%; margin-left: 0; }
   .service-agreements .agreement-workspace,.service-agreements .agreement-queue { padding: 16px; }
-  .project-phases .section-heading,.phase-form { display: grid; grid-template-columns: 1fr; }
+  .project-phases .panel-heading,.project-phases > .phase-form { display: grid; grid-template-columns: 1fr; }
+  .project-phases .panel-heading .secondary { justify-self: start; }
 }
