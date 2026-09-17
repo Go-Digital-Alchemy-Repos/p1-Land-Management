@@ -1,3 +1,4 @@
+import { CrmArchive } from "./CrmArchive";
 import { LeadDetails } from "./LeadDetails";
 import { CrmTasks } from "./CrmTasks";
 import { LeadNotes } from "./LeadNotes";
@@ -327,6 +328,7 @@ export function CommercialInbox({
             <p className="commercial-message">{selected.description}</p>
             <LeadDetails key={"details:"+selected.id} leadId={selected.id} />
             <LeadNotes key={selected.id} leadId={selected.id} />
+            <CrmArchive key={"archive-"+selected.id} kind="lead" parentId={selected.id} />
             <CrmTasks key={"tasks:"+selected.id} kind="lead" parentId={selected.id} />
             <form
               key={selected.id + ":" + detailRevision}

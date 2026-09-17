@@ -1,0 +1,40 @@
+.crm-archive {
+  min-width: 0;
+  margin-block: 1rem;
+}
+.schedule-row:has(> .crm-archive) {
+  flex-wrap: wrap;
+}
+.schedule-row > .crm-archive {
+  flex: 1 0 100%;
+}
+.crm-archive section {
+  margin-block: 1rem;
+  min-width: 0;
+}
+.crm-archive ul {
+  padding-left: 1.25rem;
+}
+.crm-archive li {
+  margin-block: 0.75rem;
+}
+.crm-archive small {
+  display: block;
+  margin-top: 0.25rem;
+}
+.crm-archive button,
+.crm-archive p,
+.crm-archive small,
+.crm-archive h4 {
+  overflow-wrap: anywhere;
+  max-width: 100%;
+}
+.crm-archive pre {
+  max-height: 32rem;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  padding: 1rem;
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.5rem;
+}

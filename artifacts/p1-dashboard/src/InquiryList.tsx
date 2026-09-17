@@ -1,3 +1,4 @@
+import { CrmArchive } from "./CrmArchive";
 import { LeadDetails } from "./LeadDetails";
 import { useEffect, useRef, useState } from "react";
 import { listSalesInquiries } from "@workspace/api-client-react/dashboard";
@@ -298,6 +299,7 @@ export function InquiryList({
               }}
             />
             <LeadNotes leadId={lead.id} />
+            <CrmArchive kind="lead" parentId={lead.id} />
             <CrmTasks kind="lead" parentId={lead.id} />
           </div>
         ))}

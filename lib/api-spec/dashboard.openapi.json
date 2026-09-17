@@ -14008,6 +14008,198 @@
           }
         }
       }
+    },
+    "/leads/{id}/crm-archive": {
+      "get": {
+        "operationId": "listLeadCrmArchive",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Read-only imported CRM history; area capability required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CrmArchivePage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/leads/{id}/crm-archive/record": {
+      "get": {
+        "operationId": "getLeadCrmArchive",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "sourceInstanceId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "collection",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sourceId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Read-only imported CRM history; area capability required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CrmArchiveDetail"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/clients/{id}/crm-archive": {
+      "get": {
+        "operationId": "listClientCrmArchive",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Read-only imported CRM history; area capability required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CrmArchivePage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/clients/{id}/crm-archive/record": {
+      "get": {
+        "operationId": "getClientCrmArchive",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "sourceInstanceId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "collection",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sourceId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Read-only imported CRM history; area capability required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CrmArchiveDetail"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -28623,6 +28815,86 @@
                 "type": "string"
               }
             }
+          }
+        }
+      },
+      "CrmArchiveRecord": {
+        "type": "object",
+        "required": [
+          "sourceInstanceId",
+          "collection",
+          "sourceId",
+          "sourceSha256",
+          "importedAt"
+        ],
+        "properties": {
+          "sourceInstanceId": {
+            "type": "string"
+          },
+          "collection": {
+            "type": "string"
+          },
+          "sourceId": {
+            "type": "string"
+          },
+          "sourceSha256": {
+            "type": "string"
+          },
+          "importedAt": {
+            "type": "string"
+          }
+        }
+      },
+      "CrmArchiveDetail": {
+        "type": "object",
+        "required": [
+          "sourceInstanceId",
+          "collection",
+          "sourceId",
+          "sourceSha256",
+          "importedAt",
+          "sourceJson"
+        ],
+        "properties": {
+          "sourceInstanceId": {
+            "type": "string"
+          },
+          "collection": {
+            "type": "string"
+          },
+          "sourceId": {
+            "type": "string"
+          },
+          "sourceSha256": {
+            "type": "string"
+          },
+          "importedAt": {
+            "type": "string"
+          },
+          "sourceJson": {
+            "type": "string",
+            "description": "Original source JSON rendered as text to preserve numeric precision."
+          }
+        }
+      },
+      "CrmArchivePage": {
+        "type": "object",
+        "required": [
+          "items",
+          "nextCursor"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CrmArchiveRecord"
+            }
+          },
+          "nextCursor": {
+            "type": [
+              "string",
+              "null"
+            ]
           }
         }
       }

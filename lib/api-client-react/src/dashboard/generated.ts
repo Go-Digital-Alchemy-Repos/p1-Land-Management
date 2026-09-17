@@ -92,6 +92,8 @@ import type {
   CreateServiceRequest,
   CreateWorkOrder,
   CreatedResource,
+  CrmArchiveDetail,
+  CrmArchivePage,
   CrmTask,
   CrmTaskAssignee,
   CrmTaskCreateReceipt,
@@ -126,7 +128,9 @@ import type {
   FieldSyncResponse,
   GenerateAssessmentAvailability,
   GeneratedAssessmentAvailability,
+  GetClientCrmArchiveParams,
   GetClientTaskHistoryParams,
+  GetLeadCrmArchiveParams,
   GetLeadDetailHistoryParams,
   GetLeadTaskHistoryParams,
   GetMarketingAnalyticsParams,
@@ -150,9 +154,11 @@ import type {
   ListAgreementDraftsParams,
   ListAgreementPreparationJobsParams,
   ListAgreementTemplatesParams,
+  ListClientCrmArchiveParams,
   ListClientNotesParams,
   ListClientTasksParams,
   ListCommercialInquiriesParams,
+  ListLeadCrmArchiveParams,
   ListLeadNotesParams,
   ListLeadTasksParams,
   ListManagedInvitations200,
@@ -7877,6 +7883,126 @@ export const updateMarketingCareerSettings = async (marketingCareerSettingsUpdat
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
       marketingCareerSettingsUpdate,)
+  }
+);}
+
+
+
+export const getListLeadCrmArchiveUrl = (id: string,
+    params?: ListLeadCrmArchiveParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/leads/${id}/crm-archive?${stringifiedParams}` : `/api/v1/leads/${id}/crm-archive`
+}
+
+export const listLeadCrmArchive = async (id: string,
+    params?: ListLeadCrmArchiveParams, options?: RequestInit): Promise<CrmArchivePage> => {
+
+  return customFetch<CrmArchivePage>(getListLeadCrmArchiveUrl(id,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getGetLeadCrmArchiveUrl = (id: string,
+    params: GetLeadCrmArchiveParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/leads/${id}/crm-archive/record?${stringifiedParams}` : `/api/v1/leads/${id}/crm-archive/record`
+}
+
+export const getLeadCrmArchive = async (id: string,
+    params: GetLeadCrmArchiveParams, options?: RequestInit): Promise<CrmArchiveDetail> => {
+
+  return customFetch<CrmArchiveDetail>(getGetLeadCrmArchiveUrl(id,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getListClientCrmArchiveUrl = (id: string,
+    params?: ListClientCrmArchiveParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/clients/${id}/crm-archive?${stringifiedParams}` : `/api/v1/clients/${id}/crm-archive`
+}
+
+export const listClientCrmArchive = async (id: string,
+    params?: ListClientCrmArchiveParams, options?: RequestInit): Promise<CrmArchivePage> => {
+
+  return customFetch<CrmArchivePage>(getListClientCrmArchiveUrl(id,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getGetClientCrmArchiveUrl = (id: string,
+    params: GetClientCrmArchiveParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/clients/${id}/crm-archive/record?${stringifiedParams}` : `/api/v1/clients/${id}/crm-archive/record`
+}
+
+export const getClientCrmArchive = async (id: string,
+    params: GetClientCrmArchiveParams, options?: RequestInit): Promise<CrmArchiveDetail> => {
+
+  return customFetch<CrmArchiveDetail>(getGetClientCrmArchiveUrl(id,params),
+  {
+    ...options,
+    method: 'GET'
+
+
   }
 );}
 
