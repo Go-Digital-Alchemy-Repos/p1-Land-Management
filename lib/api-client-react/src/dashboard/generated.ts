@@ -111,6 +111,8 @@ import type {
   MarketingMediaMetadata,
   MarketingRealtime,
   MarketingSearchConsole,
+  MarketingTeamInput,
+  MarketingTeamMember,
   OperationReceipt,
   PhotoUploadReceipt,
   Project,
@@ -3766,6 +3768,72 @@ export const getMarketingMediaSource = async (id: string, options?: RequestInit)
     method: 'GET'
 
 
+  }
+);}
+
+
+
+export const getListMarketingTeamUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/team`
+}
+
+export const listMarketingTeam = async ( options?: RequestInit): Promise<MarketingTeamMember[]> => {
+
+  return customFetch<MarketingTeamMember[]>(getListMarketingTeamUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateMarketingTeamUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/team`
+}
+
+export const createMarketingTeam = async (marketingTeamInput: MarketingTeamInput, options?: RequestInit): Promise<MarketingTeamMember> => {
+
+  return customFetch<MarketingTeamMember>(getCreateMarketingTeamUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingTeamInput,)
+  }
+);}
+
+
+
+export const getUpdateMarketingTeamUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/team/${id}`
+}
+
+export const updateMarketingTeam = async (id: string,
+    marketingTeamInput: MarketingTeamInput, options?: RequestInit): Promise<MarketingTeamMember> => {
+
+  return customFetch<MarketingTeamMember>(getUpdateMarketingTeamUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingTeamInput,)
   }
 );}
 

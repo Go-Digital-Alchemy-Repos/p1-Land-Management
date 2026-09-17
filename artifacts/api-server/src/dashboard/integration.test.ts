@@ -108,6 +108,7 @@ test(
     const securityResponse = await fetch(base + "/api/healthz");
     const csp = securityResponse.headers.get("content-security-policy")!;
     assert(csp.includes("frame-src https://www.p1landmanagement.com;"));
+    assert(csp.includes("img-src 'self' blob: data: https://tiles.openfreemap.org https://www.p1landmanagement.com;"));
     assert(csp.includes("frame-ancestors 'none'"));
     assert(!csp.includes("frame-src *"));
     const owner = client();

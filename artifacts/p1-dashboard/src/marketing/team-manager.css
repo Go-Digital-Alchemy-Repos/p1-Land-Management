@@ -1,0 +1,64 @@
+.team-manager,
+.team-editor {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+}
+.team-manager > button {
+  justify-self: start;
+}
+.team-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
+  gap: 16px;
+}
+.team-grid article {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  padding: 20px;
+  overflow-wrap: anywhere;
+}
+.team-photo {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+.team-editor fieldset {
+  display: grid;
+  gap: 16px;
+  border: 1px solid var(--line);
+  padding: 18px;
+  min-width: 0;
+  border-radius: 8px;
+}
+.team-editor label,
+.team-manager label {
+  display: grid;
+  gap: 6px;
+}
+.team-editor input,
+.team-editor textarea {
+  width: 100%;
+  min-width: 0;
+}
+.team-editor form > button {
+  margin-top: 14px;
+}
+.team-editor textarea {
+  min-height: 100px;
+}
+.team-editor .cms-richtext input[type="checkbox"] {
+  width: auto;
+}
+@media (max-width: 650px) {
+  .team-fields {
+    grid-template-columns: 1fr;
+  }
+}

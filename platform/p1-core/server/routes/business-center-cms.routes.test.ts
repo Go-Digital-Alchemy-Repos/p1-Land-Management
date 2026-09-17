@@ -16,6 +16,9 @@ const state = vi.hoisted(() => ({
   mediaGet: vi.fn(),
   mediaCreate: vi.fn(),
   mediaDownload: vi.fn(),
+  teamCreate:vi.fn(),
+  teamUpdate:vi.fn(),
+  activity:vi.fn(),
 }));
 vi.mock("../services/federation-runtime", () => ({
   federationConsumer: () => ({
@@ -41,7 +44,8 @@ vi.mock("../storage", () => ({
     cmsGalleries: { getAll: state.list },
     cmsSidebars: { getAll: state.list },
     redirects: { getAll: state.list },
-    team: { list: state.list },
+    team: { list: state.list, create:state.teamCreate, update:state.teamUpdate },
+    activity:{log:state.activity},
     seoSettings: { get: async () => ({}) },
     blog: { getAllPosts: state.list },
     events: { getAllEvents: state.list },
@@ -428,4 +432,17 @@ it("runs retained multipart and source handlers through the authenticated servic
   expect(source.headers.get("content-type")).toBe("image/png");
   expect(Buffer.from(await source.arrayBuffer())).toEqual(Buffer.from([0, 1, 255]));
   expect(state.mediaDownload).toHaveBeenCalledWith("synthetic-key");
+});
+
+it("Team service writes retain local audit identity and require independent Team access", async()=>{
+ const body={name:"Synthetic member",role:"Field lead",biography:"<p>Biography</p>",excerpt:"",photoUrl:"",photoAlt:"",status:"draft"};
+ const write=(path:string,method:string,input:unknown)=>fetch(base+"/service"+path,{method,headers:{authorization:`Bearer ${key}`,"x-p1-user-grant":grantId,"content-type":"application/json"},body:JSON.stringify(input)});
+ identity.capabilities=["marketing.content.team"];state.teamCreate.mockResolvedValue({...body,id:"member"});state.teamUpdate.mockResolvedValue({...body,id:"member",status:"archived"});
+ expect((await write("/team","POST",body)).status).toBe(201);
+ expect(state.teamCreate).toHaveBeenCalledWith(body,"linked");expect(state.activity).toHaveBeenCalledWith("linked","team_member_created","member");
+ expect((await write("/team/member","PUT",{...body,status:"archived"})).status).toBe(200);
+ expect(state.teamUpdate).toHaveBeenCalledWith("member",{...body,status:"archived"},"linked");
+ identity.capabilities=["settings.people.manage","marketing.content.media"];
+ expect((await write("/team","POST",body)).status).toBe(403);expect((await write("/team/member","PUT",body)).status).toBe(403);
+ expect(state.teamCreate).toHaveBeenCalledTimes(1);expect(state.teamUpdate).toHaveBeenCalledTimes(1);
 });

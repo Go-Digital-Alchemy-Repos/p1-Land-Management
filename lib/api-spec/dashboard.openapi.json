@@ -7049,6 +7049,97 @@
           }
         ]
       }
+    },
+    "/marketing/cms/team": {
+      "get": {
+        "operationId": "listMarketingTeam",
+        "tags": [
+          "Marketing"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MarketingTeamMember"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createMarketingTeam",
+        "tags": [
+          "Marketing"
+        ],
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingTeamMember"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketingTeamInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/marketing/cms/team/{id}": {
+      "put": {
+        "operationId": "updateMarketingTeam",
+        "tags": [
+          "Marketing"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingTeamMember"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketingTeamInput"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -14895,6 +14986,70 @@
             "maxLength": 320
           }
         }
+      },
+      "MarketingTeamInput": {
+        "type": "object",
+        "required": [
+          "name",
+          "role",
+          "biography",
+          "excerpt",
+          "photoUrl",
+          "photoAlt",
+          "status"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "role": {
+            "type": "string",
+            "maxLength": 240
+          },
+          "biography": {
+            "type": "string",
+            "maxLength": 30000
+          },
+          "excerpt": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "photoUrl": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "photoAlt": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "published",
+              "archived"
+            ]
+          }
+        }
+      },
+      "MarketingTeamMember": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MarketingTeamInput"
+          },
+          {
+            "type": "object",
+            "required": [
+              "id"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              }
+            }
+          }
+        ]
       }
     }
   }

@@ -1,0 +1,64 @@
+.cms-richtext {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+.cms-richtext-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 8px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+.cms-richtext button[aria-pressed="true"] {
+  background: hsl(var(--primary));
+  color: white;
+}
+.cms-richtext-toolbar button {
+  font-size: 12px;
+  padding: 6px 9px;
+}
+.cms-richtext-input {
+  min-height: 220px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+  overflow-wrap: anywhere;
+}
+.cms-richtext-input img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+.cms-richtext-input .cms-richtext-media-left {
+  margin-right: auto;
+}
+.cms-richtext-input .cms-richtext-media-center {
+  margin-left: auto;
+  margin-right: auto;
+}
+.cms-richtext-input .cms-richtext-media-right {
+  margin-left: auto;
+}
+.cms-richtext-input blockquote {
+  border-left: 3px solid var(--line);
+  padding-left: 15px;
+}
+.cms-richtext textarea {
+  width: 100%;
+  min-width: 0;
+}
+.cms-richtext fieldset {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+.cms-richtext label {
+  display: grid;
+  gap: 6px;
+}
+.cms-richtext input[type="checkbox"] {
+  width: auto;
+}

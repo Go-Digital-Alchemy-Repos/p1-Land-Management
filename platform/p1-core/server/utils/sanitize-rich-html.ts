@@ -64,9 +64,14 @@ export function sanitizePublicRichHtml(value: string | null | undefined): string
   return sanitizeHtml(value, {
     allowedTags,
     allowedAttributes: {
+      p: ["style"],
+      h2: ["style"],
+      h3: ["style"],
+      h4: ["style"],
       a: ["href", "target", "rel"],
       img: ["src", "alt", "data-align", "class"],
     },
+    allowedStyles: { "*": { "text-align": [/^(left|center|right)$/] } },
     allowedClasses: {
       img: [
         "cms-richtext-media",

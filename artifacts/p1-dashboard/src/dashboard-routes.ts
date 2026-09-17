@@ -16,6 +16,7 @@ export type DashboardView =
   | "Settings"
   | "Profile"
   | "Analytics"
+  | "Website Team"
   | "Media Library"
   | "Website Editor"
   | "Website Menus"
@@ -91,6 +92,7 @@ export const DASHBOARD_PAGES: readonly DashboardPageRoute[] = [
   { view: "Expenses", label: "Expenses", path: "/expenses", group: "Revenue" },
   { view: "Website Editor", label: "Website", path: "/marketing/content/website", group: "Marketing", section: "Content" },
   { view: "Media Library", label: "Media", path: "/marketing/content/media", group: "Marketing", section: "Content" },
+  { view: "Website Team", label: "Team", path: "/marketing/content/team", group: "Marketing", section: "Content" },
   { view: "Website Menus", label: "Menus", path: "/marketing/content/menus", group: "Marketing", section: "Content" },
   { view: "Analytics", label: "Google Analytics", path: "/marketing/reporting/analytics", group: "Marketing", section: "Reporting" },
   { view: "Search Console", label: "Search Console", path: "/marketing/reporting/search-console", group: "Marketing", section: "Reporting" },
@@ -192,6 +194,7 @@ export function pathForRoute(route: Extract<DashboardRoute, { kind: "page" }>) {
 
 const viewCapability: Partial<Record<DashboardView, Capability>> = {
   Analytics: "marketing.analytics.view",
+  "Website Team": "marketing.content.team",
   "Media Library": "marketing.content.media",
   "Website Editor": "marketing.content.website",
   "Website Menus": "marketing.content.menus",
