@@ -178,7 +178,9 @@ export class FormsStorage {
                 ? `${payload.kind}:${payload.recipient.trim().toLowerCase()}`
                 : payload.kind === "dashboard_form_notification"
                   ? `${payload.kind}:${payload.subject}`
-                  : payload.kind,
+                  : payload.kind === "dashboard_form_notification_dispatch"
+                    ? `${payload.kind}:${payload.after || ""}`
+                    : payload.kind,
             payload,
           })),
         );
@@ -268,6 +270,60 @@ export class FormsStorage {
         .where(and(eq(cmsFormEffectJobs.id, jobId), eq(cmsFormEffectJobs.processingToken, token)));
       return true;
     });
+  }
+
+  async completeNotificationDispatch(
+    job: CmsFormEffectJob,
+    subjects: string[],
+    nextCursor: string | null,
+    clock: () => Date = () => new Date(),
+  ) {
+    const payload = job.payload;
+    if (!job.processingToken || payload.kind !== "dashboard_form_notification_dispatch")
+      throw new Error("notification_dispatch_claim_invalid");
+    return this.completeEffectJob(
+      job.id,
+      job.processingToken,
+      "completed",
+      clock,
+      async (tx, submission) => {
+        if (submission.formId !== payload.formId)
+          throw new Error("notification_dispatch_form_mismatch");
+        const content = {
+          formId: payload.formId,
+          formName: payload.formName,
+          summary: payload.summary,
+          contact: payload.contact,
+        };
+        const children: CmsFormEffectPayload[] = [...new Set(subjects)].map((subject) => ({
+          ...content,
+          kind: "dashboard_form_notification",
+          subject,
+        }));
+        if (nextCursor)
+          children.push({
+            ...content,
+            kind: "dashboard_form_notification_dispatch",
+            after: nextCursor,
+          });
+        if (children.length)
+          await tx
+            .insert(cmsFormEffectJobs)
+            .values(
+              children.map((child) => ({
+                submissionId: submission.id,
+                deduplicationKey:
+                  child.kind === "dashboard_form_notification"
+                    ? `${child.kind}:${child.subject}`
+                    : `dashboard_form_notification_dispatch:${nextCursor}`,
+                payload: child,
+              })),
+            )
+            .onConflictDoNothing({
+              target: [cmsFormEffectJobs.submissionId, cmsFormEffectJobs.deduplicationKey],
+            });
+      },
+    );
   }
 
   async retryEffectJob(

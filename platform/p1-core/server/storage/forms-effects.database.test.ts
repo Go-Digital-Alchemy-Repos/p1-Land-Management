@@ -72,16 +72,78 @@ describe.skipIf(!testUrl)("managed form outbox disposable PostgreSQL", () => {
   beforeAll(async () => {
     await runMigrations();
   }, 60_000);
+  it("atomically fans out recipients and continuation with claim fencing", async () => {
+    const dispatch = {
+      kind: "dashboard_form_notification_dispatch" as const,
+      formId,
+      formName: "Inquiry",
+      summary: "Synthetic",
+      contact: null,
+    };
+    await accepted("dispatch-page", [dispatch]);
+    const claimed = (await forms.claimNextEffectJob(await readyTime()))!;
+    expect(
+      await forms.completeNotificationDispatch(
+        { ...claimed, processingToken: "stale" },
+        ["account-a"],
+        "account-a",
+      ),
+    ).toBe(false);
+    expect(await count("cms_form_effect_jobs")).toBe(1);
+    expect(
+      await forms.completeNotificationDispatch(
+        claimed,
+        ["account-a", "account-a", "account-b"],
+        "account-b",
+      ),
+    ).toBe(true);
+    expect(await forms.completeNotificationDispatch(claimed, ["account-c"], null)).toBe(false);
+    const rows = (
+      await pool.query(
+        "SELECT status,deduplication_key,payload FROM cms_form_effect_jobs ORDER BY deduplication_key",
+      )
+    ).rows;
+    expect(rows).toHaveLength(4);
+    expect(rows.filter((row) => row.status === "completed")).toHaveLength(1);
+    expect(
+      rows.find((row) => row.deduplication_key === "dashboard_form_notification_dispatch:account-b")
+        .payload.after,
+    ).toBe("account-b");
+    expect(
+      rows
+        .filter((row) => row.payload.kind === "dashboard_form_notification")
+        .map((row) => row.payload.subject),
+    ).toEqual(["account-a", "account-b"]);
+  });
   it("keeps canonical recipient jobs distinct and idempotent without frozen email addresses", async () => {
-    const notification = { kind: "dashboard_form_notification" as const, formId, subject: "account-a", formName: "Inquiry", summary: "Synthetic", contact: null };
+    const notification = {
+      kind: "dashboard_form_notification" as const,
+      formId,
+      subject: "account-a",
+      formName: "Inquiry",
+      summary: "Synthetic",
+      contact: null,
+    };
     const key = "canonical-notification-replay";
-    const first = await forms.createSubmissionWithEffects({ formId, data: payload, idempotencyKey: key }, [notification, { ...notification, subject: "account-b" }]);
-    const replay = await forms.createSubmissionWithEffects({ formId, data: payload, idempotencyKey: key }, [notification]);
+    const first = await forms.createSubmissionWithEffects(
+      { formId, data: payload, idempotencyKey: key },
+      [notification, { ...notification, subject: "account-b" }],
+    );
+    const replay = await forms.createSubmissionWithEffects(
+      { formId, data: payload, idempotencyKey: key },
+      [notification],
+    );
     expect(replay.created).toBe(false);
     expect(replay.submission.id).toBe(first.submission.id);
-    const jobs = await pool.query("SELECT deduplication_key,payload FROM cms_form_effect_jobs WHERE submission_id=$1 ORDER BY deduplication_key", [first.submission.id]);
-    expect(jobs.rows.map(row => row.deduplication_key)).toEqual(["dashboard_form_notification:account-a", "dashboard_form_notification:account-b"]);
-    expect(jobs.rows.every(row => !("recipient" in row.payload))).toBe(true);
+    const jobs = await pool.query(
+      "SELECT deduplication_key,payload FROM cms_form_effect_jobs WHERE submission_id=$1 ORDER BY deduplication_key",
+      [first.submission.id],
+    );
+    expect(jobs.rows.map((row) => row.deduplication_key)).toEqual([
+      "dashboard_form_notification:account-a",
+      "dashboard_form_notification:account-b",
+    ]);
+    expect(jobs.rows.every((row) => !("recipient" in row.payload))).toBe(true);
   });
   it("paginates all pending/failed deliveries beyond 200 without timestamp rounding", async () => {
     const fixture = await forms.create({

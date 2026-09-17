@@ -40,6 +40,7 @@ const payload = {
 describe("P1 managed intake integration", () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    vi.stubEnv("CORE_DASHBOARD_FORM_NOTIFICATIONS_ENABLED", "false");
     vi.stubEnv("P1_FORM_NOTIFICATION_RECIPIENTS", "owner-one@example.test,owner-two@example.test");
     mocks.getPublicBySlug.mockResolvedValue(form);
     mocks.getFormNotificationUsers.mockResolvedValue([]);
@@ -50,6 +51,26 @@ describe("P1 managed intake integration", () => {
     });
   });
   afterEach(() => vi.unstubAllEnvs());
+  it("queues canonical dispatch atomically without resolving recipients during public acceptance", async () => {
+    vi.stubEnv("CORE_DASHBOARD_FORM_NOTIFICATIONS_ENABLED", "true");
+    vi.stubEnv("CORE_FEDERATION_ENABLED", "false");
+    const result = await submitManagedFormBySlug(form.slug, payload, {
+      idempotencyKey: "canonical-intent",
+    });
+    expect(result.submission.id).toBe("receipt-1");
+    const effects = mocks.createSubmissionWithEffects.mock.calls[0][1];
+    expect(effects).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ kind: "commercial_dashboard_intake" }),
+        expect.objectContaining({ kind: "dashboard_form_notification_dispatch", formId: form.id }),
+      ]),
+    );
+    expect(effects.some((effect: { kind: string }) => effect.kind === "admin_notification")).toBe(
+      false,
+    );
+    expect(mocks.getFormNotificationUsers).not.toHaveBeenCalled();
+    expect(mocks.getUsersByRole).not.toHaveBeenCalled();
+  });
   it("validates then queues receipt, CRM and notification atomically through existing storage", async () => {
     const result = await submitManagedFormBySlug(form.slug, payload, {
       idempotencyKey: "intent-1",

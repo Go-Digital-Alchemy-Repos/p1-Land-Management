@@ -302,6 +302,7 @@ export {
   type CmsFormEffectJob,
   type CmsFormEffectPayload,
   type DashboardFormNotification,
+  type DashboardFormNotificationDispatch,
   CMS_FORM_KINDS,
   CMS_FORM_FIELD_TYPES,
   cmsFormFieldOptionSchema,

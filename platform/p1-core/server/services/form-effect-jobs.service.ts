@@ -1,4 +1,7 @@
-import { deliverDashboardFormNotification } from "./dashboard-form-notification.service";
+import {
+  deliverDashboardFormNotification,
+  getDashboardNotificationSubjects,
+} from "./dashboard-form-notification.service";
 import { CommercialHandoffError, deliverCommercialHandoff } from "./commercial-handoff.service";
 import { startStoppableWorker } from "../utils/runtime-lifecycle";
 import { type CmsFormEffectJob } from "@shared/schema";
@@ -14,6 +17,10 @@ async function applyJob(job: CmsFormEffectJob, clock: () => Date) {
   const token = job.processingToken;
   if (!token) throw new Error("form_effect_claim_missing");
   const payload = job.payload;
+  if (payload.kind === "dashboard_form_notification_dispatch") {
+    const page = await getDashboardNotificationSubjects(payload);
+    return storage.forms.completeNotificationDispatch(job, page.subjects, page.nextCursor, clock);
+  }
   if (payload.kind === "commercial_dashboard_intake") {
     const result = await deliverCommercialHandoff(job);
     return storage.forms.completeEffectJob(job.id, token, "completed", clock, undefined, result);

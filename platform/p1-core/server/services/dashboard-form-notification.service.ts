@@ -1,4 +1,4 @@
-import type { DashboardFormNotification } from "@shared/schema";
+import type { DashboardFormNotification, DashboardFormNotificationDispatch } from "@shared/schema";
 import { createFederationClient, federationConfig, federationEnabled } from "./federation-client";
 import { deliverManagedFormNotification } from "./email.service";
 
@@ -20,4 +20,12 @@ export async function deliverDashboardFormNotification(
     contact: payload.contact,
     dashboardUrl: new URL("/marketing/content/forms", config.issuer).href,
   });
+}
+
+export async function getDashboardNotificationSubjects(payload: DashboardFormNotificationDispatch) {
+  if (!federationEnabled()) throw new Error("dashboard_form_notifications_unavailable");
+  return createFederationClient(federationConfig()).formNotificationSubjects(
+    payload.formId,
+    payload.after || "",
+  );
 }

@@ -207,8 +207,17 @@ export type DashboardFormNotification = {
   contact: { name: string; email: string; message: string } | null;
 };
 
+export type DashboardFormNotificationDispatch = Omit<
+  DashboardFormNotification,
+  "kind" | "subject"
+> & {
+  kind: "dashboard_form_notification_dispatch";
+  after?: string;
+};
+
 export type CmsFormEffectPayload =
   | DashboardFormNotification
+  | DashboardFormNotificationDispatch
   | { kind: "commercial_dashboard_intake"; inquiry: CommercialInquiry }
   | { kind: "crm_intake"; formName: string }
   | { kind: "contact_message" }

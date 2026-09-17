@@ -384,11 +384,25 @@ async function buildFormEffects(form: CmsForm, data: Record<string, unknown>, ba
     });
   }
   const isP1PublicForm = P1_PUBLIC_FORM_SLUGS.has(form.slug);
-  const privateP1Recipients = isP1PublicForm ? readP1FormNotificationRecipients() : null;
+  const canonicalNotifications = process.env.CORE_DASHBOARD_FORM_NOTIFICATIONS_ENABLED === "true";
+  const privateP1Recipients =
+    !canonicalNotifications && isP1PublicForm ? readP1FormNotificationRecipients() : null;
   if (
     (isP1PublicForm || settings.notifyAdmins) &&
     (!settings.storeAsContactMessage || hasContact)
   ) {
+    if (canonicalNotifications) {
+      effects.push({
+        kind: "dashboard_form_notification_dispatch",
+        formId: form.id,
+        formName: form.name,
+        summary: buildSubmissionSummary(form, data),
+        contact: hasContact
+          ? { name: contact.name, email: contact.email, message: contact.message }
+          : null,
+      });
+      return effects;
+    }
     let recipients = privateP1Recipients;
     if (!recipients) {
       let users = await storage.users.getFormNotificationUsers(form.id);
