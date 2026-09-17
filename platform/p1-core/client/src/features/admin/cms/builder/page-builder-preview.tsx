@@ -1,4 +1,5 @@
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { sanitizeBuilderPreviewBlocks } from "@shared/cms-builder/sanitize-preview";
 import { createPortal } from "react-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -67,6 +68,7 @@ function FrontendPreviewFrame({
   previewDevice: PreviewDevice;
   blocks: BlockInstance[];
 }) {
+  const safeBlocks = useMemo(() => sanitizeBuilderPreviewBlocks(blocks), [blocks]);
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const [mountNode, setMountNode] = useState<HTMLDivElement | null>(null);
   const [frameHeight, setFrameHeight] = useState(900);
@@ -136,7 +138,7 @@ function FrontendPreviewFrame({
         ? createPortal(
             <div className="min-h-screen bg-background">
               <Suspense fallback={<div className="min-h-screen bg-background" />}>
-                <LazyPublicPageRenderer blocks={blocks} />
+                <LazyPublicPageRenderer blocks={safeBlocks} />
               </Suspense>
             </div>,
             mountNode,
