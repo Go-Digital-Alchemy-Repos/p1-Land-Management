@@ -156,7 +156,6 @@ export default function PondWaterwayManagement() {
         </div>
       </section>
 
-      <section className="site-shell py-12"><h2 className="text-2xl font-bold">Managing stormwater across a complex campus?</h2><p className="mt-4 text-muted-foreground">See how pond and SCM maintenance connects with perimeter vegetation, grading, access roads, and recurring exterior work for large facilities.</p><Link href="/commercial/data-centers-secure-facilities" className="mt-5 inline-block font-bold text-primary underline">Data center & secure facility grounds management</Link></section>
       <FinalCTA />
     </Layout>
   );

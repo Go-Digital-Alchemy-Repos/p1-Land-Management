@@ -67,7 +67,7 @@ export function GoogleReviewShowcase() {
           <div>
             <p className="text-[11px] font-bold uppercase text-clay-ink" style={{ letterSpacing: "0.22em" }}>Customer feedback</p>
             <h2 id="customer-reviews-heading" className="mt-3 font-display text-2xl font-semibold text-secondary md:text-3xl">
-              What do our customers think about us?
+              What Do Our Customers Think About Us?
             </h2>
           </div>
           <div className="hidden shrink-0 gap-2 sm:flex" aria-label="Review carousel controls">

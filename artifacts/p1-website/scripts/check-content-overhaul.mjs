@@ -26,7 +26,7 @@ for (const page of pages) {
   assert(!/\b(residential|homeowner)\b/i.test(result.html), `${page.path}: prohibited positioning`);
   for (const link of page.links) {
     assert(result.html.includes(`href="${link.href}"`), `${page.path}: missing ${link.href}`);
-    assert(result.html.includes(escape(link.label)), `${page.path}: missing anchor ${link.label}`);
+    assert(result.html.toLowerCase().includes(escape(link.label).toLowerCase()), `${page.path}: missing anchor ${link.label}`);
   }
   if (page.parent) assert(result.html.includes(`href="${page.parent}"`), `${page.path}: county parent`);
   const schemas = Array.isArray(result.head.jsonLd) ? result.head.jsonLd : [result.head.jsonLd];
@@ -41,7 +41,7 @@ for (const page of pages) {
 for (const [path, links] of Object.entries(inbound)) {
   for (const link of links) {
     assert(cache.get(path).html.includes(`href="${link.href}"`), `${path}: missing inbound ${link.href}`);
-    assert(cache.get(path).html.includes(escape(link.label)), `${path}: missing inbound anchor ${link.label}`);
+    assert(cache.get(path).html.toLowerCase().includes(escape(link.label).toLowerCase()), `${path}: missing inbound anchor ${link.label}`);
   }
 }
 assert(!cache.get('/').html.includes('Rating on Google'), 'No empty server-rendered rating block');

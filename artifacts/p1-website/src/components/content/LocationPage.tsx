@@ -1,3 +1,4 @@
+import { toTitleCase } from "@/lib/title-case";
 import { Link } from "wouter";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
@@ -54,7 +55,7 @@ export function LocationPage({ page, image }: { page: LocationContent; image: st
     </div>
     <div className="site-shell space-y-14 pb-16">
       {page.sections.map((section, index) => <section key={section.heading} className="max-w-4xl">
-        <h2 className="font-display text-3xl text-secondary">{section.heading}</h2>
+        <h2 className="font-display text-3xl text-secondary">{toTitleCase(section.heading)}</h2>
         <p className="mt-5 text-lg leading-relaxed text-secondary/80">{section.body}</p>
         {index === 0 && <section className="mt-12 rounded-lg bg-muted p-6 sm:p-8">
           <h2 className="font-display text-2xl">Land &amp; Property Management Services in {page.city}</h2>
@@ -67,7 +68,7 @@ export function LocationPage({ page, image }: { page: LocationContent; image: st
         <FaqAccordion items={page.faqs} />
       </section>
       <section>
-        <h2 className="font-display text-2xl">Services and nearby communities</h2>
+        <h2 className="font-display text-2xl">Services and Nearby Communities</h2>
         <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{page.links.map(link => <li key={link.href}><Link className="font-semibold text-primary underline" href={link.href}>{link.label}</Link></li>)}</ul>
         <p className="mt-10 text-lg">Call <a className="text-primary underline" href="tel:+17042218928">(704) 221-8928</a> or <Link className="text-primary underline" href="/contact">request a free site assessment online</Link> to discuss your property.</p>
       </section>

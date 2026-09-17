@@ -1,3 +1,4 @@
+import { toTitleCase } from "@/lib/title-case";
 import locationLinks from "@/lib/location-inbound-links.json";
 import { ArrowRight } from "lucide-react";
 import { Link, useLocation } from "wouter";
@@ -70,14 +71,14 @@ const relatedByPath: Record<string, RelatedLinksConfig> = {
   "/commercial/data-centers-secure-facilities": related("Connected secure-facility services", "Review the exterior capabilities and markets that support access-sensitive campuses.", [SERVICES.commercial, SERVICES.drainage, SERVICES.snow, AREAS.charlotte]),
 
   "/services": related("Find service coverage", "P1 delivers these connected capabilities across two primary Carolinas markets.", [AREAS.upstate, AREAS.charlotte, AREAS.all]),
-  "/services/commercial-landscaping": related("Related commercial property services", "Build recurring grounds care around seasonal planning, tree work, and the property market.", [SERVICES.snow, SERVICES.trees, AREAS.charlotte, AREAS.greenville]),
+  "/services/commercial-landscaping": related("Related commercial property services", "Build recurring grounds care around seasonal planning, tree work, and the property market.", [SERVICES.snow, SERVICES.trees, SERVICES.secureFacilities, AREAS.charlotte, AREAS.greenville]),
   "/services/industrial-agricultural": related("Related working-land services", "Clearing, drainage, and pond care often support the same industrial or agricultural property plan.", [SERVICES.clearing, SERVICES.drainage, SERVICES.ponds, AREAS.union]),
   "/services/land-clearing": related("Services connected to land clearing", "Plan what happens before, during, and after vegetation removal.", [SERVICES.trees, SERVICES.grading, SERVICES.turf, RESOURCES.clearingCost]),
   "/services/grading-site-preparation": related("Services connected to grading", "Grades, drainage, access, and stabilization should be planned as one sequence.", [SERVICES.drainage, SERVICES.turf, SERVICES.reconstruction, AREAS.all]),
   "/services/drainage": related("Services connected to drainage", "Visible water problems may involve grades, ponds, erosion, and finish restoration.", [SERVICES.grading, SERVICES.ponds, SERVICES.reconstruction, RESOURCES.drainageGuide]),
   "/services/turf-installation-seeding": related("Services connected to turf establishment", "Prepare grades and drainage before selecting a large-acreage turf approach.", [SERVICES.grading, SERVICES.drainage, SERVICES.commercial, RESOURCES.grassGuide]),
   "/services/tree-services": related("Services connected to tree work", "Coordinate selective tree management with clearing and recurring grounds care.", [SERVICES.clearing, SERVICES.commercial, SERVICES.reconstruction, AREAS.all]),
-  "/services/pond-waterway-management": related("Services connected to ponds and waterways", "Review drainage, grading, and regional considerations around managed water.", [SERVICES.drainage, SERVICES.grading, AREAS.lakeNorman, RESOURCES.pondGuide]),
+  "/services/pond-waterway-management": related("Services connected to ponds and waterways", "Review drainage, grading, and regional considerations around managed water.", [SERVICES.drainage, SERVICES.grading, SERVICES.secureFacilities, AREAS.lakeNorman, RESOURCES.pondGuide]),
   "/services/property-reconstruction": related("Services connected to property reconstruction", "A corrective project may combine clearing, earthwork, drainage, and finish establishment.", [SERVICES.clearing, SERVICES.grading, SERVICES.drainage, SERVICES.turf]),
 
   "/service-areas": related("Compare services across the region", "Start with the capability that best matches the immediate condition on your property.", [SERVICES.commercial, SERVICES.clearing, SERVICES.drainage, SERVICES.reconstruction]),
@@ -103,29 +104,46 @@ export function ContextualLinks() {
 
   if (!config) return null;
 
+  const links = [...new Map(config.links.map(item => [item.href, item])).values()];
+  const areas = links.filter(item => item.href.startsWith("/service-areas"));
+  const services = links.filter(item => !item.href.startsWith("/service-areas"));
+  const heading = toTitleCase(config.heading);
+
   return (
-    <section className="bg-background" aria-labelledby="related-pages-heading">
-      <div className="site-shell py-14 md:py-16">
-        <div className="max-w-3xl">
-          <p className="text-sm font-bold uppercase text-primary">Related Services & Areas</p>
-          <h2 id="related-pages-heading" className="mt-2 font-display text-3xl font-semibold text-secondary">
-            {config.heading}
-          </h2>
+    <section className="border-y border-secondary/10 bg-secondary/[0.035]" aria-labelledby="related-pages-heading">
+      <div className="site-shell py-12 md:py-16">
+        <div className="max-w-2xl">
+          <p className="text-xs font-bold tracking-[0.16em] text-primary">Explore More With P1</p>
+          <h2 id="related-pages-heading" className="mt-3 font-display text-3xl font-semibold text-secondary md:text-4xl">{heading}</h2>
           <p className="mt-3 leading-relaxed text-secondary/75">{config.intro}</p>
         </div>
-        <nav aria-label={config.heading} className="mt-8">
-          <ul className="grid gap-x-10 gap-y-6 md:grid-cols-2">
-            {config.links.map((item) => (
-              <li key={item.href} className="border-t border-border pt-4">
-                <Link href={item.href} className="group inline-flex items-center gap-2 font-bold text-primary underline-offset-4 hover:underline">
-                  {item.label}
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
-                </Link>
-                <p className="mt-2 text-sm leading-relaxed text-secondary/70">{item.description}</p>
-              </li>
-            ))}
+        {services.length > 0 && <nav aria-label="Related Services and Resources" className="mt-8">
+          <ul className={`grid gap-4 ${services.length === 2 ? "md:grid-cols-2" : "md:grid-cols-2 xl:grid-cols-3"}`}>
+            {services.map(item => <li key={item.href}>
+              <Link href={item.href} className="group flex h-full flex-col rounded-xl border border-secondary/10 bg-background p-6 transition-colors hover:border-primary/50 hover:bg-primary/[0.035] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">
+                <span className="flex items-start justify-between gap-4 text-lg font-bold leading-snug text-secondary">
+                  <span>{toTitleCase(item.label)}</span>
+                  <ArrowRight className="mt-1 h-5 w-5 shrink-0 text-primary transition-transform motion-safe:group-hover:translate-x-1" aria-hidden="true" />
+                </span>
+                <span className="mt-3 text-sm leading-relaxed text-secondary/70">{item.description}</span>
+              </Link>
+            </li>)}
           </ul>
-        </nav>
+        </nav>}
+        {areas.length > 0 && <nav aria-labelledby="related-areas-heading" className="mt-9 border-t border-secondary/15 pt-7 md:flex md:gap-10">
+          <div className="mb-5 shrink-0 md:mb-0 md:w-48">
+            <h3 id="related-areas-heading" className="font-display text-xl font-semibold text-secondary">Explore Service Areas</h3>
+            <p className="mt-2 text-sm leading-relaxed text-secondary/70">Local coverage across the Carolinas.</p>
+          </div>
+          <ul className="grid flex-1 gap-x-6 gap-y-1 sm:grid-cols-2 lg:grid-cols-3">
+            {areas.map(item => <li key={item.href}>
+              <Link href={item.href} className="group flex min-h-12 items-center justify-between gap-3 rounded-md px-3 py-3 text-sm font-semibold leading-snug text-primary transition-colors hover:bg-primary/[0.07] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+                {toTitleCase(item.label)}
+                <ArrowRight className="h-4 w-4 shrink-0" aria-hidden="true" />
+              </Link>
+            </li>)}
+          </ul>
+        </nav>}
       </div>
     </section>
   );

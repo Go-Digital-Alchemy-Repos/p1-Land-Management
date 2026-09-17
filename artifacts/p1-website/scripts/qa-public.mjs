@@ -120,7 +120,7 @@ try {
     }
   }
   const edited = render('/contact', { route: '/contact', content: { seoTitle: 'QA SEO title', seoDescription: 'QA description', seoImage: '/qa.webp' }, global: {} });
-  assert.equal(edited.head.title, 'QA SEO title');
+  assert.equal(edited.head.title, 'QA SEO Title');
   assert.equal(edited.head.description, 'QA description');
   assert.equal(edited.head.image, '/qa.webp');
   assert.equal(warnings.length, 0, `React render warnings: ${warnings.slice(0, 3).join('\n')}`);

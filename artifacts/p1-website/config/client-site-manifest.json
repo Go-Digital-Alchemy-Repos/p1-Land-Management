@@ -6,7 +6,7 @@
     "displayName": "P1 Land & Property Management",
     "source": {
       "repository": "https://github.com/Go-Digital-Alchemy-Repos/p1-Land-Management.git",
-      "revision": "9838a6ed05354afc19d7639cda464d456df213dc"
+      "revision": "bcf72fe6bb7af6bf37c3500c86a22960208b075f"
     },
     "owners": [
       {
@@ -12595,48 +12595,6 @@
             "maxLength": 2000
           },
           {
-            "path": "f1uzigwr",
-            "label": "Text: Seasonal and specialist grounds care",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "fcvdvuv",
-            "label": "Text: Explore how commercial landscaping, drainage, land, corrective work, and",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1wyfltu",
-            "label": "Text: can fit an agreed exterior-work scope.",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1xazi9y",
-            "label": "Text: commercial snow and ice management",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1el7f4d",
-            "label": "Text: Data center & secure facility grounds",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1feoon5",
-            "label": "Link: /commercial/data-centers-secure-facilities",
-            "type": "ctaTarget",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
             "path": "f1u1km71",
             "label": "Image: /assets/fine-grading-1280-CWwHPN9f.webp",
             "type": "image",
@@ -12761,12 +12719,6 @@
           "f9spy6u": "tel:7042218928",
           "fatly8t": "request a free estimate online",
           "fmggb4x": "/contact",
-          "f1uzigwr": "Seasonal and specialist grounds care",
-          "fcvdvuv": "Explore how commercial landscaping, drainage, land, corrective work, and ",
-          "f1wyfltu": " can fit an agreed exterior-work scope.",
-          "f1xazi9y": "commercial snow and ice management",
-          "f1el7f4d": "Data center & secure facility grounds",
-          "f1feoon5": "/commercial/data-centers-secure-facilities",
           "f1u1km71": "/assets/fine-grading-1280-CWwHPN9f.webp",
           "f5dus4q": "Start the Conversation",
           "f19zqrt0": "Have acreage that needs shaping? Let's walk it together.",
@@ -17015,34 +16967,6 @@
             "maxLength": 2000
           },
           {
-            "path": "fkqohtc",
-            "label": "Text: Managing stormwater across a complex campus?",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1j2t86w",
-            "label": "Text: See how pond and SCM maintenance connects with perimeter vegetation, grading, access roads, and",
-            "type": "textarea",
-            "required": false,
-            "maxLength": 12000
-          },
-          {
-            "path": "f14cvxe4",
-            "label": "Text: Data center & secure facility grounds management",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f1feoon5",
-            "label": "Link: /commercial/data-centers-secure-facilities",
-            "type": "ctaTarget",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
             "path": "f1u1km71",
             "label": "Image: /assets/fine-grading-1280-CWwHPN9f.webp",
             "type": "image",
@@ -17169,10 +17093,6 @@
           "f9spy6u": "tel:7042218928",
           "fatly8t": "request a free estimate online",
           "fmggb4x": "/contact",
-          "fkqohtc": "Managing stormwater across a complex campus?",
-          "f1j2t86w": "See how pond and SCM maintenance connects with perimeter vegetation, grading, access roads, and recurring exterior work for large facilities.",
-          "f14cvxe4": "Data center & secure facility grounds management",
-          "f1feoon5": "/commercial/data-centers-secure-facilities",
           "f1u1km71": "/assets/fine-grading-1280-CWwHPN9f.webp",
           "f5dus4q": "Start the Conversation",
           "f19zqrt0": "Have acreage that needs shaping? Let's walk it together.",

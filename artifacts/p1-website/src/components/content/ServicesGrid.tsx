@@ -1,3 +1,4 @@
+import { toTitleCase } from "@/lib/title-case";
 import { Link } from "wouter";
 import type { LucideIcon } from "lucide-react";
 import {
@@ -88,7 +89,7 @@ export function ServicesGrid() {
               <Icon className="absolute bottom-4 right-4 h-6 w-6 text-white/90" aria-hidden="true" />
             </div>
             <div className="p-6">
-              <h3 className="font-serif text-xl font-bold tracking-tight text-secondary">{title}</h3>
+              <h3 className="font-serif text-xl font-bold tracking-tight text-secondary">{toTitleCase(title)}</h3>
               <p className="mt-2 text-[14px] leading-relaxed" style={{ color: "hsl(215 18% 38%)" }}>{description}</p>
               <div className="mt-4 inline-flex items-center gap-1.5 font-sans text-[12px] font-bold uppercase text-clay-ink opacity-0 transition-opacity duration-300 group-hover:opacity-100 motion-reduce:transition-none" style={{ letterSpacing: "0.12em" }}>
                 Learn more <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
