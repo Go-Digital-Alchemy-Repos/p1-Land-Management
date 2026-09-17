@@ -5,10 +5,10 @@
  * Shared field, scheduling and commercial inbox contract. Other office routes remain documented in docs/dashboard/API.md.
  * OpenAPI spec version: 0.1.0
  */
+import type { CreateCostAgreementTemplate } from './createCostAgreementTemplate';
+import type { CreateLegacyAgreementTemplate } from './createLegacyAgreementTemplate';
+import type { CreateMsaAgreementTemplate } from './createMsaAgreementTemplate';
+import type { CreatePackageAgreementTemplate } from './createPackageAgreementTemplate';
+import type { CreateScopeAgreementTemplate } from './createScopeAgreementTemplate';
 
-export interface CreateAgreementTemplate {
-  /** @minLength 1 */
-  name: string;
-  /** @minLength 1 */
-  body: string;
-}
+export type CreateAgreementTemplate = CreateLegacyAgreementTemplate | CreateMsaAgreementTemplate | CreateScopeAgreementTemplate | CreateCostAgreementTemplate | CreatePackageAgreementTemplate;

@@ -5,6 +5,9 @@
  * Shared field, scheduling and commercial inbox contract. Other office routes remain documented in docs/dashboard/API.md.
  * OpenAPI spec version: 0.1.0
  */
+import type { AgreementTemplateKind } from './agreementTemplateKind';
+import type { AgreementTemplatePayload } from './agreementTemplatePayload';
+import type { AgreementTemplateStatus } from './agreementTemplateStatus';
 
 export interface AgreementTemplate {
   id: string;
@@ -12,4 +15,14 @@ export interface AgreementTemplate {
   version: number;
   body: string;
   active: boolean;
+  kind: AgreementTemplateKind;
+  status: AgreementTemplateStatus;
+  description: string;
+  payload: AgreementTemplatePayload;
+  /** @minimum 1 */
+  edit_version: number;
+  family_id: string;
+  source_template_id: string | null;
+  created_at: string;
+  updated_at: string;
 }

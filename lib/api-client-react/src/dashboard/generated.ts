@@ -30,6 +30,7 @@ import type {
   AgreementPreparationRetryReceipt,
   AgreementRecurrenceOption,
   AgreementTemplate,
+  AgreementTemplateVersionRequest,
   AgreementVersion,
   AssessmentAvailability,
   AssessmentAvailabilityConfiguration,
@@ -91,6 +92,7 @@ import type {
   DeleteMarketingMedia200,
   DeleteMarketingPageParams,
   DeleteWebsiteMenu200,
+  DuplicateAgreementTemplateBody,
   EditServiceAgreement,
   EstimateChangeOrder,
   EstimateDecision,
@@ -112,6 +114,7 @@ import type {
   ListAgreementChargeReviewsParams,
   ListAgreementChargesParams,
   ListAgreementPreparationJobsParams,
+  ListAgreementTemplatesParams,
   ListCommercialInquiriesParams,
   ListManagedInvitations200,
   ListManagedNotificationForms200,
@@ -212,6 +215,7 @@ import type {
   RescheduleWork,
   ResendManagedInvitation200,
   RetryMarketingFormDeliveryJob200,
+  ReviseAgreementTemplateBody,
   RevokeManagedInvitation200,
   RevokeManagedUserSessions200,
   SalesLead,
@@ -234,6 +238,7 @@ import type {
   SyncFieldEventsBody,
   UnpublishMarketingPageParams,
   UpdateAccountMfaPolicy,
+  UpdateAgreementTemplate,
   UpdateClientContact,
   UpdateDashboardClient,
   UpdateDashboardProperty,
@@ -2987,17 +2992,27 @@ export const activateRecurringJob = async (recurringJobId: string,
 
 
 
-export const getListAgreementTemplatesUrl = () => {
+export const getListAgreementTemplatesUrl = (params?: ListAgreementTemplatesParams,) => {
+  const normalizedParams = new URLSearchParams();
 
+  Object.entries(params || {}).forEach(([key, value]) => {
 
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
 
+  const stringifiedParams = normalizedParams.toString();
 
-  return `/api/v1/agreement-templates`
+  return stringifiedParams.length > 0 ? `/api/v1/agreement-templates?${stringifiedParams}` : `/api/v1/agreement-templates`
 }
 
-export const listAgreementTemplates = async ( options?: RequestInit): Promise<AgreementTemplate[]> => {
+/**
+ * Sales and Agreements can select published versions; non-published lists require template maintenance. Default MSA-only list preserves existing estimate selection.
+ */
+export const listAgreementTemplates = async (params?: ListAgreementTemplatesParams, options?: RequestInit): Promise<AgreementTemplate[]> => {
 
-  return customFetch<AgreementTemplate[]>(getListAgreementTemplatesUrl(),
+  return customFetch<AgreementTemplate[]>(getListAgreementTemplatesUrl(params),
   {
     ...options,
     method: 'GET'
@@ -3016,9 +3031,9 @@ export const getCreateAgreementTemplateUrl = () => {
   return `/api/v1/agreement-templates`
 }
 
-export const createAgreementTemplate = async (createAgreementTemplate: CreateAgreementTemplate, options?: RequestInit): Promise<CreatedResource> => {
+export const createAgreementTemplate = async (createAgreementTemplate: CreateAgreementTemplate, options?: RequestInit): Promise<AgreementTemplate> => {
 
-  return customFetch<CreatedResource>(getCreateAgreementTemplateUrl(),
+  return customFetch<AgreementTemplate>(getCreateAgreementTemplateUrl(),
   {
     ...options,
     method: 'POST',
@@ -6502,6 +6517,142 @@ export const listMarketingEventRegistrationForms = async ( options?: RequestInit
     method: 'GET'
 
 
+  }
+);}
+
+
+
+export const getGetAgreementTemplateUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/agreement-templates/${id}`
+}
+
+export const getAgreementTemplate = async (id: string, options?: RequestInit): Promise<AgreementTemplate> => {
+
+  return customFetch<AgreementTemplate>(getGetAgreementTemplateUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getUpdateAgreementTemplateUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/agreement-templates/${id}`
+}
+
+export const updateAgreementTemplate = async (id: string,
+    updateAgreementTemplate: UpdateAgreementTemplate, options?: RequestInit): Promise<AgreementTemplate> => {
+
+  return customFetch<AgreementTemplate>(getUpdateAgreementTemplateUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      updateAgreementTemplate,)
+  }
+);}
+
+
+
+export const getPublishAgreementTemplateUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/agreement-templates/${id}/publish`
+}
+
+export const publishAgreementTemplate = async (id: string,
+    agreementTemplateVersionRequest: AgreementTemplateVersionRequest, options?: RequestInit): Promise<AgreementTemplate> => {
+
+  return customFetch<AgreementTemplate>(getPublishAgreementTemplateUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      agreementTemplateVersionRequest,)
+  }
+);}
+
+
+
+export const getArchiveAgreementTemplateUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/agreement-templates/${id}/archive`
+}
+
+export const archiveAgreementTemplate = async (id: string,
+    agreementTemplateVersionRequest: AgreementTemplateVersionRequest, options?: RequestInit): Promise<AgreementTemplate> => {
+
+  return customFetch<AgreementTemplate>(getArchiveAgreementTemplateUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      agreementTemplateVersionRequest,)
+  }
+);}
+
+
+
+export const getDuplicateAgreementTemplateUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/agreement-templates/${id}/duplicate`
+}
+
+export const duplicateAgreementTemplate = async (id: string,
+    duplicateAgreementTemplateBody: DuplicateAgreementTemplateBody, options?: RequestInit): Promise<AgreementTemplate> => {
+
+  return customFetch<AgreementTemplate>(getDuplicateAgreementTemplateUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      duplicateAgreementTemplateBody,)
+  }
+);}
+
+
+
+export const getReviseAgreementTemplateUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/agreement-templates/${id}/revise`
+}
+
+export const reviseAgreementTemplate = async (id: string,
+    reviseAgreementTemplateBody: ReviseAgreementTemplateBody, options?: RequestInit): Promise<AgreementTemplate> => {
+
+  return customFetch<AgreementTemplate>(getReviseAgreementTemplateUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      reviseAgreementTemplateBody,)
   }
 );}
 

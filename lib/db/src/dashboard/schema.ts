@@ -408,6 +408,13 @@ export const serviceRequestEvent = pgTable(
 );
 
 export const agreementTemplate = pgTable("agreement_template", {
+  kind: text().default("msa").notNull(),
+  status: text().default("published").notNull(),
+  description: text().default("").notNull(),
+  payload: jsonb().default({}).notNull(),
+  editVersion: integer("edit_version").default(1).notNull(),
+  familyId: uuid("family_id").defaultRandom().notNull(),
+  sourceTemplateId: uuid("source_template_id").references((): AnyPgColumn => agreementTemplate.id),
   id: uuid().primaryKey().notNull(),
   name: text().notNull(),
   version: integer().default(1).notNull(),

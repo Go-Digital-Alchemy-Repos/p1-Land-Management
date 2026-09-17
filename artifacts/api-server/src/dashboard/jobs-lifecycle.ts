@@ -1,3 +1,4 @@
+import { agreementTemplateApi } from "./agreement-template.routes";
 import { Router } from "express";
 import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { z } from "zod";
@@ -93,7 +94,7 @@ async function requestEvent(
 }
 async function templateSnapshot(c: any, templateId: string | undefined) {
   if (!templateId) return null;
-  const template = (await c.query("SELECT id,version,body FROM agreement_template WHERE id=$1 AND active=true FOR SHARE", [templateId])).rows[0];
+  const template = (await c.query("SELECT id,version,body FROM agreement_template WHERE id=$1 AND active=true AND status='published' AND kind='msa' FOR SHARE", [templateId])).rows[0];
   if (!template) throw new HttpError(409, "Choose an active agreement template");
   return template;
 }
@@ -198,23 +199,7 @@ async function decideEstimate(estimateId: string, status: "approved" | "declined
 }
 
 export const jobsLifecycleApi = Router();
-jobsLifecycleApi.get("/agreement-templates", async (req, res) => {
-  const a = await actor(req); requireAnyCapability(a, ["revenue.sales", "revenue.agreements", "revenue.agreement-templates.manage"]);
-  res.json((await pool.query("SELECT id,name,version,body,active,created_at,updated_at FROM agreement_template WHERE active=true ORDER BY name,version DESC")).rows);
-});
-jobsLifecycleApi.post("/agreement-templates", async (req, res) => {
-  const a = await actor(req); requireCapability(a, "revenue.agreement-templates.manage");
-  const b = z.object({ name: z.string().trim().min(1).max(200), body: z.string().trim().min(1).max(50_000) }).parse(req.body);
-  const key = randomUUID();
-  await pool.query("INSERT INTO agreement_template(id,name,body,created_by) VALUES($1,$2,$3,$4)", [key, b.name, b.body, a.id]);
-  res.status(201).json({ id: key });
-});
-jobsLifecycleApi.post("/agreement-templates/:id/revise", async (req, res) => {
-  const a = await actor(req); requireCapability(a, "revenue.agreement-templates.manage");
-  const b = z.object({ body: z.string().trim().min(1).max(50_000) }).parse(req.body); const oldId = id.parse(req.params.id), key = randomUUID();
-  await transaction(async c => { const old = (await c.query("SELECT * FROM agreement_template WHERE id=$1 FOR UPDATE", [oldId])).rows[0]; if (!old) throw new HttpError(404, "Agreement template not found"); await c.query("UPDATE agreement_template SET active=false,updated_at=now() WHERE id=$1", [oldId]); await c.query("INSERT INTO agreement_template(id,name,version,body,created_by) VALUES($1,$2,$3,$4,$5)", [key, old.name, old.version + 1, b.body, a.id]); });
-  res.status(201).json({ id: key });
-});
+jobsLifecycleApi.use(agreementTemplateApi);
 jobsLifecycleApi.post("/estimates", async (req, res) => res.status(201).json(await createEstimate(await actor(req), req.body)));
 jobsLifecycleApi.post("/requests/:id/estimates", async (req, res) => res.status(201).json(await createEstimate(await actor(req), req.body, id.parse(req.params.id))));
 jobsLifecycleApi.get("/estimates/:id/document", async (req, res) => {

@@ -5468,29 +5468,51 @@
             "description": "Verified session required"
           },
           "403": {
-            "description": "Office role required"
+            "description": "Explicit capability required"
           }
-        }
+        },
+        "parameters": [
+          {
+            "name": "kind",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "msa",
+                "scope",
+                "cost",
+                "package",
+                "all"
+              ],
+              "default": "msa"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "published",
+                "draft",
+                "archived",
+                "all"
+              ],
+              "default": "published"
+            }
+          }
+        ],
+        "description": "Sales and Agreements can select published versions; non-published lists require template maintenance. Default MSA-only list preserves existing estimate selection."
       },
       "post": {
         "operationId": "createAgreementTemplate",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateAgreementTemplate"
-              }
-            }
-          }
-        },
         "responses": {
           "201": {
-            "description": "Created",
+            "description": "Template version",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CreatedResource"
+                  "$ref": "#/components/schemas/AgreementTemplate"
                 }
               }
             }
@@ -5502,7 +5524,23 @@
             "description": "Verified session required"
           },
           "403": {
-            "description": "Manager role required"
+            "description": "Explicit capability required"
+          },
+          "404": {
+            "description": "Template not found"
+          },
+          "409": {
+            "description": "Stale edit or invalid lifecycle transition"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAgreementTemplate"
+              }
+            }
           }
         }
       }
@@ -11395,6 +11433,344 @@
           }
         }
       }
+    },
+    "/agreement-templates/{id}": {
+      "get": {
+        "operationId": "getAgreementTemplate",
+        "responses": {
+          "200": {
+            "description": "Template version",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgreementTemplate"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid template"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Explicit capability required"
+          },
+          "404": {
+            "description": "Template not found"
+          },
+          "409": {
+            "description": "Stale edit or invalid lifecycle transition"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      },
+      "put": {
+        "operationId": "updateAgreementTemplate",
+        "responses": {
+          "200": {
+            "description": "Template version",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgreementTemplate"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid template"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Explicit capability required"
+          },
+          "404": {
+            "description": "Template not found"
+          },
+          "409": {
+            "description": "Stale edit or invalid lifecycle transition"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAgreementTemplate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agreement-templates/{id}/publish": {
+      "post": {
+        "operationId": "publishAgreementTemplate",
+        "responses": {
+          "200": {
+            "description": "Template version",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgreementTemplate"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid template"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Explicit capability required"
+          },
+          "404": {
+            "description": "Template not found"
+          },
+          "409": {
+            "description": "Stale edit or invalid lifecycle transition"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgreementTemplateVersionRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agreement-templates/{id}/archive": {
+      "post": {
+        "operationId": "archiveAgreementTemplate",
+        "responses": {
+          "200": {
+            "description": "Template version",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgreementTemplate"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid template"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Explicit capability required"
+          },
+          "404": {
+            "description": "Template not found"
+          },
+          "409": {
+            "description": "Stale edit or invalid lifecycle transition"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgreementTemplateVersionRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agreement-templates/{id}/duplicate": {
+      "post": {
+        "operationId": "duplicateAgreementTemplate",
+        "responses": {
+          "201": {
+            "description": "Template version",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgreementTemplate"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid template"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Explicit capability required"
+          },
+          "404": {
+            "description": "Template not found"
+          },
+          "409": {
+            "description": "Stale edit or invalid lifecycle transition"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "expectedEditVersion": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                },
+                "required": [
+                  "name",
+                  "expectedEditVersion"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agreement-templates/{id}/revise": {
+      "post": {
+        "operationId": "reviseAgreementTemplate",
+        "responses": {
+          "201": {
+            "description": "Template version",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgreementTemplate"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid template"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Explicit capability required"
+          },
+          "404": {
+            "description": "Template not found"
+          },
+          "409": {
+            "description": "Stale edit or invalid lifecycle transition"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/AgreementTemplateVersionRequest"
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "body": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 50000
+                      }
+                    },
+                    "required": [
+                      "body"
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -11561,7 +11937,16 @@
           "name",
           "version",
           "body",
-          "active"
+          "active",
+          "kind",
+          "status",
+          "description",
+          "payload",
+          "edit_version",
+          "family_id",
+          "source_template_id",
+          "created_at",
+          "updated_at"
         ],
         "properties": {
           "id": {
@@ -11579,26 +11964,71 @@
           },
           "active": {
             "type": "boolean"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "msa",
+              "scope",
+              "cost",
+              "package"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "published",
+              "archived"
+            ]
+          },
+          "description": {
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/AgreementTemplatePayload"
+          },
+          "edit_version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "family_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "source_template_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       },
       "CreateAgreementTemplate": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "name",
-          "body"
-        ],
-        "properties": {
-          "name": {
-            "type": "string",
-            "minLength": 1
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/CreateLegacyAgreementTemplate"
           },
-          "body": {
-            "type": "string",
-            "minLength": 1
+          {
+            "$ref": "#/components/schemas/CreateMsaAgreementTemplate"
+          },
+          {
+            "$ref": "#/components/schemas/CreateScopeAgreementTemplate"
+          },
+          {
+            "$ref": "#/components/schemas/CreateCostAgreementTemplate"
+          },
+          {
+            "$ref": "#/components/schemas/CreatePackageAgreementTemplate"
           }
-        }
+        ]
       },
       "RecurringJob": {
         "type": "object",
@@ -22791,6 +23221,338 @@
             "type": "string"
           }
         }
+      },
+      "AgreementScopePayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "maxItems": 200,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "title",
+                "description"
+              ]
+            }
+          },
+          "exclusions": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "items",
+          "exclusions"
+        ]
+      },
+      "AgreementCostPayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "unit": {
+                  "type": "string"
+                },
+                "quantity": {
+                  "type": "number",
+                  "minimum": 0,
+                  "exclusiveMinimum": true,
+                  "maximum": 1000000,
+                  "multipleOf": 0.01
+                },
+                "unitPriceCents": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000000000
+                },
+                "basis": {
+                  "type": "string",
+                  "enum": [
+                    "one_time",
+                    "fixed_monthly",
+                    "per_visit"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "description",
+                "unit",
+                "quantity",
+                "unitPriceCents",
+                "basis"
+              ]
+            }
+          }
+        },
+        "required": [
+          "items"
+        ]
+      },
+      "AgreementPackagePayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "msaId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "scopeId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "costId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          }
+        },
+        "required": [
+          "msaId",
+          "scopeId",
+          "costId"
+        ]
+      },
+      "AgreementMsaPayload": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {},
+        "required": []
+      },
+      "AgreementTemplatePayload": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/AgreementMsaPayload"
+          },
+          {
+            "$ref": "#/components/schemas/AgreementScopePayload"
+          },
+          {
+            "$ref": "#/components/schemas/AgreementCostPayload"
+          },
+          {
+            "$ref": "#/components/schemas/AgreementPackagePayload"
+          }
+        ]
+      },
+      "CreateLegacyAgreementTemplate": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "body"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "body": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "CreateMsaAgreementTemplate": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "msa"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "description": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string",
+            "maxLength": 50000
+          },
+          "payload": {
+            "$ref": "#/components/schemas/AgreementMsaPayload"
+          }
+        },
+        "required": [
+          "kind",
+          "name",
+          "payload"
+        ]
+      },
+      "CreateScopeAgreementTemplate": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "scope"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "description": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string",
+            "maxLength": 50000
+          },
+          "payload": {
+            "$ref": "#/components/schemas/AgreementScopePayload"
+          }
+        },
+        "required": [
+          "kind",
+          "name",
+          "payload"
+        ]
+      },
+      "CreateCostAgreementTemplate": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "cost"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "description": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string",
+            "maxLength": 50000
+          },
+          "payload": {
+            "$ref": "#/components/schemas/AgreementCostPayload"
+          }
+        },
+        "required": [
+          "kind",
+          "name",
+          "payload"
+        ]
+      },
+      "CreatePackageAgreementTemplate": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "package"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "description": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string",
+            "maxLength": 50000
+          },
+          "payload": {
+            "$ref": "#/components/schemas/AgreementPackagePayload"
+          }
+        },
+        "required": [
+          "kind",
+          "name",
+          "payload"
+        ]
+      },
+      "UpdateAgreementTemplate": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "description": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/AgreementTemplatePayload"
+          },
+          "expectedEditVersion": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "name",
+          "body",
+          "payload",
+          "expectedEditVersion"
+        ]
+      },
+      "AgreementTemplateVersionRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "expectedEditVersion": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "expectedEditVersion"
+        ]
       }
     }
   }
