@@ -1,3 +1,4 @@
+import { SavedSectionLibrary } from "./SavedSectionLibrary";
 import { BuilderPreview } from "./BuilderPreview";
 import { createFallbackBlockDef } from "../../../../platform/p1-core/shared/cms-builder/fallback-block";
 import { useEffect, useState } from "react";
@@ -62,7 +63,9 @@ function Editor({
     [notice, setNotice] = useState(""),
     [busy, setBusy] = useState(false),
     [type, setType] = useState(""),
-    [showPreview, setShowPreview] = useState(false);
+    [showPreview, setShowPreview] = useState(false),
+    [showLibrary, setShowLibrary] = useState(false),
+    [insertPosition, setInsertPosition] = useState("end");
   const lock = useSectionReservation(id === "new" ? null : id);
   const dirty = JSON.stringify(draft) !== JSON.stringify(saved);
   useCmsUnsavedChanges(dirty);
@@ -102,6 +105,16 @@ function Editor({
       </section>
     );
   const blocks = draft.blocks || [];
+  function insertBlocks(additions: MarketingSection["blocks"]) {
+    const index =
+      insertPosition === "end"
+        ? blocks.length
+        : Math.max(0, Math.min(blocks.length, Number(insertPosition)));
+    setDraft({
+      ...draft!,
+      blocks: [...blocks.slice(0, index), ...additions, ...blocks.slice(index)],
+    });
+  }
   function move(index: number, direction: number) {
     const next = [...blocks],
       target = index + direction;
@@ -307,6 +320,41 @@ function Editor({
             );
           })}
           <label>
+            Insert position
+            <select
+              aria-label="Insert position"
+              value={insertPosition}
+              onChange={(event) => setInsertPosition(event.target.value)}
+            >
+              <option value="end">End of section</option>
+              {blocks.map((block, index) => (
+                <option key={String(block.id || index)} value={String(index)}>
+                  Before block {index + 1}: {String(block.type || "Unknown")}
+                </option>
+              ))}
+            </select>
+          </label>
+          <button
+            type="button"
+            aria-expanded={showLibrary}
+            onClick={() => setShowLibrary((value) => !value)}
+          >
+            {showLibrary ? "Close saved sections" : "Browse saved sections"}
+          </button>
+          {showLibrary && (
+            <SavedSectionLibrary
+              catalog={catalog}
+              disabled={busy || !lock.owned}
+              onInsert={(additions, name) => {
+                insertBlocks(additions);
+                setShowLibrary(false);
+                setNotice(
+                  `Inserted ${additions.length} ${additions.length === 1 ? "block" : "blocks"} from ${name}. Save to keep this copy.`,
+                );
+              }}
+            />
+          )}
+          <label>
             Add block
             <select
               aria-label="Add block"
@@ -327,17 +375,13 @@ function Editor({
             onClick={() => {
               const def = catalog.blocks.find((row) => row.type === type);
               if (def)
-                setDraft({
-                  ...draft,
-                  blocks: [
-                    ...blocks,
-                    {
-                      id: crypto.randomUUID(),
-                      type,
-                      props: structuredClone(def.defaultProps),
-                    },
-                  ],
-                });
+                insertBlocks([
+                  {
+                    id: crypto.randomUUID(),
+                    type,
+                    props: structuredClone(def.defaultProps),
+                  },
+                ]);
             }}
           >
             Add selected block

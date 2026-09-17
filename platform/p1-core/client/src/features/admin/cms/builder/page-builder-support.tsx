@@ -1,3 +1,7 @@
+import {
+  cloneSavedSectionBlocks,
+  isInsertableSavedSection,
+} from "@shared/cms-builder/section-library";
 import { useState, type DragEvent, type ElementType } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
@@ -114,7 +118,6 @@ const SECTION_CATEGORIES = [
   "content",
   "team",
 ];
-const SYSTEM_SECTION_NAME_PREFIX = "Starter - ";
 
 export const BLOCK_CATEGORY_LABELS: Record<BlockCategory, string> = {
   hero: "Hero",
@@ -301,12 +304,16 @@ export function SectionsLibrary({
   });
 
   const filteredSections = sections.filter((section) => {
-    const sectionBlocks = Array.isArray(section.blocks) ? (section.blocks as BlockInstance[]) : [];
-    const containsDynamicStarterBlock =
-      section.name.startsWith(SYSTEM_SECTION_NAME_PREFIX) &&
-      sectionBlocks.some((block) => getBlockDef(block.type)?.isDynamic);
-
-    if (containsDynamicStarterBlock) return false;
+    if (
+      !isInsertableSavedSection(
+        {
+          ...section,
+          blocks: Array.isArray(section.blocks) ? section.blocks : [],
+        },
+        (type) => Boolean(getBlockDef(type)?.isDynamic),
+      )
+    )
+      return false;
 
     const matchesSearch = !search || section.name.toLowerCase().includes(search.toLowerCase());
     const matchesCategory = categoryFilter === "all" || section.category === categoryFilter;
@@ -315,7 +322,7 @@ export function SectionsLibrary({
 
   const remapSectionBlocks = (section: CmsSection) => {
     const blocks = Array.isArray(section.blocks) ? (section.blocks as BlockInstance[]) : [];
-    return blocks.map((block) => ({ ...block, id: crypto.randomUUID() }));
+    return cloneSavedSectionBlocks(blocks);
   };
 
   const insertSection = (section: CmsSection) => {

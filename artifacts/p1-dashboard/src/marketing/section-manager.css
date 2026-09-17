@@ -60,3 +60,9 @@
   border: 0;
   background: white;
 }
+
+.saved-section-library {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}

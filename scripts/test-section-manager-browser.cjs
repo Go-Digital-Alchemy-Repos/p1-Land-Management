@@ -42,6 +42,23 @@ const assert = require("node:assert/strict");
       },
       saved,
       accept = true;
+    const savedSource = {
+      id: "source",
+      name: "Saved feature",
+      category: "features",
+      description: "Reusable source",
+      blocks: [
+        {
+          id: "source-block",
+          type: "hero",
+          extra: "retained",
+          props: {
+            title: "Saved source title",
+            items: [{ label: "Source item", extra: "retained" }],
+          },
+        },
+      ],
+    };
     const errors = [];
     page.on("pageerror", (e) => errors.push(e.message));
     page.on("dialog", (d) => (accept ? d.accept() : d.dismiss()));
@@ -64,7 +81,17 @@ const assert = require("node:assert/strict");
           ownedByCurrentUser: true,
           lock: { lockedByName: "Section editor" },
         };
-      if (path.endsWith("/sections")) body = [record];
+      if (path.endsWith("/sections"))
+        body = [
+          record,
+          savedSource,
+          {
+            id: "starter",
+            name: "Starter - Dynamic",
+            category: "content",
+            blocks: [{ id: "dynamic", type: "blog-post-feed", props: {} }],
+          },
+        ];
       if (path.endsWith("/sections/section")) {
         if (req.method() === "PUT") {
           saved = { ...record, ...req.postDataJSON() };
@@ -95,6 +122,15 @@ const assert = require("node:assert/strict");
           galleries: [],
           team: [],
           blocks: [
+            {
+              type: "blog-post-feed",
+              label: "Blog feed",
+              description: "Feed",
+              category: "dynamic",
+              isDynamic: true,
+              defaultProps: {},
+              propDefs: [],
+            },
             {
               type: "hero",
               label: "Hero",
@@ -289,6 +325,43 @@ const assert = require("node:assert/strict");
     assert.equal(saved.blocks.length, 3);
     assert.notEqual(saved.blocks[0].id, saved.blocks[1].id);
     assert.deepEqual(saved.blocks[0].props, saved.blocks[1].props);
+    await page.getByLabel("Insert position", { exact: true }).selectOption("0");
+    await page
+      .getByRole("button", { name: "Browse saved sections", exact: true })
+      .click();
+    const library = page.getByRole("region", { name: "Saved section library" });
+    await library
+      .getByRole("button", { name: "Insert Saved feature", exact: true })
+      .waitFor();
+    assert.equal(
+      await library
+        .getByRole("button", { name: "Insert Starter - Dynamic", exact: true })
+        .count(),
+      0,
+    );
+    await page
+      .getByLabel("Find saved sections", { exact: true })
+      .fill("Saved feature");
+    await page
+      .getByLabel("Saved section category", { exact: true })
+      .selectOption("features");
+    await library.screenshot({ path: "/tmp/p1-saved-section-library.png" });
+    await library
+      .getByRole("button", { name: "Insert Saved feature", exact: true })
+      .click();
+    await page
+      .getByRole("button", { name: "Save section", exact: true })
+      .click();
+    await page.waitForFunction(
+      () => !document.querySelector("fieldset[disabled]"),
+    );
+    assert.equal(saved.blocks.length, 4);
+    assert.equal(saved.blocks[0].props.title, "Saved source title");
+    assert.notEqual(saved.blocks[0].id, "source-block");
+    assert.equal(saved.blocks[0].extra, "retained");
+    assert.equal(saved.blocks[0].props.items[0].extra, "retained");
+    assert.equal(savedSource.blocks[0].id, "source-block");
+    assert.equal(savedSource.blocks[0].props.title, "Saved source title");
     await page.setViewportSize({ width: 390, height: 844 });
     await page.waitForFunction(
       () =>
