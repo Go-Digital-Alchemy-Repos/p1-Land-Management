@@ -190,6 +190,33 @@ const assert = require("node:assert/strict");
       0,
     );
     await page
+      .getByRole("button", { name: "Choose page starter", exact: true })
+      .click();
+    await page
+      .getByLabel("Starter layout", { exact: true })
+      .selectOption("blog-page-v1");
+    await page.getByText(/They are not verified P1 facts/).waitFor();
+    accept = false;
+    await page
+      .getByRole("button", { name: "Apply starter to draft", exact: true })
+      .click();
+    assert.equal(await page.locator(".section-block").count(), 1);
+    assert.equal(writes, 0);
+    accept = true;
+    await page
+      .getByRole("button", { name: "Apply starter to draft", exact: true })
+      .click();
+    assert.equal(await page.locator(".section-block").count(), 3);
+    assert.equal(writes, 0);
+    assert.equal(
+      await page.getByLabel("Page sidebar", { exact: true }).inputValue(),
+      "missing-sidebar",
+    );
+    await page
+      .getByRole("button", { name: "Discard changes", exact: true })
+      .click();
+    assert.equal(await page.locator(".section-block").count(), 1);
+    await page
       .getByRole("button", { name: "Preview page", exact: true })
       .click();
     await page
@@ -302,11 +329,26 @@ const assert = require("node:assert/strict");
       .click();
     await page.getByLabel("Page title", { exact: true }).fill("New draft");
     await page.getByLabel("Page slug", { exact: true }).fill("new-draft");
+    await page
+      .getByRole("button", { name: "Choose page starter", exact: true })
+      .click();
+    await page
+      .getByLabel("Starter layout", { exact: true })
+      .selectOption("blog-page-v1");
+    await page
+      .getByRole("button", { name: "Apply starter to draft", exact: true })
+      .click();
     await page.getByRole("button", { name: "Save page", exact: true }).click();
     await page
       .getByRole("heading", { name: "New draft", exact: true })
       .waitFor();
     assert.equal(rows.get("new-page").status, "draft");
+    assert.equal(rows.get("new-page").content.blocks.length, 3);
+    assert.equal(
+      new Set(rows.get("new-page").content.blocks.map((block) => block.id))
+        .size,
+      3,
+    );
     await page
       .getByRole("button", { name: "Archive draft", exact: true })
       .click();
@@ -322,6 +364,10 @@ const assert = require("node:assert/strict");
       () =>
         document.querySelector(".sidebar").getBoundingClientRect().right <= 0,
     );
+    await page
+      .getByRole("button", { name: "Choose page starter", exact: true })
+      .click();
+    await page.getByLabel("Starter layout", { exact: true }).waitFor();
     await page.evaluate(() => scrollTo(0, 0));
     await page.screenshot({
       path: "/tmp/p1-cms-pages-mobile.png",
@@ -346,7 +392,7 @@ const assert = require("node:assert/strict");
     );
     assert.deepEqual(errors, []);
     console.log(
-      "CMS Pages browser checks passed: edit/create, preserved data, reservations, publication, scheduling, menu review, revisions, duplication/deletion, mobile and revocation",
+      "CMS Pages browser checks passed: starters/confirmation/discard, edit/create, preserved data, reservations, publication, scheduling, menu review, revisions, duplication/deletion, mobile and revocation",
     );
   } finally {
     await browser.close();

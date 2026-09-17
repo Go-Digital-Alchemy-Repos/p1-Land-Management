@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import {
   listMarketingPages,
   getMarketingPage,
@@ -28,6 +28,8 @@ import { BuilderPreview } from "./BuilderPreview";
 import { usePageReservation } from "./usePageReservation";
 import { useCmsUnsavedChanges } from "./useCmsUnsavedChanges";
 import "./section-manager.css";
+
+const PageTemplatePicker = lazy(() => import("./PageTemplatePicker"));
 
 type Access = {
   canUseMedia: boolean;
@@ -116,6 +118,7 @@ function Editor({
   const [notice, setNotice] = useState("");
   const [busy, setBusy] = useState(false);
   const [preview, setPreview] = useState(false);
+  const [templates, setTemplates] = useState(false);
   const [schedule, setSchedule] = useState("");
   const [relations, setRelations] = useState<MarketingPageRelationships | null>(
     null,
@@ -396,6 +399,46 @@ function Editor({
               Exclude this page from search indexing
             </label>
           </details>
+          {blocks !== null && (
+            <>
+              <button
+                type="button"
+                aria-expanded={templates}
+                onClick={() => setTemplates((value) => !value)}
+              >
+                {templates ? "Close page starters" : "Choose page starter"}
+              </button>
+              {templates && (
+                <Suspense
+                  fallback={<p role="status">Loading page starters…</p>}
+                >
+                  <PageTemplatePicker
+                    disabled={disabled}
+                    onSelect={(next, name) => {
+                      if (
+                        blocks.length &&
+                        !confirm(
+                          "Replace the current content blocks with this starter? Unsaved block changes will be replaced. Page details and SEO settings will remain.",
+                        )
+                      )
+                        return;
+                      setDraft({
+                        ...draft,
+                        content: {
+                          ...(object(draft.content) ? draft.content : {}),
+                          blocks: next,
+                        },
+                      });
+                      setTemplates(false);
+                      setNotice(
+                        `Applied ${name} to the unsaved draft. Replace example content and verify claims and links before saving or publishing.`,
+                      );
+                    }}
+                  />
+                </Suspense>
+              )}
+            </>
+          )}
           {blocks ? (
             <CmsBlockEditor
               blocks={blocks}
