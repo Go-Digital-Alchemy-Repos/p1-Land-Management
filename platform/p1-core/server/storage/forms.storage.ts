@@ -176,7 +176,9 @@ export class FormsStorage {
             deduplicationKey:
               payload.kind === "admin_notification"
                 ? `${payload.kind}:${payload.recipient.trim().toLowerCase()}`
-                : payload.kind,
+                : payload.kind === "dashboard_form_notification"
+                  ? `${payload.kind}:${payload.subject}`
+                  : payload.kind,
             payload,
           })),
         );

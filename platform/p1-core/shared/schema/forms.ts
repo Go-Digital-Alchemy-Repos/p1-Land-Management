@@ -198,7 +198,17 @@ export type CmsForm = typeof cmsForms.$inferSelect;
 export type InsertCmsFormSubmission = z.infer<typeof insertCmsFormSubmissionSchema>;
 export type CmsFormSubmission = typeof cmsFormSubmissions.$inferSelect;
 
+export type DashboardFormNotification = {
+  kind: "dashboard_form_notification";
+  formId: string;
+  subject: string;
+  formName: string;
+  summary: string;
+  contact: { name: string; email: string; message: string } | null;
+};
+
 export type CmsFormEffectPayload =
+  | DashboardFormNotification
   | { kind: "commercial_dashboard_intake"; inquiry: CommercialInquiry }
   | { kind: "crm_intake"; formName: string }
   | { kind: "contact_message" }

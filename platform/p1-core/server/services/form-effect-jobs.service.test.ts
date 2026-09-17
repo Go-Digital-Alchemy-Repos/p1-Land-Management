@@ -7,6 +7,7 @@ const mocks = vi.hoisted(() => ({
   contact: vi.fn(),
   mailchimp: vi.fn(),
   email: vi.fn(),
+  dashboardEmail: vi.fn(),
   enabled: vi.fn(),
 }));
 vi.mock("../storage", () => ({
@@ -22,6 +23,7 @@ vi.mock("../storage", () => ({
 }));
 vi.mock("./site-features.service", () => ({ isSiteFeatureEnabled: mocks.enabled }));
 vi.mock("./mailchimp.service", () => ({ syncContactToMailchimp: mocks.mailchimp }));
+vi.mock("./dashboard-form-notification.service", () => ({ deliverDashboardFormNotification: mocks.dashboardEmail }));
 vi.mock("./email.service", () => ({ deliverManagedFormNotification: mocks.email }));
 vi.mock("../utils/logger", () => ({ logger: { app: { warn: vi.fn(), error: vi.fn() } } }));
 import { runFormEffectJobs } from "./form-effect-jobs.service";
@@ -66,6 +68,15 @@ describe("form effect worker", () => {
     mocks.email.mockResolvedValue("completed");
   });
   afterEach(() => vi.useRealTimers());
+  it("retries canonical lookup failures and fences explicit revoked-recipient skips", async () => {
+    const payload = { kind: "dashboard_form_notification", formId: "form", subject: "account", formName: "Inquiry", summary: "Text", contact: null };
+    mocks.claim.mockResolvedValueOnce(job("canonical-a", payload)).mockResolvedValueOnce(job("canonical-b", { ...payload, subject: "revoked" }));
+    mocks.dashboardEmail.mockRejectedValueOnce(new Error("lookup unavailable")).mockResolvedValueOnce("skipped");
+    expect(await runFormEffectJobs()).toEqual({ completed: 1, retried: 1, failed: 0 });
+    expect(mocks.email).not.toHaveBeenCalled();
+    expect(mocks.complete).toHaveBeenCalledWith("canonical-b", "token-canonical-b", "skipped", expect.any(Function));
+    expect(mocks.retry).toHaveBeenCalledWith(expect.objectContaining({ id: "canonical-a" }), expect.any(Date));
+  });
   it("keeps failed Mailchimp independent of CRM and contact effects", async () => {
     mocks.claim
       .mockResolvedValueOnce(job("mail", mail))

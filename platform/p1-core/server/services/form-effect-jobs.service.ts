@@ -1,3 +1,4 @@
+import { deliverDashboardFormNotification } from "./dashboard-form-notification.service";
 import { CommercialHandoffError, deliverCommercialHandoff } from "./commercial-handoff.service";
 import { startStoppableWorker } from "../utils/runtime-lifecycle";
 import { type CmsFormEffectJob } from "@shared/schema";
@@ -69,6 +70,8 @@ async function applyJob(job: CmsFormEffectJob, clock: () => Date) {
       },
       { requireConfigured: true },
     );
+  } else if (payload.kind === "dashboard_form_notification") {
+    outcome = await deliverDashboardFormNotification(payload);
   } else if (payload.kind === "admin_notification") {
     outcome = await deliverManagedFormNotification(payload);
   } else {

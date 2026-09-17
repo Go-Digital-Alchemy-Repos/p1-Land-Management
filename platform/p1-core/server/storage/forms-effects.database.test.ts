@@ -72,6 +72,17 @@ describe.skipIf(!testUrl)("managed form outbox disposable PostgreSQL", () => {
   beforeAll(async () => {
     await runMigrations();
   }, 60_000);
+  it("keeps canonical recipient jobs distinct and idempotent without frozen email addresses", async () => {
+    const notification = { kind: "dashboard_form_notification" as const, formId, subject: "account-a", formName: "Inquiry", summary: "Synthetic", contact: null };
+    const key = "canonical-notification-replay";
+    const first = await forms.createSubmissionWithEffects({ formId, data: payload, idempotencyKey: key }, [notification, { ...notification, subject: "account-b" }]);
+    const replay = await forms.createSubmissionWithEffects({ formId, data: payload, idempotencyKey: key }, [notification]);
+    expect(replay.created).toBe(false);
+    expect(replay.submission.id).toBe(first.submission.id);
+    const jobs = await pool.query("SELECT deduplication_key,payload FROM cms_form_effect_jobs WHERE submission_id=$1 ORDER BY deduplication_key", [first.submission.id]);
+    expect(jobs.rows.map(row => row.deduplication_key)).toEqual(["dashboard_form_notification:account-a", "dashboard_form_notification:account-b"]);
+    expect(jobs.rows.every(row => !("recipient" in row.payload))).toBe(true);
+  });
   it("paginates all pending/failed deliveries beyond 200 without timestamp rounding", async () => {
     const fixture = await forms.create({
       name: "Pagination",
