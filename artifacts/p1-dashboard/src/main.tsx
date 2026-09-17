@@ -1,3 +1,4 @@
+import BillingEstimatePicker from "./BillingAllocationPicker";
 import { formatEstimateExpiry } from "@workspace/api-zod/estimate-document";
 import { dataLoadPlan } from "./data-load-plan";
 import { hasCapability } from "@workspace/api-zod/business-access";
@@ -2767,19 +2768,7 @@ function App() {
                 {form === "billing" && (
                   <>
                     {propertySelect()}
-                    <label>
-                      Approved estimate
-                      <select name="estimateId" required>
-                        <option value="">Choose estimate</option>
-                        {(data.estimates || [])
-                          .filter((e: any) => e.status === "approved")
-                          .map((e: any) => (
-                            <option key={e.id} value={e.id}>
-                              {e.title}
-                            </option>
-                          ))}
-                      </select>
-                    </label>
+                    <BillingEstimatePicker estimates={data.estimates || []} />
                     {field("title", "Billing description")}
                     <label>
                       Amount (USD)

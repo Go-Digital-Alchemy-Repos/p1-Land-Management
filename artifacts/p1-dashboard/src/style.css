@@ -1800,6 +1800,9 @@ td { padding: 16px var(--atlas-surface-inset); }
 .phase-form { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; padding: 14px; border-radius: 10px; background: hsl(var(--muted)); }
 .phase-form label { display: grid; gap: 6px; margin: 0; }
 .phase-form textarea { min-height: 76px; }
+.billing-form > fieldset { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; min-width: 0; margin: 0; padding: 0; border: 0; }
+.billing-form > fieldset > legend { margin-bottom: 12px; font-weight: 700; }
+.billing-form > fieldset > label:first-of-type,.billing-form > fieldset > section,.billing-form > p { grid-column: 1 / -1; }
 .phase-override { display: grid; gap: 6px; padding: 10px; border-left: 3px solid hsl(var(--warning)); background: hsl(var(--warning-surface)); color: hsl(var(--warning)); font-size: 12px; font-weight: 700; }
 .warning { color: hsl(var(--warning)); font-weight: 700; }
 
@@ -1861,6 +1864,7 @@ td { padding: 16px var(--atlas-surface-inset); }
   .service-agreements .agreement-workspace,.service-agreements .agreement-queue { padding: 16px; }
   .project-phases .panel-heading,.project-phases .phase-form { display: grid; grid-template-columns: 1fr; }
   .project-phases .panel-heading .secondary { justify-self: start; }
+  .billing-form > fieldset { grid-template-columns: 1fr; }
 }
 
 

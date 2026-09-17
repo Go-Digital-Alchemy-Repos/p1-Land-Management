@@ -12286,6 +12286,45 @@
         "summary": "Save validated private pricing allocations",
         "description": "Sales only. Revalidates pricing under the draft row lock, checks expectedVersion and saves a versioned plan. Changes to draft content/context invalidate this plan. Does not prepare or send an estimate."
       }
+    },
+    "/estimates/{id}/billing-allocations": {
+      "get": {
+        "operationId": "getEstimateBillingAllocations",
+        "summary": "Read current approved billing capacity and allocation choices",
+        "description": "Billing capability only. A read-only capacity snapshot, not a reservation; preparation checks current caps again. Returns no agreement prose or private contacts.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current billing choices",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EstimateBillingAllocations"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Billing capability required"
+          },
+          "404": {
+            "description": "Estimate or operational property not found"
+          },
+          "409": {
+            "description": "Approved estimate required"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -25203,6 +25242,80 @@
           },
           "review": {
             "$ref": "#/components/schemas/AgreementDraftPricingReview"
+          }
+        }
+      },
+      "EstimateBillingAllocations": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "estimateId",
+          "approvedCents",
+          "billedCents",
+          "remainingCents",
+          "allocations"
+        ],
+        "properties": {
+          "estimateId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "approvedCents": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "billedCents": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "remainingCents": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "allocations": {
+            "type": "array",
+            "maxItems": 3,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "title",
+                "basis",
+                "approvedCents",
+                "billedCents",
+                "remainingCents"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "basis": {
+                  "type": "string",
+                  "enum": [
+                    "one_time",
+                    "fixed_monthly",
+                    "per_visit"
+                  ]
+                },
+                "approvedCents": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "billedCents": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "remainingCents": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
           }
         }
       }

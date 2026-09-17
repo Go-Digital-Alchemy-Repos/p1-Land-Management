@@ -1,3 +1,4 @@
+import { estimateAllocationApi } from "./estimate-allocation.routes";
 import { estimateDocument } from "./estimate-document";
 import { renderEstimatePdf, estimatePdfBlocks, validatePdfText } from "./estimate-pdf";
 import { agreementCompositionApi } from "./agreement-composition.routes";
@@ -195,7 +196,7 @@ async function decideEstimate(estimateId: string, status: "approved" | "declined
 }
 
 export const jobsLifecycleApi = Router();
-jobsLifecycleApi.use(agreementTemplateApi, agreementCompositionApi);
+jobsLifecycleApi.use(agreementTemplateApi, agreementCompositionApi, estimateAllocationApi);
 jobsLifecycleApi.post("/estimates", async (req, res) => res.status(201).json(await createEstimate(await actor(req), req.body)));
 jobsLifecycleApi.post("/requests/:id/estimates", async (req, res) => res.status(201).json(await createEstimate(await actor(req), req.body, id.parse(req.params.id))));
 jobsLifecycleApi.get("/estimates/:id/document", async (req, res) => {

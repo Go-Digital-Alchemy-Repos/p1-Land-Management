@@ -101,6 +101,7 @@ import type {
   DeleteWebsiteMenu200,
   DuplicateAgreementTemplateBody,
   EditServiceAgreement,
+  EstimateBillingAllocations,
   EstimateChangeOrder,
   EstimateDecision,
   EstimateDecisionReceipt,
@@ -6915,6 +6916,31 @@ export const saveAgreementDraftPricing = async (id: string,
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
       reviewAgreementDraftPricing,)
+  }
+);}
+
+
+
+export const getGetEstimateBillingAllocationsUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/estimates/${id}/billing-allocations`
+}
+
+/**
+ * Billing capability only. A read-only capacity snapshot, not a reservation; preparation checks current caps again. Returns no agreement prose or private contacts.
+ * @summary Read current approved billing capacity and allocation choices
+ */
+export const getEstimateBillingAllocations = async (id: string, options?: RequestInit): Promise<EstimateBillingAllocations> => {
+
+  return customFetch<EstimateBillingAllocations>(getGetEstimateBillingAllocationsUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
   }
 );}
 

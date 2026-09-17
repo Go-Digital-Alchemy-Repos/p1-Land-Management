@@ -541,6 +541,48 @@ test(
       });
       return { status: response.status, body: (await response.json()) as any };
     }
+    async function options(estimateId = f.estimate) {
+      const response = await fetch(
+        base + `/api/v1/estimates/${estimateId}/billing-allocations`,
+        { headers: { cookie } },
+      );
+      return { status: response.status, body: (await response.json()) as any };
+    }
+    const initialOptions = await options();
+    assert.equal(initialOptions.status, 200);
+    assert.equal(initialOptions.body.remainingCents, 600);
+    assert.equal(initialOptions.body.allocations.length, 3);
+    assert.deepEqual(
+      Object.keys(initialOptions.body.allocations[0]).sort(),
+      [
+        "approvedCents",
+        "basis",
+        "billedCents",
+        "id",
+        "remainingCents",
+        "title",
+      ].sort(),
+    );
+    const unapproved = await fixture();
+    assert.equal((await options(unapproved.estimate)).status, 409);
+    await pool.query(
+      "UPDATE business_account_access SET capabilities=$2 WHERE user_id=$1",
+      [userId, ["revenue.sales"]],
+    );
+    assert.equal((await options()).status, 403);
+    await pool.query(
+      "UPDATE business_account_access SET capabilities=$2 WHERE user_id=$1",
+      [userId, ["revenue.billing"]],
+    );
+    const legacyEstimate = randomUUID();
+    await pool.query(
+      "INSERT INTO estimate(id,property_id,title,scope,amount_cents,status) VALUES($1,$2,'Legacy authorization','Scope',123,'approved')",
+      [legacyEstimate, f.property],
+    );
+    const legacyOptions = await options(legacyEstimate);
+    assert.equal(legacyOptions.status, 200);
+    assert.deepEqual(legacyOptions.body.allocations, []);
+    assert.equal(legacyOptions.body.remainingCents, 123);
     const request = {
       operationId: randomUUID(),
       propertyId: f.property,
@@ -553,6 +595,15 @@ test(
     const allocated = { ...request, estimateAllocationId: f.allocations[0].id };
     const first = await post("/billing", allocated);
     assert.equal(first.status, 201, JSON.stringify(first.body));
+    const updatedOptions = await options();
+    assert.equal(updatedOptions.body.remainingCents, 510);
+    assert.equal(
+      updatedOptions.body.allocations.find(
+        (row: any) => row.id === f.allocations[0].id,
+      ).remainingCents,
+      10,
+    );
+
     assert.equal((await post("/billing", allocated)).body.id, first.body.id);
     assert.equal(
       (
