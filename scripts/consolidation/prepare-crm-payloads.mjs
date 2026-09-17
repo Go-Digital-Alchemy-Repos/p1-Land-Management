@@ -120,7 +120,7 @@ function canonical(value, depth = 0) {
     );
   throw Error("Payload must contain JSON values only");
 }
-const digest = (value) =>
+export const digestCrmValue = (value) =>
   createHash("sha256")
     .update(JSON.stringify(canonical(value)))
     .digest("hex");
@@ -249,7 +249,7 @@ export function prepareCrmPayloads(input) {
           [...content].length > (kind === "note" ? 10000 : 2000))
       )
         blockers.push("content_exceeds_native_constraints");
-      const sourceDigest = digest(source);
+      const sourceDigest = digestCrmValue(source);
       const nativeProjection =
         kind === "parent"
           ? null
@@ -307,11 +307,11 @@ export function prepareCrmPayloads(input) {
       a.collection.localeCompare(b.collection, "en") ||
       a.sourceId.localeCompare(b.sourceId, "en"),
   );
-  return {
+  const manifest = {
     schemaVersion: 1,
     mode: "payload_preservation_preview",
     sourceInstanceId: input.sourceInstanceId,
-    sourceContentSha256: digest(
+    sourceContentSha256: digestCrmValue(
       Object.fromEntries(
         Object.entries(input.records).map(([key, rows]) => [
           key,
@@ -330,6 +330,8 @@ export function prepareCrmPayloads(input) {
     automaticImportAllowed: false,
     releaseApproval: false,
   };
+  manifest.manifestSha256 = digestCrmValue(manifest);
+  return manifest;
 }
 export async function main(args) {
   if (args.length !== 4 || args[0] !== "--input" || args[2] !== "--output")

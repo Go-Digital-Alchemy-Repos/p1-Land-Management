@@ -1,6 +1,6 @@
 # CRM payload preservation manifest
 
-Status: implemented offline preparation; database import, source extraction and cutover remain open. This command does not connect to Core or the dashboard, create records, merge customers, assign staff or grant access.
+Status: implemented offline preparation. A [reviewed matched-record importer](crm-payload-import.md) is now implemented for archive and native note/task transfer; source extraction, full reconciliation and cutover remain open. This command does not connect to Core or the dashboard, create records, merge customers, assign staff or grant access.
 
 ```sh
 node scripts/consolidation/prepare-crm-payloads.mjs --input /absolute/private/crm-export.json --output /absolute/private/crm-payload-manifest.json
@@ -36,8 +36,8 @@ Notes and tasks receive `review_native_projection` only when the parent resolves
 
 Every manifest retains `automaticImportAllowed: false` and `releaseApproval: false`. A successful preparation command does not mean the manifest can be applied without further checks.
 
-## Importer acceptance requirements still open
+## Importer and remaining release requirements
 
-The database importer must revalidate the manifest schema/digests and reviewed source/target/identity links, lock/check current target state, recheck active assignment grants, store all source snapshots durably, and key provenance by source instance plus source table and ID. Replay must compare preserved source content rather than overwriting later native task edits. Mismatched source content or mappings must conflict explicitly. Notes, tasks, mappings, preserved snapshots and audit evidence need transactional rollback and count/checksum verification. Parent fields must not be overwritten by an archive operation.
+The matched-record importer now rederives and validates the manifest, locks current target state, checks open-task assignment grants, stores source snapshots and native notes/tasks transactionally, and protects replay against source/mapping conflicts without overwriting later native edits. See its runbook for the verified scope and the external Core identity-link/freeze requirements. Full production count/checksum reconciliation, role-separated visibility and restoration verification remain release gates.
 
 A source extraction/freeze procedure, reconciliation of incompatible source values, unmatched parent creation policy, protected archive access, idempotent import, restore rehearsal and retirement gates remain necessary before `/admin/` can be removed. No production inventory, export, import or cutover was run for this checkpoint.

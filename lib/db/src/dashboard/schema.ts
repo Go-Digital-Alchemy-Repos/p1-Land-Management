@@ -2006,3 +2006,33 @@ export const leadDetailRevision = pgTable("lead_detail_revision", {
  actorId: text("actor_id").references(()=>user.id),
  recordedAt: timestamp("recorded_at",{withTimezone:true,mode:"string"}).defaultNow().notNull(),
 }, t=>[primaryKey({columns:[t.leadId,t.version]}),check("lead_detail_revision_version_check",sql`${t.version}>0`),check("lead_detail_revision_kind_check",sql`${t.kind} IN ('baseline','created','edited')`)]);
+
+export const crmSourceRecord = pgTable("crm_source_record", {
+  sourceInstanceId: text("source_instance_id").notNull(),
+  sourceTable: text("source_table").notNull(),
+  sourceId: text("source_id").notNull(),
+  sourceSha256: text("source_sha256").notNull(),
+  sourcePayload: jsonb("source_payload").notNull(),
+  leadId: uuid("lead_id").references(()=>lead.id),
+  clientId: uuid("client_id").references(()=>client.id),
+  nativeRecordId: uuid("native_record_id"),
+  projectionSha256: text("projection_sha256").notNull(),
+  reviewSha256: text("review_sha256").notNull(),
+  importedById: text("imported_by_id").notNull().references(()=>user.id),
+  importedAt: timestamp("imported_at",{withTimezone:true,mode:"string"}).defaultNow().notNull(),
+},t=>[
+  primaryKey({columns:[t.sourceInstanceId,t.sourceTable,t.sourceId]}),
+  uniqueIndex("crm_source_lead_mapping").on(t.sourceInstanceId,t.leadId).where(sql`${t.sourceTable}='leads'`),
+  uniqueIndex("crm_source_client_mapping").on(t.sourceInstanceId,t.clientId).where(sql`${t.sourceTable}='clients'`),
+  uniqueIndex("crm_source_native_mapping").on(t.sourceTable,t.nativeRecordId).where(sql`${t.nativeRecordId} IS NOT NULL`),
+  check("crm_source_record_source_instance_id_check",sql`length(btrim(${t.sourceInstanceId}))>0`),
+  check("crm_source_record_source_id_check",sql`length(btrim(${t.sourceId}))>0`),
+  check("crm_source_record_source_table_check",sql`${t.sourceTable} IN ('leads','clients','leadNotes','clientNotes','leadTasks','clientTasks')`),
+  check("crm_source_record_source_sha256_check",sql`${t.sourceSha256} ~ '^[a-f0-9]{64}$'`),
+  check("crm_source_record_projection_sha256_check",sql`${t.projectionSha256} ~ '^[a-f0-9]{64}$'`),
+  check("crm_source_record_review_sha256_check",sql`${t.reviewSha256} ~ '^[a-f0-9]{64}$'`),
+  check("crm_source_record_source_payload_check",sql`jsonb_typeof(${t.sourcePayload})='object'`),
+  check("crm_source_record_check",sql`num_nonnulls(${t.leadId},${t.clientId})=1`),
+  check("crm_source_record_check1",sql`(${t.sourceTable} IN ('leads','leadNotes','leadTasks') AND ${t.leadId} IS NOT NULL) OR (${t.sourceTable} IN ('clients','clientNotes','clientTasks') AND ${t.clientId} IS NOT NULL)`),
+  check("crm_source_record_check2",sql`(${t.sourceTable} IN ('leads','clients') AND ${t.nativeRecordId} IS NULL) OR (${t.sourceTable} NOT IN ('leads','clients') AND ${t.nativeRecordId} IS NOT NULL)`),
+]);
