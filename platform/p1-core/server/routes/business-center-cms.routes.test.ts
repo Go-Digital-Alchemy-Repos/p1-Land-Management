@@ -694,3 +694,17 @@ it("exposes shared Section block definitions with minimal independent selectors"
  expect((await request("/pages")).status).toBe(403);expect((await request("/team")).status).toBe(403);
  identity.capabilities=[];expect((await request("/section-builder")).status).toBe(403);expect((await request("/section-builder","GET",{},"/legacy")).status).toBe(403);
 });
+
+it("exposes the configured preview URL only when the isolated renderer is enabled", async () => {
+  identity.capabilities = ["marketing.content.sections"];
+  vi.stubEnv("CORE_BUILDER_PREVIEW_ENABLED", "false");
+  expect((await (await request("/section-builder")).json()).previewUrl).toBeNull();
+  vi.stubEnv("CORE_BUILDER_PREVIEW_ENABLED", "true");
+  vi.stubEnv("APP_URL", "https://core.example.test");
+  vi.stubEnv("DASHBOARD_FEDERATION_ISSUER", "https://dashboard.example.test");
+  vi.stubEnv("CORE_FEDERATION_CLIENT_ID", "preview-test");
+  vi.stubEnv("CORE_FEDERATION_CLIENT_SECRET_CURRENT", "s".repeat(43));
+  const response = await request("/section-builder");
+  expect(response.status).toBe(200);
+  expect((await response.json()).previewUrl).toBe("https://core.example.test/cms-preview/builder");
+});

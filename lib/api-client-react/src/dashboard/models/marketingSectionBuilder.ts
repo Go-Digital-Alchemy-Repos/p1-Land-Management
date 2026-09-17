@@ -19,4 +19,6 @@ export interface MarketingSectionBuilder {
   forms: MarketingSectionBuilderFormsItem[];
   galleries: MarketingSectionBuilderGalleriesItem[];
   team: MarketingSectionBuilderTeamItem[];
+  /** Isolated Core renderer URL; null when preview is not enabled. */
+  previewUrl?: string | null;
 }

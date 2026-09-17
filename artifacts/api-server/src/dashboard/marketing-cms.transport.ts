@@ -1,3 +1,4 @@
+import { marketingConnection } from "./marketing-reporting.transport";
 import type { Capability } from "@workspace/api-zod/business-access";
 import { HttpError } from "./policy";
 
@@ -305,4 +306,16 @@ export async function callCms(
       "Website operation unavailable. Refresh before retrying any change.",
     );
   }
+}
+
+/** Framing follows the same validated Core connection as CMS requests. */
+export function marketingPreviewFrameSources(env = process.env): string[] {
+  const sources = new Set(["https://www.p1landmanagement.com"]);
+  try {
+    const origin = marketingConnection(env).origin;
+    if (!new URL(origin).hostname.includes("*")) sources.add(origin);
+  } catch {
+    /* Unconfigured CMS stays closed. */
+  }
+  return [...sources];
 }

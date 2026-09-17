@@ -37,6 +37,7 @@ export function federationConfig(env = process.env): FederationConfig {
     try {
       const u = new URL(value || "");
       if (
+        u.hostname.includes("*") ||
         u.username ||
         u.password ||
         u.search ||

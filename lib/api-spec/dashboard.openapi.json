@@ -18583,6 +18583,12 @@
                 }
               }
             }
+          },
+          "previewUrl": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true,
+            "description": "Isolated Core renderer URL; null when preview is not enabled."
           }
         }
       },

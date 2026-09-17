@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { isCapability } from "@workspace/api-zod/business-access";
 import {
+  marketingPreviewFrameSources,
   callCms,
   cmsOperations,
   cmsDestination,
@@ -314,12 +315,47 @@ test("Media sources are bounded binary responses with safe content types; metada
   );
 });
 
-test("Blog moderation accepts only known scalar status filters and static routes precede post IDs",()=>{
- const comments=operation("GET","/blog/comments");
- assert.equal(cmsDestination(comments,{},{}),"/blog/comments");
- assert.equal(cmsDestination(comments,{},{status:"pending"}),"/blog/comments?status=pending");
- for(const query of [{status:"unknown"},{status:["pending"]},{url:"https://external.test"}])assert.throws(()=>cmsDestination(comments,{},query),/filters/);
- const postIndex=cmsOperations.indexOf(operation("GET","/blog/:id"));
- for(const path of ["/blog/comments","/blog/references"])assert(cmsOperations.indexOf(operation("GET",path))<postIndex);
- for(const op of cmsOperations.filter(item=>item.path.startsWith("/blog")))assert.deepEqual(op.capabilities,["marketing.content.blog"]);
+test("Blog moderation accepts only known scalar status filters and static routes precede post IDs", () => {
+  const comments = operation("GET", "/blog/comments");
+  assert.equal(cmsDestination(comments, {}, {}), "/blog/comments");
+  assert.equal(
+    cmsDestination(comments, {}, { status: "pending" }),
+    "/blog/comments?status=pending",
+  );
+  for (const query of [
+    { status: "unknown" },
+    { status: ["pending"] },
+    { url: "https://external.test" },
+  ])
+    assert.throws(() => cmsDestination(comments, {}, query), /filters/);
+  const postIndex = cmsOperations.indexOf(operation("GET", "/blog/:id"));
+  for (const path of ["/blog/comments", "/blog/references"])
+    assert(cmsOperations.indexOf(operation("GET", path)) < postIndex);
+  for (const op of cmsOperations.filter((item) =>
+    item.path.startsWith("/blog"),
+  ))
+    assert.deepEqual(op.capabilities, ["marketing.content.blog"]);
+});
+
+test("preview framing admits only a fully configured exact Core origin", () => {
+  const fallback = ["https://www.p1landmanagement.com"];
+  assert.deepEqual(marketingPreviewFrameSources({}), fallback);
+  const env = {
+    CORE_MARKETING_SERVICE_KEY: "s".repeat(43),
+    CORE_MARKETING_ORIGIN: "https://core.example.test",
+  };
+  assert.deepEqual(marketingPreviewFrameSources(env), [
+    ...fallback,
+    "https://core.example.test",
+  ]);
+  for (const origin of [
+    "https://*.example.test",
+    "https://core.example.test/path",
+    "http://core.example.test",
+    "https://user:pass@core.example.test",
+  ])
+    assert.deepEqual(
+      marketingPreviewFrameSources({ ...env, CORE_MARKETING_ORIGIN: origin }),
+      fallback,
+    );
 });

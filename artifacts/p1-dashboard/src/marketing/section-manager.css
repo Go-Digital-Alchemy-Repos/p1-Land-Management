@@ -42,3 +42,21 @@
 .block-fields {
   margin-top: 16px;
 }
+
+.builder-preview {
+  min-width: 0;
+  display: grid;
+  gap: 12px;
+}
+.builder-preview-scroll {
+  max-width: 100%;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.builder-preview iframe {
+  display: block;
+  height: 720px;
+  border: 0;
+  background: white;
+}

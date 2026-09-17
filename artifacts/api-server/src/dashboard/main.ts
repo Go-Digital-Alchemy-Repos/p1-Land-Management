@@ -1,3 +1,4 @@
+import { marketingPreviewFrameSources } from "./marketing-cms.transport";
 import { marketingReportingApi } from "./marketing-reporting";
 import { marketingCmsApi } from "./marketing-cms";
 import { workspaceReferencesApi } from "./workspace-references";
@@ -51,7 +52,7 @@ app.use((req, res, next) => {
     "X-Frame-Options": "DENY",
     "Strict-Transport-Security": "max-age=31536000",
     "Content-Security-Policy":
-      "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data: https://tiles.openfreemap.org https://www.p1landmanagement.com; connect-src 'self' https://tiles.openfreemap.org; frame-src https://www.p1landmanagement.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
+      "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data: https://tiles.openfreemap.org https://www.p1landmanagement.com; connect-src 'self' https://tiles.openfreemap.org; frame-src " + marketingPreviewFrameSources().join(" ") + "; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
     "Permissions-Policy": "geolocation=(), microphone=()",
   });
   if (req.path.startsWith("/api")) res.set("Cache-Control", "no-store");

@@ -74,6 +74,7 @@ const assert = require("node:assert/strict");
       }
       if (path.endsWith("/section-builder"))
         body = {
+          previewUrl: "https://www.p1landmanagement.com/cms-preview/builder",
           aliases: {},
           pages: [
             {
@@ -133,9 +134,43 @@ const assert = require("node:assert/strict");
         };
       await route.fulfill({ json: body });
     });
+    await page.route(
+      "https://www.p1landmanagement.com/cms-preview/builder**",
+      (route) =>
+        route.fulfill({
+          contentType: "text/html",
+          body: `<!doctype html><html><body><p id="status">Waiting</p><script>
+      window.received=[];
+      const channel=new URLSearchParams(location.hash.slice(1)).get('channel');
+      addEventListener('message', event=>{if(event.origin==='http://127.0.0.1:4347' && event.data.channel===channel){window.received.push(event.data);document.getElementById('status').textContent='Draft received';}});
+      parent.postMessage({type:'p1:builder-preview-ready',version:1,channel},'http://127.0.0.1:4347');
+      </script></body></html>`,
+        }),
+    );
     await page.goto("http://127.0.0.1:4347/marketing/content/sections");
     await page
       .getByRole("button", { name: "Edit Reusable section", exact: true })
+      .click();
+    await page
+      .getByRole("button", { name: "Preview section", exact: true })
+      .click();
+    let preview = page.frameLocator('iframe[title="Desktop section preview"]');
+    await preview.getByText("Draft received", { exact: true }).waitFor();
+    assert.equal(
+      await preview
+        .locator("body")
+        .evaluate(() => window.received.at(-1).blocks[1].props.title),
+      "Old title",
+    );
+    await page.getByRole("button", { name: "Mobile", exact: true }).click();
+    assert.equal(
+      await page
+        .locator('iframe[title="Mobile section preview"]')
+        .evaluate((node) => node.getBoundingClientRect().width),
+      430,
+    );
+    await page
+      .getByRole("button", { name: "Close preview", exact: true })
       .click();
     await page.getByText("Edit Hero", { exact: true }).click();
     await page
@@ -170,6 +205,46 @@ const assert = require("node:assert/strict");
       "contact",
     );
     await page.getByLabel("Heading", { exact: true }).fill("Updated title");
+    await page
+      .getByRole("button", { name: "Preview section", exact: true })
+      .click();
+    const livePreview = page.frameLocator(
+      'iframe[title="Desktop section preview"]',
+    );
+    await livePreview.getByText("Draft received", { exact: true }).waitFor();
+    await page
+      .getByLabel("Heading", { exact: true })
+      .fill("Live preview title");
+    await page
+      .frames()
+      .find((frame) =>
+        frame
+          .url()
+          .startsWith("https://www.p1landmanagement.com/cms-preview/builder"),
+      )
+      .waitForFunction(() =>
+        window.received
+          .at(-1)
+          .blocks.some((block) => block.props.title === "Live preview title"),
+      );
+    const previousPreviewUrl = await page
+      .locator('iframe[title="Desktop section preview"]')
+      .getAttribute("src");
+    await page
+      .getByRole("button", { name: "Retry preview", exact: true })
+      .click();
+    await livePreview.getByText("Draft received", { exact: true }).waitFor();
+    assert.notEqual(
+      await page
+        .locator('iframe[title="Desktop section preview"]')
+        .getAttribute("src"),
+      previousPreviewUrl,
+    );
+    await page.getByLabel("Heading", { exact: true }).fill("Updated title");
+    await page
+      .getByRole("button", { name: "Close preview", exact: true })
+      .click();
+
     await page
       .getByLabel("Feature label", { exact: true })
       .fill("Edited feature");
@@ -219,6 +294,16 @@ const assert = require("node:assert/strict");
       () =>
         document.querySelector(".sidebar").getBoundingClientRect().right <= 0,
     );
+    await page
+      .getByRole("button", { name: "Preview section", exact: true })
+      .click();
+    await page
+      .frameLocator('iframe[title="Desktop section preview"]')
+      .getByText("Draft received", { exact: true })
+      .waitFor();
+    await page.getByRole("button", { name: "Mobile", exact: true }).click();
+    await page.locator(".builder-preview").scrollIntoViewIfNeeded();
+    await page.screenshot({ path: "/tmp/p1-sections-preview-mobile.png" });
     await page.evaluate(() => scrollTo(0, 0));
     await page.screenshot({
       path: "/tmp/p1-sections-mobile.png",

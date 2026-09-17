@@ -1,3 +1,4 @@
+import { BuilderPreview } from "./BuilderPreview";
 import { createFallbackBlockDef } from "../../../../platform/p1-core/shared/cms-builder/fallback-block";
 import { useEffect, useState } from "react";
 import {
@@ -60,7 +61,8 @@ function Editor({
     [error, setError] = useState(""),
     [notice, setNotice] = useState(""),
     [busy, setBusy] = useState(false),
-    [type, setType] = useState("");
+    [type, setType] = useState(""),
+    [showPreview, setShowPreview] = useState(false);
   const lock = useSectionReservation(id === "new" ? null : id);
   const dirty = JSON.stringify(draft) !== JSON.stringify(saved);
   useCmsUnsavedChanges(dirty);
@@ -123,6 +125,16 @@ function Editor({
           </p>
           <button onClick={() => void lock.acquire()}>Check reservation</button>
         </aside>
+      )}
+      <button
+        type="button"
+        aria-expanded={showPreview}
+        onClick={() => setShowPreview((value) => !value)}
+      >
+        {showPreview ? "Close preview" : "Preview section"}
+      </button>
+      {showPreview && (
+        <BuilderPreview previewUrl={catalog.previewUrl} blocks={blocks} />
       )}
       <form
         onSubmit={async (e) => {

@@ -1,3 +1,5 @@
+import { federationConfig } from "../../services/federation-client";
+import { CMS_BUILDER_PREVIEW_PATH } from "../../../shared/cms-builder/preview";
 import { requireBusinessCapability as p1Authorize } from "../../middleware/auth";
 import { Router } from "express";
 import { z } from "zod";
@@ -16,6 +18,7 @@ router.get("/section-builder", p1Authorize("marketing.content.sections"), asyncH
   ]);
   res.json({
     blocks:ALL_BLOCKS, aliases:LEGACY_BLOCK_TYPE_ALIASES,
+    previewUrl: process.env.CORE_BUILDER_PREVIEW_ENABLED === "true" ? `${federationConfig().origin}${CMS_BUILDER_PREVIEW_PATH}` : null,
     pages:pages.map(({id,title,slug,status})=>({id,title,slug,status})),
     forms:forms.map(({id,name,slug,kind})=>({id,name,slug,kind})),
     galleries:galleries.filter(row=>row.status==="published").map(({id,title})=>({id,title})),

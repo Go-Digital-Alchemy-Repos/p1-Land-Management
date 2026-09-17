@@ -59,6 +59,6 @@ it("fails closed unless explicitly enabled with valid federation configuration",
   expect((await responses({}))[0].status).toBe(404);
   expect(() => builderPreviewPolicy({ CORE_BUILDER_PREVIEW_ENABLED: "true" })).toThrow();
   expect(() =>
-    builderPreviewPolicy({ ...env, DASHBOARD_FEDERATION_ISSUER: "https://*.evil.test/path" }),
+    builderPreviewPolicy({ ...env, DASHBOARD_FEDERATION_ISSUER: "https://*.evil.test" }),
   ).toThrow();
 });
