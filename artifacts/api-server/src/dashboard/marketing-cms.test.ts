@@ -367,3 +367,12 @@ test("preview framing admits only a fully configured exact Core origin", () => {
       fallback,
     );
 });
+
+
+test("Forms delivery queries are bounded and backfill remains owner-only", () => {
+  assert.deepEqual(operation("GET", "/forms").capabilities, ["marketing.content.forms"]);
+  assert.equal(operation("POST", "/form-delivery-jobs/commercial-backfill").ownerOnly, true);
+  const jobs = operation("GET", "/form-delivery-jobs");
+  assert.equal(cmsDestination(jobs, {}, { limit: "20", status: "all", cursor: "abc_123" }), "/form-delivery-jobs?limit=20&status=all&cursor=abc_123");
+  for (const query of [{ limit: "201" }, { limit: "0" }, { status: "unknown" }, { cursor: ["a", "b"] }, { cursor: "../" }, { extra: "x" }]) assert.throws(() => cmsDestination(jobs, {}, query), /Invalid form delivery filters/);
+});

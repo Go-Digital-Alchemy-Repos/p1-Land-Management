@@ -10,13 +10,16 @@ import router from "./forms.routes";
 
 describe("commercial backfill mounted admin route", () => {
   afterEach(() => vi.resetAllMocks());
-  it("denies anonymous/editors and forwards session actor only for admin", async () => {
+  it("requires an attested canonical Owner and forwards the resolved actor", async () => {
     const app = express();
     app.use(express.json());
     // Shared admin mount authenticates sessions; this fixture tests the actual per-route role guard.
     app.use((req, _res, next) => {
       const role = req.get("x-test-role");
-      if (role) req.user = { id: "session-actor", role } as Express.User;
+      if (role) {
+        req.user = { id: "session-actor", role: "admin" } as Express.User;
+        req.dashboardIdentity = { active: true, role: role === "owner-unattested" ? "owner" : role, ownerAttested: role === "owner", capabilities: ["marketing.content.forms"] } as any;
+      }
       next();
     });
     app.use("/api/admin", router);
@@ -28,6 +31,8 @@ describe("commercial backfill mounted admin route", () => {
         ["", 401],
         ["editor", 403],
         ["user", 403],
+        ["admin", 403],
+        ["owner-unattested", 403],
       ] as const) {
         expect(
           (
@@ -49,7 +54,7 @@ describe("commercial backfill mounted admin route", () => {
         (
           await fetch(base, {
             method: "POST",
-            headers: { "content-type": "application/json", "x-test-role": "admin" },
+            headers: { "content-type": "application/json", "x-test-role": "owner" },
             body: JSON.stringify(body),
           })
         ).status,
@@ -60,7 +65,7 @@ describe("commercial backfill mounted admin route", () => {
         (
           await fetch(base, {
             method: "POST",
-            headers: { "content-type": "application/json", "x-test-role": "admin" },
+            headers: { "content-type": "application/json", "x-test-role": "owner" },
             body: "{}",
           })
         ).status,

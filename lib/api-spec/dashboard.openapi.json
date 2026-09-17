@@ -10101,6 +10101,479 @@
           }
         }
       }
+    },
+    "/marketing/cms/forms": {
+      "get": {
+        "operationId": "listMarketingForms",
+        "description": "Requires the Forms capability; commercial backfill additionally requires Owner. Uses canonical website validation and storage.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MarketingForm"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied"
+          },
+          "404": {
+            "description": "Record not found"
+          },
+          "409": {
+            "description": "Conflict"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createMarketingForm",
+        "description": "Requires the Forms capability; commercial backfill additionally requires Owner. Uses canonical website validation and storage.",
+        "responses": {
+          "403": {
+            "description": "Access denied"
+          },
+          "404": {
+            "description": "Record not found"
+          },
+          "409": {
+            "description": "Conflict"
+          },
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingForm"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketingFormInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/marketing/cms/forms/{id}": {
+      "get": {
+        "operationId": "getMarketingForm",
+        "description": "Requires the Forms capability; commercial backfill additionally requires Owner. Uses canonical website validation and storage.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingForm"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied"
+          },
+          "404": {
+            "description": "Record not found"
+          },
+          "409": {
+            "description": "Conflict"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "put": {
+        "operationId": "updateMarketingForm",
+        "description": "Requires the Forms capability; commercial backfill additionally requires Owner. Uses canonical website validation and storage.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingForm"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied"
+          },
+          "404": {
+            "description": "Record not found"
+          },
+          "409": {
+            "description": "Conflict"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketingFormInput"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteMarketingForm",
+        "description": "Requires the Forms capability; commercial backfill additionally requires Owner. Uses canonical website validation and storage.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success"
+                  ],
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied"
+          },
+          "404": {
+            "description": "Record not found"
+          },
+          "409": {
+            "description": "Conflict"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/forms/{id}/submissions": {
+      "get": {
+        "operationId": "listMarketingFormSubmissions",
+        "description": "Requires the Forms capability; commercial backfill additionally requires Owner. Uses canonical website validation and storage.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MarketingFormSubmission"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied"
+          },
+          "404": {
+            "description": "Record not found"
+          },
+          "409": {
+            "description": "Conflict"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/forms/{id}/submissions/{submissionId}": {
+      "delete": {
+        "operationId": "deleteMarketingFormSubmission",
+        "description": "Requires the Forms capability; commercial backfill additionally requires Owner. Uses canonical website validation and storage.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "success"
+                  ],
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied"
+          },
+          "404": {
+            "description": "Record not found"
+          },
+          "409": {
+            "description": "Conflict"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "submissionId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/form-delivery-jobs": {
+      "get": {
+        "operationId": "listMarketingFormDeliveryJobs",
+        "description": "Requires the Forms capability; commercial backfill additionally requires Owner. Uses canonical website validation and storage.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "items",
+                    "nextCursor"
+                  ],
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/MarketingFormDeliveryJob"
+                      }
+                    },
+                    "nextCursor": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied"
+          },
+          "404": {
+            "description": "Record not found"
+          },
+          "409": {
+            "description": "Conflict"
+          }
+        },
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "actionable",
+                "completed",
+                "all"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/form-delivery-jobs/{id}/retry": {
+      "post": {
+        "operationId": "retryMarketingFormDeliveryJob",
+        "description": "Requires the Forms capability; commercial backfill additionally requires Owner. Uses canonical website validation and storage.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "id"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied"
+          },
+          "404": {
+            "description": "Record not found"
+          },
+          "409": {
+            "description": "Conflict"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/form-delivery-jobs/commercial-backfill": {
+      "post": {
+        "operationId": "backfillMarketingCommercialForms",
+        "description": "Requires the Forms capability; commercial backfill additionally requires Owner. Uses canonical website validation and storage.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied"
+          },
+          "404": {
+            "description": "Record not found"
+          },
+          "409": {
+            "description": "Conflict"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "mode",
+                  "receipts"
+                ],
+                "properties": {
+                  "mode": {
+                    "type": "string",
+                    "enum": [
+                      "dry_run",
+                      "apply"
+                    ]
+                  },
+                  "receipts": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 100,
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "submissionId"
+                      ],
+                      "properties": {
+                        "submissionId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "expectedSnapshotSha256": {
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{64}$"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -20018,6 +20491,195 @@
             }
           }
         ]
+      },
+      "MarketingFormInput": {
+        "type": "object",
+        "required": [
+          "name",
+          "slug"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "contact",
+              "newsletter",
+              "interest",
+              "application",
+              "custom"
+            ]
+          },
+          "isSystem": {
+            "type": "boolean"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "settings": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      },
+      "MarketingForm": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "slug",
+          "kind",
+          "isSystem",
+          "isActive",
+          "fields",
+          "settings"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "contact",
+              "newsletter",
+              "interest",
+              "application",
+              "custom"
+            ]
+          },
+          "isSystem": {
+            "type": "boolean"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "settings": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "createdAt": {
+            "type": "string",
+            "nullable": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "MarketingFormSubmission": {
+        "type": "object",
+        "required": [
+          "id",
+          "formId",
+          "data"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "formId": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "source": {
+            "type": "string",
+            "nullable": true
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "MarketingFormDeliveryJob": {
+        "type": "object",
+        "required": [
+          "id",
+          "submissionId",
+          "kind",
+          "status",
+          "attemptCount"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "submissionId": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "attemptCount": {
+            "type": "integer"
+          },
+          "failedAt": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastErrorCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "nextAttemptAt": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "nullable": true
+          },
+          "deliveryResult": {
+            "type": "object",
+            "additionalProperties": true,
+            "nullable": true
+          }
+        }
       }
     }
   }

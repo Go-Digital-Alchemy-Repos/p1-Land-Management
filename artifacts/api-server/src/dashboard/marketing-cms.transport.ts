@@ -118,6 +118,20 @@ cmsOperations.push({
   ownerOnly: true,
 });
 
+for (const method of ["GET", "POST"] as const) add("forms", method, "/forms");
+for (const method of ["GET", "PUT", "DELETE"] as const)
+  add("forms", method, "/forms/:id");
+add("forms", "GET", "/forms/:id/submissions");
+add("forms", "DELETE", "/forms/:id/submissions/:submissionId");
+add("forms", "GET", "/form-delivery-jobs");
+add("forms", "POST", "/form-delivery-jobs/:id/retry");
+cmsOperations.push({
+  method: "POST",
+  path: "/form-delivery-jobs/commercial-backfill",
+  capabilities: ["marketing.content.forms"],
+  ownerOnly: true,
+});
+
 const lockCapabilities: Record<string, Capability | null> = {
   cms_page: "marketing.content.pages",
   blog_post: "marketing.content.blog",
@@ -175,6 +189,25 @@ export function cmsDestination(
     )
       throw new HttpError(400, "Invalid comment filters");
     return path + (query.status === undefined ? "" : `?status=${query.status}`);
+  }
+  if (operation.method === "GET" && operation.path === "/form-delivery-jobs") {
+    if (
+      Object.keys(query).some(
+        (key) => !["limit", "status", "cursor"].includes(key),
+      ) ||
+      Object.values(query).some((value) => typeof value !== "string") ||
+      (query.limit !== undefined &&
+        (!/^[0-9]{1,3}$/.test(String(query.limit)) ||
+          Number(query.limit) < 1 ||
+          Number(query.limit) > 200)) ||
+      (query.status !== undefined &&
+        !["actionable", "completed", "all"].includes(String(query.status))) ||
+      (query.cursor !== undefined &&
+        !/^[A-Za-z0-9_-]{1,1024}$/.test(String(query.cursor)))
+    )
+      throw new HttpError(400, "Invalid form delivery filters");
+    const search = new URLSearchParams(query as Record<string, string>);
+    return path + (search.size ? `?${search}` : "");
   }
   if (operation.method === "GET" && operation.path === "/galleries") {
     if (

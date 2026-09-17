@@ -35,6 +35,8 @@ import type {
   AssessmentAvailabilityConfiguration,
   AssessmentAvailabilityUpdate,
   AssessmentSlot,
+  BackfillMarketingCommercialForms200,
+  BackfillMarketingCommercialFormsBody,
   BillingDraft,
   BookAssessmentSlot,
   CancelServiceAgreement,
@@ -81,6 +83,8 @@ import type {
   DeleteMarketingBlog200,
   DeleteMarketingBlogComment200,
   DeleteMarketingBlogTaxonomy200,
+  DeleteMarketingForm200,
+  DeleteMarketingFormSubmission200,
   DeleteMarketingMedia200,
   DeleteMarketingPageParams,
   DeleteWebsiteMenu200,
@@ -109,6 +113,8 @@ import type {
   ListManagedUserHistory200,
   ListManagedUsers200,
   ListMarketingBlogCommentsParams,
+  ListMarketingFormDeliveryJobs200,
+  ListMarketingFormDeliveryJobsParams,
   ListMarketingGalleriesParams,
   ListServiceAgreementsParams,
   ManagedAccountUpdate,
@@ -127,6 +133,9 @@ import type {
   MarketingBlogTaxonomyInput,
   MarketingBlogTaxonomyPatch,
   MarketingDeleteResult,
+  MarketingForm,
+  MarketingFormInput,
+  MarketingFormSubmission,
   MarketingGallery,
   MarketingGalleryInput,
   MarketingMedia,
@@ -184,6 +193,7 @@ import type {
   RequestManagedPasswordRecovery200,
   RescheduleWork,
   ResendManagedInvitation200,
+  RetryMarketingFormDeliveryJob200,
   RevokeManagedInvitation200,
   RevokeManagedUserSessions200,
   SalesLead,
@@ -5724,6 +5734,259 @@ export const updateManagedOwnerNotifications = async (id: string,
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
       updateManagedOwnerNotificationsBody,)
+  }
+);}
+
+
+
+export const getListMarketingFormsUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/forms`
+}
+
+/**
+ * Requires the Forms capability; commercial backfill additionally requires Owner. Uses canonical website validation and storage.
+ */
+export const listMarketingForms = async ( options?: RequestInit): Promise<MarketingForm[]> => {
+
+  return customFetch<MarketingForm[]>(getListMarketingFormsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateMarketingFormUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/forms`
+}
+
+/**
+ * Requires the Forms capability; commercial backfill additionally requires Owner. Uses canonical website validation and storage.
+ */
+export const createMarketingForm = async (marketingFormInput: MarketingFormInput, options?: RequestInit): Promise<MarketingForm> => {
+
+  return customFetch<MarketingForm>(getCreateMarketingFormUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingFormInput,)
+  }
+);}
+
+
+
+export const getGetMarketingFormUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/forms/${id}`
+}
+
+/**
+ * Requires the Forms capability; commercial backfill additionally requires Owner. Uses canonical website validation and storage.
+ */
+export const getMarketingForm = async (id: string, options?: RequestInit): Promise<MarketingForm> => {
+
+  return customFetch<MarketingForm>(getGetMarketingFormUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getUpdateMarketingFormUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/forms/${id}`
+}
+
+/**
+ * Requires the Forms capability; commercial backfill additionally requires Owner. Uses canonical website validation and storage.
+ */
+export const updateMarketingForm = async (id: string,
+    marketingFormInput: MarketingFormInput, options?: RequestInit): Promise<MarketingForm> => {
+
+  return customFetch<MarketingForm>(getUpdateMarketingFormUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingFormInput,)
+  }
+);}
+
+
+
+export const getDeleteMarketingFormUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/forms/${id}`
+}
+
+/**
+ * Requires the Forms capability; commercial backfill additionally requires Owner. Uses canonical website validation and storage.
+ */
+export const deleteMarketingForm = async (id: string, options?: RequestInit): Promise<DeleteMarketingForm200> => {
+
+  return customFetch<DeleteMarketingForm200>(getDeleteMarketingFormUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+export const getListMarketingFormSubmissionsUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/forms/${id}/submissions`
+}
+
+/**
+ * Requires the Forms capability; commercial backfill additionally requires Owner. Uses canonical website validation and storage.
+ */
+export const listMarketingFormSubmissions = async (id: string, options?: RequestInit): Promise<MarketingFormSubmission[]> => {
+
+  return customFetch<MarketingFormSubmission[]>(getListMarketingFormSubmissionsUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getDeleteMarketingFormSubmissionUrl = (id: string,
+    submissionId: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/forms/${id}/submissions/${submissionId}`
+}
+
+/**
+ * Requires the Forms capability; commercial backfill additionally requires Owner. Uses canonical website validation and storage.
+ */
+export const deleteMarketingFormSubmission = async (id: string,
+    submissionId: string, options?: RequestInit): Promise<DeleteMarketingFormSubmission200> => {
+
+  return customFetch<DeleteMarketingFormSubmission200>(getDeleteMarketingFormSubmissionUrl(id,submissionId),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+export const getListMarketingFormDeliveryJobsUrl = (params?: ListMarketingFormDeliveryJobsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/marketing/cms/form-delivery-jobs?${stringifiedParams}` : `/api/v1/marketing/cms/form-delivery-jobs`
+}
+
+/**
+ * Requires the Forms capability; commercial backfill additionally requires Owner. Uses canonical website validation and storage.
+ */
+export const listMarketingFormDeliveryJobs = async (params?: ListMarketingFormDeliveryJobsParams, options?: RequestInit): Promise<ListMarketingFormDeliveryJobs200> => {
+
+  return customFetch<ListMarketingFormDeliveryJobs200>(getListMarketingFormDeliveryJobsUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getRetryMarketingFormDeliveryJobUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/form-delivery-jobs/${id}/retry`
+}
+
+/**
+ * Requires the Forms capability; commercial backfill additionally requires Owner. Uses canonical website validation and storage.
+ */
+export const retryMarketingFormDeliveryJob = async (id: string, options?: RequestInit): Promise<RetryMarketingFormDeliveryJob200> => {
+
+  return customFetch<RetryMarketingFormDeliveryJob200>(getRetryMarketingFormDeliveryJobUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+export const getBackfillMarketingCommercialFormsUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/form-delivery-jobs/commercial-backfill`
+}
+
+/**
+ * Requires the Forms capability; commercial backfill additionally requires Owner. Uses canonical website validation and storage.
+ */
+export const backfillMarketingCommercialForms = async (backfillMarketingCommercialFormsBody: BackfillMarketingCommercialFormsBody, options?: RequestInit): Promise<BackfillMarketingCommercialForms200> => {
+
+  return customFetch<BackfillMarketingCommercialForms200>(getBackfillMarketingCommercialFormsUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      backfillMarketingCommercialFormsBody,)
   }
 );}
 

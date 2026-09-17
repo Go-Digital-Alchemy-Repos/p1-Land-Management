@@ -7,6 +7,7 @@ import {
 } from "../middleware/marketing-service";
 import { requireCmsEnabled, requireBlogEnabled } from "../middleware/site-features";
 import { FederationError } from "../services/federation-client";
+import forms from "./admin/forms.routes";
 import pages from "./admin/cms.routes";
 import sections from "./admin/cms-sections.routes";
 import galleries from "./admin/cms-galleries.routes";
@@ -69,6 +70,6 @@ router.use("/editor-locks", editorLocks);
 router.use("/blog", requireBlogEnabled, blog);
 router.use(requireCmsEnabled);
 router.use("/website", website);
-router.use(pages, sections, galleries, menus, sidebars, seo, redirects, audit, team, media);
+router.use(forms, pages, sections, galleries, menus, sidebars, seo, redirects, audit, team, media);
 router.use((_req, res) => res.status(404).json({ message: "CMS operation not found" }));
 export default router;

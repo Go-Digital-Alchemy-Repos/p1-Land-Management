@@ -39,6 +39,15 @@ const state = vi.hoisted(() => ({
   teamCreate: vi.fn(),
   teamUpdate: vi.fn(),
   activity: vi.fn(),
+  form: vi.fn(),
+  formSlug: vi.fn(),
+  formCreate: vi.fn(),
+  formUpdate: vi.fn(),
+  formDelete: vi.fn(),
+  formSubmissions: vi.fn(),
+  formDeleteSubmission: vi.fn(),
+  formJobs: vi.fn(),
+  formRetry: vi.fn(),
 }));
 vi.mock("../services/federation-runtime", () => ({
   federationConsumer: () => ({
@@ -92,10 +101,11 @@ vi.mock("../storage", () => ({
       countByStatus: async () => ({ pending: 0, approved: 0, spam: 0, rejected: 0 }),
     },
     events: { getAllEvents: state.list },
-    forms: { getAll: state.list },
+    forms: { getAll: state.list, getById: state.form, getBySlug: state.formSlug, create: state.formCreate, update: state.formUpdate, delete: state.formDelete, getSubmissionsByFormId: state.formSubmissions, deleteSubmission: state.formDeleteSubmission, listDeliveryJobs: state.formJobs, requeueFailedEffectJob: state.formRetry },
     editorLocks: { listActiveByResourceType: state.list },
   },
 }));
+vi.mock("../services/commercial-backfill.service", () => ({ backfillCommercialInquiries: vi.fn() }));
 vi.mock("../storage/index", async () => await import("../storage"));
 vi.mock("../services/site-features.service", () => ({ isSiteFeatureEnabled: state.enabled }));
 vi.mock("../services/system-cms-sections.service", () => ({ ensureSystemCmsSections: vi.fn() }));
@@ -193,14 +203,17 @@ function request(
   method = "GET",
   headers: Record<string, string> = {},
   prefix = "/service",
+  body?: unknown,
 ) {
   return fetch(base + prefix + path, {
     method,
     headers: {
       authorization: `Bearer ${key}`,
       "x-p1-user-grant": grantId,
+      ...(body === undefined ? {} : { "content-type": "application/json" }),
       ...headers,
     },
+    ...(body === undefined ? {} : { body: JSON.stringify(body) }),
   });
 }
 it("rejects missing grants, browser-shaped requests and failed local links before CMS work", async () => {
@@ -759,4 +772,26 @@ it("exposes only notification form references to an attested active Owner", asyn
   const response = await request("/notification-forms");
   expect(response.status).toBe(200);
   expect(await response.json()).toEqual({ items: [{ id: "form", name: "Estimate", slug: "p1-estimate", isActive: false, isSystem: true }] });
+});
+
+
+it("gates Forms reads and preserves system form identity against mutation bypass", async () => {
+  expect((await request("/forms")).status).toBe(403);
+  expect(state.list).not.toHaveBeenCalled();
+  identity.capabilities = ["marketing.content.forms"];
+  expect((await request("/forms")).status).toBe(200);
+  state.form.mockResolvedValue({ id: "system", name: "Estimate", slug: "p1-estimate", kind: "custom", isSystem: true });
+  state.formSlug.mockResolvedValue(undefined);
+  state.formUpdate.mockImplementation(async (_id, data) => ({ id: "system", ...data }));
+  const payload = { name: "Updated", slug: "p1-estimate", kind: "custom", isSystem: true, fields: [], settings: {} };
+  expect((await request("/forms", "POST", {}, "/service", payload)).status).toBe(400);
+  expect((await request("/forms/system", "PUT", {}, "/service", { ...payload, isSystem: false })).status).toBe(409);
+  expect((await request("/forms/system", "PUT", {}, "/service", { ...payload, slug: "renamed" })).status).toBe(409);
+  expect((await request("/forms/system", "PUT", {}, "/service", payload)).status).toBe(200);
+  expect(state.formUpdate).toHaveBeenCalledTimes(1);
+  expect((await request("/forms/system", "DELETE")).status).toBe(400);
+  expect(state.formDelete).not.toHaveBeenCalled();
+  state.formSubmissions.mockResolvedValue([{ id: "receipt", formId: "system", data: { message: "Synthetic" } }]);
+  expect((await request("/forms/system/submissions")).status).toBe(200);
+  expect((await request("/form-delivery-jobs/commercial-backfill", "POST", {}, "/service", {})).status).toBe(403);
 });

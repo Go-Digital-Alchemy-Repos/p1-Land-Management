@@ -1,4 +1,4 @@
-import { requireRole } from "../../middleware/auth";
+import { requireBusinessCapability as authorize } from "../../middleware/auth";
 import { backfillCommercialInquiries } from "../../services/commercial-backfill.service";
 import { Router } from "express";
 import { insertCmsFormSchema } from "@shared/schema";
@@ -10,7 +10,14 @@ const router = Router();
 
 router.post(
   "/form-delivery-jobs/commercial-backfill",
-  requireRole("admin"),
+  (req, res, next) => {
+    if (!req.user) return res.status(401).json({ message: "Unauthorized" });
+    const identity = req.dashboardIdentity;
+    if (!identity?.active || identity.role !== "owner" || !identity.ownerAttested)
+      return res.status(403).json({ message: "Owner access required" });
+    next();
+  },
+  authorize("marketing.content.forms"),
   asyncHandler(async (req, res) => {
     try {
       const result = await backfillCommercialInquiries(req.body, req.user!.id);
@@ -25,6 +32,7 @@ router.post(
 
 router.get(
   "/form-delivery-jobs",
+  authorize("marketing.content.forms"),
   asyncHandler(async (req, res) => {
     try {
       res.json(await storage.forms.listDeliveryJobs(req.query));
@@ -37,6 +45,7 @@ router.get(
 );
 router.post(
   "/form-delivery-jobs/:id/retry",
+  authorize("marketing.content.forms"),
   asyncHandler(async (req, res) => {
     const job = await storage.forms.requeueFailedEffectJob(paramString(req.params.id));
     if (!job) return res.status(404).json({ message: "Failed job not found" });
@@ -51,6 +60,7 @@ router.post(
 
 router.get(
   "/forms",
+  authorize("marketing.content.forms"),
   asyncHandler(async (_req, res) => {
     res.json(await storage.forms.getAll());
   }),
@@ -58,6 +68,7 @@ router.get(
 
 router.get(
   "/forms/:id",
+  authorize("marketing.content.forms"),
   asyncHandler(async (req, res) => {
     const id = paramString(req.params.id);
     const form = await storage.forms.getById(id);
@@ -70,6 +81,7 @@ router.get(
 
 router.get(
   "/forms/:id/submissions",
+  authorize("marketing.content.forms"),
   asyncHandler(async (req, res) => {
     const id = paramString(req.params.id);
     const form = await storage.forms.getById(id);
@@ -82,6 +94,7 @@ router.get(
 
 router.delete(
   "/forms/:id/submissions/:submissionId",
+  authorize("marketing.content.forms"),
   asyncHandler(async (req, res) => {
     const id = paramString(req.params.id);
     const submissionId = paramString(req.params.submissionId);
@@ -101,6 +114,7 @@ router.delete(
 
 router.post(
   "/forms",
+  authorize("marketing.content.forms"),
   asyncHandler(async (req, res) => {
     const parsed = insertCmsFormSchema.safeParse(req.body);
     if (!parsed.success) {
@@ -109,6 +123,8 @@ router.post(
         .json({ message: "Invalid form payload", errors: parsed.error.flatten() });
     }
 
+    if (parsed.data.isSystem)
+      return res.status(400).json({ message: "System forms are provisioned by the platform" });
     const existing = await storage.forms.getBySlug(parsed.data.slug);
     if (existing) {
       return res.status(409).json({ message: "A form with that slug already exists" });
@@ -121,6 +137,7 @@ router.post(
 
 router.put(
   "/forms/:id",
+  authorize("marketing.content.forms"),
   asyncHandler(async (req, res) => {
     const parsed = insertCmsFormSchema.safeParse(req.body);
     if (!parsed.success) {
@@ -135,6 +152,18 @@ router.put(
       return res.status(404).json({ message: "Form not found" });
     }
 
+    if (
+      current.isSystem &&
+      (req.body.isSystem === false ||
+        parsed.data.slug !== current.slug ||
+        (req.body.kind !== undefined && parsed.data.kind !== current.kind))
+    )
+      return res.status(409).json({ message: "System form identity cannot be changed" });
+    if (!current.isSystem && parsed.data.isSystem)
+      return res.status(400).json({ message: "Custom forms cannot become system forms" });
+    parsed.data.isSystem = current.isSystem;
+    if (current.isSystem) parsed.data.kind = current.kind;
+
     const conflicting = await storage.forms.getBySlug(parsed.data.slug);
     if (conflicting && conflicting.id !== id) {
       return res.status(409).json({ message: "A form with that slug already exists" });
@@ -147,6 +176,7 @@ router.put(
 
 router.delete(
   "/forms/:id",
+  authorize("marketing.content.forms"),
   asyncHandler(async (req, res) => {
     const id = paramString(req.params.id);
     const existing = await storage.forms.getById(id);
