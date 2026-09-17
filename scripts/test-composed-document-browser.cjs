@@ -187,6 +187,9 @@ fs.writeFileSync(
       path: "/tmp/p1-composed-document-mobile.png",
       fullPage: true,
     });
+    document.composition_document.changeOrder={title:"Original approved agreement",revision:2};
+    await page.reload();
+    await page.getByRole("heading",{name:"Additional work for Original approved agreement, revision 2",exact:true}).waitFor();
     assert.deepEqual(errors, []);
     console.log(
       "Composed customer document passed: all components, explicit periods/visit limits, shared terms, literal text, PDF link and mobile layout.",

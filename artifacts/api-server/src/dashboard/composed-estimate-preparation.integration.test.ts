@@ -1,6 +1,7 @@
 import { after, test } from "node:test";
 import assert from "node:assert/strict";
 import { randomUUID, createHash, createHmac } from "node:crypto";
+import { createComposedChangeOrder } from "./composed-estimate-change-order";
 import { createComposedRevision } from "./composed-estimate-revision";
 import { estimateDocument } from "./estimate-document";
 import { composedEstimateDocument } from "./composed-estimate-document";
@@ -693,6 +694,158 @@ test(
       (
         await pool.query(
           "SELECT count(*)::int AS n FROM audit_event WHERE entity_id=$1 AND action='estimate.approved'",
+          [result.estimateId],
+        )
+      ).rows[0].n,
+      1,
+    );
+    const changeInput = {
+      operationId: randomUUID(),
+      expectedRevision: 1,
+      title: "Additional cleanup",
+    };
+    const changes = await Promise.all([
+      createComposedChangeOrder(actor, result.estimateId, changeInput),
+      createComposedChangeOrder(actor, result.estimateId, changeInput),
+    ]);
+    assert.equal(changes.filter((row) => row.created).length, 1);
+    assert.equal(changes[0].draft.id, changes[1].draft.id);
+    const change = changes[0].draft;
+    assert.equal(change.content.scope.items.length, 0);
+    assert.equal(change.content.costs.items.length, 0);
+    assert.equal(change.content.terms, "Terms for {{client.name}}");
+    assert.equal(change.pricing_plan, null);
+    assert.deepEqual(change.dates, {
+      preparedOn: null,
+      startsOn: null,
+      endsOn: null,
+    });
+    await assert.rejects(
+      createComposedChangeOrder(actor, result.estimateId, {
+        ...changeInput,
+        operationId: randomUUID(),
+        expectedRevision: 2,
+      }),
+      /current approved/,
+    );
+    await assert.rejects(
+      prepareComposedEstimate(actor, change.id, {
+        expectedVersion: 1,
+        schedules: [],
+      }),
+      /pricing review/,
+    );
+    const changeScope = randomUUID();
+    const changeEdited = await editComposition(user, change.id, {
+      expectedVersion: 1,
+      title: change.title,
+      dates: change.dates,
+      content: {
+        ...change.content,
+        scope: {
+          items: [
+            {
+              id: changeScope,
+              title: "New cleanup area",
+              description: "Additional work only",
+            },
+          ],
+          exclusions: "",
+        },
+        costs: {
+          items: [
+            {
+              id: randomUUID(),
+              description: "Additional cleanup",
+              quantity: 1,
+              unit: "job",
+              unitPriceCents: 300,
+              basis: "one_time",
+            },
+          ],
+        },
+      },
+    });
+    const changePriced = await saveCompositionPricing(user, change.id, {
+      expectedVersion: changeEdited.version,
+      allocations: [{ basis: "one_time", scopeRowIds: [changeScope] }],
+    });
+    const changePrepared = await prepareComposedEstimate(actor, change.id, {
+      expectedVersion: changePriced.version,
+      schedules: [],
+    });
+    const extra = (
+      await pool.query("SELECT * FROM estimate WHERE id=$1", [
+        changePrepared.estimateId,
+      ])
+    ).rows[0];
+    assert.equal(extra.change_order_for, result.estimateId);
+    assert.equal(extra.revision, 1);
+    assert.notEqual(extra.series_id, estimate.series_id);
+    assert.equal(Number(extra.amount_cents), 300);
+    const baseAfterChange = (
+      await pool.query(
+        "SELECT status,is_current,amount_cents FROM estimate WHERE id=$1",
+        [result.estimateId],
+      )
+    ).rows[0];
+    assert.deepEqual(baseAfterChange, {
+      status: "approved",
+      is_current: true,
+      amount_cents: "500",
+    });
+    const extraDoc = await estimateDocument(pool, extra.id);
+    assert.deepEqual(extraDoc.composition_document.changeOrder, {
+      title: estimate.title,
+      revision: 1,
+    });
+    assert(
+      composedProposalBlocks(extraDoc.composition_document).some(
+        (block) =>
+          block.text === `Additional work for ${estimate.title}, revision 1`,
+      ),
+    );
+    assert(
+      !JSON.stringify(extraDoc.composition_document).includes(
+        result.estimateId,
+      ),
+    );
+    await pool.query("UPDATE estimate SET status='sent' WHERE id=$1", [
+      extra.id,
+    ]);
+    const extraToken = randomUUID() + randomUUID();
+    await pool.query(
+      "INSERT INTO estimate_recipient(id,estimate_id,contact_id,email,token_hash,expires_at) VALUES($1,$2,$3,$4,$5,now()+interval '1 day')",
+      [
+        randomUUID(),
+        extra.id,
+        contact,
+        `${contact}@example.test`,
+        createHash("sha256").update(extraToken).digest("hex"),
+      ],
+    );
+    const extraDecision = await fetch(
+      `${process.env.DASHBOARD_TEST_ORIGIN}/api/public/estimates/${extraToken}/decision`,
+      {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ status: "approved" }),
+      },
+    );
+    assert.equal(extraDecision.status, 200);
+    assert.equal(
+      (
+        await pool.query(
+          "SELECT count(*)::int AS n FROM work_order WHERE estimate_id=$1",
+          [extra.id],
+        )
+      ).rows[0].n,
+      1,
+    );
+    assert.equal(
+      (
+        await pool.query(
+          "SELECT count(*)::int AS n FROM work_order WHERE estimate_id=$1",
           [result.estimateId],
         )
       ).rows[0].n,

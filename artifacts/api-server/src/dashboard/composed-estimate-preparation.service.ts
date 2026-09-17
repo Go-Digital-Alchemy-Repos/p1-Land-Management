@@ -76,6 +76,33 @@ export async function prepareComposedEstimate(
         );
     }
 
+    let changeOrderSource: any = null;
+    if (row.change_order_estimate_id) {
+      changeOrderSource = (
+        await c.query("SELECT * FROM estimate WHERE id=$1 FOR UPDATE", [
+          row.change_order_estimate_id,
+        ])
+      ).rows[0];
+      if (
+        !changeOrderSource ||
+        changeOrderSource.kind !== "composed" ||
+        changeOrderSource.status !== "approved" ||
+        !changeOrderSource.is_current
+      )
+        throw new HttpError(
+          409,
+          "The change order requires a current approved agreement",
+        );
+      if (
+        changeOrderSource.property_id !== row.property_id ||
+        changeOrderSource.composition_snapshot?.party?.clientId !==
+          row.client_id
+      )
+        throw new HttpError(
+          409,
+          "A change order must retain its original client and property",
+        );
+    }
     if (!row.client_id || !row.property_id)
       throw new HttpError(
         409,
@@ -132,7 +159,11 @@ export async function prepareComposedEstimate(
       revisionSource.composition_snapshot?.party?.clientId !== row.client_id
     )
       throw new HttpError(409, "A revision must retain the original client");
-    const projectId = input.projectId ?? revisionSource?.project_id ?? null;
+    const projectId =
+      input.projectId ??
+      revisionSource?.project_id ??
+      changeOrderSource?.project_id ??
+      null;
     if (
       projectId &&
       !(
@@ -173,7 +204,7 @@ export async function prepareComposedEstimate(
         input.validForDays,
         revisionSource ? revisionSource.revision + 1 : 1,
         revisionSource?.series_id ?? randomUUID(),
-        revisionSource?.change_order_for ?? null,
+        revisionSource?.change_order_for ?? changeOrderSource?.id ?? null,
         revisionSource?.request_id ?? null,
       ],
     );
@@ -228,6 +259,13 @@ export async function prepareComposedEstimate(
     const snapshot = {
       schemaVersion: 1,
       revisesEstimateId: revisionSource?.id ?? null,
+      changeOrder: changeOrderSource
+        ? {
+            estimateId: changeOrderSource.id,
+            title: changeOrderSource.title,
+            revision: changeOrderSource.revision,
+          }
+        : (revisionSource?.composition_snapshot?.changeOrder ?? null),
       draftId: id,
       sourceVersion: row.version,
       party: {

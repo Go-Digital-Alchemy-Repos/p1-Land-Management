@@ -14,6 +14,7 @@ export function formatEstimateExpiry(value: string | Date): string {
 }
 
 export type ComposedProposalDocument = {
+  changeOrder?: { title: string; revision: number } | null;
   schemaVersion: 1;
   preparedOn: string | null;
   startsOn: string | null;
@@ -59,6 +60,11 @@ export function composedProposalBlocks(
   doc: ComposedProposalDocument,
 ): ProposalBlock[] {
   const blocks: ProposalBlock[] = [];
+  if (doc.changeOrder)
+    blocks.push({
+      kind: "heading",
+      text: `Additional work for ${doc.changeOrder.title}, revision ${doc.changeOrder.revision}`,
+    });
   if (doc.preparedOn) blocks.push({ text: `Prepared on: ${doc.preparedOn}` });
   if (doc.startsOn || doc.endsOn)
     blocks.push({

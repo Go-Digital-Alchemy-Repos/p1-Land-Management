@@ -43,6 +43,10 @@ export function composedEstimateDocument(raw: unknown): {
     const source = z
       .object({
         schemaVersion: z.literal(1),
+        changeOrder: z
+          .object({ title: z.string(), revision: z.number().int().positive() })
+          .nullable()
+          .optional(),
         content: z.unknown(),
         dates: compositionDates,
         party: z.object({
@@ -172,6 +176,7 @@ export function composedEstimateDocument(raw: unknown): {
     return {
       document: {
         schemaVersion: 1,
+        changeOrder: source.changeOrder ?? null,
         ...source.dates,
         terms: content.terms,
         scopeNotes: content.notes.scope,
