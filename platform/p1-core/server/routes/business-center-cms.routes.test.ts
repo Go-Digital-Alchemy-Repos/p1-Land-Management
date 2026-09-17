@@ -708,3 +708,36 @@ it("exposes the configured preview URL only when the isolated renderer is enable
   expect(response.status).toBe(200);
   expect((await response.json()).previewUrl).toBe("https://core.example.test/cms-preview/builder");
 });
+
+it("provides Pages builder selectors without granting access to related managers", async () => {
+  identity.capabilities = ["marketing.content.pages"];
+  state.pages.mockResolvedValue([{id:"page",title:"Page",slug:"page",status:"draft",content:{private:true}}]);
+  state.list.mockResolvedValueOnce([{id:"form",name:"Form",slug:"form",kind:"contact",fields:["private"]}])
+    .mockResolvedValueOnce([{id:"gallery",title:"Gallery",status:"published",items:["private"]}])
+    .mockResolvedValueOnce([{id:"person",name:"Person",status:"published",biography:"private"}])
+    .mockResolvedValueOnce([{id:"sidebar",name:"Sidebar",isDefault:true,widgets:["private"]}]);
+  const response = await request("/page-builder");
+  expect(response.status).toBe(200);
+  const data = await response.json();
+  expect(data.sidebars).toEqual([{id:"sidebar",name:"Sidebar",isDefault:true}]);
+  expect(data.forms).toEqual([{id:"form",name:"Form",slug:"form",kind:"contact"}]);
+  expect(JSON.stringify(data.pages)).not.toContain("private");
+  expect(JSON.stringify(data.galleries)).not.toContain("private");
+  expect(JSON.stringify(data.team)).not.toContain("private");
+  expect((await request("/section-builder")).status).toBe(403);
+  expect((await request("/sidebars")).status).toBe(403);
+  identity.capabilities = [];
+  expect((await request("/page-builder")).status).toBe(403);
+});
+
+it("reserves the isolated renderer and rejects rooted reserved page slugs before storage writes", async () => {
+  identity.capabilities = ["marketing.content.pages"];
+  for (const slug of ["cms-preview/builder", "/cms-preview/builder", "//admin/users", "/api/private"]) {
+    const response = await fetch(base + "/service/pages", {
+      method: "POST", headers: { authorization: `Bearer ${key}`, "x-p1-user-grant": grantId, "content-type": "application/json" },
+      body: JSON.stringify({title:"Collision", slug}),
+    });
+    expect(response.status).toBe(400);
+    expect(await response.json()).toMatchObject({error:"This route is reserved"});
+  }
+});

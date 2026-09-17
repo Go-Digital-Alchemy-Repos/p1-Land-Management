@@ -82,6 +82,7 @@ import type {
   DeleteMarketingBlogComment200,
   DeleteMarketingBlogTaxonomy200,
   DeleteMarketingMedia200,
+  DeleteMarketingPageParams,
   DeleteWebsiteMenu200,
   EditServiceAgreement,
   EstimateChangeOrder,
@@ -129,6 +130,15 @@ import type {
   MarketingGalleryInput,
   MarketingMedia,
   MarketingMediaMetadata,
+  MarketingPage,
+  MarketingPageBuilder,
+  MarketingPageInput,
+  MarketingPageMenuCleanup,
+  MarketingPagePatch,
+  MarketingPagePreviewLink,
+  MarketingPageRelationships,
+  MarketingPageRevision,
+  MarketingPageSchedule,
   MarketingRealtime,
   MarketingRedirect,
   MarketingRedirectInput,
@@ -191,6 +201,7 @@ import type {
   ServiceRequestTransition,
   ServiceRequestTransitionReceipt,
   SyncFieldEventsBody,
+  UnpublishMarketingPageParams,
   UpdateAccountMfaPolicy,
   UpdateClientContact,
   UpdateDashboardClient,
@@ -5173,6 +5184,463 @@ export const getReleaseMarketingSectionReservationUrl = (id: string,) => {
 export const releaseMarketingSectionReservation = async (id: string, options?: RequestInit): Promise<WebsiteEditorReservation> => {
 
   return customFetch<WebsiteEditorReservation>(getReleaseMarketingSectionReservationUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+export const getListMarketingPagesUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/pages`
+}
+
+/**
+ * Requires marketing.content.pages. Generic CMS content remains separate from primary Website manifest publication. Core owns validation, storage and publication.
+ */
+export const listMarketingPages = async ( options?: RequestInit): Promise<MarketingPage[]> => {
+
+  return customFetch<MarketingPage[]>(getListMarketingPagesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateMarketingPageUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/pages`
+}
+
+/**
+ * Requires marketing.content.pages. Generic CMS content remains separate from primary Website manifest publication. Core owns validation, storage and publication.
+ */
+export const createMarketingPage = async (marketingPageInput: MarketingPageInput, options?: RequestInit): Promise<MarketingPage> => {
+
+  return customFetch<MarketingPage>(getCreateMarketingPageUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingPageInput,)
+  }
+);}
+
+
+
+export const getGetMarketingPageUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/pages/${id}`
+}
+
+/**
+ * Requires marketing.content.pages. Generic CMS content remains separate from primary Website manifest publication. Core owns validation, storage and publication.
+ */
+export const getMarketingPage = async (id: string, options?: RequestInit): Promise<MarketingPage> => {
+
+  return customFetch<MarketingPage>(getGetMarketingPageUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getUpdateMarketingPageUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/pages/${id}`
+}
+
+/**
+ * Requires marketing.content.pages. Generic CMS content remains separate from primary Website manifest publication. Core owns validation, storage and publication.
+ */
+export const updateMarketingPage = async (id: string,
+    marketingPagePatch: MarketingPagePatch, options?: RequestInit): Promise<MarketingPage> => {
+
+  return customFetch<MarketingPage>(getUpdateMarketingPageUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingPagePatch,)
+  }
+);}
+
+
+
+export const getDeleteMarketingPageUrl = (id: string,
+    params?: DeleteMarketingPageParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/marketing/cms/pages/${id}?${stringifiedParams}` : `/api/v1/marketing/cms/pages/${id}`
+}
+
+/**
+ * Requires marketing.content.pages. Generic CMS content remains separate from primary Website manifest publication. Core owns validation, storage and publication.
+ */
+export const deleteMarketingPage = async (id: string,
+    params?: DeleteMarketingPageParams, options?: RequestInit): Promise<MarketingDeleteResult> => {
+
+  return customFetch<MarketingDeleteResult>(getDeleteMarketingPageUrl(id,params),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+export const getDuplicateMarketingPageUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/pages/${id}/duplicate`
+}
+
+/**
+ * Requires marketing.content.pages. Generic CMS content remains separate from primary Website manifest publication. Core owns validation, storage and publication.
+ */
+export const duplicateMarketingPage = async (id: string, options?: RequestInit): Promise<MarketingPage> => {
+
+  return customFetch<MarketingPage>(getDuplicateMarketingPageUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+export const getPublishMarketingPageUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/pages/${id}/publish`
+}
+
+/**
+ * Requires marketing.content.pages. Generic CMS content remains separate from primary Website manifest publication. Core owns validation, storage and publication.
+ */
+export const publishMarketingPage = async (id: string, options?: RequestInit): Promise<MarketingPage> => {
+
+  return customFetch<MarketingPage>(getPublishMarketingPageUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+export const getUnpublishMarketingPageUrl = (id: string,
+    params?: UnpublishMarketingPageParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/marketing/cms/pages/${id}/unpublish?${stringifiedParams}` : `/api/v1/marketing/cms/pages/${id}/unpublish`
+}
+
+/**
+ * Requires marketing.content.pages. Generic CMS content remains separate from primary Website manifest publication. Core owns validation, storage and publication.
+ */
+export const unpublishMarketingPage = async (id: string,
+    params?: UnpublishMarketingPageParams, options?: RequestInit): Promise<MarketingPage> => {
+
+  return customFetch<MarketingPage>(getUnpublishMarketingPageUrl(id,params),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+export const getScheduleMarketingPageUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/pages/${id}/schedule`
+}
+
+/**
+ * Requires marketing.content.pages. Generic CMS content remains separate from primary Website manifest publication. Core owns validation, storage and publication.
+ */
+export const scheduleMarketingPage = async (id: string,
+    marketingPageSchedule: MarketingPageSchedule, options?: RequestInit): Promise<MarketingPage> => {
+
+  return customFetch<MarketingPage>(getScheduleMarketingPageUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingPageSchedule,)
+  }
+);}
+
+
+
+export const getGetMarketingPageRelationshipsUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/pages/${id}/relationships`
+}
+
+/**
+ * Requires marketing.content.pages. Generic CMS content remains separate from primary Website manifest publication. Core owns validation, storage and publication.
+ */
+export const getMarketingPageRelationships = async (id: string, options?: RequestInit): Promise<MarketingPageRelationships> => {
+
+  return customFetch<MarketingPageRelationships>(getGetMarketingPageRelationshipsUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getRemoveMarketingPageMenuItemsUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/pages/${id}/relationships/remove-menu-items`
+}
+
+/**
+ * Requires marketing.content.pages. Generic CMS content remains separate from primary Website manifest publication. Core owns validation, storage and publication. Also requires marketing.content.menus.
+ */
+export const removeMarketingPageMenuItems = async (id: string, options?: RequestInit): Promise<MarketingPageMenuCleanup> => {
+
+  return customFetch<MarketingPageMenuCleanup>(getRemoveMarketingPageMenuItemsUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+export const getGetMarketingPagePreviewLinkUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/pages/${id}/preview-link`
+}
+
+/**
+ * Requires marketing.content.pages. Generic CMS content remains separate from primary Website manifest publication. Core owns validation, storage and publication.
+ */
+export const getMarketingPagePreviewLink = async (id: string, options?: RequestInit): Promise<MarketingPagePreviewLink> => {
+
+  return customFetch<MarketingPagePreviewLink>(getGetMarketingPagePreviewLinkUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getListMarketingPageRevisionsUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/pages/${id}/revisions`
+}
+
+/**
+ * Requires marketing.content.pages. Generic CMS content remains separate from primary Website manifest publication. Core owns validation, storage and publication.
+ */
+export const listMarketingPageRevisions = async (id: string, options?: RequestInit): Promise<MarketingPageRevision[]> => {
+
+  return customFetch<MarketingPageRevision[]>(getListMarketingPageRevisionsUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getRestoreMarketingPageRevisionUrl = (pageId: string,
+    revisionId: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/pages/${pageId}/revisions/${revisionId}/restore`
+}
+
+/**
+ * Requires marketing.content.pages. Generic CMS content remains separate from primary Website manifest publication. Core owns validation, storage and publication.
+ */
+export const restoreMarketingPageRevision = async (pageId: string,
+    revisionId: string, options?: RequestInit): Promise<MarketingPage> => {
+
+  return customFetch<MarketingPage>(getRestoreMarketingPageRevisionUrl(pageId,revisionId),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+export const getGetMarketingPageBuilderUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/page-builder`
+}
+
+/**
+ * Requires marketing.content.pages. Returns the canonical block catalog and minimized page/form/gallery/team/sidebar references.
+ */
+export const getMarketingPageBuilder = async ( options?: RequestInit): Promise<MarketingPageBuilder> => {
+
+  return customFetch<MarketingPageBuilder>(getGetMarketingPageBuilderUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getAcquireMarketingPageReservationUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/editor-locks/cms_page/${id}/acquire`
+}
+
+/**
+ * Requires marketing.content.pages; retained advisory reservation.
+ */
+export const acquireMarketingPageReservation = async (id: string, options?: RequestInit): Promise<WebsiteEditorReservation> => {
+
+  return customFetch<WebsiteEditorReservation>(getAcquireMarketingPageReservationUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+export const getHeartbeatMarketingPageReservationUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/editor-locks/cms_page/${id}/heartbeat`
+}
+
+/**
+ * Requires marketing.content.pages; retained advisory reservation.
+ */
+export const heartbeatMarketingPageReservation = async (id: string, options?: RequestInit): Promise<WebsiteEditorReservation> => {
+
+  return customFetch<WebsiteEditorReservation>(getHeartbeatMarketingPageReservationUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+export const getReleaseMarketingPageReservationUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/editor-locks/cms_page/${id}/release`
+}
+
+/**
+ * Requires marketing.content.pages; retained advisory reservation.
+ */
+export const releaseMarketingPageReservation = async (id: string, options?: RequestInit): Promise<WebsiteEditorReservation> => {
+
+  return customFetch<WebsiteEditorReservation>(getReleaseMarketingPageReservationUrl(id),
   {
     ...options,
     method: 'POST'

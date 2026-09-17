@@ -9154,6 +9154,765 @@
           }
         ]
       }
+    },
+    "/marketing/cms/pages": {
+      "get": {
+        "operationId": "listMarketingPages",
+        "description": "Requires marketing.content.pages. Generic CMS content remains separate from primary Website manifest publication. Core owns validation, storage and publication.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MarketingPage"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid page or publication request"
+          },
+          "403": {
+            "description": "Required capability missing"
+          },
+          "404": {
+            "description": "Page or revision not found"
+          },
+          "409": {
+            "description": "Slug conflict or linked navigation references must be reviewed"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createMarketingPage",
+        "description": "Requires marketing.content.pages. Generic CMS content remains separate from primary Website manifest publication. Core owns validation, storage and publication.",
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingPage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid page or publication request"
+          },
+          "403": {
+            "description": "Required capability missing"
+          },
+          "404": {
+            "description": "Page or revision not found"
+          },
+          "409": {
+            "description": "Slug conflict or linked navigation references must be reviewed"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketingPageInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/marketing/cms/pages/{id}": {
+      "get": {
+        "operationId": "getMarketingPage",
+        "description": "Requires marketing.content.pages. Generic CMS content remains separate from primary Website manifest publication. Core owns validation, storage and publication.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingPage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid page or publication request"
+          },
+          "403": {
+            "description": "Required capability missing"
+          },
+          "404": {
+            "description": "Page or revision not found"
+          },
+          "409": {
+            "description": "Slug conflict or linked navigation references must be reviewed"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "put": {
+        "operationId": "updateMarketingPage",
+        "description": "Requires marketing.content.pages. Generic CMS content remains separate from primary Website manifest publication. Core owns validation, storage and publication.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingPage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid page or publication request"
+          },
+          "403": {
+            "description": "Required capability missing"
+          },
+          "404": {
+            "description": "Page or revision not found"
+          },
+          "409": {
+            "description": "Slug conflict or linked navigation references must be reviewed"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketingPagePatch"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteMarketingPage",
+        "description": "Requires marketing.content.pages. Generic CMS content remains separate from primary Website manifest publication. Core owns validation, storage and publication.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingDeleteResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid page or publication request"
+          },
+          "403": {
+            "description": "Required capability missing"
+          },
+          "404": {
+            "description": "Page or revision not found"
+          },
+          "409": {
+            "description": "Slug conflict or linked navigation references must be reviewed"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "force",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "Explicit override after reviewing navigation references."
+          }
+        ]
+      }
+    },
+    "/marketing/cms/pages/{id}/duplicate": {
+      "post": {
+        "operationId": "duplicateMarketingPage",
+        "description": "Requires marketing.content.pages. Generic CMS content remains separate from primary Website manifest publication. Core owns validation, storage and publication.",
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingPage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid page or publication request"
+          },
+          "403": {
+            "description": "Required capability missing"
+          },
+          "404": {
+            "description": "Page or revision not found"
+          },
+          "409": {
+            "description": "Slug conflict or linked navigation references must be reviewed"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/pages/{id}/publish": {
+      "post": {
+        "operationId": "publishMarketingPage",
+        "description": "Requires marketing.content.pages. Generic CMS content remains separate from primary Website manifest publication. Core owns validation, storage and publication.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingPage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid page or publication request"
+          },
+          "403": {
+            "description": "Required capability missing"
+          },
+          "404": {
+            "description": "Page or revision not found"
+          },
+          "409": {
+            "description": "Slug conflict or linked navigation references must be reviewed"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/pages/{id}/unpublish": {
+      "post": {
+        "operationId": "unpublishMarketingPage",
+        "description": "Requires marketing.content.pages. Generic CMS content remains separate from primary Website manifest publication. Core owns validation, storage and publication.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingPage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid page or publication request"
+          },
+          "403": {
+            "description": "Required capability missing"
+          },
+          "404": {
+            "description": "Page or revision not found"
+          },
+          "409": {
+            "description": "Slug conflict or linked navigation references must be reviewed"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "force",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "Explicit override after reviewing navigation references."
+          }
+        ]
+      }
+    },
+    "/marketing/cms/pages/{id}/schedule": {
+      "post": {
+        "operationId": "scheduleMarketingPage",
+        "description": "Requires marketing.content.pages. Generic CMS content remains separate from primary Website manifest publication. Core owns validation, storage and publication.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingPage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid page or publication request"
+          },
+          "403": {
+            "description": "Required capability missing"
+          },
+          "404": {
+            "description": "Page or revision not found"
+          },
+          "409": {
+            "description": "Slug conflict or linked navigation references must be reviewed"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketingPageSchedule"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/marketing/cms/pages/{id}/relationships": {
+      "get": {
+        "operationId": "getMarketingPageRelationships",
+        "description": "Requires marketing.content.pages. Generic CMS content remains separate from primary Website manifest publication. Core owns validation, storage and publication.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingPageRelationships"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid page or publication request"
+          },
+          "403": {
+            "description": "Required capability missing"
+          },
+          "404": {
+            "description": "Page or revision not found"
+          },
+          "409": {
+            "description": "Slug conflict or linked navigation references must be reviewed"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/pages/{id}/relationships/remove-menu-items": {
+      "post": {
+        "operationId": "removeMarketingPageMenuItems",
+        "description": "Requires marketing.content.pages. Generic CMS content remains separate from primary Website manifest publication. Core owns validation, storage and publication. Also requires marketing.content.menus.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingPageMenuCleanup"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid page or publication request"
+          },
+          "403": {
+            "description": "Required capability missing"
+          },
+          "404": {
+            "description": "Page or revision not found"
+          },
+          "409": {
+            "description": "Slug conflict or linked navigation references must be reviewed"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/pages/{id}/preview-link": {
+      "get": {
+        "operationId": "getMarketingPagePreviewLink",
+        "description": "Requires marketing.content.pages. Generic CMS content remains separate from primary Website manifest publication. Core owns validation, storage and publication.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingPagePreviewLink"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid page or publication request"
+          },
+          "403": {
+            "description": "Required capability missing"
+          },
+          "404": {
+            "description": "Page or revision not found"
+          },
+          "409": {
+            "description": "Slug conflict or linked navigation references must be reviewed"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/pages/{id}/revisions": {
+      "get": {
+        "operationId": "listMarketingPageRevisions",
+        "description": "Requires marketing.content.pages. Generic CMS content remains separate from primary Website manifest publication. Core owns validation, storage and publication.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MarketingPageRevision"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid page or publication request"
+          },
+          "403": {
+            "description": "Required capability missing"
+          },
+          "404": {
+            "description": "Page or revision not found"
+          },
+          "409": {
+            "description": "Slug conflict or linked navigation references must be reviewed"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/pages/{pageId}/revisions/{revisionId}/restore": {
+      "post": {
+        "operationId": "restoreMarketingPageRevision",
+        "description": "Requires marketing.content.pages. Generic CMS content remains separate from primary Website manifest publication. Core owns validation, storage and publication.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingPage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid page or publication request"
+          },
+          "403": {
+            "description": "Required capability missing"
+          },
+          "404": {
+            "description": "Page or revision not found"
+          },
+          "409": {
+            "description": "Slug conflict or linked navigation references must be reviewed"
+          }
+        },
+        "parameters": [
+          {
+            "name": "pageId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "revisionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/page-builder": {
+      "get": {
+        "operationId": "getMarketingPageBuilder",
+        "description": "Requires marketing.content.pages. Returns the canonical block catalog and minimized page/form/gallery/team/sidebar references.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingPageBuilder"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid section"
+          },
+          "403": {
+            "description": "Page capability required"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/marketing/cms/editor-locks/cms_page/{id}/acquire": {
+      "post": {
+        "operationId": "acquireMarketingPageReservation",
+        "description": "Requires marketing.content.pages; retained advisory reservation.",
+        "responses": {
+          "200": {
+            "description": "Website menu result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteEditorReservation"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid menu or identifier"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Menus access or linked Core identity required"
+          },
+          "404": {
+            "description": "Menu not found"
+          },
+          "409": {
+            "description": "Conflict"
+          },
+          "503": {
+            "description": "Website unavailable; refresh before retrying a change"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/editor-locks/cms_page/{id}/heartbeat": {
+      "post": {
+        "operationId": "heartbeatMarketingPageReservation",
+        "description": "Requires marketing.content.pages; retained advisory reservation.",
+        "responses": {
+          "200": {
+            "description": "Website menu result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteEditorReservation"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid menu or identifier"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Menus access or linked Core identity required"
+          },
+          "404": {
+            "description": "Menu not found"
+          },
+          "409": {
+            "description": "Conflict"
+          },
+          "503": {
+            "description": "Website unavailable; refresh before retrying a change"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/editor-locks/cms_page/{id}/release": {
+      "post": {
+        "operationId": "releaseMarketingPageReservation",
+        "description": "Requires marketing.content.pages; retained advisory reservation.",
+        "responses": {
+          "200": {
+            "description": "Website menu result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteEditorReservation"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid menu or identifier"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Menus access or linked Core identity required"
+          },
+          "404": {
+            "description": "Menu not found"
+          },
+          "409": {
+            "description": "Conflict"
+          },
+          "503": {
+            "description": "Website unavailable; refresh before retrying a change"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -18618,6 +19377,459 @@
             "type": "integer"
           }
         }
+      },
+      "MarketingPageInput": {
+        "type": "object",
+        "properties": {
+          "sidebarId": {
+            "type": "string",
+            "nullable": true
+          },
+          "seoTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "seoDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "seoKeywords": {
+            "type": "string",
+            "nullable": true
+          },
+          "ogImageUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "canonicalUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "template": {
+            "type": "string"
+          },
+          "pageType": {
+            "type": "string",
+            "enum": [
+              "home",
+              "about",
+              "contact",
+              "landing",
+              "custom"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "published",
+              "scheduled",
+              "archived"
+            ]
+          },
+          "content": {
+            "nullable": true,
+            "description": "Retained CMS JSON content. Preserve unknown fields and legacy shapes."
+          },
+          "noindex": {
+            "type": "boolean",
+            "nullable": true
+          }
+        },
+        "required": [
+          "title",
+          "slug"
+        ]
+      },
+      "MarketingPagePatch": {
+        "type": "object",
+        "properties": {
+          "sidebarId": {
+            "type": "string",
+            "nullable": true
+          },
+          "seoTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "seoDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "seoKeywords": {
+            "type": "string",
+            "nullable": true
+          },
+          "ogImageUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "canonicalUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "template": {
+            "type": "string"
+          },
+          "pageType": {
+            "type": "string",
+            "enum": [
+              "home",
+              "about",
+              "contact",
+              "landing",
+              "custom"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "published",
+              "scheduled",
+              "archived"
+            ]
+          },
+          "content": {
+            "nullable": true,
+            "description": "Retained CMS JSON content. Preserve unknown fields and legacy shapes."
+          },
+          "noindex": {
+            "type": "boolean",
+            "nullable": true
+          }
+        }
+      },
+      "MarketingPage": {
+        "type": "object",
+        "properties": {
+          "sidebarId": {
+            "type": "string",
+            "nullable": true
+          },
+          "seoTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "seoDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "seoKeywords": {
+            "type": "string",
+            "nullable": true
+          },
+          "ogImageUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "canonicalUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "template": {
+            "type": "string"
+          },
+          "pageType": {
+            "type": "string",
+            "enum": [
+              "home",
+              "about",
+              "contact",
+              "landing",
+              "custom"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "published",
+              "scheduled",
+              "archived"
+            ]
+          },
+          "content": {
+            "nullable": true,
+            "description": "Retained CMS JSON content. Preserve unknown fields and legacy shapes."
+          },
+          "noindex": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "createdBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "updatedBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "id": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "publishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "scheduledAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "slug",
+          "status",
+          "pageType",
+          "template"
+        ]
+      },
+      "MarketingPageSchedule": {
+        "type": "object",
+        "properties": {
+          "scheduledAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "scheduledAt"
+        ]
+      },
+      "MarketingPageRevision": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "pageId": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "changedBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "changeNote": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "content": {
+            "nullable": true,
+            "description": "Retained CMS JSON content. Preserve unknown fields and legacy shapes."
+          }
+        },
+        "required": [
+          "id",
+          "pageId",
+          "title",
+          "status"
+        ]
+      },
+      "MarketingPageMenuReference": {
+        "type": "object",
+        "properties": {
+          "menuId": {
+            "type": "string"
+          },
+          "menuName": {
+            "type": "string"
+          },
+          "menuLocation": {
+            "type": "string"
+          },
+          "itemId": {
+            "type": "string"
+          },
+          "itemLabel": {
+            "type": "string"
+          },
+          "itemUrl": {
+            "type": "string"
+          },
+          "labelSource": {
+            "type": "string",
+            "enum": [
+              "page",
+              "custom"
+            ]
+          },
+          "depth": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "menuId",
+          "menuName",
+          "menuLocation",
+          "itemId",
+          "itemLabel",
+          "itemUrl",
+          "depth"
+        ]
+      },
+      "MarketingPageRelationships": {
+        "type": "object",
+        "properties": {
+          "pageId": {
+            "type": "string"
+          },
+          "menuReferences": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MarketingPageMenuReference"
+            }
+          },
+          "counts": {
+            "type": "object",
+            "properties": {
+              "menuItems": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "menuItems"
+            ]
+          }
+        },
+        "required": [
+          "pageId",
+          "menuReferences",
+          "counts"
+        ]
+      },
+      "MarketingPageMenuCleanup": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "menusUpdated": {
+            "type": "integer"
+          },
+          "itemsRemoved": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "success",
+          "menusUpdated",
+          "itemsRemoved"
+        ]
+      },
+      "MarketingPagePreviewLink": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "previewPath": {
+            "type": "string"
+          },
+          "previewUrl": {
+            "type": "string"
+          },
+          "pageId": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "expiresInHours": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "token",
+          "previewPath",
+          "previewUrl",
+          "pageId",
+          "slug",
+          "status",
+          "expiresInHours"
+        ]
+      },
+      "MarketingPageBuilder": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MarketingSectionBuilder"
+          },
+          {
+            "type": "object",
+            "required": [
+              "sidebars"
+            ],
+            "properties": {
+              "sidebars": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "name"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "isDefault": {
+                      "type": "boolean",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
       }
     }
   }

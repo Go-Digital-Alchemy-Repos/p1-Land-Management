@@ -1,3 +1,5 @@
+import { loadCmsBuilderReferences } from "../../services/cms-builder-references";
+import { asyncHandler } from "../../middleware/error-handler";
 import { getBaseUrl } from "../../utils/route-helpers";
 import { requireBusinessCapability as p1Authorize } from "../../middleware/auth";
 import { Router } from "express";
@@ -14,6 +16,9 @@ import {
 } from "../../services/cms-relationships.service";
 
 const router = Router();
+router.get("/page-builder", p1Authorize("marketing.content.pages"), asyncHandler(async (_req, res) => {
+  res.json(await loadCmsBuilderReferences(true));
+}));
 
 const PAGE_TYPES = ["home", "about", "contact", "landing", "custom"] as const;
 const STATUSES = ["draft", "published", "scheduled", "archived"] as const;
@@ -24,7 +29,7 @@ const createPageSchema = insertCmsPageSchema.extend({
     .string()
     .min(1, "Slug is required")
     .regex(/^[a-z0-9-/]+$/, "Slug must be lowercase with hyphens only")
-    .refine(value => !/^(admin|api|assets|uploads|r2|health)(?:\/|$)/.test(value), "This route is reserved"),
+    .refine(value => !/^(admin|api|assets|uploads|r2|health|cms-preview)(?:\/|$)/.test(value.replace(/^\/+/, "")), "This route is reserved"),
   pageType: z.enum(PAGE_TYPES).default("custom"),
   status: z.enum(STATUSES).default("draft"),
 });
@@ -34,7 +39,7 @@ const updatePageSchema = createPageSchema.partial().extend({
   slug: z
     .string()
     .regex(/^[a-z0-9-/]+$/)
-    .refine(value => !/^(admin|api|assets|uploads|r2|health)(?:\/|$)/.test(value), "This route is reserved")
+    .refine(value => !/^(admin|api|assets|uploads|r2|health|cms-preview)(?:\/|$)/.test(value.replace(/^\/+/, "")), "This route is reserved")
     .optional(),
 });
 
