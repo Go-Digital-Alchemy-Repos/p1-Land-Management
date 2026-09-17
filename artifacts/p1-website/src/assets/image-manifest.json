@@ -660,35 +660,35 @@
     ]
   },
   "features/grading-level.png": {
-    "sourceBytes": 1970159,
-    "sourceHash": "49035cdfa8d0a17f170e450b7c2a2c96c53d830eacd18b227704aec62f1b1146",
-    "width": 1280,
-    "height": 896,
+    "sourceBytes": 2565663,
+    "sourceHash": "8a56b700fc71e7140490fca54b833d025f334c7de70347b95295c8eb2a3b211b",
+    "width": 1672,
+    "height": 941,
     "default": "optimized/features/grading-level-1280.webp",
     "variants": [
       {
         "path": "optimized/features/grading-level-480.webp",
         "format": "webp",
         "width": 480,
-        "height": 336,
-        "bytes": 33980,
-        "quality": 78
+        "height": 270,
+        "bytes": 52978,
+        "quality": 88
       },
       {
         "path": "optimized/features/grading-level-768.webp",
         "format": "webp",
         "width": 768,
-        "height": 538,
-        "bytes": 78824,
-        "quality": 78
+        "height": 432,
+        "bytes": 96896,
+        "quality": 84
       },
       {
         "path": "optimized/features/grading-level-1280.webp",
         "format": "webp",
         "width": 1280,
-        "height": 896,
-        "bytes": 185716,
-        "quality": 78
+        "height": 720,
+        "bytes": 239192,
+        "quality": 88
       }
     ]
   },
