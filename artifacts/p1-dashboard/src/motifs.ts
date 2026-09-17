@@ -3,6 +3,8 @@ import type { DashboardView, SettingsSection } from "./dashboard-routes";
 const illustration = (name: string) => `url("/images/illustrations/${name}.webp")`;
 
 const pageIllustrations: Record<Exclude<DashboardView, "Settings">, string> = {
+  Analytics: "none",
+  "Search Console": "none",
   Overview: illustration("overview"),
   Properties: illustration("properties"),
   Clients: illustration("clients"),

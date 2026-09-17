@@ -43,6 +43,8 @@ import {
   Plug,
   SlidersHorizontal,
   LibraryBig,
+  BarChart3,
+  Search,
   ChevronDown,
   Eye,
   EyeOff,
@@ -72,6 +74,7 @@ import {
   type SettingsSection,
 } from "./dashboard-routes";
 const auth = createAuthClient({ plugins: [twoFactorClient()] });
+const MarketingReports = lazy(() => import("./marketing/MarketingReports").then(module => ({default: module.MarketingReports})));
 const PropertyMap = lazy(() =>
   import("./PropertyMap").then(({ PropertyMap }) => ({ default: PropertyMap })),
 );
@@ -99,6 +102,8 @@ type NavItem = DashboardPageRoute & {
   icon: typeof LayoutDashboard;
 };
 const icons: Record<DashboardPageRoute["view"] | "Settings:security" | "Settings:integrations" | "Settings:preferences" | "Settings:term-libraries", typeof LayoutDashboard> = {
+  Analytics: BarChart3,
+  "Search Console": Search,
   Overview: LayoutDashboard,
   Properties: MapPin,
   Clients: Users,
@@ -1375,6 +1380,7 @@ function App() {
               onRefresh={session}
             />
           )}
+          {(view === "Analytics" || view === "Search Console") && <Suspense fallback={<p role="status">Loading reporting tools…</p>}><MarketingReports key={`${person.id}:${view}:${(person.capabilities || []).join(",")}`} source={view === "Analytics" ? "analytics" : "search-console"}/></Suspense>}
           {view === "Agreements" && (
             <ServiceAgreements
               role={person.role}

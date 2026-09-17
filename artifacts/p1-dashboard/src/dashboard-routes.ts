@@ -14,7 +14,9 @@ export type DashboardView =
   | "Inspections"
   | "Expenses"
   | "Settings"
-  | "Profile";
+  | "Profile"
+  | "Analytics"
+  | "Search Console";
 
 export type SettingsSection =
   | "people"
@@ -28,6 +30,7 @@ export type NavigationGroup =
   | "Customers"
   | "Operations"
   | "Revenue"
+  | "Marketing"
   | "Settings";
 
 export type RecordRoute =
@@ -82,6 +85,8 @@ export const DASHBOARD_PAGES: readonly DashboardPageRoute[] = [
   { view: "Agreements", label: "Agreements", path: "/agreements", group: "Revenue" },
   { view: "Billing", label: "Billing", path: "/billing", group: "Revenue" },
   { view: "Expenses", label: "Expenses", path: "/expenses", group: "Revenue" },
+  { view: "Analytics", label: "Google Analytics", path: "/marketing/reporting/analytics", group: "Marketing" },
+  { view: "Search Console", label: "Search Console", path: "/marketing/reporting/search-console", group: "Marketing" },
   { view: "Profile", label: "My profile", path: "/profile", group: "Workspace", navigation: false },
   { view: "Settings", label: "User Manager", path: "/settings/people", group: "Settings", settingsSection: "people" },
   { view: "Settings", label: "Security", path: "/settings/security", group: "Settings", settingsSection: "security" },
@@ -95,6 +100,7 @@ export const NAVIGATION_GROUPS: readonly NavigationGroup[] = [
   "Customers",
   "Operations",
   "Revenue",
+  "Marketing",
   "Settings",
 ];
 
@@ -178,6 +184,8 @@ export function pathForRoute(route: Extract<DashboardRoute, { kind: "page" }>) {
 }
 
 const viewCapability: Partial<Record<DashboardView, Capability>> = {
+  Analytics: "marketing.analytics.view",
+  "Search Console": "marketing.search-console.view",
   Overview: "workspace.overview", "My Day": "workspace.my-day",
   Clients: "customers.clients", Properties: "customers.properties", Requests: "customers.requests",
   Schedule: "operations.schedule", Recurring: "operations.recurring", Projects: "operations.projects", Inspections: "operations.inspections",
