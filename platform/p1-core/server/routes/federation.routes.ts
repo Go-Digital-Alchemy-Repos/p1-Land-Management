@@ -66,6 +66,15 @@ const run =
           code,
         ])
         .catch(() => undefined);
+      // The browser callback must recover to the link form without reflecting
+      // callback codes/state or treating an unlinked identity as authenticated.
+      if (req.method === "GET" && req.path === "/callback" && code === "federation_link_required") {
+        clear(res, nonceCookie);
+        clear(res, intentCookie);
+        clear(res, confirmCookie);
+        res.redirect(303, "/admin/login?federation=link-required");
+        return;
+      }
       res.status(status).json({ message: code });
     }
   };

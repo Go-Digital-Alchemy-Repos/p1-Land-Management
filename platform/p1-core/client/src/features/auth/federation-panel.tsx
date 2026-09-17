@@ -15,7 +15,9 @@ export function FederationPanel({ setup = false }: { setup?: boolean }) {
     queryKey: ["/api/setup/status"],
     enabled: setup,
   });
-  const confirming = new URLSearchParams(window.location.search).get("federation") === "confirm";
+  const flow = new URLSearchParams(window.location.search).get("federation");
+  const confirming = flow === "confirm";
+  const linkingRequired = flow === "link-required";
   const detail = useQuery<{ localEmail: string; canonicalEmail: string }>({
     queryKey: ["/api/auth/federation/confirmation"],
     enabled: confirming,
@@ -116,7 +118,14 @@ export function FederationPanel({ setup = false }: { setup?: boolean }) {
             <a href="/api/auth/federation/start" className="block my-6 underline">
               Sign in with P1 Dashboard
             </a>
-            <details>
+            {linkingRequired && (
+              <p role="alert">
+                Your Dashboard sign-in succeeded, but your website account has not been linked.
+                Enter your existing website admin email and password below, then confirm your
+                Dashboard identity. This connects your existing accounts without creating a new one.
+              </p>
+            )}
+            <details open={linkingRequired || undefined}>
               <summary>Link an existing CMS account</summary>
               <p>
                 Prove your existing CMS credentials, then confirm the Dashboard identity to link.
