@@ -6,7 +6,7 @@
     "displayName": "P1 Land & Property Management",
     "source": {
       "repository": "https://github.com/Go-Digital-Alchemy-Repos/p1-Land-Management.git",
-      "revision": "c553a3771abd666d2ae679c05995dedec92c6a7c"
+      "revision": "498be9fbce902ef6a3265f6b5f713236c7477fa4"
     },
     "owners": [
       {
@@ -14045,8 +14045,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1isqm08",
-            "label": "Text: Large Properties",
+            "path": "fxtjr4q",
+            "label": "Text: In the Carolinas",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -14522,7 +14522,7 @@
           "f1cjy9l7": "/assets/service-grading-1280-B0ka5_58.webp",
           "f7aumzw": "Bulldozer grading a dirt site",
           "f1i5fdfo": "Grading & Site Preparation",
-          "f1isqm08": "Large Properties",
+          "fxtjr4q": "In the Carolinas",
           "f1tw7dfb": "Prepare your ground for construction, improve access, or correct an uneven grade. We handle grading and site preparation for large properties across Upstate SC and greater Charlotte.",
           "f1ke7dc6": "Index of Work",
           "fgwkxig": "/services/grading-site-preparation",

@@ -60,11 +60,10 @@ export default function GradingSitePreparation() {
         eyebrow="Grading & Site Preparation"
         title={
           <>
-            Fine Grading & Site Preparation for{" "}
+            Fine Grading & Site Preparation{" "}
             <em className="font-semibold not-italic text-tan" style={{ fontStyle: "italic" }}>
-              Large Properties
-            </em>{" "}
-            in the Carolinas
+              In the Carolinas
+            </em>
           </>
         }
         subtitle="Prepare your ground for construction, improve access, or correct an uneven grade. We handle grading and site preparation for large properties across Upstate SC and greater Charlotte."
