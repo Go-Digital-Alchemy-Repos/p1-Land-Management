@@ -682,3 +682,15 @@ it("rejects gallery slugs that normalize to empty or separators before storage",
  expect(response.status).toBe(400);expect((await response.json()).message).toBe("Slug must contain letters or numbers");
  }
 });
+
+it("exposes shared Section block definitions with minimal independent selectors", async()=>{
+ identity.capabilities=["marketing.content.sections"];
+ state.pages.mockResolvedValue([{id:"page",title:"Page",slug:"page",status:"draft",content:"private body"}]);
+ state.list.mockResolvedValueOnce([{id:"form",name:"Form",slug:"contact",kind:"contact",fields:["private"]}]).mockResolvedValueOnce([{id:"gallery",title:"Gallery",status:"published",items:["private"]},{id:"draft-gallery",title:"Draft",status:"draft"}]).mockResolvedValueOnce([{id:"team",name:"Person",status:"published",biography:"private"},{id:"draft-team",name:"Draft",status:"draft"}]);
+ const response=await request("/section-builder");expect(response.status).toBe(200);const data=await response.json();
+ expect(data.blocks.some((block:any)=>block.type==="hero"&&block.propDefs.length>0)).toBe(true);
+ expect(data.aliases["cta-banner"]).toBe("cta");
+ expect(data.pages).toEqual([{id:"page",title:"Page",slug:"page",status:"draft"}]);expect(data.forms).toEqual([{id:"form",name:"Form",slug:"contact",kind:"contact"}]);expect(data.galleries).toEqual([{id:"gallery",title:"Gallery"}]);expect(data.team).toEqual([{id:"team",name:"Person"}]);
+ expect((await request("/pages")).status).toBe(403);expect((await request("/team")).status).toBe(403);
+ identity.capabilities=[];expect((await request("/section-builder")).status).toBe(403);expect((await request("/section-builder","GET",{},"/legacy")).status).toBe(403);
+});

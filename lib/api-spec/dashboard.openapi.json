@@ -8780,6 +8780,380 @@
           }
         ]
       }
+    },
+    "/marketing/cms/sections": {
+      "get": {
+        "operationId": "listMarketingSections",
+        "description": "Requires marketing.content.sections. Preserves retained block payloads and Core storage.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MarketingSection"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid section"
+          },
+          "403": {
+            "description": "Section capability required"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createMarketingSection",
+        "description": "Requires marketing.content.sections. Preserves retained block payloads and Core storage.",
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingSection"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid section"
+          },
+          "403": {
+            "description": "Section capability required"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketingSectionInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/marketing/cms/sections/{id}": {
+      "get": {
+        "operationId": "getMarketingSection",
+        "description": "Requires marketing.content.sections. Preserves retained block payloads and Core storage.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingSection"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid section"
+          },
+          "403": {
+            "description": "Section capability required"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "put": {
+        "operationId": "updateMarketingSection",
+        "description": "Requires marketing.content.sections. Preserves retained block payloads and Core storage.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingSection"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid section"
+          },
+          "403": {
+            "description": "Section capability required"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketingSectionInput"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "deleteMarketingSection",
+        "description": "Requires marketing.content.sections. Preserves retained block payloads and Core storage.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingDeleteResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid section"
+          },
+          "403": {
+            "description": "Section capability required"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/section-builder": {
+      "get": {
+        "operationId": "getMarketingSectionBuilder",
+        "description": "Requires marketing.content.sections. Preserves retained block payloads and Core storage.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingSectionBuilder"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid section"
+          },
+          "403": {
+            "description": "Section capability required"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/marketing/cms/sections/system/starter-library": {
+      "post": {
+        "operationId": "refreshMarketingSectionStarters",
+        "description": "Requires marketing.content.sections. Preserves retained block payloads and Core storage.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingSectionStarterResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid section"
+          },
+          "403": {
+            "description": "Section capability required"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/marketing/cms/editor-locks/cms_section/{id}/acquire": {
+      "post": {
+        "operationId": "acquireMarketingSectionReservation",
+        "description": "Requires marketing.content.sections; retained advisory reservation.",
+        "responses": {
+          "200": {
+            "description": "Website menu result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteEditorReservation"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid menu or identifier"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Menus access or linked Core identity required"
+          },
+          "404": {
+            "description": "Menu not found"
+          },
+          "409": {
+            "description": "Conflict"
+          },
+          "503": {
+            "description": "Website unavailable; refresh before retrying a change"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/editor-locks/cms_section/{id}/heartbeat": {
+      "post": {
+        "operationId": "heartbeatMarketingSectionReservation",
+        "description": "Requires marketing.content.sections; retained advisory reservation.",
+        "responses": {
+          "200": {
+            "description": "Website menu result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteEditorReservation"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid menu or identifier"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Menus access or linked Core identity required"
+          },
+          "404": {
+            "description": "Menu not found"
+          },
+          "409": {
+            "description": "Conflict"
+          },
+          "503": {
+            "description": "Website unavailable; refresh before retrying a change"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/editor-locks/cms_section/{id}/release": {
+      "post": {
+        "operationId": "releaseMarketingSectionReservation",
+        "description": "Requires marketing.content.sections; retained advisory reservation.",
+        "responses": {
+          "200": {
+            "description": "Website menu result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteEditorReservation"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid menu or identifier"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Menus access or linked Core identity required"
+          },
+          "404": {
+            "description": "Menu not found"
+          },
+          "409": {
+            "description": "Conflict"
+          },
+          "503": {
+            "description": "Website unavailable; refresh before retrying a change"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -17909,6 +18283,335 @@
             }
           }
         ]
+      },
+      "MarketingSectionInput": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "thumbnailUrl": {
+            "type": "string"
+          },
+          "blocks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {}
+            }
+          }
+        }
+      },
+      "MarketingSection": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "blocks"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "category": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "thumbnailUrl": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "createdAt": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "updatedAt": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "blocks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {}
+            }
+          }
+        }
+      },
+      "MarketingBuilderProperty": {
+        "type": "object",
+        "required": [
+          "key",
+          "label",
+          "type"
+        ],
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "text",
+              "textarea",
+              "richtext",
+              "image-url",
+              "url",
+              "page-select",
+              "gallery-select",
+              "team-select",
+              "select",
+              "form-select",
+              "boolean",
+              "number",
+              "color",
+              "array-items"
+            ]
+          },
+          "placeholder": {
+            "type": "string"
+          },
+          "min": {
+            "type": "number"
+          },
+          "max": {
+            "type": "number"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "label",
+                "value"
+              ],
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "itemSchema": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MarketingBuilderProperty"
+            }
+          }
+        }
+      },
+      "MarketingBuilderBlock": {
+        "type": "object",
+        "required": [
+          "type",
+          "label",
+          "description",
+          "category",
+          "defaultProps",
+          "propDefs"
+        ],
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "iconName": {
+            "type": "string"
+          },
+          "isDynamic": {
+            "type": "boolean"
+          },
+          "defaultProps": {
+            "type": "object",
+            "additionalProperties": {}
+          },
+          "propDefs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MarketingBuilderProperty"
+            }
+          }
+        }
+      },
+      "MarketingSectionBuilder": {
+        "type": "object",
+        "required": [
+          "blocks",
+          "aliases",
+          "pages",
+          "forms",
+          "galleries",
+          "team"
+        ],
+        "properties": {
+          "blocks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MarketingBuilderBlock"
+            }
+          },
+          "aliases": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "pages": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "title",
+                "slug",
+                "status"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "slug": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "forms": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "name",
+                "slug",
+                "kind"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "slug": {
+                  "type": "string"
+                },
+                "kind": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "galleries": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "title"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "team": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "name"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "MarketingSectionStarterResult": {
+        "type": "object",
+        "required": [
+          "success",
+          "created",
+          "updated",
+          "deleted",
+          "total"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "created": {
+            "type": "integer"
+          },
+          "updated": {
+            "type": "integer"
+          },
+          "deleted": {
+            "type": "integer"
+          },
+          "total": {
+            "type": "integer"
+          }
+        }
       }
     }
   }

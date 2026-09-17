@@ -6,7 +6,22 @@ import { storage } from "../../storage";
 import { ensureSystemCmsSections } from "../../services/system-cms-sections.service";
 import { paramString } from "../../utils/params";
 
+import { ALL_BLOCKS } from "../../../shared/cms-builder/block-registry";
+import { LEGACY_BLOCK_TYPE_ALIASES } from "../../../shared/cms-builder/block-registry.shared";
+
 const router = Router();
+router.get("/section-builder", p1Authorize("marketing.content.sections"), asyncHandler(async (_req, res) => {
+  const [pages,forms,galleries,team] = await Promise.all([
+    storage.cmsPages.getAllPages(),storage.forms.getAll(),storage.cmsGalleries.getAll(),storage.team.list(),
+  ]);
+  res.json({
+    blocks:ALL_BLOCKS, aliases:LEGACY_BLOCK_TYPE_ALIASES,
+    pages:pages.map(({id,title,slug,status})=>({id,title,slug,status})),
+    forms:forms.map(({id,name,slug,kind})=>({id,name,slug,kind})),
+    galleries:galleries.filter(row=>row.status==="published").map(({id,title})=>({id,title})),
+    team:team.filter(row=>row.status==="published").map(({id,name})=>({id,name})),
+  });
+}));
 
 const createSectionSchema = z.object({
   name: z.string().min(1, "Name is required"),

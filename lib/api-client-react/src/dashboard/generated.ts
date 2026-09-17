@@ -135,6 +135,10 @@ import type {
   MarketingRobots,
   MarketingRobotsInput,
   MarketingSearchConsole,
+  MarketingSection,
+  MarketingSectionBuilder,
+  MarketingSectionInput,
+  MarketingSectionStarterResult,
   MarketingSeoAudit,
   MarketingSeoSettings,
   MarketingSidebar,
@@ -4926,6 +4930,249 @@ export const getUnpublishMarketingGalleryUrl = (id: string,) => {
 export const unpublishMarketingGallery = async (id: string, options?: RequestInit): Promise<MarketingGallery> => {
 
   return customFetch<MarketingGallery>(getUnpublishMarketingGalleryUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+export const getListMarketingSectionsUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/sections`
+}
+
+/**
+ * Requires marketing.content.sections. Preserves retained block payloads and Core storage.
+ */
+export const listMarketingSections = async ( options?: RequestInit): Promise<MarketingSection[]> => {
+
+  return customFetch<MarketingSection[]>(getListMarketingSectionsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateMarketingSectionUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/sections`
+}
+
+/**
+ * Requires marketing.content.sections. Preserves retained block payloads and Core storage.
+ */
+export const createMarketingSection = async (marketingSectionInput: MarketingSectionInput, options?: RequestInit): Promise<MarketingSection> => {
+
+  return customFetch<MarketingSection>(getCreateMarketingSectionUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingSectionInput,)
+  }
+);}
+
+
+
+export const getGetMarketingSectionUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/sections/${id}`
+}
+
+/**
+ * Requires marketing.content.sections. Preserves retained block payloads and Core storage.
+ */
+export const getMarketingSection = async (id: string, options?: RequestInit): Promise<MarketingSection> => {
+
+  return customFetch<MarketingSection>(getGetMarketingSectionUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getUpdateMarketingSectionUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/sections/${id}`
+}
+
+/**
+ * Requires marketing.content.sections. Preserves retained block payloads and Core storage.
+ */
+export const updateMarketingSection = async (id: string,
+    marketingSectionInput: MarketingSectionInput, options?: RequestInit): Promise<MarketingSection> => {
+
+  return customFetch<MarketingSection>(getUpdateMarketingSectionUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingSectionInput,)
+  }
+);}
+
+
+
+export const getDeleteMarketingSectionUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/sections/${id}`
+}
+
+/**
+ * Requires marketing.content.sections. Preserves retained block payloads and Core storage.
+ */
+export const deleteMarketingSection = async (id: string, options?: RequestInit): Promise<MarketingDeleteResult> => {
+
+  return customFetch<MarketingDeleteResult>(getDeleteMarketingSectionUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+export const getGetMarketingSectionBuilderUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/section-builder`
+}
+
+/**
+ * Requires marketing.content.sections. Preserves retained block payloads and Core storage.
+ */
+export const getMarketingSectionBuilder = async ( options?: RequestInit): Promise<MarketingSectionBuilder> => {
+
+  return customFetch<MarketingSectionBuilder>(getGetMarketingSectionBuilderUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getRefreshMarketingSectionStartersUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/sections/system/starter-library`
+}
+
+/**
+ * Requires marketing.content.sections. Preserves retained block payloads and Core storage.
+ */
+export const refreshMarketingSectionStarters = async ( options?: RequestInit): Promise<MarketingSectionStarterResult> => {
+
+  return customFetch<MarketingSectionStarterResult>(getRefreshMarketingSectionStartersUrl(),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+export const getAcquireMarketingSectionReservationUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/editor-locks/cms_section/${id}/acquire`
+}
+
+/**
+ * Requires marketing.content.sections; retained advisory reservation.
+ */
+export const acquireMarketingSectionReservation = async (id: string, options?: RequestInit): Promise<WebsiteEditorReservation> => {
+
+  return customFetch<WebsiteEditorReservation>(getAcquireMarketingSectionReservationUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+export const getHeartbeatMarketingSectionReservationUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/editor-locks/cms_section/${id}/heartbeat`
+}
+
+/**
+ * Requires marketing.content.sections; retained advisory reservation.
+ */
+export const heartbeatMarketingSectionReservation = async (id: string, options?: RequestInit): Promise<WebsiteEditorReservation> => {
+
+  return customFetch<WebsiteEditorReservation>(getHeartbeatMarketingSectionReservationUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+export const getReleaseMarketingSectionReservationUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/editor-locks/cms_section/${id}/release`
+}
+
+/**
+ * Requires marketing.content.sections; retained advisory reservation.
+ */
+export const releaseMarketingSectionReservation = async (id: string, options?: RequestInit): Promise<WebsiteEditorReservation> => {
+
+  return customFetch<WebsiteEditorReservation>(getReleaseMarketingSectionReservationUrl(id),
   {
     ...options,
     method: 'POST'
