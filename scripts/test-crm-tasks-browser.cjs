@@ -72,6 +72,8 @@ const assert = require("node:assert/strict");
           notes: [],
           activity: [],
         };
+      if (path === `/api/v1/clients/${client}/notes`)
+        json = { items: [], nextCursor: null };
       const prefix = parentPath(path);
       if (path === prefix + "/assignees")
         json = [{ id: "staff", name: "Eligible colleague" }];

@@ -1,3 +1,4 @@
+import { ClientNotes } from "./ClientNotes";
 import { CrmTasks } from "./CrmTasks";
 import { hasCapability } from "@workspace/api-zod/business-access";
 import { canAccessWorkspaceTab } from "./dashboard-routes";
@@ -122,36 +123,6 @@ function Rows({
 
 function Status({ value }: { value: string }) {
   return <span className={`atlas-status ${value.replaceAll("_", "-")}`}>{value.replaceAll("_", " ")}</span>;
-}
-
-function NoteComposer({
-  clientId,
-  properties,
-  request,
-  onSaved,
-}: {
-  clientId: string;
-  properties: any[];
-  request: Request;
-  onSaved: () => void;
-}) {
-  const [body, setBody] = useState("");
-  const [propertyId, setPropertyId] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
-  async function submit(event: FormEvent) {
-    event.preventDefault();
-    setBusy(true); setError("");
-    try {
-      await request(`/clients/${clientId}/notes`, { body, ...(propertyId ? { propertyId } : {}) });
-      setBody(""); setPropertyId(""); onSaved();
-    } catch (reason) { setError((reason as Error).message); } finally { setBusy(false); }
-  }
-  return <form className="note-composer" onSubmit={submit}>
-    <label>New internal note<RichTextEditor value={body} onChange={setBody} required maxLength={10000} ariaLabel="New internal note" placeholder="Capture context for the office team. Notes are permanent once saved." /></label>
-    <div className="note-composer-actions"><label>Property scope<select value={propertyId} onChange={(event) => setPropertyId(event.target.value)}><option value="">Client-wide note</option>{properties.map((property) => <option key={property.id} value={property.id}>{property.name}</option>)}</select></label><button type="submit" className="primary" disabled={busy || !body.trim()}><Plus size={16} />{busy ? "Saving…" : "Add note"}</button></div>
-    {error && <p className="error" role="alert">{error}</p>}
-  </form>;
 }
 
 type WorkspaceProperty = {
@@ -376,7 +347,7 @@ export function ClientWorkspace({ id, tab, request, onTab, onProperty, role, cap
     {tab === "schedule" && <DataSurface title="Client schedule" detail="Upcoming and in-flight operational work."><Rows items={workspace.schedule} columns={[{ label: "Work", render: (item) => <strong>{item.title}</strong> }, { label: "Property", render: (item) => item.property_name }, { label: "Scheduled", render: (item) => stamp(item.scheduled_at) }, { label: "Status", render: (item) => <Status value={item.status} /> }]} empty={{ title: "No work on the calendar", text: "Schedule a work order to see it here." }} /></DataSurface>}
     {tab === "requests" && <DataSurface title="Service requests" detail="Requests connected to this client’s properties." action={<button className="text-action" onClick={() => setEditor({ kind: "request" })}><Plus size={15} /> Create request</button>}>{editor?.kind === "request" && <RequestEditor properties={properties} request={request} onSaved={() => { setEditor(null); void load(); }} onCancel={() => setEditor(null)} />}<Rows items={workspace.requests} columns={[{ label: "Request", render: (item) => item.description }, { label: "Property", render: (item) => item.property_name }, { label: "Received", render: (item) => stamp(item.created_at) }, { label: "Status", render: (item) => <Status value={item.status} /> }]} empty={{ title: "No service requests", text: "Client requests will appear here." }} /></DataSurface>}
     {tab === "projects" && <DataSurface title="Projects" detail="Project work across the account." action={hasCapability({ role, capabilities }, "operations.projects") ? <button className="text-action" onClick={() => setEditor({ kind: "project" })}><Plus size={15} /> New project</button> : undefined}>{editor?.kind === "project" && <ProjectEditor project={editor.project} properties={properties} request={request} onSaved={() => { setEditor(null); void load(); }} onCancel={() => setEditor(null)} />}<Rows items={workspace.projects} columns={[{ label: "Project", render: (item) => <strong>{item.name}</strong> }, { label: "Property", render: (item) => item.property_name }, { label: "Scope", render: (item) => item.scope }, { label: "Status", render: (item) => <Status value={item.status} /> }, ...(hasCapability({ role, capabilities }, "operations.projects") ? [{ label: "", render: (item: any) => <button className="table-link" onClick={() => setEditor({ kind: "project", project: item })}>Edit</button> }] : [])]} empty={{ title: "No projects", text: "Projects for this account will appear here." }} /></DataSurface>}
-    {tab === "notes" && <div className="notes-layout"><DataSurface title="Notes & tasks" detail="Internal customer notes and follow-ups."><CrmTasks kind="client" parentId={id} /><NoteComposer clientId={id} properties={workspace.properties} request={request} onSaved={load} /><div className="note-list">{workspace.notes.length ? workspace.notes.map((note: any) => <article key={note.id}><header><strong>{note.author_name}</strong><span>{note.property_name || "Client-wide"}</span><time>{stamp(note.created_at)}</time></header><p>{note.body}</p></article>) : <Empty title="No notes yet" text="Keep the next handoff clear by adding the first internal note." />}</div></DataSurface><aside className="context-rail"><DataSurface title="Note policy"><p className="muted">Notes are visible to office roles only. They cannot be edited or deleted after saving.</p></DataSurface></aside></div>}
+    {tab === "notes" && <div className="notes-layout"><DataSurface title="Notes & tasks" detail="Internal customer notes and follow-ups."><CrmTasks kind="client" parentId={id} /><ClientNotes key={id} clientId={id} properties={workspace.properties} /></DataSurface><aside className="context-rail"><DataSurface title="Note policy"><p className="muted">Notes are visible to office roles only. They cannot be edited or deleted after saving.</p></DataSurface></aside></div>}
   </article>;
 }
 
@@ -451,6 +422,6 @@ export function PropertyWorkspace({
     {tab === "requests" && tabSurface("Service requests", "Requests and follow-up for this property.", workspace.requests, [{ label: "Request", render: (item: any) => item.description }, { label: "Received", render: (item: any) => stamp(item.created_at) }, { label: "Status", render: (item: any) => <Status value={item.status} /> }], { title: "No requests", text: "Requests will appear here." })}
     {tab === "projects" && tabSurface("Projects", "Property projects and phases.", workspace.projects, [{ label: "Project", render: (item: any) => <strong>{item.name}</strong> }, { label: "Scope", render: (item: any) => item.scope }, { label: "Status", render: (item: any) => <Status value={item.status} /> }], { title: "No projects", text: "Projects will appear here." })}
     {tab === "inspections" && tabSurface("Inspections", "Inspection records and observations.", workspace.inspections, [{ label: "Inspection", render: (item: any) => <strong>{item.title}</strong> }, { label: "Findings", render: (item: any) => `${Array.isArray(item.findings) ? item.findings.length : 0} observations` }, { label: "Date", render: (item: any) => stamp(item.created_at) }], { title: "No inspections", text: "Inspection records will appear here." })}
-    {tab === "notes-files" && <div className="notes-layout">{canOpenClient && tabSurface("Internal notes", "Office-only account context for this property.", workspace.notes, [{ label: "Note", render: (item: any) => <><strong>{item.author_name}</strong><p>{item.body}</p><small>{stamp(item.created_at)}</small></> }], { title: "No internal notes", text: "Notes scoped to this property will appear here." })}{tabSurface("Files", "Published property documents and photos.", workspace.files, [{ label: "File", render: (item: any) => <strong>{item.name}</strong> }, { label: "Type", render: (item: any) => item.mime }, { label: "Added", render: (item: any) => stamp(item.created_at) }], { title: "No files", text: "Files will appear here when they are available." })}</div>}
+    {tab === "notes-files" && <div className="notes-layout">{canOpenClient && tabSurface("Internal notes", "Office-only account context for this property.", workspace.notes, [{ label: "Note", render: (item: any) => <><strong>{item.author_name || "Historical author unavailable"}</strong><p>{item.body}</p><small>{stamp(item.created_at)}</small></> }], { title: "No internal notes", text: "Notes scoped to this property will appear here." })}{tabSurface("Files", "Published property documents and photos.", workspace.files, [{ label: "File", render: (item: any) => <strong>{item.name}</strong> }, { label: "Type", render: (item: any) => item.mime }, { label: "Added", render: (item: any) => stamp(item.created_at) }], { title: "No files", text: "Files will appear here when they are available." })}</div>}
   </article>;
 }

@@ -1,9 +1,9 @@
 import { hasCapability } from "@workspace/api-zod/business-access";
 import { Router } from "express";
-import { randomUUID } from "node:crypto";
 import { z } from "zod";
 import { actor, propertyAccess } from "./access";
-import { pool, transaction } from "./database";
+import { pool } from "./database";
+import { createClientNote, listClientNotes } from "./client-notes.service";
 import { HttpError, requireCapability, type Role } from "./policy";
 
 export const clientWorkspaceApi = Router();
@@ -12,10 +12,6 @@ function section(allowed: boolean, sql: string, values: unknown[]) {
   return allowed ? pool.query(sql, values) : Promise.resolve({ rows: [] });
 }
 const identifier = z.string().uuid();
-const noteInput = z.object({
-  body: z.string().trim().min(1).max(10000),
-  propertyId: z.string().uuid().optional(),
-});
 
 function propertyVisibility(role: Role, userId: string, alias = "p") {
   if (role === "client")
@@ -71,7 +67,7 @@ clientWorkspaceApi.get("/clients/:id/workspace", async (req, res) => {
       [clientId],
     ),
     section(true,
-      "SELECT n.id,n.property_id,n.body,n.created_at,u.name AS author_name,p.name AS property_name FROM client_note n JOIN \"user\" u ON u.id=n.author_id LEFT JOIN property p ON p.id=n.property_id WHERE n.client_id=$1 ORDER BY n.created_at DESC LIMIT 30",
+      "SELECT n.id,n.property_id,n.body,n.created_at,u.name AS author_name,p.name AS property_name,(n.source_note_id IS NOT NULL) AS imported FROM client_note n LEFT JOIN \"user\" u ON u.id=n.author_id LEFT JOIN property p ON p.id=n.property_id WHERE n.client_id=$1 ORDER BY n.created_at DESC,n.id DESC LIMIT 30",
       [clientId],
     ),
     section(user.role === "owner",
@@ -92,31 +88,20 @@ clientWorkspaceApi.get("/clients/:id/workspace", async (req, res) => {
   });
 });
 
+clientWorkspaceApi.get("/clients/:id/notes", async (req, res) => {
+  const user = await actor(req);
+  requireCapability(user, "customers.clients");
+  res.setHeader("Cache-Control", "private, no-store");
+  res.json(await listClientNotes(identifier.parse(req.params.id), req.query));
+});
 clientWorkspaceApi.post("/clients/:id/notes", async (req, res) => {
   const user = await actor(req);
   requireCapability(user, "customers.clients");
-  const clientId = identifier.parse(req.params.id);
-  const input = noteInput.parse(req.body);
-  await officeClient(clientId);
-  const noteId = randomUUID();
-  await transaction(async (connection) => {
-    if (input.propertyId) {
-      const property = await connection.query(
-        "SELECT id FROM property WHERE id=$1 AND client_id=$2 AND archived=false AND lifecycle='operational'",
-        [input.propertyId, clientId],
-      );
-      if (!property.rowCount) throw new HttpError(400, "Property does not belong to this client");
-    }
-    await connection.query(
-      "INSERT INTO client_note(id,client_id,property_id,author_id,body) VALUES($1,$2,$3,$4,$5)",
-      [noteId, clientId, input.propertyId || null, user.id, input.body],
-    );
-    await connection.query(
-      "INSERT INTO audit_event(id,user_id,action,entity_id) VALUES($1,$2,$3,$4)",
-      [randomUUID(), user.id, "client_note.created", noteId],
-    );
-  });
-  res.status(201).json({ id: noteId });
+  res.setHeader("Cache-Control", "private, no-store");
+  const result = await createClientNote(
+    identifier.parse(req.params.id), user.id, req.body,
+  );
+  res.status(result.replayed ? 200 : 201).json({ id: result.id });
 });
 
 clientWorkspaceApi.get("/properties/:id/workspace", async (req, res) => {
@@ -172,7 +157,7 @@ clientWorkspaceApi.get("/properties/:id/workspace", async (req, res) => {
       : Promise.resolve({ rows: [] as unknown[] }),
     hasCapability(user, "customers.clients")
       ? pool.query(
-          "SELECT n.id,n.body,n.created_at,u.name AS author_name FROM client_note n JOIN \"user\" u ON u.id=n.author_id WHERE n.client_id=$1 AND (n.property_id=$2 OR n.property_id IS NULL) ORDER BY n.created_at DESC LIMIT 30",
+          "SELECT n.id,n.body,n.created_at,u.name AS author_name,(n.source_note_id IS NOT NULL) AS imported FROM client_note n LEFT JOIN \"user\" u ON u.id=n.author_id WHERE n.client_id=$1 AND (n.property_id=$2 OR n.property_id IS NULL) ORDER BY n.created_at DESC,n.id DESC LIMIT 30",
           [property.client_id, propertyId],
         )
       : Promise.resolve({ rows: [] as unknown[] }),

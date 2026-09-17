@@ -2332,7 +2332,7 @@
     "/clients/{clientId}/notes": {
       "post": {
         "operationId": "createClientNote",
-        "description": "Office-only append-only internal note. Optional property scope must belong to the requested client; clients and crew cannot read or create notes.",
+        "description": "Customer-access-controlled, append-only internal note. Optional requested ID supports exact retries; optional property scope must belong to the customer.",
         "parameters": [
           {
             "name": "clientId",
@@ -2372,7 +2372,74 @@
             "description": "Verified session required"
           },
           "403": {
-            "description": "Office role required"
+            "description": "Customers access required"
+          },
+          "404": {
+            "description": "Client not found"
+          },
+          "200": {
+            "description": "Exact same-author creation replay",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatedResource"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Requested note ID already used"
+          }
+        }
+      },
+      "get": {
+        "operationId": "listClientNotes",
+        "parameters": [
+          {
+            "name": "clientId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Full history page",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientNotePage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid cursor"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Customers access required"
           },
           "404": {
             "description": "Client not found"
@@ -13676,6 +13743,27 @@
   },
   "components": {
     "schemas": {
+      "ClientNotePage": {
+        "type": "object",
+        "required": [
+          "items",
+          "nextCursor"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ClientNote"
+            }
+          },
+          "nextCursor": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
       "CrmTask": {
         "type": "object",
         "properties": {
@@ -18062,6 +18150,11 @@
           "propertyId": {
             "type": "string",
             "format": "uuid"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Generate once per intended creation; retain on uncertain retries."
           }
         }
       },
@@ -18095,11 +18188,17 @@
             "type": "string"
           },
           "author_name": {
-            "type": "string"
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "created_at": {
             "type": "string",
             "format": "date-time"
+          },
+          "imported": {
+            "type": "boolean"
           }
         }
       },

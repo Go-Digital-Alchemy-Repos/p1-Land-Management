@@ -1976,3 +1976,23 @@ export const crmTaskRevision = pgTable("crm_task_revision", {
   changedById: text("changed_by_id").references(() => user.id),
   recordedAt: timestamp("recorded_at", { withTimezone: true, mode: "string" }).defaultNow().notNull(),
 }, t => [primaryKey({columns:[t.taskId,t.version]})]);
+
+// Existing customer note store, extended by 0041; append-only trigger originates in 0019.
+export const clientNote = pgTable("client_note", {
+  id: uuid().primaryKey(),
+  clientId: uuid("client_id").notNull().references(() => client.id),
+  propertyId: uuid("property_id").references(() => property.id),
+  authorId: text("author_id").references(() => user.id),
+  body: text().notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true, mode: "string" }).defaultNow().notNull(),
+  sourceInstanceId: text("source_instance_id"),
+  sourceNoteId: text("source_note_id"),
+  sourceAuthorId: text("source_author_id"),
+},t=>[
+  index("client_note_client_created_idx").on(t.clientId,t.createdAt.desc()),
+  index("client_note_property_created_idx").on(t.propertyId,t.createdAt.desc()),
+  index("client_note_history_idx").on(t.clientId,t.createdAt.desc(),t.id.desc()),
+  uniqueIndex("client_note_source_idx").on(t.sourceInstanceId,t.sourceNoteId),
+  check("client_note_body_check",sql`length(btrim(${t.body})) BETWEEN 1 AND 10000`),
+  check("client_note_origin",sql`(${t.sourceInstanceId} IS NULL AND ${t.sourceNoteId} IS NULL AND ${t.sourceAuthorId} IS NULL AND ${t.authorId} IS NOT NULL) OR (${t.sourceInstanceId} IS NOT NULL AND length(btrim(${t.sourceInstanceId}))>0 AND ${t.sourceNoteId} IS NOT NULL AND length(btrim(${t.sourceNoteId}))>0)`),
+]);

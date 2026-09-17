@@ -5,14 +5,10 @@
  * Shared field, scheduling and commercial inbox contract. Other office routes remain documented in docs/dashboard/API.md.
  * OpenAPI spec version: 0.1.0
  */
+import type { ClientNote } from './clientNote';
 
-export interface CreateClientNote {
-  /**
-     * @minLength 1
-     * @maxLength 10000
-     */
-  body: string;
-  propertyId?: string;
-  /** Generate once per intended creation; retain on uncertain retries. */
-  id?: string;
+export interface ClientNotePage {
+  items: ClientNote[];
+  /** @nullable */
+  nextCursor: string | null;
 }

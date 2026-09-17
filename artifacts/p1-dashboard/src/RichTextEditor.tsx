@@ -51,7 +51,7 @@ export function RichTextEditor({ name, value, defaultValue = "", onChange, requi
       <button type="button" aria-label="Bulleted list" title="Bulleted list" onMouseDown={(event) => { event.preventDefault(); command("insertUnorderedList"); }} disabled={disabled}><List size={16} /></button>
       <button type="button" aria-label="Numbered list" title="Numbered list" onMouseDown={(event) => { event.preventDefault(); command("insertOrderedList"); }} disabled={disabled}><ListOrdered size={16} /></button>
     </div>
-    <div ref={editor} className="rich-text-input" role="textbox" aria-multiline="true" aria-label={ariaLabel} aria-required={required} contentEditable={!disabled} suppressContentEditableWarning data-placeholder={placeholder} onInput={update} onPaste={() => requestAnimationFrame(update)} />
+    <div ref={editor} className="rich-text-input" role="textbox" aria-readonly={Boolean(disabled)} aria-multiline="true" aria-label={ariaLabel} aria-required={required} contentEditable={!disabled} suppressContentEditableWarning data-placeholder={placeholder} onInput={update} onPaste={() => requestAnimationFrame(update)} />
     {name && <textarea className="rich-text-value" name={name} value={currentValue} readOnly tabIndex={-1} aria-hidden="true" />}
   </div>;
 }

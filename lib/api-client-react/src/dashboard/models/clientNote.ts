@@ -13,6 +13,8 @@ export interface ClientNote {
   /** @nullable */
   property_name?: string | null;
   body: string;
-  author_name: string;
+  /** @nullable */
+  author_name: string | null;
   created_at: string;
+  imported?: boolean;
 }

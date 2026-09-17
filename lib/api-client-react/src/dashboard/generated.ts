@@ -53,6 +53,7 @@ import type {
   CancelServiceAgreement,
   ChangeAgreementDraftContext,
   ClientContact,
+  ClientNotePage,
   ClientOnboardingReceipt,
   ClientWorkspace,
   CommercialAssessmentArchive,
@@ -144,6 +145,7 @@ import type {
   ListAgreementDraftsParams,
   ListAgreementPreparationJobsParams,
   ListAgreementTemplatesParams,
+  ListClientNotesParams,
   ListClientTasksParams,
   ListCommercialInquiriesParams,
   ListLeadNotesParams,
@@ -1459,7 +1461,7 @@ export const getCreateClientNoteUrl = (clientId: string,) => {
 }
 
 /**
- * Office-only append-only internal note. Optional property scope must belong to the requested client; clients and crew cannot read or create notes.
+ * Customer-access-controlled, append-only internal note. Optional requested ID supports exact retries; optional property scope must belong to the customer.
  */
 export const createClientNote = async (clientId: string,
     createClientNote: CreateClientNote, options?: RequestInit): Promise<CreatedResource> => {
@@ -1471,6 +1473,36 @@ export const createClientNote = async (clientId: string,
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
       createClientNote,)
+  }
+);}
+
+
+
+export const getListClientNotesUrl = (clientId: string,
+    params?: ListClientNotesParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/clients/${clientId}/notes?${stringifiedParams}` : `/api/v1/clients/${clientId}/notes`
+}
+
+export const listClientNotes = async (clientId: string,
+    params?: ListClientNotesParams, options?: RequestInit): Promise<ClientNotePage> => {
+
+  return customFetch<ClientNotePage>(getListClientNotesUrl(clientId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
   }
 );}
 

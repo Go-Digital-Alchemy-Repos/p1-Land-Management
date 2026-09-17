@@ -6,13 +6,11 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface CreateClientNote {
-  /**
-     * @minLength 1
-     * @maxLength 10000
-     */
-  body: string;
-  propertyId?: string;
-  /** Generate once per intended creation; retain on uncertain retries. */
-  id?: string;
-}
+export type ListClientNotesParams = {
+/**
+ * @minimum 1
+ * @maximum 100
+ */
+limit?: number;
+cursor?: string;
+};
