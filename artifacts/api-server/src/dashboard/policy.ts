@@ -22,6 +22,10 @@ export function requireCapability(subject: CapabilitySubject, capability: Capabi
   if (subject.role === "crew" || !hasCapability(subject, capability))
     throw new HttpError(403, "Access denied");
 }
+export function requireAnyCapability(subject: CapabilitySubject, capabilities: readonly Capability[]) {
+  if (subject.role === "crew" || !capabilities.some(capability => hasCapability(subject, capability)))
+    throw new HttpError(403, "Access denied");
+}
 export function requireRole(role: Role, allowed: Role[]) {
   if (!allowed.includes(role)) throw new HttpError(403, "Access denied");
 }

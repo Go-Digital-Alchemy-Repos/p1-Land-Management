@@ -15,6 +15,7 @@ The reporting implementation from `codex/admin-google-analytics` was integrated 
 - Owner-only User Manager APIs and UI: account search, invite/resend/revoke, names, suspension, grouped permissions, MFA policy controls, session revocation and audit history. Stale edits preserve the draft and explicit reload fetches fresh server values.
 - Access updates atomically version grants, audit, and invalidate sessions. Owner access cannot be edited or suspended through this manager. Client invitations retain separate client-access boundaries.
 - `/me` returns capabilities. Dashboard navigation now uses explicit office grants, with profile fallback for ungranted accounts. Existing client and assigned crew portal routes remain distinct.
+- Sales API follow-through: legacy leads/estimates, current estimate creation/document/recipient/send paths and commercial inbox require explicit Sales or the applicable financial read grant. Template selection and maintenance are separate. Commercial owner assignment checks active Sales grants rather than legacy titles. Direct HTTP tests prove denial for ungranted Manager/report-only accounts and access for explicitly granted members.
 - Initial service migration: sales revision/conversion, commercial assessment/prospect context, agreement management/read/activation preview, billing charge review and queue require explicit grants. Billing reads remain separated from general agreement details.
 - OpenAPI and generated client cover the new identity field and User Manager endpoints. Codegen now preserves its handwritten index and legacy estimate adapter.
 
@@ -22,7 +23,7 @@ The reporting implementation from `codex/admin-google-analytics` was integrated 
 
 - `pnpm run typecheck:libs`: passed.
 - API and dashboard typechecks passed after actor typing and generated-client integration fixes.
-- `node scripts/test-dashboard.mjs`: 41/41 passed, plus migration replay, using disposable PostgreSQL and synthetic records.
+- `node scripts/test-dashboard.mjs`: 43/43 passed, plus migration replay, using disposable PostgreSQL and synthetic records.
 - `node scripts/test-service-agreements.mjs`: lifecycle/charge/schema/review tests, worker preparation test and real HTTP test passed; no live providers.
 - Dashboard production build: passed; existing large MapLibre chunk warning remains.
 - Dashboard navigation tests: 3/3 passed after explicit-grant navigation change.
@@ -41,3 +42,9 @@ The baseline property-workspace test omitted nullable structured-address and pro
 7. Feature inventory/parity verification, restore rehearsal, redirects/retirement tooling, production builds and final release review. No legacy removal or production cutover has occurred.
 
 Canonical scope: `docs/proposals/p1-business-center-consolidation.md`. The active goal remains the full implementation, not just this foundation.
+
+## Next integration notes
+
+Core reporting still has a blanket `crm` route gate and must be split. Core middleware currently gives local `admin` users blanket access, and its federation-client role enum lacks `member`. Complete the user-scoped dashboard-to-Core authority contract before changing those gates; do not merely add local reporting permissions and treat local administrators as Owners. Core's reporting services and chart code remain available to reuse.
+
+The current web app still preloads data using legacy role conditions; this is the next critical dependency for a usable least-privilege member workspace. Permission-aware reference lookups must return only the minimal client/property/staff selection fields required by the granted workflow. Do not substitute broad Customers access for every Sales or Operations user.

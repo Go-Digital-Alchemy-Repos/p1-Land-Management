@@ -5,7 +5,7 @@ import { z } from "zod";
 import { receiveCommercialInquiry } from "./commercial-ingress.service";
 import { actor } from "./access";
 import { pool, transaction } from "./database";
-import { HttpError, requireRole } from "./policy";
+import { HttpError, requireRole, requireCapability } from "./policy";
 export const commercialIngress = Router();
 const buckets = new Map<string, { expires: number; count: number }>();
 commercialIngress.post(
@@ -54,15 +54,14 @@ commercialIngress.use(((error, _req, res, next) => {
   next(error);
 }) satisfies ErrorRequestHandler);
 export const commercialStaffApi = Router();
-const salesRoles = ["owner", "manager", "sales"] as const;
 commercialStaffApi.get("/commercial-inquiries", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, [...salesRoles]);
+  requireCapability(a, "revenue.sales");
   res.json(await listCommercialInquiries(req.query));
 });
 commercialStaffApi.get("/commercial-inquiries/:id", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, [...salesRoles]);
+  requireCapability(a, "revenue.sales");
   const id = z.string().uuid().parse(req.params.id);
   const row = (
     await pool.query(
@@ -77,7 +76,7 @@ commercialStaffApi.patch(
   "/commercial-inquiries/:id/follow-up",
   async (req, res) => {
     const a = await actor(req);
-    requireRole(a.role, [...salesRoles]);
+    requireCapability(a, "revenue.sales");
     const id = z.string().uuid().parse(req.params.id);
     const body = z
       .object({
@@ -101,7 +100,7 @@ commercialStaffApi.patch(
         body.ownerId &&
         !(
           await c.query(
-            "SELECT 1 FROM staff_profile WHERE user_id=$1 AND active=true AND role IN ('owner','manager','sales')",
+            "SELECT 1 FROM staff_profile p LEFT JOIN business_account_access a ON a.user_id=p.user_id WHERE p.user_id=$1 AND p.active=true AND (p.role='owner' OR (p.role NOT IN ('crew','client') AND 'revenue.sales'=ANY(a.capabilities)))",
             [body.ownerId],
           )
         ).rowCount

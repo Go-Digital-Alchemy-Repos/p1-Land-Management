@@ -3,7 +3,7 @@ import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { z } from "zod";
 import { actor, propertyAccess, type Actor } from "./access";
 import { pool, transaction } from "./database";
-import { HttpError, requireRole } from "./policy";
+import { HttpError, requireRole, requireCapability, requireAnyCapability } from "./policy";
 import { requireOperationalProperty } from "./operational-property";
 import { assessActivation } from "./service-agreement.activation";
 import { agreementAudit, lockedAgreement } from "./service-agreement.persistence";
@@ -66,7 +66,6 @@ const legacyEstimateInput = z.object({
   agreementTemplateId: undefined,
 }));
 const estimateInput = z.union([lifecycleEstimateInput, legacyEstimateInput]);
-const offices = ["owner", "manager", "sales"] as const;
 const dispatch = ["owner", "manager", "dispatch"] as const;
 const sha = (value: string) => createHash("sha256").update(value).digest("hex");
 const total = (items: z.infer<typeof lineItem>[]) => {
@@ -101,7 +100,7 @@ async function templateSnapshot(c: any, templateId: string | undefined) {
 }
 
 async function createEstimate(a: Actor, raw: unknown, requestId?: string) {
-  requireRole(a.role, [...offices]);
+  requireCapability(a, "revenue.sales");
   const b = estimateInput.parse(raw);
   await propertyAccess(a, b.propertyId);
   const amountCents = total(b.lineItems);
@@ -201,18 +200,18 @@ async function decideEstimate(estimateId: string, status: "approved" | "declined
 
 export const jobsLifecycleApi = Router();
 jobsLifecycleApi.get("/agreement-templates", async (req, res) => {
-  const a = await actor(req); requireRole(a.role, ["owner", "manager", "sales"]);
+  const a = await actor(req); requireAnyCapability(a, ["revenue.sales", "revenue.agreements", "revenue.agreement-templates.manage"]);
   res.json((await pool.query("SELECT id,name,version,body,active,created_at,updated_at FROM agreement_template WHERE active=true ORDER BY name,version DESC")).rows);
 });
 jobsLifecycleApi.post("/agreement-templates", async (req, res) => {
-  const a = await actor(req); requireRole(a.role, ["owner", "manager"]);
+  const a = await actor(req); requireCapability(a, "revenue.agreement-templates.manage");
   const b = z.object({ name: z.string().trim().min(1).max(200), body: z.string().trim().min(1).max(50_000) }).parse(req.body);
   const key = randomUUID();
   await pool.query("INSERT INTO agreement_template(id,name,body,created_by) VALUES($1,$2,$3,$4)", [key, b.name, b.body, a.id]);
   res.status(201).json({ id: key });
 });
 jobsLifecycleApi.post("/agreement-templates/:id/revise", async (req, res) => {
-  const a = await actor(req); requireRole(a.role, ["owner", "manager"]);
+  const a = await actor(req); requireCapability(a, "revenue.agreement-templates.manage");
   const b = z.object({ body: z.string().trim().min(1).max(50_000) }).parse(req.body); const oldId = id.parse(req.params.id), key = randomUUID();
   await transaction(async c => { const old = (await c.query("SELECT * FROM agreement_template WHERE id=$1 FOR UPDATE", [oldId])).rows[0]; if (!old) throw new HttpError(404, "Agreement template not found"); await c.query("UPDATE agreement_template SET active=false,updated_at=now() WHERE id=$1", [oldId]); await c.query("INSERT INTO agreement_template(id,name,version,body,created_by) VALUES($1,$2,$3,$4,$5)", [key, old.name, old.version + 1, b.body, a.id]); });
   res.status(201).json({ id: key });
@@ -220,7 +219,7 @@ jobsLifecycleApi.post("/agreement-templates/:id/revise", async (req, res) => {
 jobsLifecycleApi.post("/estimates", async (req, res) => res.status(201).json(await createEstimate(await actor(req), req.body)));
 jobsLifecycleApi.post("/requests/:id/estimates", async (req, res) => res.status(201).json(await createEstimate(await actor(req), req.body, id.parse(req.params.id))));
 jobsLifecycleApi.get("/estimates/:id/document", async (req, res) => {
-  const a = await actor(req); const key = id.parse(req.params.id); const doc = await estimateDocument(pool, key); await propertyAccess(a, doc.property_id); if (a.role === "client" && doc.status === "draft") throw new HttpError(404, "Estimate not found");
+  const a = await actor(req); if (a.role !== "client") requireAnyCapability(a, ["revenue.sales", "revenue.agreements", "revenue.billing"]); const key = id.parse(req.params.id); const doc = await estimateDocument(pool, key); await propertyAccess(a, doc.property_id); if (a.role === "client" && doc.status === "draft") throw new HttpError(404, "Estimate not found");
   if (a.role === "client") {
     const { id: estimateId, property_id, property_name, client_name, title, revision, amount_cents, scope, status, approved_at, created_at, is_current, kind, terms, expires_at, line_items } = doc;
     res.json({ id: estimateId, property_id, property_name, client_name, title, revision, amount_cents, scope, status, approved_at, created_at, is_current, kind, terms, expires_at, line_items });
@@ -229,14 +228,14 @@ jobsLifecycleApi.get("/estimates/:id/document", async (req, res) => {
   res.json(doc);
 });
 jobsLifecycleApi.get("/estimates/:id/recipient-options", async (req, res) => {
-  const a = await actor(req); requireRole(a.role, [...offices]); const key = id.parse(req.params.id);
+  const a = await actor(req); requireCapability(a, "revenue.sales"); const key = id.parse(req.params.id);
   const estimate = await estimateDocument(pool, key); await propertyAccess(a, estimate.property_id);
   res.json((await pool.query(`SELECT c.id,c.name,c.email,COALESCE(p.email_enabled,true) AS email_enabled
     FROM contact c JOIN property pr ON pr.client_id=c.client_id LEFT JOIN contact_notification_preference p ON p.contact_id=c.id
     WHERE pr.id=$1 AND c.archived=false ORDER BY c.kind='primary' DESC,c.name`, [estimate.property_id])).rows);
 });
 jobsLifecycleApi.post("/estimates/:id/send", async (req, res) => {
-  const a = await actor(req); requireRole(a.role, [...offices]); const estimateId = id.parse(req.params.id); const b = z.object({ recipientContactIds: z.array(id).min(1).max(20) }).parse(req.body);
+  const a = await actor(req); requireCapability(a, "revenue.sales"); const estimateId = id.parse(req.params.id); const b = z.object({ recipientContactIds: z.array(id).min(1).max(20) }).parse(req.body);
   await transaction(async c => {
     const estimate = (await c.query("SELECT * FROM estimate WHERE id=$1 FOR UPDATE", [estimateId])).rows[0]; if (!estimate || estimate.status !== "draft" || !estimate.is_current) throw new HttpError(409, "Only the current draft estimate can be sent");
     const contacts = (await c.query("SELECT c.id,c.email,COALESCE(p.email_enabled,true) AS email_enabled FROM contact c LEFT JOIN contact_notification_preference p ON p.contact_id=c.id JOIN property pr ON pr.client_id=c.client_id WHERE c.id=ANY($1::uuid[]) AND pr.id=$2 AND c.archived=false", [b.recipientContactIds, estimate.property_id])).rows;
@@ -251,7 +250,7 @@ jobsLifecycleApi.post("/estimates/:id/decision", async (req, res) => {
   const a = await actor(req); const key = id.parse(req.params.id); const b = z.object({ status: z.enum(["sent", "approved", "declined"]), revision: z.number().int().positive() }).parse(req.body);
   const estimate = await estimateDocument(pool, key); await propertyAccess(a, estimate.property_id); if (estimate.revision !== b.revision) throw new HttpError(409, "Estimate changed; refresh and retry");
   if (b.status === "sent") {
-    requireRole(a.role, [...offices]);
+    requireCapability(a, "revenue.sales");
     await transaction(async (c) => {
       const current = (await c.query("SELECT status,is_current,revision FROM estimate WHERE id=$1 FOR UPDATE", [key])).rows[0];
       if (!current || !current.is_current || current.revision !== b.revision || current.status !== "draft") throw new HttpError(409, "Estimate changed or decision already recorded");

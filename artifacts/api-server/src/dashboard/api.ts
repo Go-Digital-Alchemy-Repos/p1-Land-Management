@@ -1,3 +1,4 @@
+import { requireCapability, requireAnyCapability } from "./policy";
 import { CAPABILITIES } from "@workspace/api-zod/business-access";
 import {
   requireOperationalProperty,
@@ -847,19 +848,19 @@ api.get("/properties/:id/timeline", async (req, res) => {
 });
 api.get("/leads", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, office);
+  requireCapability(a, "revenue.sales");
   res.json(
     (
       await pool.query(
         "SELECT * FROM lead WHERE ($1::boolean OR inquiry_type IS DISTINCT FROM 'commercial_site_assessment') ORDER BY created_at DESC LIMIT 200",
-        [["owner", "manager", "sales"].includes(a.role)],
+        [true],
       )
     ).rows,
   );
 });
 api.post("/leads", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, office);
+  requireCapability(a, "revenue.sales");
   const b = z
     .object({
       name: text,
@@ -887,7 +888,7 @@ api.post("/leads", async (req, res) => {
 });
 api.get("/estimates", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, [...office, "client"]);
+  if (a.role !== "client") requireAnyCapability(a, ["revenue.sales", "revenue.agreements", "revenue.billing"]);
   res.json(
     (
       await pool.query(
@@ -899,7 +900,7 @@ api.get("/estimates", async (req, res) => {
 });
 api.post("/estimates", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, ["owner", "manager", "sales"]);
+  requireCapability(a, "revenue.sales");
   const b = z
     .object({
       propertyId: id,
@@ -932,7 +933,7 @@ api.post("/estimates/:id/decision", async (req, res) => {
     ).rows[0];
     if (!e) throw new HttpError(404, "Estimate not found");
     await propertyAccess(a, e.property_id);
-    if (b.status === "sent") requireRole(a.role, ["owner", "manager", "sales"]);
+    if (b.status === "sent") requireCapability(a, "revenue.sales");
     else requireRole(a.role, ["client"]);
     if (
       !e.is_current ||

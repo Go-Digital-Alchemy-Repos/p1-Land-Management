@@ -19,6 +19,7 @@ test(
     await pool.query("INSERT INTO contact(id,client_id,name,email,kind) VALUES($1,$2,'Approval contact','approval@example.test','primary')", [contactId, clientId]);
     await pool.query('INSERT INTO "user"(id,name,email,"emailVerified") VALUES($1,$2,$3,true)', [managerId, "Lifecycle manager", `${managerId}@example.test`]);
     await pool.query("INSERT INTO staff_profile(user_id,role) VALUES($1,'manager')", [managerId]);
+    await pool.query("INSERT INTO business_account_access(user_id,capabilities) VALUES($1,$2)", [managerId, ["revenue.sales", "revenue.agreement-templates.manage"]]);
     await pool.query('INSERT INTO session(id,"expiresAt",token,"userId") VALUES($1,now()+interval \'1 hour\',$2,$3)', [randomUUID(), sessionToken, managerId]);
     const cookie = "p1-dashboard.session_token=" + encodeURIComponent(sessionToken + "." + createHmac("sha256", process.env.BETTER_AUTH_SECRET!).update(sessionToken).digest("base64"));
     const auth = async (path: string, body?: unknown) => {
