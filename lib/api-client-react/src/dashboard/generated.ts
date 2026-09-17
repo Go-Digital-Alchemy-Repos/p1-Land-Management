@@ -123,10 +123,17 @@ import type {
   MarketingBlogTaxonomy,
   MarketingBlogTaxonomyInput,
   MarketingBlogTaxonomyPatch,
+  MarketingDeleteResult,
   MarketingMedia,
   MarketingMediaMetadata,
   MarketingRealtime,
+  MarketingRedirect,
+  MarketingRedirectInput,
+  MarketingRobots,
+  MarketingRobotsInput,
   MarketingSearchConsole,
+  MarketingSeoAudit,
+  MarketingSeoSettings,
   MarketingTeamInput,
   MarketingTeamMember,
   OperationReceipt,
@@ -4274,6 +4281,227 @@ export const releaseMarketingBlogReservation = async (id: string, options?: Requ
   {
     ...options,
     method: 'POST'
+
+
+  }
+);}
+
+
+
+export const getGetMarketingSeoUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/seo`
+}
+
+/**
+ * Requires marketing.content.seo. Retained Core storage and validation apply.
+ */
+export const getMarketingSeo = async ( options?: RequestInit): Promise<MarketingSeoSettings> => {
+
+  return customFetch<MarketingSeoSettings>(getGetMarketingSeoUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getSaveMarketingSeoUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/seo`
+}
+
+/**
+ * Requires marketing.content.seo. Retained Core storage and validation apply.
+ */
+export const saveMarketingSeo = async (marketingSeoSettings: MarketingSeoSettings, options?: RequestInit): Promise<MarketingSeoSettings> => {
+
+  return customFetch<MarketingSeoSettings>(getSaveMarketingSeoUrl(),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingSeoSettings,)
+  }
+);}
+
+
+
+export const getGetMarketingRobotsUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/seo/robots-txt`
+}
+
+/**
+ * Requires marketing.content.seo. Retained Core storage and validation apply.
+ */
+export const getMarketingRobots = async ( options?: RequestInit): Promise<MarketingRobots> => {
+
+  return customFetch<MarketingRobots>(getGetMarketingRobotsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getSaveMarketingRobotsUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/seo/robots-txt`
+}
+
+/**
+ * Requires marketing.content.seo. Retained Core storage and validation apply.
+ */
+export const saveMarketingRobots = async (marketingRobotsInput: MarketingRobotsInput, options?: RequestInit): Promise<MarketingRobots> => {
+
+  return customFetch<MarketingRobots>(getSaveMarketingRobotsUrl(),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingRobotsInput,)
+  }
+);}
+
+
+
+export const getGetMarketingSeoAuditUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/seo-audit`
+}
+
+/**
+ * Requires marketing.content.seo. Retained Core storage and validation apply.
+ */
+export const getMarketingSeoAudit = async ( options?: RequestInit): Promise<MarketingSeoAudit> => {
+
+  return customFetch<MarketingSeoAudit>(getGetMarketingSeoAuditUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getListMarketingRedirectsUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/redirects`
+}
+
+/**
+ * Requires marketing.content.seo. Retained Core storage and validation apply.
+ */
+export const listMarketingRedirects = async ( options?: RequestInit): Promise<MarketingRedirect[]> => {
+
+  return customFetch<MarketingRedirect[]>(getListMarketingRedirectsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateMarketingRedirectUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/redirects`
+}
+
+/**
+ * Requires marketing.content.seo. Retained Core storage and validation apply.
+ */
+export const createMarketingRedirect = async (marketingRedirectInput: MarketingRedirectInput, options?: RequestInit): Promise<MarketingRedirect> => {
+
+  return customFetch<MarketingRedirect>(getCreateMarketingRedirectUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingRedirectInput,)
+  }
+);}
+
+
+
+export const getUpdateMarketingRedirectUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/redirects/${id}`
+}
+
+/**
+ * Requires marketing.content.seo. Retained Core storage and validation apply.
+ */
+export const updateMarketingRedirect = async (id: string,
+    marketingRedirectInput: MarketingRedirectInput, options?: RequestInit): Promise<MarketingRedirect> => {
+
+  return customFetch<MarketingRedirect>(getUpdateMarketingRedirectUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingRedirectInput,)
+  }
+);}
+
+
+
+export const getDeleteMarketingRedirectUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/redirects/${id}`
+}
+
+/**
+ * Requires marketing.content.seo. Retained Core storage and validation apply.
+ */
+export const deleteMarketingRedirect = async (id: string, options?: RequestInit): Promise<MarketingDeleteResult> => {
+
+  return customFetch<MarketingDeleteResult>(getDeleteMarketingRedirectUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
 
 
   }

@@ -11,6 +11,8 @@ const state = vi.hoisted(() => ({
   menus: vi.fn(),
   updateMenu: vi.fn(),
   list: vi.fn(),
+  seoGet: vi.fn(),
+  seoSave: vi.fn(),
   blogCreate: vi.fn(),
   blogUpdate: vi.fn(),
   blogGet: vi.fn(),
@@ -64,7 +66,7 @@ vi.mock("../storage", () => ({
     redirects: { getAll: state.list },
     team: { list: state.list, create: state.teamCreate, update: state.teamUpdate },
     activity: { log: state.activity },
-    seoSettings: { get: async () => ({}) },
+    seoSettings: { get: state.seoGet, upsert: state.seoSave },
     blog: {
       getAllPosts: state.list,
       getPost: state.blogGet,
@@ -649,4 +651,18 @@ it("rejects descendant category parents before persisting a cycle", async () => 
  state.taxonomies.mockResolvedValue([parent,{...parent,id:"child",name:"Child",parentId:"parent"}]);
  const response=await fetch(base+"/service/blog/settings/taxonomies/parent",{method:"PUT",headers:{authorization:`Bearer ${key}`,"x-p1-user-grant":grantId,"content-type":"application/json"},body:JSON.stringify({parentId:"child"})});
  expect(response.status).toBe(400);expect(state.taxonomyUpdate).not.toHaveBeenCalled();
+});
+
+it("preserves SEO robots reset semantics and minimizes the audit without content grants", async()=>{
+ identity.capabilities=["marketing.content.seo"];
+ state.seoGet.mockResolvedValue({siteName:"P1",customRobotsTxt:null});
+ state.seoSave.mockImplementation(async(data)=>({siteName:"P1",...data}));
+ const write=(body:unknown)=>fetch(base+"/service/seo/robots-txt",{method:"PUT",headers:{authorization:`Bearer ${key}`,"x-p1-user-grant":grantId,"content-type":"application/json"},body:JSON.stringify(body)});
+ let result=await write({customContent:"User-agent: *\nDisallow: /private  "});
+ expect(result.status).toBe(200);expect((await result.json()).customContent).toBe("User-agent: *\nDisallow: /private\n");
+ result=await write({customContent:null});const reset=await result.json();expect(reset.customContent).toBeNull();expect(reset.effectiveContent).toBe(reset.generatedContent);
+ state.pages.mockResolvedValue([{id:"page",title:"Example",slug:"example",status:"draft",content:"private body",seoTitle:null,seoDescription:null}]);state.list.mockResolvedValue([]);
+ const auditResult=await request("/seo-audit");expect(auditResult.status).toBe(200);const auditData=await auditResult.json();expect(auditData.pages[0].issues).toContain("missing_seo_title");expect(auditData.pages[0]).not.toHaveProperty("content");
+ expect((await request("/pages")).status).toBe(403);
+ identity.capabilities=[];expect((await write({customContent:null})).status).toBe(403);expect((await request("/seo-audit")).status).toBe(403);
 });

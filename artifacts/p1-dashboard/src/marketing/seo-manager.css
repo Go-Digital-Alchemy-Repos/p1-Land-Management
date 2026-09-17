@@ -1,0 +1,55 @@
+.seo-manager,
+.seo-manager section,
+.seo-manager fieldset {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+.seo-manager nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.seo-manager nav [aria-current="page"] {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+.seo-manager label {
+  display: grid;
+  gap: 6px;
+}
+.seo-manager fieldset,
+.seo-list article {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 18px;
+}
+.seo-manager .seo-check {
+  display: flex;
+  align-items: center;
+}
+.seo-manager input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+}
+.seo-manager pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-width: 100%;
+  background: var(--surface);
+  padding: 16px;
+}
+.seo-manager button {
+  justify-self: start;
+}
+.seo-list {
+  display: grid;
+  gap: 12px;
+  overflow-wrap: anywhere;
+}
+.seo-manager dialog {
+  width: min(1000px, 95vw);
+  max-height: 90vh;
+  overflow: auto;
+}

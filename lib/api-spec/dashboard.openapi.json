@@ -7758,6 +7758,331 @@
           }
         ]
       }
+    },
+    "/marketing/cms/seo": {
+      "get": {
+        "operationId": "getMarketingSeo",
+        "description": "Requires marketing.content.seo. Retained Core storage and validation apply.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingSeoSettings"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "SEO capability required"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "409": {
+            "description": "Conflict"
+          }
+        }
+      },
+      "put": {
+        "operationId": "saveMarketingSeo",
+        "description": "Requires marketing.content.seo. Retained Core storage and validation apply.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingSeoSettings"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "SEO capability required"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "409": {
+            "description": "Conflict"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketingSeoSettings"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/marketing/cms/seo/robots-txt": {
+      "get": {
+        "operationId": "getMarketingRobots",
+        "description": "Requires marketing.content.seo. Retained Core storage and validation apply.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingRobots"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "SEO capability required"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "409": {
+            "description": "Conflict"
+          }
+        }
+      },
+      "put": {
+        "operationId": "saveMarketingRobots",
+        "description": "Requires marketing.content.seo. Retained Core storage and validation apply.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingRobots"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "SEO capability required"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "409": {
+            "description": "Conflict"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketingRobotsInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/marketing/cms/seo-audit": {
+      "get": {
+        "operationId": "getMarketingSeoAudit",
+        "description": "Requires marketing.content.seo. Retained Core storage and validation apply.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingSeoAudit"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "SEO capability required"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "409": {
+            "description": "Conflict"
+          }
+        }
+      }
+    },
+    "/marketing/cms/redirects": {
+      "get": {
+        "operationId": "listMarketingRedirects",
+        "description": "Requires marketing.content.seo. Retained Core storage and validation apply.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MarketingRedirect"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "SEO capability required"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "409": {
+            "description": "Conflict"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createMarketingRedirect",
+        "description": "Requires marketing.content.seo. Retained Core storage and validation apply.",
+        "responses": {
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "SEO capability required"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "409": {
+            "description": "Conflict"
+          },
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingRedirect"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketingRedirectInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/marketing/cms/redirects/{id}": {
+      "put": {
+        "operationId": "updateMarketingRedirect",
+        "description": "Requires marketing.content.seo. Retained Core storage and validation apply.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingRedirect"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "SEO capability required"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "409": {
+            "description": "Conflict"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketingRedirectInput"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "deleteMarketingRedirect",
+        "description": "Requires marketing.content.seo. Retained Core storage and validation apply.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingDeleteResult"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "SEO capability required"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "409": {
+            "description": "Conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -16183,6 +16508,325 @@
             "type": "integer"
           }
         }
+      },
+      "MarketingSeoSettings": {
+        "type": "object",
+        "properties": {
+          "siteName": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "titleSuffix": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "defaultMetaDescription": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "siteUrl": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "defaultOgImageUrl": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "organizationName": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "organizationLogoUrl": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "facebookUrl": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "twitterHandle": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "linkedinUrl": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "instagramUrl": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "customRobotsTxt": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "defaultRobotsNoindex": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          }
+        }
+      },
+      "MarketingRobots": {
+        "type": "object",
+        "properties": {
+          "generatedContent": {
+            "type": "string"
+          },
+          "effectiveContent": {
+            "type": "string"
+          },
+          "customContent": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "generatedContent",
+          "effectiveContent",
+          "customContent"
+        ]
+      },
+      "MarketingRobotsInput": {
+        "type": "object",
+        "properties": {
+          "customContent": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "customContent"
+        ]
+      },
+      "MarketingRedirectInput": {
+        "type": "object",
+        "properties": {
+          "fromPath": {
+            "type": "string"
+          },
+          "toPath": {
+            "type": "string"
+          },
+          "statusCode": {
+            "type": "integer",
+            "enum": [
+              301,
+              302
+            ]
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "note": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "fromPath",
+          "toPath",
+          "statusCode",
+          "isActive"
+        ]
+      },
+      "MarketingRedirect": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MarketingRedirectInput"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          }
+        ]
+      },
+      "MarketingSeoAuditRecord": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "slug": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "status": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "seoTitle": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "seoDescription": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "ogImageUrl": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "canonicalUrl": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "coverImageUrl": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "authorName": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "updatedAt": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "visibility": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "date": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "imageUrl": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "noindex": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "isPublished": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "slug",
+          "issues"
+        ]
+      },
+      "MarketingSeoAudit": {
+        "type": "object",
+        "properties": {
+          "pages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MarketingSeoAuditRecord"
+            }
+          },
+          "posts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MarketingSeoAuditRecord"
+            }
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MarketingSeoAuditRecord"
+            }
+          }
+        },
+        "required": [
+          "pages",
+          "posts",
+          "events"
+        ]
+      },
+      "MarketingDeleteResult": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "success"
+        ]
       }
     }
   }
