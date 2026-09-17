@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import { MediaLibrary } from "./MediaLibrary";
 type Field = Record<string, unknown>;
 const types = [
   "text",
@@ -102,11 +104,22 @@ const defaults: Field = {
 export function FormFieldsEditor({
   fields,
   onChange,
+  canUseMedia = false,
 }: {
+  canUseMedia?: boolean;
   fields: Field[];
   onChange: (fields: Field[]) => void;
 }) {
   const [type, setType] = useState("text");
+  const [imageTarget, setImageTarget] = useState<{
+    fieldId: string;
+    option: number;
+  } | null>(null);
+  const dialog = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    if (imageTarget && canUseMedia) dialog.current?.showModal();
+    else dialog.current?.close();
+  }, [imageTarget, canUseMedia]);
   function update(index: number, patch: Field) {
     onChange(
       fields.map((field, at) =>
@@ -151,6 +164,42 @@ export function FormFieldsEditor({
   }
   return (
     <div className="form-field-builder">
+      {createPortal(
+        <dialog
+          ref={dialog}
+          className="media-picker"
+          aria-label="Choose form choice image"
+          onCancel={() => setImageTarget(null)}
+        >
+          <button type="button" onClick={() => setImageTarget(null)}>
+            Close image picker
+          </button>
+          {imageTarget && canUseMedia && (
+            <MediaLibrary
+              acceptAsset={(asset) => asset.mimeType.startsWith("image/")}
+              onSelect={(asset) => {
+                const index = fields.findIndex(
+                  (field) => String(field.id) === imageTarget.fieldId,
+                );
+                if (index >= 0) {
+                  const options = records(fields[index].options);
+                  if (options[imageTarget.option])
+                    update(index, {
+                      options: options.map((option, at) =>
+                        at === imageTarget.option
+                          ? { ...option, imageUrl: asset.url }
+                          : option,
+                      ),
+                    });
+                }
+                setImageTarget(null);
+              }}
+            />
+          )}{" "}
+        </dialog>,
+        document.body,
+      )}
+
       <p>
         Field keys identify saved answers and integrations. Changing a key
         affects future submissions; previous answers retain their original keys.
@@ -389,6 +438,19 @@ export function FormFieldsEditor({
                         />
                       </label>
                     ))}
+                    {fieldType === "image-choice" && canUseMedia && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setImageTarget({
+                            fieldId: String(field.id),
+                            option: at,
+                          })
+                        }
+                      >
+                        Choose image {at + 1}
+                      </button>
+                    )}
                     <button
                       type="button"
                       onClick={() =>

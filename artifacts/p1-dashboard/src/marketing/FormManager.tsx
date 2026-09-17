@@ -67,7 +67,9 @@ function Editor({
   form,
   close,
   saved,
+  canUseMedia,
 }: {
+  canUseMedia: boolean;
   form: MarketingForm | "new";
   close: () => void;
   saved: () => void;
@@ -251,6 +253,7 @@ function Editor({
         <fieldset disabled={busy}>
           <legend>Fields ({value.fields?.length || 0})</legend>
           <FormFieldsEditor
+            canUseMedia={canUseMedia}
             fields={value.fields || []}
             onChange={(fields) => patch({ fields })}
           />
@@ -382,7 +385,11 @@ function Submissions({
     </section>
   );
 }
-export default function FormManager() {
+export default function FormManager({
+  canUseMedia = false,
+}: {
+  canUseMedia?: boolean;
+}) {
   const [deliveries, setDeliveries] = useState(false);
   const [rows, setRows] = useState<MarketingForm[]>([]),
     [selected, setSelected] = useState<MarketingForm | "new" | null>(null),
@@ -413,6 +420,7 @@ export default function FormManager() {
   if (selected)
     return (
       <Editor
+        canUseMedia={canUseMedia}
         key={selected === "new" ? "new" : selected.id}
         form={selected}
         close={() => setSelected(null)}

@@ -19,6 +19,7 @@ const assert = require("node:assert/strict");
       queued = false,
       retryCalls = 0;
     const deliveryQueries = [];
+    let mediaAllowed = true;
     let deny = false,
       fail = true,
       saved,
@@ -58,7 +59,12 @@ const assert = require("node:assert/strict");
           id: "synthetic",
           name: "Forms editor",
           role: "member",
-          capabilities: deny ? [] : ["marketing.content.forms"],
+          capabilities: deny
+            ? []
+            : [
+                "marketing.content.forms",
+                ...(mediaAllowed ? ["marketing.content.media"] : []),
+              ],
           mfaRequired: false,
         };
       if (path === "/api/v1/marketing/cms/forms") body = [form];
@@ -121,6 +127,27 @@ const assert = require("node:assert/strict");
         queued = true;
         body = { id: "first" };
       }
+      if (path === "/api/v1/marketing/cms/media")
+        body = [
+          {
+            id: "image",
+            title: "Choice photo",
+            originalName: "choice.png",
+            filename: "choice.png",
+            mimeType: "image/png",
+            url: "/uploads/cms/choice.png",
+            fileSize: 50,
+          },
+          {
+            id: "doc",
+            title: "Choice document",
+            originalName: "document.pdf",
+            filename: "document.pdf",
+            mimeType: "application/pdf",
+            url: "/uploads/cms/document.pdf",
+            fileSize: 50,
+          },
+        ];
       await route.fulfill({ json: body });
     });
     await page.goto("http://127.0.0.1:4347/marketing/content/forms");
@@ -291,6 +318,24 @@ const assert = require("node:assert/strict");
     await page.getByRole("button", { name: "Add field", exact: true }).click();
     await page.locator(".form-field-card summary").first().click();
     await page
+      .getByRole("button", { name: "Choose image 1", exact: true })
+      .click();
+    const imageDialog = page.getByRole("dialog", {
+      name: "Choose form choice image",
+    });
+    await imageDialog.waitFor();
+    assert(
+      await imageDialog
+        .getByRole("button", { name: /Choice document/ })
+        .isDisabled(),
+    );
+    await imageDialog.getByRole("button", { name: /Choice photo/ }).click();
+    assert.equal(
+      await page.getByLabel("Choice image URL", { exact: true }).inputValue(),
+      "/uploads/cms/choice.png",
+    );
+    assert.equal(mutations, 2);
+    await page
       .getByLabel("Selection mode", { exact: true })
       .selectOption("multiple");
     await page.getByRole("button", { name: "Add choice", exact: true }).click();
@@ -319,6 +364,24 @@ const assert = require("node:assert/strict");
     assert.equal(
       await page.getByLabel("Name", { exact: true }).inputValue(),
       "Unsaved form",
+    );
+    page.once("dialog", (d) => d.accept());
+    await page.getByRole("button", { name: "Cancel", exact: true }).click();
+    mediaAllowed = false;
+    await page.reload();
+    await page
+      .getByRole("button", { name: "Create form", exact: true })
+      .click();
+    await page
+      .getByLabel("New field type", { exact: true })
+      .selectOption("image-choice");
+    await page.getByRole("button", { name: "Add field", exact: true }).click();
+    await page.locator(".form-field-card summary").first().click();
+    assert.equal(
+      await page
+        .getByRole("button", { name: "Choose image 1", exact: true })
+        .count(),
+      0,
     );
     page.once("dialog", (d) => d.accept());
     await page.getByRole("button", { name: "Cancel", exact: true }).click();
