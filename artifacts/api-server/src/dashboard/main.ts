@@ -36,6 +36,7 @@ import { notificationsApi, smsWebhook } from "./notifications";
 import { clientWorkspaceApi } from "./client-workspace";
 import { propertyTypesApi } from "./property-types";
 import { crmTasksApi } from "./crm-tasks";
+import { leadOnboardingApi } from "./lead-onboarding";
 import { crmArchiveApi } from "./crm-archive";
 import { leadNotesApi } from "./lead-notes";
 import { salesApi } from "./sales";
@@ -127,6 +128,7 @@ app.use(
   salesApi,
   leadNotesApi,
   crmArchiveApi,
+  leadOnboardingApi,
   leadFollowUpApi,
   inquiryListApi,
   leadDetailsApi,

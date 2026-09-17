@@ -2036,3 +2036,18 @@ export const crmSourceRecord = pgTable("crm_source_record", {
   check("crm_source_record_check1",sql`(${t.sourceTable} IN ('leads','leadNotes','leadTasks') AND ${t.leadId} IS NOT NULL) OR (${t.sourceTable} IN ('clients','clientNotes','clientTasks') AND ${t.clientId} IS NOT NULL)`),
   check("crm_source_record_check2",sql`(${t.sourceTable} IN ('leads','clients') AND ${t.nativeRecordId} IS NULL) OR (${t.sourceTable} NOT IN ('leads','clients') AND ${t.nativeRecordId} IS NOT NULL)`),
 ]);
+
+export const leadCustomerOnboarding = pgTable("lead_customer_onboarding", {
+  operationId: uuid("operation_id").primaryKey(),
+  leadId: uuid("lead_id").notNull().unique().references(() => lead.id),
+  clientId: uuid("client_id").notNull().references(() => client.id),
+  actorId: text("actor_id").notNull().references(() => user.id),
+  fingerprint: text("fingerprint").notNull(),
+  mode: text("mode").notNull(),
+  leadVersion: integer("lead_version").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true, mode: "string" }).notNull().defaultNow(),
+}, t => [
+  check("lead_customer_onboarding_fingerprint_check", sql`${t.fingerprint} ~ '^[a-f0-9]{64}$'`),
+  check("lead_customer_onboarding_mode_check", sql`${t.mode} IN ('create','link')`),
+  check("lead_customer_onboarding_lead_version_check", sql`${t.leadVersion}>0`),
+]);

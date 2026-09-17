@@ -1891,7 +1891,7 @@ function App() {
           {view === "Sales" && (
             <>
               {hasCapability(person, "revenue.sales") && <a href="/agreements/drafts">Agreement drafts</a>}
-              {hasCapability(person, "revenue.sales") && <CommercialInbox staff={data.staff || []} />}
+              {hasCapability(person, "revenue.sales") && <CommercialInbox staff={data.staff || []} canOnboard={can("customers.clients")} />}
               <section className="panel">
                 <div className="panel-heading">
                   <h2>Estimates</h2>
@@ -1970,7 +1970,7 @@ function App() {
                   revision={inquiryRevision}
                   owners={data.staff || []}
                   onCreate={() => openForm("lead")}
-                  onConvert={(lead) => openForm("convert", lead)}
+                  canOnboard={can("customers.clients")}
                 />
               )}
             </>

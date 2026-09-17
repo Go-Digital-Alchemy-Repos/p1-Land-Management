@@ -1,3 +1,4 @@
+import { LeadOnboarding } from "./LeadOnboarding";
 import { CrmArchive } from "./CrmArchive";
 import { LeadDetails } from "./LeadDetails";
 import { CrmTasks } from "./CrmTasks";
@@ -49,10 +50,12 @@ export function CommercialInbox({
   staff,
   api = defaultApi,
   contextApi,
+  canOnboard = false,
 }: {
   staff: Staff[];
   api?: CommercialInboxApi;
   contextApi?: ContextTransport;
+  canOnboard?: boolean;
 }) {
   const [status, setStatus] = useState<Filters["status"] | "">(""),
     [owner, setOwner] = useState(""),
@@ -327,6 +330,7 @@ export function CommercialInbox({
             </dl>
             <p className="commercial-message">{selected.description}</p>
             <LeadDetails key={"details:"+selected.id} leadId={selected.id} />
+            {canOnboard && <LeadOnboarding key={"onboard-"+selected.id} leadId={selected.id} />}
             <LeadNotes key={selected.id} leadId={selected.id} />
             <CrmArchive key={"archive-"+selected.id} kind="lead" parentId={selected.id} />
             <CrmTasks key={"tasks:"+selected.id} kind="lead" parentId={selected.id} />

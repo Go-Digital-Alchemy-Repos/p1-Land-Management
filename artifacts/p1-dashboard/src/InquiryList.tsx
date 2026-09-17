@@ -1,3 +1,4 @@
+import { LeadOnboarding } from "./LeadOnboarding";
 import { CrmArchive } from "./CrmArchive";
 import { LeadDetails } from "./LeadDetails";
 import { useEffect, useRef, useState } from "react";
@@ -24,12 +25,12 @@ const emptyFilters: Filters = {
 };
 export function InquiryList({
   onCreate,
-  onConvert,
+  canOnboard = false,
   revision,
   owners,
 }: {
   onCreate: () => void;
-  onConvert: (lead: Inquiry) => void;
+  canOnboard?: boolean;
   revision: number;
   owners: Array<{
     id: string;
@@ -279,11 +280,7 @@ export function InquiryList({
               </small>
             </div>
             <span className="badge">{lead.status}</span>
-            {!lead.converted_property_id && (
-              <button type="button" onClick={() => onConvert(lead)}>
-                Convert inquiry
-              </button>
-            )}
+            {canOnboard && <LeadOnboarding leadId={lead.id} onSaved={() => setNeedsRefresh(true)} />}
             <LeadFollowUp leadId={lead.id} onSaved={acknowledge} />
             <LeadDetails
               leadId={lead.id}

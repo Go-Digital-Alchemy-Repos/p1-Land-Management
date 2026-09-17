@@ -31,7 +31,11 @@ salesApi.post("/leads/:id/convert", async (req, res) => {
     ) throw new HttpError(409,"Prospect onboarding is not enabled yet");
     if (lead.inquiry_type === "commercial_site_assessment" && !lead.email)
       throw new HttpError(409, "Record a verified contact email before converting this commercial inquiry");
-    let clientId = b.clientId;
+    if (lead.converted_client_id && b.clientId && b.clientId !== lead.converted_client_id)
+      throw new HttpError(409, "Inquiry already belongs to a different customer");
+    let clientId = lead.converted_client_id || b.clientId;
+    if (clientId && !(await c.query("SELECT id FROM client WHERE id=$1 AND NOT archived FOR UPDATE", [clientId])).rowCount)
+      throw new HttpError(409, "Choose an active customer");
     if (!clientId) {
       clientId = randomUUID();
       await c.query(
@@ -45,7 +49,7 @@ salesApi.post("/leads/:id/convert", async (req, res) => {
       [propertyId, clientId, b.propertyName, b.address],
     );
     await c.query(
-      "UPDATE lead SET converted_client_id=$2,converted_property_id=$3,status='qualified',version=version+1,last_activity_at=now() WHERE id=$1",
+      "UPDATE lead SET converted_client_id=$2,converted_property_id=$3,status=CASE WHEN status='won' THEN 'won' ELSE 'qualified' END,version=version+1,last_activity_at=now() WHERE id=$1",
       [key, clientId, propertyId],
     );
     await c.query(

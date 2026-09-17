@@ -148,7 +148,11 @@ export async function saveProspectContext(
       )
     ).rows[0];
     if (!lead) throw new HttpError(404, "Inquiry not found");
-    if (lead.version !== b.expectedVersion || lead.converted_property_id)
+    if (
+      lead.version !== b.expectedVersion ||
+      lead.converted_property_id ||
+      lead.converted_client_id
+    )
       throw new HttpError(409, "Inquiry changed or already converted");
     let organizationId: string;
     if ("existingId" in b.organization)

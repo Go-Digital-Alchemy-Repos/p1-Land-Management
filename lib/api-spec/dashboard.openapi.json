@@ -14200,7 +14200,74 @@
           }
         }
       }
+    },
+    "/leads/{id}/onboarding": {
+      "get": {
+        "operationId": "getLeadOnboarding",
+        "description": "Requires Sales and Customers access. Explicit Won customer onboarding; no property or access creation.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeadOnboardingState"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "onboardLeadCustomer",
+        "description": "Requires Sales and Customers access. Explicit Won customer onboarding; no property or access creation.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeadOnboardingResult"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LeadOnboardingInput"
+              }
+            }
+          }
+        }
+      }
     }
+
   },
   "components": {
     "schemas": {
@@ -28897,7 +28964,138 @@
             ]
           }
         }
+      },
+      "LeadOnboardingState": {
+        "type": "object",
+        "required": [
+          "id",
+          "version",
+          "status",
+          "clientId",
+          "clientName",
+          "clientArchived"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "string"
+          },
+          "clientId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "clientName": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "clientArchived": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          }
+        }
+      },
+      "LeadOnboardingInput": {
+        "type": "object",
+        "required": [
+          "operationId",
+          "expectedVersion",
+          "customer"
+        ],
+        "properties": {
+          "operationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "expectedVersion": {
+            "type": "integer"
+          },
+          "customer": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "existingId"
+                ],
+                "properties": {
+                  "existingId": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "create"
+                ],
+                "properties": {
+                  "create": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "name",
+                      "email",
+                      "phone"
+                    ],
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "email": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "phone": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "LeadOnboardingResult": {
+        "type": "object",
+        "required": [
+          "clientId",
+          "version",
+          "replayed"
+        ],
+        "properties": {
+          "clientId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "integer"
+          },
+          "replayed": {
+            "type": "boolean"
+          }
+        }
       }
+
     }
   }
 }

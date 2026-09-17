@@ -1,0 +1,32 @@
+.lead-onboarding {
+  min-width: 0;
+  margin-block: 1rem;
+}
+.schedule-row > .lead-onboarding {
+  flex: 1 0 100%;
+}
+.lead-onboarding section,
+.lead-onboarding form {
+  margin-block: 1rem;
+}
+.lead-onboarding fieldset {
+  display: grid;
+  gap: 0.75rem;
+  min-width: 0;
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+.lead-onboarding label {
+  display: grid;
+  gap: 0.25rem;
+}
+.lead-onboarding input,
+.lead-onboarding select {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+}
+.lead-onboarding p {
+  overflow-wrap: anywhere;
+}

@@ -110,7 +110,10 @@ test(
       );
       assert.equal(response.status, 200);
       assert.equal(response.headers.get("cache-control"), "private, no-store");
-      const page = await response.json();
+      const page = (await response.json()) as {
+        items: any[];
+        nextCursor: string | null;
+      };
       records.push(...page.items);
       cursor = page.nextCursor;
       if (cursor && records.length === 7) {
@@ -162,7 +165,10 @@ test(
     const detail = await call("sales", "leads", lead, "/record?" + params);
     assert.equal(detail.status, 200);
     assert.equal(detail.headers.get("cache-control"), "private, no-store");
-    const result = await detail.json();
+    const result = (await detail.json()) as {
+      sourceJson: string;
+      importedById?: string;
+    };
     assert.match(result.sourceJson, /9007199254740993/);
     assert.match(result.sourceJson, /0.1234567890123456789/);
     assert.match(result.sourceJson, /<script>/);

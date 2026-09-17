@@ -123,6 +123,7 @@ try {
       "src/dashboard/lead-follow-up.test.ts",
       "src/dashboard/lead-details.test.ts",
       "src/dashboard/crm-archive.test.ts",
+      "src/dashboard/lead-onboarding.test.ts",
       "../../scripts/consolidation/import-crm-payloads.test.mjs",
       "../../scripts/consolidation/export-crm-payloads.test.mjs",
       "../../scripts/consolidation/verify-crm-import.test.mjs",

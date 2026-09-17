@@ -147,6 +147,9 @@ import type {
   LeadFollowUpView,
   LeadNotePage,
   LeadNoteReceipt,
+  LeadOnboardingInput,
+  LeadOnboardingResult,
+  LeadOnboardingState,
   ListAgreementChargeQueueParams,
   ListAgreementChargeReviewsParams,
   ListAgreementChargesParams,
@@ -8003,6 +8006,56 @@ export const getClientCrmArchive = async (id: string,
     method: 'GET'
 
 
+  }
+);}
+
+
+
+export const getGetLeadOnboardingUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/leads/${id}/onboarding`
+}
+
+/**
+ * Requires Sales and Customers access. Explicit Won customer onboarding; no property or access creation.
+ */
+export const getLeadOnboarding = async (id: string, options?: RequestInit): Promise<LeadOnboardingState> => {
+
+  return customFetch<LeadOnboardingState>(getGetLeadOnboardingUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getOnboardLeadCustomerUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/leads/${id}/onboarding`
+}
+
+/**
+ * Requires Sales and Customers access. Explicit Won customer onboarding; no property or access creation.
+ */
+export const onboardLeadCustomer = async (id: string,
+    leadOnboardingInput: LeadOnboardingInput, options?: RequestInit): Promise<LeadOnboardingResult> => {
+
+  return customFetch<LeadOnboardingResult>(getOnboardLeadCustomerUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      leadOnboardingInput,)
   }
 );}
 

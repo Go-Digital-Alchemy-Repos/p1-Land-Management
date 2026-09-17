@@ -335,7 +335,7 @@ Rollback should retain the new columns, indexes, constraints and history. Do not
 
 General and commercial endpoints now use one service and the same lead version. The older `/commercial-inquiries/:id/follow-up` remains commercial-only and retains its response shape and `commercial.followup_updated` audit action. General inquiry updates record `lead.followup_updated`; commercial rows retain the commercial audit action even through the general endpoint. No schema migration is needed.
 
-Changing stage to Won only records the pursuit outcome. It does not create/link clients, properties, portal access or billing. The explicit Won onboarding workflow is still pending; the existing separate conversion action is not replaced by this checkpoint.
+Changing stage to Won only records the pursuit outcome. It does not create/link clients, properties, portal access or billing. Explicit create/link-customer onboarding is now available through the separate workflow documented below; changing the stage alone still performs no onboarding.
 
 ### Full Sales inquiry history
 
@@ -364,3 +364,15 @@ Lists return `{items,nextCursor}`. Items contain source instance, collection, so
 Native Sales inquiry/commercial views and Customers → Notes & tasks expose a lazy read-only history viewer. It renders source text literally, supports pagination and retry, and preserves neighboring unsaved notes. There is no public portal/crew exposure or automatic link navigation from archived text.
 
 Apply archive migration 0044 before this feature; additive 0045 adds parent/source-order indexes for bounded list queries. Neither migration is a production import. Application rollback can retain these indexes and the archive. Full source-field editing/native workflow parity, reviewed live import, backup/restore rehearsal and retirement remain separate gates.
+
+### Won inquiry customer onboarding
+
+`GET /api/v1/leads/:id/onboarding` and `POST` on the same path require both current `revenue.sales` and `customers.clients` access (or active Owner). Responses are private/no-store. GET returns inquiry ID/version/stage and its linked customer ID/name/archive status. The Sales inquiry list and commercial detail offer this workflow only to users with both grants.
+
+POST accepts exactly `{operationId,expectedVersion,customer}`. `customer` is either `{existingId}` or `{create:{name,email,phone}}`. Name is explicitly reviewed, trimmed and required (300 characters); email is nullable or a valid address (320), phone nullable or nonempty text (100). Source contact details are not silently copied or used for fuzzy matching. Existing customers must be active. New operations require current inquiry version, Won status and no existing converted customer/property. Known organization/contact/property associations must be active and cannot contradict the selected customer. Unassigned prospect associations remain preserved without being silently promoted into operational records.
+
+The operation locks the inquiry and relevant associations, then commits customer creation/link, the inquiry version, an immutable replay receipt and audit together. It leaves stage Won and original intake/contact values intact. No property, portal grant, accounting customer, agreement or invoice is created. New-customer duplicates are not automatically merged: the user must review the existing customer list before choosing creation. Shared inquiry version conflicts require refresh. Operation UUIDs are serialized across inquiries; exact actor/input replays return the original receipt without creating another customer, even if that customer was subsequently archived. Changed actor/input or a changed saved customer link returns 409. The UI retains the exact submitted operation for unconfirmed-result retries and freezes its inputs until resolved.
+
+Migration 0046 adds `lead_customer_onboarding`, one immutable receipt per inquiry, with original operation, customer, actor, request fingerprint, mode, version and timestamp. Apply before deploying this workflow. Retain receipts and linked customers on application rollback; deleting history or unlinking customers is not a rollback mechanism. Production migration has not run.
+
+The old property-creating conversion button is removed from the inquiry list. The compatibility `/leads/:id/convert` API remains for existing callers: a previously onboarded customer cannot be replaced, must be active, and explicit property creation preserves Won status. Its preexisting prospect-context guard remains. Prospect context creation/editing stops once a customer is onboarded to prevent a conflicting reassociation; previously completed context-operation replay remains unchanged. Explicit operational adoption of prospect property/contact/organization context and full agreement-to-operations rehearsal remain open work.
