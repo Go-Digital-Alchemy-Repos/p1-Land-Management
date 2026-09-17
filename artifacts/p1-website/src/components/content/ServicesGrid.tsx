@@ -5,6 +5,7 @@ import {
   Building2,
   Droplets,
   Mountain,
+  Snowflake,
   Sprout,
   Tractor,
   Trees,
@@ -12,6 +13,7 @@ import {
   Wrench,
 } from "lucide-react";
 import serviceCommercial from "@/assets/service-commercial.png";
+import serviceCommercialSnowIce from "@/assets/hero-commercial-snow-ice.png";
 import serviceIndustrial from "@/assets/service-industrial.png";
 import serviceClearing from "@/assets/service-clearing.png";
 import serviceGrading from "@/assets/service-grading.png";
@@ -19,7 +21,7 @@ import serviceDrainage from "@/assets/service-drainage.png";
 import serviceTurf from "@/assets/service-turf.png";
 import serviceTree from "@/assets/service-tree.png";
 import servicePond from "@/assets/service-pond.png";
-import serviceReconstruction from "@/assets/service-reconstruction.png";
+import serviceReconstruction from "@/assets/service-reconstruction-smaller-scale.png";
 import { cmsValue, useCms } from "@/lib/cms";
 import { responsiveImageProps } from "@/lib/responsive-images";
 
@@ -29,10 +31,12 @@ type Service = {
   image: string;
   icon: LucideIcon;
   slug: string;
+  href?: string;
 };
 
 const services: readonly Service[] = [
   { title: "Commercial Landscaping", description: "Scheduled exterior grounds maintenance that keeps large sites pristine year-round.", image: serviceCommercial, icon: Building2, slug: "commercial-landscaping" },
+  { title: "Commercial Snow & Ice", description: "Seasonal plowing, anti-icing, and documented storm response for large commercial sites.", image: serviceCommercialSnowIce, icon: Snowflake, slug: "commercial-snow-ice-management", href: "/commercial-snow-ice-management" },
   { title: "Industrial & Agricultural Land", description: "Heavy-duty care for farms, industrial sites and working rural acreage.", image: serviceIndustrial, icon: Tractor, slug: "industrial-agricultural" },
   { title: "Land Clearing & Mulching", description: "Selective clearing and forestry mulching that opens up acreage responsibly.", image: serviceClearing, icon: Trees, slug: "land-clearing" },
   { title: "Fine Grading & Site Prep", description: "Precision cut-and-fill that gives every project a true, build-ready foundation.", image: serviceGrading, icon: Mountain, slug: "grading-site-preparation" },
@@ -56,7 +60,7 @@ export function ServicesGrid() {
       {services.map((service) => {
         const title = cmsValue(context, service.title);
         const description = cmsValue(context, service.description, "textarea");
-        const href = cmsValue(context, `/services/${service.slug}`, "ctaTarget");
+        const href = cmsValue(context, service.href ?? `/services/${service.slug}`, "ctaTarget");
         const image = cmsValue(context, service.image, "image");
         const alt = cmsValue(context, service.title, "imageAlt");
         const imageProps = responsiveImageProps(image, "(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw");

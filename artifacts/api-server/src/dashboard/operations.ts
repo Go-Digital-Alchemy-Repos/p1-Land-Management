@@ -8,10 +8,14 @@ import { requireRole, HttpError } from "./policy";
 import { contactsApi } from "./contact-routes";
 import { assessmentApi } from "./assessment-routes";
 import { scheduleApi } from "./schedule-routes";
+import { projectPhaseApi } from "./project-phase.routes";
+import { serviceRequestApi } from "./service-request.routes";
 export const operationsApi = Router();
 operationsApi.use(scheduleApi);
 operationsApi.use(assessmentApi);
 operationsApi.use(contactsApi);
+operationsApi.use(projectPhaseApi);
+operationsApi.use(serviceRequestApi);
 const id = z.string().uuid(),
   text = z.string().trim().min(1).max(10000);
 operationsApi.get("/recurring-services", async (req, res) => {
@@ -105,7 +109,7 @@ operationsApi.post("/properties/:id/areas", async (req, res) => {
 });
 operationsApi.get("/projects", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, ["owner", "manager", "dispatch"]);
+  requireRole(a.role, ["owner", "manager", "dispatch", "finance"]);
   res.json(
     (
       await pool.query(
@@ -150,6 +154,38 @@ operationsApi.post("/projects", async (req, res) => {
     await c.query("INSERT INTO audit_event(id,user_id,action,entity_id) VALUES($1,$2,'project.created',$3)", [randomUUID(), a.id, key]);
   });
   res.status(201).json({ id: key });
+});
+operationsApi.post("/projects/:id", async (req, res) => {
+  const a = await actor(req);
+  requireRole(a.role, ["owner", "manager"]);
+  const projectId = id.parse(req.params.id);
+  const b = z
+    .object({
+      name: text,
+      scope: text,
+      expectedVersion: z.number().int().positive(),
+    })
+    .parse(req.body);
+  const project = await transaction(async (c) => {
+    const changed = await c.query(
+      "UPDATE project j SET name=$2,scope=$3,version=version+1 WHERE j.id=$1 AND j.version=$4 AND EXISTS(SELECT 1 FROM property p WHERE p.id=j.property_id AND p.lifecycle='operational' AND p.client_id IS NOT NULL) RETURNING j.id,j.property_id,j.name,j.scope,j.status,j.version",
+      [projectId, b.name, b.scope, b.expectedVersion],
+    );
+    if (!changed.rowCount)
+      throw new HttpError(409, "Project changed or is unavailable; refresh before saving");
+    await c.query(
+      "INSERT INTO audit_event(id,user_id,action,entity_id,details) VALUES($1,$2,$3,$4,$5)",
+      [
+        randomUUID(),
+        a.id,
+        "project.updated",
+        projectId,
+        JSON.stringify({ priorVersion: b.expectedVersion, version: changed.rows[0].version }),
+      ],
+    );
+    return changed.rows[0];
+  });
+  res.json(project);
 });
 operationsApi.get("/expenses", async (req, res) => {
   const a = await actor(req);

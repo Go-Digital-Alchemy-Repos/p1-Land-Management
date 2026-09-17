@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import { DEFAULT_SITE_FEATURES } from "@shared/site-features";
 import type { AdminPermission } from "@shared/types";
 import type { User } from "@shared/schema";
-import type { PublicDirectorySettings } from "@shared/types/directory-settings";
 import { buildNavGroups } from "@/features/admin/admin-sidebar";
 import { buildAdminCommandItems } from "@/features/admin/admin-command-palette";
 import { findAdminBreadcrumbTarget } from "@/features/admin/admin-breadcrumbs";
@@ -14,14 +13,6 @@ const adminUser = {
   role: "admin",
 } as User;
 
-const directorySettings = {
-  directoryLabelSingular: "Provider Directory",
-  directoryLabelPlural: "Providers",
-  listingLabelPlural: "Listings",
-  specialtyLabelPlural: "Specialties",
-  directoryRequiresApplicationProcess: true,
-} as PublicDirectorySettings;
-
 describe("buildNavGroups", () => {
   it("groups website content once and preserves feature and permission gates", () => {
     const enabled = {
@@ -30,15 +21,13 @@ describe("buildNavGroups", () => {
       eventsEnabled: true,
       careersEnabled: true,
     };
-    const groups = buildNavGroups(enabled, adminUser, () => true, directorySettings);
+    const groups = buildNavGroups(enabled, adminUser, () => true);
     const content = groups.find((group) => group.label === "Content")!;
     expect(content.href).toBe("/admin/cms");
     expect(content.items.filter((item) => item.title === "P1 Website")).toMatchObject([
       { title: "P1 Website", href: "/admin/cms/website" },
     ]);
-    expect(content.items.filter((item) => item.title === "Private proof")).toMatchObject([
-      { title: "Private proof", href: "/admin/cms/private-proof" },
-    ]);
+    expect(content.items.some((item) => item.title === "Private proof")).toBe(false);
     expect(content.items.map((item) => item.title)).toEqual(
       expect.arrayContaining(["Events", "Careers", "Team"]),
     );
@@ -51,20 +40,17 @@ describe("buildNavGroups", () => {
       ).toHaveLength(1);
     }
     expect(
-      buildNavGroups(enabled, adminUser, () => false, directorySettings).some(
-        (group) => group.label === "Content",
-      ),
+      buildNavGroups(enabled, adminUser, () => false).some((group) => group.label === "Content"),
     ).toBe(false);
     const disabled = buildNavGroups(
       { ...enabled, cmsEnabled: false, eventsEnabled: false, careersEnabled: false },
       adminUser,
       () => true,
-      directorySettings,
     );
     expect(
       disabled
         .flatMap((group) => group.items)
-        .some((item) => ["Private proof", "P1 Website", "Events", "Careers", "Team"].includes(item.title)),
+        .some((item) => ["P1 Website", "Events", "Careers", "Team"].includes(item.title)),
     ).toBe(false);
   });
   it("places Event Settings under Content after Create Event", () => {
@@ -72,7 +58,6 @@ describe("buildNavGroups", () => {
       { ...DEFAULT_SITE_FEATURES, eventsEnabled: true },
       adminUser,
       (permission: AdminPermission) => permission === "content",
-      directorySettings,
     );
 
     const eventGroup = groups.find((group) => group.label === "Content");
@@ -89,7 +74,6 @@ describe("buildNavGroups", () => {
       { ...DEFAULT_SITE_FEATURES, careersEnabled: true },
       adminUser,
       (permission: AdminPermission) => permission === "content",
-      directorySettings,
     );
 
     const careersGroup = groups.find((group) => group.label === "Content");
@@ -104,10 +88,9 @@ describe("buildNavGroups", () => {
 
   it("builds command palette items from gated navigation and known sub-routes", () => {
     const navGroups = buildNavGroups(
-      { ...DEFAULT_SITE_FEATURES, ecommerceEnabled: true, eventsEnabled: true },
+      { ...DEFAULT_SITE_FEATURES, eventsEnabled: true },
       adminUser,
       () => true,
-      directorySettings,
     );
 
     const commands = buildAdminCommandItems(navGroups);
@@ -119,25 +102,11 @@ describe("buildNavGroups", () => {
     expect(hrefs).toContain("/admin/settings/email-templates");
   });
 
-  it("omits app command items when the feature gate removes the nav group", () => {
-    const navGroups = buildNavGroups(
-      { ...DEFAULT_SITE_FEATURES, ecommerceEnabled: false },
-      adminUser,
-      () => true,
-      directorySettings,
-    );
-
-    const commands = buildAdminCommandItems(navGroups);
-
-    expect(commands.some((item) => item.href.startsWith("/admin/ecommerce"))).toBe(false);
-  });
-
   it("uses the same command model to label nested responsive admin routes", () => {
     const navGroups = buildNavGroups(
       { ...DEFAULT_SITE_FEATURES, eventsEnabled: true },
       adminUser,
       () => true,
-      directorySettings,
     );
     const commands = buildAdminCommandItems(navGroups);
 

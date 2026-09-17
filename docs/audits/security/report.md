@@ -15,20 +15,21 @@ Bounded source-led security audit of current P1 worktree; production-boundary an
 - Runtime or test status: not recorded
 
 Limitations and exclusions:
+
 - Coverage partial; not an exhaustive dependency or all-files scan.
 - No independent baseline due to occupied worker slots.
 - Excluded external-runtime-and-git-history: No production/network access, form submissions, exploit execution, registry advisory lookup, Git-history scan or deployment credential inspection.
 
 ### Scan Summary
 
-| Field | Value |
-| --- | --- |
-| Scan outcome | completed |
-| Reportable findings | 1 |
-| Severity mix | low: 1 |
-| Confidence mix | high: 1 |
-| Coverage | partial |
-| Validation mode | offline static source trace |
+| Field               | Value                       |
+| ------------------- | --------------------------- |
+| Scan outcome        | completed                   |
+| Reportable findings | 1                           |
+| Severity mix        | low: 1                      |
+| Confidence mix      | high: 1                     |
+| Coverage            | partial                     |
+| Validation mode     | offline static source trace |
 
 Canonical artifacts: `scan-manifest.json`, `findings.json`, and `coverage.json`. This report is a deterministic projection of those files.
 
@@ -70,30 +71,35 @@ P1 is a React/Vite marketing site prerendered to static HTML and served by Vite 
 
 ## Findings
 
-| Finding | Severity | Confidence | Detailed write-up |
-| --- | --- | --- | --- |
-| [Development servers accept arbitrary Host headers](#finding-1) | low | high | inline below |
+| Finding                                                         | Severity | Confidence | Detailed write-up |
+| --------------------------------------------------------------- | -------- | ---------- | ----------------- |
+| [Development servers accept arbitrary Host headers](#finding-1) | low      | high       | inline below      |
 
 ### Confidence Scale
 
-| Label | Meaning |
-| --- | --- |
-| high | Direct evidence supports the finding with no material unresolved blocker. |
+| Label  | Meaning                                                                                  |
+| ------ | ---------------------------------------------------------------------------------------- |
+| high   | Direct evidence supports the finding with no material unresolved blocker.                |
 | medium | Evidence supports a plausible issue, but material runtime or reachability proof remains. |
-| low | Evidence is incomplete and the item is retained only for explicit follow-up. |
+| low    | Evidence is incomplete and the item is retained only for explicit follow-up.             |
 
 <a id="finding-1"></a>
 
 ### [1] Development servers accept arbitrary Host headers
 
-| Field | Value |
-| --- | --- |
-| Severity | low |
-| Confidence | high |
+**Status: remediated.** The public-site and mockup Vite configs now default to
+loopback binding and a local Host allowlist. Controlled remote previews require
+an explicit binding and hostname allowlist. The historical evidence below
+describes the configuration present when this audit was written.
+
+| Field                | Value                                                                                                                                                           |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Severity             | low                                                                                                                                                             |
+| Confidence           | high                                                                                                                                                            |
 | Confidence rationale | Both repository configs explicitly set allowedHosts:true; installed Vite source confirms this bypasses host validation. Runtime exploitation was not attempted. |
-| Category | security-misconfiguration |
-| CWE | CWE-346 |
-| Affected lines | artifacts/p1-website/vite.config.ts:53, artifacts/mockup-sandbox/vite.config.ts:49 |
+| Category             | security-misconfiguration                                                                                                                                       |
+| CWE                  | CWE-346                                                                                                                                                         |
+| Affected lines       | artifacts/p1-website/vite.config.ts:53, artifacts/mockup-sandbox/vite.config.ts:49                                                                              |
 
 #### Summary
 
@@ -168,6 +174,7 @@ The mockup development server also accepts arbitrary Host values and can serve u
 ```
 
 Limitations:
+
 - Browser local-network protections, DNS behavior, developer browsing and server reachability govern exploitability.
 - The production preview serves built public files; this finding concerns development source confidentiality.
 
@@ -198,10 +205,12 @@ Requires a running development server and successful browser/network rebinding; 
 Additional runtime or deployment evidence could raise or lower this severity.
 
 Impact assessment:
+
 - **Level:** medium
 - **Why:** Workspace source or unreleased mockups may be read; no secrets or host execution established.
 
 Likelihood assessment:
+
 - **Level:** low
 - **Why:** Requires developer interaction and a permissive browser/network path.
 
@@ -210,21 +219,23 @@ Likelihood assessment:
 Restore Vite Host validation in both development configs, default to loopback binding, and explicitly allow only controlled development hostnames when remote previews are required.
 
 Tests:
+
 - With each dev config, an unrecognized Host header returns 403 while localhost and explicitly configured development hosts still work.
 - Verify remote preview requirements with a narrow controlled hostname allowlist; do not use allowedHosts:true.
 
 Preventive controls:
+
 - Keep development servers private and separate from the public static production server.
 
 ## Reviewed Surfaces
 
-| Surface | Risk Area | Outcome | Notes |
-| --- | --- | --- | --- |
-| Development host/origin boundary | not recorded | Reported | Both development configs disable host validation. Installed Vite consumer inspected. |
-| Contact handoff and API | not recorded | No issue found | Full contact form and all Express routes reviewed. URI-encoded mailto fields do not reach SQL or HTML. Public healthz is the only route; wildcard CORS does not expose a protected resource here. |
-| HTML generation and frontend sinks | not recorded | No issue found | SEO component, head collector, renderer, prerender script, routing, schema helpers and chart helper reviewed. HTML and JSON-LD escaping are present; chart config has no untrusted caller established. API bearer getter has no application call site. |
+| Surface                              | Risk Area    | Outcome         | Notes                                                                                                                                                                                                                                                  |
+| ------------------------------------ | ------------ | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Development host/origin boundary     | not recorded | Reported        | Both development configs disable host validation. Installed Vite consumer inspected.                                                                                                                                                                   |
+| Contact handoff and API              | not recorded | No issue found  | Full contact form and all Express routes reviewed. URI-encoded mailto fields do not reach SQL or HTML. Public healthz is the only route; wildcard CORS does not expose a protected resource here.                                                      |
+| HTML generation and frontend sinks   | not recorded | No issue found  | SEO component, head collector, renderer, prerender script, routing, schema helpers and chart helper reviewed. HTML and JSON-LD escaping are present; chart config has no untrusted caller established. API bearer getter has no application call site. |
 | Container and build trust boundaries | not recorded | Needs follow-up | Dockerfile copies the full context into a single-stage root runtime and runs Vite preview. No .dockerignore or repository header policy observed. Treat runtime minimization/secret exclusion/header configuration as hardening, not a proven exploit. |
-| Contact handoff and public API | not recorded | No issue found | Form data is encoded into fixed mailto target; API exposes health only. No injection or authorization bypass established. |
+| Contact handoff and public API       | not recorded | No issue found  | Form data is encoded into fixed mailto target; API exposes health only. No injection or authorization bypass established.                                                                                                                              |
 
 ## Open Questions And Follow Up
 

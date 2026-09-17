@@ -1,6 +1,7 @@
 import { serviceAgreementApi } from "./service-agreement.routes";
 import { workReadinessApi } from "./work-readiness.routes";
 import { prospectContextApi } from "./prospect-context.routes";
+import { commercialAssessmentApi } from "./commercial-assessment.routes";
 import { commercialIngress, commercialStaffApi } from "./commercial-ingress";
 import { contactsApi } from "./contact-routes";
 import {
@@ -21,9 +22,11 @@ import {
 import { api } from "./api";
 import { operationsApi } from "./operations";
 import { filesApi } from "./files";
+import { profileApi } from "./profile";
 import { qboApi, qboWebhook } from "./quickbooks";
 import { notificationsApi, smsWebhook } from "./notifications";
 import { clientWorkspaceApi } from "./client-workspace";
+import { propertyTypesApi } from "./property-types";
 import { salesApi } from "./sales";
 import { estimatePublicApi, jobsLifecycleApi } from "./jobs-lifecycle";
 import { pool, database } from "./database";
@@ -44,7 +47,7 @@ app.use((req, res, next) => {
     "X-Frame-Options": "DENY",
     "Strict-Transport-Security": "max-age=31536000",
     "Content-Security-Policy":
-      "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
+      "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data: https://tiles.openfreemap.org; connect-src 'self' https://tiles.openfreemap.org; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
     "Permissions-Policy": "geolocation=(), microphone=()",
   });
   if (req.path.startsWith("/api")) res.set("Cache-Control", "no-store");
@@ -92,14 +95,17 @@ app.use(
   },
   coreFederationApi,
   prospectContextApi,
+  commercialAssessmentApi,
   commercialStaffApi,
   contactsApi,
   clientWorkspaceApi,
+  propertyTypesApi,
   jobsLifecycleApi,
   api,
   operationsApi,
   workReadinessApi,
   serviceAgreementApi,
+  profileApi,
   filesApi,
   qboApi,
   notificationsApi,
@@ -108,20 +114,28 @@ app.use(
 app.use("/api", (_req, res) => {
   res.status(404).json({ error: "Endpoint not found" });
 });
+const dashboardStaticDir = resolve(
+  process.env.DASHBOARD_STATIC_DIR || "../p1-dashboard/dist",
+);
 app.use(
   express.static(
-    resolve(process.env.DASHBOARD_STATIC_DIR || "../p1-dashboard/dist"),
-    { index: false, maxAge: 0 },
+    dashboardStaticDir,
+    {
+      index: false,
+      maxAge: 0,
+      setHeaders(res, path) {
+        // Vite content-hashes every compiled asset filename. A deployed HTML
+        // document can therefore safely reference these for a year, while the
+        // non-hashed dashboard images remain revalidatable after each deploy.
+        if (/[/\\]assets[/\\].+-[A-Za-z0-9_-]{8,}\.[A-Za-z0-9]+$/.test(path))
+          res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+      },
+    },
   ),
 );
 app.get("/{*splat}", (_req, res) => {
   res.set("Cache-Control", "no-cache");
-  res.sendFile(
-    resolve(
-      process.env.DASHBOARD_STATIC_DIR || "../p1-dashboard/dist",
-      "index.html",
-    ),
-  );
+  res.sendFile(resolve(dashboardStaticDir, "index.html"));
 });
 app.use(
   (

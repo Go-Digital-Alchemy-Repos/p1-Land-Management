@@ -6,16 +6,8 @@ describe("site features", () => {
     expect(DEFAULT_SITE_FEATURES.cmsEnabled).toBe(true);
   });
 
-  it("disables ecommerce by default", () => {
-    expect(DEFAULT_SITE_FEATURES.ecommerceEnabled).toBe(false);
-  });
-
   it("disables careers by default", () => {
     expect(DEFAULT_SITE_FEATURES.careersEnabled).toBe(false);
-  });
-
-  it("disables portfolio by default", () => {
-    expect(DEFAULT_SITE_FEATURES.portfolioEnabled).toBe(false);
   });
 
   it("normalizes disabled feature settings", () => {

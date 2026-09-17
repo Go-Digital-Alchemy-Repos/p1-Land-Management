@@ -701,11 +701,11 @@ export function Earthwork() {
                 </li>
                 <li>
                   <a
-                    href="mailto:info@p1landmanagement.com"
+                    href="/contact"
                     className="flex items-center gap-2 hover:text-white"
                   >
                     <Mail className="h-4 w-4" style={{ color: tan }} />{" "}
-                    info@p1landmanagement.com
+                    Send a secure inquiry
                   </a>
                 </li>
                 <li className="flex items-center gap-2">

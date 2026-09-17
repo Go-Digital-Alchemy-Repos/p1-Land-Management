@@ -43,6 +43,11 @@ The Vite configs default to local ports when `PORT` is not set:
 
 Railway still provides `PORT` in production.
 
+Development servers bind to `127.0.0.1` and accept only local Host headers by
+default. A temporary controlled-network preview must explicitly set both
+`DEV_BIND_HOST=0.0.0.0` and `DEV_ALLOWED_HOSTS=preview.example.test`; do not
+disable Vite host validation.
+
 ## Deployment
 
 Railway builds from the root `Dockerfile`:
@@ -53,6 +58,25 @@ Railway builds from the root `Dockerfile`:
 
 Production domain constants live in `artifacts/p1-website/src/lib/site.ts`.
 Robots and sitemap files live in `artifacts/p1-website/public`.
+
+### Google Business Profile reviews
+
+The homepage review showcase reads verified review data through the server-only
+`/api/p1/google-reviews` endpoint. Production requires these Railway variables:
+
+- `GOOGLE_BUSINESS_CLIENT_ID`
+- `GOOGLE_BUSINESS_CLIENT_SECRET`
+- `GOOGLE_BUSINESS_REFRESH_TOKEN`
+- `GOOGLE_BUSINESS_ACCOUNT_ID`
+- `GOOGLE_BUSINESS_LOCATION_ID`
+
+The server refreshes OAuth access tokens, caches the response for six hours,
+and serves only five-star reviews that contain written comments. The displayed
+average rating and review count remain the unfiltered values returned by Google.
+If configuration, authorization, or Google Business Profile API access is
+unavailable, the public section stays hidden instead of rendering placeholder
+reviews. The Google Cloud project is `p1-land-management-reviews`; never commit
+OAuth credentials or refresh tokens.
 
 ## QA Notes
 

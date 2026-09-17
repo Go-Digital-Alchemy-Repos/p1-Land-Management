@@ -1,6 +1,8 @@
 # Project phases and progress billing — decision proposal
 
-Status: **proposed for Project Orchestrator review; no schema, route, UI, migration, or deployment is authorized by this document.**
+Status: **implemented candidate, pending independent review and deployment.** Migration `0020_project_phases.sql` adds the normalized phase, immutable event, nullable one-phase-per-work-order relationship, and retry-safe billing-intent records without changing legacy `project.phases` JSON. The mounted Projects workspace supports phase creation, lifecycle movement, client publication and finance/management draft preparation. This candidate creates dashboard billing drafts only; it does not connect a provider, post an invoice, send an invoice, charge a customer or publish crew content automatically.
+
+The implementation deliberately defers multi-phase work allocation, legacy JSON backfill, automatic phase inference and provider activation. Existing JSON stays readable for historic projects. Reordering and additional phase report/template design should be added as a separately reviewed extension rather than mutating accepted records implicitly.
 
 ## Decision needed
 

@@ -57,6 +57,8 @@ try {
     CORE_FEDERATION_REDIRECT_URI:
       "https://core.example.test/api/auth/federation/callback",
     CORE_FEDERATION_TEST_ALLOW_INSECURE_ORIGIN: "true",
+    COMMERCIAL_TEST_DATABASE_URL:
+      "postgresql://postgres:p1-test-only@" + mapping + "/dashboard",
   });
   let ready = false;
   for (let i = 0; i < 30; i++) {
@@ -97,7 +99,9 @@ try {
       const r = await fetch(env.DASHBOARD_ORIGIN + "/api/healthz");
       if (r.ok) {
         if (r.headers.get("x-robots-tag") !== "noindex, nofollow")
-          throw new Error("Dashboard must exclude operational responses from indexing");
+          throw new Error(
+            "Dashboard must exclude operational responses from indexing",
+          );
         if (r.headers.get("strict-transport-security") !== "max-age=31536000")
           throw new Error("Dashboard must enforce HTTPS transport policy");
         ready = true;
@@ -122,10 +126,19 @@ try {
       "src/dashboard/owner-recovery.test.ts",
       "src/dashboard/core-federation.test.ts",
       "src/dashboard/work-readiness.test.ts",
+      "src/dashboard/project-phase.test.ts",
+      "src/dashboard/service-request.test.ts",
+      "src/dashboard/jobs-lifecycle.test.ts",
+      "src/dashboard/commercial-assessment.test.ts",
       "../p1-dashboard/tests/schedule-dates.test.ts",
+      "../p1-dashboard/tests/phone.test.ts",
       "../p1-dashboard/tests/dashboard-routes.test.ts",
       "../p1-dashboard/tests/dashboard-contract.test.ts",
+      "../p1-dashboard/tests/property-coordinates.test.ts",
+      "../p1-dashboard/tests/service-request-triage.test.ts",
       "src/dashboard/integration.test.ts",
+      "src/dashboard/profile-avatar.test.ts",
+      "src/dashboard/property-update-geocoding.test.ts",
     ],
     { cwd, env },
   );

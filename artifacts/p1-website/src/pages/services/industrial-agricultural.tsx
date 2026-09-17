@@ -30,7 +30,7 @@ const FAQS = [
   {
     question: "What equipment does P1 operate?",
     answer:
-      "Discuss the equipment, operator availability and access plan required for your industrial or agricultural property. P1 confirms the proposed equipment and delivery scope during qualification.",
+      "P1 matches the proposed equipment, operator availability, and access plan to the industrial or agricultural property during qualification.",
   },
 ];
 
@@ -38,8 +38,8 @@ export default function IndustrialAgricultural() {
   return (
     <Layout>
       <SEO 
-        title="Industrial & Agricultural Land Maintenance | P1 Land & Property Management"
-        description="Heavy-duty land maintenance for industrial sites, farms, and rural acreage in Upstate SC and Charlotte NC. Land clearing, grading, drainage, turf, and more. Call (704) 221-8928."
+        title="Industrial & Agricultural Land Maintenance | P1"
+        description="Land maintenance for industrial sites, farms, and working acreage in Upstate SC and Charlotte, including clearing, grading, drainage, and turf."
         jsonLd={[
           serviceSchema({ name: "Industrial & Agricultural Land Management", description: "Heavy-duty land maintenance for industrial sites, farms, and rural acreage in Upstate SC and Charlotte NC. Land clearing, grading, drainage, turf, and more. Call (704) 221-8928.", path: "/services/industrial-agricultural" }),
           breadcrumbSchema([

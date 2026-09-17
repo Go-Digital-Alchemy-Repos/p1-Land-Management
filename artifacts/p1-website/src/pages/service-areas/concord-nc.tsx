@@ -23,12 +23,12 @@ const FAQS = [
   {
     question: "Can P1 maintain agricultural and rural land in Cabarrus County?",
     answer:
-      "Yes. P1 works with farm and rural landowners across Cabarrus County on pasture maintenance, land clearing, access-road grading, drainage correction, and pond management — the earthwork and upkeep that keep working land productive.",
+      "Yes. P1 works with farm operators across Cabarrus County on pasture maintenance, land clearing, access-road grading, drainage correction, and pond management — the earthwork and upkeep that keep working land productive.",
   },
   {
     question: "What size properties does P1 work on in Concord?",
     answer:
-      "P1 focuses on properties 1 acre and larger — commercial, agricultural, and large residential — bringing equipment and expertise that standard landscaping companies can't match.",
+      "P1 focuses on commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger, bringing equipment and expertise that small-scale landscaping companies can't match. P1 does not provide residential services.",
   },
 ];
 
@@ -36,10 +36,10 @@ export default function ConcordNC() {
   return (
     <Layout>
       <SEO 
-        title="Land Clearing & Property Management Concord NC | P1 Land & Property Management"
-        description="Professional land clearing, grading, drainage, and property management in Concord, NC. Properties 1 acre and larger. Call (704) 221-8928."
+        title="Land Management in Concord, NC | P1"
+        description="Commercial landscaping, grounds maintenance, land clearing, grading & drainage for 1-acre-plus Concord and Cabarrus County sites. Call (704) 221-8928."
         jsonLd={[
-          serviceAreaSchema({ areaName: "Concord, North Carolina", areaType: "City", description: "Professional land clearing, grading, drainage, and property management in Concord, NC. Properties 1 acre and larger. Call (704) 221-8928.", path: "/service-areas/concord-nc" }),
+          serviceAreaSchema({ areaName: "Concord, North Carolina", areaType: "City", description: "Commercial landscaping, grounds maintenance, land clearing, grading, drainage, and turf services for qualifying Concord and Cabarrus County properties.", path: "/service-areas/concord-nc" }),
           breadcrumbSchema([
             { name: "Home", path: "/" },
             { name: "Service Areas", path: "/service-areas" },
@@ -59,7 +59,7 @@ export default function ConcordNC() {
             </em>
           </>
         }
-        subtitle="P1 Land & Property Management serves commercial, agricultural, and large residential properties throughout Concord, NC and Cabarrus County. Concord's growing commercial corridor and surrounding rural acreage create strong demand for professional land management at scale — and P1 delivers the full range of services from initial clearing through ongoing maintenance."
+        subtitle="P1 Land & Property Management leads with commercial landscaping and grounds maintenance for commercial, industrial, agricultural, municipal, and institutional properties throughout Concord and Cabarrus County. P1 also coordinates land clearing, grading, drainage, turf, tree, and pond services for qualifying sites at scale."
         image={heroImg}
         imageAlt="Land Clearing & Property Management in Concord, NC"
       />
@@ -71,13 +71,13 @@ export default function ConcordNC() {
               <h2 className="text-3xl font-serif font-bold text-secondary border-b border-border pb-4">Concord NC Services</h2>
               <ul className="space-y-3">
                 {[
+                  "Commercial landscaping and grounds maintenance programs",
+                  "Agricultural and rural land maintenance",
                   "Land clearing and site preparation for commercial development",
                   "Fine grading and drainage installation",
-                  "Agricultural and rural land maintenance",
                   "Turf installation and seeding",
                   "Tree services",
                   "Pond and waterway management",
-                  "Commercial grounds maintenance programs"
                 ].map((item, i) => (
                   <li key={i} className="flex items-start gap-3 text-secondary/80 font-medium">
                     <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
@@ -93,6 +93,21 @@ export default function ConcordNC() {
                   Call <a href="tel:7042218928" className="text-primary hover:underline">+1 (704) 221-8928</a> or <Link href="/contact" className="text-primary hover:underline">request a free estimate online</Link> to discuss your property.
                 </p>
               </div>
+            </div>
+          </div>
+
+          <div className="grid gap-10 border-y border-border py-12 md:grid-cols-2">
+            <div className="space-y-4">
+              <h2 className="text-2xl font-serif font-bold text-secondary">Large-site work in Concord and Cabarrus County</h2>
+              <p className="leading-relaxed text-secondary/80">Concord combines active commercial and industrial corridors with institutional grounds and working acreage outside the urban core. Each setting changes the practical sequence: busy sites may require phased access and careful coordination, while agricultural land may prioritize drainage, equipment routes, soil protection, and the next productive use.</p>
+              <p className="leading-relaxed text-secondary/80">P1 evaluates the requested work in that site context. Clearing, grading, drainage, turf, tree, and recurring grounds needs can be considered together so one improvement does not create a problem for the next.</p>
+            </div>
+            <div className="space-y-4">
+              <h2 className="text-2xl font-serif font-bold text-secondary">What to prepare for an assessment</h2>
+              <p className="leading-relaxed text-secondary/80">Bring any available site plans, known utility information, drainage history, access restrictions, and target use for the property. P1 uses those details and the visible conditions to define the proposed scope, assumptions, exclusions, and schedule.</p>
+              <p className="leading-relaxed text-secondary/80">Work that requires engineering, permitting, surveys, utility coordination, or another licensed specialty is identified during qualification rather than silently folded into a broad promise. That gives property teams a clearer basis for comparing estimates and planning mobilization.</p>
+              <p className="leading-relaxed text-secondary/80">The assessment can also distinguish urgent corrective work from improvements that can be phased. A washed access route, active erosion, or blocked drainage path may need attention before finish grading, seeding, or recurring maintenance begins. For occupied Concord properties, that sequence can be coordinated around traffic, staff, tenants, or public access. The final written scope establishes what P1 will perform, how work areas will be accessed, and what the property team must complete before mobilization.</p>
+              <p className="leading-relaxed text-secondary/80">Before the visit, mark priority areas and collect photos showing how conditions change after rain or during normal operations. That context helps connect a visible symptom to the surrounding site.</p>
             </div>
           </div>
 

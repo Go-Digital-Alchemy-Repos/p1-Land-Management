@@ -77,6 +77,105 @@ function formatDate(value: string | Date | null | undefined) {
   }).format(new Date(value));
 }
 
+type SubmissionField = { label: string; value: string };
+
+function formatSubmissionFieldLabel(key: string) {
+  const label = key
+    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+    .replace(/[_-]+/g, " ")
+    .trim();
+  return label ? label.charAt(0).toUpperCase() + label.slice(1) : "Field";
+}
+
+function formatSubmissionValue(value: unknown): string {
+  if (value === null || value === undefined || value === "") return "Not provided";
+  if (typeof value === "boolean") return value ? "Yes" : "No";
+  if (Array.isArray(value)) {
+    if (value.length === 0) return "None";
+    if (value.every((item) => ["string", "number", "boolean"].includes(typeof item))) {
+      return value.map((item) => formatSubmissionValue(item)).join(", ");
+    }
+  }
+  if (typeof value === "object") return JSON.stringify(value, null, 2);
+  return String(value);
+}
+
+export function getSubmissionFields(data: Record<string, unknown>): SubmissionField[] {
+  return Object.entries(data).map(([key, value]) => ({
+    label: formatSubmissionFieldLabel(key),
+    value: formatSubmissionValue(value),
+  }));
+}
+
+export function LeadSubmissionDetails({ lead }: { lead: CrmLead }) {
+  const fields = getSubmissionFields(lead.formData ?? {});
+  const formName =
+    typeof lead.metadata?.formName === "string" && lead.metadata.formName.trim()
+      ? lead.metadata.formName.trim()
+      : null;
+
+  return (
+    <div className="space-y-5" data-testid="crm-lead-submission-details">
+      <section className="space-y-3" aria-labelledby="lead-contact-details-heading">
+        <h3 id="lead-contact-details-heading" className="text-sm font-semibold">
+          Contact details
+        </h3>
+        <dl className="grid gap-x-6 gap-y-3 text-sm sm:grid-cols-2">
+          <div>
+            <dt className="text-xs font-medium text-muted-foreground">Name</dt>
+            <dd className="mt-0.5 break-words">{lead.name}</dd>
+          </div>
+          <div>
+            <dt className="text-xs font-medium text-muted-foreground">Email</dt>
+            <dd className="mt-0.5 break-words">{lead.email || "Not provided"}</dd>
+          </div>
+          <div>
+            <dt className="text-xs font-medium text-muted-foreground">Phone</dt>
+            <dd className="mt-0.5 break-words">{lead.phone || "Not provided"}</dd>
+          </div>
+          <div>
+            <dt className="text-xs font-medium text-muted-foreground">Company</dt>
+            <dd className="mt-0.5 break-words">{lead.company || "Not provided"}</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section className="space-y-2" aria-labelledby="lead-original-message-heading">
+        <h3 id="lead-original-message-heading" className="text-sm font-semibold">
+          Original message
+        </h3>
+        <p className="whitespace-pre-wrap rounded-md bg-muted/60 p-4 text-sm leading-6">
+          {lead.message || "No message was submitted."}
+        </p>
+      </section>
+
+      <section className="space-y-3" aria-labelledby="lead-submitted-fields-heading">
+        <div>
+          <h3 id="lead-submitted-fields-heading" className="text-sm font-semibold">
+            All submitted fields
+          </h3>
+          {formName ? <p className="text-xs text-muted-foreground">{formName}</p> : null}
+        </div>
+        {fields.length > 0 ? (
+          <dl className="divide-y rounded-md border">
+            {fields.map((field, index) => (
+              <div
+                key={`${field.label}-${index}`}
+                className="grid gap-1 px-4 py-3 text-sm sm:grid-cols-[minmax(140px,0.4fr)_1fr] sm:gap-4"
+              >
+                <dt className="font-medium text-muted-foreground">{field.label}</dt>
+                <dd className="whitespace-pre-wrap break-words">{field.value}</dd>
+              </div>
+            ))}
+          </dl>
+        ) : (
+          <p className="text-sm text-muted-foreground">No original form fields are available.</p>
+        )}
+      </section>
+    </div>
+  );
+}
+
 function LeadCard({
   lead,
   onOpen,
@@ -419,6 +518,12 @@ function LeadDetailSheet({ leadId, onClose }: { leadId: string | null; onClose: 
                 <p className="text-sm">
                   <span className="font-medium">Company:</span> {lead.company || "—"}
                 </p>
+                <p className="text-sm">
+                  <span className="font-medium">Email:</span> {lead.email || "—"}
+                </p>
+                <p className="text-sm">
+                  <span className="font-medium">Phone:</span> {lead.phone || "—"}
+                </p>
                 {lead.client ? (
                   <p className="text-sm sm:col-span-2">
                     <span className="font-medium">Client:</span> {lead.client.name} (
@@ -427,8 +532,12 @@ function LeadDetailSheet({ leadId, onClose }: { leadId: string | null; onClose: 
                 ) : null}
               </div>
 
-              <Tabs defaultValue="notes">
+              <Tabs defaultValue={lead.source === "website_form" ? "submission" : "notes"}>
                 <TabsList>
+                  <TabsTrigger value="submission">
+                    <Database className="mr-1.5 h-4 w-4 text-cyan-600" />
+                    Submission
+                  </TabsTrigger>
                   <TabsTrigger value="notes">
                     <MessageSquare className="mr-1.5 h-4 w-4 text-emerald-600" />
                     Notes
@@ -437,11 +546,10 @@ function LeadDetailSheet({ leadId, onClose }: { leadId: string | null; onClose: 
                     <ClipboardList className="mr-1.5 h-4 w-4 text-orange-600" />
                     Tasks
                   </TabsTrigger>
-                  <TabsTrigger value="data">
-                    <Database className="mr-1.5 h-4 w-4 text-cyan-600" />
-                    Data
-                  </TabsTrigger>
                 </TabsList>
+                <TabsContent value="submission">
+                  <LeadSubmissionDetails lead={lead} />
+                </TabsContent>
                 <TabsContent value="notes" className="space-y-3">
                   <Textarea
                     rows={3}
@@ -507,11 +615,6 @@ function LeadDetailSheet({ leadId, onClose }: { leadId: string | null; onClose: 
                       </span>
                     </label>
                   ))}
-                </TabsContent>
-                <TabsContent value="data">
-                  <pre className="max-h-96 overflow-auto rounded-md bg-muted p-4 text-xs">
-                    {JSON.stringify({ formData: lead.formData, metadata: lead.metadata }, null, 2)}
-                  </pre>
                 </TabsContent>
               </Tabs>
             </>

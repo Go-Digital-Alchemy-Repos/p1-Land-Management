@@ -2,17 +2,29 @@
 
 `/api/v1` endpoints use verified Better Auth sessions. Browser cookie mutations require the configured dashboard Origin. Future iOS/Android clients use the same account's signed bearer session token in `Authorization`; a valid bearer request is allowed without a browser Origin and is still subject to the same verified-email, MFA, role and property authorization checks. Errors use HTTP status and an error message; callers must preserve pending operations on failure.
 
-`lib/api-spec/dashboard.openapi.json` specifies selected shared dashboard contracts, including setup/identity, client contacts, field work, assessment availability and booking, integration health, property reads, service requests, scheduling, commercial intake, agreement work and binary photos. `pnpm --filter @workspace/api-spec codegen:dashboard` generates the isolated dashboard fetch client. The UI consumes its field methods. Other routes currently validate with Zod at the server and still require full OpenAPI coverage.
+`lib/api-spec/dashboard.openapi.json` specifies selected shared dashboard contracts, including setup/identity, client and property records, client contacts, field work, assessment availability and booking, integration health, property reads, sales, project and expense records, project-phase and service-request lifecycles, scheduling, commercial intake, agreement work and binary photos. `pnpm --filter @workspace/api-spec codegen:dashboard` generates the isolated dashboard fetch client. The UI consumes its field methods. Other routes currently validate with Zod at the server and still require full OpenAPI coverage.
 
-| Domain                | Routes beneath /api/v1                                                                                                                       |
-| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| Initialization/access | /setup, /setup/complete, /me, /staff, /account-mfa-policies, /account-mfa-policies/:id, /invitations, /invitations/accept                    |
-| Operations            | /clients, /properties, /properties/:id/timeline, /work-orders, /work-orders/:id/status, /work-orders/:id/publish, /field/sync                |
-| Scheduling            | /assessment-slots, /assessment-slots/:id/book, /recurring-services; operations.ts owns rescheduling/pause routes                             |
-| Sales                 | /leads, /estimates, estimate decision/revision and lead conversion routes in sales.ts                                                        |
-| Financial             | /billing, /billing/:id/post, /quickbooks/connect, /quickbooks/callback, /quickbooks/import-preview, /quickbooks/import, /quickbooks/invoices |
-| Media                 | POST /files/:id with image body, x-p1-property, x-p1-work, x-p1-classification; protected content/publication routes in files.ts             |
-| Communications        | Notification, delivery and consent routes in notifications.ts                                                                                |
+| Domain                | Routes beneath /api/v1                                                                                                                |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Initialization/access | /setup, /setup/complete, /me, /staff, /account-mfa-policies, /account-mfa-policies/:id, /invitations, /invitations/accept             |
+| Operations            | /clients, /properties, /properties/:id/areas, /projects, /work-orders, /work-orders/:id/status, /work-orders/:id/publish, /field/sync |
+
+`GET/POST /clients`, `POST /clients/:id`, and `POST /properties` are generated contracts. Office client updates require the current version and atomically maintain the primary contact. Client accounts receive a minimized client list; crew have no client-record access. A primary-contact onboarding request requires address and phone and returns its created contact ID; neither client nor property creation creates an invitation, schedule, work order, billing record, or provider action.
+
+The generated work-order contract covers office planning, versioned status transitions, and manager publication alongside the existing read, readiness, rescheduling, and field-sync methods. Only owner, manager, or dispatch can create or transition work; an override reason requires owner or manager authority. Publication requires a reviewed work order and is owner/manager-only. It publishes only eligible non-conflicting notes, checklist entries, and completion events; it does not publish field issues, alter billing, or record payment.
+
+`POST /properties/:id` is an office-only, versioned edit of an operational unarchived property. It requires `{name,address,acreage:null|number,accessInstructions?,version}` and returns `409` for stale or unavailable records. A changed address receives a best-effort server-side coordinate refresh; an unresolved address clears the prior point so the map cannot show an obsolete location, while an unchanged address retains its existing point without another geocoding request. `POST /projects/:id` is owner/manager-only and requires `{name,scope,expectedVersion}`. It atomically advances the project version and returns `409` on a stale or unavailable record. Neither route changes client access, phase state, schedules, work, billing, publication, providers, or payments.
+
+`GET/POST /property-types`, `POST /property-types/:id`, and `DELETE /property-types/:id` are owner/manager-only portfolio-classification administration routes. The property workspace updates its current type through `POST /properties/:id/property-type` with `{propertyTypeId:null|uuid,expectedVersion}`. It uses the property's optimistic version and returns `409` on a stale or unavailable property; a type in use cannot be deleted. Client property reads may include their assigned type name but never receive the classification library or mutation access.
+| Project phases | /projects/:id/phases, /project-phases/:id, /project-phases/:id/transitions, /project-phases/:id/publish, history and billing-intent routes |
+| Service requests | /requests, /service-requests, /service-requests/:id, transitions, history, conversion preview and conversion receipt routes |
+| Scheduling | /assessment-slots, /assessment-slots/:id/book, /recurring-services; operations.ts owns rescheduling/pause routes |
+
+The generated recurring-schedule contract covers office creation and future-generation pause/resume. Owner, manager, and dispatch can configure weekly or monthly cadence, interval, America/New_York local time, assigned crew, and independent fixed-monthly or per-visit billing metadata. The worker remains responsible for creating occurrences; pausing never rewrites existing work orders, sends notifications, or alters billing records.
+| Sales | /leads, /estimates, estimate decision/revision and lead conversion routes in sales.ts |
+| Financial | /expenses, /billing, /billing/:id/post, /quickbooks/connect, /quickbooks/callback, /quickbooks/import-preview, /quickbooks/import, /quickbooks/invoices |
+| Media | POST /files/:id with image body, x-p1-property, x-p1-work, x-p1-classification; GET/POST /profile/avatar; protected content/publication routes in files.ts |
+| Communications | Notification, delivery and consent routes in notifications.ts |
 
 ## Client onboarding and maintenance
 
@@ -24,9 +36,39 @@ Migration 0015 adds the client version and primary-contact detail columns withou
 
 Billing creation requires `operationId` (UUID), `propertyId`, `estimateId`, `title`, integer `amountCents`, and `kind` (service/deposit/progress/final). Reuse the same operation ID on an identical retry. Different payload reuse returns 409; a new financial intent requires a new operation ID. The transaction stores actor, canonical validated-payload fingerprint and resulting draft ID. This does not automatically send an invoice or collect payment.
 
-## Client service requests
+## Project phases (deployed migration 0020)
 
-`GET /requests` is available to office and client roles. Clients receive requests for properties they can access, but the server omits the internal submitting user ID; office readers retain the operational submitter identity. `POST /requests` requires a client-accessible or operational property and creates a new request only; the insert and `service_request.created` audit event commit together. Status changes and work-order conversion require the separately approved service-request workflow contract.
+`POST /projects/:projectId/phases` requires owner or manager and creates an additive normalized phase while preserving the legacy JSON `project.phases` value. An explicit occupied `position` returns409. Owner/manager edits use `PATCH /project-phases/:id` with `expectedVersion` and a required reason. Terminal accepted, cancelled and archived records reject edits.
+
+`POST /project-phases/:id/transitions` requires the current version, target state and a reason. The server validates lifecycle transitions, blocks ready/in-progress states with unmet prerequisites unless an explicit override reason is recorded, and requires all linked work to be reviewed/cancelled/skipped before acceptance. `GET /project-phases/:id/history` returns the append-only event history only to office roles. Client reads are restricted to explicitly published projections; crew reads are restricted to phases with active assigned work.
+
+`POST /project-phases/:id/publish` is an owner/manager action for manager-review or accepted work and records a client-safe summary only. `POST /project-phases/:id/billing-intents` is owner/manager/finance-only. It requires an accepted phase, approved estimate, current phase version and UUID operation ID. The server stores one immutable intent and one draft billing record on an identical retry, enforces the estimate cap, and returns409 for a changed operation replay. It never posts to QuickBooks, sends an invoice, creates a payment link, records a payment, or publishes crew material.
+
+The phase list/detail, create/update, transition, publication, history, and billing-intent endpoints are generated from the shared OpenAPI contract. The generated types keep client publications and crew assignment views minimized; office-only event history and billing-intent records remain server-authorized.
+
+## Project and expense records
+
+`GET/POST /projects` is generated from the shared contract. Owner, manager, dispatch, and finance can list operational-property projects; only owner and manager can create one. A creation writes the legacy project summary and optional legacy phase list only. It does not create normalized project phases, dispatch work, publish client material, create billing, post to QuickBooks, or record a payment.
+
+`GET/POST /expenses` is generated from the shared contract. Owner, manager, and finance can list and record expenses for operational properties. It is an operational job-costing record; QuickBooks remains the accounting system of record. The database returns `amount_cents` as a base-10 string because the source column is PostgreSQL `bigint`; request `amountCents` remains a positive integer. These endpoints do not create a QuickBooks entry, post accounting changes, create a payment link, or record a payment.
+
+## Sales lifecycle
+
+The generated sales contract covers office lead listing and creation, eligible lead conversion, draft estimate creation, staff sending, client approval/decline, revisions, and change orders. The established `listAgreementEstimates` read method remains the shared typed reader for `/estimates`, so agreement callers retain their existing operation name and response model.
+
+Lead conversion makes a client/property linkage only. Estimate creation, revision, and change order creation do not send an estimate, schedule work, dispatch a crew, publish client material, post a QuickBooks invoice, create a payment link, or record a payment. An estimate approval remains a current-revision decision by an authorized client for an accessible property; office roles may only move a draft to `sent`.
+
+## Client service requests (deployed migration 0021)
+
+`GET/POST /requests` remain compatible. A client list response has client-safe status labels and no submitting-user identity; office readers retain the operational details. Creation requires a client-accessible or operational property and writes the first append-only lifecycle event in the same transaction.
+
+`GET /service-requests` and `GET /service-requests/:id` provide the normalized lifecycle read model. Clients can read only properties granted to their account and receive a minimized projection. Crew have no independent request queue. Owner, manager, dispatch, sales and finance can read the operational projection; only owner, manager and dispatch can mutate it.
+
+`POST /service-requests/:id/transitions` requires `{expectedVersion,status,reason}`. It accepts only `triaged`, `scheduled`, `closed`, or `cancelled` targets, locks the request, rejects stale or invalid transitions with409, advances the version, and appends an event. `GET /service-requests/:id/history` is office-only and reads append-only events.
+
+`POST /service-requests/:id/conversion-preview` writes nothing. `POST /service-requests/:id/conversions` requires `{operationId,expectedRequestVersion,title,scope,checklist,prerequisites}`. It permits only triaged or service-planning requests, records a stable fingerprint and one receipt, and returns that receipt on an identical retry; changed reuse, stale state, cancellation and a second operation return409. The work order is always an unassigned, unscheduled, unpublished `draft`. This route never invokes QuickBooks, notifications, payments, files, publication or outbox actions.
+
+The migration and public health/authentication boundaries are production-verified. The lifecycle reads, transitions, history, conversion preview and idempotent draft conversion are generated from the shared OpenAPI contract; broader office-route coverage, invited-client workflow acceptance and the one-crew pilot remain open.
 
 ## Inspection report publication
 
@@ -78,11 +120,15 @@ Scheduling review follow-up: `GET /work-orders/:id` authorizes the same client/c
 
 ### Shared identity contract for mobile
 
-`getDashboardMe` and `DashboardMe` are generated from `/api/v1/me` in the dashboard OpenAPI contract. A verified session may return `role: null` when its business profile is missing or inactive. `twoFactorEnabled` is optional and nullable because the handler forwards the identity provider value without normalization; consumers must compare it with `true`. `mfaRequired` reports whether the current session is blocked by its configured policy; `ownerMfaRequired` is its deprecated compatibility alias. Reading this endpoint does not create session assurance or authorize operational data access.
+`getDashboardMe` and `DashboardMe` are generated from `/api/v1/me` in the dashboard OpenAPI contract. A verified session may return `role: null` when its business profile is missing or inactive. `avatarUrl` is either `null` or the private same-origin path for that account; it is never an object-storage URL. `twoFactorEnabled` is optional and nullable because the handler forwards the identity provider value without normalization; consumers must compare it with `true`. `mfaRequired` reports whether the current session is blocked by its configured policy; `ownerMfaRequired` is its deprecated compatibility alias. Reading this endpoint does not create session assurance or authorize operational data access.
+
+`GET /profile/avatar` and `POST /profile/avatar` require the current active account. Reads return only that account's transformed WebP image with `Cache-Control: private, no-store`; a known URL never authorizes another account to read it. Uploads accept JPEG, PNG, or WebP only, validate their signatures after authentication, limit request bytes to 5 MiB and decoded pixels to 16 million, convert to a 512px WebP, and allow only four in-flight avatar uploads per dashboard process. The server records the update in the account audit history and best-effort removes the prior private object after the new reference commits. These routes do not create a user, modify a business profile, grant access, or expose storage credentials.
 
 `listAccountMfaPolicies` and `updateAccountMfaPolicy` are owner-only generated contracts. The list includes all active account roles, including clients, while `/staff` remains role-minimized for its existing office readers. The update and its audit record share one transaction. If an owner requires their own unassured current session, the client must re-read `/me` and show enrollment immediately.
 
 `listDashboardProperties`, `getPropertyTimeline`, and `listPropertyFiles` share the existing authorized read projections with native clients. Internal property fields are optional because they are omitted for clients; acreage is a nullable PostgreSQL numeric string. Timeline reads contain the latest 200 events and retain historical JSON payloads. File metadata omits object keys and bucket URLs. These endpoints remain online snapshots rather than a complete synchronization feed.
+
+`listPropertyAreas` and `createPropertyArea` are generated contracts for `GET/POST /properties/:id/areas`. The read requires server-side access to an operational property: office roles can read it, clients need their account grant, and crew need currently assigned active work. Creation is owner/manager/dispatch-only and requires an operational property with a client. Area acreage returns as a nullable PostgreSQL numeric string; creation accepts a nonnegative number. These routes only store or read property-area records: they do not create assets, schedule or dispatch work, publish material, create billing, change QuickBooks, create a payment link, or record payment.
 
 ### Binary photo transport
 

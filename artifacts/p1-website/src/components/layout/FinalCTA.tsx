@@ -3,14 +3,18 @@ import { Button } from "@/components/ui/button";
 import { ContourField } from "@/components/layout/ContourField";
 import { Phone, ArrowUpRight } from "lucide-react";
 import ctaImg from "@/assets/fine-grading.png";
+import { responsiveImageProps } from "@/lib/responsive-images";
+import { ContextualLinks } from "@/components/content/ContextualLinks";
 
 const TAN = "hsl(32 42% 62%)";
 
 export function FinalCTA() {
   return (
-    <section className="relative overflow-hidden bg-navy-deep">
+    <>
+      <ContextualLinks />
+      <section className="relative overflow-hidden bg-navy-deep">
       <div className="absolute inset-0">
-        <img src={ctaImg} alt="" aria-hidden loading="lazy" decoding="async" className="h-full w-full object-cover" style={{ opacity: 0.22 }} />
+        <img src={ctaImg} alt="" aria-hidden loading="lazy" decoding="async" {...responsiveImageProps(ctaImg, "100vw")} className="h-full w-full object-cover" style={{ opacity: 0.22 }} />
       </div>
       <div className="absolute inset-0" style={{ background: "linear-gradient(100deg, hsl(215 50% 11%) 30%, hsl(208 64% 40% / 0.4))" }} />
       <div className="absolute inset-0" style={{ mixBlendMode: "soft-light" }}>
@@ -40,6 +44,7 @@ export function FinalCTA() {
           </a>
         </div>
       </div>
-    </section>
+      </section>
+    </>
   );
 }

@@ -1,7 +1,5 @@
 import { describe, expect, it } from "vitest";
 import type { Event } from "@shared/schema/events";
-import type { TherapistWithUser } from "@shared/types/directory";
-import type { PublicDirectorySettings } from "@shared/types/directory-settings";
 import { updateOwnTherapistProfileSchema } from "@shared/schema";
 import { validateClientStackEnvironment } from "../config/client-stack";
 import {

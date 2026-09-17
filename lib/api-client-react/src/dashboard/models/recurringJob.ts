@@ -7,29 +7,17 @@
  */
 import type { RecurringJobCadence } from './recurringJobCadence';
 
-/**
- * Staff-only recurring Job program. Its future visits are independent Jobs on the schedule.
- */
 export interface RecurringJob {
   id: string;
   property_id: string;
-  /** @nullable */
-  estimate_id?: string | null;
-  /** @nullable */
-  agreement_id?: string | null;
-  /** @nullable */
-  project_id?: string | null;
   title: string;
   cadence: RecurringJobCadence;
   interval_count: number;
   next_date: string;
   local_time: string;
-  /** @nullable */
-  assigned_to?: string | null;
   paused: boolean;
   /** @nullable */
   agreement_status?: string | null;
   /** @nullable */
   next_visit?: string | null;
-  visit_count?: number;
 }

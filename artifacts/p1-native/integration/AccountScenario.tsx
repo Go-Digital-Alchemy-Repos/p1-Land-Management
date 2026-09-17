@@ -62,6 +62,17 @@ function resource(accountId: string): Vault {
       recordUse("pending");
       return 0;
     },
+    storageStatus: async () => {
+      recordUse("storage");
+      return {
+        queuedPhotoCount: 0,
+        queuedPhotoBytes: 0,
+        availableBytes: 1024 * 1024 * 1024,
+        totalBytes: 64 * 1024 * 1024 * 1024,
+        severity: "normal" as const,
+      };
+    },
+    requirePhotoStorage: async () => recordUse("photo-storage"),
     download: async () => recordUse("download"),
     downloaded: async () => {
       recordUse("read");
@@ -73,6 +84,15 @@ function resource(accountId: string): Vault {
       return [];
     },
     recordResults: async () => recordUse("ack"),
+    rememberTemporaryPhoto: async () => recordUse("remember-photo"),
+    stageRememberedPhoto: async () => {
+      recordUse("stage-photo");
+      return "staged" as const;
+    },
+    recoverTemporaryPhotos: async () => {
+      recordUse("recover-photos");
+      return { recovered: 0, cleaned: 0, missing: 0, missingIds: [] };
+    },
     stagePhoto: async () => recordUse("photo"),
     pendingPhotoIds: async () => {
       recordUse("photos");

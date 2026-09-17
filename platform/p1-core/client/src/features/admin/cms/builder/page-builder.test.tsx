@@ -117,7 +117,7 @@ describe("PageBuilder", () => {
     expect(container.textContent).toContain("Blog Post Feed (Live)");
     expect(container.textContent).toContain("Events Preview");
     expect(container.textContent).toContain("FAQ");
-    expect(container.textContent).toContain("Professional Directory (Live)");
+    expect(container.textContent).toContain("Form Embed");
     expect(
       container.querySelector('[data-testid="mock-block-preview-cta-legacy-block"]'),
     ).not.toBeNull();
@@ -162,7 +162,7 @@ describe("PageBuilder", () => {
       );
     });
 
-    const dragHandle = container.querySelector('[data-testid="canvas-drag-directory-block"]');
+    const dragHandle = container.querySelector('[data-testid="canvas-drag-managed-form-block"]');
     const firstDropZone = container.querySelector('[data-testid="canvas-drop-zone-0"]');
     expect(dragHandle).not.toBeNull();
     expect(firstDropZone).not.toBeNull();
@@ -176,7 +176,7 @@ describe("PageBuilder", () => {
     });
 
     const updatedContent = onChange.mock.calls.at(-1)?.[0];
-    expect(updatedContent.blocks[0].id).toBe("directory-block");
+    expect(updatedContent.blocks[0].id).toBe("managed-form-block");
     expect(updatedContent.blocks.map((block: { id: string }) => block.id)).toHaveLength(
       mixedBuilderFixture.blocks.length,
     );

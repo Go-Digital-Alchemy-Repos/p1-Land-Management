@@ -164,7 +164,7 @@ smsWebhook.post(
       .type("text/xml")
       .send(
         command === "HELP"
-          ? "<Response><Message>P1 Land Management: contact info@p1landmanagement.com for help. Reply STOP to opt out.</Message></Response>"
+          ? "<Response><Message>P1 Land Management: use the secure contact form on our website or call us for help. Reply STOP to opt out.</Message></Response>"
           : "<Response/>",
       );
   },

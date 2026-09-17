@@ -11,6 +11,8 @@ import {
   type ContactValues,
 } from "./commercial-context.types";
 import "./commercial-context.css";
+import { formatPhoneNumber } from "./phone";
+import { EmailLink, PhoneLink } from "./contact-links";
 type Choice = { mode: "new" | "existing" | "none"; selected: Candidate | null };
 type Draft = {
   organization: Choice;
@@ -53,7 +55,7 @@ const fromContext = (c: Context): Draft => ({
 const contactFrom = (c: Context): ContactValues => ({
   name: c.contact?.name || "",
   email: c.contact?.email || null,
-  phone: c.contact?.phone || null,
+  phone: formatPhoneNumber(c.contact?.phone) || null,
   source: c.contact?.channel_source || "",
 });
 const nullable = (value: string) => value.trim() || null;
@@ -204,7 +206,7 @@ function Picker({
                   <small>
                     {item.address ||
                       item.email ||
-                      item.phone ||
+                      formatPhoneNumber(item.phone) ||
                       item.legal_name ||
                       "Review this record"}
                     {item.client_id ? " · Existing customer record" : ""}
@@ -485,8 +487,8 @@ export function CommercialContextPanel({
             <p>
               <strong>Reviewed contact</strong>
               {context.contact?.name || "Not linked"}
-              {context.contact?.email && <span>{context.contact.email}</span>}
-              {context.contact?.phone && <span>{context.contact.phone}</span>}
+              {context.contact?.email && <span><EmailLink email={context.contact.email} /></span>}
+              {context.contact?.phone && <span><PhoneLink phone={context.contact.phone} /></span>}
             </p>
             <p>
               <strong>Reviewed property</strong>
@@ -561,6 +563,7 @@ export function CommercialContextPanel({
                       maxLength={50}
                       value={draft.phone}
                       onChange={(e) => field("phone", e.target.value)}
+                      onBlur={(e) => field("phone", formatPhoneNumber(e.target.value))}
                     />
                   </label>
                   <p>Provide at least one contact channel.</p>
@@ -737,6 +740,12 @@ export function CommercialContextPanel({
                         setReview((v) => ({
                           ...v,
                           phone: e.target.value || null,
+                        }))
+                      }
+                      onBlur={(e) =>
+                        setReview((v) => ({
+                          ...v,
+                          phone: formatPhoneNumber(e.target.value) || null,
                         }))
                       }
                     />

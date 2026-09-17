@@ -110,10 +110,9 @@ export function ScheduleCalendar({
         aria-label={`${w.scheduled_at ? scheduleTime(w.scheduled_at) : "Unscheduled"} ${w.title}, ${w.property_name}, ${w.status.replaceAll("_", " ")}`}
       >
         <strong>
-          {w.scheduled_at ? scheduleTime(w.scheduled_at) : "Unscheduled"} ·{" "}
-          {w.title}
+          {w.scheduled_at ? scheduleTime(w.scheduled_at) : "Unscheduled"} · {w.property_name}
         </strong>
-        <span>{w.property_name}</span>
+        <span className="calendar-job-title">{w.title}</span>
         <span>
           {w.status.replaceAll("_", " ")}
           {canManage

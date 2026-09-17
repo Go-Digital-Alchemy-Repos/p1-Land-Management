@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   getPublicBySlug: vi.fn(),
   createSubmissionWithEffects: vi.fn(),
@@ -37,9 +37,10 @@ const payload = {
   serviceTiming: "both",
   website: "",
 };
-describe("commercial managed intake integration", () => {
+describe("P1 managed intake integration", () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    vi.stubEnv("P1_FORM_NOTIFICATION_RECIPIENTS", "owner-one@example.test,owner-two@example.test");
     mocks.getPublicBySlug.mockResolvedValue(form);
     mocks.getFormNotificationUsers.mockResolvedValue([]);
     mocks.getUsersByRole.mockResolvedValue([{ email: "synthetic@example.test" }]);
@@ -48,6 +49,7 @@ describe("commercial managed intake integration", () => {
       created: true,
     });
   });
+  afterEach(() => vi.unstubAllEnvs());
   it("validates then queues receipt, CRM and notification atomically through existing storage", async () => {
     const result = await submitManagedFormBySlug(form.slug, payload, {
       idempotencyKey: "intent-1",
@@ -70,11 +72,41 @@ describe("commercial managed intake integration", () => {
         expect.objectContaining({ kind: "crm_intake" }),
         expect.objectContaining({
           kind: "admin_notification",
+          recipient: "owner-one@example.test",
           dashboardUrl: "https://www.p1landmanagement.com/admin/forms",
+        }),
+        expect.objectContaining({
+          kind: "admin_notification",
+          recipient: "owner-two@example.test",
         }),
       ]),
     );
+    expect(mocks.getFormNotificationUsers).not.toHaveBeenCalled();
+    expect(mocks.getUsersByRole).not.toHaveBeenCalled();
     expect(mocks.createSubmissionWithEffects.mock.calls[0][0].data).not.toHaveProperty("website");
+  });
+  it("routes estimate submissions to the same private two-recipient audience", async () => {
+    mocks.getPublicBySlug.mockResolvedValue({
+      ...form,
+      id: "estimate-form",
+      slug: "p1-estimate",
+      name: "P1 Estimate Request",
+    });
+    await submitManagedFormBySlug("p1-estimate", {
+      name: "Pat",
+      email: "pat@example.test",
+      address: "York County",
+      message: "Estimate request",
+      website: "",
+    });
+    const effects = mocks.createSubmissionWithEffects.mock.calls[0][1];
+    expect(
+      effects
+        .filter((effect: { kind: string }) => effect.kind === "admin_notification")
+        .map((effect: { recipient: string }) => effect.recipient),
+    ).toEqual(["owner-one@example.test", "owner-two@example.test"]);
+    expect(mocks.getFormNotificationUsers).not.toHaveBeenCalled();
+    expect(mocks.getUsersByRole).not.toHaveBeenCalled();
   });
   it("returns the storage duplicate outcome with the original receipt", async () => {
     mocks.createSubmissionWithEffects.mockResolvedValue({

@@ -5,9 +5,9 @@
  * Shared field, scheduling and commercial inbox contract. Other office routes remain documented in docs/dashboard/API.md.
  * OpenAPI spec version: 0.1.0
  */
-import type { RecurringBillingPeriod } from './recurringBillingPeriod';
 import type { RecurringJobConfigurationBillingMode } from './recurringJobConfigurationBillingMode';
 import type { RecurringJobConfigurationCadence } from './recurringJobConfigurationCadence';
+import type { RecurringJobConfigurationPeriodsItem } from './recurringJobConfigurationPeriodsItem';
 
 export interface RecurringJobConfiguration {
   cadence: RecurringJobConfigurationCadence;
@@ -18,14 +18,9 @@ export interface RecurringJobConfiguration {
   intervalCount: number;
   startsOn: string;
   endsOn: string;
-  /** @pattern ^([01]\d|2[0-3]):[0-5]\d$ */
   localTime: string;
   billingMode: RecurringJobConfigurationBillingMode;
-  /**
-     * @minimum 1
-     * @nullable
-     */
+  /** @nullable */
   unitAmountCents: number | null;
-  /** @maxItems 120 */
-  periods: RecurringBillingPeriod[];
+  periods: RecurringJobConfigurationPeriodsItem[];
 }

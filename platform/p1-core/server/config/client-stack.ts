@@ -143,7 +143,11 @@ export function validateClientStackEnvironment(
   }
 
   if (requirements.email) {
-    requireVariables(env, ["SMTP_HOST", "SMTP_USER", "SMTP_PASS", "SMTP_FROM"], errors);
+    requireVariables(
+      env,
+      ["SMTP_HOST", "SMTP_USER", "SMTP_PASS", "SMTP_FROM", "P1_FORM_NOTIFICATION_RECIPIENTS"],
+      errors,
+    );
     const port = Number.parseInt(env.SMTP_PORT || "587", 10);
     if (!Number.isInteger(port) || port < 1 || port > 65535) {
       errors.push("SMTP_PORT must be an integer between 1 and 65535");

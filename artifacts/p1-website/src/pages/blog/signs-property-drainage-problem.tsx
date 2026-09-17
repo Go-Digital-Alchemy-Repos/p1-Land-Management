@@ -3,27 +3,22 @@ import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
+import { articleSchema } from "@/lib/structured-data";
 import heroImg from "@/assets/blog-drainage.png";
 
 export default function BlogPost() {
   return (
     <Layout>
       <SEO 
-        title="5 Signs Your Property Has a Drainage Problem (And What to Do About It) | P1 Land & Property Management"
-        description="Standing water, soggy soil, and erosion are signs of a drainage problem that will get worse. Learn to spot the signs early and understand your options. Serving Upstate SC and Charlotte NC."
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "Article",
+        title="5 Signs of a Property Drainage Problem | P1"
+        description="Learn to recognize standing water, erosion, soggy ground, washouts, and other drainage warning signs before they cause more property damage."
+        jsonLd={articleSchema({
           headline: "5 Signs Your Property Has a Drainage Problem (And What to Do About It)",
           description: "Standing water, soggy soil, and erosion are signs of a drainage problem that will get worse. Learn to spot the signs early.",
-          image: "https://www.p1landmanagement.com/opengraph.jpg",
-          author: { "@type": "Organization", name: "P1 Land & Property Management" },
-          publisher: {
-            "@type": "Organization",
-            name: "P1 Land & Property Management",
-            logo: { "@type": "ImageObject", url: "https://www.p1landmanagement.com/opengraph.jpg" },
-          },
-        }}
+          path: "/blog/signs-property-drainage-problem",
+          datePublished: "2026-06-24",
+          dateModified: "2026-09-14",
+        })}
       />
 
       <article className="pb-24">
@@ -50,7 +45,7 @@ export default function BlogPost() {
               Drainage problems don't announce themselves with a clear label. They show up as inconveniences — a soggy corner of the field, a driveway that washes out after every storm, a patch of turf that never seems to dry out — until the underlying problem is serious enough that small fixes won't cut it.
             </p>
             <p>
-              For large commercial, agricultural, and rural residential properties, drainage failures are especially costly: they damage structures, reduce the productive capacity of fields, create erosion and additional maintenance work.
+              For large commercial, industrial, agricultural, municipal, and institutional properties, drainage failures are especially costly: they damage structures, reduce the productive capacity of fields, create erosion and additional maintenance work.
             </p>
             <p>
               Here are five signs that your property has a drainage problem that deserves a professional look — and what your options are when you find one.
@@ -104,7 +99,7 @@ export default function BlogPost() {
               A proper drainage assessment evaluates the overall topography, existing drainage infrastructure, soil type and permeability, and sources of the water causing the problem. From that assessment, a targeted solution can be designed — whether that's regrading, installing drainage pipes or swales, improving ditch capacity, or a combination.
             </p>
             <p>
-              P1 Land & Property Management provides on-site drainage assessments and installs custom drainage solutions for large commercial, agricultural, and residential properties throughout Upstate South Carolina and the Charlotte, NC region.
+              P1 Land & Property Management provides on-site drainage assessments and installs custom drainage solutions for large commercial, industrial, agricultural, municipal, and institutional properties throughout Upstate South Carolina and the Charlotte, NC region. P1 does not provide residential services.
             </p>
             <p>
               Call <strong><a href="tel:7042218928">+1 (704) 221-8928</a></strong> or request a free estimate online — P1 Land & Property Management, serving Upstate SC and Charlotte NC.
@@ -114,7 +109,7 @@ export default function BlogPost() {
       </article>
 
       <aside className="site-shell pb-12 text-lg">
-        <p>Planning work on your land? <Link href="/services/drainage" className="text-primary underline">Explore this service</Link> and <Link href="/contact" className="text-primary underline">request a property estimate</Link>.</p>
+        <p>Planning work on your land? Review P1's <Link href="/services/drainage" className="text-primary underline">property drainage services</Link> and <Link href="/contact" className="text-primary underline">request a property estimate</Link>.</p>
       </aside>
       <FinalCTA />
     </Layout>

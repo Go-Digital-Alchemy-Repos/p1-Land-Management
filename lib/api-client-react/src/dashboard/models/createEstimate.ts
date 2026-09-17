@@ -11,27 +11,15 @@ import type { RecurringJobConfiguration } from './recurringJobConfiguration';
 
 export interface CreateEstimate {
   propertyId: string;
-  /** Staff-only Project grouping; the selected property must participate. */
   projectId?: string;
-  /**
-     * @minLength 1
-     * @maxLength 10000
-     */
+  /** @minLength 1 */
   title: string;
-  /**
-     * @minLength 1
-     * @maxLength 10000
-     */
+  /** @minLength 1 */
   scope: string;
-  /** @maxLength 50000 */
   terms?: string;
-  /**
-     * @minItems 1
-     * @maxItems 100
-     */
+  /** @minItems 1 */
   lineItems: EstimateLineItem[];
   kind: CreateEstimateKind;
   recurring?: RecurringJobConfiguration;
-  /** Required for recurring estimates and snapshotted when the draft is created. */
   agreementTemplateId?: string;
 }

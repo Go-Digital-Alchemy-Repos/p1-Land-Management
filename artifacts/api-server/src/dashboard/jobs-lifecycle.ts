@@ -33,7 +33,7 @@ const recurringConfig = z.object({
   if (value.billingMode === "per_visit" && (value.unitAmountCents === null || value.periods.length)) ctx.addIssue({ code: "custom", message: "Per-visit agreements require a rate and no monthly periods" });
   if (value.billingMode === "fixed_monthly" && (value.unitAmountCents !== null || !value.periods.length)) ctx.addIssue({ code: "custom", message: "Monthly agreements require explicit monthly periods" });
 });
-const estimateInput = z.object({
+const lifecycleEstimateInput = z.object({
   propertyId: id,
   title: text,
   scope: text,
@@ -47,7 +47,25 @@ const estimateInput = z.object({
   if (value.kind === "recurring" && (!value.recurring || !value.agreementTemplateId)) ctx.addIssue({ code: "custom", message: "Recurring estimates require a schedule and agreement template" });
   if (value.kind === "one_time" && (value.recurring || value.agreementTemplateId)) ctx.addIssue({ code: "custom", message: "One-time estimates cannot include recurring agreement details" });
 });
-type EstimateInput = z.infer<typeof estimateInput>;
+// The prior dashboard contract created a one-time estimate from a single
+// amount. Keep it accepted while new callers supply itemized scope.
+const legacyEstimateInput = z.object({
+  propertyId: id,
+  title: text,
+  scope: text,
+  amountCents: z.number().int().positive().max(10_000_000_000),
+}).transform((value) => ({
+  propertyId: value.propertyId,
+  title: value.title,
+  scope: value.scope,
+  terms: "",
+  lineItems: [{ description: value.title, unit: undefined, quantity: 1, unitPriceCents: value.amountCents }],
+  kind: "one_time" as const,
+  projectId: undefined,
+  recurring: undefined,
+  agreementTemplateId: undefined,
+}));
+const estimateInput = z.union([lifecycleEstimateInput, legacyEstimateInput]);
 const offices = ["owner", "manager", "sales"] as const;
 const dispatch = ["owner", "manager", "dispatch"] as const;
 const sha = (value: string) => createHash("sha256").update(value).digest("hex");
@@ -59,8 +77,21 @@ const total = (items: z.infer<typeof lineItem>[]) => {
 async function audit(c: any, userId: string | null, action: string, entityId: string, details: unknown = {}) {
   await c.query("INSERT INTO audit_event(id,user_id,action,entity_id,details) VALUES($1,$2,$3,$4,$5)", [randomUUID(), userId, action, entityId, details]);
 }
-async function requestEvent(c: any, requestId: string, actorId: string | null, event: string, version: number, details: unknown = {}) {
-  await c.query("INSERT INTO service_request_event(id,request_id,actor_id,event,version,details) VALUES($1,$2,$3,$4,$5,$6)", [randomUUID(), requestId, actorId, event, version, details]);
+async function requestEvent(
+  c: any,
+  requestId: string,
+  actorId: string,
+  eventType: "transitioned" | "converted",
+  priorVersion: number,
+  resultingVersion: number,
+  fromStatus: string,
+  toStatus: string,
+  details: unknown = {},
+) {
+  await c.query(
+    "INSERT INTO service_request_event(id,service_request_id,actor_id,event_type,prior_version,resulting_version,from_status,to_status,details) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)",
+    [randomUUID(), requestId, actorId, eventType, priorVersion, resultingVersion, fromStatus, toStatus, JSON.stringify(details)],
+  );
 }
 async function templateSnapshot(c: any, templateId: string | undefined) {
   if (!templateId) return null;
@@ -92,8 +123,12 @@ async function createEstimate(a: Actor, raw: unknown, requestId?: string) {
     for (const [position, item] of b.lineItems.entries())
       await c.query("INSERT INTO estimate_line_item(id,estimate_id,position,description,unit,quantity,unit_price_cents) VALUES($1,$2,$3,$4,$5,$6,$7)", [randomUUID(), key, position, item.description, item.unit || null, item.quantity, item.unitPriceCents]);
     if (requestId) {
-      const request = (await c.query("UPDATE service_request SET status='estimating',version=version+1,updated_at=now() WHERE id=$1 RETURNING version", [requestId])).rows[0];
-      await requestEvent(c, requestId, a.id, "estimating", request.version, { estimateId: key });
+      const request = (await c.query("SELECT status,version FROM service_request WHERE id=$1 FOR UPDATE", [requestId])).rows[0];
+      if (request.status === "new") {
+        const nextVersion = Number(request.version) + 1;
+        await c.query("UPDATE service_request SET status='triaged',version=$2,updated_at=now() WHERE id=$1", [requestId, nextVersion]);
+        await requestEvent(c, requestId, a.id, "transitioned", Number(request.version), nextVersion, "new", "triaged", { estimateId: key, stage: "estimate_draft" });
+      }
     }
     await audit(c, a.id, "estimate.created", key, { requestId: requestId || null, kind: b.kind });
   });
@@ -113,6 +148,8 @@ async function convertApprovedEstimate(c: any, estimate: any, actorId: string | 
   if (!estimate.is_current || new Date(estimate.expires_at).getTime() <= Date.now()) throw new HttpError(409, "Estimate has expired or been revised");
   await c.query("UPDATE estimate SET status='approved',approved_by=$2,approved_at=now() WHERE id=$1", [estimate.id, actorId]);
   let jobId: string;
+  const eventActorId = estimate.created_by || actorId;
+  if (!eventActorId) throw new HttpError(409, "Estimate is missing its staff owner");
   if (estimate.kind === "recurring") {
     const config = recurringConfig.parse(estimate.recurring_config);
     const recurringId = randomUUID(), agreementId = randomUUID();
@@ -128,9 +165,17 @@ async function convertApprovedEstimate(c: any, estimate: any, actorId: string | 
     await c.query("INSERT INTO work_order(id,property_id,title,scope,estimate_id,request_id,project_id,job_kind) VALUES($1,$2,$3,$4,$5,$6,$7,'one_time')", [jobId, estimate.property_id, estimate.title, estimate.scope, estimate.id, estimate.request_id, estimate.project_id]);
     await audit(c, actorId, "job.created_from_estimate", jobId, { estimateId: estimate.id });
   }
-  if (estimate.request_id) {
-    const request = (await c.query("UPDATE service_request SET status='converted',version=version+1,updated_at=now() WHERE id=$1 RETURNING version", [estimate.request_id])).rows[0];
-    await requestEvent(c, estimate.request_id, actorId, "converted", request.version, { estimateId: estimate.id, jobId, recurring: estimate.kind === "recurring" });
+  if (estimate.request_id && estimate.kind === "one_time") {
+    const request = (await c.query("SELECT status,version FROM service_request WHERE id=$1 FOR UPDATE", [estimate.request_id])).rows[0];
+    if (!request || !["triaged", "scheduled"].includes(request.status)) throw new HttpError(409, "Request is not ready for Job conversion");
+    const nextVersion = Number(request.version) + 1;
+    const operationId = randomUUID();
+    await c.query(
+      "INSERT INTO service_request_conversion(operation_id,service_request_id,work_order_id,actor_id,expected_request_version,fingerprint) VALUES($1,$2,$3,$4,$5,$6)",
+      [operationId, estimate.request_id, jobId, eventActorId, request.version, sha(JSON.stringify({ estimateId: estimate.id, jobId }))],
+    );
+    await c.query("UPDATE service_request SET status='converted',version=$2,updated_at=now() WHERE id=$1", [estimate.request_id, nextVersion]);
+    await requestEvent(c, estimate.request_id, eventActorId, "converted", Number(request.version), nextVersion, request.status, "converted", { estimateId: estimate.id, jobId, operationId });
   }
   await audit(c, actorId, "estimate.approved", estimate.id, { jobId, contactId });
   return { jobId, recurring: estimate.kind === "recurring" };
@@ -143,10 +188,6 @@ async function decideEstimate(estimateId: string, status: "approved" | "declined
     if (status === "declined") {
       if (estimate.status !== "sent") throw new HttpError(409, "Estimate is no longer awaiting a decision");
       await c.query("UPDATE estimate SET status='declined' WHERE id=$1", [estimateId]);
-      if (estimate.request_id) {
-        const request = (await c.query("UPDATE service_request SET status='estimating',version=version+1,updated_at=now() WHERE id=$1 RETURNING version", [estimate.request_id])).rows[0];
-        await requestEvent(c, estimate.request_id, actorId, "declined", request.version, { estimateId });
-      }
       await audit(c, actorId, "estimate.declined", estimateId, { contactId });
       await notifyStaff(c, estimate.created_by, "Estimate declined", `${estimate.title} was declined by the client.`, `estimate-declined:${estimateId}`);
       return { ok: true, declined: true };
@@ -202,14 +243,25 @@ jobsLifecycleApi.post("/estimates/:id/send", async (req, res) => {
     if (contacts.length !== b.recipientContactIds.length || contacts.some(contact => !contact.email || !contact.email_enabled)) throw new HttpError(409, "Each recipient must be an active property contact with email notifications enabled");
     await c.query("UPDATE estimate SET status='sent' WHERE id=$1", [estimateId]);
     for (const contact of contacts) { const token = randomBytes(32).toString("base64url"); await c.query("INSERT INTO estimate_recipient(id,estimate_id,contact_id,email,token_hash,expires_at) VALUES($1,$2,$3,$4,$5,$6)", [randomUUID(), estimateId, contact.id, contact.email, sha(token), estimate.expires_at]); await c.query("INSERT INTO outbox(id,kind,payload,dedup_key) VALUES($1,'email',$2,$3)", [randomUUID(), { to: contact.email, subject: `Estimate ready: ${estimate.title}`, text: `Your P1 estimate is ready to review and approve: ${process.env.DASHBOARD_ORIGIN || ""}/estimate-approval/${token}` }, `estimate:${estimateId}:${contact.id}:v${estimate.revision}`]); }
-    if (estimate.request_id) { const request = (await c.query("UPDATE service_request SET status='awaiting_client',version=version+1,updated_at=now() WHERE id=$1 RETURNING version", [estimate.request_id])).rows[0]; await requestEvent(c, estimate.request_id, a.id, "sent", request.version, { estimateId }); }
     await audit(c, a.id, "estimate.sent", estimateId, { recipients: b.recipientContactIds });
   });
   res.json({ ok: true });
 });
 jobsLifecycleApi.post("/estimates/:id/decision", async (req, res) => {
-  const a = await actor(req); const key = id.parse(req.params.id); const b = z.object({ status: z.enum(["approved", "declined"]), revision: z.number().int().positive() }).parse(req.body);
-  requireRole(a.role, ["client"]); const estimate = await estimateDocument(pool, key); await propertyAccess(a, estimate.property_id); if (estimate.revision !== b.revision) throw new HttpError(409, "Estimate changed; refresh and retry");
+  const a = await actor(req); const key = id.parse(req.params.id); const b = z.object({ status: z.enum(["sent", "approved", "declined"]), revision: z.number().int().positive() }).parse(req.body);
+  const estimate = await estimateDocument(pool, key); await propertyAccess(a, estimate.property_id); if (estimate.revision !== b.revision) throw new HttpError(409, "Estimate changed; refresh and retry");
+  if (b.status === "sent") {
+    requireRole(a.role, [...offices]);
+    await transaction(async (c) => {
+      const current = (await c.query("SELECT status,is_current,revision FROM estimate WHERE id=$1 FOR UPDATE", [key])).rows[0];
+      if (!current || !current.is_current || current.revision !== b.revision || current.status !== "draft") throw new HttpError(409, "Estimate changed or decision already recorded");
+      await c.query("UPDATE estimate SET status='sent' WHERE id=$1", [key]);
+      await audit(c, a.id, "estimate.sent_legacy", key);
+    });
+    res.json({ ok: true });
+    return;
+  }
+  requireRole(a.role, ["client"]);
   res.json(await decideEstimate(key, b.status, a.id, null));
 });
 jobsLifecycleApi.post("/jobs/internal", async (req, res) => {

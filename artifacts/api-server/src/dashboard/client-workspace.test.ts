@@ -243,5 +243,101 @@ test(
       { headers: headers.get(ids.outsider)! },
     );
     assert.equal(otherProperty.status, 404);
+
+    const propertyUpdate = await fetch(
+      `${base}/api/v1/properties/${ids.property}`,
+      {
+        method: "POST",
+        headers: managerHeaders,
+        body: JSON.stringify({
+          name: "Updated workspace property",
+          address: "101 Verified Lane",
+          acreage: 12.5,
+          accessInstructions: "Call before arrival",
+          version: 1,
+        }),
+      },
+    );
+    assert.equal(propertyUpdate.status, 200);
+    assert.deepEqual(await propertyUpdate.json(), {
+      id: ids.property,
+      client_id: ids.client,
+      name: "Updated workspace property",
+      address: "101 Verified Lane",
+      acreage: "12.5",
+      access_instructions: "Call before arrival",
+      version: 2,
+    });
+    const stalePropertyUpdate = await fetch(
+      `${base}/api/v1/properties/${ids.property}`,
+      {
+        method: "POST",
+        headers: managerHeaders,
+        body: JSON.stringify({
+          name: "Stale update",
+          address: "101 Verified Lane",
+          acreage: null,
+          version: 1,
+        }),
+      },
+    );
+    assert.equal(stalePropertyUpdate.status, 409);
+    const clientPropertyUpdate = await fetch(
+      `${base}/api/v1/properties/${ids.property}`,
+      {
+        method: "POST",
+        headers: headers.get(ids.clientUser)!,
+        body: JSON.stringify({
+          name: "Unauthorized update",
+          address: "101 Verified Lane",
+          acreage: null,
+          version: 2,
+        }),
+      },
+    );
+    assert.equal(clientPropertyUpdate.status, 403);
+
+    const projectId = randomUUID();
+    await pool.query(
+      "INSERT INTO project(id,property_id,name,scope) VALUES($1,$2,'Workspace project','Original scope')",
+      [projectId, ids.property],
+    );
+    const projectUpdate = await fetch(`${base}/api/v1/projects/${projectId}`, {
+      method: "POST",
+      headers: managerHeaders,
+      body: JSON.stringify({
+        name: "Updated workspace project",
+        scope: "Reviewed operational scope",
+        expectedVersion: 1,
+      }),
+    });
+    assert.equal(projectUpdate.status, 200);
+    assert.deepEqual(await projectUpdate.json(), {
+      id: projectId,
+      property_id: ids.property,
+      name: "Updated workspace project",
+      scope: "Reviewed operational scope",
+      status: "planned",
+      version: 2,
+    });
+    const staleProjectUpdate = await fetch(`${base}/api/v1/projects/${projectId}`, {
+      method: "POST",
+      headers: managerHeaders,
+      body: JSON.stringify({
+        name: "Stale project update",
+        scope: "Should not persist",
+        expectedVersion: 1,
+      }),
+    });
+    assert.equal(staleProjectUpdate.status, 409);
+    const storedProject = await pool.query(
+      "SELECT name,scope,version FROM project WHERE id=$1",
+      [projectId],
+    );
+    assert.deepEqual(storedProject.rows[0], {
+      name: "Updated workspace project",
+      scope: "Reviewed operational scope",
+      version: 2,
+    });
   },
 );

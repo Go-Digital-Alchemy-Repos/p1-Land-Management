@@ -3,27 +3,22 @@ import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
+import { articleSchema } from "@/lib/structured-data";
 import heroImg from "@/assets/blog-retention-pond.png";
 
 export default function BlogPost() {
   return (
     <Layout>
       <SEO 
-        title="How to Manage a Retention Pond on Your Property in SC & NC | P1 Land & Property Management"
-        description="A retention pond that isn't maintained becomes a liability. Learn what routine pond management involves, what to watch for, and when to call a professional. Serving Upstate SC and Charlotte NC."
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "Article",
+        title="Retention Pond Management in SC & NC | P1"
+        description="Learn the routine inspections, vegetation control, sediment review, shoreline care, and professional coordination involved in retention pond management."
+        jsonLd={articleSchema({
           headline: "How to Manage a Retention Pond on Your Property in SC & NC",
           description: "A retention pond that isn't maintained becomes a liability. Learn what routine pond management involves and when to call a professional.",
-          image: "https://www.p1landmanagement.com/opengraph.jpg",
-          author: { "@type": "Organization", name: "P1 Land & Property Management" },
-          publisher: {
-            "@type": "Organization",
-            name: "P1 Land & Property Management",
-            logo: { "@type": "ImageObject", url: "https://www.p1landmanagement.com/opengraph.jpg" },
-          },
-        }}
+          path: "/blog/how-to-manage-retention-pond-south-carolina",
+          datePublished: "2026-06-24",
+          dateModified: "2026-09-14",
+        })}
       />
 
       <article className="pb-24">
@@ -111,7 +106,7 @@ export default function BlogPost() {
               DIY pond maintenance has limits. If you're dealing with a serious algae problem, significant erosion, dam integrity concerns, or a commercial pond with regulatory implications, a professional pond management contractor has the equipment, chemicals, and expertise to solve the problem correctly.
             </p>
             <p>
-              P1 provides pond and waterway management throughout Upstate South Carolina and the Charlotte, NC region. We work with farm ponds, commercial retention basins, residential estate ponds, and waterfront properties.
+              P1 provides pond and waterway management throughout Upstate South Carolina and the Charlotte, NC region. We work with farm ponds, commercial and industrial retention basins, municipal stormwater ponds, institutional water features, and qualifying waterfront commercial properties.
             </p>
             <p>
               Call <strong><a href="tel:7042218928">+1 (704) 221-8928</a></strong> or request a free estimate online — P1 Land & Property Management, serving Upstate SC and Charlotte NC.
@@ -121,7 +116,7 @@ export default function BlogPost() {
       </article>
 
       <aside className="site-shell pb-12 text-lg">
-        <p>Planning work on your land? <Link href="/services/pond-waterway-management" className="text-primary underline">Explore this service</Link> and <Link href="/contact" className="text-primary underline">request a property estimate</Link>.</p>
+        <p>Planning work on your land? Review P1's <Link href="/services/pond-waterway-management" className="text-primary underline">pond and waterway management services</Link> and <Link href="/contact" className="text-primary underline">request a property estimate</Link>.</p>
       </aside>
       <FinalCTA />
     </Layout>

@@ -50,5 +50,13 @@ and Job projections are also published in
 `lib/api-spec/dashboard.openapi.json`; the generated dashboard client is kept
 in `lib/api-client-react/src/dashboard`.
 
+## Targeted validation
+
+With the isolated local dashboard fixture configured, run
+`pnpm --filter @workspace/api-server test:dashboard:jobs`. It covers exactly-once
+one-time conversion, post-decision and expiry token rejection, recurring
+agreement snapshots, and pending activation. The normal request lifecycle
+suite remains `pnpm --filter @workspace/api-server test:dashboard`.
+
 Authenticated and public estimate responses are `no-store`; public tokens are
 revoked after any decision, revision, or expiry.

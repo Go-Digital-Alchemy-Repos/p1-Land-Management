@@ -3,27 +3,22 @@ import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
+import { articleSchema } from "@/lib/structured-data";
 import heroImg from "@/assets/blog-land-clearing.png";
 
 export default function BlogPost() {
   return (
     <Layout>
       <SEO 
-        title="How Much Does Land Clearing Cost Per Acre in South Carolina? | P1 Land & Property Management"
-        description="Understand what drives land clearing costs in South Carolina. From forestry mulching to full clearing with grubbing, we break down what you can expect to pay per acre. Call (704) 221-8928."
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "Article",
+        title="Land Clearing Cost Per Acre in South Carolina | P1"
+        description="Learn what drives land clearing cost in South Carolina, from vegetation and access to grading, debris handling, and the work planned after clearing."
+        jsonLd={articleSchema({
           headline: "How Much Does Land Clearing Cost Per Acre in South Carolina?",
           description: "Understand what drives land clearing costs in South Carolina, from forestry mulching to full clearing with grubbing.",
-          image: "https://www.p1landmanagement.com/opengraph.jpg",
-          author: { "@type": "Organization", name: "P1 Land & Property Management" },
-          publisher: {
-            "@type": "Organization",
-            name: "P1 Land & Property Management",
-            logo: { "@type": "ImageObject", url: "https://www.p1landmanagement.com/opengraph.jpg" },
-          },
-        }}
+          path: "/blog/land-clearing-cost-per-acre-south-carolina",
+          datePublished: "2026-06-24",
+          dateModified: "2026-09-14",
+        })}
       />
 
       <article className="pb-24">
@@ -100,7 +95,7 @@ export default function BlogPost() {
 
             <h2>Ready to Get Your Land Cleared in Upstate SC or Charlotte NC?</h2>
             <p>
-              P1 Land & Property Management provides land clearing for commercial, agricultural, and large residential properties throughout Upstate South Carolina and the Charlotte, NC region. We offer free on-site assessments and transparent, written estimates.
+              P1 Land & Property Management provides land clearing for commercial, industrial, agricultural, municipal, and institutional properties throughout Upstate South Carolina and the Charlotte, NC region. We offer free on-site assessments and transparent, written estimates. P1 does not provide residential services.
             </p>
             <p>
               Call <strong><a href="tel:7042218928">+1 (704) 221-8928</a></strong> or request a free estimate online — P1 Land & Property Management, serving Upstate SC and Charlotte NC.
@@ -110,7 +105,7 @@ export default function BlogPost() {
       </article>
 
       <aside className="site-shell pb-12 text-lg">
-        <p>Planning work on your land? <Link href="/services/land-clearing" className="text-primary underline">Explore this service</Link> and <Link href="/contact" className="text-primary underline">request a property estimate</Link>.</p>
+        <p>Planning work on your land? Review P1's <Link href="/services/land-clearing" className="text-primary underline">commercial land clearing services</Link> and <Link href="/contact" className="text-primary underline">request a property estimate</Link>.</p>
       </aside>
       <FinalCTA />
     </Layout>

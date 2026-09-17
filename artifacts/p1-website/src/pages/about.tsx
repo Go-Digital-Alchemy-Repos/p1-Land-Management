@@ -3,6 +3,7 @@ import { FinalCTA } from "@/components/layout/FinalCTA";
 import { FeatureRow } from "@/components/layout/FeatureRow";
 import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
+import { localBusinessSchema } from "@/lib/structured-data";
 import heroImg from "@/assets/commercial-property.png";
 import whoImg from "@/assets/features/about-who.png";
 import { CheckCircle2 } from "lucide-react";
@@ -11,8 +12,9 @@ export default function About() {
   return (
     <Layout>
       <SEO 
-        title="About P1 Land & Property Management | Upstate SC & Charlotte NC"
-        description="P1 Land & Property Management is a full-service land and property contractor serving commercial, industrial, and agricultural landowners across Upstate South Carolina and the Charlotte, NC region."
+        title="About P1 Land Management | Carolinas"
+        description="Meet P1, a land and property contractor for 1-acre-plus commercial, industrial, agricultural, municipal, and institutional sites in the Carolinas."
+        jsonLd={localBusinessSchema()}
       />
 
       {/* PAGE HERO */}
@@ -36,16 +38,16 @@ export default function About() {
         <div className="site-shell">
           <FeatureRow heading="Who We Are" image={whoImg} imageAlt="Experienced P1 land management crew with heavy equipment">
             <p>
-              P1 Land & Property Management was founded on a simple idea: that commercial, agricultural, and large residential landowners in the Carolinas deserve a single, capable contractor who can manage the full life of their property — from rough clearing to fine turf, from drainage repair to complete reconstruction.
+              P1 Land & Property Management was founded on a simple idea: that commercial, industrial, agricultural, municipal, and institutional property operators in the Carolinas deserve a single, capable contractor who can manage the full life of their property — from rough clearing to fine turf, from drainage repair to complete reconstruction.
             </p>
             <p>
               We operate across two of the region's fastest-growing markets: the Greenville-Spartanburg corridor in Upstate South Carolina, and the greater Charlotte, North Carolina area. Our services span land preparation and ongoing property maintenance.
             </p>
             <p>
-              Our services are intended for commercial property developers, farm owners, industrial site managers, HOAs managing large common areas, equestrian property owners, and rural landowners who simply want their land working for them, not against them.
+              Our services are intended for commercial property developers and managers, farm operators, industrial site managers, municipalities, and institutions that need their land working for them, not against them.
             </p>
             <p className="font-bold text-secondary text-xl border-l-4 border-primary pl-6 py-2 mt-8">
-              We don't take small residential lawn jobs. Our minimum is 1 acre, and our specialty is the kind of work that takes real equipment, real experience, and a real commitment to getting it done right.
+              We do not provide residential services. Our minimum is 1 acre, and our specialty is the kind of commercial-scale work that takes real equipment, real experience, and a real commitment to getting it done right.
             </p>
           </FeatureRow>
         </div>
@@ -91,16 +93,16 @@ export default function About() {
               Where We Work
             </h2>
             <p className="text-lg text-secondary/80 leading-relaxed">
-              P1 serves commercial, agricultural, and large residential property owners throughout Upstate South Carolina — including Greenville, Spartanburg, Anderson, Gaffney, Greer, Simpsonville, and surrounding counties — and the greater Charlotte, North Carolina region, including Concord, Mooresville, Lake Norman, Gastonia, Huntersville, and the Mecklenburg County area.
+              P1 serves commercial, industrial, agricultural, municipal, and institutional properties throughout Upstate South Carolina — including Greenville, Spartanburg, Anderson, Gaffney, Greer, Simpsonville, and surrounding counties — and the greater Charlotte, North Carolina region, including Concord, Mooresville, Lake Norman, Gastonia, Huntersville, and the Mecklenburg County area.
             </p>
           </div>
           <div className="space-y-6">
             <h2 className="text-3xl font-serif font-bold text-secondary border-b border-border pb-4">
-              Discuss Your Property With P1
+              What to Expect From P1
             </h2>
             <ul className="space-y-4">
               {[
-                "Discuss project requirements and documentation with our team",
+                "Project requirements and documentation defined before work begins",
                 "Commercial and agricultural property experience",
                 "Equipped for large-scale earthwork and fine maintenance",
                 "Serving both Upstate SC and Charlotte NC markets",

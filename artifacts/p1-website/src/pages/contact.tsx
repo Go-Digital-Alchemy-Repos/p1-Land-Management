@@ -11,8 +11,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CheckCircle2, Phone, Mail, Clock, MapPin } from "lucide-react";
-import { EMAIL, PHONE_DISPLAY, PHONE_HREF } from "@/lib/site";
+import { CheckCircle2, Phone, Clock, MapPin } from "lucide-react";
+import { PHONE_DISPLAY, PHONE_HREF } from "@/lib/site";
 
 const SERVICES = [
   "Land Clearing", "Grading & Site Prep", "Drainage", "Turf & Seeding",
@@ -22,7 +22,7 @@ const SERVICES = [
 const FAQS = [
   {
     question: "What is your minimum property size?",
-    answer: "P1 specializes in properties 1 acre and larger. We do not take standard residential lawn maintenance jobs.",
+    answer: "P1 specializes in commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger. We do not provide residential services.",
   },
   {
     question: "Do you serve both South Carolina and North Carolina?",
@@ -34,7 +34,7 @@ const FAQS = [
   },
   {
     question: "Do you offer ongoing maintenance contracts?",
-    answer: "Yes. We offer weekly, bi-weekly, and monthly maintenance programs for commercial, agricultural, and large residential properties.",
+    answer: "Yes. We offer weekly, bi-weekly, and monthly maintenance programs for commercial, industrial, agricultural, municipal, and institutional properties.",
   },
   {
     question: "Are you licensed and insured?",
@@ -90,7 +90,7 @@ export default function Contact() {
     <Layout>
       <SEO 
         title="Get a Free Estimate | P1 Land & Property Management"
-        description="Request a free on-site estimate for land clearing, grading, drainage, turf, pond management, or property maintenance. Serving Upstate SC and Charlotte NC. Call (704) 221-8928."
+        description="Request a free estimate for clearing, grading, drainage, turf, pond, or property maintenance work in Upstate SC and Charlotte. Call (704) 221-8928."
         jsonLd={[
           localBusinessSchema(), faqSchema(FAQS),
           breadcrumbSchema([
@@ -191,10 +191,10 @@ export default function Contact() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="commercial">Commercial</SelectItem>
-                        <SelectItem value="agricultural">Agricultural</SelectItem>
                         <SelectItem value="industrial">Industrial</SelectItem>
-                        <SelectItem value="residential">Large Residential</SelectItem>
-                        <SelectItem value="hoa">HOA</SelectItem>
+                        <SelectItem value="agricultural">Agricultural</SelectItem>
+                        <SelectItem value="municipal">Municipal</SelectItem>
+                        <SelectItem value="institutional">Institutional</SelectItem>
                         <SelectItem value="other">Other</SelectItem>
                       </SelectContent>
                     </Select>
@@ -242,13 +242,7 @@ export default function Contact() {
                     <p className="text-white/60 text-sm">Call us direct</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-4">
-                  <Mail className="w-6 h-6 text-primary mt-1" />
-                  <div>
-                    <a className="font-bold text-lg" href={`mailto:${EMAIL}`}>{EMAIL}</a>
-                    <p className="text-white/60 text-sm">Email us</p>
-                  </div>
-                </div>
+                <p className="text-white/80">To protect our team from spam, please use the secure estimate form on this page.</p>
                 <div className="flex items-start gap-4">
                   <MapPin className="w-6 h-6 text-primary mt-1" />
                   <div>

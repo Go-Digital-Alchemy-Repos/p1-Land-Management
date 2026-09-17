@@ -3,12 +3,16 @@ export const BUSINESS_NAME = "P1 Land & Property Management";
 export const PHONE_DISPLAY = "(704) 221-8928";
 export const PHONE_HREF = "tel:+17042218928";
 export const PHONE_E164 = "+17042218928";
-export const EMAIL = "info@p1landmanagement.com";
+export const GOOGLE_BUSINESS_URL =
+  "https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4m6!3m5!1s0x8855cd2b88976525:0x49c378cdfdecac9a!8m2!3d34.8311381!4d-80.6194367!16s%2Fg%2F11nw0vxpb_?entry=ttu&g_ep=EgoyMDI2MDkxMy4wIKXMDSoASAFQAw%3D%3D";
 
 export const BUSINESS_DESCRIPTION =
-  "Full-service land and property management for commercial, agricultural, industrial, and large residential properties 1 acre and larger. Serving Upstate South Carolina and the greater Charlotte, North Carolina region.";
+  "Full-service land and property management — commercial landscaping and grounds maintenance, land clearing, grading, drainage, turf, tree, and pond services — for commercial, industrial, and agricultural properties 1 acre and larger across Upstate South Carolina and the greater Charlotte, North Carolina region.";
 
-export const LOGO_URL = `${SITE_URL}/opengraph.jpg`;
+// Social cards need a broad photographic image, while structured data needs
+// the actual P1 mark supplied for the company's icon and favicon.
+export const BUSINESS_IMAGE_URL = `${SITE_URL}/opengraph.jpg`;
+export const LOGO_URL = `${SITE_URL}/p1-symbol.svg`;
 
 // Days/hours of operation, used for LocalBusiness openingHoursSpecification.
 export const OPENING_HOURS = [

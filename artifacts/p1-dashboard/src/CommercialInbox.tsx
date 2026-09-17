@@ -1,4 +1,5 @@
 import { CommercialContextPanel } from "./CommercialContextPanel";
+import { CommercialAssessmentPanel } from "./CommercialAssessmentPanel";
 import type { ContextTransport } from "./commercial-context.types";
 import {
   listCommercialInquiries,
@@ -6,6 +7,8 @@ import {
   updateCommercialFollowUp,
 } from "@workspace/api-client-react/dashboard";
 import { useEffect, useRef, useState } from "react";
+import { EmailLink, PhoneLink } from "./contact-links";
+import { RichTextEditor } from "./RichTextEditor";
 import "./commercial-inbox.css";
 const statuses = [
   "new",
@@ -296,9 +299,9 @@ export function CommercialInbox({
               {selected.contact_title ? " · " + selected.contact_title : ""}
             </p>
             <p>
-              {selected.email || "No email provided"}
+              {selected.email ? <EmailLink email={selected.email} /> : "No email provided"}
               <br />
-              {selected.phone || "No phone provided"}
+              {selected.phone ? <PhoneLink phone={selected.phone} /> : "No phone provided"}
             </p>
             <dl>
               {[
@@ -359,13 +362,7 @@ export function CommercialInbox({
               </label>
               <label>
                 Next action
-                <textarea
-                  name="action"
-                  required
-                  maxLength={2000}
-                  defaultValue={selected.next_action || ""}
-                  disabled={detailsBusy}
-                />
+                <RichTextEditor name="action" defaultValue={selected.next_action || ""} maxLength={2000} disabled={detailsBusy} ariaLabel="Next action" placeholder="Record the next action and owner." />
               </label>
               <label>
                 Follow-up due (device timezone)
@@ -397,6 +394,16 @@ export function CommercialInbox({
               onMutationAck={({leadId: id, expectedVersion, newVersion}) => {
                 setSelected((current) => current?.id === id && current.version === expectedVersion ? {...current, version: newVersion} : current);
                 setRows((current) => current.map(row => row.id === id && row.version === expectedVersion ? {...row, version: newVersion} : row));
+              }}
+            />
+            <CommercialAssessmentPanel
+              key={selected.id + ":" + selected.version}
+              leadId={selected.id}
+              leadVersion={selected.version}
+              disabled={saving || detailLoading || contextBusy}
+              onLeadMutationAck={({ expectedVersion, newVersion }) => {
+                setSelected((current) => current?.id === selected.id && current.version === expectedVersion ? { ...current, version: newVersion } : current);
+                setRows((current) => current.map((row) => row.id === selected.id && row.version === expectedVersion ? { ...row, version: newVersion } : row));
               }}
             />
           </article>

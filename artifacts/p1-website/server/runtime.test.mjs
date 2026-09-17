@@ -78,11 +78,18 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
     const apex = await request(port, '/contact', { Host: 'p1landmanagement.com' });
     assert.equal(apex.status, 308); assert.equal(apex.headers.location, 'https://www.p1landmanagement.com/contact');
     const legacyService = await request(port, '/services/commercial-property-management?utm_source=qa');
-    assert.equal(legacyService.status, 308);
+    assert.equal(legacyService.status, 301);
     assert.equal(legacyService.headers.location, '/services/commercial-landscaping?utm_source=qa');
+    const consolidatedCharlotte = await request(port, '/service-areas/charlotte-nc?utm_source=qa');
+    assert.equal(consolidatedCharlotte.status, 301);
+    assert.equal(consolidatedCharlotte.headers.location, '/service-areas/charlotte-north-carolina?utm_source=qa');
     const renamedService = await request(port, '/services/commercial-landscaping');
     assert.equal(renamedService.status, 200);
     assert(renamedService.body.includes('Commercial Landscaping'));
+    const setup = await request(port, '/setup/?utm_source=owner-invite');
+    assert.equal(setup.status, 308);
+    assert.equal(setup.headers.location, '/admin/setup?utm_source=owner-invite');
+    assert.equal(setup.headers['x-robots-tag'], 'noindex, nofollow');
   });
   await t.test('retired testimonials page permanently redirects to Contact', async () => {
     const response = await request(port, '/testimonials?utm_source=qa');
@@ -104,6 +111,14 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
     assert(!/<script[^>]+src="[^"]*(?:admin|dashboard)/.test(response.body));
     const preview = await request(port, '/?cmsPreview=1'); assert.equal(preview.headers['x-robots-tag'], 'noindex, nofollow');
   });
+  await t.test('Google reviews endpoint fails closed until server credentials are configured', async () => {
+    const response = await request(port, '/api/p1/google-reviews');
+    assert.equal(response.status, 503);
+    assert.equal(response.headers['content-type'], 'application/json');
+    assert.equal(response.headers['cache-control'], 'no-store');
+    assert.equal(response.headers['x-robots-tag'], 'noindex, nofollow');
+    assert.deepEqual(JSON.parse(response.body), { error: 'Reviews are temporarily unavailable.' });
+  });
   await t.test('favicon MIME, security headers and hashed-asset caching', async () => {
     const favicon = await request(port, '/favicon.svg'); assert.equal(favicon.status, 200); assert.equal(favicon.headers['content-type'], 'image/svg+xml');
     assert.equal(favicon.headers['x-content-type-options'], 'nosniff');
@@ -114,14 +129,18 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
     assert.equal(script.headers['cache-control'], 'public, max-age=31536000, immutable');
     const head = await request(port, asset[1], {}, 'HEAD'); assert.equal(head.status, 200); assert.equal(head.body, '');
   });
-  await t.test('production stays indexable based on manifest with preview exclusion preserved', async () => {
-    const home = await request(port, '/', { Host: 'staging-looking.example.test' });
+  await t.test('production only serves indexable public documents on the canonical host', async () => {
+    const home = await request(port, '/', { Host: 'www.p1landmanagement.com' });
+    assert.equal(home.status, 200);
     assert.equal(home.headers['x-robots-tag'], undefined);
     assert(home.body.includes('name="robots" content="index, follow"'));
-    const robots = await request(port, '/robots.txt');
+    const railwayAlias = await request(port, '/contact/?utm_source=qa', { Host: 'p1-land-management-production.up.railway.app' });
+    assert.equal(railwayAlias.status, 308);
+    assert.equal(railwayAlias.headers.location, 'https://www.p1landmanagement.com/contact?utm_source=qa');
+    const robots = await request(port, '/robots.txt', { Host: 'www.p1landmanagement.com' });
     assert.equal(robots.status, 200);
     assert(!/^Disallow:\s*\/\s*$/m.test(robots.body), 'Production robots must not block the entire site');
-    const preview = await request(port, '/?cmsPreview=1');
+    const preview = await request(port, '/?cmsPreview=1', { Host: 'www.p1landmanagement.com' });
     assert.equal(preview.headers['x-robots-tag'], 'noindex, nofollow');
   });
   await t.test('dashboard routes and assets proxy to configured upstream', async () => {
@@ -156,6 +175,7 @@ test('staging manifest blocks indexing across public and proxied responses regar
   await copyFile(resolve(root, 'server/index.mjs'), resolve(temporary, 'server/index.mjs'));
   await copyFile(resolve(root, 'server/content.mjs'), resolve(temporary, 'server/content.mjs'));
   await copyFile(resolve(root, 'server/client-ip.mjs'), resolve(temporary, 'server/client-ip.mjs')); 
+  await copyFile(resolve(root, 'server/google-reviews.mjs'), resolve(temporary, 'server/google-reviews.mjs'));
   await symlink(resolve(root, 'dist'), resolve(temporary, 'dist'), 'dir');
   const manifest = JSON.parse(await readFile(resolve(root, 'config/client-site-manifest.json'), 'utf8'));
   manifest.origins.publicSite = 'https://p1-staging-example.up.railway.app';

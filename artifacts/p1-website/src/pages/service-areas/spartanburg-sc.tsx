@@ -18,7 +18,7 @@ const FAQS = [
   {
     question: "Does P1 handle industrial site work along the I-85 corridor?",
     answer:
-      "Yes. Spartanburg County's I-85 corridor is one of the most active industrial markets in the Southeast, and P1 provides land clearing, grading, drainage installation, and ongoing grounds maintenance for manufacturing and distribution facilities throughout the area.",
+      "Yes. Spartanburg County's I-85 corridor is one of the most active industrial markets in the Southeast, and P1 provides ongoing grounds maintenance, land clearing, grading, and drainage work for manufacturing and distribution facilities throughout the area.",
   },
   {
     question: "Can P1 maintain farms and pasture in Spartanburg County?",
@@ -28,7 +28,7 @@ const FAQS = [
   {
     question: "What size properties does P1 work on in Spartanburg?",
     answer:
-      "P1 focuses on properties 1 acre and larger — industrial, commercial, agricultural, and large residential — with the heavy equipment and crews that large-acreage work demands.",
+      "P1 focuses on commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger, with the heavy equipment and crews that large-acreage work demands. P1 does not provide residential services.",
   },
 ];
 
@@ -36,10 +36,10 @@ export default function SpartanburgSC() {
   return (
     <Layout>
       <SEO 
-        title="Land Clearing & Property Management Spartanburg SC | P1 Land & Property Management"
-        description="Full-service land clearing, grading, drainage, and property management in Spartanburg, SC. Properties 1 acre and larger. Call (704) 221-8928."
+        title="Land Management in Spartanburg, SC | P1"
+        description="Commercial landscaping, grounds maintenance, land clearing, grading & drainage for qualifying 1-acre-plus Spartanburg, SC sites. Call (704) 221-8928."
         jsonLd={[
-          serviceAreaSchema({ areaName: "Spartanburg, South Carolina", areaType: "City", description: "Full-service land clearing, grading, drainage, and property management in Spartanburg, SC. Properties 1 acre and larger. Call (704) 221-8928.", path: "/service-areas/spartanburg-sc" }),
+          serviceAreaSchema({ areaName: "Spartanburg, South Carolina", areaType: "City", description: "Commercial landscaping, grounds maintenance, land clearing, grading, and drainage services for qualifying Spartanburg, SC properties 1 acre and larger.", path: "/service-areas/spartanburg-sc" }),
           breadcrumbSchema([
             { name: "Home", path: "/" },
             { name: "Service Areas", path: "/service-areas" },
@@ -59,7 +59,7 @@ export default function SpartanburgSC() {
             </em>
           </>
         }
-        subtitle="P1 Land & Property Management serves commercial, industrial, and agricultural properties throughout Spartanburg, SC and Spartanburg County. Our full-service land management programs cover everything from initial land clearing and site preparation through ongoing weekly or monthly maintenance — all with the equipment and crew to handle large-acreage properties that standard contractors can't."
+        subtitle="P1 Land & Property Management serves commercial, industrial, and agricultural properties throughout Spartanburg and Spartanburg County. Our full-service programs begin with commercial landscaping and grounds maintenance, then extend through land clearing, grading, drainage, and complete property reconstruction for qualifying large-acreage sites."
         image={heroImg}
         imageAlt="Land Clearing & Property Management in Spartanburg, SC"
       />
@@ -71,10 +71,11 @@ export default function SpartanburgSC() {
               <h2 className="text-3xl font-serif font-bold text-secondary border-b border-border pb-4">Spartanburg SC Services</h2>
               <ul className="space-y-3">
                 {[
+                  "Commercial landscaping and grounds maintenance",
+                  "Agricultural land maintenance and pasture management",
                   "Land clearing and forestry mulching",
                   "Grading and site preparation for commercial and industrial sites",
                   "Drainage system installation and correction",
-                  "Agricultural land maintenance and pasture management",
                   "Turf installation and large-acreage seeding",
                   "Tree management and clearing",
                   "Pond and waterway management",
@@ -97,6 +98,21 @@ export default function SpartanburgSC() {
                   Call <a href="tel:7042218928" className="text-primary hover:underline">+1 (704) 221-8928</a> or <Link href="/contact" className="text-primary hover:underline">request a free estimate online</Link> to discuss your property.
                 </p>
               </div>
+            </div>
+          </div>
+
+          <div className="grid gap-10 border-y border-border py-12 md:grid-cols-2">
+            <div className="space-y-4">
+              <h2 className="text-2xl font-serif font-bold text-secondary">Land management along a working corridor</h2>
+              <p className="leading-relaxed text-secondary/80">Spartanburg’s manufacturing, logistics, commercial, and institutional sites operate alongside rural acreage and agricultural land. Active sites often require phased access and coordination around vehicles, shifts, tenants, or public use. Working land may place more emphasis on equipment routes, vegetation, field drainage, pond access, and soil protection.</p>
+              <p className="leading-relaxed text-secondary/80">P1 defines the proposed work around those operating conditions, not just the acreage. That makes it easier to coordinate clearing, grading, drainage, stabilization, and ongoing care in the right order.</p>
+            </div>
+            <div className="space-y-4">
+              <h2 className="text-2xl font-serif font-bold text-secondary">Build a scope that can be compared</h2>
+              <p className="leading-relaxed text-secondary/80">A useful estimate should state the work area, intended result, access assumptions, debris handling, exclusions, schedule, and responsibilities. Available plans, known utilities, drainage history, and current site constraints help make those details more accurate.</p>
+              <p className="leading-relaxed text-secondary/80">Engineering, surveys, permits, utility coordination, and licensed specialty work are confirmed separately when needed. P1’s site review is the place to identify those boundaries before equipment and crews are scheduled.</p>
+              <p className="leading-relaxed text-secondary/80">The same review can organize a large scope into sensible phases. Access or drainage corrections may need to precede clearing, finish grading, stabilization, seeding, or recurring grounds work. For an active Spartanburg County site, phases can be planned around shifts, deliveries, tenant access, animals, or seasonal land use. The property-specific written estimate establishes the approved work and assumptions, giving the owner or facilities team a clearer foundation for budgeting and scheduling.</p>
+              <p className="leading-relaxed text-secondary/80">Photos, drainage history, and a marked plan of recurring problem areas help the assessment concentrate on site behavior that may not be obvious during one visit.</p>
             </div>
           </div>
 

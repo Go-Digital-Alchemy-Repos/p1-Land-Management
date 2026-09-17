@@ -12,7 +12,7 @@ const SITE_URL = (() => {
   return match[1].replace(/\/$/, "");
 })();
 
-const appTsx = readFileSync(resolve(root, "src/App.tsx"), "utf8");
+const appTsx = readFileSync(resolve(root, "src/app-routes.tsx"), "utf8");
 
 const routes = [];
 const seen = new Set();
@@ -27,7 +27,7 @@ while ((m = routeRegex.exec(appTsx)) !== null) {
 }
 
 if (routes.length === 0) {
-  throw new Error("No routes found in src/App.tsx");
+  throw new Error("No routes found in src/app-routes.tsx");
 }
 
 // Published CMS dates are added by the production content server. Do not invent modification dates at build time.

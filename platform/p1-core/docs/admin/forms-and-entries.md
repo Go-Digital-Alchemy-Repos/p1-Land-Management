@@ -35,6 +35,7 @@ Every active form can expose a shareable public link.
 
 Forms can notify more than one system user.
 
+- P1 estimate and commercial assessment submissions use the two-recipient `P1_FORM_NOTIFICATION_RECIPIENTS` server environment value when configured. The value must never be exposed through client code, manifests, API responses, logs, or documentation.
 - Notification recipients are managed in `Admin > User Manager`.
 - Users can be assigned to one form, many forms, or all active forms.
 - Email delivery is a notification channel, not the system of record. Entries still remain stored in the CMS.

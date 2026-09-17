@@ -39,8 +39,8 @@ export default function PondWaterwayManagement() {
   return (
     <Layout>
       <SEO 
-        title="Pond & Waterway Management | P1 Land & Property Management | Upstate SC & Charlotte NC"
-        description="Professional pond management, waterway clearing, shoreline restoration, and water quality maintenance for large properties. Serving Upstate SC and Charlotte NC. Call (704) 221-8928."
+        title="Pond & Waterway Management in SC & NC | P1"
+        description="Pond management, waterway clearing, shoreline work, and maintenance for qualifying large properties in Upstate SC and Charlotte. Call (704) 221-8928."
         jsonLd={[
           serviceSchema({ name: "Pond & Waterway Management", description: "Professional pond management, waterway clearing, shoreline restoration, and water quality maintenance for large properties. Serving Upstate SC and Charlotte NC. Call (704) 221-8928.", path: "/services/pond-waterway-management" }),
           breadcrumbSchema([
@@ -156,6 +156,7 @@ export default function PondWaterwayManagement() {
         </div>
       </section>
 
+      <section className="site-shell py-12"><h2 className="text-2xl font-bold">Managing stormwater across a complex campus?</h2><p className="mt-4 text-muted-foreground">See how pond and SCM maintenance connects with perimeter vegetation, grading, access roads, and recurring exterior work for large facilities.</p><Link href="/commercial/data-centers-secure-facilities" className="mt-5 inline-block font-bold text-primary underline">Data center & secure facility grounds management</Link></section>
       <FinalCTA />
     </Layout>
   );

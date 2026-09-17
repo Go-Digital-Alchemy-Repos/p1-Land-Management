@@ -6,6 +6,7 @@ import type {
   DashboardProperty,
 } from "../../../lib/api-client-react/src/dashboard/models";
 import { useEffect, useRef, useState } from "react";
+import { RichTextEditor } from "./RichTextEditor";
 import {
   listAgreementChargeQueue,
   getAgreementChargeReview,
@@ -441,16 +442,7 @@ export function AgreementQueue({
           </label>
           <label>
             Reason for this decision
-            <textarea
-              value={reviewReason}
-              maxLength={2000}
-              disabled={busy}
-              onChange={(event) => {
-                setReviewReason(event.target.value);
-                setCancellationPreview(null);
-                setReviewOperationId(null);
-              }}
-            />
+            <RichTextEditor value={reviewReason} maxLength={2000} disabled={busy} ariaLabel="Reason for this decision" placeholder="Explain the approval or cancellation decision." onChange={(value) => { setReviewReason(value); setCancellationPreview(null); setReviewOperationId(null); }} />
           </label>
           <div className="agreement-actions">
             <button

@@ -26,7 +26,7 @@ const FAQS = [
   {
     question: "Is there a minimum property size for commercial programs?",
     answer:
-      "Yes — P1 focuses on properties 1 acre and larger. We're built for business campuses, industrial sites, HOA common areas, and large commercial landholdings, not small lawns.",
+      "Yes — P1 focuses on properties 1 acre and larger. We're built for business campuses, industrial sites, municipal grounds, institutional properties, and large commercial landholdings. We do not provide residential services.",
   },
   {
     question: "How are insurance, licensing and procurement documents handled?",
@@ -39,8 +39,8 @@ export default function CommercialLandscaping() {
   return (
     <Layout>
       <SEO 
-        title="Commercial Landscaping | P1 Land & Property Management | Upstate SC & Charlotte NC"
-        description="Commercial landscaping and exterior grounds maintenance for 1-acre-plus properties across Upstate SC and Charlotte NC. Turf, drainage, land clearing, ponds, and more. Call (704) 221-8928."
+        title="Commercial Landscaping in SC & NC | P1"
+        description="Commercial landscaping and exterior grounds maintenance for 1-acre-plus properties across Upstate SC and Charlotte. Call (704) 221-8928."
         jsonLd={[
           serviceSchema({ name: "Commercial Landscaping", description: "Commercial landscaping and exterior grounds maintenance for 1-acre-plus properties across Upstate SC and Charlotte NC. Turf, drainage, land clearing, ponds, and more. Call (704) 221-8928.", path: "/services/commercial-landscaping" }),
           breadcrumbSchema([
@@ -78,7 +78,7 @@ export default function CommercialLandscaping() {
               A well-maintained commercial property supports a professional presentation, protects the work already invested in the site and helps your team identify exterior needs early. P1 Land & Property Management helps large properties define and maintain an agreed exterior-work scope.
             </p>
             <p>
-              We work with commercial developers, property managers, business campus owners, HOAs managing significant acreage, industrial facility managers, and private landowners who hold commercial-use land across both our markets.
+              We work with commercial developers, property managers, business campus operators, industrial facility managers, municipalities, institutions, and agricultural operators across both our markets.
             </p>
           </FeatureRow>
 
@@ -149,7 +149,7 @@ export default function CommercialLandscaping() {
         </div>
       </section>
 
-      <section className="site-shell py-12"><h2 className="text-2xl font-bold">Looking for a connected exterior site plan?</h2><p className="mt-4 text-muted-foreground">Explore how commercial landscaping, drainage, land and corrective work can fit an agreed exterior-work scope.</p><a href="/commercial" className="mt-5 inline-block font-bold text-primary underline">Commercial Site Management & Site Assessment</a></section>
+      <section className="site-shell py-12"><h2 className="text-2xl font-bold">Looking for a connected exterior site plan?</h2><p className="mt-4 text-muted-foreground">Explore how commercial landscaping, drainage, land, corrective work, and <Link href="/commercial-snow-ice-management" className="font-bold text-primary underline">commercial snow and ice management</Link> can fit an agreed exterior-work scope.</p><div className="mt-5 flex flex-wrap gap-x-6 gap-y-3"><Link href="/commercial" className="font-bold text-primary underline">Commercial Site Management & Site Assessment</Link><Link href="/commercial/data-centers-secure-facilities" className="font-bold text-primary underline">Data center & secure facility grounds</Link></div></section>
       <FinalCTA />
     </Layout>
   );

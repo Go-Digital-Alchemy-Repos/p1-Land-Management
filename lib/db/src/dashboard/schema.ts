@@ -354,10 +354,10 @@ export const serviceRequest = pgTable(
     source: text().default("portal").notNull(),
     requesterContactId: uuid("requester_contact_id"),
     version: integer().default(1).notNull(),
-    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" })
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
       .defaultNow()
       .notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
+    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" })
       .defaultNow()
       .notNull(),
   },
@@ -372,23 +372,33 @@ export const serviceRequest = pgTable(
       foreignColumns: [user.id],
       name: "service_request_user_id_fkey",
     }),
-    foreignKey({
-      columns: [table.requesterContactId],
-      foreignColumns: [contact.id],
-      name: "service_request_requester_contact_id_fkey",
-    }),
+    foreignKey({ columns: [table.requesterContactId], foreignColumns: [contact.id], name: "service_request_requester_contact_id_fkey" }),
   ],
 );
 
-export const serviceRequestEvent = pgTable("service_request_event", {
-  id: uuid().primaryKey().notNull(),
-  requestId: uuid("request_id").notNull().references(() => serviceRequest.id),
-  actorId: text("actor_id").references(() => user.id),
-  event: text().notNull(),
-  version: integer().notNull(),
-  details: jsonb().default({}).notNull(),
-  createdAt: timestamp("created_at", { withTimezone: true, mode: "string" }).defaultNow().notNull(),
-});
+export const serviceRequestEvent = pgTable(
+  "service_request_event",
+  {
+    id: uuid().primaryKey().notNull(),
+    serviceRequestId: uuid("service_request_id").notNull(),
+    actorId: text("actor_id").notNull(),
+    eventType: text("event_type").notNull(),
+    priorVersion: integer("prior_version"),
+    resultingVersion: integer("resulting_version").notNull(),
+    fromStatus: text("from_status"),
+    toStatus: text("to_status"),
+    reason: text(),
+    details: jsonb().default({}).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index("service_request_event_request_created_idx").using("btree", table.serviceRequestId.asc().nullsLast().op("uuid_ops"), table.createdAt.desc().nullsLast().op("timestamptz_ops")),
+    foreignKey({ columns: [table.serviceRequestId], foreignColumns: [serviceRequest.id], name: "service_request_event_service_request_id_fkey" }),
+    foreignKey({ columns: [table.actorId], foreignColumns: [user.id], name: "service_request_event_actor_id_fkey" }),
+  ],
+);
 
 export const agreementTemplate = pgTable("agreement_template", {
   id: uuid().primaryKey().notNull(),
@@ -564,6 +574,7 @@ export const project = pgTable(
     scope: text().notNull(),
     status: text().default("planned").notNull(),
     phases: jsonb().default([]).notNull(),
+    version: integer().default(1).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
       .defaultNow()
       .notNull(),
@@ -586,6 +597,60 @@ export const projectProperty = pgTable("project_property", {
   projectId: uuid("project_id").notNull().references(() => project.id),
   propertyId: uuid("property_id").notNull().references(() => property.id),
 }, (t) => [primaryKey({ columns: [t.projectId, t.propertyId] })]);
+
+export const projectPhase = pgTable(
+  "project_phase",
+  {
+    id: uuid().primaryKey().notNull(),
+    projectId: uuid("project_id").notNull(),
+    position: integer().notNull(),
+    title: text().notNull(),
+    scope: text().default("").notNull(),
+    status: text().default("planned").notNull(),
+    plannedStart: date("planned_start"),
+    plannedEnd: date("planned_end"),
+    actualStart: date("actual_start"),
+    actualEnd: date("actual_end"),
+    prerequisites: jsonb().default([]).notNull(),
+    overrideReason: text("override_reason"),
+    version: integer().default(1).notNull(),
+    publishedSummary: text("published_summary"),
+    publishedAt: timestamp("published_at", { withTimezone: true, mode: "string" }),
+    publishedBy: text("published_by"),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    unique("project_phase_project_id_position_key").on(table.projectId, table.position),
+    index("project_phase_project_position_idx").using("btree", table.projectId.asc().nullsLast().op("uuid_ops"), table.position.asc().nullsLast().op("int4_ops")),
+    index("project_phase_project_status_idx").using("btree", table.projectId.asc().nullsLast().op("uuid_ops"), table.status.asc().nullsLast().op("text_ops")),
+    foreignKey({ columns: [table.projectId], foreignColumns: [project.id], name: "project_phase_project_id_fkey" }),
+    foreignKey({ columns: [table.publishedBy], foreignColumns: [user.id], name: "project_phase_published_by_fkey" }),
+  ],
+);
+
+export const projectPhaseEvent = pgTable(
+  "project_phase_event",
+  {
+    id: uuid().primaryKey().notNull(),
+    phaseId: uuid("phase_id").notNull(),
+    actorId: text("actor_id").notNull(),
+    eventType: text("event_type").notNull(),
+    priorVersion: integer("prior_version"),
+    resultingVersion: integer("resulting_version").notNull(),
+    fromStatus: text("from_status"),
+    toStatus: text("to_status"),
+    reason: text(),
+    details: jsonb().default({}).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" }).defaultNow().notNull(),
+  },
+  (table) => [
+    index("project_phase_event_phase_created_idx").using("btree", table.phaseId.asc().nullsLast().op("uuid_ops"), table.createdAt.desc().nullsLast().op("timestamptz_ops")),
+    foreignKey({ columns: [table.phaseId], foreignColumns: [projectPhase.id], name: "project_phase_event_phase_id_fkey" }),
+    foreignKey({ columns: [table.actorId], foreignColumns: [user.id], name: "project_phase_event_actor_id_fkey" }),
+  ],
+);
 
 export const workOrder = pgTable(
   "work_order",
@@ -611,6 +676,7 @@ export const workOrder = pgTable(
     recurringServiceId: uuid("recurring_service_id"),
     occurrenceDate: date("occurrence_date"),
     projectId: uuid("project_id"),
+    projectPhaseId: uuid("project_phase_id"),
     estimateId: uuid("estimate_id"),
     requestId: uuid("request_id"),
     jobKind: text("job_kind").default("one_time").notNull(),
@@ -648,19 +714,39 @@ export const workOrder = pgTable(
       name: "work_order_project_id_fkey",
     }),
     foreignKey({
-      columns: [table.estimateId],
-      foreignColumns: [estimate.id],
-      name: "work_order_estimate_id_fkey",
+      columns: [table.projectPhaseId],
+      foreignColumns: [projectPhase.id],
+      name: "work_order_project_phase_id_fkey",
     }),
-    foreignKey({
-      columns: [table.requestId],
-      foreignColumns: [serviceRequest.id],
-      name: "work_order_request_id_fkey",
-    }),
+    foreignKey({ columns: [table.estimateId], foreignColumns: [estimate.id], name: "work_order_estimate_id_fkey" }),
+    foreignKey({ columns: [table.requestId], foreignColumns: [serviceRequest.id], name: "work_order_request_id_fkey" }),
     check(
       "work_order_status_check",
       sql`status = ANY (ARRAY['draft'::text, 'scheduled'::text, 'in_progress'::text, 'completed'::text, 'reviewed'::text, 'cancelled'::text, 'skipped'::text, 'delayed'::text])`,
     ),
+  ],
+);
+
+export const serviceRequestConversion = pgTable(
+  "service_request_conversion",
+  {
+    operationId: uuid("operation_id").primaryKey().notNull(),
+    serviceRequestId: uuid("service_request_id").notNull(),
+    workOrderId: uuid("work_order_id").notNull(),
+    actorId: text("actor_id").notNull(),
+    expectedRequestVersion: integer("expected_request_version").notNull(),
+    fingerprint: text().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    unique("service_request_conversion_service_request_id_key").on(table.serviceRequestId),
+    unique("service_request_conversion_work_order_id_key").on(table.workOrderId),
+    index("service_request_conversion_request_created_idx").using("btree", table.serviceRequestId.asc().nullsLast().op("uuid_ops"), table.createdAt.desc().nullsLast().op("timestamptz_ops")),
+    foreignKey({ columns: [table.serviceRequestId], foreignColumns: [serviceRequest.id], name: "service_request_conversion_service_request_id_fkey" }),
+    foreignKey({ columns: [table.workOrderId], foreignColumns: [workOrder.id], name: "service_request_conversion_work_order_id_fkey" }),
+    foreignKey({ columns: [table.actorId], foreignColumns: [user.id], name: "service_request_conversion_actor_id_fkey" }),
   ],
 );
 
@@ -734,6 +820,29 @@ export const billingDraft = pgTable(
       "billing_draft_status_check",
       sql`status = ANY (ARRAY['draft'::text, 'approved'::text, 'posted'::text, 'failed'::text])`,
     ),
+  ],
+);
+
+export const projectPhaseBillingIntent = pgTable(
+  "project_phase_billing_intent",
+  {
+    operationId: uuid("operation_id").primaryKey().notNull(),
+    phaseId: uuid("phase_id").notNull(),
+    billingDraftId: uuid("billing_draft_id").notNull(),
+    actorId: text("actor_id").notNull(),
+    expectedPhaseVersion: integer("expected_phase_version").notNull(),
+    fingerprint: text().notNull(),
+    kind: text().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    unique("project_phase_billing_intent_billing_draft_id_key").on(table.billingDraftId),
+    index("project_phase_billing_intent_phase_created_idx").using("btree", table.phaseId.asc().nullsLast().op("uuid_ops"), table.createdAt.desc().nullsLast().op("timestamptz_ops")),
+    foreignKey({ columns: [table.phaseId], foreignColumns: [projectPhase.id], name: "project_phase_billing_intent_phase_id_fkey" }),
+    foreignKey({ columns: [table.billingDraftId], foreignColumns: [billingDraft.id], name: "project_phase_billing_intent_billing_draft_id_fkey" }),
+    foreignKey({ columns: [table.actorId], foreignColumns: [user.id], name: "project_phase_billing_intent_actor_id_fkey" }),
   ],
 );
 
@@ -1059,16 +1168,8 @@ export const estimate = pgTable(
       foreignColumns: [table.id],
       name: "estimate_change_order_for_fkey",
     }),
-    foreignKey({
-      columns: [table.requestId],
-      foreignColumns: [serviceRequest.id],
-      name: "estimate_request_id_fkey",
-    }),
-    foreignKey({
-      columns: [table.agreementTemplateId],
-      foreignColumns: [agreementTemplate.id],
-      name: "estimate_agreement_template_id_fkey",
-    }),
+    foreignKey({ columns: [table.requestId], foreignColumns: [serviceRequest.id], name: "estimate_request_id_fkey" }),
+    foreignKey({ columns: [table.agreementTemplateId], foreignColumns: [agreementTemplate.id], name: "estimate_agreement_template_id_fkey" }),
     check("estimate_amount_cents_check", sql`amount_cents >= 0`),
     check(
       "estimate_status_check",
@@ -1442,13 +1543,8 @@ export const serviceAgreement = pgTable(
     templateId: uuid("template_id").references(() => agreementTemplate.id),
     templateVersion: integer("template_version"),
     templateSnapshot: text("template_snapshot"),
-    acceptedAt: timestamp("accepted_at", {
-      withTimezone: true,
-      mode: "string",
-    }),
-    acceptedByContactId: uuid("accepted_by_contact_id").references(
-      () => contact.id,
-    ),
+    acceptedAt: timestamp("accepted_at", { withTimezone: true, mode: "string" }),
+    acceptedByContactId: uuid("accepted_by_contact_id").references(() => contact.id),
     createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
       .defaultNow()
       .notNull(),

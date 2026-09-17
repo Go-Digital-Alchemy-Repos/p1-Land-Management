@@ -21,6 +21,7 @@ import {
   ActivityIndicator,
   AppState,
   Button,
+  Modal,
   ScrollView,
   StyleSheet,
   Text,
@@ -35,11 +36,19 @@ import type { FieldOperation } from "@workspace/api-zod/dashboard";
 import {
   BusinessTransport,
   RequestFailure,
+  RequestCancelled,
   SessionChanged,
 } from "./src/core/transport";
 import { syncOperations } from "./src/core/sync";
+import { NATIVE_SUPPORT_GUIDANCE } from "./src/core/support-guidance";
+import { nativeRoleHome } from "./src/core/role-home";
+import { adjacentWorkday, validateWorkday } from "./src/core/workday";
+import {
+  protectedStorageMessage,
+  type ProtectedStorageStatus,
+} from "./src/core/storage-capacity";
 import { NativeAuth } from "./src/native/auth";
-import { openVault, type Vault } from "./src/native/vault";
+import { openVault, type PhotoRecovery, type Vault } from "./src/native/vault";
 import { capturePhoto } from "./src/native/capture";
 const origin =
   process.env.EXPO_PUBLIC_P1_API_ORIGIN ||
@@ -83,7 +92,11 @@ export function Application({ services }: { services: ApplicationServices }) {
     [note, setNote] = useState(""),
     [notice, setNotice] = useState("Sign in with your invited P1 account."),
     [busy, setBusy] = useState(false),
-    [pending, setPending] = useState(0);
+    [pending, setPending] = useState(0),
+    [storage, setStorage] = useState<ProtectedStorageStatus | null>(null),
+    [supportOpen, setSupportOpen] = useState(false),
+    [syncing, setSyncing] = useState(false),
+    [syncProgress, setSyncProgress] = useState("");
   const [enrollment, setEnrollment] = useState(false),
     [setup, setSetup] = useState<{
       totpURI?: string;
@@ -98,7 +111,40 @@ export function Application({ services }: { services: ApplicationServices }) {
     }).format(new Date()),
   );
   const vault = useRef(new AccountVault<Vault>()).current,
-    busyRef = useRef(false);
+    busyRef = useRef(false),
+    recoveredPhotoNotice = useRef<string | null>(null),
+    syncAbort = useRef<AbortController | null>(null);
+  function describePhotoRecovery(recovery: PhotoRecovery) {
+    const parts: string[] = [];
+    if (recovery.recovered)
+      parts.push(
+        `${recovery.recovered} interrupted photo${recovery.recovered === 1 ? "" : "s"} recovered into protected storage`,
+      );
+    if (recovery.cleaned)
+      parts.push(
+        `${recovery.cleaned} temporary photo file${recovery.cleaned === 1 ? "" : "s"} cleaned after secure staging`,
+      );
+    if (recovery.missing) {
+      const references = recovery.missingIds.slice(0, 3).join(", ");
+      const remainder = recovery.missingIds.length - 3;
+      parts.push(
+        `${recovery.missing} interrupted photo capture${recovery.missing === 1 ? "" : "s"} could not be recovered and remain${recovery.missing === 1 ? "s" : ""} protected on this device for office support (reference ${references}${remainder > 0 ? ` and ${remainder} more` : ""})`,
+      );
+    }
+    return parts.length ? `${parts.join(". ")}.` : null;
+  }
+  async function attachCrewVault(accountId: string, requireExisting = false) {
+    const opened = await openVault(origin, accountId, requireExisting);
+    try {
+      const recovery = await opened.recoverTemporaryPhotos();
+      recoveredPhotoNotice.current = describePhotoRecovery(recovery);
+      vault.attach(opened);
+      return opened;
+    } catch (error) {
+      await opened.close();
+      throw error;
+    }
+  }
   async function detachVault() {
     const close = vault.detach();
     setOutbox(null);
@@ -106,6 +152,7 @@ export function Application({ services }: { services: ApplicationServices }) {
     setWork([]);
     setSelected(null);
     setPending(0);
+    setStorage(null);
     setNote("");
     await close;
   }
@@ -113,6 +160,14 @@ export function Application({ services }: { services: ApplicationServices }) {
     if (!person || person.role !== "crew")
       throw new Error("Protected work is locked for this account.");
     return vault.require(origin, person.id);
+  }
+  async function refreshStorage(current = vault.current) {
+    if (!current) {
+      setStorage(null);
+      return;
+    }
+    const status = await current.storageStatus();
+    if (vault.current === current) setStorage(status);
   }
   async function loadOutbox(cursors: (OutboxCursor | null)[] = [null]) {
     const current = requireBoundVault();
@@ -213,7 +268,7 @@ export function Application({ services }: { services: ApplicationServices }) {
       await detachVault();
     transport.bind({ accountId: current.id, token });
     if (current.role === "crew" && !vault.current)
-      vault.attach(await openVault(origin, current.id));
+      await attachCrewVault(current.id);
     if (current.role === "crew") {
       const response = await auth.call("get-session", undefined);
       if (
@@ -236,26 +291,38 @@ export function Application({ services }: { services: ApplicationServices }) {
     setPerson(current);
     return current;
   }
-  async function loadDay() {
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(day))
-      throw new Error("Choose a date in YYYY-MM-DD format.");
+  async function loadDay(targetDay = day) {
+    const selectedDay = validateWorkday(targetDay);
     const rows: WorkOrder[] = [];
     let cursor: string | null = null;
     do {
       const page: SchedulePage = await transport.request(
-        `/api/v1/schedule?from=${day}&through=${day}${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`,
+        `/api/v1/schedule?from=${selectedDay}&through=${selectedDay}${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`,
       );
       rows.push(...page.items);
       cursor = page.nextCursor;
     } while (cursor);
     return rows;
   }
+  async function moveWorkday(offset: -1 | 1) {
+    const nextDay = adjacentWorkday(day, offset);
+    await verify();
+    setDay(nextDay);
+    setWork(await loadDay(nextDay));
+    setSelected(null);
+    setNotice(`Authorized work for ${nextDay} loaded.`);
+  }
   async function refresh() {
     await verify();
     setWork(await loadDay());
     setSelected(null);
-    setNotice("Current authorized work loaded.");
-    if (vault.current) setPending(await vault.current.pendingCount());
+    const recovery = recoveredPhotoNotice.current;
+    recoveredPhotoNotice.current = null;
+    setNotice(recovery || "Current authorized work loaded.");
+    if (vault.current) {
+      setPending(await vault.current.pendingCount());
+      await refreshStorage();
+    }
   }
   useEffect(() => {
     void run(async () => {
@@ -343,53 +410,82 @@ export function Application({ services }: { services: ApplicationServices }) {
   async function sync() {
     await verify();
     const current = requireBoundVault();
+    const controller = new AbortController();
+    syncAbort.current = controller;
+    setSyncing(true);
+    setSyncProgress("Preparing saved work for sync.");
     const assertCurrent = () => {
       if (vault.current !== current) throw new SessionChanged();
       vault.require(origin, current.accountId);
     };
-    const result = await syncCaptures({
-      photoIds: () => current.pendingPhotoIds(),
-      loadPhoto: (id) => current.loadPendingPhoto(id),
-      upload: async (photo) => {
-        const m = JSON.parse(photo.manifest);
-        return transport.request<PhotoUploadReceipt>(
-          `/api/v1/files/${photo.id}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": m.mime,
-              "x-p1-property": m.propertyId,
-              "x-p1-work": m.workOrderId,
-              "x-p1-classification": m.classification,
+    try {
+      const result = await syncCaptures({
+        photoIds: () => current.pendingPhotoIds(),
+        loadPhoto: (id) => current.loadPendingPhoto(id),
+        upload: async (photo) => {
+          const m = JSON.parse(photo.manifest);
+          return transport.request<PhotoUploadReceipt>(
+            `/api/v1/files/${photo.id}`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": m.mime,
+                "x-p1-property": m.propertyId,
+                "x-p1-work": m.workOrderId,
+                "x-p1-classification": m.classification,
+              },
+              body: photo.bytes as unknown as BodyInit,
+              signal: controller.signal,
             },
-            body: photo.bytes as unknown as BodyInit,
-          },
-        );
-      },
-      acknowledgePhoto: (id) => current.acknowledgePhoto(id),
-      operations: () =>
-        syncOperations(current, (events) => {
-          assertCurrent();
-          return transport.request("/api/v1/field/sync", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ events }),
-          });
-        }),
-      assertCurrent,
-      isFatal: (error) =>
-        error instanceof SessionChanged ||
-        ((error instanceof RequestFailure ||
-          error instanceof AuthRequestFailure) &&
-          [401, 403].includes(error.status)),
-    });
-    assertCurrent();
-    const remaining = await current.pendingCount();
-    assertCurrent();
-    setPending(remaining);
-    setNotice(
-      `Photos acknowledged: ${result.photosAcknowledged}. ${result.photoFailures ? `Unconfirmed photo attempts: ${result.photoFailures}. ` : ""}${result.operationsProcessed ? "Operation queue processed." : "Operations need retry or office review."} Saved items remaining: ${remaining}.`,
-    );
+          );
+        },
+        acknowledgePhoto: (id) => current.acknowledgePhoto(id),
+        operations: () =>
+          syncOperations(current, (events) => {
+            assertCurrent();
+            return transport.request("/api/v1/field/sync", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ events }),
+              signal: controller.signal,
+            });
+          }),
+        assertCurrent,
+        isFatal: (error) =>
+          error instanceof SessionChanged ||
+          ((error instanceof RequestFailure ||
+            error instanceof AuthRequestFailure) &&
+            [401, 403].includes(error.status)),
+        isCancelled: (error) =>
+          controller.signal.aborted || error instanceof RequestCancelled,
+        onProgress: (progress) => {
+          if (progress.kind === "photos")
+            setSyncProgress(
+              progress.status === "uploading"
+                ? `Syncing photo ${progress.current} of ${progress.total}.`
+                : `Photo ${progress.current} of ${progress.total} ${progress.status}.`,
+            );
+          else
+            setSyncProgress(
+              progress.status === "processing"
+                ? "Syncing saved work entries."
+                : `Saved work entries ${progress.status}.`,
+            );
+        },
+      });
+      assertCurrent();
+      const remaining = await current.pendingCount();
+      assertCurrent();
+      setPending(remaining);
+      await refreshStorage(current);
+      setNotice(
+        `Photos acknowledged: ${result.photosAcknowledged}. ${result.photoFailures ? `Unconfirmed photo attempts: ${result.photoFailures}. ` : ""}${result.operationsProcessed ? "Operation queue processed." : "Operations need retry or office review."} Saved items remaining: ${remaining}.`,
+      );
+    } finally {
+      if (syncAbort.current === controller) syncAbort.current = null;
+      setSyncing(false);
+      setSyncProgress("");
+    }
   }
 
   async function logout() {
@@ -438,6 +534,7 @@ export function Application({ services }: { services: ApplicationServices }) {
       )
     ) {
       setPending(await vault.current.pendingCount());
+      await refreshStorage();
       setNotice("Photo saved securely.");
     }
   };
@@ -456,6 +553,18 @@ export function Application({ services }: { services: ApplicationServices }) {
             {notice}
           </Text>
           {busy && <ActivityIndicator accessibilityLabel="Working" />}
+          {syncing && (
+            <View style={s.button}>
+              <Text accessibilityLiveRegion="polite">{syncProgress}</Text>
+              <Button
+                title="Cancel current sync"
+                onPress={() => syncAbort.current?.abort()}
+              />
+            </View>
+          )}
+          {action("Help with account or saved work", async () => {
+            setSupportOpen(true);
+          })}
           {!person && enrollment ? (
             <View>
               <Text accessibilityRole="header" style={s.heading}>
@@ -571,14 +680,14 @@ export function Application({ services }: { services: ApplicationServices }) {
                     throw new Error("Sign in online before offline access.");
                   const entry = await recallOffline(origin, token);
                   await detachVault();
-                  const saved = await openVault(origin, entry.accountId, true);
-                  vault.attach(saved);
+                  const saved = await attachCrewVault(entry.accountId, true);
                   const rows = await saved.downloaded();
                   setWork(rows);
                   setPerson({
                     id: entry.accountId,
                     name: entry.displayName,
                     email: "",
+                    avatarUrl: null,
                     role: "crew",
                     mfaRequired: false,
                     ownerMfaRequired: false,
@@ -586,8 +695,11 @@ export function Application({ services }: { services: ApplicationServices }) {
                   setOffline(true);
                   transport.bind(null);
                   setPending(await saved.pendingCount());
+                  await refreshStorage(saved);
+                  const recovery = recoveredPhotoNotice.current;
+                  recoveredPhotoNotice.current = null;
                   setNotice(
-                    `Offline downloaded work. Access expires ${new Date(entry.expiresAt).toLocaleString()}. Reconnect before syncing.`,
+                    `${recovery ? `${recovery} ` : ""}Offline downloaded work. Access expires ${new Date(entry.expiresAt).toLocaleString()}. Reconnect before syncing.`,
                   );
                 })}
             </View>
@@ -596,6 +708,10 @@ export function Application({ services }: { services: ApplicationServices }) {
               <Text style={s.heading}>
                 {person.name} · {person.role}
               </Text>
+              <Text accessibilityRole="header" style={s.roleTitle}>
+                {nativeRoleHome(person.role).title}
+              </Text>
+              <Text>{nativeRoleHome(person.role).detail}</Text>
               <Text>Work date · America/New_York</Text>
               <TextInput
                 accessibilityLabel="Work date YYYY-MM-DD"
@@ -603,6 +719,8 @@ export function Application({ services }: { services: ApplicationServices }) {
                 onChangeText={setDay}
                 style={s.input}
               />
+              {action("Previous work day", () => moveWorkday(-1))}
+              {action("Next work day", () => moveWorkday(1))}
               {action("Refresh work", refresh)}
               {action("Sign out", logout)}
               {person.role !== "crew" && (
@@ -615,6 +733,11 @@ export function Application({ services }: { services: ApplicationServices }) {
               )}
               {person.role === "crew" && (
                 <>
+                  {storage && (
+                    <Text accessibilityLiveRegion="polite">
+                      {protectedStorageMessage(storage)}
+                    </Text>
+                  )}
                   {action("Download assignments", async () => {
                     await verify();
                     const rows = await loadDay();
@@ -667,7 +790,8 @@ export function Application({ services }: { services: ApplicationServices }) {
                   </Text>
                   {selected.scheduled_at ? (
                     <Text>
-                      Scheduled · {formatPropertyTimestamp(selected.scheduled_at)}
+                      Scheduled ·{" "}
+                      {formatPropertyTimestamp(selected.scheduled_at)}
                     </Text>
                   ) : (
                     <Text>Schedule pending</Text>
@@ -765,6 +889,36 @@ export function Application({ services }: { services: ApplicationServices }) {
             Development build · Foreground sync. Office review and billing
             remain in the web dashboard.
           </Text>
+          <Modal
+            visible={supportOpen}
+            animationType="slide"
+            presentationStyle="pageSheet"
+            onRequestClose={() => setSupportOpen(false)}
+          >
+            <SafeAreaView style={s.support}>
+              <ScrollView contentContainerStyle={s.supportContent}>
+                <Text accessibilityRole="header" style={s.heading}>
+                  P1 Field support
+                </Text>
+                <Text>
+                  This guidance protects your assigned work and account. It does
+                  not change access or send information from this device.
+                </Text>
+                {NATIVE_SUPPORT_GUIDANCE.map((item) => (
+                  <View key={item.title} style={s.card}>
+                    <Text accessibilityRole="header" style={s.supportTitle}>
+                      {item.title}
+                    </Text>
+                    <Text>{item.detail}</Text>
+                  </View>
+                ))}
+                <Button
+                  title="Close support"
+                  onPress={() => setSupportOpen(false)}
+                />
+              </ScrollView>
+            </SafeAreaView>
+          </Modal>
         </ScrollView>
       </SafeAreaView>
     </SafeAreaProvider>
@@ -781,6 +935,7 @@ const s = StyleSheet.create({
   },
   title: { fontSize: 32, fontWeight: "800", color: "#183e2a" },
   heading: { fontSize: 19, fontWeight: "600" },
+  roleTitle: { fontSize: 24, fontWeight: "700", color: "#183e2a" },
   notice: { padding: 14, backgroundColor: "#e3ede7", color: "#183e2a" },
   input: {
     padding: 12,
@@ -798,5 +953,8 @@ const s = StyleSheet.create({
     borderColor: "#ced9d1",
     backgroundColor: "white",
   },
+  support: { flex: 1, backgroundColor: "#f5f7f6" },
+  supportContent: { padding: 20, gap: 14 },
+  supportTitle: { fontSize: 18, fontWeight: "600", color: "#183e2a" },
   footer: { marginTop: 20, color: "#485a4d" },
 });

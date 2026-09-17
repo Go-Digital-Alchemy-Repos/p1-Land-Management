@@ -17,7 +17,6 @@ import NotFound from "@/pages/not-found";
 import { DEFAULT_SITE_FEATURES, type SiteFeatures } from "@shared/site-features";
 import { Loader2 } from "lucide-react";
 
-const PrivateProofPage = lazy(() => import("@/features/admin/cms/private-proof-page"));
 const ClientSitePagesPage = lazy(() => import("@/features/admin/cms/client-site-pages-page"));
 
 const CmsHybridPage = lazy(() =>
@@ -269,11 +268,6 @@ function Router() {
             {siteFeatures.cmsEnabled ? <ClientSiteContentEditorPage /> : <NotFound />}
           </ProtectedRoute>
         </Route>
-        <Route path="/admin/cms/private-proof">
-          <ProtectedRoute roles={["admin", "editor"]} adminPermissions={["content"]}>
-            {siteFeatures.cmsEnabled ? <PrivateProofPage /> : <NotFound />}
-          </ProtectedRoute>
-        </Route>
         <Route path="/admin/cms/website">
           <ProtectedRoute roles={["admin", "editor"]} adminPermissions={["content"]}>
             <ClientSitePagesPage />
@@ -398,7 +392,7 @@ function SetupGuard({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (needsSetup && location !== "/admin/setup") {
-      setLocation("/setup");
+      setLocation("/admin/setup");
     }
   }, [needsSetup, location, setLocation]);
 

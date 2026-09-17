@@ -5,14 +5,16 @@
  * Shared field, scheduling and commercial inbox contract. Other office routes remain documented in docs/dashboard/API.md.
  * OpenAPI spec version: 0.1.0
  */
-import type { CreateProjectPhasesItem } from './createProjectPhasesItem';
+import type { LegacyProjectPhase } from './legacyProjectPhase';
 
 export interface CreateProject {
+  propertyId?: string;
   /**
+     * Participating client properties. The server derives client membership and never grants cross-client access.
      * @minItems 1
      * @maxItems 100
      */
-  propertyIds: string[];
+  propertyIds?: string[];
   /**
      * @minLength 1
      * @maxLength 10000
@@ -24,5 +26,5 @@ export interface CreateProject {
      */
   scope: string;
   /** @maxItems 50 */
-  phases?: CreateProjectPhasesItem[];
+  phases?: LegacyProjectPhase[];
 }

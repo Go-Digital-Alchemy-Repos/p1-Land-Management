@@ -3,12 +3,55 @@ import assert from "node:assert/strict";
 import {
   listCommercialInquiries,
   updateCommercialFollowUp,
+  listCommercialAssessmentBaselines,
+  createCommercialAssessmentBaseline,
+  getCommercialAssessmentBaseline,
+  updateCommercialAssessmentBaseline,
+  reviewCommercialAssessmentBaseline,
+  archiveCommercialAssessmentBaseline,
   getSchedule,
   rescheduleWork,
   updateWorkReadiness,
   listAgreementPreparationJobs,
   previewAgreementPreparationRetry,
   retryAgreementPreparation,
+  listServiceRequestLifecycle,
+  getServiceRequestLifecycle,
+  transitionServiceRequest,
+  getServiceRequestHistory,
+  previewServiceRequestConversion,
+  convertServiceRequest,
+  listProjectPhases,
+  createProjectPhase,
+  getProjectPhase,
+  updateProjectPhase,
+  transitionProjectPhase,
+  publishProjectPhase,
+  getProjectPhaseHistory,
+  listProjectPhaseBillingIntents,
+  createProjectPhaseBillingIntent,
+  listProjects,
+  createProject,
+  updateProject,
+  listExpenses,
+  createExpense,
+  listSalesLeads,
+  createSalesLead,
+  convertSalesLead,
+  createSalesEstimate,
+  recordEstimateDecision,
+  reviseEstimate,
+  createEstimateChangeOrder,
+  listDashboardClients,
+  createDashboardClient,
+  updateDashboardClient,
+  createDashboardProperty,
+  updateDashboardProperty,
+  createWorkOrder,
+  updateWorkOrderStatus,
+  publishWorkOrder,
+  createRecurringService,
+  pauseRecurringService,
 } from "@workspace/api-client-react/dashboard";
 test("generated dashboard client preserves cursor filters, explicit nulls and conflict errors", async () => {
   const original = globalThis.fetch;
@@ -50,6 +93,54 @@ test("generated dashboard client preserves cursor filters, explicit nulls and co
       nextActionDueAt: null,
       status: "contacted",
     });
+    const assessmentLeadId = "00000000-0000-4000-8000-000000000001";
+    const assessmentId = "00000000-0000-4000-8000-000000000002";
+    await listCommercialAssessmentBaselines(assessmentLeadId);
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      `/api/v1/commercial-inquiries/${assessmentLeadId}/assessment-baselines`,
+    );
+    const createAssessment = {
+      operationId: "00000000-0000-4000-8000-000000000003",
+      expectedLeadVersion: 2,
+      title: "Initial exterior baseline",
+      scopeNote: null,
+    };
+    await createCommercialAssessmentBaseline(assessmentLeadId, createAssessment);
+    assert.equal(calls.at(-1)!.init?.method, "POST");
+    assert.deepEqual(
+      JSON.parse(String(calls.at(-1)!.init?.body)),
+      createAssessment,
+    );
+    await getCommercialAssessmentBaseline(assessmentLeadId, assessmentId);
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      `/api/v1/commercial-inquiries/${assessmentLeadId}/assessment-baselines/${assessmentId}`,
+    );
+    const updateAssessment = {
+      expectedVersion: 1,
+      title: "Initial exterior baseline",
+      scopeNote: "Documented before proposal.",
+      findings: [],
+      recommendations: [],
+    };
+    await updateCommercialAssessmentBaseline(assessmentLeadId, assessmentId, updateAssessment);
+    assert.equal(calls.at(-1)!.init?.method, "PUT");
+    assert.deepEqual(
+      JSON.parse(String(calls.at(-1)!.init?.body)),
+      updateAssessment,
+    );
+    await reviewCommercialAssessmentBaseline(assessmentLeadId, assessmentId, {
+      expectedVersion: 2,
+    });
+    assert.equal(calls.at(-1)!.init?.method, "POST");
+    assert.match(String(calls.at(-1)!.url), /\/review$/);
+    await archiveCommercialAssessmentBaseline(assessmentLeadId, assessmentId, {
+      expectedVersion: 3,
+      reason: "Superseded by a later site walk.",
+    });
+    assert.equal(calls.at(-1)!.init?.method, "POST");
+    assert.match(String(calls.at(-1)!.url), /\/archive$/);
     await getSchedule({
       from: "2026-09-07",
       through: "2026-09-13",
@@ -127,6 +218,373 @@ test("generated dashboard client preserves cursor filters, explicit nulls and co
       expectedRevision: 3,
       eligibilityFingerprint: "a".repeat(64),
       reason: "Manager corrected the prerequisite.",
+    });
+    const requestId = "00000000-0000-4000-8000-000000000004";
+    await listServiceRequestLifecycle();
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      "/api/v1/service-requests",
+    );
+    await getServiceRequestLifecycle(requestId);
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      `/api/v1/service-requests/${requestId}`,
+    );
+    await transitionServiceRequest(requestId, {
+      expectedVersion: 2,
+      status: "triaged",
+      reason: "Office review completed.",
+    });
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), {
+      expectedVersion: 2,
+      status: "triaged",
+      reason: "Office review completed.",
+    });
+    await getServiceRequestHistory(requestId);
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      `/api/v1/service-requests/${requestId}/history`,
+    );
+    const draft = {
+      title: "Inspect north drive",
+      scope: "Assess drainage.",
+      checklist: [{ label: "Photo record", done: false }],
+      prerequisites: [{ label: "Gate access", done: false }],
+    };
+    await previewServiceRequestConversion(requestId, draft);
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      `/api/v1/service-requests/${requestId}/conversion-preview`,
+    );
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), draft);
+    await convertServiceRequest(requestId, {
+      ...draft,
+      operationId: "00000000-0000-4000-8000-000000000005",
+      expectedRequestVersion: 3,
+    });
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      `/api/v1/service-requests/${requestId}/conversions`,
+    );
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), {
+      ...draft,
+      operationId: "00000000-0000-4000-8000-000000000005",
+      expectedRequestVersion: 3,
+    });
+    const projectId = "00000000-0000-4000-8000-000000000006";
+    const phaseId = "00000000-0000-4000-8000-000000000007";
+    const phaseDetails = {
+      title: "Driveway restoration",
+      scope: "Repair drainage and gravel.",
+      plannedStart: "2026-09-08",
+      plannedEnd: "2026-09-10",
+      prerequisites: [{ label: "Gate access", done: true }],
+    };
+    await listProjectPhases(projectId);
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      `/api/v1/projects/${projectId}/phases`,
+    );
+    await createProjectPhase(projectId, { ...phaseDetails, position: 2 });
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), {
+      ...phaseDetails,
+      position: 2,
+    });
+    await getProjectPhase(phaseId);
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      `/api/v1/project-phases/${phaseId}`,
+    );
+    await updateProjectPhase(phaseId, {
+      ...phaseDetails,
+      expectedVersion: 2,
+      reason: "Client confirmed the access window.",
+    });
+    assert.equal(calls.at(-1)!.init?.method, "PATCH");
+    await transitionProjectPhase(phaseId, {
+      expectedVersion: 3,
+      status: "ready",
+      reason: "Prerequisites checked.",
+    });
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      `/api/v1/project-phases/${phaseId}/transitions`,
+    );
+    await publishProjectPhase(phaseId, {
+      expectedVersion: 4,
+      summary: "Access and drainage preparation are complete.",
+    });
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), {
+      expectedVersion: 4,
+      summary: "Access and drainage preparation are complete.",
+    });
+    await getProjectPhaseHistory(phaseId);
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      `/api/v1/project-phases/${phaseId}/history`,
+    );
+    await listProjectPhaseBillingIntents(phaseId);
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      `/api/v1/project-phases/${phaseId}/billing-intents`,
+    );
+    await createProjectPhaseBillingIntent(phaseId, {
+      operationId: "00000000-0000-4000-8000-000000000008",
+      expectedPhaseVersion: 5,
+      estimateId: "00000000-0000-4000-8000-000000000009",
+      title: "Driveway restoration deposit",
+      amountCents: 250000,
+      kind: "deposit",
+    });
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), {
+      operationId: "00000000-0000-4000-8000-000000000008",
+      expectedPhaseVersion: 5,
+      estimateId: "00000000-0000-4000-8000-000000000009",
+      title: "Driveway restoration deposit",
+      amountCents: 250000,
+      kind: "deposit",
+    });
+    const projectPropertyId = "00000000-0000-4000-8000-000000000010";
+    await listProjects();
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      "/api/v1/projects",
+    );
+    const project = {
+      propertyId: projectPropertyId,
+      name: "Driveway restoration",
+      scope: "Repair drainage and gravel.",
+      phases: [{ name: "Mobilization", complete: false }],
+    };
+    await createProject(project);
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), project);
+    await updateProject("project-id", {
+      name: "Driveway restoration",
+      scope: "Repair drainage and gravel.",
+      expectedVersion: 2,
+    });
+    assert.equal(calls.at(-1)!.init?.method, "POST");
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      "/api/v1/projects/project-id",
+    );
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), {
+      name: "Driveway restoration",
+      scope: "Repair drainage and gravel.",
+      expectedVersion: 2,
+    });
+    await listExpenses();
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      "/api/v1/expenses",
+    );
+    const expense = {
+      propertyId: projectPropertyId,
+      amountCents: 12500,
+      category: "Materials",
+      description: "Drainage gravel",
+      incurredOn: "2026-09-08",
+    };
+    await createExpense(expense);
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), expense);
+    const leadId = "00000000-0000-4000-8000-000000000010";
+    const propertyId = "00000000-0000-4000-8000-000000000011";
+    const estimateId = "00000000-0000-4000-8000-000000000012";
+    await listSalesLeads();
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      "/api/v1/leads",
+    );
+    const lead = {
+      name: "Jordan Smith",
+      email: "jordan@example.test",
+      phone: "864-555-0100",
+      location: "Greenville, SC",
+      description: "Seasonal estate management",
+      source: "office",
+    };
+    await createSalesLead(lead);
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), lead);
+    await convertSalesLead(leadId, {
+      propertyName: "Smith Estate",
+      address: "100 Example Lane",
+    });
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      `/api/v1/leads/${leadId}/convert`,
+    );
+    const estimate = {
+      propertyId,
+      title: "Seasonal grounds plan",
+      scope: "Monthly mowing and inspection.",
+      amountCents: 125000,
+    };
+    await createSalesEstimate(estimate);
+    assert.equal(calls.at(-1)!.init?.method, "POST");
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), estimate);
+    await recordEstimateDecision(estimateId, {
+      status: "sent",
+      revision: 1,
+    });
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      `/api/v1/estimates/${estimateId}/decision`,
+    );
+    const revised = {
+      revision: 1,
+      title: "Seasonal grounds plan",
+      scope: "Monthly mowing and inspection with storm checks.",
+      amountCents: 150000,
+    };
+    await reviseEstimate(estimateId, revised);
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      `/api/v1/estimates/${estimateId}/revise`,
+    );
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), revised);
+    const changeOrder = {
+      title: "Storm cleanup allowance",
+      scope: "Remove fallen limbs after a named storm.",
+      amountCents: 50000,
+    };
+    await createEstimateChangeOrder(estimateId, changeOrder);
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      `/api/v1/estimates/${estimateId}/change-order`,
+    );
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), changeOrder);
+    const clientId = "00000000-0000-4000-8000-000000000013";
+    await listDashboardClients();
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      "/api/v1/clients",
+    );
+    const primaryContact = {
+      firstName: "Avery",
+      lastName: "Morgan",
+      email: "avery@example.test",
+      position: "Property manager",
+      phone: "803-555-0199",
+    };
+    await createDashboardClient({
+      name: "Pine Ridge Holdings",
+      address: "123 Fieldstone Road",
+      phone: "803-555-0199",
+      primaryContact,
+    });
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), {
+      name: "Pine Ridge Holdings",
+      address: "123 Fieldstone Road",
+      phone: "803-555-0199",
+      primaryContact,
+    });
+    await updateDashboardClient(clientId, {
+      name: "Pine Ridge Holdings",
+      address: "123 Fieldstone Road",
+      phone: "803-555-0199",
+      email: null,
+      version: 1,
+      primaryContact,
+    });
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      `/api/v1/clients/${clientId}`,
+    );
+    await createDashboardProperty({
+      clientId,
+      name: "Pine Ridge",
+      address: "123 Fieldstone Road",
+      acreage: 125,
+      accessInstructions: "Call before entry.",
+    });
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), {
+      clientId,
+      name: "Pine Ridge",
+      address: "123 Fieldstone Road",
+      acreage: 125,
+      accessInstructions: "Call before entry.",
+    });
+    await updateDashboardProperty("property-id", {
+      name: "Pine Ridge",
+      address: "123 Fieldstone Road",
+      acreage: null,
+      accessInstructions: "Call before entry.",
+      version: 3,
+    });
+    assert.equal(calls.at(-1)!.init?.method, "POST");
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      "/api/v1/properties/property-id",
+    );
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), {
+      name: "Pine Ridge",
+      address: "123 Fieldstone Road",
+      acreage: null,
+      accessInstructions: "Call before entry.",
+      version: 3,
+    });
+    const workOrderId = "00000000-0000-4000-8000-000000000015";
+    const workPropertyId = "00000000-0000-4000-8000-000000000016";
+    const workOrder = {
+      propertyId: workPropertyId,
+      title: "Driveway inspection",
+      scope: "Inspect drainage and gravel.",
+      assignedTo: "crew-member-id",
+      scheduledAt: "2026-09-10T13:00:00.000Z",
+      checklist: [{ label: "Photo record", done: false }],
+      prerequisites: [{ label: "Gate access", done: true }],
+    };
+    await createWorkOrder(workOrder);
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      "/api/v1/work-orders",
+    );
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), workOrder);
+    await updateWorkOrderStatus(workOrderId, {
+      status: "ready",
+      version: 2,
+      overrideReason: "Manager verified alternate equipment.",
+    });
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      `/api/v1/work-orders/${workOrderId}/status`,
+    );
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), {
+      status: "ready",
+      version: 2,
+      overrideReason: "Manager verified alternate equipment.",
+    });
+    await publishWorkOrder(workOrderId);
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      `/api/v1/work-orders/${workOrderId}/publish`,
+    );
+    assert.equal(calls.at(-1)!.init?.body, undefined);
+    const recurringId = "00000000-0000-4000-8000-000000000015";
+    const recurring = {
+      propertyId: workPropertyId,
+      title: "Seasonal grounds care",
+      scope: "Mowing and perimeter inspection.",
+      cadence: "monthly" as const,
+      intervalCount: 1,
+      nextDate: "2026-10-01",
+      localTime: "08:00",
+      assignedTo: "crew-member-id",
+      billingMode: "fixed_monthly" as const,
+    };
+    await createRecurringService(recurring);
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      "/api/v1/recurring-services",
+    );
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), recurring);
+    await pauseRecurringService(recurringId, { paused: true });
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      `/api/v1/recurring-services/${recurringId}/pause`,
+    );
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), {
+      paused: true,
     });
     fail = true;
     await assert.rejects(
@@ -231,6 +689,45 @@ test("generated property reads preserve role-minimized snapshots and unknown his
     assert.equal(p.acreage, null);
     assert.deepEqual(await getPropertyTimeline("property"), [event]);
     assert.deepEqual(await listPropertyFiles("property"), [file]);
+  } finally {
+    globalThis.fetch = original;
+  }
+});
+
+test("generated property-area transport preserves authorized route and optional details", async () => {
+  const { listPropertyAreas, createPropertyArea } =
+    await import("@workspace/api-client-react/dashboard");
+  const original = globalThis.fetch;
+  const calls: { url: string; init?: RequestInit }[] = [];
+  const area = {
+    id: "area",
+    property_id: "property",
+    name: "North pasture",
+    description: "Seasonal drainage watch.",
+    acreage: "12.5",
+  };
+  globalThis.fetch = async (input, init) => {
+    calls.push({ url: String(input), init });
+    return Response.json([area]);
+  };
+  try {
+    assert.deepEqual(await listPropertyAreas("property"), [area]);
+    assert.equal(
+      new URL(calls.at(-1)!.url, "https://example.test").pathname,
+      "/api/v1/properties/property/areas",
+    );
+    assert.equal(calls.at(-1)!.init?.method, "GET");
+    await createPropertyArea("property", {
+      name: "North pasture",
+      description: "Seasonal drainage watch.",
+      acreage: 12.5,
+    });
+    assert.equal(calls.at(-1)!.init?.method, "POST");
+    assert.deepEqual(JSON.parse(String(calls.at(-1)!.init?.body)), {
+      name: "North pasture",
+      description: "Seasonal drainage watch.",
+      acreage: 12.5,
+    });
   } finally {
     globalThis.fetch = original;
   }

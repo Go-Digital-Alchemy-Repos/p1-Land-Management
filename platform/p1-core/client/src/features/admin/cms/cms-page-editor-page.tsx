@@ -69,7 +69,6 @@ import { reportBuilderRenderError } from "./builder/builder-diagnostics";
 import { mergeJoinHeroBlocks } from "@shared/cms-blocks";
 import { TemplatePicker } from "./components/template-picker";
 import { LandingPageWizard } from "./components/landing-page-wizard";
-import { MembershipAccessRuleCard } from "./components/membership-access-rule-card";
 import { analyzeCmsPageQuality } from "@/lib/cms-page-quality";
 import { useEditorLock } from "@/hooks/use-editor-lock";
 import { useLockConflictGuard } from "@/hooks/use-lock-conflict-guard";
@@ -1132,13 +1131,6 @@ export default function CmsPageEditorPage() {
                     </Card>
                   </form>
                 </Form>
-                <div className="mt-6">
-                  <MembershipAccessRuleCard
-                    resourceType="cms_page"
-                    resourceId={isNew ? undefined : id}
-                    disabled={editorLock.isReadOnly}
-                  />
-                </div>
               </div>
 
               {!isNew && (

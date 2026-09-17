@@ -5,7 +5,7 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./dashboard": "./src/dashboard/generated.ts"
+    "./dashboard": "./src/dashboard/index.ts"
   },
   "dependencies": {
     "@tanstack/react-query": "catalog:"

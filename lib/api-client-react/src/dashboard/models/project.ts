@@ -5,17 +5,23 @@
  * Shared field, scheduling and commercial inbox contract. Other office routes remain documented in docs/dashboard/API.md.
  * OpenAPI spec version: 0.1.0
  */
-import type { ProjectPhasesItem } from './projectPhasesItem';
+import type { LegacyProjectPhase } from './legacyProjectPhase';
 
-/**
- * Staff-only multi-client delivery container. Jobs, estimates, agreements and billing stay property-specific.
- */
 export interface Project {
-  id: string;
+  /** @nullable */
+  id: string | null;
+  property_id?: string;
   name: string;
   scope: string;
-  phases?: ProjectPhasesItem[];
+  /** Legacy project status. The project-phase lifecycle is the authoritative detailed execution state. */
+  status: string;
+  phases: LegacyProjectPhase[];
+  /** @minimum 1 */
+  version: number;
+  created_at: string;
+  property_name?: string;
+  /** Staff-only participating-property summary. */
+  property_names: string;
+  /** Staff-only participating-client summary. */
   client_names?: string;
-  property_names?: string;
-  created_at?: string;
 }

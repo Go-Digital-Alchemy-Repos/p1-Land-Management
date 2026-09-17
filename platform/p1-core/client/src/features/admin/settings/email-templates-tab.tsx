@@ -69,11 +69,8 @@ interface EmailTemplate {
 
 type EmailTemplateModule =
   | "events"
-  | "ecommerce"
-  | "membership"
   | "forms"
   | "users"
-  | "directory"
   | "crm"
   | "system";
 
@@ -89,28 +86,14 @@ const EMAIL_TEMPLATE_MODULE_OPTIONS: Array<{
     label: "Events",
     description: "Registration, reminders, payments, and recordings.",
   },
-  { value: "ecommerce", label: "Ecommerce", description: "Order and store notifications." },
-  {
-    value: "membership",
-    label: "Membership",
-    description: "Renewals, failed payments, and access changes.",
-  },
   { value: "forms", label: "Forms", description: "Contact and managed form notifications." },
   { value: "users", label: "Users", description: "Account, welcome, and password emails." },
-  {
-    value: "directory",
-    label: "Directory",
-    description: "Provider and directory workflow emails.",
-  },
   { value: "crm", label: "CRM", description: "Lead and client workflow notifications." },
   { value: "system", label: "System", description: "Fallback and platform-level emails." },
 ];
 
 const EMAIL_TEMPLATE_MODULE_FEATURES: Partial<Record<EmailTemplateModule, keyof SiteFeatures>> = {
   events: "eventsEnabled",
-  ecommerce: "ecommerceEnabled",
-  membership: "membershipEnabled",
-  directory: "directoryEnabled",
   crm: "crmEnabled",
 };
 

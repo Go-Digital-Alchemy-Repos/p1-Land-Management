@@ -37,7 +37,7 @@ export default function NotFound() {
     <Layout>
       <SEO
         title="Page Not Found | P1 Land & Property Management"
-        description="The page you're looking for couldn't be found. Explore P1 Land & Property Management's land clearing, grading, drainage, and property management services across Upstate SC and Charlotte NC."
+        description="That page could not be found. Explore P1 land clearing, grading, drainage, and property management services across Upstate SC and Charlotte."
         noindex
       />
 

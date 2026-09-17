@@ -5,7 +5,7 @@ import { SEO } from "@/components/seo";
 import { breadcrumbSchema, faqSchema } from "@/lib/structured-data";
 import { Link } from "wouter";
 import heroImg from "@/assets/hero-service-areas.png";
-import unionCountyImg from "@/assets/features/union-county-equestrian.png";
+import unionCountyImg from "@/assets/features/union-county-agriculture.png";
 import lancasterCountyImg from "@/assets/features/lancaster-sitework.png";
 import yorkCountyImg from "@/assets/features/york-county-lakewylie.png";
 import { MapPin, Map, ArrowRight } from "lucide-react";
@@ -40,7 +40,7 @@ export default function ServiceAreasIndex() {
     <Layout>
       <SEO 
         title="Service Areas | P1 Land & Property Management"
-        description="P1 Land & Property Management serves commercial, agricultural, and large residential properties across Upstate South Carolina and the Charlotte, NC region."
+        description="Commercial landscaping, grounds maintenance, land clearing, grading & drainage for 1-acre-plus sites across Upstate SC and greater Charlotte."
         jsonLd={[
           breadcrumbSchema([
             { name: "Home", path: "/" },
@@ -61,7 +61,7 @@ export default function ServiceAreasIndex() {
             </em>
           </>
         }
-        subtitle="From the Greenville-Spartanburg corridor to the greater Charlotte metro area, we provide full-service land and property management for properties 1 acre and larger."
+        subtitle="Commercial landscaping and grounds maintenance lead our full-service property care for sites 1 acre and larger from the Greenville-Spartanburg corridor to greater Charlotte."
         image={heroImg}
         imageAlt="Heavy equipment clearing land in the Carolinas"
       />
@@ -113,15 +113,12 @@ export default function ServiceAreasIndex() {
                 </div>
                 <h2 className="text-3xl font-serif font-bold text-secondary mb-4">Charlotte Region, NC</h2>
                 <p className="text-secondary/80 leading-relaxed mb-8">
-                  Serving commercial developments, working farms, and large residential estates throughout the greater Charlotte metropolitan area.
+                  Serving commercial and industrial developments, working farms and agricultural operations, municipalities, and institutions throughout the greater Charlotte metropolitan area.
                 </p>
                 
                 <div className="space-y-3 mb-8">
                   <Link href="/service-areas/charlotte-north-carolina" className="flex items-center gap-2 text-primary font-bold hover:underline">
-                    → Charlotte NC Regional Overview
-                  </Link>
-                  <Link href="/service-areas/charlotte-nc" className="flex items-center gap-2 text-secondary hover:text-primary font-medium">
-                    <MapPin className="w-4 h-4 text-primary" /> Charlotte, NC
+                    → Charlotte, NC
                   </Link>
                   <Link href="/service-areas/concord-nc" className="flex items-center gap-2 text-secondary hover:text-primary font-medium">
                     <MapPin className="w-4 h-4 text-primary" /> Concord, NC
@@ -156,7 +153,7 @@ export default function ServiceAreasIndex() {
                 <div className="aspect-[16/9] overflow-hidden">
                   <img
                     src={unionCountyImg}
-                    alt="Equestrian pasture and fencing on a horse farm in Union County, NC"
+                    alt="Working pasture and fencing on agricultural land in Union County, NC"
                     loading="lazy"
                     decoding="async"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -166,7 +163,7 @@ export default function ServiceAreasIndex() {
                   <p className="text-primary font-bold uppercase tracking-wider text-xs mb-2">Charlotte Region · NC</p>
                   <h3 className="text-2xl font-serif font-bold text-secondary mb-3">Union County, NC</h3>
                   <p className="text-secondary/80 leading-relaxed mb-6 flex-1">
-                    Horse farms, working land, and fast-growing development from Monroe and Indian Trail to Waxhaw, Marvin, and Weddington.
+                    Working farms, agricultural land, and fast-growing development from Monroe and Indian Trail to Waxhaw, Marvin, and Weddington.
                   </p>
                   <span className="flex items-center gap-2 text-primary font-bold">
                     Explore Union County <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -192,7 +189,7 @@ export default function ServiceAreasIndex() {
                   <p className="text-primary font-bold uppercase tracking-wider text-xs mb-2">Upstate & Midlands · SC</p>
                   <h3 className="text-2xl font-serif font-bold text-secondary mb-3">Lancaster County, SC</h3>
                   <p className="text-secondary/80 leading-relaxed mb-6 flex-1">
-                    From the booming Indian Land panhandle to rural acreage around Kershaw and Heath Springs — clearing, grading, and full property management.
+                    Commercial landscaping and grounds care, plus clearing, grading, and full property management from the Indian Land panhandle to Kershaw and Heath Springs.
                   </p>
                   <span className="flex items-center gap-2 text-primary font-bold">
                     Explore Lancaster County <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -208,7 +205,7 @@ export default function ServiceAreasIndex() {
                 <div className="aspect-[16/9] overflow-hidden">
                   <img
                     src={yorkCountyImg}
-                    alt="Lakeside lawn maintenance on a Lake Wylie waterfront estate in York County, SC"
+                    alt="Commercial lakeside grounds maintenance near Lake Wylie in York County, SC"
                     loading="lazy"
                     decoding="async"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -218,7 +215,7 @@ export default function ServiceAreasIndex() {
                   <p className="text-primary font-bold uppercase tracking-wider text-xs mb-2">Charlotte Metro · SC</p>
                   <h3 className="text-2xl font-serif font-bold text-secondary mb-3">York County, SC</h3>
                   <p className="text-secondary/80 leading-relaxed mb-6 flex-1">
-                    Lake Wylie waterfront estates, I-77 corridor development, and western-county horse farms from Rock Hill and Fort Mill to Clover and York.
+                    Lake Wylie commercial waterfront sites, I-77 corridor development, and western-county working farms from Rock Hill and Fort Mill to Clover and York.
                   </p>
                   <span className="flex items-center gap-2 text-primary font-bold">
                     Explore York County <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

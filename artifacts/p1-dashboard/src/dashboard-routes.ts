@@ -12,13 +12,15 @@ export type DashboardView =
   | "Projects"
   | "Inspections"
   | "Expenses"
-  | "Settings";
+  | "Settings"
+  | "Profile";
 
 export type SettingsSection =
   | "people"
   | "security"
   | "integrations"
-  | "preferences";
+  | "preferences"
+  | "term-libraries";
 
 export type NavigationGroup =
   | "Workspace"
@@ -58,6 +60,7 @@ export type DashboardPageRoute = {
   path: string;
   group: NavigationGroup;
   settingsSection?: SettingsSection;
+  navigation?: boolean;
 };
 
 export type DashboardRoute =
@@ -78,10 +81,12 @@ export const DASHBOARD_PAGES: readonly DashboardPageRoute[] = [
   { view: "Agreements", label: "Agreements", path: "/agreements", group: "Revenue" },
   { view: "Billing", label: "Billing", path: "/billing", group: "Revenue" },
   { view: "Expenses", label: "Expenses", path: "/expenses", group: "Revenue" },
+  { view: "Profile", label: "My profile", path: "/profile", group: "Workspace", navigation: false },
   { view: "Settings", label: "People & access", path: "/settings/people", group: "Settings", settingsSection: "people" },
   { view: "Settings", label: "Security", path: "/settings/security", group: "Settings", settingsSection: "security" },
   { view: "Settings", label: "Integrations", path: "/settings/integrations", group: "Settings", settingsSection: "integrations" },
   { view: "Settings", label: "Preferences", path: "/settings/preferences", group: "Settings", settingsSection: "preferences" },
+  { view: "Settings", label: "Term libraries", path: "/settings/term-libraries", group: "Settings", settingsSection: "term-libraries" },
 ];
 
 export const NAVIGATION_GROUPS: readonly NavigationGroup[] = [
@@ -182,6 +187,7 @@ export function defaultRouteForRole(role: string | null | undefined) {
 export function canAccessRoute(route: DashboardRoute, role: string | null | undefined) {
   if (route.kind !== "page" || !role) return false;
   const { view, settingsSection } = route.page;
+  if (view === "Profile") return true;
   if (role === "crew") return ["My Day", "Properties"].includes(view);
   if (role === "client") {
     return ["Overview", "Properties", "Schedule", "Sales", "Billing", "Requests", "Inspections"].includes(view);
@@ -189,7 +195,8 @@ export function canAccessRoute(route: DashboardRoute, role: string | null | unde
   if (settingsSection) return ["owner", "manager"].includes(role);
   if (view === "Clients") return ["owner", "manager", "dispatch", "sales", "finance"].includes(role);
   if (view === "Agreements") return ["owner", "manager", "finance", "dispatch"].includes(role);
-  if (["Recurring", "Projects", "Inspections"].includes(view)) return ["owner", "manager", "dispatch"].includes(role);
+  if (view === "Projects") return ["owner", "manager", "dispatch", "finance"].includes(role);
+  if (["Recurring", "Inspections"].includes(view)) return ["owner", "manager", "dispatch"].includes(role);
   if (view === "Expenses" || view === "Billing") return ["owner", "manager", "finance"].includes(role);
   if (view === "Sales") return ["owner", "manager", "sales"].includes(role);
   return true;

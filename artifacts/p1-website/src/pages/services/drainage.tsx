@@ -38,10 +38,10 @@ export default function Drainage() {
   return (
     <Layout>
       <SEO 
-        title="Drainage Solutions for Large Properties | P1 Land & Property Management | Upstate SC & Charlotte NC"
-        description="Custom drainage solutions for commercial, agricultural, and large residential properties. French drains, retention systems, swales, and more. Serving Upstate SC and Charlotte NC. Call (704) 221-8928."
+        title="Large-Property Drainage Solutions in SC & NC | P1"
+        description="Drainage assessment and scoped work for qualifying Carolina properties, including swales, French drains, grading, and retention systems. Call (704) 221-8928."
         jsonLd={[
-          serviceSchema({ name: "Drainage Solutions", description: "Custom drainage solutions for commercial, agricultural, and large residential properties. French drains, retention systems, swales, and more. Serving Upstate SC and Charlotte NC. Call (704) 221-8928.", path: "/services/drainage" }),
+          serviceSchema({ name: "Drainage Solutions", description: "Custom drainage solutions for commercial, industrial, agricultural, municipal, and institutional properties. French drains, retention systems, swales, and more. Serving Upstate SC and Charlotte NC. Call (704) 221-8928.", path: "/services/drainage" }),
           breadcrumbSchema([
             { name: "Home", path: "/" },
             { name: "Services", path: "/services" },
@@ -113,7 +113,7 @@ export default function Drainage() {
             </h2>
             <ul className="space-y-4">
               {[
-                "Standing water in fields, yards, or near structures after rain",
+                "Standing water in fields, commercial grounds, or near structures after rain",
                 "Soggy, compacted soil that won't grow healthy turf",
                 "Erosion on slopes, embankments, or around ponds",
                 "Flooded access roads or driveways",
@@ -149,6 +149,7 @@ export default function Drainage() {
         </div>
       </section>
 
+      <section className="site-shell py-12"><h2 className="text-2xl font-bold">Drainage is one part of the campus exterior.</h2><p className="mt-4 text-muted-foreground">Coordinate swales, ponds, erosion, perimeter vegetation, and exterior access through a site plan built for large operational facilities.</p><Link href="/commercial/data-centers-secure-facilities" className="mt-5 inline-block font-bold text-primary underline">Explore secure facility exterior management</Link></section>
       <FinalCTA />
     </Layout>
   );

@@ -2,6 +2,12 @@
 
 The dedicated backend is deployed; this is not public website, shared identity or end-to-end production release acceptance.
 
+## Integrated Core/public provenance alignment — b5fd35d
+
+On September 8, Core deployment `8dd20b49-2a13-4208-9c47-4bf89ff5d961` reached SUCCESS on the production service from `b5fd35df8860dc392b722e30f446074b79885ca3`. Railway built image `sha256:7e3189bffbe3a681f016b1f51d2ee35c32148d80f80ace88c43db44f05dabf66` with the GitHub source root `/platform/p1-core` and Dockerfile `/platform/p1-core/Dockerfile`. The original Core repository, deployment, database, users, customer records, and credentials remain outside this P1 service boundary.
+
+Live verification through the same-origin public gateway returned `200` from `/api/health/ready` with `database:"connected"`. The response retained the public gateway's HSTS, content-security policy, and `noindex, nofollow` boundary for API responses. This release aligns Core's client-site content contract with the reviewed public release; it does not create an administrator, publish CMS records, alter a provider, or satisfy shared-identity and owner-acceptance gates.
+
 ## Exact source and deployment
 
 - Source: `bc3f41483b557afaebcd74fec350b11bd3c49acc`, copied P1 Core only. All904 source Git blobs were reverified with no extra files in the standalone upload context.

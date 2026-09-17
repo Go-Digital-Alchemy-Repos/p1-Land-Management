@@ -6,8 +6,35 @@ import { gzipSync } from 'node:zlib';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const { render } = await import(pathToFileURL(resolve(root, 'dist/server/entry-server.js')).href);
-const paths = [...readFileSync(resolve(root, 'src/App.tsx'), 'utf8').matchAll(/<Route\s+path="([^"]+)"/g)].map(match => match[1]);
-assert.equal(paths.length, 34, 'Review route inventory when adding or removing pages');
+const paths = [...readFileSync(resolve(root, 'src/app-routes.tsx'), 'utf8').matchAll(/<Route\s+path="([^"]+)"/g)].map(match => match[1]);
+assert(paths.length > 0, 'Public route inventory must not be empty');
+assert.equal(new Set(paths).size, paths.length, 'Public route paths must be unique');
+const companyIconUrl = 'https://www.p1landmanagement.com/p1-symbol.svg';
+const headerSource = readFileSync(resolve(root, 'src/components/layout/SiteHeader.tsx'), 'utf8');
+assert(!headerSource.includes('View All Services'), 'Header must not restore the retired View All Services item');
+assert(!/\b(?:Blog|Gallery)\b/.test(headerSource), 'Header main navigation must exclude Blog and Gallery');
+assert.equal((headerSource.match(/Service Areas/g) || []).length, 2, 'Desktop and mobile service menus must each include Service Areas');
+assert(/services\.map\([\s\S]*?Service Areas/.test(headerSource), 'Service Areas must follow the services list');
+assert(/font-bold text-primary[\s\S]*?Service Areas/.test(headerSource), 'Service Areas must retain its emphasized blue styling');
+const commercialInquirySource = readFileSync(resolve(root, 'src/lib/commercial-inquiry.ts'), 'utf8');
+const residentialOfferPattern = /\b(?:large residential|(?<!non-)residential (?:properties|development|acreage|estate)|HOAs?|estate (?:maintenance|lawns?)|waterfront estates?|rural estates?|new homes?|neighborhoods?)\b/i;
+assert(!residentialOfferPattern.test(readFileSync(resolve(root, 'public/llms.txt'), 'utf8')), 'AI-facing site summary must not advertise residential work');
+const expectedPublicForms = [
+  { id: 'p1-estimate', routeId: 'contact', endpoint: '/api/forms/p1-estimate/submit', method: 'POST', authentication: 'public', handlerOwner: 'platform' },
+  { id: 'p1-commercial-assessment', routeId: 'commercial', endpoint: '/api/forms/p1-commercial-assessment/submit', method: 'POST', authentication: 'public', handlerOwner: 'platform' },
+];
+const contractManifests = [
+  resolve(root, 'config/client-site-manifest.json'),
+  resolve(root, '../../platform/p1-core/config/p1-client-site-manifest.json'),
+].map((path) => JSON.parse(readFileSync(path, 'utf8')));
+for (const contractManifest of contractManifests) {
+  assert.deepEqual(
+    contractManifest.forms.map(({ id, routeId, endpoint, method, authentication, handlerOwner }) => ({ id, routeId, endpoint, method, authentication, handlerOwner })),
+    expectedPublicForms,
+    'Public intake forms must have an identical, explicit site-to-platform contract',
+  );
+}
+assert(commercialInquirySource.includes(expectedPublicForms[1].endpoint), 'Commercial inquiry transport must use the declared CMS form endpoint');
 const warnings = [];
 const originalError = console.error;
 console.error = (...args) => warnings.push(args.join(' '));
@@ -15,12 +42,15 @@ try {
   for (const path of paths) {
     const result = render(path);
     assert(result.head?.title && result.head.description, `${path}: metadata`);
+    assert(result.head.title.length <= 60, `${path}: title must be 60 characters or fewer (${result.head.title.length})`);
+    assert(result.head.description.length <= 160, `${path}: description must be 160 characters or fewer (${result.head.description.length})`);
     assert.equal((result.html.match(/<h1(?:\s|>)/g) || []).length, 1, `${path}: one heading`);
     assert(result.fields.page.seoTitle && result.fields.page.seoDescription && result.fields.page.seoImage, `${path}: editable SEO`);
     if (path === "/") assert(/href="\/contact"[^>]*class="[^"]*inline-flex|class="[^"]*inline-flex[^>]*href="\/contact"/.test(result.html), "Slot CTA must retain button styling");
     assert(!/Marcus T\.|50-Acre Forestry|P1 took over our|fill-current|Est\. 2009|±0\.1/.test(result.html), `${path}: unverified proof`);
     assert(!/Yes\. P1 is licensed and insured for commercial work|Licensed and insured for commercial work/.test(result.html), `${path}: unsupported commercial credential claim`);
     assert(!/never need to call anyone else|Free on-site property assessments|One contractor\. No gaps\./.test(result.html), `${path}: unsupported universal service claim`);
+    assert(!residentialOfferPattern.test(result.html), `${path}: must not advertise residential work`);
     for (const match of result.html.matchAll(/href="([^"#]+)(?:#[^"]*)?"/g)) {
       const href = match[1].replaceAll('&amp;', '&');
       if (!href.startsWith('/') || href.startsWith('//')) continue;
@@ -45,6 +75,14 @@ try {
     assert.equal(headings[0], 1, `${path}: main starts with h1`);
     assert(!headings.some((level, index) => index > 0 && level - headings[index - 1] > 1), `${path}: heading level jump`);
     for (const image of main.matchAll(/<img\b[^>]*>/g)) assert(/\balt="[^"]*"/.test(image[0]) || /\baria-hidden="true"/.test(image[0]), `${path}: image alternative text`);
+    for (const control of main.matchAll(/<(input|select|textarea)\b[^>]*>/g)) {
+      const markup = control[0];
+      if (/\btype="hidden"|\baria-hidden="true"/.test(markup)) continue;
+      const id = markup.match(/\bid="([^"]+)"/)?.[1];
+      const hasAccessibleName = /\baria-label="[^"]+"|\baria-labelledby="[^"]+"/.test(markup)
+        || (id ? new RegExp(`<label\\b[^>]*\\bfor="${id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`).test(main) : false);
+      assert(hasAccessibleName, `${path}: visible ${control[1]} must have a programmatic label`);
+    }
     for (const image of html.matchAll(/<img\b[^>]*\bsrc="([^"]+)"[^>]*>/g)) {
       const src = image[1].split('?')[0];
       assert(!/\.(?:png|jpe?g|avif)$/i.test(src), `${path}: public raster image must use WebP (${src})`);
@@ -54,7 +92,14 @@ try {
     }
     for (const match of html.matchAll(/<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)) {
       assert(match[0].includes('data-seo-jsonld'), `${path}: schema cleanup marker`);
-      JSON.parse(match[1]);
+      const jsonLd = JSON.parse(match[1]);
+      if (jsonLd['@type'] === 'LandscapingBusiness') {
+        assert.equal(jsonLd.logo, companyIconUrl, `${path}: business schema uses the P1 symbol`);
+        assert.equal(jsonLd.image, 'https://www.p1landmanagement.com/opengraph.jpg', `${path}: business schema retains its social image`);
+      }
+      if (jsonLd['@type'] === 'Article') {
+        assert.equal(jsonLd.publisher?.logo?.url, companyIconUrl, `${path}: article publisher uses the P1 symbol`);
+      }
     }
     if (html.includes('"@type":"FAQPage"')) {
       assert(html.includes('data-content-type="faq"'), `${path}: FAQ content is semantically labelled`);

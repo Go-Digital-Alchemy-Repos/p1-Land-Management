@@ -1,6 +1,7 @@
 import { commercialInquirySnapshot } from "./commercial-inquiry-snapshot";
 import { p1CommercialAssessmentSchema } from "./p1-commercial-assessment";
 import { p1EstimateSchema } from "./p1-estimate";
+import { readP1FormNotificationRecipients } from "./p1-form-notification-recipients";
 import type { CmsForm, CmsFormField, CmsFormEffectPayload } from "@shared/schema";
 import { storage } from "../storage";
 import { syncContactToMailchimp } from "./mailchimp.service";
@@ -356,6 +357,8 @@ function buildSubmissionSummary(form: CmsForm, data: Record<string, unknown>) {
 
 type SubmissionOptions = { baseUrl?: string; source?: string; idempotencyKey?: string };
 
+const P1_PUBLIC_FORM_SLUGS = new Set(["p1-estimate", "p1-commercial-assessment"]);
+
 async function buildFormEffects(form: CmsForm, data: Record<string, unknown>, baseUrl?: string) {
   const settings = normalizeFormSettings(form);
   const effects: CmsFormEffectPayload[] = [];
@@ -380,21 +383,26 @@ async function buildFormEffects(form: CmsForm, data: Record<string, unknown>, ba
       tag: settings.mailchimpTag,
     });
   }
-  if (settings.notifyAdmins && (!settings.storeAsContactMessage || hasContact)) {
-    let users = await storage.users.getFormNotificationUsers(form.id);
-    if (
-      (hasContact || form.slug === "p1-estimate" || form.slug === "p1-commercial-assessment") &&
-      !users.some((user) => user.email)
-    ) {
-      users = await storage.users.getUsersByRole("admin");
+  const isP1PublicForm = P1_PUBLIC_FORM_SLUGS.has(form.slug);
+  const privateP1Recipients = isP1PublicForm ? readP1FormNotificationRecipients() : null;
+  if (
+    (isP1PublicForm || settings.notifyAdmins) &&
+    (!settings.storeAsContactMessage || hasContact)
+  ) {
+    let recipients = privateP1Recipients;
+    if (!recipients) {
+      let users = await storage.users.getFormNotificationUsers(form.id);
+      if ((hasContact || isP1PublicForm) && !users.some((user) => user.email)) {
+        users = await storage.users.getUsersByRole("admin");
+      }
+      recipients = [
+        ...new Set(
+          users
+            .map((user) => user.email?.trim().toLowerCase())
+            .filter((email): email is string => Boolean(email)),
+        ),
+      ];
     }
-    const recipients = [
-      ...new Set(
-        users
-          .map((user) => user.email?.trim().toLowerCase())
-          .filter((email): email is string => Boolean(email)),
-      ),
-    ];
     for (const recipient of recipients)
       effects.push({
         kind: "admin_notification",

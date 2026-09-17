@@ -53,6 +53,28 @@ describe("Email service", () => {
     vi.clearAllMocks();
     const mod = await import("../services/email.service");
     mod.resetMailgunConfig();
+    mod.resetEmailBrandingCache();
+  });
+
+  it("renders the configured P1 logo and company name in the email shell", async () => {
+    mockGetDecryptedCategory.mockImplementation(async (category: string) =>
+      category === "branding"
+        ? {
+            frontend_logo_url: "https://www.p1landmanagement.com/admin/p1-land-management-logo.png",
+            company_name: "P1 Land & Property Management",
+          }
+        : {},
+    );
+
+    const mod = await import("../services/email.service");
+    const html = await mod.renderEmailShell("New Form Submission", "<p>Submission details</p>");
+
+    expect(html).toContain(
+      'src="https://www.p1landmanagement.com/admin/p1-land-management-logo.png"',
+    );
+    expect(html).toContain('alt="P1 Land &amp; Property Management"');
+    expect(html).toContain("automated message from P1 Land &amp; Property Management");
+    expect(html).not.toContain("Core Platform");
   });
 
   it("sends via Mailgun when configured", async () => {

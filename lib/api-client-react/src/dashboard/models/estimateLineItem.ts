@@ -7,12 +7,8 @@
  */
 
 export interface EstimateLineItem {
-  /**
-     * @minLength 1
-     * @maxLength 2000
-     */
+  /** @minLength 1 */
   description: string;
-  /** @maxLength 100 */
   unit?: string;
   /** @exclusiveMinimum 0 */
   quantity: number;

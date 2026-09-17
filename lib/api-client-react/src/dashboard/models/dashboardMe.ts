@@ -11,6 +11,11 @@ export interface DashboardMe {
   id: string;
   name: string;
   email: string;
+  /**
+     * Private same-origin avatar endpoint for the current account; null when no avatar is stored.
+     * @nullable
+     */
+  avatarUrl: string | null;
   /** @nullable */
   twoFactorEnabled?: boolean | null;
   mfaRequired: boolean;

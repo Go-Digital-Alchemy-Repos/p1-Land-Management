@@ -3,27 +3,22 @@ import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
+import { articleSchema } from "@/lib/structured-data";
 import heroImg from "@/assets/blog-ag-land.png";
 
 export default function BlogPost() {
   return (
     <Layout>
       <SEO 
-        title="How to Prepare Raw Land for Agricultural Use in the Carolinas | P1 Land & Property Management"
-        description="Turning raw or neglected land into productive agricultural acreage requires the right sequence of clearing, grading, drainage, and seeding. Here's how to do it right in SC and NC. Call (704) 221-8928."
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "Article",
+        title="Preparing Land for Agricultural Use | Carolinas | P1"
+        description="Plan the sequence for preparing Carolina acreage for agricultural use: soil testing, clearing, grading, drainage, amendments, and establishment."
+        jsonLd={articleSchema({
           headline: "How to Prepare Raw Land for Agricultural Use in the Carolinas",
           description: "Turning raw or neglected land into productive agricultural acreage requires the right sequence of clearing, grading, drainage, and seeding.",
-          image: "https://www.p1landmanagement.com/opengraph.jpg",
-          author: { "@type": "Organization", name: "P1 Land & Property Management" },
-          publisher: {
-            "@type": "Organization",
-            name: "P1 Land & Property Management",
-            logo: { "@type": "ImageObject", url: "https://www.p1landmanagement.com/opengraph.jpg" },
-          },
-        }}
+          path: "/blog/preparing-land-agricultural-use-carolinas",
+          datePublished: "2026-06-24",
+          dateModified: "2026-09-14",
+        })}
       />
 
       <article className="pb-24">
@@ -126,7 +121,7 @@ export default function BlogPost() {
       </article>
 
       <aside className="site-shell pb-12 text-lg">
-        <p>Planning work on your land? <Link href="/services/industrial-agricultural" className="text-primary underline">Explore this service</Link> and <Link href="/contact" className="text-primary underline">request a property estimate</Link>.</p>
+        <p>Planning work on your land? Review P1's <Link href="/services/industrial-agricultural" className="text-primary underline">industrial and agricultural land services</Link> and <Link href="/contact" className="text-primary underline">request a property estimate</Link>.</p>
       </aside>
       <FinalCTA />
     </Layout>

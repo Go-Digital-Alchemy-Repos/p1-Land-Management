@@ -3,13 +3,15 @@ import { FinalCTA } from "@/components/layout/FinalCTA";
 import { ContourField } from "@/components/layout/ContourField";
 import { IndexOfWork } from "@/components/layout/IndexOfWork";
 import { ServicesGrid } from "@/components/content/ServicesGrid";
+import { GoogleReviewShowcase } from "@/components/content/GoogleReviewShowcase";
 import { SEO } from "@/components/seo";
 import { localBusinessSchema, faqSchema } from "@/lib/structured-data";
+import { responsiveImageProps } from "@/lib/responsive-images";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import heroImg from "@/assets/hero-bg.png";
 import featureImg from "@/assets/features/grading-construction.png";
-import testimonialImg from "@/assets/commercial-property.png";
+import propertyPlanningImg from "@/assets/commercial-property.png";
 import {
   Phone,
   ArrowUpRight,
@@ -26,10 +28,10 @@ import {
 const TAN = "hsl(32 42% 62%)";
 
 const values = [
-  { n: "01", title: "Heavy Equipment Fleet", desc: "Discuss the equipment and access requirements for your grading, clearing, and property maintenance work.", icon: Truck },
-  { n: "02", title: "Large-Acreage Expertise", desc: "Built around properties most crews can't handle — farms, estates, HOAs and commercial sites.", icon: Ruler },
-  { n: "03", title: "Drainage Planning", desc: "We assess slope and water movement, then discuss grade-level work and any specialist involvement.", icon: Droplets },
-  { n: "04", title: "Dependable Scheduling", desc: "Crews that show up, communicate and finish on the timeline we commit to.", icon: CalendarCheck },
+  { n: "01", title: "Equipment Matched to the Work", desc: "We plan access and match equipment to the approved grading, clearing, or maintenance scope.", icon: Truck },
+  { n: "02", title: "Large-Acreage Expertise", desc: "Built around properties most crews can't handle — farms, industrial grounds, public sites, and commercial campuses.", icon: Ruler },
+  { n: "03", title: "Drainage Planning", desc: "We assess visible slope and water movement, define the proposed work, and identify specialist needs before construction.", icon: Droplets },
+  { n: "04", title: "Defined Scheduling", desc: "Every approved scope establishes coordination, responsibilities, and the working schedule before mobilization.", icon: CalendarCheck },
 ];
 
 import { FaqAccordion } from "@/components/content/FaqAccordion";
@@ -38,12 +40,12 @@ const FAQS = [
   {
     question: "What does P1 Land & Property Management do?",
     answer:
-      "P1 is a full-service land and property management company. We handle land clearing and forestry mulching, fine grading and site preparation, drainage solutions, turf installation and seeding, tree and brush management, pond and waterway management, commercial landscaping, and complete property reconstruction.",
+      "P1 is a full-service land and property management company. We provide commercial landscaping and grounds maintenance, along with land clearing and forestry mulching, fine grading and site preparation, drainage solutions, turf installation and seeding, tree and brush management, pond and waterway management, and complete property reconstruction.",
   },
   {
     question: "Is there a minimum property size for P1's services?",
     answer:
-      "Yes. P1 specializes in properties 1 acre and larger — commercial sites, industrial and agricultural land, HOAs, farms, estates, and large residential acreage. That focus lets us bring the heavy equipment and expertise that big properties demand.",
+      "Yes. P1 specializes in properties 1 acre and larger — commercial sites, industrial facilities, agricultural land, municipal grounds, and institutional campuses. We do not provide residential services. That focus lets us bring the heavy equipment and expertise that large properties demand.",
   },
   {
     question: "What areas does P1 Land & Property Management serve?",
@@ -83,14 +85,14 @@ export default function Home() {
     <Layout>
       <SEO
         title="P1 Land & Property Management | Upstate SC & Charlotte NC"
-        description="Grading, drainage, clearing, ponds and full property management for large acreage across Upstate South Carolina and the Charlotte, NC region. Call (704) 221-8928."
+        description="Commercial landscaping & grounds maintenance, plus grading, drainage, clearing & ponds for large commercial & industrial sites in Upstate SC & Charlotte NC."
         jsonLd={[localBusinessSchema(), faqSchema(FAQS)]}
       />
 
       {/* HERO */}
       <section className="relative overflow-hidden bg-navy-deep">
         <div className="absolute inset-0">
-          <img src={heroImg} alt="Heavy equipment shaping large acreage" fetchPriority="high" decoding="async" className="h-full w-full object-cover" style={{ opacity: 0.5 }} />
+          <img src={heroImg} alt="Heavy equipment shaping large acreage" fetchPriority="high" decoding="async" {...responsiveImageProps(heroImg, "100vw")} className="h-full w-full object-cover" style={{ opacity: 0.5 }} />
         </div>
         <div
           className="absolute inset-0"
@@ -113,7 +115,7 @@ export default function Home() {
               </em>
             </h1>
             <p className="mt-7 max-w-xl text-lg leading-relaxed" style={{ color: "hsl(40 20% 92% / 0.82)" }}>
-              Grading, drainage, clearing and ponds for big properties across Upstate South Carolina and the Charlotte metro. Heavy-equipment professionals for farms, estates, HOAs and commercial sites.
+              Commercial landscaping and grounds care, plus grading, drainage, clearing and ponds for large properties across Upstate South Carolina and the Charlotte metro. Heavy-equipment professionals for commercial, industrial, agricultural, municipal, and institutional sites.
             </p>
             <div className="mt-9 flex flex-wrap items-center gap-4">
               <Button asChild size="lg" className="group h-12 rounded-[3px] border-0 bg-primary px-7 font-sans text-[15px] font-bold text-primary-foreground hover:bg-primary/90" style={{ boxShadow: "0 18px 40px -14px hsl(206 70% 48%)" }}>
@@ -156,6 +158,8 @@ export default function Home() {
         </div>
       </section>
 
+      <GoogleReviewShowcase />
+
       {/* SERVICES */}
       <section className="relative bg-background py-24">
         <div className="site-shell">
@@ -169,7 +173,7 @@ export default function Home() {
               </h2>
             </div>
             <p className="max-w-xs text-[15px] leading-relaxed" style={{ color: "hsl(215 20% 35%)" }}>
-              From the first cut to ongoing care, discuss your property’s needs and coordinate the scope with P1.
+              From the first cut to ongoing care, P1 connects the services your large property needs under a clearly defined scope.
             </p>
           </div>
 
@@ -188,7 +192,7 @@ export default function Home() {
               <div className="absolute -left-4 -top-4 h-full w-full rounded-[4px] bg-primary" style={{ opacity: 0.9 }} />
               <div className="absolute -bottom-5 -right-5 h-28 w-28 rounded-[4px] bg-clay" />
               <div className="relative overflow-hidden rounded-[4px] border-4 border-white" style={{ boxShadow: "0 40px 70px -34px hsl(215 45% 15%)" }}>
-                <img src={featureImg} alt="Grading for new construction" loading="lazy" decoding="async" className="h-[420px] w-full object-cover" />
+                <img src={featureImg} alt="Grading for new construction" loading="lazy" decoding="async" {...responsiveImageProps(featureImg)} className="h-[420px] w-full object-cover" />
               </div>
               <div className="absolute -bottom-6 left-8 z-10 rounded-[3px] bg-navy px-5 py-4 text-white" style={{ boxShadow: "0 20px 40px -18px hsl(215 45% 15%)" }}>
                 <div className="font-sans text-3xl font-black leading-none text-tan">Site Prep</div>
@@ -244,11 +248,11 @@ export default function Home() {
                 <span className="text-tan" style={{ fontStyle: "italic" }}>groundwork.</span>
               </h2>
               <p className="mt-5 max-w-sm text-[15px] leading-relaxed" style={{ color: "hsl(40 20% 92% / 0.7)" }}>
-                Discuss the equipment, scope, documentation and delivery responsibilities needed for your property before work begins.
+                P1 brings land preparation, water management, turf, tree care, and recurring exterior work into one coordinated property plan.
               </p>
               <div className="mt-8 inline-flex items-center gap-2 rounded-[3px] px-4 py-2 font-sans text-[12px] font-bold uppercase" style={{ background: "hsl(145 40% 35% / 0.18)", color: "hsl(145 45% 70%)", letterSpacing: "0.16em" }}>
                 <ShieldCheck className="h-4 w-4" />
-                Discuss Your Project
+                Plan Your Project
               </div>
             </div>
 
@@ -273,7 +277,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* TESTIMONIAL */}
+      {/* PROPERTY PLANNING */}
       <section className="relative bg-background py-24">
         <div className="mx-auto max-w-[1100px] px-6">
           <div className="grid grid-cols-12 items-center gap-10">
@@ -281,7 +285,7 @@ export default function Home() {
               <div className="relative">
                 <div className="absolute -left-3 -top-3 h-full w-full rounded-[4px] bg-clay" style={{ opacity: 0.9 }} />
                 <div className="relative overflow-hidden rounded-[4px] border-4 border-white" style={{ boxShadow: "0 30px 60px -28px hsl(215 45% 15%)" }}>
-                  <img src={testimonialImg} alt="Illustrative commercial property" loading="lazy" decoding="async" className="h-[340px] w-full object-cover" />
+                  <img src={propertyPlanningImg} alt="Illustrative commercial property" loading="lazy" decoding="async" {...responsiveImageProps(propertyPlanningImg)} className="h-[340px] w-full object-cover" />
                 </div>
               </div>
             </div>
@@ -344,7 +348,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="site-shell py-12"><div className="border-l-4 border-primary bg-muted p-7"><h2 className="text-2xl font-bold">Managing a commercial or industrial property?</h2><p className="mt-3 text-muted-foreground">Bring grounds, drainage, land and recurring exterior work into one scope discussion.</p><Link href="/commercial" className="mt-5 inline-block font-bold text-primary underline">Explore Commercial Site Management</Link></div></section>
+      <section className="site-shell py-12"><div className="border-l-4 border-primary bg-muted p-7"><h2 className="text-2xl font-bold">Managing a commercial or industrial property?</h2><p className="mt-3 text-muted-foreground">Bring grounds, drainage, land and recurring exterior work into one scope discussion.</p><div className="mt-5 flex flex-wrap gap-x-6 gap-y-3"><Link href="/commercial" className="font-bold text-primary underline">Explore Commercial Site Management</Link><Link href="/commercial/data-centers-secure-facilities" className="font-bold text-primary underline">Data center & secure facility grounds</Link></div></div></section>
       <FinalCTA />
     </Layout>
   );

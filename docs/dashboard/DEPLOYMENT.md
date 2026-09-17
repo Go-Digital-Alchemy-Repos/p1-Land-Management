@@ -1,6 +1,18 @@
 # Deployment and support
 
-Status on 2026-09-07: reviewed preview is deployed to staging and the production dashboard hostname. Full launch acceptance remains pending provider, device and pilot gates.
+Status on 2026-09-08: the reviewed dashboard web and worker are deployed to production. Full launch acceptance remains pending provider, device and pilot gates.
+
+Project-phase implementation `0020` is deployed as an additive production migration. It passed the disposable-PostgreSQL migration replay and the role/lifecycle/idempotency suite before release. See [PROJECT_PHASES_PROPOSAL.md](PROJECT_PHASES_PROPOSAL.md).
+
+Service-request implementation `0021` is deployed as an additive production migration. Its non-validating lifecycle constraint retains historic nonstandard statuses; the new conversion record creates only an unassigned, unscheduled, unpublished work-order draft. See [SERVICE_REQUESTS_PROPOSAL.md](SERVICE_REQUESTS_PROPOSAL.md).
+
+## Overview desk visual release (c739434)
+
+Dashboard web deployment `0acd5ca3-35bd-4809-bce6-fba8f0a6ca7e` was released from an allowlisted package built at `c739434`. The Overview route now uses a full-width, fixed desk backdrop with a paper-color fade, a left title-safe field, and a lighter Next Right Thing panel. The sole desk asset is `manager-desk-overview-v2.webp` (143,394 bytes); no PNG illustration was deployed. Dashboard type checking and the production Vite build passed before release. Live verification confirmed the delivered CSS references the WebP asset, includes its fixed-background and panel-color rules, the image responds as `image/webp`, and `/api/healthz` remains `200` with the existing no-store and security headers.
+
+This is a dashboard presentation/performance release only. It introduces no schema or migration change, worker update, authentication or role change, provider call, billing action, customer communication, or business-data write. The subsequent `ccfcba2` OpenAPI/generated-client change is contract-only and does not require a runtime rollout.
+
+The same visual source line then shipped `f135e49`, `d398c8c`, and `1a88fe4`. It keeps the overview card treatment scoped to Overview, honors reduced-motion preferences, makes the application header sticky, and adds keyboard-equivalent row feedback for rows that contain a quiet action. Production deployment `a3022542-1d74-4215-8242-c9019fa660ee` reached `SUCCESS` from `1a88fe4` (image `sha256:75d86d9452d5d242c6f57fe8b42b8723c6f1bbd4e8c8de2a267b84448fded3c2`). The live bundle references the same WebP asset and CSS rules; health remained `200`. These changes also have no data, API, worker, provider, or authorization effect.
 
 Railway project: `e83f79dd-d901-4ab1-836b-bdf272b58dc2` (p1-Land-Management).
 
@@ -24,9 +36,39 @@ Web start: `node dist/dashboard/main.js`; predeploy: `node dist/dashboard/migrat
 
 Verify deployment status, health, setup behavior, TLS, authenticated no-store headers, deep links, static assets, provider redirects, uploads and webhook signatures before declaring release. Inspect logs without printing credentials or customer content. Roll back application deployment through Railway to the previously verified image; retain additive schema changes. Rehearse compatibility before production data is present.
 
-Production dashboard DB volume backup schedule has DAILY/WEEKLY/MONTHLY enabled. Provider schedule retention is **not a guarantee of 30 daily recovery points**; confirm/implement the proposed 30-day retention before acceptance. A synthetic local pg_dump/restore succeeded previously (6 migrations, 2 properties, 2 field events); this is not a deployed restore rehearsal. Initial targets remain <=24 hours server data loss and restoration within one business day. Backup failure alerts, provider disconnection alerts and operational support ownership still need verification.
+## Service-request lifecycle release
+
+Local validation passed dashboard/API type checks, the dashboard production build, and the disposable PostgreSQL suite (25 tests) with migration replay. Production dashboard web deployment `1defa5c9-89b0-4d27-8c6b-4b596e6e7fa9`, labeled `Release service-request lifecycle d387571`, reached `SUCCESS` after its migration predeploy. The final combined source, `253a83b7495dcd79d6a29a410f741aa5090db586`, then reached `SUCCESS` as dashboard web deployment `d1b99ad9-f798-4e12-8d7e-7558d7f30dce` (image `sha256:f3b4f0826e404e009635a95b2b7587606efc43664c2ef0a8c8e4b7560218244e`) and the matching allowlisted worker deployment `b25da4f2-556d-49b9-8d48-f07bce7d6284` (image `sha256:9fb03256012304a491438497ffbd38520bac222b370c47e2ed77c95893b55b8a`). The worker startup log emitted `worker.started` without an application error.
+
+After deployment, `https://dashboard.p1landmanagement.com/api/healthz` returned `200` with `Cache-Control: no-store`, HSTS, CSP, frame denial, and noindex headers. Anonymous `GET /api/v1/service-requests` returned `401` with `no-store`. No authenticated production request, conversion, or business data was created; invited-client and pilot acceptance remain required.
+
+Production dashboard DB volume backups retain six daily, 27 weekly and 89 monthly recovery points, and Railway point-in-time recovery is active; see [RECOVERY.md](RECOVERY.md) for the verified limits. This is not a guarantee of 30 daily recovery points. A synthetic local pg_dump/restore succeeded previously (6 migrations, 2 properties, 2 field events); this is not a deployed restore rehearsal. Initial targets remain <=24 hours server data loss and restoration within one business day. Backup failure alerts, provider disconnection alerts and operational support ownership still need verification.
 
 Owner authorized setup costs without another cost approval step. A source-backed assumption estimate is in [COSTS.md](COSTS.md); actual measured usage remains to be recorded from provider billing. Messaging, storage/egress, backups and QuickBooks subscription/payment eligibility are separate expenses.
+
+Use [PILOT_ACCEPTANCE.md](PILOT_ACCEPTANCE.md) for the required owner, integration, field-device and one-crew/invited-client launch evidence.
+
+## Integrated production release (b5fd35d)
+
+`b5fd35df8860dc392b722e30f446074b79885ca3` is the current integrated release source. Production dashboard web deployment `fcbe95c2-b566-4b17-8bdc-51580e7053dc` reached SUCCESS using `artifacts/api-server/Dockerfile.dashboard`. Its post-deploy health response returned `200` with `Cache-Control: no-store`, `X-Robots-Tag: noindex, nofollow`, the existing CSP/frame/nosniff headers, and `Strict-Transport-Security: max-age=31536000`. Root, `/properties`, and `/settings/security` served `200`; anonymous `/api/v1/requests` returned `401`.
+
+The source-disconnected production worker was promoted only after the web deployment succeeded. An allowlisted package was created from an isolated worktree at the exact source revision, omitting environment files, website source/assets, and Core. Worker deployment `b6131965-ec85-4458-8bd9-ee3837c0c032` reached SUCCESS with image `sha256:ade0114957b0034df1710e58d5389bae5596d029ed766e029a532626989b31de`; the active service reported SUCCESS/not stopped and startup emitted `event="worker.started"`. This release adds no provider credentials, invoice action, payment action, customer communication, database migration, or acceptance claim.
+
+The public website deployment `a92be6fe-eecf-44aa-8bcd-e6833e220515` also reached SUCCESS from the same source. Live `/`, `/commercial`, `/services`, `/sitemap.xml`, `/robots.txt`, and the public Core readiness gateway returned `200`; retired `/testimonials` returned `301` to `/contact` with HSTS. The worker and website evidence confirms deployed code and basic response boundaries only. QuickBooks, Twilio, owner recovery/MFA, physical-device offline behavior, backup/object recovery, and a one-crew/invited-client billing pilot remain acceptance gates.
+
+## Project phases and draft billing intents (cd76d2c)
+
+`cd76d2c83cfcf7253bea609b19479d2712f379cb` adds the normalized, append-only project-phase lifecycle and retry-safe draft billing intents. Migration `0020_project_phases.sql` is additive: it preserves the legacy `project.phases` JSON, creates normalized phase/event/billing-intent records, and adds a nullable work-order phase reference. It does not post an invoice, call a provider, or create customer communications.
+
+Before release, shared-library and API type checks passed. The disposable PostgreSQL suite passed 24/24 checks and replayed the complete migration ledger using only synthetic records. It covers legacy JSON preservation, operational-property and role boundaries, phase transitions/prerequisites, reviewed-work acceptance, append-only events, version conflicts, duplicate explicit positions, client/crew field minimization, and idempotent draft billing operations.
+
+Production dashboard web deployment `6bb5a72d-2d8d-41c2-8223-9d921c72ce21` reached SUCCESS from that source (image `sha256:0e27fc742f9d08ed0a45fcbe7f9bb2bf09edc454699c17ed04bf194cc1a9e0ed`) and ran the web-only migration command. The matching source-disconnected worker was promoted from an allowlisted package after web success: deployment `01232cf4-e9d5-4958-a448-4f86aa7c7cfb`, image `sha256:142d969d72d9fe692e7b9063cf6b19fd7d083b4684cc2db250da5d9f4f0bd9b8`. Its startup log emitted `worker.started` without an application error. Live dashboard health returned `200` with no-store, HSTS, CSP, frame denial and noindex headers; an anonymous phase-history request returned `401` with no-store. The public website and Core source deployments associated with the same commit also reached SUCCESS.
+
+Application rollback must retain migration `0020` and its append-only records. Roll back only the application image after assessing the incident; do not remove phase data or reverse the migration as a convenience. Role/browser acceptance with an authorized owner, an actual crew, and an invited client remains part of [PILOT_ACCEPTANCE.md](PILOT_ACCEPTANCE.md).
+
+## Dashboard illustration optimization (f3c2776)
+
+Dashboard deployment `b5c17033-0cf4-49a7-9598-318089d00adc` reached SUCCESS from `f3c277658f2577730cd6bcd0e55ba774213fd5c2`, image `sha256:7de2cac07e65e6c0dfe1431ef0d7529174b692ebc2002ea09360104a17df0f4c`. It adds page-specific, non-geographic dashboard illustrations and serves all 19 as WebP, replacing the prior PNG copies. The optimized set is 1,148,454 bytes, down 93.1% from the PNG source set. The dashboard build passed; live root returned `200` with HSTS and noindex headers, and its delivered CSS references the WebP property illustration. This is a presentation/performance update only: no API, schema, worker, provider, authentication, role, or operational-process behavior changed.
 
 ## Reviewed preview candidate
 
@@ -38,7 +80,7 @@ Independent scoped reviews accepted the original six findings and two follow-ups
 
 Production worker deployment `28a3cb2b-9c33-45b0-92b6-2c98b7e077e6` reached SUCCESS; startup logs showed container start with no application error in the inspected output. Provider jobs cannot be proven without authorized credentials and test accounts.
 
-Owner onboarding activation, 2026-09-07: after authorized Mailgun credential provisioning, the existing reviewed preview was redeployed without new workspace code: web `6b4fa525-9084-4c19-94a0-5b6d82c37229`, worker `5b8bdb72-7306-4400-b792-41a32af4c5c2`, both SUCCESS. Live setup returned initialized:false/configured:true. Designated email is mike@p1landmanagement.com. A 24-hour setup authorization hash was stored securely; one setup message was accepted by Mailgun (`20260907070915.55774c0f5bda186d@mg.p1landmanagement.com`). No account password or MFA enrollment was performed by the agent. Provider delivery event and owner completion remain to be confirmed. No setup code or secret is stored in this repository.
+Owner onboarding activation, 2026-09-07: after authorized Mailgun credential provisioning, the existing reviewed preview was redeployed without new workspace code: web `6b4fa525-9084-4c19-94a0-5b6d82c37229`, worker `5b8bdb72-7306-4400-b792-41a32af4c5c2`, both SUCCESS. Live setup returned initialized:false/configured:true. The designated owner inbox is held in protected deployment configuration. A 24-hour setup authorization hash was stored securely; one setup message was accepted by Mailgun (`20260907070915.55774c0f5bda186d@mg.p1landmanagement.com`). No account password or MFA enrollment was performed by the agent. Provider delivery event and owner completion remain to be confirmed. No setup code or secret is stored in this repository.
 
 DNS task independently verified the same owner setup message in Mailgun logs without opening its body: Accepted 03:09:15 Eastern, Delivered 03:09:16 Eastern, recipient Gmail server `2.0.0 OK`. This proves provider delivery, not that the owner has read it or completed setup.
 

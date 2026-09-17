@@ -5,10 +5,17 @@ import { PropertyFiles } from "./PropertyFiles";
 import { ScheduleCalendar } from "./ScheduleCalendar";
 import { AssessmentAvailability } from "./AssessmentAvailability";
 import { ClientContacts } from "./ClientContacts";
+import { RequestComposer } from "./RequestComposer";
+import { RichTextEditor } from "./RichTextEditor";
 import { ClientWorkspace, PropertyWorkspace } from "./AccountWorkspace";
 import { motifForPage } from "./motifs";
 import { InspectionReports } from "./InspectionReports";
-import React, { useEffect, useRef, useState } from "react";
+import { ServiceRequestTriage } from "./ServiceRequestTriage";
+import { ProjectPhases } from "./ProjectPhases";
+import { formatPhoneNumber } from "./phone";
+import { ContactDetails, EmailLink } from "./contact-links";
+import { AccountProfile } from "./AccountProfile";
+import React, { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { createAuthClient } from "better-auth/react";
 import { twoFactorClient } from "better-auth/client/plugins";
@@ -32,6 +39,7 @@ import {
   ShieldCheck,
   Plug,
   SlidersHorizontal,
+  LibraryBig,
   ChevronDown,
   Eye,
   EyeOff,
@@ -59,7 +67,10 @@ import {
   type SettingsSection,
 } from "./dashboard-routes";
 const auth = createAuthClient({ plugins: [twoFactorClient()] });
-async function api(path: string, body?: unknown, method: "POST" | "PATCH" = "POST") {
+const PropertyMap = lazy(() =>
+  import("./PropertyMap").then(({ PropertyMap }) => ({ default: PropertyMap })),
+);
+async function api(path: string, body?: unknown, method: "POST" | "PATCH" | "DELETE" = "POST") {
   const r = await fetch("/api/v1" + path, {
     method: body === undefined ? "GET" : method,
     headers: body === undefined ? {} : { "Content-Type": "application/json" },
@@ -76,11 +87,12 @@ type Person = {
   role: string | null;
   twoFactorEnabled: boolean;
   mfaRequired?: boolean;
+  avatarUrl?: string | null;
 };
 type NavItem = DashboardPageRoute & {
   icon: typeof LayoutDashboard;
 };
-const icons: Record<DashboardPageRoute["view"] | "Settings:security" | "Settings:integrations" | "Settings:preferences", typeof LayoutDashboard> = {
+const icons: Record<DashboardPageRoute["view"] | "Settings:security" | "Settings:integrations" | "Settings:preferences" | "Settings:term-libraries", typeof LayoutDashboard> = {
   Overview: LayoutDashboard,
   Properties: MapPin,
   Clients: Users,
@@ -94,10 +106,12 @@ const icons: Record<DashboardPageRoute["view"] | "Settings:security" | "Settings
   Projects: ClipboardList,
   Inspections: CheckCircle2,
   Expenses: Wallet,
+  Profile: Users,
   Settings: Users,
   "Settings:security": ShieldCheck,
   "Settings:integrations": Plug,
   "Settings:preferences": SlidersHorizontal,
+  "Settings:term-libraries": LibraryBig,
 };
 const nav: NavItem[] = DASHBOARD_PAGES.map((page) => ({
   ...page,
@@ -133,6 +147,47 @@ function operatingDate(value: string | Date) {
     .map((type) => parts.find((part) => part.type === type)?.value)
     .join("-");
 }
+
+function PropertyTypesLibrary({
+  propertyTypes,
+  request,
+  onRefresh,
+}: {
+  propertyTypes: any[];
+  request: (path: string, body?: unknown, method?: "POST" | "PATCH" | "DELETE") => Promise<any>;
+  onRefresh: () => Promise<void>;
+}) {
+  const [newName, setNewName] = useState("");
+  const [editing, setEditing] = useState<{ id: string; name: string } | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  async function runChange(change: () => Promise<unknown>) {
+    setBusy(true); setError("");
+    try { await change(); await onRefresh(); }
+    catch (reason) { setError((reason as Error).message); }
+    finally { setBusy(false); }
+  }
+  return <section className="panel term-library-panel">
+    <div className="panel-heading"><div><h2>Property types library</h2><p>Shared classifications for the property directory and account workspaces.</p></div></div>
+    <div className="term-library-body">
+      <form className="term-library-add" onSubmit={(event) => { event.preventDefault(); if (!newName.trim()) return; void runChange(async () => { await request("/property-types", { name: newName }); setNewName(""); }); }}>
+        <label>New property type<input value={newName} maxLength={100} onChange={(event) => setNewName(event.target.value)} placeholder="e.g. Hospitality" /></label>
+        <button className="primary" disabled={busy || !newName.trim()}><Plus size={16} />Add type</button>
+      </form>
+      <div className="term-library-list">
+        {propertyTypes.map((item) => {
+          const editingThis = editing?.id === item.id;
+          const name = editingThis && editing ? editing.name : "";
+          return <div className="term-library-row" key={item.id}>
+            {editingThis ? <form onSubmit={(event) => { event.preventDefault(); if (!name.trim()) return; void runChange(async () => { await request(`/property-types/${item.id}`, { name }); setEditing(null); }); }}><input aria-label={`Rename ${item.name}`} value={name} maxLength={100} onChange={(event) => setEditing({ id: item.id, name: event.target.value })} /><div><button className="primary" disabled={busy || !name.trim()}>Save</button><button type="button" className="secondary" disabled={busy} onClick={() => setEditing(null)}>Cancel</button></div></form> : <><strong>{item.name}</strong><div className="term-library-actions"><button type="button" className="text-action" disabled={busy} onClick={() => setEditing({ id: item.id, name: item.name })}>Rename</button><button type="button" className="quiet-action danger-action" disabled={busy} onClick={() => { if (window.confirm(`Remove ${item.name}? This is available only when no properties use it.`)) void runChange(() => request(`/property-types/${item.id}`, {}, "DELETE")); }}>Remove</button></div></>}
+          </div>;
+        })}
+        {!propertyTypes.length && <p className="empty">No property types have been added yet.</p>}
+      </div>
+      {error && <p className="error" role="alert">{error}</p>}
+    </div>
+  </section>;
+}
 function App() {
   const initialRoute = routeFromLocation();
   const initialPage =
@@ -164,6 +219,9 @@ function App() {
     [isOnline, setOnline] = useState(navigator.onLine),
     [count, setCount] = useState(0),
     [menu, setMenu] = useState(false);
+  const [propertySearch, setPropertySearch] = useState("");
+  const [propertyTypeFilter, setPropertyTypeFilter] = useState("");
+  const [propertySort, setPropertySort] = useState<"name" | "type">("name");
   const [authMode, setAuthMode] = useState("login"),
     [mfa, setMfa] = useState<any>(null);
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -286,6 +344,7 @@ function App() {
             ? [
                 "work-orders",
                 "properties",
+                "property-types",
                 "clients",
                 "estimates",
                 "billing",
@@ -297,12 +356,13 @@ function App() {
             : [
                 "work-orders",
                 "properties",
+                "property-types",
                 "clients",
                 ...(person.role === "finance"
-                  ? ["billing", "estimates", "expenses", "quickbooks/invoices"]
+                  ? ["billing", "estimates", "expenses", "quickbooks/invoices", "projects"]
                   : []),
                 ...(["owner", "manager", "sales"].includes(person.role)
-                  ? ["estimates"]
+                  ? ["estimates", "agreement-templates"]
                   : []),
                 ...(["owner", "manager"].includes(person.role)
                   ? [
@@ -319,9 +379,6 @@ function App() {
                 "assessment-slots",
                 ...(["owner", "manager", "dispatch"].includes(person.role)
                   ? ["recurring-services", "recurring-jobs", "projects", "inspections"]
-                  : []),
-                ...(["owner", "manager", "sales"].includes(person.role)
-                  ? ["agreement-templates"]
                   : []),
               ];
       const values = await Promise.all(
@@ -561,7 +618,7 @@ function App() {
           ...b,
           intervalCount: Number(b.intervalCount),
         });
-      if (form === "project") await api("/projects", { ...b, propertyIds: formData.getAll("propertyIds").map(String) });
+      if (form === "project") await api("/projects", b);
       if (form === "expense")
         await api("/expenses", {
           ...b,
@@ -624,75 +681,51 @@ function App() {
         await api("/properties", {
           clientId: b.clientId,
           name: b.name,
-          address: b.address,
+          addressLine1: b.addressLine1,
+          addressLine2: b.addressLine2 || undefined,
+          city: b.city,
+          state: b.state,
+          postalCode: b.postalCode,
           acreage: b.acreage ? Number(b.acreage) : undefined,
           accessInstructions: b.accessInstructions,
+          propertyTypeId: b.propertyTypeId || null,
         });
       if (form === "work")
         await api("/jobs/internal", {
           propertyId: b.propertyId,
           title: b.title,
           scope: b.scope,
-          reason: b.reason,
           assignedTo: b.assignedTo || undefined,
           scheduledAt: b.scheduledAt
             ? new Date(b.scheduledAt).toISOString()
             : undefined,
+          reason: b.reason,
         });
       if (form === "lead") await api("/leads", b);
-      if (["estimate", "estimate-request"].includes(form || "")) {
-        const lineItems = String(b.lineItems || "")
-          .split("\n")
-          .filter(Boolean)
-          .map((line) => {
-            const [description, quantity, price, unit] = line.split("|").map((part) => part.trim());
-            return { description, quantity: Number(quantity), unitPriceCents: Math.round(Number(price) * 100), unit: unit || undefined };
-          });
-        if (!lineItems.length || lineItems.some((item) => !item.description || !item.quantity || item.unitPriceCents < 0))
-          throw new Error("Enter each line as description | quantity | unit price | optional unit");
-        const monthlyPeriods = () => {
-          const result: any[] = [];
-          if (!b.startsOn || !b.endsOn || !b.monthlyAmount) return result;
-          let start = b.startsOn;
-          while (start <= b.endsOn && result.length < 120) {
-            const day = new Date(start + "T00:00:00Z");
-            const monthEnd = new Date(Date.UTC(day.getUTCFullYear(), day.getUTCMonth() + 1, 0)).toISOString().slice(0, 10);
-            result.push({ startsOn: start, endsOn: monthEnd < b.endsOn ? monthEnd : b.endsOn, amountCents: Math.round(Number(b.monthlyAmount) * 100) });
-            start = new Date(Date.UTC(day.getUTCFullYear(), day.getUTCMonth() + 1, 1)).toISOString().slice(0, 10);
-          }
-          return result;
-        };
-        const recurring = b.kind === "recurring" ? {
-          cadence: b.cadence,
-          intervalCount: Number(b.intervalCount),
-          startsOn: b.startsOn,
-          endsOn: b.endsOn,
-          localTime: b.localTime || "08:00",
-          billingMode: b.billingMode,
-          unitAmountCents: b.billingMode === "per_visit" ? Math.round(Number(b.unitAmount) * 100) : null,
-          periods: b.billingMode === "fixed_monthly" ? monthlyPeriods() : [],
-        } : undefined;
-        await api(form === "estimate-request" ? "/requests/" + selected.id + "/estimates" : "/estimates", { propertyId: b.propertyId, title: b.title, scope: b.scope, terms: b.terms || "", kind: b.kind, projectId: b.projectId || undefined, lineItems, recurring, agreementTemplateId: b.kind === "recurring" ? b.agreementTemplateId : undefined });
+      if (form === "estimate" || form === "estimate-request") {
+        const lineItems = String(b.lineItems || "").split("\n").filter(Boolean).map((line) => {
+          const [description, quantity, unitPrice, unit] = line.split("|").map((part) => part.trim());
+          if (!description || !Number(quantity) || Number(unitPrice) < 0) throw new Error("Each line item needs description | quantity | unit price | optional unit");
+          return { description, quantity: Number(quantity), unitPriceCents: Math.round(Number(unitPrice) * 100), ...(unit ? { unit } : {}) };
+        });
+        const kind = b.kind || "one_time";
+        const payload: any = { propertyId: b.propertyId, title: b.title, scope: b.scope, terms: b.terms || "", lineItems, kind };
+        if (kind === "recurring") {
+          if (!b.agreementTemplateId || !b.startsOn || !b.endsOn) throw new Error("Recurring estimates need a template and service dates");
+          payload.agreementTemplateId = b.agreementTemplateId;
+          payload.recurring = { cadence: b.cadence || "weekly", intervalCount: Number(b.intervalCount || 1), startsOn: b.startsOn, endsOn: b.endsOn, localTime: b.localTime || "08:00", billingMode: "per_visit", unitAmountCents: Math.round(Number(b.unitAmount) * 100), periods: [] };
+        }
+        await api(form === "estimate-request" ? `/requests/${selected.id}/estimates` : "/estimates", payload);
       }
-      if (form === "send-estimate")
-        await api("/estimates/" + selected.id + "/send", {
-          recipientContactIds: formData.getAll("recipientContactIds").map(String),
-        });
-      if (form === "activate-recurring")
-        await api("/recurring-jobs/" + selected.id + "/activate", {
-          assignedTo: b.assignedTo,
-          nextDate: b.nextDate,
-          localTime: b.localTime,
-        });
-      if (form === "agreement-template")
-        await api("/agreement-templates", { name: b.name, body: b.body });
+      if (form === "send-estimate") await api(`/estimates/${selected.id}/send`, { recipientContactIds: formData.getAll("recipientContactIds") });
+      if (form === "activate-recurring") await api(`/recurring-jobs/${selected.id}/activate`, { assignedTo: b.assignedTo, nextDate: b.nextDate, localTime: b.localTime });
       if (form === "billing")
         await api("/billing", {
           ...b,
           operationId: billingOperationId,
           amountCents: Math.round(Number(b.amount) * 100),
         });
-      if (form === "request") await api("/requests", { ...b, source: person?.role === "client" ? "portal" : "manual" });
+      if (form === "request") await api("/requests", b);
       if (form === "invite")
         await api("/invitations", { ...b, clientId: b.clientId || undefined });
       if (form === "slot")
@@ -741,7 +774,12 @@ function App() {
   ) => (
     <label>
       {label}
-      <input name={name} type={type} required={required} />
+      <input
+        name={name}
+        type={type}
+        required={required}
+        onBlur={type === "tel" ? (event) => { event.currentTarget.value = formatPhoneNumber(event.currentTarget.value); } : undefined}
+      />
     </label>
   );
   const passwordField = (label: string) => (
@@ -773,7 +811,7 @@ function App() {
   const propertySelect = () => (
     <label>
       Property
-      <select name="propertyId" required defaultValue={form === "estimate-request" ? selected?.property_id : undefined}>
+      <select name="propertyId" required>
         <option value="">Choose a property</option>
         {(data.properties || []).map((p: any) => (
           <option key={p.id} value={p.id}>
@@ -796,13 +834,13 @@ function App() {
       </select>
     </label>
   );
-  const openForm = (name: string, row?: any) => {
+  const openForm = async (name: string, row?: any) => {
+    if (name === "send-estimate" && row) {
+      const estimateRecipients = await api(`/estimates/${row.id}/recipient-options`);
+      setData((previous: any) => ({ ...previous, estimateRecipients }));
+    }
     setSelected(row);
     setForm(name);
-    if (name === "send-estimate" && row)
-      void api("/estimates/" + row.id + "/recipient-options")
-        .then((recipients) => setData((current: any) => ({ ...current, estimateRecipients: recipients })))
-        .catch((reason) => setError(reason.message));
   };
   const propertyPage = nav.find((item) => item.view === "Properties")!;
   const schedulePage = nav.find((item) => item.view === "Schedule")!;
@@ -859,8 +897,27 @@ function App() {
     ),
     manager = ["owner", "manager"].includes(person?.role || ""),
     ops = ["owner", "manager", "dispatch"].includes(person?.role || "");
+  const propertyTypes = data["property-types"] || [];
+  const visibleProperties = (data.properties || [])
+    .filter((property: any) => {
+      const haystack = [property.name, property.address, property.property_type_name]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+      return (
+        (!propertyTypeFilter || property.property_type_id === propertyTypeFilter) &&
+        haystack.includes(propertySearch.trim().toLowerCase())
+      );
+    })
+    .toSorted((left: any, right: any) =>
+      propertySort === "type"
+        ? `${left.property_type_name || "Unclassified"}\u0000${left.name}`.localeCompare(
+            `${right.property_type_name || "Unclassified"}\u0000${right.name}`,
+          )
+        : left.name.localeCompare(right.name),
+    );
   const allowedNav = nav.filter((item) =>
-    canAccessRoute({ kind: "page", page: item }, person?.role),
+    item.navigation !== false && canAccessRoute({ kind: "page", page: item }, person?.role),
   );
   const activePage = nav.find(
     (item) =>
@@ -884,7 +941,7 @@ function App() {
           : new Set([...current, activePage.group]),
       );
     }
-  }, [activePage, routeUnavailable]);
+  }, [activePage?.group, routeUnavailable]);
   useEffect(() => {
     const current = routeFromLocation();
     if (
@@ -1116,9 +1173,11 @@ function App() {
             return (
               <section className="nav-group" key={group} aria-label={group}>
                 <button
+                  type="button"
                   className="nav-group-trigger"
                   aria-expanded={expanded}
                   aria-controls={groupId}
+                  aria-label={`${expanded ? "Collapse" : "Expand"} ${group}`}
                   onClick={() =>
                     setExpandedGroups((current) => {
                       const next = new Set(current);
@@ -1186,19 +1245,30 @@ function App() {
                 : view}
             </strong>
           </div>
-          <div className="user">
+          <button
+            className="user account-menu-trigger"
+            onClick={() => navigate("Profile")}
+            aria-label="Open your account profile"
+          >
             <span className={isOnline ? "connection" : "connection offline"}>
               {isOnline ? "Connected" : "Offline"}
             </span>
-            <span className="avatar">{person.name.slice(0, 1)}</span>
+            {person.avatarUrl ? (
+              <img className="avatar" src={person.avatarUrl} alt="" />
+            ) : (
+              <span className="avatar">{person.name.slice(0, 1)}</span>
+            )}
             <div>
               {person.name}
               <small>{person.role}</small>
             </div>
-          </div>
+          </button>
         </header>
-        <main className={view === "Overview" ? "content desk-workspace-preview" : "content"}>
-          {!accountWorkspace && <div className="page-heading page-hero" style={{ "--page-motif": motifForPage(view, settingsSection) } as React.CSSProperties}>
+        <main
+          className={view === "Overview" ? "content desk-workspace-preview" : "content workspace-motif"}
+          style={view === "Overview" ? undefined : ({ "--workspace-motif": motifForPage(view, settingsSection) } as React.CSSProperties)}
+        >
+          {!accountWorkspace && <div className={view === "Overview" ? "page-heading page-hero" : "page-heading"}>
             <div>
               <p className="eyebrow">P1 · PROPERTY OPERATIONS</p>
               <h1>
@@ -1238,8 +1308,11 @@ function App() {
               )}
               {view === "Schedule" && ops && (
                 <button className="primary" onClick={() => openForm("work")}>
-                  <Plus size={17} /> Internal or emergency Job
+                  <Plus size={17} /> Internal Job
                 </button>
+              )}
+              {view === "Recurring" && ops && (
+                <span className="muted">Recurring Jobs begin with an approved recurring estimate.</span>
               )}
               {view === "Projects" && manager && (
                 <button className="primary" onClick={() => openForm("project")}>
@@ -1281,6 +1354,7 @@ function App() {
               id={recordRoute.id}
               tab={recordRoute.tab}
               request={api}
+              role={person.role || ""}
               onTab={(tab) =>
                 navigateRecord(clientPage, { kind: "client", id: recordRoute.id, tab })
               }
@@ -1319,20 +1393,30 @@ function App() {
               </div>
             </section>
           ) : <>
+          {view === "Profile" && (
+            <AccountProfile
+              account={person}
+              actions={{
+                updateUser: (input) => auth.updateUser(input),
+                changePassword: (input) => auth.changePassword(input),
+                enableTwoFactor: (input) => auth.twoFactor.enable(input),
+                verifyTotp: (input) => auth.twoFactor.verifyTotp(input),
+                disableTwoFactor: (input) => auth.twoFactor.disable(input),
+              }}
+              onRefresh={session}
+            />
+          )}
           {view === "Agreements" && (
-            <>
-              <ServiceAgreements
-                role={person.role}
-                userId={person.id}
-                selectedAgreementId={
-                  recordRoute?.kind === "agreement" ? recordRoute.id : undefined
-                }
-                onSelect={(id) =>
-                  navigateRecord(agreementPage, { kind: "agreement", id })
-                }
-              />
-              {manager && <section className="panel"><div className="panel-heading"><h2>Agreement templates</h2><button onClick={() => openForm("agreement-template")}><Plus size={16} /> New template</button></div><Table rows={data["agreement-templates"] || []} columns={["name", "version", "updated_at"]} empty="No reusable agreement templates yet." /></section>}
-            </>
+            <ServiceAgreements
+              role={person.role}
+              userId={person.id}
+              selectedAgreementId={
+                recordRoute?.kind === "agreement" ? recordRoute.id : undefined
+              }
+              onSelect={(id) =>
+                navigateRecord(agreementPage, { kind: "agreement", id })
+              }
+            />
           )}
           {view === "Overview" && (
             <>
@@ -1344,7 +1428,7 @@ function App() {
                     "In your workspace",
                   ],
                   [
-                    "Scheduled Jobs",
+                    "Scheduled work",
                     data.work?.filter((w: any) => w.status === "scheduled")
                       .length || 0,
                     "Ready for the crew",
@@ -1399,14 +1483,14 @@ function App() {
                           className="quiet-action"
                           onClick={() => void openWorkOrder(w.id, schedulePage)}
                         >
-                          Open Job
+                          Open work order
                         </button>
                       </div>
                     ))
                   ) : (
                     <Empty
                       title="A fresh start for your operations"
-                      text="Add a client and property, then schedule your first Job."
+                      text="Add a client and property, then schedule your first work order."
                     />
                   )}
                 </section>
@@ -1441,12 +1525,39 @@ function App() {
             </>
           )}
           {view === "Properties" && (
-            <section className="panel">
-              <PropertyCards
-                properties={data.properties || []}
-                onOpen={openPropertyWorkspace}
-              />
-            </section>
+            <>
+              <section className="panel property-map-panel">
+                <div className="panel-heading">
+                  <div>
+                    <h2>Property map</h2>
+                    <p>Choose a property pin to open its account profile.</p>
+                  </div>
+                </div>
+                <Suspense
+                  fallback={
+                    <div className="property-map-loading" role="status">
+                      Loading property map…
+                    </div>
+                  }
+                >
+                  <PropertyMap
+                    properties={data.properties || []}
+                    onOpen={openPropertyWorkspace}
+                  />
+                </Suspense>
+              </section>
+              <section className="panel">
+                <div className="property-directory-controls" aria-label="Property directory controls">
+                  <label>Search properties<input type="search" value={propertySearch} onChange={(event) => setPropertySearch(event.target.value)} placeholder="Name or address" /></label>
+                  <label>Property type<select value={propertyTypeFilter} onChange={(event) => setPropertyTypeFilter(event.target.value)}><option value="">All property types</option>{propertyTypes.map((type: any) => <option key={type.id} value={type.id}>{type.name}</option>)}</select></label>
+                  <label>Sort by<select value={propertySort} onChange={(event) => setPropertySort(event.target.value as "name" | "type")}><option value="name">Name</option><option value="type">Property type</option></select></label>
+                </div>
+                <PropertyCards
+                  properties={visibleProperties}
+                  onOpen={openPropertyWorkspace}
+                />
+              </section>
+            </>
           )}
           {view === "Clients" && (
             <section className="panel">
@@ -1454,22 +1565,9 @@ function App() {
                 <div className="schedule-row" key={client.id}>
                   <div>
                     <strong>{client.name}</strong>
-                    <small>
-                      {[client.billing_address, client.phone]
-                        .filter(Boolean)
-                        .join(" · ")}
-                    </small>
+                    <small><ContactDetails prefix={client.billing_address} phone={client.phone} /></small>
                     {client.primary_contact_name && (
-                      <small>
-                        {[
-                          client.primary_contact_name,
-                          client.primary_contact_position,
-                          client.primary_contact_email,
-                          client.primary_contact_phone,
-                        ]
-                          .filter(Boolean)
-                          .join(" · ")}
-                      </small>
+                      <small><ContactDetails prefix={[client.primary_contact_name, client.primary_contact_position].filter(Boolean).join(" · ")} email={client.primary_contact_email} phone={client.primary_contact_phone} /></small>
                     )}
                   </div>
                   {staff && (
@@ -1718,7 +1816,7 @@ function App() {
                     title={
                       view === "My Day"
                         ? "No work scheduled for this date"
-                        : "No Jobs yet"
+                        : "No work orders yet"
                     }
                     text="Scheduled assignments will appear here."
                   />
@@ -1792,11 +1890,7 @@ function App() {
                       </button>
                     )}
                     {e.status === "draft" && e.is_current && staff && (
-                      <button
-                        onClick={() => openForm("send-estimate", e)}
-                      >
-                        Send to client
-                      </button>
+                      <button onClick={() => void openForm("send-estimate", e)}>Send to client</button>
                     )}
                     {e.status === "sent" &&
                       e.is_current &&
@@ -1949,43 +2043,24 @@ function App() {
           )}
           {view === "Recurring" && (
             <section className="panel">
-              <div className="panel-heading">
-                <div>
-                  <h2>Recurring Jobs</h2>
-                  <p className="muted">Approved recurring work awaiting activation and active Job programs.</p>
-                </div>
-              </div>
               <Table
                 rows={data["recurring-jobs"] || []}
                 columns={[
                   "title",
                   "client_name",
                   "property_name",
-                  "cadence",
-                  "next_date",
                   "agreement_status",
+                  "cadence",
                   "next_visit",
                   "paused",
                 ]}
-                empty="No recurring Jobs yet. Create one from an approved recurring estimate."
+                empty="No recurring services yet."
               />
-              {(data["recurring-jobs"] || []).filter((job: any) => job.paused && job.agreement_status === "draft").map((job: any) => (
-                <div className="schedule-row" key={"activate-" + job.id}>
-                  <span><strong>{job.title}</strong><small>Client-approved; waiting for dispatch activation.</small></span>
-                  <button onClick={() => openForm("activate-recurring", job)}>Schedule and activate</button>
-                </div>
-              ))}
+              {(data["recurring-jobs"] || []).filter((item: any) => item.paused && item.agreement_status === "draft").map((item: any) => <button key={item.id} onClick={() => openForm("activate-recurring", item)}>Schedule and activate {item.title}</button>)}
             </section>
           )}
           {view === "Projects" && (
-            <section className="panel">
-              <p className="muted">Projects group related Jobs across participating clients. Client portals remain limited to their own Jobs and documents.</p>
-              <Table
-                rows={data.projects || []}
-                columns={["name", "client_names", "property_names", "scope", "status"]}
-                empty="No projects yet."
-              />
-            </section>
+            <ProjectPhases projects={data.projects || []} estimates={data.estimates || []} role={person?.role} api={api} refresh={refresh} onError={setError} />
           )}
           {view === "Inspections" && (
             <InspectionReports
@@ -2018,16 +2093,13 @@ function App() {
             </section>
           )}
           {view === "Requests" && (
-            <section className="panel">
-              {(data.requests || []).map((request: any) => (
-                <div className="schedule-row" key={request.id}>
-                  <div><strong>{request.property_name}</strong><small>{request.description}</small></div>
-                  <span className="badge">{request.status.replaceAll("_", " ")}</span>
-                  {["new", "estimating"].includes(request.status) && ["owner", "manager", "sales"].includes(person.role || "") && <button onClick={() => openForm("estimate-request", request)}>Generate estimate</button>}
-                </div>
-              ))}
-              {!data.requests?.length && <p className="empty">No service requests. New requests will appear here.</p>}
-            </section>
+            <ServiceRequestTriage
+              records={data.requests || []}
+              role={person?.role}
+              api={api}
+              onRefresh={refresh}
+              onGenerateEstimate={(request) => openForm("estimate-request", request)}
+            />
           )}
           {view === "Settings" && settingsSection === "security" && (
             <section className="panel">
@@ -2129,7 +2201,7 @@ function App() {
                     {(data["account-mfa-policies"] || []).map((member: any) => (
                       <div className="row-actions" key={member.id}>
                         <span>
-                          {member.name} · {member.role} · {member.email} —{" "}
+                          {member.name} · {member.role} · <EmailLink email={member.email} /> —{" "}
                           {member.mfaRequired ? "Required" : "Optional"}
                         </span>
                         <button
@@ -2231,6 +2303,13 @@ function App() {
               </div>
             </section>
           )}
+          {view === "Settings" && settingsSection === "term-libraries" && (
+            <PropertyTypesLibrary
+              propertyTypes={propertyTypes}
+              request={api}
+              onRefresh={refresh}
+            />
+          )}
           </>}
           <footer className="footer">
             P1 LAND & PROPERTY MANAGEMENT <span>Built for the work ahead.</span>
@@ -2272,6 +2351,15 @@ function App() {
             )}
             {form === "contacts" ? (
               <ClientContacts client={selected} request={api} />
+            ) : form === "request" ? (
+              <RequestComposer
+                properties={data.properties || []}
+                request={api}
+                onSaved={async () => {
+                  setForm(null);
+                  await refresh();
+                }}
+              />
             ) : form === "import" ? (
               <div className="import-preview">
                 <p>
@@ -2378,7 +2466,7 @@ function App() {
                     {field("title", "Service title")}
                     <label>
                       Scope
-                      <textarea name="scope" />
+                      <RichTextEditor name="scope" ariaLabel="Service scope" placeholder="Describe the recurring service scope." />
                     </label>
                     <label>
                       Frequency
@@ -2400,16 +2488,11 @@ function App() {
                 )}
                 {form === "project" && (
                   <>
+                    {propertySelect()}
                     {field("name", "Project name")}
                     <label>
-                      Participating properties
-                      <select name="propertyIds" multiple required size={Math.min(8, Math.max(3, (data.properties || []).length))}>
-                        {(data.properties || []).map((property: any) => <option key={property.id} value={property.id}>{property.name}</option>)}
-                      </select>
-                    </label>
-                    <label>
                       Scope
-                      <textarea name="scope" required />
+                      <RichTextEditor name="scope" ariaLabel="Project scope" placeholder="Describe the project scope." />
                     </label>
                   </>
                 )}
@@ -2451,7 +2534,7 @@ function App() {
                     </label>
                     <label>
                       Observation
-                      <textarea name="note" required />
+                      <RichTextEditor name="note" ariaLabel="Inspection observation" placeholder="Record the observation and relevant details." />
                     </label>
                   </>
                 )}
@@ -2471,11 +2554,7 @@ function App() {
                     {field("title", "Title")}
                     <label>
                       Scope
-                      <textarea
-                        name="scope"
-                        required
-                        defaultValue={form === "revise" ? selected.scope : ""}
-                      />
+                      <RichTextEditor name="scope" ariaLabel="Agreement scope" defaultValue={form === "revise" ? selected.scope : ""} placeholder="Describe the service scope." />
                     </label>
                     <label>
                       Amount (USD)
@@ -2529,7 +2608,8 @@ function App() {
                         name="phone"
                         type="tel"
                         required
-                        defaultValue={selected.phone || ""}
+                        defaultValue={formatPhoneNumber(selected.phone)}
+                        onBlur={(event) => { event.currentTarget.value = formatPhoneNumber(event.currentTarget.value); }}
                       />
                     </label>
                     <fieldset>
@@ -2584,7 +2664,8 @@ function App() {
                           name="primaryPhone"
                           type="tel"
                           required
-                          defaultValue={selected.primary_contact_phone || ""}
+                          defaultValue={formatPhoneNumber(selected.primary_contact_phone)}
+                          onBlur={(event) => { event.currentTarget.value = formatPhoneNumber(event.currentTarget.value); }}
                         />
                       </label>
                     </fieldset>
@@ -2594,11 +2675,46 @@ function App() {
                   <>
                     {clientSelect()}
                     {field("name", "Property name")}
-                    {field("address", "Address")}
+                    <label>
+                      Property type
+                      <select name="propertyTypeId">
+                        <option value="">Not classified</option>
+                        {propertyTypes.map((propertyType: any) => (
+                          <option key={propertyType.id} value={propertyType.id}>
+                            {propertyType.name}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <fieldset className="property-address-fields">
+                      <legend>Property address</legend>
+                      <label>
+                        Address line 1
+                        <input name="addressLine1" autoComplete="address-line1" required />
+                      </label>
+                      <label>
+                        Address line 2 <span className="optional-field">Optional</span>
+                        <input name="addressLine2" autoComplete="address-line2" />
+                      </label>
+                      <div className="property-address-grid">
+                        <label>
+                          City
+                          <input name="city" autoComplete="address-level2" required />
+                        </label>
+                        <label>
+                          State
+                          <input name="state" autoComplete="address-level1" inputMode="text" maxLength={2} pattern="[A-Za-z]{2}" placeholder="NC" required />
+                        </label>
+                        <label>
+                          ZIP code
+                          <input name="postalCode" autoComplete="postal-code" inputMode="numeric" pattern="\\d{5}(-\\d{4})?" placeholder="28105" required />
+                        </label>
+                      </div>
+                    </fieldset>
                     {field("acreage", "Acreage", "number", false)}
                     <label>
                       Access instructions
-                      <textarea name="accessInstructions" />
+                      <RichTextEditor name="accessInstructions" ariaLabel="Access instructions" placeholder="Add gates, contacts, arrival, and access instructions." />
                     </label>
                   </>
                 )}
@@ -2608,11 +2724,7 @@ function App() {
                     {field("title", "Internal or emergency Job title")}
                     <label>
                       Scope
-                      <textarea name="scope" />
-                    </label>
-                    <label>
-                      Why is this Job exempt from estimate approval?
-                      <textarea name="reason" required />
+                      <RichTextEditor name="scope" ariaLabel="Work order scope" placeholder="Describe the work to complete." />
                     </label>
                     <label>
                       Assigned person
@@ -2631,6 +2743,10 @@ function App() {
                       "datetime-local",
                       false,
                     )}
+                    <label>
+                      Why is this Job exempt from estimate approval?
+                      <textarea name="reason" required />
+                    </label>
                   </>
                 )}
                 {form === "lead" && (
@@ -2640,68 +2756,29 @@ function App() {
                     {field("location", "Property location")}
                     <label>
                       What needs doing?
-                      <textarea name="description" required />
+                      <RichTextEditor name="description" ariaLabel="Assessment details" placeholder="Describe the property and what needs doing." />
                     </label>
                   </>
                 )}
-                {["estimate", "estimate-request"].includes(form || "") && (
+                {(form === "estimate" || form === "estimate-request") && (
                   <>
-                    {propertySelect()}
-                    {data.projects?.length > 0 && <label>Project (optional)<select name="projectId"><option value="">Not part of a Project</option>{(data.projects || []).map((project: any) => <option key={project.id} value={project.id}>{project.name}</option>)}</select></label>}
+                    {form === "estimate-request" ? <><p>Creating an estimate from this request.</p><input type="hidden" name="propertyId" value={selected.property_id} /></> : propertySelect()}
                     {field("title", "Estimate title")}
                     <label>
                       Scope to approve
-                      <textarea name="scope" required />
+                      <RichTextEditor name="scope" ariaLabel="Estimate scope" placeholder="Describe the scope to approve." />
                     </label>
                     <label>
                       Line items — one per line: description | quantity | unit price | optional unit
                       <textarea name="lineItems" required placeholder="Mowing | 1 | 250.00 | visit" />
                     </label>
-                    <label>
-                      Client-facing terms
-                      <textarea name="terms" />
-                    </label>
-                    <label>
-                      Job type
-                      <select name="kind">
-                        <option value="one_time">One-time Job</option>
-                        <option value="recurring">Recurring Job</option>
-                      </select>
-                    </label>
-                    <fieldset>
-                      <legend>Recurring Job details (required only for recurring estimates)</legend>
-                      <label>Agreement template<select name="agreementTemplateId"><option value="">Choose a template</option>{(data["agreement-templates"] || []).map((template: any) => <option key={template.id} value={template.id}>{template.name} · v{template.version}</option>)}</select></label>
-                      <label>Frequency<select name="cadence"><option value="weekly">Weeks</option><option value="monthly">Months</option></select></label>
-                      {field("intervalCount", "Every X weeks/months", "number", false)}
-                      {field("startsOn", "Agreement start", "date", false)}
-                      {field("endsOn", "Agreement end", "date", false)}
-                      {field("localTime", "Default Job time", "time", false)}
-                      <label>Billing basis<select name="billingMode"><option value="per_visit">Per visit</option><option value="fixed_monthly">Fixed monthly</option></select></label>
-                      {field("unitAmount", "Per-visit agreement rate (USD)", "number", false)}
-                      {field("monthlyAmount", "Monthly agreement amount (USD)", "number", false)}
-                    </fieldset>
+                    <label>Client-facing terms<textarea name="terms" /></label>
+                    <label>Job type<select name="kind"><option value="one_time">One-time Job</option><option value="recurring">Recurring Job</option></select></label>
+                    <fieldset><legend>Recurring details</legend><label>Agreement template<select name="agreementTemplateId"><option value="">Choose a template</option>{(data["agreement-templates"] || []).map((template: any) => <option key={template.id} value={template.id}>{template.name} · v{template.version}</option>)}</select></label>{field("cadence", "Cadence", "text", false)}{field("intervalCount", "Every X periods", "number", false)}{field("startsOn", "Agreement start", "date", false)}{field("endsOn", "Agreement end", "date", false)}{field("localTime", "Default Job time", "time", false)}{field("unitAmount", "Per-visit rate", "number", false)}</fieldset>
                   </>
                 )}
-                {form === "send-estimate" && (
-                  <>
-                    <p>Send <strong>{selected.title}</strong> to one or more client contacts.</p>
-                    <label>Recipients<select name="recipientContactIds" multiple required size={Math.min(6, Math.max(2, (data.estimateRecipients || []).length))}>{(data.estimateRecipients || []).map((contact: any) => <option key={contact.id} value={contact.id} disabled={!contact.email || !contact.email_enabled}>{contact.name} {contact.email ? `· ${contact.email}` : "· no email"}{!contact.email_enabled ? " · email disabled" : ""}</option>)}</select></label>
-                  </>
-                )}
-                {form === "activate-recurring" && (
-                  <>
-                    <p>Activate <strong>{selected.title}</strong> after setting its first visit and default team member.</p>
-                    <label>Default assigned person<select name="assignedTo" required><option value="">Choose a team member</option>{(data.staff || []).filter((staffMember: any) => staffMember.role !== "client").map((staffMember: any) => <option key={staffMember.id} value={staffMember.id}>{staffMember.name}</option>)}</select></label>
-                    {field("nextDate", "First visit", "date")}
-                    {field("localTime", "Default visit time", "time")}
-                  </>
-                )}
-                {form === "agreement-template" && (
-                  <>
-                    {field("name", "Template name")}
-                    <label>Agreement terms<textarea name="body" required /></label>
-                  </>
-                )}
+                {form === "send-estimate" && <><p>Send <strong>{selected.title}</strong> to one or more client contacts.</p><label>Recipients<select name="recipientContactIds" multiple required size={Math.min(6, Math.max(2, (data.estimateRecipients || []).length))}>{(data.estimateRecipients || []).map((contact: any) => <option key={contact.id} value={contact.id} disabled={!contact.email || !contact.email_enabled}>{contact.name} · {contact.email || "no email"}</option>)}</select></label></>}
+                {form === "activate-recurring" && <><p>Set the first visit and default team member.</p><label>Default assignee<select name="assignedTo" required><option value="">Choose a team member</option>{(data.staff || []).map((staffMember: any) => <option key={staffMember.id} value={staffMember.id}>{staffMember.name}</option>)}</select></label>{field("nextDate", "First visit", "date")}{field("localTime", "Default time", "time")}</>}
                 {form === "billing" && (
                   <>
                     {propertySelect()}
@@ -2738,15 +2815,6 @@ function App() {
                           ),
                         )}
                       </select>
-                    </label>
-                  </>
-                )}
-                {form === "request" && (
-                  <>
-                    {propertySelect()}
-                    <label>
-                      How can we help?
-                      <textarea name="description" required />
                     </label>
                   </>
                 )}
@@ -2812,7 +2880,7 @@ function App() {
                     </label>
                     <label>
                       Notes
-                      <textarea name="text" required />
+                      <RichTextEditor name="text" ariaLabel="Field work notes" placeholder="Add field notes, observations, or handoff details." />
                     </label>
                     {selected.checklist?.map((item: any, index: number) => (
                       <label key={index} className="check-item">
@@ -2849,13 +2917,11 @@ function EstimateApproval() {
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState("");
   useEffect(() => {
-    void fetch("/api/public/estimates/" + encodeURIComponent(token))
-      .then(async (response) => {
-        const value = await response.json();
-        if (!response.ok) throw new Error(value.error || "Estimate is unavailable");
-        setDocument(value);
-      })
-      .catch((reason) => setError(reason.message));
+    void fetch("/api/public/estimates/" + encodeURIComponent(token)).then(async (response) => {
+      const value = await response.json();
+      if (!response.ok) throw new Error(value.error || "Estimate is unavailable");
+      setDocument(value);
+    }).catch((reason) => setError(reason.message));
   }, [token]);
   const decide = async (status: "approved" | "declined") => {
     setBusy(true); setError("");
@@ -2863,11 +2929,11 @@ function EstimateApproval() {
       const response = await fetch("/api/public/estimates/" + encodeURIComponent(token) + "/decision", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status }) });
       const value = await response.json();
       if (!response.ok) throw new Error(value.error || "Unable to record your decision");
-      setNotice(status === "approved" ? "Thank you. Your estimate has been approved and P1 will schedule the Job." : "Your decision has been recorded. P1 will follow up if needed.");
+      setNotice(status === "approved" ? "Thank you. P1 will schedule your Job." : "Your decision has been recorded.");
       setDocument(null);
     } catch (reason) { setError((reason as Error).message); } finally { setBusy(false); }
   };
-  return <main className="auth-shell"><section className="auth-card estimate-approval"><img src="/p1-logo.png" alt="P1 Land Management" className="brand-logo" /><h1>Estimate review</h1>{error && <p className="error">{error}</p>}{notice && <p className="notice">{notice}</p>}{!document && !error && <p>Loading estimate…</p>}{document && <><p><strong>{document.title}</strong></p><p>{document.client_name} · {document.property_name}</p><p>{document.address}</p><p>{document.scope}</p><div className="table-wrap"><table><thead><tr><th>Description</th><th>Quantity</th><th>Rate</th></tr></thead><tbody>{document.line_items.map((item: any) => <tr key={item.position}><td>{item.description}</td><td>{item.quantity} {item.unit || ""}</td><td>{money(item.unit_price_cents)}</td></tr>)}</tbody></table></div><h2>{money(document.amount_cents)}</h2><p>Valid through {new Date(document.expires_at).toLocaleDateString("en-US")}</p>{document.terms && <p className="muted">{document.terms}</p>}<p><a href={`/api/public/estimates/${encodeURIComponent(token)}/pdf`}>Download PDF</a></p><div className="heading-actions"><button className="primary" disabled={busy} onClick={() => void decide("approved")}>Approve estimate</button><button disabled={busy} onClick={() => void decide("declined")}>Decline</button></div></>}</section></main>;
+  return <main className="auth-shell"><section className="auth-card estimate-approval"><h1>Estimate review</h1>{error && <p className="error">{error}</p>}{notice && <p className="notice">{notice}</p>}{!document && !error && <p>Loading estimate…</p>}{document && <><p><strong>{document.title}</strong></p><p>{document.client_name} · {document.property_name}</p><p>{document.scope}</p><div className="table-wrap"><table><thead><tr><th>Description</th><th>Quantity</th><th>Rate</th></tr></thead><tbody>{document.line_items.map((item: any) => <tr key={item.position}><td>{item.description}</td><td>{item.quantity} {item.unit || ""}</td><td>{money(item.unit_price_cents)}</td></tr>)}</tbody></table></div><h2>{money(document.amount_cents)}</h2><p>Valid through {new Date(document.expires_at).toLocaleDateString("en-US")}</p>{document.terms && <p className="muted">{document.terms}</p>}<p><a href={`/api/public/estimates/${encodeURIComponent(token)}/pdf`}>Download PDF</a></p><div className="heading-actions"><button className="primary" disabled={busy} onClick={() => void decide("approved")}>Approve estimate</button><button disabled={busy} onClick={() => void decide("declined")}>Decline</button></div></>}</section></main>;
 }
 function Empty({ title, text }: { title: string; text: string }) {
   return (
@@ -2898,6 +2964,7 @@ function PropertyCards({
               {p.name} <ArrowUpRight size={18} />
             </h3>
             <p>{p.address}</p>
+            {p.property_type_name && <small className="property-type-label">{p.property_type_name}</small>}
             <small>View property history</small>
           </div>
         </button>

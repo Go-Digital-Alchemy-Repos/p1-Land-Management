@@ -7,14 +7,8 @@
  */
 
 export interface CreateAgreementTemplate {
-  /**
-     * @minLength 1
-     * @maxLength 200
-     */
+  /** @minLength 1 */
   name: string;
-  /**
-     * @minLength 1
-     * @maxLength 50000
-     */
+  /** @minLength 1 */
   body: string;
 }

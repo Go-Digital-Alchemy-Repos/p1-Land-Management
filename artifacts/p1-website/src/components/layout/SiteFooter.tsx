@@ -1,7 +1,8 @@
 import { Link } from "wouter";
 import logo from "@assets/Asset_1_1782329698014.svg";
 import { Button } from "@/components/ui/button";
-import { Phone, Mail } from "lucide-react";
+import { Phone } from "lucide-react";
+import { GOOGLE_BUSINESS_URL } from "@/lib/site";
 
 export function SiteFooter() {
   return (
@@ -13,17 +14,22 @@ export function SiteFooter() {
             <img src={logo} alt="P1 Land & Property Management" className="h-12 w-auto brightness-0 invert" />
           </Link>
           <p className="text-secondary-foreground/70 text-sm leading-relaxed max-w-xs">
-            Full-service land and property management for commercial, agricultural, and large residential properties 1 acre and larger across Upstate SC and the Charlotte, NC region.
+            Full-service land and property management for commercial, agricultural, industrial, municipal, and institutional properties 1 acre and larger across Upstate SC and the Charlotte, NC region.
           </p>
           <div className="space-y-2 pt-2">
             <a href="tel:7042218928" className="flex items-center gap-2 text-xl font-sans font-bold hover:text-primary transition-colors">
               <Phone className="h-5 w-5 text-primary" />
               (704) 221-8928
             </a>
-            <a href="mailto:info@p1landmanagement.com" className="flex items-center gap-2 text-sm text-secondary-foreground/70 hover:text-primary transition-colors">
-              <Mail className="h-4 w-4 text-primary" />
-              info@p1landmanagement.com
+            <a
+              href={GOOGLE_BUSINESS_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block w-fit text-sm font-semibold text-secondary-foreground/70 transition-colors hover:text-primary"
+            >
+              Find us on Google
             </a>
+            <Link href="/contact" className="inline-block text-sm font-semibold text-secondary-foreground/70 hover:text-primary transition-colors">Send a secure inquiry</Link>
           </div>
         </div>
 
@@ -32,6 +38,7 @@ export function SiteFooter() {
           <h4 className="font-serif text-[11px] font-bold uppercase tracking-[0.2em] text-tan mb-6">Services</h4>
           <ul className="space-y-3 text-sm text-secondary-foreground/70">
             <li><Link href="/services/commercial-landscaping" className="hover:text-primary transition-colors">Commercial Landscaping</Link></li>
+            <li><Link href="/commercial-snow-ice-management" className="hover:text-primary transition-colors">Commercial Snow & Ice</Link></li>
             <li><Link href="/services/industrial-agricultural" className="hover:text-primary transition-colors">Industrial & Agricultural</Link></li>
             <li><Link href="/services/land-clearing" className="hover:text-primary transition-colors">Land Clearing</Link></li>
             <li><Link href="/services/grading-site-preparation" className="hover:text-primary transition-colors">Grading & Site Prep</Link></li>
@@ -55,7 +62,7 @@ export function SiteFooter() {
             <li><Link href="/service-areas/lancaster-county-sc" className="hover:text-primary transition-colors">Lancaster County</Link></li>
             <li><Link href="/service-areas/york-county-sc" className="hover:text-primary transition-colors">York County</Link></li>
             <li className="font-bold text-secondary-foreground/90 pt-3">Greater Charlotte NC</li>
-            <li><Link href="/service-areas/charlotte-nc" className="hover:text-primary transition-colors">Charlotte</Link></li>
+            <li><Link href="/service-areas/charlotte-north-carolina" className="hover:text-primary transition-colors">Charlotte, NC</Link></li>
             <li><Link href="/service-areas/concord-nc" className="hover:text-primary transition-colors">Concord</Link></li>
             <li><Link href="/service-areas/mooresville-lake-norman-nc" className="hover:text-primary transition-colors">Mooresville & Lake Norman</Link></li>
             <li><Link href="/service-areas/gastonia-nc" className="hover:text-primary transition-colors">Gastonia</Link></li>

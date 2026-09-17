@@ -25,7 +25,6 @@ import { cn } from "@/lib/utils";
 import type { User as AppUser } from "@shared/schema";
 import { DEFAULT_SITE_FEATURES, type SiteFeatures } from "@shared/site-features";
 import type { AdminPermission } from "@shared/types";
-import type { PublicDirectorySettings } from "@shared/types/directory-settings";
 import { useQuery } from "@tanstack/react-query";
 import {
   Blocks,
@@ -82,7 +81,6 @@ export function buildNavGroups(
   siteFeatures: SiteFeatures,
   user: AppUser | null,
   hasAdminPermission: (permission: AdminPermission) => boolean,
-  _directorySettings?: PublicDirectorySettings,
 ): NavGroup[] {
   const groups: NavGroup[] = [
     {
@@ -140,12 +138,6 @@ export function buildNavGroups(
             items: [
               ...(siteFeatures.cmsEnabled
                 ? [
-                    {
-                      title: "Private proof",
-                      href: "/admin/cms/private-proof",
-                      icon: Globe,
-                      iconColor: "text-violet-600",
-                    } satisfies NavItem,
                     {
                       title: "P1 Website",
                       href: "/admin/cms/website",
@@ -391,7 +383,7 @@ export function AdminSidebar({ children }: AdminSidebarProps) {
   const toggleGroup = (label: string, open: boolean) => {
     setOpenGroup(open ? label : null);
   };
-  const exactOnlyRoutes = ["/admin", "/admin/cms", "/admin/crm", "/admin/membership"];
+  const exactOnlyRoutes = ["/admin", "/admin/cms", "/admin/crm"];
   const isRouteActive = (href?: string) =>
     Boolean(
       href && (location === href || (!exactOnlyRoutes.includes(href) && location.startsWith(href))),

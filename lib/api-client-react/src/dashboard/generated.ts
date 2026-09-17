@@ -39,7 +39,15 @@ import type {
   BookAssessmentSlot,
   CancelServiceAgreement,
   ClientContact,
+  ClientOnboardingReceipt,
   ClientWorkspace,
+  CommercialAssessmentArchive,
+  CommercialAssessmentCreate,
+  CommercialAssessmentCreateReceipt,
+  CommercialAssessmentDetail,
+  CommercialAssessmentSummary,
+  CommercialAssessmentUpdate,
+  CommercialAssessmentVersionInput,
   CommercialFollowUp,
   CommercialInquiry,
   CommercialInquiryDetail,
@@ -49,16 +57,31 @@ import type {
   CreateBillingDraft,
   CreateClientContact,
   CreateClientNote,
+  CreateDashboardClient,
+  CreateDashboardProperty,
   CreateEstimate,
+  CreateExpense,
   CreateInspectionReport,
   CreateManualAssessmentSlot,
   CreateProject,
+  CreateProjectPhase,
+  CreatePropertyArea,
+  CreateRecurringService,
+  CreateSalesLead,
   CreateServiceAgreement,
   CreateServiceRequest,
+  CreateWorkOrder,
   CreatedResource,
+  DashboardClient,
   DashboardMe,
   DashboardProperty,
+  DashboardPropertyEditReceipt,
   EditServiceAgreement,
+  EstimateChangeOrder,
+  EstimateDecision,
+  EstimateDecisionReceipt,
+  EstimateRevision,
+  Expense,
   FieldSyncResponse,
   GenerateAssessmentAvailability,
   GeneratedAssessmentAvailability,
@@ -75,6 +98,18 @@ import type {
   OperationReceipt,
   PhotoUploadReceipt,
   Project,
+  ProjectEditReceipt,
+  ProjectPhase,
+  ProjectPhaseBillingIntent,
+  ProjectPhaseBillingIntentInput,
+  ProjectPhaseBillingIntentReceipt,
+  ProjectPhaseCreateReceipt,
+  ProjectPhaseEvent,
+  ProjectPhasePublication,
+  ProjectPhaseReceipt,
+  ProjectPhaseTransition,
+  ProjectPhaseTransitionReceipt,
+  PropertyArea,
   PropertyFile,
   PropertyTimelineEvent,
   PropertyWorkspace,
@@ -82,17 +117,34 @@ import type {
   ReadinessResult,
   ReadinessUpdate,
   RecurringJob,
+  RecurringServicePause,
   RescheduleWork,
+  SalesLead,
+  SalesLeadConversion,
+  SalesLeadConversionReceipt,
   SchedulePage,
   ServiceAgreement,
   ServiceAgreementFinancial,
   ServiceAgreementPage,
   ServiceRequest,
+  ServiceRequestConversion,
+  ServiceRequestConversionPreview,
+  ServiceRequestConversionPreviewInput,
+  ServiceRequestConversionReceipt,
+  ServiceRequestEvent,
+  ServiceRequestLifecycle,
+  ServiceRequestTransition,
+  ServiceRequestTransitionReceipt,
   SyncFieldEventsBody,
   UpdateAccountMfaPolicy,
   UpdateClientContact,
+  UpdateDashboardClient,
+  UpdateDashboardProperty,
+  UpdateProject,
+  UpdateProjectPhase,
   UploadFieldPhotoHeaders,
   WorkOrder,
+  WorkOrderStatusUpdate,
   WorkVersion
 } from './models';
 
@@ -119,187 +171,76 @@ export const getMyWorkOrders = async ( options?: RequestInit): Promise<WorkOrder
 
 
 
-export const getListAgreementEstimatesUrl = () => {
+export const getCreateWorkOrderUrl = () => {
 
 
 
 
-  return `/api/v1/estimates`
-}
-
-export const listAgreementEstimates = async ( options?: RequestInit): Promise<AgreementEstimateOption[]> => {
-
-  return customFetch<AgreementEstimateOption[]>(getListAgreementEstimatesUrl(),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-);}
-
-
-
-export const getCreateEstimateFromRequestUrl = (requestId: string,) => {
-
-
-
-
-  return `/api/v1/requests/${requestId}/estimates`
+  return `/api/v1/work-orders`
 }
 
 /**
- * Creates a draft estimate linked to an open service request.
+ * Owner, manager, or dispatch only. Creates an operational work order. It does not publish client material, post billing, charge payment, or call providers.
  */
-export const createEstimateFromRequest = async (requestId: string,
-    createEstimate: CreateEstimate, options?: RequestInit): Promise<CreatedResource> => {
+export const createWorkOrder = async (createWorkOrder: CreateWorkOrder, options?: RequestInit): Promise<CreatedResource> => {
 
-  return customFetch<CreatedResource>(getCreateEstimateFromRequestUrl(requestId),
+  return customFetch<CreatedResource>(getCreateWorkOrderUrl(),
   {
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
-      createEstimate,)
+      createWorkOrder,)
   }
 );}
 
 
 
-export const getListRecurringJobsUrl = () => {
+export const getUpdateWorkOrderStatusUrl = (id: string,) => {
 
 
 
 
-  return `/api/v1/recurring-jobs`
+  return `/api/v1/work-orders/${id}/status`
 }
 
 /**
- * Staff-only bird's-eye view of recurring Job programs. Individual visits remain schedule resources.
+ * Owner, manager, or dispatch only. Applies a server-validated status transition using the current version. Manager-only overrides are recorded when prerequisites would otherwise block progress.
  */
-export const listRecurringJobs = async ( options?: RequestInit): Promise<RecurringJob[]> => {
+export const updateWorkOrderStatus = async (id: string,
+    workOrderStatusUpdate: WorkOrderStatusUpdate, options?: RequestInit): Promise<PublicationReceipt> => {
 
-  return customFetch<RecurringJob[]>(getListRecurringJobsUrl(),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-);}
-
-
-
-export const getActivateRecurringJobUrl = (recurringJobId: string,) => {
-
-
-
-
-  return `/api/v1/recurring-jobs/${recurringJobId}/activate`
-}
-
-/**
- * Dispatches the initial visit and activates an accepted recurring agreement after billing safeguards pass.
- */
-export const activateRecurringJob = async (recurringJobId: string,
-    activateRecurringJob: ActivateRecurringJob, options?: RequestInit): Promise<OperationReceipt> => {
-
-  return customFetch<OperationReceipt>(getActivateRecurringJobUrl(recurringJobId),
+  return customFetch<PublicationReceipt>(getUpdateWorkOrderStatusUrl(id),
   {
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
-      activateRecurringJob,)
+      workOrderStatusUpdate,)
   }
 );}
 
 
 
-export const getListAgreementTemplatesUrl = () => {
+export const getPublishWorkOrderUrl = (id: string,) => {
 
 
 
 
-  return `/api/v1/agreement-templates`
-}
-
-export const listAgreementTemplates = async ( options?: RequestInit): Promise<AgreementTemplate[]> => {
-
-  return customFetch<AgreementTemplate[]>(getListAgreementTemplatesUrl(),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-);}
-
-
-
-export const getCreateAgreementTemplateUrl = () => {
-
-
-
-
-  return `/api/v1/agreement-templates`
-}
-
-export const createAgreementTemplate = async (createAgreementTemplate: CreateAgreementTemplate, options?: RequestInit): Promise<CreatedResource> => {
-
-  return customFetch<CreatedResource>(getCreateAgreementTemplateUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      createAgreementTemplate,)
-  }
-);}
-
-
-
-export const getListProjectsUrl = () => {
-
-
-
-
-  return `/api/v1/projects`
+  return `/api/v1/work-orders/${id}/publish`
 }
 
 /**
- * Staff-only Project containers. The response identifies participating clients and properties but is never a client portal projection.
+ * Owner or manager only. Publishes a reviewed work order and eligible non-conflicting field notes, checklists, and completion events. It does not publish issues, alter billing, or record payment.
  */
-export const listProjects = async ( options?: RequestInit): Promise<Project[]> => {
+export const publishWorkOrder = async (id: string, options?: RequestInit): Promise<PublicationReceipt> => {
 
-  return customFetch<Project[]>(getListProjectsUrl(),
+  return customFetch<PublicationReceipt>(getPublishWorkOrderUrl(id),
   {
     ...options,
-    method: 'GET'
+    method: 'POST'
 
 
-  }
-);}
-
-
-
-export const getCreateProjectUrl = () => {
-
-
-
-
-  return `/api/v1/projects`
-}
-
-export const createProject = async (createProject: CreateProject, options?: RequestInit): Promise<CreatedResource> => {
-
-  return customFetch<CreatedResource>(getCreateProjectUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      createProject,)
   }
 );}
 
@@ -808,6 +749,81 @@ export const bookAssessmentSlot = async (id: string,
 
 
 
+export const getListDashboardClientsUrl = () => {
+
+
+
+
+  return `/api/v1/clients`
+}
+
+/**
+ * Office roles receive active client records and primary-contact summary fields. Client accounts receive only their own IDs and names; crew cannot access this route.
+ */
+export const listDashboardClients = async ( options?: RequestInit): Promise<DashboardClient[]> => {
+
+  return customFetch<DashboardClient[]>(getListDashboardClientsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateDashboardClientUrl = () => {
+
+
+
+
+  return `/api/v1/clients`
+}
+
+/**
+ * Office-only client creation. Supplying primaryContact uses atomic onboarding and requires the business address and phone. Without it, the endpoint creates a minimal client record. Neither mode sends invitations, creates a property, schedules work, or posts billing.
+ */
+export const createDashboardClient = async (createDashboardClient: CreateDashboardClient, options?: RequestInit): Promise<CreatedResource | ClientOnboardingReceipt> => {
+
+  return customFetch<CreatedResource | ClientOnboardingReceipt>(getCreateDashboardClientUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createDashboardClient,)
+  }
+);}
+
+
+
+export const getUpdateDashboardClientUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/clients/${id}`
+}
+
+/**
+ * Office-only optimistic client update. The supplied version must be current; the primary contact is updated or created in the same transaction. A stale version fails without overwriting either record.
+ */
+export const updateDashboardClient = async (id: string,
+    updateDashboardClient: UpdateDashboardClient, options?: RequestInit): Promise<DashboardClient> => {
+
+  return customFetch<DashboardClient>(getUpdateDashboardClientUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      updateDashboardClient,)
+  }
+);}
+
+
+
 export const getListClientContactsUrl = (clientId: string,) => {
 
 
@@ -1009,6 +1025,685 @@ export const createServiceRequest = async (createServiceRequest: CreateServiceRe
 
 
 
+export const getListServiceRequestLifecycleUrl = () => {
+
+
+
+
+  return `/api/v1/service-requests`
+}
+
+/**
+ * Lists service requests. Office roles receive operational fields; clients receive only requests for accessible properties with client-safe status labels. Crew members cannot access this route.
+ */
+export const listServiceRequestLifecycle = async ( options?: RequestInit): Promise<ServiceRequestLifecycle[]> => {
+
+  return customFetch<ServiceRequestLifecycle[]>(getListServiceRequestLifecycleUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getGetServiceRequestLifecycleUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/service-requests/${id}`
+}
+
+/**
+ * Returns one service request. Office roles receive operational fields. Clients require property access and receive a client-safe projection. Crew members cannot access this route.
+ */
+export const getServiceRequestLifecycle = async (id: string, options?: RequestInit): Promise<ServiceRequestLifecycle> => {
+
+  return customFetch<ServiceRequestLifecycle>(getGetServiceRequestLifecycleUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getTransitionServiceRequestUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/service-requests/${id}/transitions`
+}
+
+/**
+ * Owner, manager, or dispatch only. Changes status with optimistic versioning and an explicit reason. It does not assign crews, schedule work, publish client material, post billing, or call providers.
+ */
+export const transitionServiceRequest = async (id: string,
+    serviceRequestTransition: ServiceRequestTransition, options?: RequestInit): Promise<ServiceRequestTransitionReceipt> => {
+
+  return customFetch<ServiceRequestTransitionReceipt>(getTransitionServiceRequestUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      serviceRequestTransition,)
+  }
+);}
+
+
+
+export const getGetServiceRequestHistoryUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/service-requests/${id}/history`
+}
+
+/**
+ * Office-only append-only service-request lifecycle history. Clients and crew cannot access this route.
+ */
+export const getServiceRequestHistory = async (id: string, options?: RequestInit): Promise<ServiceRequestEvent[]> => {
+
+  return customFetch<ServiceRequestEvent[]>(getGetServiceRequestHistoryUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getPreviewServiceRequestConversionUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/service-requests/${id}/conversion-preview`
+}
+
+/**
+ * Owner, manager, or dispatch only. Previews an unscheduled, unassigned, unpublished draft work order from a triaged or scheduled request. It never writes, dispatches, bills, publishes, or calls a provider.
+ */
+export const previewServiceRequestConversion = async (id: string,
+    serviceRequestConversionPreviewInput: ServiceRequestConversionPreviewInput, options?: RequestInit): Promise<ServiceRequestConversionPreview> => {
+
+  return customFetch<ServiceRequestConversionPreview>(getPreviewServiceRequestConversionUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      serviceRequestConversionPreviewInput,)
+  }
+);}
+
+
+
+export const getConvertServiceRequestUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/service-requests/${id}/conversions`
+}
+
+/**
+ * Owner, manager, or dispatch only. Creates exactly one retry-safe planning draft from a triaged or scheduled request. The operation ID is idempotent for the same actor and payload. The resulting draft is unassigned, unscheduled, unpublished, and has no billing or provider side effects.
+ */
+export const convertServiceRequest = async (id: string,
+    serviceRequestConversion: ServiceRequestConversion, options?: RequestInit): Promise<ServiceRequestConversionReceipt> => {
+
+  return customFetch<ServiceRequestConversionReceipt>(getConvertServiceRequestUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      serviceRequestConversion,)
+  }
+);}
+
+
+
+export const getListProjectsUrl = () => {
+
+
+
+
+  return `/api/v1/projects`
+}
+
+/**
+ * Owner, manager, dispatch, or finance only. Lists projects for operational properties. It does not publish client material, dispatch work, create billing, post to QuickBooks, or record payments.
+ */
+export const listProjects = async ( options?: RequestInit): Promise<Project[]> => {
+
+  return customFetch<Project[]>(getListProjectsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateProjectUrl = () => {
+
+
+
+
+  return `/api/v1/projects`
+}
+
+/**
+ * Owner or manager only. Creates a project for an operational property and preserves the supplied legacy phase summary. It does not create normalized phases, dispatch work, create billing, post to QuickBooks, or record payments.
+ */
+export const createProject = async (createProject: CreateProject, options?: RequestInit): Promise<CreatedResource> => {
+
+  return customFetch<CreatedResource>(getCreateProjectUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createProject,)
+  }
+);}
+
+
+
+export const getUpdateProjectUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/projects/${id}`
+}
+
+/**
+ * Owner or manager only. Versioned edit of a project on an operational client property. A stale version returns 409; it does not change phases, work, billing, dispatch, publications, provider state, or payments.
+ */
+export const updateProject = async (id: string,
+    updateProject: UpdateProject, options?: RequestInit): Promise<ProjectEditReceipt> => {
+
+  return customFetch<ProjectEditReceipt>(getUpdateProjectUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      updateProject,)
+  }
+);}
+
+
+
+export const getListExpensesUrl = () => {
+
+
+
+
+  return `/api/v1/expenses`
+}
+
+/**
+ * Owner, manager, or finance only. Lists recorded expenses for operational properties. It is an operational job-costing view and does not post accounting changes, create payment links, or record payments.
+ */
+export const listExpenses = async ( options?: RequestInit): Promise<Expense[]> => {
+
+  return customFetch<Expense[]>(getListExpensesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateExpenseUrl = () => {
+
+
+
+
+  return `/api/v1/expenses`
+}
+
+/**
+ * Owner, manager, or finance only. Records one expense against an operational property. It does not create a QuickBooks entry, post accounting changes, create a payment link, or record a payment.
+ */
+export const createExpense = async (createExpense: CreateExpense, options?: RequestInit): Promise<CreatedResource> => {
+
+  return customFetch<CreatedResource>(getCreateExpenseUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createExpense,)
+  }
+);}
+
+
+
+export const getListProjectPhasesUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/v1/projects/${projectId}/phases`
+}
+
+/**
+ * Lists normalized phases for an operational project. Office roles receive the operational model. Clients receive explicitly published summaries only; crew receive phases tied to active assigned work only.
+ */
+export const listProjectPhases = async (projectId: string, options?: RequestInit): Promise<ProjectPhase[]> => {
+
+  return customFetch<ProjectPhase[]>(getListProjectPhasesUrl(projectId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateProjectPhaseUrl = (projectId: string,) => {
+
+
+
+
+  return `/api/v1/projects/${projectId}/phases`
+}
+
+/**
+ * Owner or manager only. Creates an additive normalized project phase without replacing legacy project history. It does not dispatch work, publish client material, post billing, or call providers.
+ */
+export const createProjectPhase = async (projectId: string,
+    createProjectPhase: CreateProjectPhase, options?: RequestInit): Promise<ProjectPhaseCreateReceipt> => {
+
+  return customFetch<ProjectPhaseCreateReceipt>(getCreateProjectPhaseUrl(projectId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createProjectPhase,)
+  }
+);}
+
+
+
+export const getGetProjectPhaseUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/project-phases/${id}`
+}
+
+/**
+ * Returns one phase with the same office, client-publication, and crew-assignment boundaries as the phase list.
+ */
+export const getProjectPhase = async (id: string, options?: RequestInit): Promise<ProjectPhase> => {
+
+  return customFetch<ProjectPhase>(getGetProjectPhaseUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getUpdateProjectPhaseUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/project-phases/${id}`
+}
+
+/**
+ * Owner or manager only. Replaces editable phase details with optimistic versioning and a required reason. Accepted, cancelled, and archived phases cannot be edited.
+ */
+export const updateProjectPhase = async (id: string,
+    updateProjectPhase: UpdateProjectPhase, options?: RequestInit): Promise<ProjectPhaseReceipt> => {
+
+  return customFetch<ProjectPhaseReceipt>(getUpdateProjectPhaseUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      updateProjectPhase,)
+  }
+);}
+
+
+
+export const getTransitionProjectPhaseUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/project-phases/${id}/transitions`
+}
+
+/**
+ * Owner or manager only. Applies a validated phase lifecycle transition with an explicit reason. Unmet prerequisites require a recorded override for ready/in-progress states; acceptance requires linked work to be reviewed, cancelled, or skipped.
+ */
+export const transitionProjectPhase = async (id: string,
+    projectPhaseTransition: ProjectPhaseTransition, options?: RequestInit): Promise<ProjectPhaseTransitionReceipt> => {
+
+  return customFetch<ProjectPhaseTransitionReceipt>(getTransitionProjectPhaseUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      projectPhaseTransition,)
+  }
+);}
+
+
+
+export const getPublishProjectPhaseUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/project-phases/${id}/publish`
+}
+
+/**
+ * Owner or manager only. Publishes a client-safe summary for manager-review or accepted work. It does not alter crew work, files, billing, or payments.
+ */
+export const publishProjectPhase = async (id: string,
+    projectPhasePublication: ProjectPhasePublication, options?: RequestInit): Promise<ProjectPhaseReceipt> => {
+
+  return customFetch<ProjectPhaseReceipt>(getPublishProjectPhaseUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      projectPhasePublication,)
+  }
+);}
+
+
+
+export const getGetProjectPhaseHistoryUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/project-phases/${id}/history`
+}
+
+/**
+ * Office-only append-only phase history. Clients and crew cannot read the event ledger.
+ */
+export const getProjectPhaseHistory = async (id: string, options?: RequestInit): Promise<ProjectPhaseEvent[]> => {
+
+  return customFetch<ProjectPhaseEvent[]>(getGetProjectPhaseHistoryUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getListProjectPhaseBillingIntentsUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/project-phases/${id}/billing-intents`
+}
+
+/**
+ * Owner, manager, or finance only. Lists existing phase billing intents and associated dashboard drafts. QuickBooks remains the accounting system of record.
+ */
+export const listProjectPhaseBillingIntents = async (id: string, options?: RequestInit): Promise<ProjectPhaseBillingIntent[]> => {
+
+  return customFetch<ProjectPhaseBillingIntent[]>(getListProjectPhaseBillingIntentsUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateProjectPhaseBillingIntentUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/project-phases/${id}/billing-intents`
+}
+
+/**
+ * Owner, manager, or finance only. Creates exactly one idempotent dashboard billing draft for an accepted phase and approved estimate. It never posts, sends, charges, credits, or records a QuickBooks payment.
+ */
+export const createProjectPhaseBillingIntent = async (id: string,
+    projectPhaseBillingIntentInput: ProjectPhaseBillingIntentInput, options?: RequestInit): Promise<ProjectPhaseBillingIntentReceipt> => {
+
+  return customFetch<ProjectPhaseBillingIntentReceipt>(getCreateProjectPhaseBillingIntentUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      projectPhaseBillingIntentInput,)
+  }
+);}
+
+
+
+export const getListSalesLeadsUrl = () => {
+
+
+
+
+  return `/api/v1/leads`
+}
+
+/**
+ * Office-only lead list. Owner, manager, and sales can see commercial assessment inquiries; dispatch and finance receive the ordinary operational lead list.
+ */
+export const listSalesLeads = async ( options?: RequestInit): Promise<SalesLead[]> => {
+
+  return customFetch<SalesLead[]>(getListSalesLeadsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateSalesLeadUrl = () => {
+
+
+
+
+  return `/api/v1/leads`
+}
+
+/**
+ * Office-only manual lead creation. It records intake only; it does not create a client, property, assessment, estimate, job, or billing record.
+ */
+export const createSalesLead = async (createSalesLead: CreateSalesLead, options?: RequestInit): Promise<CreatedResource> => {
+
+  return customFetch<CreatedResource>(getCreateSalesLeadUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createSalesLead,)
+  }
+);}
+
+
+
+export const getConvertSalesLeadUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/leads/${id}/convert`
+}
+
+/**
+ * Owner, manager, or sales only. Converts one eligible lead into a linked client and property. Repeating a completed conversion returns the existing linkage. It does not create an estimate, schedule work, dispatch, publish, bill, or call a provider.
+ */
+export const convertSalesLead = async (id: string,
+    salesLeadConversion: SalesLeadConversion, options?: RequestInit): Promise<SalesLeadConversionReceipt> => {
+
+  return customFetch<SalesLeadConversionReceipt>(getConvertSalesLeadUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      salesLeadConversion,)
+  }
+);}
+
+
+
+export const getRecordEstimateDecisionUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/estimates/${id}/decision`
+}
+
+/**
+ * Office staff may move a draft estimate to sent. Only an authorized client may approve or decline a current sent estimate for an accessible property. A recorded approval includes the approving identity and timestamp; stale or repeated decisions fail.
+ */
+export const recordEstimateDecision = async (id: string,
+    estimateDecision: EstimateDecision, options?: RequestInit): Promise<EstimateDecisionReceipt> => {
+
+  return customFetch<EstimateDecisionReceipt>(getRecordEstimateDecisionUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      estimateDecision,)
+  }
+);}
+
+
+
+export const getReviseEstimateUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/estimates/${id}/revise`
+}
+
+/**
+ * Owner, manager, or sales only. Creates the next revision in the same estimate series. Current revision and draft/sent state are required; an approved scope is immutable and requires a change order.
+ */
+export const reviseEstimate = async (id: string,
+    estimateRevision: EstimateRevision, options?: RequestInit): Promise<CreatedResource> => {
+
+  return customFetch<CreatedResource>(getReviseEstimateUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      estimateRevision,)
+  }
+);}
+
+
+
+export const getCreateEstimateChangeOrderUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/estimates/${id}/change-order`
+}
+
+/**
+ * Owner, manager, or sales only. Creates a separate draft change order only from an approved estimate. It does not alter the approved scope, post billing, send an invoice, or collect payment.
+ */
+export const createEstimateChangeOrder = async (id: string,
+    estimateChangeOrder: EstimateChangeOrder, options?: RequestInit): Promise<CreatedResource> => {
+
+  return customFetch<CreatedResource>(getCreateEstimateChangeOrderUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      estimateChangeOrder,)
+  }
+);}
+
+
+
+export const getPauseRecurringServiceUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/recurring-services/${id}/pause`
+}
+
+/**
+ * Owner, manager, or dispatch only. Pauses or resumes future recurrence generation; it does not rewrite existing work orders or billing.
+ */
+export const pauseRecurringService = async (id: string,
+    recurringServicePause: RecurringServicePause, options?: RequestInit): Promise<PublicationReceipt> => {
+
+  return customFetch<PublicationReceipt>(getPauseRecurringServiceUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      recurringServicePause,)
+  }
+);}
+
+
+
 export const getListInspectionReportsUrl = () => {
 
 
@@ -1150,6 +1845,107 @@ export const listDashboardProperties = async ( options?: RequestInit): Promise<D
     method: 'GET'
 
 
+  }
+);}
+
+
+
+export const getCreateDashboardPropertyUrl = () => {
+
+
+
+
+  return `/api/v1/properties`
+}
+
+/**
+ * Office-only property creation for a client. It records a property only; it does not schedule work, grant client access, publish material, or create billing.
+ */
+export const createDashboardProperty = async (createDashboardProperty: CreateDashboardProperty, options?: RequestInit): Promise<CreatedResource> => {
+
+  return customFetch<CreatedResource>(getCreateDashboardPropertyUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createDashboardProperty,)
+  }
+);}
+
+
+
+export const getUpdateDashboardPropertyUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/properties/${id}`
+}
+
+/**
+ * Office-only versioned property edit for an operational, unarchived property. A stale version returns 409; this does not change client access, schedules, work, billing, or published material.
+ */
+export const updateDashboardProperty = async (id: string,
+    updateDashboardProperty: UpdateDashboardProperty, options?: RequestInit): Promise<DashboardPropertyEditReceipt> => {
+
+  return customFetch<DashboardPropertyEditReceipt>(getUpdateDashboardPropertyUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      updateDashboardProperty,)
+  }
+);}
+
+
+
+export const getListPropertyAreasUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/properties/${id}/areas`
+}
+
+/**
+ * Returns areas for one operational property after server-side property authorization. Office roles can read operational properties; clients need an account grant; crew need active assigned work. The response is an online property snapshot and does not publish reports, change work, or infer property condition.
+ */
+export const listPropertyAreas = async (id: string, options?: RequestInit): Promise<PropertyArea[]> => {
+
+  return customFetch<PropertyArea[]>(getListPropertyAreasUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreatePropertyAreaUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/properties/${id}/areas`
+}
+
+/**
+ * Owner, manager, or dispatch only. Creates an area for an operational property with a client. It does not create assets, schedule or dispatch work, publish client material, create billing, post to QuickBooks, or record a payment.
+ */
+export const createPropertyArea = async (id: string,
+    createPropertyArea: CreatePropertyArea, options?: RequestInit): Promise<CreatedResource> => {
+
+  return customFetch<CreatedResource>(getCreatePropertyAreaUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createPropertyArea,)
   }
 );}
 
@@ -1776,6 +2572,347 @@ export const listAgreementRecurrences = async ( options?: RequestInit): Promise<
     method: 'GET'
 
 
+  }
+);}
+
+
+
+export const getCreateRecurringServiceUrl = () => {
+
+
+
+
+  return `/api/v1/recurring-services`
+}
+
+/**
+ * Owner, manager, or dispatch only. Records a recurrence configuration; occurrence generation remains worker-controlled.
+ */
+export const createRecurringService = async (createRecurringService: CreateRecurringService, options?: RequestInit): Promise<CreatedResource> => {
+
+  return customFetch<CreatedResource>(getCreateRecurringServiceUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createRecurringService,)
+  }
+);}
+
+
+
+export const getListAgreementEstimatesUrl = () => {
+
+
+
+
+  return `/api/v1/estimates`
+}
+
+export const listAgreementEstimates = async ( options?: RequestInit): Promise<AgreementEstimateOption[]> => {
+
+  return customFetch<AgreementEstimateOption[]>(getListAgreementEstimatesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateLifecycleEstimateUrl = () => {
+
+
+
+
+  return `/api/v1/estimates`
+}
+
+/**
+ * Owner, manager, or sales only. Creates a draft estimate for an operational property. It does not send, approve, schedule, dispatch, publish, post billing, or collect payment.
+ */
+export const createLifecycleEstimate = async (createEstimate: CreateEstimate, options?: RequestInit): Promise<CreatedResource> => {
+
+  return customFetch<CreatedResource>(getCreateLifecycleEstimateUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createEstimate,)
+  }
+);}
+
+
+
+export const getListCommercialAssessmentBaselinesUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/commercial-inquiries/${id}/assessment-baselines`
+}
+
+/**
+ * Owner, manager, and sales only. Private sales baselines; no booking, proposal, or operational side effect.
+ */
+export const listCommercialAssessmentBaselines = async (id: string, options?: RequestInit): Promise<CommercialAssessmentSummary[]> => {
+
+  return customFetch<CommercialAssessmentSummary[]>(getListCommercialAssessmentBaselinesUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateCommercialAssessmentBaselineUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/commercial-inquiries/${id}/assessment-baselines`
+}
+
+/**
+ * Stable operation UUID plus lead version makes an identical retry return its original receipt.
+ */
+export const createCommercialAssessmentBaseline = async (id: string,
+    commercialAssessmentCreate: CommercialAssessmentCreate, options?: RequestInit): Promise<CommercialAssessmentCreateReceipt> => {
+
+  return customFetch<CommercialAssessmentCreateReceipt>(getCreateCommercialAssessmentBaselineUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      commercialAssessmentCreate,)
+  }
+);}
+
+
+
+export const getGetCommercialAssessmentBaselineUrl = (id: string,
+    assessmentId: string,) => {
+
+
+
+
+  return `/api/v1/commercial-inquiries/${id}/assessment-baselines/${assessmentId}`
+}
+
+/**
+ * Owner, manager, and sales only.
+ */
+export const getCommercialAssessmentBaseline = async (id: string,
+    assessmentId: string, options?: RequestInit): Promise<CommercialAssessmentDetail> => {
+
+  return customFetch<CommercialAssessmentDetail>(getGetCommercialAssessmentBaselineUrl(id,assessmentId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getUpdateCommercialAssessmentBaselineUrl = (id: string,
+    assessmentId: string,) => {
+
+
+
+
+  return `/api/v1/commercial-inquiries/${id}/assessment-baselines/${assessmentId}`
+}
+
+/**
+ * Draft-only complete collection replacement guarded by assessment version.
+ */
+export const updateCommercialAssessmentBaseline = async (id: string,
+    assessmentId: string,
+    commercialAssessmentUpdate: CommercialAssessmentUpdate, options?: RequestInit): Promise<CommercialAssessmentDetail> => {
+
+  return customFetch<CommercialAssessmentDetail>(getUpdateCommercialAssessmentBaselineUrl(id,assessmentId),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      commercialAssessmentUpdate,)
+  }
+);}
+
+
+
+export const getReviewCommercialAssessmentBaselineUrl = (id: string,
+    assessmentId: string,) => {
+
+
+
+
+  return `/api/v1/commercial-inquiries/${id}/assessment-baselines/${assessmentId}/review`
+}
+
+/**
+ * Draft-only CAS review. Creates an immutable private snapshot; does not approve work.
+ */
+export const reviewCommercialAssessmentBaseline = async (id: string,
+    assessmentId: string,
+    commercialAssessmentVersionInput: CommercialAssessmentVersionInput, options?: RequestInit): Promise<CommercialAssessmentDetail> => {
+
+  return customFetch<CommercialAssessmentDetail>(getReviewCommercialAssessmentBaselineUrl(id,assessmentId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      commercialAssessmentVersionInput,)
+  }
+);}
+
+
+
+export const getArchiveCommercialAssessmentBaselineUrl = (id: string,
+    assessmentId: string,) => {
+
+
+
+
+  return `/api/v1/commercial-inquiries/${id}/assessment-baselines/${assessmentId}/archive`
+}
+
+/**
+ * CAS archive with a reason. This preserves review history.
+ */
+export const archiveCommercialAssessmentBaseline = async (id: string,
+    assessmentId: string,
+    commercialAssessmentArchive: CommercialAssessmentArchive, options?: RequestInit): Promise<CommercialAssessmentDetail> => {
+
+  return customFetch<CommercialAssessmentDetail>(getArchiveCommercialAssessmentBaselineUrl(id,assessmentId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      commercialAssessmentArchive,)
+  }
+);}
+
+
+
+export const getCreateEstimateFromRequestUrl = (requestId: string,) => {
+
+
+
+
+  return `/api/v1/requests/${requestId}/estimates`
+}
+
+export const createEstimateFromRequest = async (requestId: string,
+    createEstimate: CreateEstimate, options?: RequestInit): Promise<CreatedResource> => {
+
+  return customFetch<CreatedResource>(getCreateEstimateFromRequestUrl(requestId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createEstimate,)
+  }
+);}
+
+
+
+export const getListRecurringJobsUrl = () => {
+
+
+
+
+  return `/api/v1/recurring-jobs`
+}
+
+export const listRecurringJobs = async ( options?: RequestInit): Promise<RecurringJob[]> => {
+
+  return customFetch<RecurringJob[]>(getListRecurringJobsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getActivateRecurringJobUrl = (recurringJobId: string,) => {
+
+
+
+
+  return `/api/v1/recurring-jobs/${recurringJobId}/activate`
+}
+
+export const activateRecurringJob = async (recurringJobId: string,
+    activateRecurringJob: ActivateRecurringJob, options?: RequestInit): Promise<OperationReceipt> => {
+
+  return customFetch<OperationReceipt>(getActivateRecurringJobUrl(recurringJobId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      activateRecurringJob,)
+  }
+);}
+
+
+
+export const getListAgreementTemplatesUrl = () => {
+
+
+
+
+  return `/api/v1/agreement-templates`
+}
+
+export const listAgreementTemplates = async ( options?: RequestInit): Promise<AgreementTemplate[]> => {
+
+  return customFetch<AgreementTemplate[]>(getListAgreementTemplatesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateAgreementTemplateUrl = () => {
+
+
+
+
+  return `/api/v1/agreement-templates`
+}
+
+export const createAgreementTemplate = async (createAgreementTemplate: CreateAgreementTemplate, options?: RequestInit): Promise<CreatedResource> => {
+
+  return customFetch<CreatedResource>(getCreateAgreementTemplateUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createAgreementTemplate,)
   }
 );}
 

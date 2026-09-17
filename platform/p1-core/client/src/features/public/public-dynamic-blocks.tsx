@@ -1,14 +1,10 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Send, Loader2, ArrowRight, Clock, Search, BookOpen, ExternalLink } from "lucide-react";
-import { LoginDialog } from "@/components/auth/login-dialog";
-import { MapView } from "@/components/directory/map-view";
-import { SectionHeading } from "@/features/admin/cms/builder/section-heading";
-import { normalizeHexColor } from "@/features/admin/cms/builder/section-style";
+import { Send, ArrowRight, Search, BookOpen, ExternalLink } from "lucide-react";
 import {
   getPostCategories,
   getPrimaryPostCategory,
@@ -18,91 +14,12 @@ import { getImageObjectPositionStyle } from "@/lib/image-focus";
 import { PublicFormRenderer } from "@/components/forms/public-form-renderer";
 import { CompanyInformationCard } from "@/components/shared/company-information-card";
 import { stripHtml } from "@/lib/html";
-import type { TherapistProfile, User as AppUser } from "@shared/schema";
-
-type DirectoryProvider = TherapistProfile & {
-  user?: Pick<AppUser, "firstName" | "lastName"> & { profileImageUrl?: string | null };
-};
-
-interface DirectoryProvidersResponse {
-  items: DirectoryProvider[];
-}
-
 function str(v: unknown): string {
   return typeof v === "string" ? v : "";
 }
 
 function plainText(v: unknown): string {
   return stripHtml(str(v));
-}
-
-function colorStyle(value: unknown, fallback?: string) {
-  const normalized = normalizeHexColor(str(value)) || fallback || "";
-  return normalized ? { color: normalized } : undefined;
-}
-
-export function TherapistMapBlock({ props }: { props: Record<string, unknown> }) {
-  const { data: allTherapistsData, isLoading } = useQuery<DirectoryProvidersResponse>({
-    queryKey: ["/api/therapists", "pageSize=500"],
-    queryFn: async () => {
-      const res = await fetch("/api/therapists?pageSize=500");
-      if (!res.ok) throw new Error("Failed to fetch therapists");
-      return res.json();
-    },
-  });
-
-  const mapTherapists = useMemo(
-    () =>
-      (allTherapistsData?.items ?? []).map((t) => ({
-        profile: t,
-        user: {
-          firstName: t.user?.firstName ?? null,
-          lastName: t.user?.lastName ?? null,
-          profileImageUrl: t.user?.profileImageUrl ?? null,
-        },
-      })),
-    [allTherapistsData],
-  );
-  const headingAlignment = str(props.sectionHeadingAlignment) || "center";
-  const buttonJustifyClass =
-    headingAlignment === "left"
-      ? "justify-start"
-      : headingAlignment === "right"
-        ? "justify-end"
-        : "justify-center";
-
-  return (
-    <section
-      className="relative bg-[#ffffff4d] overflow-hidden"
-      data-testid="section-professional-map"
-    >
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-14 sm:py-20 md:py-24">
-        <div className="mb-8 sm:mb-12 space-y-5">
-          <SectionHeading props={props} defaultAlignment="center" />
-          <div className={`flex ${buttonJustifyClass}`}>
-            <Link href="/directory">
-              <Button variant="outline" data-testid="button-view-all-therapists">
-                Find a Verified Provider <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
-        </div>
-        {isLoading ? (
-          <div className="flex justify-center py-16">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-          </div>
-        ) : (
-          <MapView
-            therapists={mapTherapists}
-            height="500px"
-            interactive
-            zoom={2}
-            center={[20, 0]}
-          />
-        )}
-      </div>
-    </section>
-  );
 }
 
 export function ContactFormBlock() {
@@ -140,142 +57,6 @@ export function ManagedFormEmbedBlock({ props }: { props: Record<string, unknown
   return (
     <div className="max-w-4xl mx-auto px-4 py-8" data-testid={`dynamic-form-embed-${formSlug}`}>
       <PublicFormRenderer slug={formSlug} />
-    </div>
-  );
-}
-
-export function JoinRegistrationFormBlock({ props = {} }: { props?: Record<string, unknown> }) {
-  const [loginOpen, setLoginOpen] = useState(false);
-  const heading = plainText(props.heading);
-  const accentHeading = plainText(props.accentHeading);
-  const subheading = str(props.subheading);
-  const hasImageBackground = !!str(props.sectionBackgroundImageUrl);
-  const headingTextStyle = colorStyle(
-    props.headingColor,
-    hasImageBackground ? "#ffffff" : undefined,
-  );
-  const accentHeadingTextStyle = colorStyle(
-    props.accentHeadingColor,
-    hasImageBackground ? "#ffffff" : undefined,
-  );
-  const subheadingTextStyle = colorStyle(
-    props.subheadingColor,
-    hasImageBackground ? "#ffffff" : undefined,
-  );
-  const applicationStatusText = plainText(props.applicationStatusText) || "Apply to join.";
-  const loginPromptPrefix =
-    plainText(props.loginPromptPrefix) || "If you're already a member click here to";
-  const loginLinkText = plainText(props.loginLinkText) || "Log in";
-  const loginPromptSuffix = plainText(props.loginPromptSuffix) || "to your profile!";
-  const hasHeroCopy = !!(heading || accentHeading);
-
-  return (
-    <section
-      className={`max-w-4xl mx-auto px-4 sm:px-6 text-center ${hasHeroCopy ? "py-14 sm:py-20 md:py-24" : "py-8 sm:py-10 md:py-12"}`}
-      data-testid="dynamic-join-registration-form"
-    >
-      {hasHeroCopy && (
-        <>
-          <h1
-            className="font-heading text-3xl sm:text-4xl md:text-5xl font-bold mb-6"
-            data-testid="text-join-title"
-            style={headingTextStyle}
-          >
-            {heading}
-            {accentHeading && (
-              <>
-                {" "}
-                <span className="text-accent" style={accentHeadingTextStyle}>
-                  {accentHeading}
-                </span>
-              </>
-            )}
-          </h1>
-          {subheading && (
-            <div
-              className="text-base sm:text-lg public-heading-subtext max-w-2xl mx-auto mb-8 [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-2 [&_a]:hover:text-primary/80 [&_p]:m-0"
-              data-testid="text-join-subheading"
-              style={subheadingTextStyle}
-              dangerouslySetInnerHTML={{ __html: subheading }}
-            />
-          )}
-        </>
-      )}
-      <Button
-        size="lg"
-        className="bg-accent text-accent-foreground border-accent-border text-base px-8 py-6 opacity-60 cursor-not-allowed"
-        disabled
-        data-testid="button-apply-member"
-      >
-        <Clock className="mr-2 h-5 w-5" />
-        {applicationStatusText}
-      </Button>
-      <p
-        className="text-sm sm:text-base public-helper-text mt-6"
-        data-testid="text-login-prompt"
-        style={subheadingTextStyle}
-      >
-        {loginPromptPrefix}{" "}
-        <button
-          onClick={() => setLoginOpen(true)}
-          className="text-accent underline underline-offset-2 hover:text-accent/80 font-medium"
-          data-testid="button-member-login"
-        >
-          {loginLinkText}
-        </button>{" "}
-        {loginPromptSuffix}
-      </p>
-      <LoginDialog open={loginOpen} onOpenChange={setLoginOpen} />
-    </section>
-  );
-}
-
-export function JoinHeroBlock({ props = {} }: { props?: Record<string, unknown> }) {
-  const heading = plainText(props.heading) || "Are you a Platform-Approved Verified Provider?";
-  const accentHeading = plainText(props.accentHeading) || "Join the Network!";
-  const subheading = str(props.subheading);
-  const hasImageBackground = !!str(props.sectionBackgroundImageUrl);
-  const headingTextStyle = colorStyle(
-    props.headingColor,
-    hasImageBackground ? "#ffffff" : undefined,
-  );
-  const accentHeadingTextStyle = colorStyle(
-    props.accentHeadingColor,
-    hasImageBackground ? "#ffffff" : undefined,
-  );
-  const subheadingTextStyle = colorStyle(
-    props.subheadingColor,
-    hasImageBackground ? "#ffffff" : undefined,
-  );
-
-  return (
-    <div
-      className="max-w-4xl mx-auto px-4 sm:px-6 py-14 sm:py-20 md:py-24 text-center"
-      data-testid="dynamic-join-hero"
-    >
-      <h1
-        className="font-heading text-3xl sm:text-4xl md:text-5xl font-bold mb-6"
-        data-testid="text-join-hero-title"
-        style={headingTextStyle}
-      >
-        {heading}
-        {accentHeading && (
-          <>
-            {" "}
-            <span className="text-accent" style={accentHeadingTextStyle}>
-              {accentHeading}
-            </span>
-          </>
-        )}
-      </h1>
-      {subheading && (
-        <div
-          className="text-base sm:text-lg public-heading-subtext max-w-2xl mx-auto [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-2 [&_a]:hover:text-primary/80 [&_p]:m-0"
-          data-testid="text-join-hero-subheading"
-          style={subheadingTextStyle}
-          dangerouslySetInnerHTML={{ __html: subheading }}
-        />
-      )}
     </div>
   );
 }

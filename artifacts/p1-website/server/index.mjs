@@ -7,6 +7,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createGzip, createBrotliCompress } from 'node:zlib';
 import { createContentStore } from './content.mjs';
 import { clientIp } from './client-ip.mjs';
+import { createGoogleReviewsStore } from './google-reviews.mjs';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const publicDir = path.join(root,'dist/public');
 const manifest = JSON.parse(await readFile(path.join(root,'config/client-site-manifest.json'),'utf8'));
@@ -14,18 +15,27 @@ const template = await readFile(path.join(publicDir,'index.html'),'utf8');
 const { render } = await import(pathToFileURL(path.join(root,'dist/server/entry-server.js')).href);
 const origin = process.env.P1_CORE_ORIGIN?.replace(/\/$/,'');
 const content = createContentStore({ manifest, origin, cacheDir: process.env.P1_CONTENT_CACHE_DIR });
+const googleReviews = createGoogleReviewsStore();
 const canonical = 'https://www.p1landmanagement.com';
 const legacyPublicRoutes = new Map([
   ['/services/commercial-property-management', '/services/commercial-landscaping'],
+  ['/service-areas/charlotte-nc', '/service-areas/charlotte-north-carolina'],
 ]);
+// The CMS is served behind the protected /admin gateway. Keep the original
+// owner setup link useful without creating a separate public setup surface.
+const adminShortcutRoutes = new Map([['/setup', '/admin/setup']]);
 // Keep established links useful after retiring pages that no longer represent
 // an active customer journey. The destination remains within the public site.
 const retiredRoutes = new Map([['/testimonials', '/contact']]);
-// Deployment-owned configuration, never the request Host, controls indexing.
+// Deployment-owned configuration determines whether this is an indexable
+// production release. In that release, public documents only belong on the
+// configured canonical host; Railway's generated service alias must not create
+// a second indexable copy of the site.
 const indexableDeployment = (() => {
   try { return new URL(manifest.origins?.publicSite).origin === canonical; }
   catch { return false; }
 })();
+const canonicalHost = new URL(canonical).hostname;
 const mime = { '.html':'text/html; charset=utf-8', '.js':'text/javascript; charset=utf-8', '.css':'text/css; charset=utf-8', '.json':'application/json', '.xml':'application/xml', '.txt':'text/plain; charset=utf-8', '.svg':'image/svg+xml', '.ico':'image/x-icon', '.webp':'image/webp', '.avif':'image/avif', '.jpg':'image/jpeg', '.png':'image/png', '.woff2':'font/woff2' };
 const escape = x => String(x).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 function send(req,res,status,body,type='text/html; charset=utf-8',cache='no-cache') {
@@ -77,10 +87,15 @@ const server=http.createServer(async(req,res)=>{
     res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Referrer-Policy','strict-origin-when-cross-origin');res.setHeader('X-Frame-Options','SAMEORIGIN');
     res.setHeader('Permissions-Policy','camera=(), microphone=(), geolocation=()');
     if(process.env.NODE_ENV==='production')res.setHeader('Strict-Transport-Security','max-age=31536000');
-    const host=(req.headers.host || '').split(':')[0];
+    const host=(req.headers.host || '').split(':')[0].toLowerCase();
     const backendPath = ['/admin','/api','/uploads','/r2'].some(prefix => pathname === prefix || pathname.startsWith(prefix + '/'));
     if (backendPath) res.setHeader('X-Robots-Tag','noindex, nofollow');
     const infrastructurePath = backendPath || pathname === '/healthz' || pathname === '/assets' || pathname.startsWith('/assets/');
+    // Local hosts are kept usable for the isolated runtime suite. Public
+    // alternate hosts redirect before an HTML, robots, or sitemap response can
+    // be served, while operational routes remain explicitly noindex.
+    const localHost = host === '' || host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+    const redirectToCanonicalHost = indexableDeployment && !localHost && host !== canonicalHost;
     let normalized=pathname;
     // Core and static asset servers own their exact paths and directory redirects.
     if (!infrastructurePath) {
@@ -88,11 +103,27 @@ const server=http.createServer(async(req,res)=>{
       if(normalized.endsWith('/index'))normalized=normalized.slice(0,-6)||'/';
       if(normalized!=='/')normalized=normalized.replace(/\/+$/,'');
     }
+    const adminShortcut = adminShortcutRoutes.get(normalized);
+    if (adminShortcut) {
+      res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+      res.writeHead(308,{Location:`${redirectToCanonicalHost?canonical:''}${adminShortcut}${url.search}`});
+      return res.end();
+    }
     const replacement = retiredRoutes.get(normalized);
-    if (replacement) {res.writeHead(301,{Location:`${host==='p1landmanagement.com'?canonical:''}${replacement}${url.search}`});return res.end();}
-    const redirectPath = legacyPublicRoutes.get(normalized) || normalized;
-    if(host==='p1landmanagement.com' || redirectPath!==pathname) {res.writeHead(308,{Location:`${host==='p1landmanagement.com'?canonical:''}${redirectPath}${url.search}`});return res.end();}
+    if (replacement) {res.writeHead(301,{Location:`${redirectToCanonicalHost?canonical:''}${replacement}${url.search}`});return res.end();}
+    const legacyDestination = legacyPublicRoutes.get(normalized);
+    if (legacyDestination) {res.writeHead(301,{Location:`${redirectToCanonicalHost?canonical:''}${legacyDestination}${url.search}`});return res.end();}
+    if(redirectToCanonicalHost || normalized!==pathname) {res.writeHead(308,{Location:`${redirectToCanonicalHost?canonical:''}${normalized}${url.search}`});return res.end();}
     if(pathname==='/api/p1/page-content' && ['GET','HEAD'].includes(req.method)) {const snapshot=await content.snapshot(url.searchParams.get('path')||'/');return send(req,res,snapshot?200:404,JSON.stringify(snapshot||{error:'Not found'}),'application/json','no-store');}
+    if(pathname==='/api/p1/google-reviews' && ['GET','HEAD'].includes(req.method)) {
+      try {
+        const snapshot=await googleReviews.snapshot();
+        return send(req,res,200,JSON.stringify(snapshot),'application/json','public, max-age=300, stale-while-revalidate=21600');
+      } catch (error) {
+        const unavailable = error?.code === 'NOT_CONFIGURED' || [401, 403, 429, 503].includes(error?.status);
+        return send(req,res,unavailable?503:502,JSON.stringify({ error: 'Reviews are temporarily unavailable.' }),'application/json','no-store');
+      }
+    }
     if(pathname==='/healthz')return send(req,res,200,'{"status":"ok"}','application/json','no-store');
     if(backendPath)return proxy(req,res);
     if(!['GET','HEAD'].includes(req.method))return send(req,res,405,'Method not allowed');

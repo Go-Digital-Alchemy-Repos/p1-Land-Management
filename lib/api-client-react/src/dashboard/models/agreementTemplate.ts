@@ -9,10 +9,7 @@
 export interface AgreementTemplate {
   id: string;
   name: string;
-  /** @minimum 1 */
   version: number;
   body: string;
   active: boolean;
-  created_at: string;
-  updated_at: string;
 }

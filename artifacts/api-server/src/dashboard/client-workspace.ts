@@ -44,7 +44,7 @@ clientWorkspaceApi.get("/clients/:id/workspace", async (req, res) => {
   const client = await officeClient(clientId);
   const [properties, contacts, agreements, schedule, requests, projects, notes, activity] = await Promise.all([
     pool.query(
-      "SELECT id,name,address,acreage,access_instructions,created_at FROM property WHERE client_id=$1 AND archived=false AND lifecycle='operational' ORDER BY name",
+      "SELECT p.id,p.name,p.address,p.address_line1,p.address_line2,p.city,p.state,p.postal_code,p.acreage,p.latitude,p.longitude,p.property_type_id,pt.name AS property_type_name,p.access_instructions,p.version,p.created_at FROM property p LEFT JOIN property_type pt ON pt.id=p.property_type_id WHERE p.client_id=$1 AND p.archived=false AND p.lifecycle='operational' ORDER BY p.name",
       [clientId],
     ),
     pool.query(
@@ -64,7 +64,7 @@ clientWorkspaceApi.get("/clients/:id/workspace", async (req, res) => {
       [clientId],
     ),
     pool.query(
-      "SELECT j.id,j.property_id,j.name,j.scope,j.status,j.created_at,p.name AS property_name FROM project j JOIN property p ON p.id=j.property_id WHERE p.client_id=$1 AND p.lifecycle='operational' ORDER BY j.created_at DESC LIMIT 12",
+      "SELECT j.id,j.property_id,j.name,j.scope,j.status,j.version,j.created_at,p.name AS property_name FROM project j JOIN property p ON p.id=j.property_id WHERE p.client_id=$1 AND p.lifecycle='operational' ORDER BY j.created_at DESC LIMIT 12",
       [clientId],
     ),
     pool.query(
@@ -122,7 +122,7 @@ clientWorkspaceApi.get("/properties/:id/workspace", async (req, res) => {
   await propertyAccess(user, propertyId);
   const visibility = propertyVisibility(user.role, user.id);
   const propertyResult = await pool.query(
-    `SELECT p.id,p.name,p.address,p.acreage,p.created_at,c.name AS client_name${office.includes(user.role) ? ",p.client_id,p.access_instructions" : ""} FROM property p JOIN client c ON c.id=p.client_id WHERE p.id=$1 AND p.archived=false AND p.lifecycle='operational'${visibility.clause}`,
+    `SELECT p.id,p.name,p.address,p.address_line1,p.address_line2,p.city,p.state,p.postal_code,p.acreage,p.latitude,p.longitude,p.property_type_id,pt.name AS property_type_name,p.created_at,c.name AS client_name${office.includes(user.role) ? ",p.client_id,p.access_instructions,p.version" : ""} FROM property p JOIN client c ON c.id=p.client_id LEFT JOIN property_type pt ON pt.id=p.property_type_id WHERE p.id=$1 AND p.archived=false AND p.lifecycle='operational'${visibility.clause}`,
     [propertyId, ...visibility.values],
   );
   if (!propertyResult.rowCount) throw new HttpError(404, "Property not found");
@@ -143,7 +143,7 @@ clientWorkspaceApi.get("/properties/:id/workspace", async (req, res) => {
     crewSafe
       ? Promise.resolve({ rows: [] as unknown[] })
       : pool.query(
-          "SELECT id,description,status,created_at FROM service_request WHERE property_id=$1 ORDER BY CASE status WHEN 'new' THEN 0 ELSE 1 END,created_at DESC LIMIT 12",
+          `SELECT id,description,${clientSafe ? "CASE status WHEN 'new' THEN 'received' WHEN 'triaged' THEN 'under_review' WHEN 'scheduled' THEN 'service_planning' WHEN 'converted' THEN 'work_planning' WHEN 'closed' THEN 'closed' WHEN 'cancelled' THEN 'cancelled' ELSE 'under_review' END" : "status"} AS status,created_at,updated_at FROM service_request WHERE property_id=$1 ORDER BY CASE status WHEN 'new' THEN 0 ELSE 1 END,created_at DESC LIMIT 12`,
           [propertyId],
         ),
     crewSafe

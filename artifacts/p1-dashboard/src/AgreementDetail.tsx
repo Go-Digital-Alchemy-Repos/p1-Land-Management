@@ -5,6 +5,7 @@ import type {
   AgreementChargeHistory,
 } from "../../../lib/api-client-react/src/dashboard/models";
 import { useState, useRef } from "react";
+import { RichTextEditor } from "./RichTextEditor";
 import {
   previewServiceAgreementActivation,
   activateServiceAgreement,
@@ -341,12 +342,7 @@ export function AgreementDetail({
                 </label>
                 <label>
                   Cancellation reason
-                  <textarea
-                    required
-                    maxLength={1000}
-                    value={reason}
-                    onChange={(e) => setReason(e.target.value)}
-                  />
+                  <RichTextEditor value={reason} onChange={setReason} maxLength={1000} ariaLabel="Cancellation reason" placeholder="Explain the cancellation." />
                 </label>
                 <button disabled={busy}>Record cancellation</button>
               </fieldset>

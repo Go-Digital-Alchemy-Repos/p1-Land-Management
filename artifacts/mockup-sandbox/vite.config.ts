@@ -14,6 +14,15 @@ if (Number.isNaN(port) || port <= 0) {
 }
 
 const basePath = process.env.BASE_PATH ?? "/";
+// Keep an interactive design sandbox local unless a controlled preview host is
+// explicitly configured alongside a narrow hostname allowlist.
+const devHost = process.env.DEV_BIND_HOST ?? "127.0.0.1";
+const allowedHosts = (
+  process.env.DEV_ALLOWED_HOSTS ?? "localhost,127.0.0.1,::1"
+)
+  .split(",")
+  .map((host) => host.trim())
+  .filter(Boolean);
 
 export default defineConfig({
   base: basePath,
@@ -45,15 +54,15 @@ export default defineConfig({
   },
   server: {
     port,
-    host: "0.0.0.0",
-    allowedHosts: true,
+    host: devHost,
+    allowedHosts,
     fs: {
       strict: true,
     },
   },
   preview: {
     port,
-    host: "0.0.0.0",
-    allowedHosts: true,
+    host: devHost,
+    allowedHosts,
   },
 });

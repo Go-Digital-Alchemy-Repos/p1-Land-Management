@@ -16,7 +16,7 @@ const FAQS = [
   {
     question: "What grass species grow best in Upstate SC and Charlotte NC?",
     answer:
-      "The Carolinas sit in the transition zone between warm- and cool-season grasses, so species selection matters. Bermudagrass suits high-traffic sunny sites, Tall Fescue handles shade and transition-zone lawns, Zoysia offers dense low-maintenance turf, Centipede fits low-fertility acidic soils, and Bahia works for drought-prone pastures.",
+      "The Carolinas sit in the transition zone between warm- and cool-season grasses, so species selection matters. Bermuda grass suits high-traffic sunny sites, Tall Fescue handles shade and transition-zone lawns, Zoysia grass offers dense low-maintenance turf, Centipede grass fits low-fertility acidic soils, and Bahia grass works for drought-prone pastures.",
   },
   {
     question: "Should I choose sod or seed for my property?",
@@ -39,10 +39,10 @@ export default function TurfInstallationSeeding() {
   return (
     <Layout>
       <SEO 
-        title="Turf Installation & Seeding for Large Acreage | P1 Land & Property Management | Upstate SC & Charlotte NC"
-        description="Large-acreage sod and seed installation for commercial, agricultural, and residential properties. Bermuda, fescue, zoysia, and more. Serving Upstate SC and Charlotte NC. Call (704) 221-8928."
+        title="Large-Acreage Turf Installation in SC & NC | P1"
+        description="Sod and seed installation for qualifying commercial, industrial, agricultural, municipal, and institutional properties. Call (704) 221-8928."
         jsonLd={[
-          serviceSchema({ name: "Turf Installation & Seeding", description: "Large-acreage sod and seed installation for commercial, agricultural, and residential properties. Bermuda, fescue, zoysia, and more. Serving Upstate SC and Charlotte NC. Call (704) 221-8928.", path: "/services/turf-installation-seeding" }),
+          serviceSchema({ name: "Turf Installation & Seeding", description: "Large-acreage sod and seed installation for commercial, industrial, agricultural, municipal, and institutional properties. Bermuda, fescue, zoysia, and more. Serving Upstate SC and Charlotte NC. Call (704) 221-8928.", path: "/services/turf-installation-seeding" }),
           breadcrumbSchema([
             { name: "Home", path: "/" },
             { name: "Services", path: "/services" },
@@ -65,7 +65,7 @@ export default function TurfInstallationSeeding() {
             in the Carolinas
           </>
         }
-        subtitle="From commercial grounds to farm pastures to rural residential acreage, P1 installs turf that establishes strong, lasts long, and performs in the Carolinas' climate — at any scale."
+        subtitle="From commercial grounds and institutional campuses to farm pastures and municipal sites, P1 installs turf that establishes strong, lasts long, and performs in the Carolinas' climate — at any scale."
         image={heroImg}
         imageAlt="Lush new sod and grass"
       />
@@ -76,7 +76,7 @@ export default function TurfInstallationSeeding() {
           
           <FeatureRow heading="Turf Done Right Starts Before the First Seed" image={turfPrepImg} imageAlt="Site being prepared and graded before turf installation">
             <p>
-              A healthy stand of turf — whether it's a commercial property lawn, a farm pasture, a sports field, or a residential estate — begins with proper site preparation. Bad grade, poor soil, improper species selection, and inadequate establishment practices are the reasons most large-acreage turf jobs fail within two to three years.
+              A healthy stand of turf — whether it's a commercial property lawn, a farm pasture, a sports field, or an institutional campus — begins with proper site preparation. Bad grade, poor soil, improper species selection, and inadequate establishment practices are the reasons most large-acreage turf jobs fail within two to three years.
             </p>
             <p>
               Discuss soil testing, site grading, amendment, species selection and seeding or sod installation with P1 as part of the agreed scope. Establishment practices, responsibilities and any result commitments should be confirmed in writing before work begins.
@@ -90,7 +90,7 @@ export default function TurfInstallationSeeding() {
               </h2>
               <ul className="space-y-3">
                 {[
-                  "Large-acreage sod installation for commercial and residential properties",
+                  "Large-acreage sod installation for commercial, municipal, and institutional properties",
                   "Bermuda, Zoysia, Centipede, and Fescue sod options",
                   "Grade verification and correction before installation",
                   "Soil preparation and amendment",
@@ -135,11 +135,11 @@ export default function TurfInstallationSeeding() {
           <div className="space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
             <div className="grid grid-cols-1 gap-4">
               {[
-                { title: "Bermudagrass", desc: "Best for high-traffic commercial turf, sports fields, and sunny pastures" },
+                { title: "Bermuda Grass", desc: "Best for high-traffic commercial turf, sports fields, and sunny pastures" },
                 { title: "Tall Fescue", desc: "Ideal for transition zone lawns, commercial grounds, and shaded areas" },
-                { title: "Zoysiagrass", desc: "Dense, low-maintenance warm-season option for commercial and residential sites" },
-                { title: "Centipedegrass", desc: "Low-input warm-season grass for lower-fertility acidic soils" },
-                { title: "Bahiagrass", desc: "Drought-tolerant pasture and erosion control option for coarser soils" }
+                { title: "Zoysia Grass", desc: "Dense, low-maintenance warm-season option for commercial and institutional sites" },
+                { title: "Centipede Grass", desc: "Low-input warm-season grass for lower-fertility acidic soils" },
+                { title: "Bahia Grass", desc: "Drought-tolerant pasture and erosion control option for coarser soils" }
               ].map((item, i) => (
                 <div key={i} className="bg-card border border-border p-6 rounded-lg">
                   <h3 className="text-xl font-bold text-secondary mb-2">{item.title}</h3>

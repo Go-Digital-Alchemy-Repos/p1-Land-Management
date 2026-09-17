@@ -4,7 +4,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderToString } from "react-dom/server";
 import {
   BrandingTab,
-  ECOMMERCE_INTEGRATION_CATEGORIES,
   filterIntegrations,
   filterEmailTemplates,
   getIntegrationLibraryCounts,
@@ -148,7 +147,7 @@ describe("email template library helpers", () => {
     expect(counts.events).toBe(1);
     expect(counts.users).toBe(1);
     expect(counts.forms).toBe(1);
-    expect(counts.ecommerce).toBe(0);
+    expect(Object.keys(counts)).not.toContain("ecommerce");
   });
 
   it("filters by module, status, and searchable variables", () => {

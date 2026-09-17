@@ -1,21 +1,22 @@
 # P1 Land & Property Management
 
-> Full-service land and property management for commercial, agricultural, industrial, equestrian, and large residential properties 1 acre and larger. Serving Upstate South Carolina and the greater Charlotte, North Carolina region.
+> Full-service land and property management for commercial, agricultural, industrial, municipal, and institutional properties 1 acre and larger. Serving Upstate South Carolina and the greater Charlotte, North Carolina region.
 
 P1 Land & Property Management is a Carolinas-based land management contractor. One contractor for the entire life of your land — from initial clearing and reconstruction through ongoing weekly and seasonal care.
 
 - Phone: +1 (704) 221-8928
-- Email: info@p1landmanagement.com
+- Contact: https://www.p1landmanagement.com/contact
 - Hours: Monday–Friday 7 AM–6 PM, Saturday by appointment, Sunday closed
 - Minimum property size: 1 acre
 - Free estimates: https://www.p1landmanagement.com/contact
 
 ## Services
 
-- [Commercial Landscaping](https://www.p1landmanagement.com/services/commercial-landscaping): Year-round exterior grounds maintenance for commercial sites, HOAs, and facilities
+- [Commercial Landscaping](https://www.p1landmanagement.com/services/commercial-landscaping): Year-round exterior grounds maintenance for commercial, industrial, municipal, and institutional sites
+- [Commercial Snow & Ice Management](https://www.p1landmanagement.com/commercial-snow-ice-management): Seasonal plowing, anti-icing, and documented storm response for qualifying commercial sites
 - [Industrial & Agricultural](https://www.p1landmanagement.com/services/industrial-agricultural): Land maintenance for industrial sites, farms, pasture, and working acreage
 - [Land Clearing](https://www.p1landmanagement.com/services/land-clearing): Lot clearing, forestry mulching, right-of-way, and rural acreage
-- [Grading & Site Preparation](https://www.p1landmanagement.com/services/grading-site-preparation): Fine grading and site prep for commercial and residential development
+- [Grading & Site Preparation](https://www.p1landmanagement.com/services/grading-site-preparation): Fine grading and site prep for commercial, industrial, agricultural, and institutional development
 - [Drainage Solutions](https://www.p1landmanagement.com/services/drainage): French drains, retention, stormwater, and erosion control
 - [Turf Installation & Seeding](https://www.p1landmanagement.com/services/turf-installation-seeding): Sod and large-acreage seeding for Piedmont soils
 - [Tree Services](https://www.p1landmanagement.com/services/tree-services): Trimming, removal, and selective clearing
@@ -31,8 +32,7 @@ P1 Land & Property Management is a Carolinas-based land management contractor. O
 - [Anderson, SC](https://www.p1landmanagement.com/service-areas/anderson-sc)
 - [Lancaster County, SC](https://www.p1landmanagement.com/service-areas/lancaster-county-sc): Indian Land, Van Wyck, Lancaster, Kershaw, Heath Springs
 - [York County, SC](https://www.p1landmanagement.com/service-areas/york-county-sc): Rock Hill, Fort Mill, Tega Cay, Lake Wylie, Clover, York
-- [Charlotte, NC Region](https://www.p1landmanagement.com/service-areas/charlotte-north-carolina): Charlotte metro and surrounding counties
-- [Charlotte, NC](https://www.p1landmanagement.com/service-areas/charlotte-nc)
+- [Charlotte, NC](https://www.p1landmanagement.com/service-areas/charlotte-north-carolina): Commercial land and property management in Charlotte and Mecklenburg County
 - [Concord, NC](https://www.p1landmanagement.com/service-areas/concord-nc)
 - [Mooresville & Lake Norman, NC](https://www.p1landmanagement.com/service-areas/mooresville-lake-norman-nc)
 - [Gastonia, NC](https://www.p1landmanagement.com/service-areas/gastonia-nc)
@@ -42,7 +42,8 @@ P1 Land & Property Management is a Carolinas-based land management contractor. O
 
 - [About](https://www.p1landmanagement.com/about)
 - [Project Gallery](https://www.p1landmanagement.com/gallery)
-- [Testimonials](https://www.p1landmanagement.com/testimonials)
+- [Commercial Site Management & Assessment](https://www.p1landmanagement.com/commercial)
+- [Data Centers & Secure Facilities](https://www.p1landmanagement.com/commercial/data-centers-secure-facilities): Exterior land, drainage, vegetation, access, and corrective work planning for secure campuses
 - [Blog & Resources](https://www.p1landmanagement.com/blog)
 - [Land Clearing Cost Per Acre in South Carolina](https://www.p1landmanagement.com/blog/land-clearing-cost-per-acre-south-carolina)
 - [How to Manage a Retention Pond in South Carolina](https://www.p1landmanagement.com/blog/how-to-manage-retention-pond-south-carolina)

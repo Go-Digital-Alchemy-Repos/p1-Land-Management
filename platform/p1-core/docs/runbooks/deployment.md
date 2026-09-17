@@ -32,6 +32,7 @@
 | `SMTP_USER`                   | Email    | SMTP username                                    |
 | `SMTP_PASS`                   | Email    | SMTP password                                    |
 | `SMTP_FROM`                   | Email    | Default sender address                           |
+| `P1_FORM_NOTIFICATION_RECIPIENTS` | Email | Private comma-separated list of exactly two approved P1 form recipients |
 | `SETUP_TOKEN`                 | Security | Required high-entropy authorization code for first admin setup |
 | `CMS_PREVIEW_SECRET`          | CMS      | Optional signing secret for CMS preview links    |
 | `METRICS_ENABLED`             | Metrics  | Set to "true" to enable metrics endpoint         |

@@ -3,8 +3,9 @@ import {
   BUSINESS_NAME,
   BUSINESS_DESCRIPTION,
   PHONE_E164,
-  EMAIL,
+  BUSINESS_IMAGE_URL,
   LOGO_URL,
+  GOOGLE_BUSINESS_URL,
   ADDRESS,
   AREAS_SERVED,
   OPENING_HOURS,
@@ -41,9 +42,9 @@ export function localBusinessSchema(): JsonLd {
     description: BUSINESS_DESCRIPTION,
     url: SITE_URL,
     telephone: PHONE_E164,
-    email: EMAIL,
-    image: LOGO_URL,
+    image: BUSINESS_IMAGE_URL,
     logo: LOGO_URL,
+    sameAs: [GOOGLE_BUSINESS_URL],
     priceRange: "$$",
     address: {
       "@type": "PostalAddress",
@@ -131,5 +132,43 @@ export function breadcrumbSchema(items: { name: string; path: string }[]): JsonL
       name: item.name,
       item: SITE_URL + item.path,
     })),
+  };
+}
+
+/**
+ * Article markup with source-controlled dates. The company is the author until
+ * the owner supplies a verified individual byline and credentials.
+ */
+export function articleSchema(opts: {
+  headline: string;
+  description: string;
+  path: string;
+  datePublished: string;
+  dateModified: string;
+}): JsonLd {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: opts.headline,
+    description: opts.description,
+    image: BUSINESS_IMAGE_URL,
+    datePublished: opts.datePublished,
+    dateModified: opts.dateModified,
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": SITE_URL + opts.path,
+    },
+    author: {
+      "@type": "Organization",
+      "@id": BUSINESS_ID,
+      name: BUSINESS_NAME,
+      url: SITE_URL,
+    },
+    publisher: {
+      "@type": "Organization",
+      "@id": BUSINESS_ID,
+      name: BUSINESS_NAME,
+      logo: { "@type": "ImageObject", url: LOGO_URL },
+    },
   };
 }

@@ -16,6 +16,16 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://www.p1landmanagement.com/commercial-snow-ice-management</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.p1landmanagement.com/commercial/data-centers-secure-facilities</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://www.p1landmanagement.com/contact</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -102,11 +112,6 @@
   </url>
   <url>
     <loc>https://www.p1landmanagement.com/service-areas/anderson-sc</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.p1landmanagement.com/service-areas/charlotte-nc</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

@@ -17,12 +17,8 @@ export function requireSiteFeature(feature: keyof SiteFeatures, label: string): 
   };
 }
 
-export const requireEcommerceEnabled = requireSiteFeature("ecommerceEnabled", "Ecommerce");
 export const requireCmsEnabled = requireSiteFeature("cmsEnabled", "CMS");
-export const requireDirectoryEnabled = requireSiteFeature("directoryEnabled", "Directory");
 export const requireBlogEnabled = requireSiteFeature("blogEnabled", "Blog");
 export const requireEventsEnabled = requireSiteFeature("eventsEnabled", "Events");
 export const requireCrmEnabled = requireSiteFeature("crmEnabled", "CRM");
 export const requireCareersEnabled = requireSiteFeature("careersEnabled", "Careers");
-export const requireMembershipEnabled = requireSiteFeature("membershipEnabled", "Membership");
-export const requirePortfolioEnabled = requireSiteFeature("portfolioEnabled", "Portfolio");

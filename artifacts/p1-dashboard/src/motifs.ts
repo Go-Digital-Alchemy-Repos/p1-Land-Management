@@ -1,6 +1,6 @@
 import type { DashboardView, SettingsSection } from "./dashboard-routes";
 
-const illustration = (name: string) => `url("/images/illustrations/${name}.png")`;
+const illustration = (name: string) => `url("/images/illustrations/${name}.webp")`;
 
 const pageIllustrations: Record<Exclude<DashboardView, "Settings">, string> = {
   Overview: illustration("overview"),
@@ -16,6 +16,7 @@ const pageIllustrations: Record<Exclude<DashboardView, "Settings">, string> = {
   Projects: illustration("projects"),
   Inspections: illustration("inspections"),
   Expenses: illustration("expenses"),
+  Profile: illustration("settings-security"),
 };
 
 const settingsIllustrations: Record<SettingsSection, string> = {
@@ -23,6 +24,7 @@ const settingsIllustrations: Record<SettingsSection, string> = {
   security: illustration("settings-security"),
   integrations: illustration("settings-integrations"),
   preferences: illustration("settings-preferences"),
+  "term-libraries": illustration("settings-preferences"),
 };
 
 export function motifForPage(view: DashboardView, settingsSection?: SettingsSection) {

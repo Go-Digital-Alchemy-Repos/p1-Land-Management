@@ -3,27 +3,22 @@ import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
+import { articleSchema } from "@/lib/structured-data";
 import heroImg from "@/assets/blog-grass-acreage.png";
 
 export default function BlogPost() {
   return (
     <Layout>
       <SEO 
-        title="Best Grass Types for Large Acreage Properties in the Carolinas | P1 Land & Property Management"
-        description="Choosing the right grass for large acreage in SC and NC depends on sun, soil, use, and maintenance commitment. Here's how to make the right call. Call (704) 221-8928."
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "Article",
+        title="Best Grass for Large Acreage in the Carolinas | P1"
+        description="Compare grass options for large Carolina properties based on climate, sunlight, soil, intended use, establishment method, and maintenance needs."
+        jsonLd={articleSchema({
           headline: "Best Grass Types for Large Acreage Properties in the Carolinas",
           description: "Choosing the right grass for large acreage in SC and NC depends on sun, soil, use, and maintenance commitment.",
-          image: "https://www.p1landmanagement.com/opengraph.jpg",
-          author: { "@type": "Organization", name: "P1 Land & Property Management" },
-          publisher: {
-            "@type": "Organization",
-            name: "P1 Land & Property Management",
-            logo: { "@type": "ImageObject", url: "https://www.p1landmanagement.com/opengraph.jpg" },
-          },
-        }}
+          path: "/blog/best-grass-large-acreage-carolinas",
+          datePublished: "2026-06-24",
+          dateModified: "2026-09-14",
+        })}
       />
 
       <article className="pb-24">
@@ -60,7 +55,7 @@ export default function BlogPost() {
 
             <h2>Warm-Season Grasses for Large Acreage</h2>
             
-            <h3>Bermudagrass</h3>
+            <h3>Bermuda Grass</h3>
             <p>
               The dominant choice for high-traffic commercial turf, athletic fields, and active pastures throughout the region. Bermuda is aggressive, drought-tolerant, and recovers quickly from damage. It goes fully dormant and brown in winter — which is acceptable for most commercial and agricultural applications. It requires full sun and performs poorly in shade.
             </p>
@@ -70,22 +65,22 @@ export default function BlogPost() {
               <li><strong>Maintenance:</strong> Moderate to high — requires regular fertilization and mowing during growing season</li>
             </ul>
 
-            <h3>Zoysiagrass</h3>
+            <h3>Zoysia Grass</h3>
             <p>
               A dense, slow-growing warm-season grass that produces a tight, attractive turf with fewer inputs than Bermuda once established. Shade and cold tolerance vary by cultivar; match the selection to the site. The downside is slow establishment and relatively high cost if sodded.
             </p>
             <ul>
-              <li><strong>Best for:</strong> Commercial properties, HOA common areas, estate lawns</li>
+              <li><strong>Best for:</strong> Commercial properties, institutional campuses, and municipal grounds</li>
               <li><strong>Establishment:</strong> Sod or plugs (slow from seed)</li>
               <li><strong>Maintenance:</strong> Low to moderate once established</li>
             </ul>
 
-            <h3>Centipedegrass</h3>
+            <h3>Centipede Grass</h3>
             <p>
               A low-input warm-season option for acidic, lower-fertility soils common in much of the Carolinas Piedmont. Centipede requires minimal fertilization and grows slowly, which means less mowing. It's not suitable for high-traffic or heavy-use areas.
             </p>
             <ul>
-              <li><strong>Best for:</strong> Low-maintenance rural and residential acreage, utility areas</li>
+              <li><strong>Best for:</strong> Low-maintenance agricultural acreage, utility areas, and industrial grounds</li>
               <li><strong>Establishment:</strong> Seed or sod</li>
               <li><strong>Maintenance:</strong> Very low</li>
             </ul>
@@ -97,7 +92,7 @@ export default function BlogPost() {
               The most widely used cool-season grass in the Carolinas transition zone. Tall fescue stays green through winter, tolerates moderate shade, and performs well in the cooler temperatures of fall, winter, and spring. It struggles in the intense heat and drought of Carolinas summers — requiring irrigation or overseeding after summer stress.
             </p>
             <ul>
-              <li><strong>Best for:</strong> Commercial grounds, shaded areas, residential estates, cooler Upstate SC elevations</li>
+              <li><strong>Best for:</strong> Commercial and institutional grounds, shaded areas, and cooler Upstate SC elevations</li>
               <li><strong>Establishment:</strong> Seed (fall is ideal)</li>
               <li><strong>Maintenance:</strong> Moderate — annual overseeding often needed after summer stress</li>
             </ul>
@@ -107,9 +102,9 @@ export default function BlogPost() {
               For farm pastures, hay fields, and food plots, the calculus is different — productivity and forage quality matter more than aesthetics. Common choices in the region include:
             </p>
             <ul>
-              <li><strong>Bermudagrass</strong> — The primary hay and pasture grass for the Carolinas. High yield, good quality forage, drought-tolerant.</li>
+              <li><strong>Bermuda Grass</strong> — The primary hay and pasture grass for the Carolinas. High yield, good quality forage, drought-tolerant.</li>
               <li><strong>Tall Fescue</strong> — The dominant cool-season pasture grass. Widely grown for beef cattle across the region, though endophyte toxicity in older varieties is a consideration for breeding stock.</li>
-              <li><strong>Bahiagrass</strong> — Drought-tolerant, low-input pasture grass for sandier, lower-fertility soils. Excellent for erosion control on rough terrain.</li>
+              <li><strong>Bahia Grass</strong> — Drought-tolerant, low-input pasture grass for sandier, lower-fertility soils. Excellent for erosion control on rough terrain.</li>
               <li><strong>Mixed species</strong> — Many productive pastures use a warm/cool season mix to extend the grazing season and reduce seasonal gaps in forage availability.</li>
             </ul>
 
@@ -128,7 +123,7 @@ export default function BlogPost() {
       </article>
 
       <aside className="site-shell pb-12 text-lg">
-        <p>Planning work on your land? <Link href="/services/turf-installation-seeding" className="text-primary underline">Explore this service</Link> and <Link href="/contact" className="text-primary underline">request a property estimate</Link>.</p>
+        <p>Planning work on your land? Review P1's <Link href="/services/turf-installation-seeding" className="text-primary underline">large-acreage turf installation and seeding</Link> and <Link href="/contact" className="text-primary underline">request a property estimate</Link>.</p>
       </aside>
       <FinalCTA />
     </Layout>

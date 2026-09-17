@@ -5,7 +5,10 @@ const SMTP_HOST = process.env.SMTP_HOST;
 const SMTP_PORT = parseInt(process.env.SMTP_PORT || "587", 10);
 const SMTP_USER = process.env.SMTP_USER;
 const SMTP_PASS = process.env.SMTP_PASS;
-const SMTP_FROM = process.env.SMTP_FROM || "P1 Land & Property Management <noreply@p1landmanagement.com>";
+const SMTP_FROM =
+  process.env.SMTP_FROM || "P1 Land & Property Management <noreply@p1landmanagement.com>";
+const DEFAULT_EMAIL_COMPANY_NAME = "P1 Land & Property Management";
+const DEFAULT_EMAIL_LOGO_URL = "https://www.p1landmanagement.com/admin/p1-land-management-logo.png";
 
 const isSmtpConfigured = !!(SMTP_HOST && SMTP_USER && SMTP_PASS);
 
@@ -33,6 +36,7 @@ interface MailgunConfig {
 let cachedMailgunConfig: MailgunConfig | null = null;
 let mailgunConfigFetched = false;
 let cachedEmailLogoUrl: string | null = null;
+let cachedEmailCompanyName = DEFAULT_EMAIL_COMPANY_NAME;
 let emailBrandingFetched = false;
 
 export function resetMailgunConfig(): void {
@@ -42,6 +46,7 @@ export function resetMailgunConfig(): void {
 
 export function resetEmailBrandingCache(): void {
   cachedEmailLogoUrl = null;
+  cachedEmailCompanyName = DEFAULT_EMAIL_COMPANY_NAME;
   emailBrandingFetched = false;
 }
 
@@ -75,13 +80,20 @@ function resolveAbsoluteAssetUrl(url: string | null | undefined) {
   return `${appUrl}${value}`;
 }
 
-async function getEmailLogoUrl(): Promise<string | null> {
-  if (emailBrandingFetched) return cachedEmailLogoUrl;
+async function getEmailBranding(): Promise<{ logoUrl: string; companyName: string }> {
+  if (emailBrandingFetched) {
+    return {
+      logoUrl: cachedEmailLogoUrl || DEFAULT_EMAIL_LOGO_URL,
+      companyName: cachedEmailCompanyName,
+    };
+  }
 
   try {
     const { storage } = await import("../storage/index");
     const branding = await storage.settings.getDecryptedCategory("branding");
-    cachedEmailLogoUrl = resolveAbsoluteAssetUrl(branding.frontend_logo_url);
+    cachedEmailLogoUrl =
+      resolveAbsoluteAssetUrl(branding.frontend_logo_url) || DEFAULT_EMAIL_LOGO_URL;
+    cachedEmailCompanyName = branding.company_name?.trim() || DEFAULT_EMAIL_COMPANY_NAME;
     emailBrandingFetched = true;
   } catch (err) {
     logger.email.warn("Failed to load branding for email shell", {
@@ -90,7 +102,10 @@ async function getEmailLogoUrl(): Promise<string | null> {
     emailBrandingFetched = true;
   }
 
-  return cachedEmailLogoUrl;
+  return {
+    logoUrl: cachedEmailLogoUrl || DEFAULT_EMAIL_LOGO_URL,
+    companyName: cachedEmailCompanyName,
+  };
 }
 
 async function sendViaMailgun(to: string, subject: string, html: string): Promise<boolean> {
@@ -131,11 +146,23 @@ async function sendViaSmtp(to: string, subject: string, html: string): Promise<b
 function baseTemplate(
   title: string,
   body: string,
-  options: { logoUrl?: string | null } = {},
+  options: { logoUrl?: string | null; companyName?: string | null } = {},
 ): string {
+  const companyName = options.companyName?.trim() || DEFAULT_EMAIL_COMPANY_NAME;
+  const escapedCompanyName = companyName.replace(
+    /[&<>"']/g,
+    (character) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      })[character]!,
+  );
   const logoMarkup = options.logoUrl
-    ? `<img src="${options.logoUrl}" alt="Core Platform" style="display:block;max-width:220px;max-height:52px;height:auto;width:auto;margin:0 auto;" />`
-    : `<div style="color:#1e3a5f;font-size:22px;font-weight:600;text-align:center;">Core Platform</div>`;
+    ? `<img src="${options.logoUrl}" alt="${escapedCompanyName}" style="display:block;max-width:280px;max-height:54px;height:auto;width:auto;margin:0 auto;" />`
+    : `<div style="color:#1e3a5f;font-size:22px;font-weight:600;text-align:center;">${escapedCompanyName}</div>`;
 
   return `<!DOCTYPE html>
 <html>
@@ -152,7 +179,7 @@ function baseTemplate(
           ${body}
         </td></tr>
         <tr><td style="background:#f9fafb;padding:20px 32px;border-top:1px solid #e5e7eb;">
-          <p style="margin:0;color:#6b7280;font-size:13px;">This is an automated message from Core Platform. Please do not reply directly to this email.</p>
+          <p style="margin:0;color:#6b7280;font-size:13px;">This is an automated message from ${escapedCompanyName}. Please do not reply directly to this email.</p>
         </td></tr>
       </table>
     </td></tr>
@@ -162,8 +189,8 @@ function baseTemplate(
 }
 
 export async function renderEmailShell(title: string, body: string): Promise<string> {
-  const logoUrl = await getEmailLogoUrl();
-  return baseTemplate(title, body, { logoUrl });
+  const branding = await getEmailBranding();
+  return baseTemplate(title, body, branding);
 }
 
 function renderTemplate(template: string, vars: Record<string, string | null>): string {

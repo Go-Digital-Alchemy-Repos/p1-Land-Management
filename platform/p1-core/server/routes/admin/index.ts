@@ -1,4 +1,3 @@
-import privateProofRoutes from "./p1-private-proof.routes";
 import { Router } from "express";
 import { authenticateToken, requireAdminPermission, requireRole } from "../../middleware/auth";
 import dashboardRoutes from "./dashboard.routes";
@@ -34,13 +33,6 @@ import {
 const router = Router();
 
 router.use(authenticateToken);
-
-router.use(
-  "/cms/private-proof",
-  requireCmsEnabled,
-  requireAdminPermission("content"),
-  privateProofRoutes,
-);
 
 // CRM editors must reach their scoped router before the admin-only root mounts.
 router.use("/crm", requireCrmEnabled, requireAdminPermission("crm"), crmRoutes);

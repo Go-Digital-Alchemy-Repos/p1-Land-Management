@@ -778,11 +778,11 @@ export function Topographic() {
                 </li>
                 <li>
                   <a
-                    href="mailto:info@p1landmanagement.com"
+                    href="/contact"
                     className="flex items-center gap-2.5 transition-colors hover:text-white"
                   >
                     <Mail className="h-4 w-4" style={{ color: BLUE }} />
-                    info@p1landmanagement.com
+                    Send a secure inquiry
                   </a>
                 </li>
                 <li className="flex items-start gap-2.5">

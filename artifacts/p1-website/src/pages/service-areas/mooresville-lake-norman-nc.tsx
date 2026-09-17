@@ -13,7 +13,7 @@ const FAQS = [
   {
     question: "What areas around Lake Norman does P1 serve?",
     answer:
-      "P1 serves the entire Lake Norman region — Mooresville, Davidson, Cornelius, Huntersville, Troutman, Sherrills Ford, and Denver — including waterfront estates, rural acreage, and commercial properties 1 acre and larger.",
+      "P1 serves the entire Lake Norman region — Mooresville, Davidson, Cornelius, Huntersville, Troutman, Sherrills Ford, and Denver — for commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger.",
   },
   {
     question: "Can P1 help with shoreline erosion on Lake Norman properties?",
@@ -21,14 +21,14 @@ const FAQS = [
       "Yes. P1 provides shoreline restoration, erosion control on steep lakeside slopes, drainage design for sloped terrain, and pond and waterway maintenance — the specialized work that waterfront properties around Lake Norman regularly need.",
   },
   {
-    question: "Does P1 maintain large estates near Mooresville year-round?",
+    question: "Does P1 provide year-round commercial maintenance near Mooresville?",
     answer:
-      "Yes. P1 offers ongoing estate and rural property maintenance programs covering turf, tree care, drainage, and pond management, so large Lake Norman properties stay in top condition through every season.",
+      "Yes. P1 offers ongoing maintenance programs covering turf, tree care, drainage, and pond management for qualifying commercial, industrial, municipal, and institutional properties around Lake Norman.",
   },
   {
     question: "What size properties does P1 work on near Lake Norman?",
     answer:
-      "P1 focuses on properties 1 acre and larger — waterfront estates, rural acreage, and commercial sites — bringing the equipment and expertise that sloped, lakeside land demands.",
+      "P1 focuses on commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger, bringing the equipment and expertise that sloped, lakeside land demands. P1 does not provide residential services.",
   },
 ];
 
@@ -36,10 +36,10 @@ export default function MooresvilleLakeNormanNC() {
   return (
     <Layout>
       <SEO 
-        title="Land & Property Management Mooresville & Lake Norman NC | P1 Land & Property Management"
-        description="Full-service land clearing, drainage, pond management, and property maintenance for large properties near Mooresville and Lake Norman, NC. Call (704) 221-8928."
+        title="Land Management in Mooresville & Lake Norman | P1"
+        description="Commercial landscaping, grounds maintenance, land clearing, drainage & pond care for large sites near Mooresville and Lake Norman. Call (704) 221-8928."
         jsonLd={[
-          serviceAreaSchema({ areaName: "Mooresville & Lake Norman, North Carolina", areaType: "City", description: "Full-service land clearing, drainage, pond management, and property maintenance for large properties near Mooresville and Lake Norman, NC. Call (704) 221-8928.", path: "/service-areas/mooresville-lake-norman-nc" }),
+          serviceAreaSchema({ areaName: "Mooresville & Lake Norman, North Carolina", areaType: "City", description: "Commercial landscaping, grounds maintenance, land clearing, grading, drainage, turf, and pond services for qualifying Mooresville and Lake Norman properties.", path: "/service-areas/mooresville-lake-norman-nc" }),
           breadcrumbSchema([
             { name: "Home", path: "/" },
             { name: "Service Areas", path: "/service-areas" },
@@ -59,7 +59,7 @@ export default function MooresvilleLakeNormanNC() {
             </em>
           </>
         }
-        subtitle="P1 Land & Property Management serves the large waterfront estates, rural acreage, and commercial properties of the Mooresville and Lake Norman area. This region's concentration of high-value lakefront and rural properties — combined with the drainage and terrain challenges of sloped, lakeside land — makes it an ideal market for P1's specialized services."
+        subtitle="P1 Land & Property Management provides commercial landscaping and grounds maintenance for commercial, industrial, agricultural, municipal, and institutional properties in the Mooresville and Lake Norman area. Our connected services extend through land clearing, grading, drainage, turf, tree, shoreline, and pond care for qualifying sites."
         image={heroImg}
         imageAlt="Land & Property Management Near Mooresville & Lake Norman, NC"
       />
@@ -71,13 +71,13 @@ export default function MooresvilleLakeNormanNC() {
               <h2 className="text-3xl font-serif font-bold text-secondary border-b border-border pb-4">Mooresville & Lake Norman Services</h2>
               <ul className="space-y-3">
                 {[
-                  "Pond and waterway management — including shoreline restoration and water quality maintenance",
-                  "Drainage planning and scoped installation work for sloped and waterfront terrain",
+                  "Commercial landscaping and grounds maintenance",
+                  "Commercial and institutional property maintenance programs",
                   "Land clearing and selective tree management",
                   "Grading and site preparation",
+                  "Drainage planning and scoped installation work for sloped and waterfront terrain",
                   "Large-acreage turf installation and seeding",
-                  "Commercial property maintenance",
-                  "Estate and rural property maintenance programs",
+                  "Pond and waterway management — including shoreline restoration and water quality maintenance",
                   "Stormwater and erosion management"
                 ].map((item, i) => (
                   <li key={i} className="flex items-start gap-3 text-secondary/80 font-medium">
@@ -97,6 +97,20 @@ export default function MooresvilleLakeNormanNC() {
                   Call <a href="tel:7042218928" className="text-primary hover:underline">+1 (704) 221-8928</a> or <Link href="/contact" className="text-primary hover:underline">request a free estimate online</Link> to discuss your property.
                 </p>
               </div>
+            </div>
+          </div>
+
+          <div className="grid gap-10 border-y border-border py-12 md:grid-cols-2">
+            <div className="space-y-4">
+              <h2 className="text-2xl font-serif font-bold text-secondary">Plan for slopes, water, and occupied sites</h2>
+              <p className="leading-relaxed text-secondary/80">Around Mooresville and Lake Norman, commercial campuses, institutional grounds, municipal property, and working land often sit on sloped terrain influenced by coves, tributaries, ponds, and concentrated runoff. Clearing or grading without considering where water moves can shift erosion and maintenance problems elsewhere on the site.</p>
+              <p className="leading-relaxed text-secondary/80">P1 reviews access, visible grades, drainage patterns, vegetation, shore or pond edges, and the property’s intended use before defining a proposed sequence of work.</p>
+            </div>
+            <div className="space-y-4">
+              <h2 className="text-2xl font-serif font-bold text-secondary">Clear boundaries for waterfront work</h2>
+              <p className="leading-relaxed text-secondary/80">Shoreline and stormwater-adjacent work may involve property-specific restrictions, protected areas, engineered plans, permits, or other specialist responsibilities. Those requirements should be confirmed before vegetation removal, earthwork, stabilization, or access changes begin.</p>
+              <p className="leading-relaxed text-secondary/80">Bring available plans, known utilities, drainage history, operating-hour limits, and the desired outcome to the assessment. P1 can scope the work it will perform, identify exclusions, and coordinate the schedule around an active large-format property.</p>
+              <p className="leading-relaxed text-secondary/80">That review can also divide urgent stabilization, access, or drainage concerns from finish work and recurring care. Phasing helps reduce rework when the same slope or work area needs clearing, earthwork, erosion control, and vegetation establishment. The written estimate defines the property-specific work and assumptions so owners and facility teams can coordinate budgets, operations, and any outside approvals before mobilization.</p>
             </div>
           </div>
 

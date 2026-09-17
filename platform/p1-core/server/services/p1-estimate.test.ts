@@ -11,7 +11,7 @@ describe("P1 estimate boundary", () => {
   });
   it("allows phone/email CTAs without executable URLs or email header injection", () => {
     expect(isContactLink("tel:+17042218928")).toBe(true);
-    expect(isContactLink("mailto:info@p1landmanagement.com")).toBe(true);
+    expect(isContactLink("mailto:info@example.test")).toBe(true);
     for (const url of ["javascript:alert(1)","mailto:a@b.com?bcc=other@b.com","tel:123%0aevil"]) expect(isContactLink(url)).toBe(false);
   });
 });

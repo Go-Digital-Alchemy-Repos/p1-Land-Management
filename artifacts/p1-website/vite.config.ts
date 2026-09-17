@@ -15,12 +15,21 @@ if (Number.isNaN(port) || port <= 0) {
 }
 
 const basePath = process.env.BASE_PATH ?? "/";
-const allowedHosts = (process.env.DEV_ALLOWED_HOSTS ?? "localhost,127.0.0.1,::1")
-  .split(",").map((host) => host.trim()).filter(Boolean);
+// Remote previews are opt-in. When exposing one, pair DEV_BIND_HOST=0.0.0.0
+// with a narrow DEV_ALLOWED_HOSTS list for its controlled hostname.
+const devHost = process.env.DEV_BIND_HOST ?? "127.0.0.1";
+const allowedHosts = (
+  process.env.DEV_ALLOWED_HOSTS ?? "localhost,127.0.0.1,::1"
+)
+  .split(",")
+  .map((host) => host.trim())
+  .filter(Boolean);
 
 // Preserve original artwork; application imports resolve to generated delivery assets.
 const assetRoot = path.resolve(import.meta.dirname, "src/assets");
-const imageManifest = JSON.parse(readFileSync(path.join(assetRoot, "image-manifest.json"), "utf8")) as Record<string, { default: string }>;
+const imageManifest = JSON.parse(
+  readFileSync(path.join(assetRoot, "image-manifest.json"), "utf8"),
+) as Record<string, { default: string }>;
 const optimizedImages = {
   name: "p1-optimized-images",
   enforce: "pre" as const,
@@ -31,7 +40,10 @@ const optimizedImages = {
       : source.startsWith(".") && importer
         ? path.resolve(path.dirname(importer.split("?")[0]), source)
         : source;
-    const entry = imageManifest[path.relative(assetRoot, absolute).split(path.sep).join("/")];
+    const entry =
+      imageManifest[
+        path.relative(assetRoot, absolute).split(path.sep).join("/")
+      ];
     return entry ? path.join(assetRoot, entry.default) : null;
   },
 };
@@ -62,7 +74,12 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "src"),
-      "@assets": path.resolve(import.meta.dirname, "..", "..", "attached_assets"),
+      "@assets": path.resolve(
+        import.meta.dirname,
+        "..",
+        "..",
+        "attached_assets",
+      ),
     },
     dedupe: ["react", "react-dom"],
   },
@@ -75,7 +92,7 @@ export default defineConfig({
   server: {
     port,
     strictPort: true,
-    host: "0.0.0.0",
+    host: devHost,
     allowedHosts,
     fs: {
       strict: true,
@@ -83,7 +100,7 @@ export default defineConfig({
   },
   preview: {
     port,
-    host: "0.0.0.0",
+    host: devHost,
     allowedHosts,
   },
 });

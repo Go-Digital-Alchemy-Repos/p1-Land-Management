@@ -66,6 +66,10 @@
   font-size: 12px;
   color: #526355;
 }
+.calendar-job .calendar-job-title {
+  color: #294537;
+  font-weight: 650;
+}
 .calendar-job.delayed {
   border-left-color: #b87b24;
 }

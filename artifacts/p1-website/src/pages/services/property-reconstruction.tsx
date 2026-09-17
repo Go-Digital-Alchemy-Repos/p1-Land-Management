@@ -6,8 +6,8 @@ import { serviceSchema, breadcrumbSchema, faqSchema } from "@/lib/structured-dat
 import { FeatureRow } from "@/components/layout/FeatureRow";
 import { CheckCircle2 } from "lucide-react";
 import { Link } from "wouter";
-import heroImg from "@/assets/service-reconstruction.png";
-import reconstructionImg from "@/assets/features/reconstruction.png";
+import heroImg from "@/assets/service-reconstruction-smaller-scale.png";
+import reconstructionImg from "@/assets/features/reconstruction-smaller-scale.png";
 
 import { FaqAccordion } from "@/components/content/FaqAccordion";
 
@@ -38,8 +38,8 @@ export default function PropertyReconstruction() {
   return (
     <Layout>
       <SEO 
-        title="Property Reconstruction & Large-Scale Land Restoration | P1 Land & Property Management"
-        description="Full-scope property reconstruction including land clearing, regrading, drainage overhaul, and turf establishment. Serving commercial and agricultural landowners in Upstate SC and Charlotte NC. Call (704) 221-8928."
+        title="Property Reconstruction & Land Restoration | P1"
+        description="Coordinate clearing, regrading, drainage, and turf establishment for qualifying property reconstruction work in Upstate SC and Charlotte. Call (704) 221-8928."
         jsonLd={[
           serviceSchema({ name: "Property Reconstruction", description: "Full-scope property reconstruction including land clearing, regrading, drainage overhaul, and turf establishment. Serving commercial and agricultural landowners in Upstate SC and Charlotte NC. Call (704) 221-8928.", path: "/services/property-reconstruction" }),
           breadcrumbSchema([
@@ -65,14 +65,14 @@ export default function PropertyReconstruction() {
         }
         subtitle="When a property needs more than maintenance — when it needs to be fundamentally reworked — P1 is the contractor to call. We handle the full scope of land reconstruction, from initial clearing to finished turf, under one roof."
         image={heroImg}
-        imageAlt="Massive land reconstruction with equipment"
+        imageAlt="Compact equipment restoring drainage and grade on a smaller rural property"
       />
 
       {/* CONTENT SECTIONS */}
       <section className="py-24 bg-background">
         <div className="site-shell space-y-16">
           
-          <FeatureRow heading="When Maintenance Isn't Enough" image={reconstructionImg} imageAlt="Heavy machinery rebuilding a neglected, eroded property">
+          <FeatureRow heading="When Maintenance Isn't Enough" image={reconstructionImg} imageAlt="Compact excavator restoring a smaller property edge with drainage rock and fresh grading">
             <p>
               Some properties have gone too long without the right care. Drainage has failed. Erosion has carved up slopes and fields. Invasive vegetation has taken over. Ponds have silted in. Grade has shifted. What was once a functional, productive piece of land is now costing its owner more than it's worth.
             </p>
