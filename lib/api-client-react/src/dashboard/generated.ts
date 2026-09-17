@@ -22,6 +22,7 @@ import type {
   AgreementChargeReviewRecordInput,
   AgreementChargeSource,
   AgreementDraft,
+  AgreementDraftTemplateReview,
   AgreementEstimateOption,
   AgreementPreparationJob,
   AgreementPreparationJobPage,
@@ -33,6 +34,7 @@ import type {
   AgreementTemplate,
   AgreementTemplateVersionRequest,
   AgreementVersion,
+  ApplyAgreementDraftTemplates,
   AssessmentAvailability,
   AssessmentAvailabilityConfiguration,
   AssessmentAvailabilityUpdate,
@@ -220,6 +222,7 @@ import type {
   RescheduleWork,
   ResendManagedInvitation200,
   RetryMarketingFormDeliveryJob200,
+  ReviewAgreementDraftTemplates,
   ReviseAgreementTemplateBody,
   RevokeManagedInvitation200,
   RevokeManagedUserSessions200,
@@ -6776,6 +6779,58 @@ export const changeAgreementDraftContext = async (id: string,
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
       changeAgreementDraftContext,)
+  }
+);}
+
+
+
+export const getReviewAgreementDraftTemplatesUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/agreement-drafts/${id}/templates/review`
+}
+
+/**
+ * @summary Compare template replacement
+ */
+export const reviewAgreementDraftTemplates = async (id: string,
+    reviewAgreementDraftTemplates: ReviewAgreementDraftTemplates, options?: RequestInit): Promise<AgreementDraftTemplateReview> => {
+
+  return customFetch<AgreementDraftTemplateReview>(getReviewAgreementDraftTemplatesUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      reviewAgreementDraftTemplates,)
+  }
+);}
+
+
+
+export const getApplyAgreementDraftTemplatesUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/agreement-drafts/${id}/templates/apply`
+}
+
+/**
+ * @summary Apply a reviewed template replacement
+ */
+export const applyAgreementDraftTemplates = async (id: string,
+    applyAgreementDraftTemplates: ApplyAgreementDraftTemplates, options?: RequestInit): Promise<AgreementDraft> => {
+
+  return customFetch<AgreementDraft>(getApplyAgreementDraftTemplatesUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      applyAgreementDraftTemplates,)
   }
 );}
 

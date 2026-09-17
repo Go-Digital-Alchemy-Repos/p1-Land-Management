@@ -8,6 +8,7 @@ import {
   createComposition,
   editComposition,
   readComposition,
+  replaceCompositionTemplates,
 } from "./agreement-composition.service";
 export const agreementCompositionApi = Router();
 agreementCompositionApi.get("/agreement-drafts", async (req, res) => {
@@ -109,3 +110,21 @@ agreementCompositionApi.post(
     );
   },
 );
+
+for (const action of ["review", "apply"] as const) {
+  agreementCompositionApi.post(
+    `/agreement-drafts/:id/templates/${action}`,
+    async (req, res) => {
+      const a = await actor(req);
+      requireCapability(a, "revenue.sales");
+      res.json(
+        await replaceCompositionTemplates(
+          a.id,
+          z.string().uuid().parse(req.params.id),
+          req.body,
+          action === "apply",
+        ),
+      );
+    },
+  );
+}

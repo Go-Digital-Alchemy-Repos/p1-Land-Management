@@ -42,6 +42,25 @@ const { randomUUID } = require("node:crypto");
       body: "",
       description: "",
     };
+    const replacement = {
+      ...template,
+      id: randomUUID(),
+      kind: "scope",
+      name: "Replacement scope",
+      body: "Replacement notes",
+      payload: {
+        items: [
+          {
+            id: randomUUID(),
+            title: "Replacement scope item",
+            description: "New scope detail",
+          },
+        ],
+        exclusions: "Replacement exclusion",
+      },
+    };
+    let applyConflict = true,
+      applyCount = 0;
     let row,
       lostResponse = true,
       conflict = false,
@@ -106,7 +125,7 @@ const { randomUUID } = require("node:crypto");
             status: 503,
             json: { message: "Synthetic catalog unavailable" },
           });
-        body = [template];
+        body = [template, replacement];
       }
       if (path === "/api/v1/agreement-drafts") {
         if (method === "POST") {
@@ -196,6 +215,55 @@ const { randomUUID } = require("node:crypto");
             "client.name": "Synthetic Client",
             "property.name": "Synthetic Property",
           },
+        };
+        row.preview = preview();
+        body = row;
+      }
+
+      if (
+        row &&
+        path === `/api/v1/agreement-drafts/${row.id}/templates/review`
+      ) {
+        const input = request.postDataJSON();
+        assert.equal(input.selection.scopeId, replacement.id);
+        assert.deepEqual(input.sections, ["scope"]);
+        body = {
+          draftId: row.id,
+          expectedVersion: row.version,
+          reviewToken: "a".repeat(64),
+          sections: input.sections,
+          before: row.content,
+          after: {
+            ...row.content,
+            scope: replacement.payload,
+            notes: { ...row.content.notes, scope: replacement.body },
+          },
+          preview: row.preview,
+          sources: [replacement],
+        };
+      }
+      if (
+        row &&
+        path === `/api/v1/agreement-drafts/${row.id}/templates/apply`
+      ) {
+        const input = request.postDataJSON();
+        applyCount++;
+        assert.equal(input.reviewToken, "a".repeat(64));
+        assert.equal(input.expectedVersion, row.version);
+        if (applyConflict)
+          return route.fulfill({
+            status: 409,
+            json: { message: "Synthetic replacement changed" },
+          });
+        row = {
+          ...row,
+          version: row.version + 1,
+          content: {
+            ...row.content,
+            scope: replacement.payload,
+            notes: { ...row.content.notes, scope: replacement.body },
+          },
+          source_templates: [...row.source_templates, replacement],
         };
         row.preview = preview();
         body = row;
@@ -350,6 +418,94 @@ const { randomUUID } = require("node:crypto");
         document.querySelector('textarea[aria-label="Agreement terms"]')
           .value === "Private terms for {{client.name}}",
     );
+
+    await page
+      .getByRole("button", { name: "Replace template sections", exact: true })
+      .click();
+    assert.equal(
+      await page
+        .getByRole("button", { name: "Reload saved draft", exact: true })
+        .isDisabled(),
+      true,
+    );
+    await page
+      .getByRole("checkbox", { name: "Scope and scope notes", exact: true })
+      .check();
+    await page
+      .getByLabel("Scope and scope notes replacement", { exact: true })
+      .selectOption(replacement.id);
+    await page
+      .getByRole("button", { name: "Compare replacement", exact: true })
+      .click();
+    await page.getByText("Replacement scope item", { exact: true }).waitFor();
+    assert.equal(row.content.scope.items[0].title, "Synthetic scope");
+    page.once("dialog", (d) => d.dismiss());
+    await page
+      .getByRole("button", { name: "Apply reviewed replacement", exact: true })
+      .click();
+    assert.equal(applyCount, 0);
+    await page
+      .getByRole("checkbox", { name: "Scope and scope notes", exact: true })
+      .uncheck();
+    assert.equal(
+      await page
+        .getByRole("button", {
+          name: "Apply reviewed replacement",
+          exact: true,
+        })
+        .count(),
+      0,
+    );
+    await page
+      .getByRole("checkbox", { name: "Scope and scope notes", exact: true })
+      .check();
+    await page
+      .getByLabel("Scope and scope notes replacement", { exact: true })
+      .selectOption(replacement.id);
+    await page
+      .getByRole("button", { name: "Compare replacement", exact: true })
+      .click();
+    await page
+      .getByRole("button", { name: "Apply reviewed replacement", exact: true })
+      .waitFor();
+    page.once("dialog", (d) => d.accept());
+    await page
+      .getByRole("button", { name: "Apply reviewed replacement", exact: true })
+      .click();
+    await page
+      .getByRole("alert")
+      .filter({ hasText: "Synthetic replacement changed" })
+      .waitFor();
+    assert.equal(
+      await page
+        .getByRole("button", {
+          name: "Apply reviewed replacement",
+          exact: true,
+        })
+        .count(),
+      0,
+    );
+    assert.equal(row.content.scope.items[0].title, "Synthetic scope");
+    applyConflict = false;
+    await page
+      .getByRole("button", { name: "Compare replacement", exact: true })
+      .click();
+    await page
+      .getByRole("button", { name: "Apply reviewed replacement", exact: true })
+      .waitFor();
+    page.once("dialog", (d) => d.accept());
+    await page
+      .getByRole("button", { name: "Apply reviewed replacement", exact: true })
+      .click();
+    await page
+      .getByRole("heading", {
+        name: "Saved draft preview · version 4",
+        exact: true,
+      })
+      .waitFor();
+    assert.equal(row.content.terms, "Private terms for {{client.name}}");
+    assert.equal(row.content.costs.items[0].unitPriceCents, 10001);
+    assert.equal(row.content.scope.items[0].title, "Replacement scope item");
     readOnly = true;
     await page.reload();
     await page

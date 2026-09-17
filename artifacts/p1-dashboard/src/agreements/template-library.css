@@ -62,3 +62,23 @@
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+
+.agreement-section-choice {
+  display: flex !important;
+  align-items: center;
+}
+.agreement-section-choice input {
+  width: auto;
+}
+.agreement-comparison {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+  gap: 20px;
+}
+.agreement-comparison article {
+  border: 1px solid var(--line);
+  padding: 16px;
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}

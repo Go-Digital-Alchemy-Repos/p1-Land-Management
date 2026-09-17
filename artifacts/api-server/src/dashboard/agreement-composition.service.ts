@@ -10,7 +10,8 @@ import {
   compositionSelection,
   compositionContent,
   previewComposition,
-  type CompositionContent,
+  compositionTemplateReview,
+  compositionTemplateApply,
 } from "./agreement-composition.contract";
 
 type TemplateSnapshot = {
@@ -333,6 +334,118 @@ export async function changeCompositionContext(
       )
     ).rows[0];
     await audit(c, userId, "context-changed", key, { version: row.version });
+    return present(row);
+  });
+}
+
+/** Preview and apply both resolve current published sources under the same locks.
+ * The token binds the exact reviewed source snapshots, selection and draft version.
+ * It is a consistency token, not an authorization credential.
+ */
+export async function replaceCompositionTemplates(
+  userId: string,
+  key: string,
+  raw: unknown,
+  apply: boolean,
+) {
+  const b = apply
+    ? compositionTemplateApply.parse(raw)
+    : compositionTemplateReview.parse(raw);
+  return transaction(async (c) => {
+    const old = (
+      await c.query(
+        "SELECT * FROM agreement_composition_draft WHERE id=$1 FOR UPDATE",
+        [key],
+      )
+    ).rows[0];
+    if (!old) throw new HttpError(404, "Agreement draft not found");
+    if (old.status !== "draft" || old.version !== b.expectedVersion)
+      throw new HttpError(
+        409,
+        "Draft changed or was prepared. Reload and compare again.",
+      );
+    const selected = await selectTemplates(c, b.selection);
+    const kinds = {
+      terms: "msa",
+      scope: "scope",
+      costs: "cost",
+      packageNotes: "package",
+    } as const;
+    for (const section of b.sections) {
+      if (!selected.sources.some((source) => source.kind === kinds[section]))
+        throw new HttpError(
+          400,
+          `Choose a published ${kinds[section]} template for ${section}`,
+        );
+    }
+    const content = compositionContent.parse(structuredClone(old.content));
+    for (const section of b.sections) {
+      if (section === "terms") content.terms = selected.content.terms;
+      if (section === "scope") {
+        content.scope = selected.content.scope;
+        content.notes.scope = selected.content.notes.scope;
+      }
+      if (section === "costs") {
+        content.costs = selected.content.costs;
+        content.notes.cost = selected.content.notes.cost;
+      }
+      if (section === "packageNotes")
+        content.notes.package = selected.content.notes.package;
+    }
+    const reviewToken = createHash("sha256")
+      .update(
+        JSON.stringify({
+          id: key,
+          version: old.version,
+          selection: b.selection,
+          sections: b.sections,
+          sources: selected.sources,
+        }),
+      )
+      .digest("hex");
+    const reviewed = present({ ...old, content });
+    if (!apply)
+      return {
+        draftId: key,
+        expectedVersion: old.version,
+        reviewToken,
+        sections: b.sections,
+        before: old.content,
+        after: content,
+        preview: reviewed.preview,
+        sources: selected.sources,
+      };
+    if (!("reviewToken" in b) || b.reviewToken !== reviewToken)
+      throw new HttpError(
+        409,
+        "Template selection changed. Compare the proposed replacement again.",
+      );
+    // Keep an immutable source history, including sources of overwritten sections.
+    // Only the kinds actually applied (and their selected package) enter that history.
+    const applied = selected.sources.filter(
+      (source) =>
+        source.kind === "package" ||
+        b.sections.some((section) => kinds[section] === source.kind),
+    );
+    const history: TemplateSnapshot[] = [...old.source_templates];
+    for (const source of applied)
+      if (!history.some((item) => item.id === source.id)) history.push(source);
+    const row = (
+      await c.query(
+        "UPDATE agreement_composition_draft SET content=$2,source_templates=$3,version=version+1,updated_at=now() WHERE id=$1 RETURNING *",
+        [key, JSON.stringify(content), JSON.stringify(history)],
+      )
+    ).rows[0];
+    await audit(c, userId, "templates-replaced", key, {
+      version: row.version,
+      previousVersion: old.version,
+      sections: b.sections,
+      sources: applied.map((source) => ({
+        id: source.id,
+        version: source.version,
+      })),
+      reviewToken,
+    });
     return present(row);
   });
 }

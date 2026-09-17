@@ -404,6 +404,175 @@ test(
         )
       ).rowCount,
     );
+
+    const replacementScope = await template(
+      "scope",
+      "Replacement scope notes",
+      {
+        items: [
+          {
+            id: randomUUID(),
+            title: "New scope",
+            description: "Replacement for {{client.name}}",
+          },
+        ],
+        exclusions: "New exclusions",
+      },
+    );
+    const switchPath = `/agreement-drafts/${first.id}/templates`;
+    const beforeSwitch = (await call(sales, `/agreement-drafts/${first.id}`))
+      .body;
+    const switchRequest = {
+      expectedVersion: beforeSwitch.version,
+      selection: { scopeId: replacementScope },
+      sections: ["scope"],
+    };
+    const reviewed = await call(sales, switchPath + "/review", switchRequest);
+    assert.equal(reviewed.status, 200, JSON.stringify(reviewed.body));
+    assert.deepEqual(reviewed.body.before, beforeSwitch.content);
+    assert.deepEqual(reviewed.body.after.costs, beforeSwitch.content.costs);
+    assert.equal(reviewed.body.after.terms, "Custom A only");
+    assert.equal(
+      reviewed.body.after.notes.cost,
+      beforeSwitch.content.notes.cost,
+    );
+    assert.equal(
+      reviewed.body.preview.content.scope.items[0].description,
+      "Replacement for Client A",
+    );
+    assert.deepEqual(
+      (await call(sales, `/agreement-drafts/${first.id}`)).body,
+      beforeSwitch,
+      "Review must not mutate draft",
+    );
+    for (const who of [manager, reader, portal]) {
+      for (const action of ["review", "apply"])
+        assert.equal(
+          (
+            await call(who, switchPath + "/" + action, {
+              ...switchRequest,
+              ...(action === "apply"
+                ? { reviewToken: reviewed.body.reviewToken }
+                : {}),
+            })
+          ).status,
+          403,
+        );
+    }
+    assert.equal(
+      (
+        await call(sales, switchPath + "/review", {
+          ...switchRequest,
+          sections: ["scope", "scope"],
+        })
+      ).status,
+      400,
+    );
+    assert.equal(
+      (
+        await call(sales, switchPath + "/review", {
+          ...switchRequest,
+          sections: ["terms"],
+        })
+      ).status,
+      400,
+    );
+    assert.equal(
+      (
+        await call(sales, switchPath + "/apply", {
+          ...switchRequest,
+          reviewToken: "0".repeat(64),
+        })
+      ).status,
+      409,
+    );
+    // A source changed out of band between review/apply must not be substituted silently.
+    await pool.query(
+      "UPDATE agreement_template SET body='Changed source notes' WHERE id=$1",
+      [replacementScope],
+    );
+    assert.equal(
+      (
+        await call(sales, switchPath + "/apply", {
+          ...switchRequest,
+          reviewToken: reviewed.body.reviewToken,
+        })
+      ).status,
+      409,
+    );
+    const refreshed = await call(sales, switchPath + "/review", switchRequest);
+    const applyRequest = {
+      ...switchRequest,
+      reviewToken: refreshed.body.reviewToken,
+    };
+    const applied = await Promise.all([
+      call(sales, switchPath + "/apply", applyRequest),
+      call(sales, switchPath + "/apply", applyRequest),
+    ]);
+    assert.deepEqual(applied.map((result) => result.status).sort(), [200, 409]);
+    const switched = applied.find((result) => result.status === 200)!.body;
+    assert.equal(switched.version, beforeSwitch.version + 1);
+    assert.equal(switched.content.scope.items[0].title, "New scope");
+    assert.notEqual(
+      switched.content.scope.items[0].id,
+      beforeSwitch.content.scope.items[0].id,
+    );
+    assert.equal(switched.content.notes.scope, "Changed source notes");
+    for (const key of ["terms", "costs"])
+      assert.deepEqual(switched.content[key], beforeSwitch.content[key]);
+    assert.deepEqual(switched.dates, beforeSwitch.dates);
+    assert.deepEqual(switched.context_snapshot, beforeSwitch.context_snapshot);
+    assert.equal(
+      switched.source_templates.length,
+      beforeSwitch.source_templates.length + 1,
+    );
+    assert.deepEqual(
+      switched.source_templates.slice(0, beforeSwitch.source_templates.length),
+      beforeSwitch.source_templates,
+    );
+    assert.equal(
+      (await call(sales, `/agreement-drafts/${second.id}`)).body.content.terms,
+      second.content.terms,
+    );
+    assert.equal(
+      (await call(sales, switchPath + "/apply", applyRequest)).status,
+      409,
+    );
+    const currentSwitch = {
+      ...switchRequest,
+      expectedVersion: switched.version,
+    };
+    const beforeArchive = await call(
+      sales,
+      switchPath + "/review",
+      currentSwitch,
+    );
+    await pool.query(
+      "UPDATE agreement_template SET status='archived',active=false WHERE id=$1",
+      [replacementScope],
+    );
+    assert.equal(
+      (
+        await call(sales, switchPath + "/apply", {
+          ...currentSwitch,
+          reviewToken: beforeArchive.body.reviewToken,
+        })
+      ).status,
+      409,
+    );
+    assert.equal(
+      (await call(sales, `/agreement-drafts/${first.id}`)).body.version,
+      switched.version,
+    );
+    assert.equal(
+      (
+        await pool.query(
+          "SELECT count(*)::int AS n FROM audit_event WHERE entity_id=$1 AND action='agreement-draft.templates-replaced'",
+          [first.id],
+        )
+      ).rows[0].n,
+      1,
+    );
     assert.equal(
       (
         await pool.query(

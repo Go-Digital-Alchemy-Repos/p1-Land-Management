@@ -121,7 +121,7 @@ Existing term libraries remain reusable clause sources rather than a competing a
 
 ### Agreement implementation checkpoint — 2026-09-17
 
-The typed/versioned template library, private composition API and native draft workspace are implemented locally. Sales and Agreements now link to `/agreements/drafts`; Sales can compose from published versions and edit client-specific terms, scope/cost rows and context, while Agreements-only users can read saved drafts. The saved preview preserves exact source versions and separate pricing bases and flags unresolved placeholders. This does not yet satisfy the complete agreement acceptance criteria above: template switching/save-as-template, proposal preparation and sending, document/PDF parity, operational pricing allocation and end-to-end handoff remain required before completion.
+The typed/versioned template library, private composition API and native draft workspace are implemented locally. Sales and Agreements now link to `/agreements/drafts`; Sales can compose from published versions and edit client-specific terms, scope/cost rows and context, while Agreements-only users can read saved drafts. The saved preview preserves exact source versions and separate pricing bases and flags unresolved placeholders. Explicit template switching now compares selected sections before applying them, rejects stale or changed sources, and preserves other client-specific content and source history. This does not yet satisfy the complete agreement acceptance criteria above: save-as-template, proposal preparation and sending, document/PDF parity, operational pricing allocation and end-to-end handoff remain required before completion.
 
 ### Content source distinction verified during implementation
 

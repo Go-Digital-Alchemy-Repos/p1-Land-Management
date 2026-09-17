@@ -11,6 +11,7 @@ import type {
 import { costDraft, costPayload, message } from "./template-draft";
 import { TemplateRows } from "./TemplateRows";
 import { useCmsUnsavedChanges } from "../marketing/useCmsUnsavedChanges";
+import AgreementTemplateSwitch from "./AgreementTemplateSwitch";
 import AgreementContextFields from "./AgreementContextFields";
 import AgreementDraftPreview from "./AgreementDraftPreview";
 export default function AgreementDraftEditor({
@@ -31,6 +32,7 @@ export default function AgreementDraftEditor({
     dates: { ...row.dates },
   }));
   const [baseline] = useState(() => JSON.stringify(value));
+  const [switching, setSwitching] = useState(false);
   const [context, setContext] = useState<AgreementDraftContext | null>(null),
     [contextReady, setContextReady] = useState(false);
   const [busy, setBusy] = useState(false),
@@ -45,7 +47,7 @@ export default function AgreementDraftEditor({
   }, []);
   const dirty = JSON.stringify(value) !== baseline;
   useCmsUnsavedChanges(
-    dirty || Boolean(context),
+    dirty || Boolean(context) || switching,
     "Discard your unsaved agreement changes?",
   );
   const editable = canEdit && row.status === "draft";
@@ -75,7 +77,7 @@ export default function AgreementDraftEditor({
       {!editable && <p>This agreement draft is read-only.</p>}
       {error && <p role="alert">{error} Your local edits have been kept.</p>}
       <button
-        disabled={busy}
+        disabled={busy || switching}
         onClick={() => {
           if (
             (dirty || context) &&
@@ -90,7 +92,7 @@ export default function AgreementDraftEditor({
         Reload saved draft
       </button>
       <details>
-        <summary>Source template versions</summary>
+        <summary>Source template history</summary>
         {row.source_templates.length ? (
           <ul>
             {row.source_templates.map((source) => (
@@ -114,7 +116,7 @@ export default function AgreementDraftEditor({
           {row.context_snapshot["property.name"] || "No property attached"}
         </p>
         {row.lead_id && <p>Inquiry: {row.lead_id}</p>}
-        {editable && !context && (
+        {editable && !context && !switching && (
           <button
             disabled={busy || dirty}
             onClick={() =>
@@ -162,6 +164,21 @@ export default function AgreementDraftEditor({
         )}
         {dirty && <p>Save or reload local edits before changing context.</p>}
       </section>
+      {editable && !switching && (
+        <button
+          disabled={busy || dirty || Boolean(context)}
+          onClick={() => setSwitching(true)}
+        >
+          Replace template sections
+        </button>
+      )}
+      {switching && (
+        <AgreementTemplateSwitch
+          row={row}
+          changed={changed}
+          close={() => setSwitching(false)}
+        />
+      )}
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -180,7 +197,7 @@ export default function AgreementDraftEditor({
           );
         }}
       >
-        <fieldset disabled={busy || !editable || Boolean(context)}>
+        <fieldset disabled={busy || !editable || Boolean(context) || switching}>
           <legend>Client-specific agreement</legend>
           <label>
             Agreement title

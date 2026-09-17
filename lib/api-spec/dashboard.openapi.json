@@ -12026,6 +12026,108 @@
           }
         }
       }
+    },
+    "/agreement-drafts/{id}/templates/review": {
+      "post": {
+        "operationId": "reviewAgreementDraftTemplates",
+        "responses": {
+          "200": {
+            "description": "Private agreement draft",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgreementDraftTemplateReview"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "403": {
+            "description": "Sales write or Agreements read capability required"
+          },
+          "404": {
+            "description": "Draft or context not found"
+          },
+          "409": {
+            "description": "Stale version, incompatible context or reused creation key"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewAgreementDraftTemplates"
+              }
+            }
+          }
+        },
+        "summary": "Compare template replacement"
+      }
+    },
+    "/agreement-drafts/{id}/templates/apply": {
+      "post": {
+        "operationId": "applyAgreementDraftTemplates",
+        "responses": {
+          "200": {
+            "description": "Private agreement draft",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgreementDraft"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "403": {
+            "description": "Sales write or Agreements read capability required"
+          },
+          "404": {
+            "description": "Draft or context not found"
+          },
+          "409": {
+            "description": "Stale version, incompatible context or reused creation key"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplyAgreementDraftTemplates"
+              }
+            }
+          }
+        },
+        "summary": "Apply a reviewed template replacement"
+      }
     }
   },
   "components": {
@@ -24341,6 +24443,133 @@
           "expectedVersion",
           "context"
         ]
+      },
+      "ReviewAgreementDraftTemplates": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expectedVersion",
+          "selection",
+          "sections"
+        ],
+        "properties": {
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "selection": {
+            "$ref": "#/components/schemas/AgreementDraftSelection"
+          },
+          "sections": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 4,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "enum": [
+                "terms",
+                "scope",
+                "costs",
+                "packageNotes"
+              ]
+            }
+          }
+        }
+      },
+      "ApplyAgreementDraftTemplates": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expectedVersion",
+          "selection",
+          "sections",
+          "reviewToken"
+        ],
+        "properties": {
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "selection": {
+            "$ref": "#/components/schemas/AgreementDraftSelection"
+          },
+          "sections": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 4,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "enum": [
+                "terms",
+                "scope",
+                "costs",
+                "packageNotes"
+              ]
+            }
+          },
+          "reviewToken": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      },
+      "AgreementDraftTemplateReview": {
+        "type": "object",
+        "required": [
+          "draftId",
+          "expectedVersion",
+          "reviewToken",
+          "sections",
+          "before",
+          "after",
+          "preview",
+          "sources"
+        ],
+        "properties": {
+          "draftId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "reviewToken": {
+            "type": "string"
+          },
+          "sections": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 4,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "enum": [
+                "terms",
+                "scope",
+                "costs",
+                "packageNotes"
+              ]
+            }
+          },
+          "before": {
+            "$ref": "#/components/schemas/AgreementDraftContent"
+          },
+          "after": {
+            "$ref": "#/components/schemas/AgreementDraftContent"
+          },
+          "preview": {
+            "$ref": "#/components/schemas/AgreementDraftPreview"
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AgreementDraftTemplateSource"
+            }
+          }
+        }
       }
     }
   }

@@ -159,3 +159,21 @@ export function previewComposition(
     },
   };
 }
+
+export const compositionTemplateReview = z
+  .object({
+    expectedVersion: z.number().int().positive(),
+    selection: compositionSelection,
+    sections: z
+      .array(z.enum(["terms", "scope", "costs", "packageNotes"]))
+      .min(1)
+      .max(4)
+      .refine(
+        (value) => new Set(value).size === value.length,
+        "Choose each section only once",
+      ),
+  })
+  .strict();
+export const compositionTemplateApply = compositionTemplateReview.extend({
+  reviewToken: z.string().regex(/^[a-f0-9]{64}$/),
+});
