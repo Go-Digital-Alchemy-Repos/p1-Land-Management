@@ -26395,6 +26395,10 @@
           "integrationMetadata": {
             "type": "object",
             "additionalProperties": true
+          },
+          "expectedUpdatedAt": {
+            "type": "string",
+            "format": "date-time"
           }
         },
         "additionalProperties": false

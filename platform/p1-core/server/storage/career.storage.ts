@@ -120,11 +120,11 @@ export class CareerStorage {
     return job;
   }
 
-  async updateJob(id: string, data: Partial<InsertCareerJob>): Promise<CareerJob | undefined> {
+  async updateJob(id: string, data: Partial<InsertCareerJob>, expectedUpdatedAt?: string): Promise<CareerJob | undefined> {
     const [job] = await db
       .update(careerJobs)
-      .set({ ...data, updatedAt: new Date() } as Partial<CareerJobInsert>)
-      .where(eq(careerJobs.id, id))
+      .set({ ...data, updatedAt: sql`GREATEST(date_trunc('milliseconds', now() AT TIME ZONE 'UTC'), date_trunc('milliseconds', ${careerJobs.updatedAt}) + interval '1 millisecond')` })
+      .where(and(eq(careerJobs.id, id), expectedUpdatedAt ? sql`date_trunc('milliseconds', ${careerJobs.updatedAt}) = (${expectedUpdatedAt}::timestamptz AT TIME ZONE 'UTC')` : undefined))
       .returning();
     return job;
   }

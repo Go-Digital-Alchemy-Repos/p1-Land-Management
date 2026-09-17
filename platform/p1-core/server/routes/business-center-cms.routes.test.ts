@@ -934,3 +934,14 @@ it("Careers author fields come from the linked actor and updates preserve origin
  const updated=await request('/careers/jobs/career','PUT',{},'/service',{summary:'Edited',createdBy:'forged',updatedBy:'forged'});
  expect(updated.status).toBe(200);expect(state.careerUpdate.mock.calls[0][1]).toMatchObject({updatedBy:'linked'});expect(state.careerUpdate.mock.calls[0][1]).not.toHaveProperty('createdBy');
 });
+
+it("Careers returns a conflict when the saved job version is stale",async()=>{
+ identity.capabilities=['marketing.content.careers'];
+ state.careerGet.mockResolvedValue({id:'career',title:'Existing',slug:'existing'});
+ state.careerUpdate.mockResolvedValue(undefined);
+ const response=await request('/careers/jobs/career','PUT',{},'/service',{summary:'Local edit',expectedUpdatedAt:'2030-01-01T00:00:00.000Z'});
+ expect(response.status).toBe(409);
+ expect(state.careerUpdate).toHaveBeenCalledWith('career',expect.objectContaining({summary:'Local edit'}),'2030-01-01T00:00:00.000Z');
+ const invalid=await request('/careers/jobs/career','PUT',{},'/service',{summary:'Local edit',expectedUpdatedAt:'not-a-date'});
+ expect(invalid.status).toBe(400);
+});

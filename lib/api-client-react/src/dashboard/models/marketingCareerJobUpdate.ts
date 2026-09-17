@@ -38,4 +38,5 @@ export interface MarketingCareerJobUpdate {
   publishedAt?: string | null;
   closesAt?: string | null;
   integrationMetadata?: MarketingCareerJobUpdateIntegrationMetadata;
+  expectedUpdatedAt?: string;
 }

@@ -83,6 +83,7 @@ const SidebarManager = lazy(() => import("./marketing/SidebarManager"));
 const GalleryManager = lazy(() => import("./marketing/GalleryManager"));
 const AgreementDraftWorkspace = lazy(() => import("./agreements/AgreementDraftWorkspace"));
 const TemplateLibrary = lazy(() => import("./agreements/TemplateLibrary"));
+const CareerManager = lazy(() => import("./marketing/CareerManager"));
 const EventManager = lazy(() => import("./marketing/EventManager"));
 const FormManager = lazy(() => import("./marketing/FormManager"));
 const PageManager = lazy(() => import("./marketing/PageManager"));
@@ -123,6 +124,7 @@ const icons: Record<DashboardPageRoute["view"] | "Settings:security" | "Settings
   Analytics: BarChart3,
   "Website Sidebars": Menu,
   "Website Galleries": Menu,
+  "Website Careers": Menu,
   "Website Events": Menu,
   "Website Forms": Menu,
   "CMS Pages": Menu,
@@ -1422,6 +1424,7 @@ function App() {
           {view === "Media Library" && <Suspense fallback={<p role="status">Loading media…</p>}><MediaLibrary key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Website Sidebars" && <Suspense fallback={<p role="status">Loading sidebars…</p>}><SidebarManager key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Website Galleries" && <Suspense fallback={<p role="status">Loading galleries…</p>}><GalleryManager canUseMedia={(person.capabilities || []).includes("marketing.content.media")} key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
+          {view === "Website Careers" && <Suspense fallback={<p role="status">Loading careers…</p>}><CareerManager key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Website Events" && <Suspense fallback={<p role="status">Loading events…</p>}><EventManager canUseMedia={(person.capabilities || []).includes("marketing.content.media")} key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Website Forms" && <Suspense fallback={<p role="status">Loading forms…</p>}><FormManager canUseMedia={(person.capabilities || []).includes("marketing.content.media")} key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "CMS Pages" && <Suspense fallback={<p role="status">Loading CMS pages…</p>}><PageManager canUseMedia={(person.capabilities || []).includes("marketing.content.media")} canUseSections={(person.capabilities || []).includes("marketing.content.sections")} canUseMenus={(person.capabilities || []).includes("marketing.content.menus")} key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}

@@ -161,7 +161,10 @@ router.put(
         .status(400)
         .json({ message: "Invalid job payload", errors: parsed.error.flatten() });
     }
-    const job = await storage.careers.updateJob(id, parsed.data as Partial<InsertCareerJob>);
+    const expected = z.string().datetime().optional().safeParse(req.body.expectedUpdatedAt);
+    if (!expected.success) return res.status(400).json({message:"Invalid saved job version"});
+    const job = await storage.careers.updateJob(id, parsed.data as Partial<InsertCareerJob>, expected.data);
+    if(!job) return res.status(409).json({message:"This job changed. Reload the saved version before applying your edits."});
     await dispatchCareerWebhook("career.job.updated", job);
     res.json(job);
   }),
