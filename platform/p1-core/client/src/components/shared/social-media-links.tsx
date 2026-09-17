@@ -1,32 +1,7 @@
 import type { CSSProperties } from "react";
-import type { IconType } from "react-icons";
-import {
-  SiFacebook,
-  SiHouzz,
-  SiInstagram,
-  SiLinkedin,
-  SiNextdoor,
-  SiPinterest,
-  SiTiktok,
-  SiX,
-  SiYelp,
-  SiYoutube,
-} from "react-icons/si";
-import type { SocialIconStyle, SocialMediaLink, SocialPlatformKey } from "@shared/social-media";
+import type { SocialIconStyle, SocialMediaLink } from "@shared/social-media";
 import { cn } from "@/lib/utils";
-
-const SOCIAL_ICONS: Record<SocialPlatformKey, IconType> = {
-  facebook: SiFacebook,
-  instagram: SiInstagram,
-  linkedin: SiLinkedin,
-  x: SiX,
-  tiktok: SiTiktok,
-  youtube: SiYoutube,
-  pinterest: SiPinterest,
-  houzz: SiHouzz,
-  yelp: SiYelp,
-  nextdoor: SiNextdoor,
-};
+import { SocialPlatformIcon } from "./social-icons";
 
 export function SocialMediaLinks({
   links,
@@ -46,7 +21,6 @@ export function SocialMediaLinks({
   return (
     <div className={cn("flex flex-wrap items-center gap-2", className)}>
       {links.map((link) => {
-        const Icon = SOCIAL_ICONS[link.platform];
         const style =
           iconStyle === "brand"
             ? ({ "--social-color": link.brandColor } as CSSProperties)
@@ -75,7 +49,7 @@ export function SocialMediaLinks({
             )}
             data-testid={`link-social-${link.platform}`}
           >
-            <Icon className={size === "sm" ? "h-4 w-4" : "h-[18px] w-[18px]"} aria-hidden="true" />
+            <SocialPlatformIcon platform={link.platform} className={size === "sm" ? "h-4 w-4" : "h-[18px] w-[18px]"} />
           </a>
         );
       })}

@@ -286,6 +286,7 @@ import type {
   SaveWebsiteColors200,
   SaveWebsiteFeatures200,
   SaveWebsiteHeadTags200,
+  SaveWebsiteSocial200,
   SaveWebsiteTypography200,
   SchedulePage,
   ServiceAgreement,
@@ -334,6 +335,8 @@ import type {
   WebsiteMenu,
   WebsiteMenuInput,
   WebsiteMenuReferences,
+  WebsiteSocialInput,
+  WebsiteSocialState,
   WebsiteTypographyInput,
   WebsiteTypographyState,
   WorkOrder,
@@ -343,6 +346,49 @@ import type {
 } from './models';
 
 import { customFetch } from '../custom-fetch';
+
+export const getGetWebsiteSocialUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/design/social-media`
+}
+
+export const getWebsiteSocial = async ( options?: RequestInit): Promise<WebsiteSocialState> => {
+
+  return customFetch<WebsiteSocialState>(getGetWebsiteSocialUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getSaveWebsiteSocialUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/design/social-media`
+}
+
+export const saveWebsiteSocial = async (websiteSocialInput: WebsiteSocialInput, options?: RequestInit): Promise<SaveWebsiteSocial200> => {
+
+  return customFetch<SaveWebsiteSocial200>(getSaveWebsiteSocialUrl(),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      websiteSocialInput,)
+  }
+);}
+
+
 
 export const getGetWebsiteTypographyUrl = () => {
 

@@ -1,3 +1,4 @@
+import { isSocialSettingKey } from "@shared/social-media";
 import { isWebsiteFontKey } from "@shared/website-fonts";
 import { isWebsiteColorKey } from "@shared/website-colors";
 import { isWebsiteOwner, requireWebsiteOwner, websiteSettingScope } from "../middleware/website-owner";
@@ -67,6 +68,7 @@ function requireAdminOrDesignEditor(req: Request, res: Response, next: NextFunct
 }
 
 function requireSettingWritePermission(req: Request, res: Response, next: NextFunction) {
+  if (isSocialSettingKey(req.body?.key)) return res.status(409).json({message:"Edit social links in Marketing > Design > Social media"});
   if (isWebsiteFontKey(req.body?.key)) return res.status(409).json({message:"Edit website fonts in Marketing > Design > Typography"});
   if (isWebsiteColorKey(req.body?.key)) return res.status(409).json({message:"Edit website colors in Marketing > Design > Color palette"});
   if (websiteSettingScope(req.body?.key, req.body?.category)) return requireWebsiteOwner(req,res,next);
@@ -214,6 +216,7 @@ router.delete(
     );
     if (isRetiredPrivateProofSetting(paramString(req.params.key), existing?.category))
       return res.status(403).json({ message: "This retired private proof setting is protected" });
+    if (isSocialSettingKey(paramString(req.params.key))) return res.status(409).json({message:"Clear social links in Marketing > Design > Social media"});
     if (isWebsiteFontKey(paramString(req.params.key))) return res.status(409).json({message:"Clear website fonts in Marketing > Design > Typography"});
     if (isWebsiteColorKey(paramString(req.params.key))) return res.status(409).json({message:"Clear website colors in Marketing > Design > Color palette"});
     const scope = websiteSettingScope(paramString(req.params.key), existing?.category);

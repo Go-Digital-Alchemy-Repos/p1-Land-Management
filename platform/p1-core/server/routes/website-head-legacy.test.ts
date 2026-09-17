@@ -136,3 +136,11 @@ it("legacy generic typography writes and deletes cannot bypass the versioned lea
  }
  expect(state.save).not.toHaveBeenCalled();expect(state.legacySave).not.toHaveBeenCalled();expect(state.remove).not.toHaveBeenCalled();
 });
+
+it("legacy generic social writes/deletes cannot bypass the leaf-grant editor",async()=>{
+ for(const key of ["social_facebook_url","social_icon_style"]){
+  for(const category of ["branding","other"])expect((await put({key,category,value:"https://example.test",isSecret:false})).status).toBe(409);
+  expect((await fetch(base+"/settings/"+key,{method:"DELETE"})).status).toBe(409);
+ }
+ expect(state.save).not.toHaveBeenCalled();expect(state.legacySave).not.toHaveBeenCalled();expect(state.remove).not.toHaveBeenCalled();
+});

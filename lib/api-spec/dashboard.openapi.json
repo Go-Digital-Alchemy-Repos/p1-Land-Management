@@ -11,6 +11,56 @@
     }
   ],
   "paths": {
+    "/marketing/cms/design/social-media": {
+      "get": {
+        "operationId": "getWebsiteSocial",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteSocialState"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "saveWebsiteSocial",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "saved"
+                  ],
+                  "properties": {
+                    "saved": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebsiteSocialInput"
+              }
+            }
+          }
+        }
+      }
+    },
     "/marketing/cms/design/typography": {
       "get": {
         "operationId": "getWebsiteTypography",
@@ -14475,6 +14525,130 @@
   },
   "components": {
     "schemas": {
+      "WebsiteSocialSettings": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "social_facebook_url",
+          "social_instagram_url",
+          "social_linkedin_url",
+          "social_x_url",
+          "social_tiktok_url",
+          "social_youtube_url",
+          "social_pinterest_url",
+          "social_houzz_url",
+          "social_yelp_url",
+          "social_nextdoor_url",
+          "social_icon_style"
+        ],
+        "properties": {
+          "social_facebook_url": {
+            "type": "string"
+          },
+          "social_instagram_url": {
+            "type": "string"
+          },
+          "social_linkedin_url": {
+            "type": "string"
+          },
+          "social_x_url": {
+            "type": "string"
+          },
+          "social_tiktok_url": {
+            "type": "string"
+          },
+          "social_youtube_url": {
+            "type": "string"
+          },
+          "social_pinterest_url": {
+            "type": "string"
+          },
+          "social_houzz_url": {
+            "type": "string"
+          },
+          "social_yelp_url": {
+            "type": "string"
+          },
+          "social_nextdoor_url": {
+            "type": "string"
+          },
+          "social_icon_style": {
+            "type": "string"
+          }
+        }
+      },
+      "WebsiteSocialChanges": {
+        "type": "object",
+        "additionalProperties": false,
+        "minProperties": 1,
+        "properties": {
+          "social_facebook_url": {
+            "type": "string"
+          },
+          "social_instagram_url": {
+            "type": "string"
+          },
+          "social_linkedin_url": {
+            "type": "string"
+          },
+          "social_x_url": {
+            "type": "string"
+          },
+          "social_tiktok_url": {
+            "type": "string"
+          },
+          "social_youtube_url": {
+            "type": "string"
+          },
+          "social_pinterest_url": {
+            "type": "string"
+          },
+          "social_houzz_url": {
+            "type": "string"
+          },
+          "social_yelp_url": {
+            "type": "string"
+          },
+          "social_nextdoor_url": {
+            "type": "string"
+          },
+          "social_icon_style": {
+            "type": "string"
+          }
+        }
+      },
+      "WebsiteSocialState": {
+        "type": "object",
+        "required": [
+          "settings",
+          "version"
+        ],
+        "properties": {
+          "settings": {
+            "$ref": "#/components/schemas/WebsiteSocialSettings"
+          },
+          "version": {
+            "type": "string"
+          }
+        }
+      },
+      "WebsiteSocialInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "settings",
+          "expectedVersion"
+        ],
+        "properties": {
+          "settings": {
+            "$ref": "#/components/schemas/WebsiteSocialChanges"
+          },
+          "expectedVersion": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      },
       "WebsiteFonts": {
         "type": "object",
         "additionalProperties": false,

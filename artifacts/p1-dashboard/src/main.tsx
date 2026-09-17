@@ -79,6 +79,7 @@ import {
   type SettingsSection,
 } from "./dashboard-routes";
 const auth = createAuthClient({ plugins: [twoFactorClient()] });
+const WebsiteSocial = lazy(() => import("./marketing/WebsiteSocial"));
 const WebsiteTypography = lazy(() => import("./marketing/WebsiteTypography"));
 const WebsiteColors = lazy(() => import("./marketing/WebsiteColors"));
 const WebsiteFeatures = lazy(() => import("./marketing/WebsiteFeatures"));
@@ -133,6 +134,7 @@ const icons: Record<DashboardPageRoute["view"] | "Settings:security" | "Settings
   "Website Events": Menu,
   "Website Forms": Menu,
   "CMS Pages": Menu,
+  "Website Social": SlidersHorizontal,
   "Website Typography": SlidersHorizontal,
   "Website Colors": SlidersHorizontal,
   "Website Features": SlidersHorizontal,
@@ -1430,6 +1432,7 @@ function App() {
               onRefresh={session}
             />
           )}
+          {view === "Website Social" && <Suspense fallback={<p role="status">Loading social settings…</p>}><WebsiteSocial key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Website Typography" && <Suspense fallback={<p role="status">Loading website fonts…</p>}><WebsiteTypography key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Website Colors" && <Suspense fallback={<p role="status">Loading website colors…</p>}><WebsiteColors key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Website Features" && person.role === "owner" && <Suspense fallback={<p role="status">Loading website modules…</p>}><WebsiteFeatures key={person.id}/></Suspense>}

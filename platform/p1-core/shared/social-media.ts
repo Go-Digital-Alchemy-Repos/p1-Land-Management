@@ -57,11 +57,11 @@ export function normalizeSocialIconStyle(value: string | null | undefined): Soci
 }
 
 export function getSocialMediaLinks(
-  settings: Record<string, string | null | undefined>,
+  settings: Partial<Record<SocialPlatform["settingKey"], string | null | undefined>>,
 ): SocialMediaLink[] {
   return SOCIAL_MEDIA_PLATFORMS.map((platform) => {
     const url = settings[platform.settingKey]?.trim();
-    if (!url) return null;
+    if (!url || !isSafeSocialUrl(url)) return null;
     return {
       platform: platform.key,
       label: platform.label,
@@ -69,4 +69,26 @@ export function getSocialMediaLinks(
       brandColor: platform.brandColor,
     };
   }).filter((link): link is SocialMediaLink => Boolean(link));
+}
+
+export const SOCIAL_SETTING_KEYS = [
+  ...SOCIAL_MEDIA_PLATFORMS.map((platform) => platform.settingKey),
+  "social_icon_style",
+] as const;
+export function isSocialSettingKey(key: unknown): boolean {
+  return typeof key === "string" && (SOCIAL_SETTING_KEYS as readonly string[]).includes(key);
+}
+export function isSafeSocialUrl(value: string): boolean {
+  if (value.length > 2048 || /[\u0000-\u001f\u007f\\]/.test(value)) return false;
+  try {
+    const url = new URL(value);
+    return (
+      ["https:", "http:"].includes(url.protocol) &&
+      Boolean(url.hostname) &&
+      !url.username &&
+      !url.password
+    );
+  } catch {
+    return false;
+  }
 }

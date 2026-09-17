@@ -1135,3 +1135,16 @@ it("typography retains the catalog and unknown saved values while requiring its 
  for(const role of ["crew","client"]){identity.role=role;expect((await request("/design/typography")).status).toBe(403);}
  identity.role="member";identity.active=false;expect((await request("/design/typography")).status).toBe(403);
 });
+
+it("social settings require their own leaf grant and save validated changed settings atomically",async()=>{
+ const version="e".repeat(64),body={settings:{social_facebook_url:" https://example.test/profile ",social_icon_style:"outline"},expectedVersion:version};
+ identity.capabilities=["marketing.design.branding"];expect((await request("/design/social-media")).status).toBe(403);expect((await request("/design/social-media","PUT",{},"/service",body)).status).toBe(403);
+ identity.capabilities=["marketing.design.social-media"];state.enabled.mockResolvedValue(false);state.headSnapshot.mockResolvedValue({values:{social_x_url:"legacy custom address",social_icon_style:"custom",company_name:"not projected"},version});
+ const read=await request("/design/social-media");expect(read.status).toBe(200);const data=await read.json();expect(Object.keys(data.settings)).toHaveLength(11);expect(data.settings.social_x_url).toBe("legacy custom address");expect(data.settings.social_icon_style).toBe("custom");expect(data.settings.social_facebook_url).toBe("");expect(data.settings.company_name).toBeUndefined();
+ expect((await request("/design/social-media","PUT",{},"/service",body)).status).toBe(200);
+ expect(state.headSave).toHaveBeenCalledWith([{key:"social_facebook_url",value:"https://example.test/profile",category:"branding",isSecret:false},{key:"social_icon_style",value:"outline",category:"branding",isSecret:false}],{category:"branding",version,publicOnly:true},{userId:"linked",action:"website_social_updated",details:'["social_facebook_url","social_icon_style"]'});
+ for(const settings of [{},{unknown:"https://example.test"},{social_x_url:"javascript:bad()"},{social_yelp_url:"https://user:secret@example.test"},{social_x_url:"/relative"},{social_icon_style:"unknown"},{social_x_url:null}])expect((await request("/design/social-media","PUT",{},"/service",{...body,settings})).status).toBe(400);
+ expect((await request("/design/social-media?other=1")).status).toBe(400);expect((await request("/design/social-media","PUT",{},"/service",{...body,settings:{social_x_url:"",social_icon_style:""}})).status).toBe(200);
+ state.headSave.mockRejectedValueOnce(Object.assign(Error("Changed"),{statusCode:409}));expect((await request("/design/social-media","PUT",{},"/service",body)).status).toBe(409);
+ identity.active=false;expect((await request("/design/social-media")).status).toBe(403);
+});

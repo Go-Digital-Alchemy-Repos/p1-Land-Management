@@ -19,6 +19,7 @@ for (const path of ["/website-system/head-tags", "/website-system/features"]) {
 }
 for (const method of ["GET", "PUT"] as const) cmsOperations.push({method,path:"/design/colors",capabilities:["marketing.design.colors"]});
 for (const method of ["GET", "PUT"] as const) cmsOperations.push({method,path:"/design/typography",capabilities:["marketing.design.typography"]});
+for (const method of ["GET", "PUT"] as const) cmsOperations.push({method,path:"/design/social-media",capabilities:["marketing.design.social-media"]});
 function add(
   tool: string,
   method: Method,
