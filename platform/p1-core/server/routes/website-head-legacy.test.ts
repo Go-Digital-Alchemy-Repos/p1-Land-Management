@@ -144,3 +144,12 @@ it("legacy generic social writes/deletes cannot bypass the leaf-grant editor",as
  }
  expect(state.save).not.toHaveBeenCalled();expect(state.legacySave).not.toHaveBeenCalled();expect(state.remove).not.toHaveBeenCalled();
 });
+
+it("legacy identity mutations and direct image application cannot bypass the new editor",async()=>{
+ for(const key of ["company_name","company_address","company_phone_numbers","company_google_business_url","frontend_logo_url","favicon_url"]){
+  for(const category of ["branding","other"])expect((await put({key,category,value:"https://example.test",isSecret:false})).status).toBe(409);
+  expect((await fetch(base+"/settings/"+key,{method:"DELETE"})).status).toBe(409);
+ }
+ expect((await fetch(base+"/branding/upload",{method:"POST"})).status).toBe(409);
+ expect(state.save).not.toHaveBeenCalled();expect(state.legacySave).not.toHaveBeenCalled();expect(state.remove).not.toHaveBeenCalled();
+});

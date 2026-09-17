@@ -116,7 +116,7 @@ vi.mock("../storage", () => ({
     editorLocks: { listActiveByResourceType: state.list },
   },
 }));
-vi.mock("../services/email.service", () => ({sendEventCanceledEmail:state.eventMail,sendEventReminderEmail:state.eventMail,sendRecordingAvailableEmail:state.eventMail}));
+vi.mock("../services/email.service", () => ({resetEmailBrandingCache:vi.fn(),sendEventCanceledEmail:state.eventMail,sendEventReminderEmail:state.eventMail,sendRecordingAvailableEmail:state.eventMail}));
 vi.mock("../services/commercial-backfill.service", () => ({ backfillCommercialInquiries: vi.fn() }));
 vi.mock("../storage/index", async () => await import("../storage"));
 vi.mock("../services/careers.service",()=>({getCareerSettings:state.careerSettings,saveCareerSettings:state.careerSave,dispatchCareerWebhook:state.careerWebhook,loadCareerResume:state.careerResume}));
@@ -1147,4 +1147,27 @@ it("social settings require their own leaf grant and save validated changed sett
  expect((await request("/design/social-media?other=1")).status).toBe(400);expect((await request("/design/social-media","PUT",{},"/service",{...body,settings:{social_x_url:"",social_icon_style:""}})).status).toBe(200);
  state.headSave.mockRejectedValueOnce(Object.assign(Error("Changed"),{statusCode:409}));expect((await request("/design/social-media","PUT",{},"/service",body)).status).toBe(409);
  identity.active=false;expect((await request("/design/social-media")).status).toBe(403);
+});
+
+it("identity editor requires its leaf grant and saves only versioned changes",async()=>{
+ const version="e".repeat(64),body={settings:{company_name:" Test Co ",company_address:"Line 1\nLine 2"},expectedVersion:version};
+ identity.capabilities=["marketing.design.colors"];expect((await request("/design/branding")).status).toBe(403);
+ identity.capabilities=["marketing.design.branding"];state.enabled.mockResolvedValue(false);state.headSnapshot.mockResolvedValue({values:{frontend_logo_url:"legacy relative logo",company_name:"Retained",social_icon_style:"not included"},version});
+ const read=await request("/design/branding");expect(read.status).toBe(200);const data=await read.json();expect(Object.keys(data.settings)).toHaveLength(6);expect(data.settings.frontend_logo_url).toBe("legacy relative logo");expect(data.settings.social_icon_style).toBeUndefined();
+ expect((await request("/design/branding","PUT",{},"/service",body)).status).toBe(200);
+ expect(state.headSave).toHaveBeenCalledWith([{key:"company_name",value:"Test Co",category:"branding",isSecret:false},{key:"company_address",value:"Line 1\nLine 2",category:"branding",isSecret:false}],{category:"branding",version,publicOnly:true},{userId:"linked",action:"website_identity_updated",details:'["company_address","company_name"]'});
+ for(const settings of [{},{unknown:"x"},{favicon_url:"javascript:bad()"},{frontend_logo_url:"https://user:secret@example.test/logo.png"},{company_google_business_url:"/relative"},{company_name:"x".repeat(256)},{company_address:null}])expect((await request("/design/branding","PUT",{},"/service",{...body,settings})).status).toBe(400);
+ expect((await request("/design/branding?other=1")).status).toBe(400);
+ expect((await request("/design/branding","PUT",{},"/service",{...body,settings:{company_name:"",frontend_logo_url:""}})).status).toBe(200);
+ state.headSave.mockRejectedValueOnce(Object.assign(new Error("changed"),{statusCode:409}));expect((await request("/design/branding","PUT",{},"/service",body)).status).toBe(409);
+});
+
+it("branding uploads are bounded prepared assets and never apply settings",async()=>{
+ const upload=(settingKey:string,type="image/png",extra=false)=>{const body=new FormData();body.set("settingKey",settingKey);body.set("file",new Blob(["synthetic"],{type}),"logo.png");if(extra)body.set("unknown","x");return fetch(base+"/service/design/branding/assets",{method:"POST",headers:{authorization:`Bearer ${key}`,"x-p1-user-grant":grantId},body});};
+ identity.capabilities=["marketing.content.media"];expect((await upload("frontend_logo_url")).status).toBe(403);expect(state.mediaCreate).not.toHaveBeenCalled();
+ identity.capabilities=["marketing.design.branding"];state.mediaCreate.mockResolvedValue({id:"asset",url:"https://example.test/logo.webp"});
+ const result=await upload("frontend_logo_url");expect(result.status).toBe(201);expect(await result.json()).toEqual({mediaId:"asset",url:"https://example.test/logo.webp"});
+ expect(state.mediaCreate).toHaveBeenCalledWith(expect.objectContaining({directory:"branding",uploadedBy:"linked",title:"Site logo",mimeType:"image/png"}));expect(state.headSave).not.toHaveBeenCalled();
+ const calls=state.mediaCreate.mock.calls.length;
+ expect((await upload("company_name")).status).toBe(400);expect((await upload("favicon_url","image/svg+xml")).status).toBe(400);expect((await upload("favicon_url","image/png",true)).status).not.toBe(201);expect(state.mediaCreate).toHaveBeenCalledTimes(calls);
 });

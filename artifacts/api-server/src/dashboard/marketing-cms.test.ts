@@ -16,6 +16,9 @@ const operation = (method: string, path: string) =>
 
 test("CMS allowlist uses current leaf grants, exact paths and bounded query parameters", () => {
   assert(cmsOperations.length > 40);
+  for (const method of ["GET","PUT"]) assert.deepEqual(operation(method,"/design/branding").capabilities,["marketing.design.branding"]);
+  assert.equal(operation("POST","/design/branding/assets").multipart,true);
+  assert.deepEqual(operation("POST","/design/branding/assets").capabilities,["marketing.design.branding"]);
   for (const method of ["GET","PUT"]) assert.deepEqual(operation(method,"/design/social-media").capabilities,["marketing.design.social-media"]);
   for (const method of ["GET","PUT"]) assert.deepEqual(operation(method,"/design/typography").capabilities,["marketing.design.typography"]);
   for (const method of ["GET","PUT"]) assert.deepEqual(operation(method,"/design/colors").capabilities,["marketing.design.colors"]);

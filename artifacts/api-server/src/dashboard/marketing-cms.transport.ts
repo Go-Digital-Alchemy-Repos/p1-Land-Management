@@ -14,6 +14,8 @@ export interface CmsOperation {
 }
 /** Explicit method/path pairs. Adding a Core route never exposes it automatically. */
 export const cmsOperations: CmsOperation[] = [];
+cmsOperations.push({method:"POST",path:"/design/branding/assets",capabilities:["marketing.design.branding"],multipart:true});
+for (const method of ["GET", "PUT"] as const) cmsOperations.push({method,path:"/design/branding",capabilities:["marketing.design.branding"]});
 for (const path of ["/website-system/head-tags", "/website-system/features"]) {
   for (const method of ["GET", "PUT"] as const) cmsOperations.push({method,path,capabilities:[],ownerOnly:true});
 }

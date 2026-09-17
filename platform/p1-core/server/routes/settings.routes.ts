@@ -1,3 +1,4 @@
+import { isWebsiteIdentityKey } from "@shared/website-identity";
 import { isSocialSettingKey } from "@shared/social-media";
 import { isWebsiteFontKey } from "@shared/website-fonts";
 import { isWebsiteColorKey } from "@shared/website-colors";
@@ -5,7 +6,6 @@ import { isWebsiteOwner, requireWebsiteOwner, websiteSettingScope } from "../mid
 import { getBaseUrl } from "../utils/route-helpers";
 import { CRM_PIPELINE_SETTING_KEY } from "@shared/crm-pipeline-settings";
 import { Router, type NextFunction, type Request, type Response } from "express";
-import multer from "multer";
 import { z } from "zod";
 import { storage } from "../storage/index";
 import { authenticateToken, hasAdminPermission, requireRole } from "../middleware/auth";
@@ -21,13 +21,10 @@ import {
 import * as r2Service from "../services/r2.service";
 import { ensureSystemEmailTemplates } from "../services/system-email-templates.service";
 import { testMailchimpConnection } from "../services/mailchimp.service";
-import { BRANDING_OPTIONS, isImageMime } from "../services/image-optimizer";
-import { createCmsMediaAssetFromUpload } from "../services/cms-media-upload.service";
 import { isDesignEditableBrandingSetting } from "../utils/branding-settings-policy";
 
 const router = Router();
 
-const MAX_BRANDING_IMAGE_SIZE = 10 * 1024 * 1024;
 const RETIRED_PRIVATE_PROOF_KEY = "p1_private_proof_inventory";
 const RETIRED_PRIVATE_PROOF_CATEGORY = "p1_private_proof";
 
@@ -40,18 +37,6 @@ function isRetiredPrivateProofSetting(key: unknown, category?: unknown) {
       ),
   );
 }
-
-const brandingUpload = multer({
-  storage: multer.memoryStorage(),
-  limits: { fileSize: MAX_BRANDING_IMAGE_SIZE },
-  fileFilter: (_req, file, cb) => {
-    if (isImageMime(file.mimetype)) {
-      cb(null, true);
-      return;
-    }
-    cb(new Error("Accepted file types: PNG, JPEG, WebP, and GIF"));
-  },
-});
 
 router.use(authenticateToken);
 
@@ -68,6 +53,7 @@ function requireAdminOrDesignEditor(req: Request, res: Response, next: NextFunct
 }
 
 function requireSettingWritePermission(req: Request, res: Response, next: NextFunction) {
+  if (isWebsiteIdentityKey(req.body?.key)) return res.status(409).json({message:"Edit company identity in Marketing > Design > Branding"});
   if (isSocialSettingKey(req.body?.key)) return res.status(409).json({message:"Edit social links in Marketing > Design > Social media"});
   if (isWebsiteFontKey(req.body?.key)) return res.status(409).json({message:"Edit website fonts in Marketing > Design > Typography"});
   if (isWebsiteColorKey(req.body?.key)) return res.status(409).json({message:"Edit website colors in Marketing > Design > Color palette"});
@@ -109,10 +95,6 @@ const upsertSettingSchema = z.object({
   value: z.string(),
   category: z.string().min(1),
   isSecret: z.boolean().default(false),
-});
-
-const brandingUploadSchema = z.object({
-  settingKey: z.enum(["frontend_logo_url", "favicon_url"]),
 });
 
 router.put(
@@ -167,40 +149,7 @@ router.put(
 router.post(
   "/branding/upload",
   requireAdminOrDesignEditor,
-  brandingUpload.single("file"),
-  asyncHandler(async (req, res) => {
-    if (!req.file) {
-      return res.status(400).json({ error: "No file uploaded" });
-    }
-
-    const parsed = brandingUploadSchema.safeParse(req.body);
-    if (!parsed.success) {
-      return res.status(400).json({ error: "Invalid branding upload request" });
-    }
-
-    const asset = await createCmsMediaAssetFromUpload({
-      buffer: req.file.buffer,
-      originalName: req.file.originalname,
-      mimeType: req.file.mimetype,
-      fileSize: req.file.size,
-      uploadedBy: req.user?.id,
-      directory: "branding",
-      title: parsed.data.settingKey === "frontend_logo_url" ? "Site logo" : "Site favicon",
-      alt: parsed.data.settingKey === "frontend_logo_url" ? "Site logo" : "Site favicon",
-      optimize: BRANDING_OPTIONS,
-    });
-
-    await storage.settings.upsertSetting(parsed.data.settingKey, asset.url, "branding", false);
-    storage.settings.invalidateCategory("branding");
-    resetEmailBrandingCache();
-    r2Service.resetClient();
-
-    res.status(201).json({
-      key: parsed.data.settingKey,
-      url: asset.url,
-      mediaId: asset.id,
-    });
-  }),
+  (_req, res) => { res.status(409).json({message:"Upload branding images in Marketing > Design > Branding"}); },
 );
 
 router.delete(
@@ -216,6 +165,7 @@ router.delete(
     );
     if (isRetiredPrivateProofSetting(paramString(req.params.key), existing?.category))
       return res.status(403).json({ message: "This retired private proof setting is protected" });
+    if (isWebsiteIdentityKey(paramString(req.params.key))) return res.status(409).json({message:"Clear company identity in Marketing > Design > Branding"});
     if (isSocialSettingKey(paramString(req.params.key))) return res.status(409).json({message:"Clear social links in Marketing > Design > Social media"});
     if (isWebsiteFontKey(paramString(req.params.key))) return res.status(409).json({message:"Clear website fonts in Marketing > Design > Typography"});
     if (isWebsiteColorKey(paramString(req.params.key))) return res.status(409).json({message:"Clear website colors in Marketing > Design > Color palette"});

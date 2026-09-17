@@ -4,6 +4,7 @@ const illustration = (name: string) => `url("/images/illustrations/${name}.webp"
 
 const pageIllustrations: Record<Exclude<DashboardView, "Settings">, string> = {
   Analytics: "none",
+  "Website Identity": "none",
   "Website Social": "none",
   "Website Typography": "none",
   "Website Colors": "none",

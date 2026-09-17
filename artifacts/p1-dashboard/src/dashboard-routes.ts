@@ -30,6 +30,7 @@ export type DashboardView =
   | "Website Team"
   | "Media Library"
   | "Website Editor"
+  | "Website Identity"
   | "Website Social"
   | "Website Typography"
   | "Website Colors"
@@ -122,6 +123,7 @@ export const DASHBOARD_PAGES: readonly DashboardPageRoute[] = [
   { view: "Website Blog", label: "Blog", path: "/marketing/content/blog", group: "Marketing", section: "Content" },
   { view: "Website Team", label: "Team", path: "/marketing/content/team", group: "Marketing", section: "Content" },
   { view: "Website Menus", label: "Menus", path: "/marketing/content/menus", group: "Marketing", section: "Content" },
+  { view: "Website Identity", label: "Branding", path: "/marketing/design/branding", group: "Marketing", section: "Design" },
   { view: "Website Social", label: "Social media", path: "/marketing/design/social-media", group: "Marketing", section: "Design" },
   { view: "Website Typography", label: "Typography", path: "/marketing/design/typography", group: "Marketing", section: "Design" },
   { view: "Website Colors", label: "Color palette", path: "/marketing/design/colors", group: "Marketing", section: "Design" },
@@ -230,6 +232,7 @@ export function pathForRoute(route: Extract<DashboardRoute, { kind: "page" }>) {
 }
 
 const viewCapability: Partial<Record<DashboardView, Capability>> = {
+  "Website Identity": "marketing.design.branding",
   "Website Social": "marketing.design.social-media",
   "Website Typography": "marketing.design.typography",
   "Website Colors": "marketing.design.colors",

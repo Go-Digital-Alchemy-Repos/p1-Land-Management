@@ -286,6 +286,7 @@ import type {
   SaveWebsiteColors200,
   SaveWebsiteFeatures200,
   SaveWebsiteHeadTags200,
+  SaveWebsiteIdentity200,
   SaveWebsiteSocial200,
   SaveWebsiteTypography200,
   SchedulePage,
@@ -320,6 +321,8 @@ import type {
   UpdateProjectPhase,
   UploadFieldPhotoHeaders,
   UploadMarketingMediaBody,
+  UploadWebsiteIdentityAsset201,
+  UploadWebsiteIdentityAssetBody,
   WebsiteColorsInput,
   WebsiteColorsState,
   WebsiteContent,
@@ -332,6 +335,8 @@ import type {
   WebsiteFeaturesState,
   WebsiteHeadTags,
   WebsiteHeadTagsInput,
+  WebsiteIdentityInput,
+  WebsiteIdentityState,
   WebsiteMenu,
   WebsiteMenuInput,
   WebsiteMenuReferences,
@@ -8298,6 +8303,74 @@ export const saveWebsiteFeatures = async (websiteFeaturesInput: WebsiteFeaturesI
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
       websiteFeaturesInput,)
+  }
+);}
+
+
+
+export const getGetWebsiteIdentityUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/design/branding`
+}
+
+export const getWebsiteIdentity = async ( options?: RequestInit): Promise<WebsiteIdentityState> => {
+
+  return customFetch<WebsiteIdentityState>(getGetWebsiteIdentityUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getSaveWebsiteIdentityUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/design/branding`
+}
+
+export const saveWebsiteIdentity = async (websiteIdentityInput: WebsiteIdentityInput, options?: RequestInit): Promise<SaveWebsiteIdentity200> => {
+
+  return customFetch<SaveWebsiteIdentity200>(getSaveWebsiteIdentityUrl(),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      websiteIdentityInput,)
+  }
+);}
+
+
+
+export const getUploadWebsiteIdentityAssetUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/design/branding/assets`
+}
+
+export const uploadWebsiteIdentityAsset = async (uploadWebsiteIdentityAssetBody: UploadWebsiteIdentityAssetBody, options?: RequestInit): Promise<UploadWebsiteIdentityAsset201> => {
+    const formData = new FormData();
+formData.append(`file`, uploadWebsiteIdentityAssetBody.file);
+formData.append(`settingKey`, uploadWebsiteIdentityAssetBody.settingKey);
+
+  return customFetch<UploadWebsiteIdentityAsset201>(getUploadWebsiteIdentityAssetUrl(),
+  {
+    ...options,
+    method: 'POST'
+    ,
+    body:
+      formData,
   }
 );}
 

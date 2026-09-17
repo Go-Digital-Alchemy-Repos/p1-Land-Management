@@ -13903,7 +13903,22 @@
         "description": "Requires marketing.content.careers. Retains Core Careers storage and its feature flag.",
         "requestBody": {
           "required": true,
-          "content": { "application/json": { "schema": { "type": "object", "required": ["expectedUpdatedAt"], "properties": { "expectedUpdatedAt": { "type": "string", "format": "date-time" } } } } }
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "expectedUpdatedAt"
+                ],
+                "properties": {
+                  "expectedUpdatedAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              }
+            }
+          }
         },
         "responses": {
           "200": {
@@ -13927,7 +13942,9 @@
           "403": {
             "description": "Required access missing"
           },
-          "409": {"description": "Job changed or has applications; archive instead to preserve history"},
+          "409": {
+            "description": "Job changed or has applications; archive instead to preserve history"
+          },
           "404": {
             "description": "Not found or feature disabled"
           }
@@ -14520,8 +14537,113 @@
           }
         }
       }
+    },
+    "/marketing/cms/design/branding": {
+      "get": {
+        "operationId": "getWebsiteIdentity",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteIdentityState"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "saveWebsiteIdentity",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "saved"
+                  ],
+                  "properties": {
+                    "saved": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebsiteIdentityInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/marketing/cms/design/branding/assets": {
+      "post": {
+        "operationId": "uploadWebsiteIdentityAsset",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "file",
+                  "settingKey"
+                ],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "settingKey": {
+                    "type": "string",
+                    "enum": [
+                      "frontend_logo_url",
+                      "favicon_url"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Media uploaded. Save branding to apply it.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "url",
+                    "mediaId"
+                  ],
+                  "properties": {
+                    "url": {
+                      "type": "string"
+                    },
+                    "mediaId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
-
   },
   "components": {
     "schemas": {
@@ -29451,7 +29573,9 @@
       },
       "MarketingCareerSettingsUpdate": {
         "allOf": [
-          { "$ref": "#/components/schemas/MarketingCareerSettings" },
+          {
+            "$ref": "#/components/schemas/MarketingCareerSettings"
+          },
           {
             "type": "object",
             "properties": {
@@ -29459,7 +29583,15 @@
                 "type": "array",
                 "maxItems": 4,
                 "description": "Explicit removal selections. Requires the loaded version and the corresponding integration disabled; cannot also supply a replacement.",
-                "items": { "type": "string", "enum": ["googleServiceAccountJson", "indeedApplySecret", "zipRecruiterApiKey", "genericWebhookSecret"] }
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "googleServiceAccountJson",
+                    "indeedApplySecret",
+                    "zipRecruiterApiKey",
+                    "genericWebhookSecret"
+                  ]
+                }
               }
             }
           }
@@ -29846,8 +29978,102 @@
             "type": "string"
           }
         }
+      },
+      "WebsiteIdentitySettings": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "company_name",
+          "company_address",
+          "company_phone_numbers",
+          "company_google_business_url",
+          "frontend_logo_url",
+          "favicon_url"
+        ],
+        "properties": {
+          "company_name": {
+            "type": "string"
+          },
+          "company_address": {
+            "type": "string"
+          },
+          "company_phone_numbers": {
+            "type": "string"
+          },
+          "company_google_business_url": {
+            "type": "string"
+          },
+          "frontend_logo_url": {
+            "type": "string"
+          },
+          "favicon_url": {
+            "type": "string"
+          }
+        }
+      },
+      "WebsiteIdentityChanges": {
+        "type": "object",
+        "additionalProperties": false,
+        "minProperties": 1,
+        "properties": {
+          "company_name": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "company_address": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "company_phone_numbers": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "company_google_business_url": {
+            "type": "string",
+            "maxLength": 2048
+          },
+          "frontend_logo_url": {
+            "type": "string",
+            "maxLength": 2048
+          },
+          "favicon_url": {
+            "type": "string",
+            "maxLength": 2048
+          }
+        }
+      },
+      "WebsiteIdentityState": {
+        "type": "object",
+        "required": [
+          "settings",
+          "version"
+        ],
+        "properties": {
+          "settings": {
+            "$ref": "#/components/schemas/WebsiteIdentitySettings"
+          },
+          "version": {
+            "type": "string"
+          }
+        }
+      },
+      "WebsiteIdentityInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "settings",
+          "expectedVersion"
+        ],
+        "properties": {
+          "settings": {
+            "$ref": "#/components/schemas/WebsiteIdentityChanges"
+          },
+          "expectedVersion": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
       }
-
     }
   }
 }
