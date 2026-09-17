@@ -47,6 +47,35 @@ export async function prepareComposedEstimate(
       };
     }
     const document = prepareCompositionDocument(row, input);
+    let revisionSource: any = null;
+    if (row.revises_estimate_id) {
+      revisionSource = (
+        await c.query("SELECT * FROM estimate WHERE id=$1 FOR UPDATE", [
+          row.revises_estimate_id,
+        ])
+      ).rows[0];
+      if (
+        !revisionSource ||
+        !revisionSource.is_current ||
+        revisionSource.revision !== row.revises_estimate_revision ||
+        revisionSource.kind !== "composed"
+      )
+        throw new HttpError(
+          409,
+          "The original proposal has changed. Start a revision from its current version.",
+        );
+      if (revisionSource.status === "approved")
+        throw new HttpError(
+          409,
+          "The original proposal was approved. Create a change order instead.",
+        );
+      if (revisionSource.property_id !== row.property_id)
+        throw new HttpError(
+          409,
+          "A revision must retain the original property",
+        );
+    }
+
     if (!row.client_id || !row.property_id)
       throw new HttpError(
         409,
@@ -98,6 +127,22 @@ export async function prepareComposedEstimate(
     };
     collect([row.title, current, document.content, document.dates]);
     validatePdfText(customerStrings.map((text) => ({ text })));
+    if (
+      revisionSource &&
+      revisionSource.composition_snapshot?.party?.clientId !== row.client_id
+    )
+      throw new HttpError(409, "A revision must retain the original client");
+    const projectId = input.projectId ?? revisionSource?.project_id ?? null;
+    if (
+      projectId &&
+      !(
+        await c.query(
+          "SELECT 1 FROM project_property WHERE project_id=$1 AND property_id=$2 FOR SHARE",
+          [projectId, row.property_id],
+        )
+      ).rowCount
+    )
+      throw new HttpError(409, "The project no longer includes this property");
     const estimateId = randomUUID();
     const scope = [
       ...document.content.scope.items.map((item) =>
@@ -110,8 +155,12 @@ export async function prepareComposedEstimate(
     ]
       .filter(Boolean)
       .join("\n\n");
+    if (revisionSource)
+      await c.query("UPDATE estimate SET is_current=false WHERE id=$1", [
+        revisionSource.id,
+      ]);
     await c.query(
-      "INSERT INTO estimate(id,property_id,title,scope,amount_cents,created_by,project_id,kind,terms,expires_at) VALUES($1,$2,$3,$4,$5,$6,$7,'composed',$8,now()+($9::integer * interval '1 day'))",
+      "INSERT INTO estimate(id,property_id,title,scope,amount_cents,created_by,project_id,kind,terms,expires_at,revision,series_id,change_order_for,request_id) VALUES($1,$2,$3,$4,$5,$6,$7,'composed',$8,now()+($9::integer * interval '1 day'),$10,$11,$12,$13)",
       [
         estimateId,
         row.property_id,
@@ -119,9 +168,13 @@ export async function prepareComposedEstimate(
         scope,
         document.authorizedAmountCents,
         actor.id,
-        input.projectId,
+        projectId,
         document.content.terms,
         input.validForDays,
+        revisionSource ? revisionSource.revision + 1 : 1,
+        revisionSource?.series_id ?? randomUUID(),
+        revisionSource?.change_order_for ?? null,
+        revisionSource?.request_id ?? null,
       ],
     );
     const labels = {
@@ -174,6 +227,7 @@ export async function prepareComposedEstimate(
     }
     const snapshot = {
       schemaVersion: 1,
+      revisesEstimateId: revisionSource?.id ?? null,
       draftId: id,
       sourceVersion: row.version,
       party: {

@@ -75,6 +75,7 @@ salesApi.post("/estimates/:id/revise", async (req, res) => {
     ).rows[0];
     if (!e || !e.is_current || e.revision !== b.revision)
       throw new HttpError(409, "Estimate changed; refresh before revising");
+    if (e.kind === "composed") throw new HttpError(409,"Revise this proposal through its agreement composition draft");
     if (e.status === "approved")
       throw new HttpError(
         409,
@@ -133,11 +134,12 @@ salesApi.post("/estimates/:id/change-order", async (req, res) => {
     await requireOperationalChild(c,"estimate",key);
     const e = (
       await c.query(
-        "SELECT property_id FROM estimate WHERE id=$1 AND status='approved' FOR UPDATE",
+        "SELECT property_id,kind FROM estimate WHERE id=$1 AND status='approved' FOR UPDATE",
         [key],
       )
     ).rows[0];
     if (!e) throw new HttpError(409, "An approved estimate is required");
+    if(e.kind==="composed") throw new HttpError(409,"Composed agreements require a structured agreement change order");
     await c.query(
       "INSERT INTO estimate(id,property_id,title,scope,amount_cents,change_order_for) VALUES($1,$2,$3,$4,$5,$6)",
       [next, e.property_id, b.title, b.scope, b.amountCents, key],

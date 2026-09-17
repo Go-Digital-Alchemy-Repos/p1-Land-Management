@@ -1860,6 +1860,8 @@ export const businessAccountAccess = pgTable("business_account_access", {
 
 
 export const agreementCompositionDraft = pgTable("agreement_composition_draft", {
+  revisesEstimateId: uuid("revises_estimate_id").references(()=>estimate.id),
+  revisesEstimateRevision: integer("revises_estimate_revision"),
   id: uuid().primaryKey().notNull(),
   title: text().notNull(),
   clientId: uuid("client_id").references(()=>client.id),
@@ -1879,7 +1881,10 @@ export const agreementCompositionDraft = pgTable("agreement_composition_draft", 
   preparationFingerprint: text("preparation_fingerprint"),
   createdAt: timestamp("created_at", {withTimezone:true,mode:"string"}).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", {withTimezone:true,mode:"string"}).defaultNow().notNull(),
-}, table => [check("agreement_draft_pricing_shape", sql`${table.pricingPlan} IS NULL OR COALESCE(
+}, table => [
+  index("agreement_draft_revision_source_idx").on(table.revisesEstimateId),
+  check("agreement_draft_revision_source",sql`(${table.revisesEstimateId} IS NULL AND ${table.revisesEstimateRevision} IS NULL) OR COALESCE((${table.revisesEstimateId} IS NOT NULL AND ${table.revisesEstimateRevision}>0 AND ${table.sourceEstimateId}=${table.revisesEstimateId}),false)`),
+  check("agreement_draft_pricing_shape", sql`${table.pricingPlan} IS NULL OR COALESCE(
   jsonb_typeof(${table.pricingPlan})='object'
   AND ${table.pricingPlan}->'schemaVersion'='1'::jsonb
   AND ${table.pricingPlan}->'sourceVersion'=to_jsonb(${table.version})

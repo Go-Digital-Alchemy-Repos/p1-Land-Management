@@ -1,6 +1,7 @@
 import { after, test } from "node:test";
 import assert from "node:assert/strict";
 import { randomUUID, createHash, createHmac } from "node:crypto";
+import { createComposedRevision } from "./composed-estimate-revision";
 import { estimateDocument } from "./estimate-document";
 import { composedEstimateDocument } from "./composed-estimate-document";
 import { composedProposalBlocks } from "@workspace/api-zod/estimate-document";
@@ -720,10 +721,117 @@ test(
         expectedVersion: edited.version,
         allocations: plans,
       });
-      const prepared = await prepareComposedEstimate(actor, original.id, {
+      let prepared = await prepareComposedEstimate(actor, original.id, {
         expectedVersion: priced.version,
         schedules: input.schedules.filter((row) => bases.includes(row.basis)),
       });
+      if (bases.length === 1) {
+        const originalId = prepared.estimateId;
+        const originalEstimate = (
+          await pool.query("SELECT * FROM estimate WHERE id=$1", [originalId])
+        ).rows[0];
+        const request = { operationId: randomUUID(), expectedRevision: 1 };
+        const revisions = await Promise.all([
+          createComposedRevision(actor, originalId, request),
+          createComposedRevision(actor, originalId, request),
+        ]);
+        assert.equal(revisions.filter((row) => row.created).length, 1);
+        assert.equal(revisions[0].draft.id, revisions[1].draft.id);
+        assert.equal(revisions[0].draft.pricing_plan, null);
+        for (const section of ["scope", "costs"]) {
+          const previousIds = new Set(
+            originalEstimate.composition_snapshot.content[section].items.map(
+              (row: any) => row.id,
+            ),
+          );
+          assert(
+            revisions[0].draft.content[section].items.every(
+              (row: any) => !previousIds.has(row.id),
+            ),
+          );
+        }
+
+        assert.equal(
+          revisions[0].draft.content.terms,
+          "Terms for {{client.name}}",
+        );
+        assert.equal(
+          (
+            await pool.query("SELECT is_current FROM estimate WHERE id=$1", [
+              originalId,
+            ])
+          ).rows[0].is_current,
+          true,
+        );
+        await assert.rejects(
+          prepareComposedEstimate(actor, revisions[0].draft.id, {
+            expectedVersion: 1,
+            schedules: [],
+          }),
+          /pricing review/,
+        );
+        const competing = await createComposedRevision(actor, originalId, {
+          ...request,
+          operationId: randomUUID(),
+        });
+        const ready = [];
+        for (const revision of [revisions[0], competing])
+          ready.push(
+            await saveCompositionPricing(user, revision.draft.id, {
+              expectedVersion: revision.draft.version,
+              allocations: [
+                {
+                  basis: "one_time",
+                  scopeRowIds: revision.draft.content.scope.items.map(
+                    (row: any) => row.id,
+                  ),
+                },
+              ],
+            }),
+          );
+        const replacements = await Promise.allSettled(
+          ready.map((draft) =>
+            prepareComposedEstimate(actor, draft.id, {
+              expectedVersion: draft.version,
+              schedules: [],
+            }),
+          ),
+        );
+        const winners = replacements.filter(
+          (result) => result.status === "fulfilled",
+        );
+        assert.equal(winners.length, 1);
+        const loser = replacements.find(
+          (result) => result.status === "rejected",
+        );
+        assert(loser?.status === "rejected" && loser.reason.status === 409);
+        prepared =
+          winners[0].status === "fulfilled" ? winners[0].value : prepared;
+        const replacement = (
+          await pool.query("SELECT * FROM estimate WHERE id=$1", [
+            prepared.estimateId,
+          ])
+        ).rows[0];
+        assert.equal(replacement.revision, 2);
+        assert.equal(replacement.series_id, originalEstimate.series_id);
+        assert.equal(
+          (
+            await pool.query("SELECT is_current FROM estimate WHERE id=$1", [
+              originalId,
+            ])
+          ).rows[0].is_current,
+          false,
+        );
+        assert.deepEqual(
+          (
+            await pool.query(
+              "SELECT composition_snapshot FROM estimate WHERE id=$1",
+              [originalId],
+            )
+          ).rows[0].composition_snapshot,
+          originalEstimate.composition_snapshot,
+        );
+      }
       await pool.query("UPDATE estimate SET status='sent' WHERE id=$1", [
         prepared.estimateId,
       ]);
@@ -752,6 +860,13 @@ test(
         JSON.stringify(await decision.clone().json()),
       );
       const receipt = (await decision.json()) as any;
+      await assert.rejects(
+        createComposedRevision(actor, prepared.estimateId, {
+          operationId: randomUUID(),
+          expectedRevision: bases.length === 1 ? 2 : 1,
+        }),
+        /change order/,
+      );
       assert.equal(receipt.components.length, bases.length);
       assert.equal(receipt.recurring, !bases.includes("one_time"));
       assert.equal(
