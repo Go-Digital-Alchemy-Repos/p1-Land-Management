@@ -73,23 +73,26 @@ export function parseBuilderPreviewMessage(value: unknown): BuilderPreviewMessag
   }
 }
 
+export function isBuilderPreviewOrigin(value: string): boolean {
+  try {
+    const origin = new URL(value);
+    return (
+      origin.origin === value &&
+      ["https:", "http:"].includes(origin.protocol) &&
+      !origin.username &&
+      !origin.password
+    );
+  } catch {
+    return false;
+  }
+}
+
 export function acceptBuilderPreviewMessage(
   event: { origin: string; source: unknown; data: unknown },
   expected: { origin: string; source: unknown; channel: string; afterRevision: number },
 ): BuilderPreviewMessage | null {
   // Never accept opaque origins, wildcard origins, missing windows or stale frames.
-  try {
-    const origin = new URL(expected.origin);
-    if (
-      origin.origin !== expected.origin ||
-      !["https:", "http:"].includes(origin.protocol) ||
-      origin.username ||
-      origin.password
-    )
-      return null;
-  } catch {
-    return null;
-  }
+  if (!isBuilderPreviewOrigin(expected.origin)) return null;
   if (!expected.source || event.source !== expected.source || event.origin !== expected.origin)
     return null;
   const message = parseBuilderPreviewMessage(event.data);
