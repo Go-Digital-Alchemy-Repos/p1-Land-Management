@@ -119,8 +119,8 @@ export default function YorkCountySC() {
               </p>
               <ul className="space-y-3">
                 {[
-                  "Rock Hill — the county's largest city",
-                  "Fort Mill and Tega Cay",
+                  <span key="Rock Hill"><Link className="underline hover:text-primary" href="/service-areas/rock-hill-sc">Rock Hill</Link> — the county's largest city</span>,
+                  <span key="Fort Mill"><Link className="underline hover:text-primary" href="/service-areas/fort-mill-sc">Fort Mill</Link> and Tega Cay</span>,
                   "Lake Wylie and River Hills",
                   "York — the county seat",
                   "Clover and Bethany",
@@ -195,7 +195,7 @@ export default function YorkCountySC() {
       </section>
 
       <aside className="site-shell pb-12 text-lg">
-        <p>Explore <Link href="/services/commercial-landscaping" className="text-primary underline">commercial landscaping</Link>, review <Link href="/commercial-snow-ice-management" className="text-primary underline">commercial snow and ice management</Link>, compare <Link href="/services" className="text-primary underline">all land management services</Link>, or <Link href="/contact" className="text-primary underline">tell us about your property</Link>.</p>
+        <p>Explore <Link href="/services/commercial-landscaping" className="text-primary underline">commercial landscaping</Link>, review <Link href="/services/commercial-snow-ice-management" className="text-primary underline">commercial snow and ice management</Link>, compare <Link href="/services" className="text-primary underline">all land management services</Link>, or <Link href="/contact" className="text-primary underline">tell us about your property</Link>.</p>
       </aside>
       <FinalCTA />
     </Layout>

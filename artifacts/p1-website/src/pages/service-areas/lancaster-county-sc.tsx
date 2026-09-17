@@ -114,7 +114,7 @@ export default function LancasterCountySC() {
               </p>
               <ul className="space-y-3">
                 {[
-                  "Indian Land — the county's fastest-growing community",
+                  <span key="Indian Land"><Link className="underline hover:text-primary" href="/service-areas/indian-land-sc">Indian Land</Link> — the county's fastest-growing community</span>,
                   "Van Wyck and the panhandle",
                   "Lancaster — the county seat",
                   "Kershaw and Heath Springs",
@@ -180,7 +180,7 @@ export default function LancasterCountySC() {
       </section>
 
       <aside className="site-shell pb-12 text-lg">
-        <p>Explore <Link href="/services/commercial-landscaping" className="text-primary underline">commercial landscaping</Link>, review <Link href="/commercial-snow-ice-management" className="text-primary underline">commercial snow and ice management</Link>, compare <Link href="/services" className="text-primary underline">all land management services</Link>, or <Link href="/contact" className="text-primary underline">tell us about your property</Link>.</p>
+        <p>Explore <Link href="/services/commercial-landscaping" className="text-primary underline">commercial landscaping</Link>, review <Link href="/services/commercial-snow-ice-management" className="text-primary underline">commercial snow and ice management</Link>, compare <Link href="/services" className="text-primary underline">all land management services</Link>, or <Link href="/contact" className="text-primary underline">tell us about your property</Link>.</p>
       </aside>
       <FinalCTA />
     </Layout>

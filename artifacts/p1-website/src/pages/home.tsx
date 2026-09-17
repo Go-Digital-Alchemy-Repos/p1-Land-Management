@@ -60,7 +60,7 @@ const FAQS = [
 ];
 
 const trust = [
-  { label: "Land & Property Care", icon: ShieldCheck },
+  { label: "Nearly 30 Years of Experience", icon: ShieldCheck },
   { label: "Upstate SC + Charlotte NC", icon: MapPin },
   { label: "1-Acre Minimum", icon: Ruler },
   { label: "Large-Acreage Specialists", icon: Mountain },
@@ -115,12 +115,12 @@ export default function Home() {
               </em>
             </h1>
             <p className="mt-7 max-w-xl text-lg leading-relaxed" style={{ color: "hsl(40 20% 92% / 0.82)" }}>
-              Commercial landscaping and grounds care, plus grading, drainage, clearing and ponds for large properties across Upstate South Carolina and the Charlotte metro. Heavy-equipment professionals for commercial, industrial, agricultural, municipal, and institutional sites.
+              Commercial landscaping and commercial grounds management, plus grading, drainage, clearing and ponds for large properties across Upstate South Carolina and the Charlotte metro. Heavy-equipment professionals for commercial, industrial, agricultural, municipal, and institutional sites.
             </p>
             <div className="mt-9 flex flex-wrap items-center gap-4">
               <Button asChild size="lg" className="group h-12 rounded-[3px] border-0 bg-primary px-7 font-sans text-[15px] font-bold text-primary-foreground hover:bg-primary/90" style={{ boxShadow: "0 18px 40px -14px hsl(206 70% 48%)" }}>
                 <Link href="/contact">
-                  Get a Free Quote
+                  Get a Free Site Assessment
                   <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </Link>
               </Button>
@@ -173,7 +173,7 @@ export default function Home() {
               </h2>
             </div>
             <p className="max-w-xs text-[15px] leading-relaxed" style={{ color: "hsl(215 20% 35%)" }}>
-              From the first cut to ongoing care, P1 connects the services your large property needs under a clearly defined scope.
+              From commercial grounds management to corrective site work, P1 connects the services your large property needs under a clearly defined scope.
             </p>
           </div>
 
@@ -312,13 +312,13 @@ export default function Home() {
             <div className="rounded-[4px] border bg-white p-8" style={{ borderColor: "hsl(215 30% 15% / 0.08)", boxShadow: "0 14px 40px -30px hsl(215 45% 15%)" }}>
               <h3 className="mb-5 border-b pb-4 font-serif text-2xl font-bold text-primary" style={{ borderColor: "hsl(215 30% 15% / 0.08)" }}>Upstate South Carolina</h3>
               <p className="font-medium leading-relaxed" style={{ color: "hsl(215 20% 35%)" }}>
-                Greenville • Spartanburg • Anderson • Gaffney • Duncan • Greer • Simpsonville • Easley • Inman • Boiling Springs • Surrounding areas
+                <Link className="underline hover:text-primary" href="/service-areas/greenville-sc">Greenville</Link> · <Link className="underline hover:text-primary" href="/service-areas/spartanburg-sc">Spartanburg</Link> · <Link className="underline hover:text-primary" href="/service-areas/anderson-sc">Anderson</Link> · <Link className="underline hover:text-primary" href="/service-areas/greer-sc">Greer</Link> · <Link className="underline hover:text-primary" href="/service-areas/simpsonville-sc">Simpsonville</Link> · <Link className="underline hover:text-primary" href="/service-areas/easley-sc">Easley</Link> · <Link className="underline hover:text-primary" href="/service-areas/gaffney-sc">Gaffney</Link> · <Link className="underline hover:text-primary" href="/service-areas/duncan-sc">Duncan</Link> · <Link className="underline hover:text-primary" href="/service-areas/inman-sc">Inman</Link> · <Link className="underline hover:text-primary" href="/service-areas/boiling-springs-sc">Boiling Springs</Link>
               </p>
             </div>
             <div className="rounded-[4px] border bg-white p-8" style={{ borderColor: "hsl(215 30% 15% / 0.08)", boxShadow: "0 14px 40px -30px hsl(215 45% 15%)" }}>
-              <h3 className="mb-5 border-b pb-4 font-serif text-2xl font-bold text-primary" style={{ borderColor: "hsl(215 30% 15% / 0.08)" }}>Charlotte Region, NC</h3>
+              <h3 className="mb-5 border-b pb-4 font-serif text-2xl font-bold text-primary" style={{ borderColor: "hsl(215 30% 15% / 0.08)" }}>Greater Charlotte &amp; SC Border</h3>
               <p className="font-medium leading-relaxed" style={{ color: "hsl(215 20% 35%)" }}>
-                Charlotte • Concord • Mooresville • Lake Norman • Gastonia • Matthews • Waxhaw • Kannapolis • Huntersville • Surrounding areas
+                <Link className="underline hover:text-primary" href="/service-areas/charlotte-north-carolina">Charlotte</Link> · <Link className="underline hover:text-primary" href="/service-areas/concord-nc">Concord</Link> · <Link className="underline hover:text-primary" href="/service-areas/mooresville-lake-norman-nc">Mooresville</Link> · <Link className="underline hover:text-primary" href="/service-areas/mooresville-lake-norman-nc">Lake Norman</Link> · <Link className="underline hover:text-primary" href="/service-areas/gastonia-nc">Gastonia</Link> · <Link className="underline hover:text-primary" href="/service-areas/matthews-nc">Matthews</Link> · <Link className="underline hover:text-primary" href="/service-areas/waxhaw-nc">Waxhaw</Link> · <Link className="underline hover:text-primary" href="/service-areas/kannapolis-nc">Kannapolis</Link> · <Link className="underline hover:text-primary" href="/service-areas/huntersville-nc">Huntersville</Link> · <Link className="underline hover:text-primary" href="/service-areas/indian-trail-nc">Indian Trail</Link> · <Link className="underline hover:text-primary" href="/service-areas/monroe-nc">Monroe</Link> · <Link className="underline hover:text-primary" href="/service-areas/fort-mill-sc">Fort Mill</Link> · <Link className="underline hover:text-primary" href="/service-areas/rock-hill-sc">Rock Hill</Link> · <Link className="underline hover:text-primary" href="/service-areas/indian-land-sc">Indian Land</Link>
               </p>
             </div>
           </div>

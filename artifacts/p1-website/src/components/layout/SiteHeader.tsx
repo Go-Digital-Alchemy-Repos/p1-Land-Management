@@ -25,7 +25,7 @@ export function SiteHeader({ assessmentCta = false }: { assessmentCta?: boolean 
   const services = [
     { name: "Commercial Site Management", href: "/commercial" },
     { name: "Commercial Landscaping", href: "/services/commercial-landscaping" },
-    { name: "Commercial Snow & Ice", href: "/commercial-snow-ice-management" },
+    { name: "Commercial Snow & Ice", href: "/services/commercial-snow-ice-management" },
     { name: "Industrial & Agricultural Land", href: "/services/industrial-agricultural" },
     { name: "Land Clearing", href: "/services/land-clearing" },
     { name: "Grading & Site Preparation", href: "/services/grading-site-preparation" },
@@ -88,7 +88,7 @@ export function SiteHeader({ assessmentCta = false }: { assessmentCta?: boolean 
             (704) 221-8928
           </a>
           <Button asChild className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-6 hidden sm:inline-flex">
-            {assessmentCta ? <a href="#assessment-request" onClick={(event) => { event.preventDefault(); focusAssessment(); }}>Request a Site Assessment</a> : <Link href="/contact">Get a Free Estimate</Link>}
+            {assessmentCta ? <a href="#assessment-request" onClick={(event) => { event.preventDefault(); focusAssessment(); }}>Get a Free Site Assessment</a> : <Link href="/contact">Get a Free Site Assessment</Link>}
           </Button>
 
           {/* Mobile Menu */}
@@ -137,7 +137,7 @@ export function SiteHeader({ assessmentCta = false }: { assessmentCta?: boolean 
                     (704) 221-8928
                   </a>
                   <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold">
-                    {assessmentCta ? <a href="#assessment-request" onClick={(event) => { event.preventDefault(); focusAssessmentAfterClose.current = true; setIsOpen(false); }}>Request a Site Assessment</a> : <Link href="/contact" onClick={() => setIsOpen(false)}>Get a Free Estimate</Link>}
+                    {assessmentCta ? <a href="#assessment-request" onClick={(event) => { event.preventDefault(); focusAssessmentAfterClose.current = true; setIsOpen(false); }}>Get a Free Site Assessment</a> : <Link href="/contact" onClick={() => setIsOpen(false)}>Get a Free Site Assessment</Link>}
                   </Button>
                 </div>
               </div>

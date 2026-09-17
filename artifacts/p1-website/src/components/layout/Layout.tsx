@@ -24,7 +24,7 @@ export function Layout({ children, assessmentCta = false }: LayoutProps) {
       <SiteFooter />
       <nav aria-label="Quick contact" className="sticky bottom-0 z-40 grid grid-cols-2 border-t border-border bg-background pb-[env(safe-area-inset-bottom)] md:hidden">
         <a href={PHONE_HREF} className="p-4 text-center font-bold text-secondary">Call P1</a>
-        {assessmentCta ? <a href="#assessment-request" className="bg-primary p-4 text-center font-bold text-primary-foreground">Site Assessment</a> : <Link href="/contact" className="bg-primary p-4 text-center font-bold text-primary-foreground">Get an Estimate</Link>}
+        {assessmentCta ? <a href="#assessment-request" className="bg-primary p-4 text-center font-bold text-primary-foreground">Get a Free Site Assessment</a> : <Link href="/contact" className="bg-primary p-4 text-center font-bold text-primary-foreground">Get a Free Site Assessment</Link>}
       </nav>
     </div>
   );

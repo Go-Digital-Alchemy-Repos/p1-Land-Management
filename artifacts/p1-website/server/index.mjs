@@ -18,6 +18,7 @@ const content = createContentStore({ manifest, origin, cacheDir: process.env.P1_
 const googleReviews = createGoogleReviewsStore();
 const canonical = 'https://www.p1landmanagement.com';
 const legacyPublicRoutes = new Map([
+  ['/commercial-snow-ice-management', '/services/commercial-snow-ice-management'],
   ['/services/commercial-property-management', '/services/commercial-landscaping'],
   ['/service-areas/charlotte-nc', '/service-areas/charlotte-north-carolina'],
 ]);

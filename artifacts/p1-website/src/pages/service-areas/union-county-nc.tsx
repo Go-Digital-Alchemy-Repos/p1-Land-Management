@@ -114,9 +114,9 @@ export default function UnionCountyNC() {
               </p>
               <ul className="space-y-3">
                 {[
-                  "Monroe — the county seat and commercial hub",
-                  "Indian Trail and Stallings",
-                  "Waxhaw and Marvin",
+                  <span key="Monroe"><Link className="underline hover:text-primary" href="/service-areas/monroe-nc">Monroe</Link> — the county seat and commercial hub</span>,
+                  <span key="Indian Trail"><Link className="underline hover:text-primary" href="/service-areas/indian-trail-nc">Indian Trail</Link> and Stallings</span>,
+                  <span key="Waxhaw"><Link className="underline hover:text-primary" href="/service-areas/waxhaw-nc">Waxhaw</Link> and Marvin</span>,
                   "Weddington and Wesley Chapel",
                   "Mineral Springs and Wingate",
                   "Unionville, Fairview, and Hemby Bridge",
@@ -180,7 +180,7 @@ export default function UnionCountyNC() {
       </section>
 
       <aside className="site-shell pb-12 text-lg">
-        <p>Explore <Link href="/services/commercial-landscaping" className="text-primary underline">commercial landscaping</Link>, review <Link href="/commercial-snow-ice-management" className="text-primary underline">commercial snow and ice management</Link>, compare <Link href="/services" className="text-primary underline">all land management services</Link>, or <Link href="/contact" className="text-primary underline">tell us about your property</Link>.</p>
+        <p>Explore <Link href="/services/commercial-landscaping" className="text-primary underline">commercial landscaping</Link>, review <Link href="/services/commercial-snow-ice-management" className="text-primary underline">commercial snow and ice management</Link>, compare <Link href="/services" className="text-primary underline">all land management services</Link>, or <Link href="/contact" className="text-primary underline">tell us about your property</Link>.</p>
       </aside>
       <FinalCTA />
     </Layout>

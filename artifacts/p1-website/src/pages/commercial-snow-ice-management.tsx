@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 import { Link } from "wouter";
 
-const PATH = "/commercial-snow-ice-management";
+const PATH = "/services/commercial-snow-ice-management";
 
 const PROPERTY_TYPES = [
   { icon: Truck, title: "Distribution & fulfillment centers", description: "Dock aprons, truck courts, staging lanes, and employee lots cleared on a schedule that protects throughput." },

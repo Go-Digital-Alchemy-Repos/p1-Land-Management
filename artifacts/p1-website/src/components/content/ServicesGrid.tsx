@@ -36,7 +36,7 @@ type Service = {
 
 const services: readonly Service[] = [
   { title: "Commercial Landscaping", description: "Scheduled exterior grounds maintenance that keeps large sites pristine year-round.", image: serviceCommercial, icon: Building2, slug: "commercial-landscaping" },
-  { title: "Commercial Snow & Ice", description: "Seasonal plowing, anti-icing, and documented storm response for large commercial sites.", image: serviceCommercialSnowIce, icon: Snowflake, slug: "commercial-snow-ice-management", href: "/commercial-snow-ice-management" },
+  { title: "Commercial Snow & Ice", description: "Seasonal plowing, anti-icing, and documented storm response for large commercial sites.", image: serviceCommercialSnowIce, icon: Snowflake, slug: "commercial-snow-ice-management", href: "/services/commercial-snow-ice-management" },
   { title: "Industrial & Agricultural Land", description: "Heavy-duty care for farms, industrial sites and working rural acreage.", image: serviceIndustrial, icon: Tractor, slug: "industrial-agricultural" },
   { title: "Land Clearing & Mulching", description: "Selective clearing and forestry mulching that opens up acreage responsibly.", image: serviceClearing, icon: Trees, slug: "land-clearing" },
   { title: "Fine Grading & Site Prep", description: "Precision cut-and-fill that gives every project a true, build-ready foundation.", image: serviceGrading, icon: Mountain, slug: "grading-site-preparation" },

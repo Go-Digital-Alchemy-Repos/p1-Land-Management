@@ -7,7 +7,7 @@ export const GOOGLE_BUSINESS_URL =
   "https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4m6!3m5!1s0x8855cd2b88976525:0x49c378cdfdecac9a!8m2!3d34.8311381!4d-80.6194367!16s%2Fg%2F11nw0vxpb_?entry=ttu&g_ep=EgoyMDI2MDkxMy4wIKXMDSoASAFQAw%3D%3D";
 
 export const BUSINESS_DESCRIPTION =
-  "Full-service land and property management — commercial landscaping and grounds maintenance, land clearing, grading, drainage, turf, tree, and pond services — for commercial, industrial, and agricultural properties 1 acre and larger across Upstate South Carolina and the greater Charlotte, North Carolina region.";
+  "Full-service land and property management — commercial landscaping and grounds maintenance, land clearing, grading, drainage, turf, tree, and pond services — for commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger across Upstate South Carolina and the greater Charlotte, North Carolina region.";
 
 // Social cards need a broad photographic image, while structured data needs
 // the actual P1 mark supplied for the company's icon and favicon.
@@ -33,6 +33,26 @@ export const ADDRESS = {
 
 // Geographic markets served, used for LocalBusiness/Service areaServed.
 export const AREAS_SERVED: { name: string; type: "AdministrativeArea" | "City" }[] = [
+  { name: "Greer, South Carolina", type: "City" },
+  { name: "Simpsonville, South Carolina", type: "City" },
+  { name: "Easley, South Carolina", type: "City" },
+  { name: "Gaffney, South Carolina", type: "City" },
+  { name: "Duncan, South Carolina", type: "City" },
+  { name: "Inman, South Carolina", type: "City" },
+  { name: "Boiling Springs, South Carolina", type: "AdministrativeArea" },
+  { name: "Huntersville, North Carolina", type: "City" },
+  { name: "Matthews, North Carolina", type: "City" },
+  { name: "Kannapolis, North Carolina", type: "City" },
+  { name: "Waxhaw, North Carolina", type: "City" },
+  { name: "Fort Mill, South Carolina", type: "City" },
+  { name: "Rock Hill, South Carolina", type: "City" },
+  { name: "Indian Land, South Carolina", type: "AdministrativeArea" },
+  { name: "Indian Trail, North Carolina", type: "City" },
+  { name: "Monroe, North Carolina", type: "City" },
+  { name: "Belmont, North Carolina", type: "City" },
+  { name: "Mount Holly, North Carolina", type: "City" },
+  { name: "Cornelius, North Carolina", type: "City" },
+
   { name: "Upstate South Carolina", type: "AdministrativeArea" },
   { name: "Greenville, South Carolina", type: "City" },
   { name: "Spartanburg, South Carolina", type: "City" },

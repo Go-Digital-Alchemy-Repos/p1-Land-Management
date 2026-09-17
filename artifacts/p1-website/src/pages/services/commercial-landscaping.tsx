@@ -21,7 +21,7 @@ const FAQS = [
   {
     question: "How is a commercial maintenance schedule established?",
     answer:
-      "P1 reviews the property, the requested work and operating constraints before proposing an agreed scope and service schedule. Site-assessment availability, access requirements and any fee are confirmed during qualification.",
+      "P1 starts with a free site assessment, then builds a recurring grounds schedule around seasonal growth, site priorities, and your operating hours. The written program defines visit frequency and the work included.",
   },
   {
     question: "Is there a minimum property size for commercial programs?",
@@ -39,7 +39,7 @@ export default function CommercialLandscaping() {
   return (
     <Layout>
       <SEO 
-        title="Commercial Landscaping in SC & NC | P1"
+        title="Commercial Landscaping & Grounds Management | P1"
         description="Commercial landscaping and exterior grounds maintenance for 1-acre-plus properties across Upstate SC and Charlotte. Call (704) 221-8928."
         jsonLd={[
           serviceSchema({ name: "Commercial Landscaping", description: "Commercial landscaping and exterior grounds maintenance for 1-acre-plus properties across Upstate SC and Charlotte NC. Turf, drainage, land clearing, ponds, and more. Call (704) 221-8928.", path: "/services/commercial-landscaping" }),
@@ -58,7 +58,7 @@ export default function CommercialLandscaping() {
         eyebrow="Commercial Landscaping"
         title={
           <>
-            Commercial Landscaping for{" "}
+            Commercial Landscaping &amp; Grounds Management for{" "}
             <em className="font-semibold not-italic text-tan" style={{ fontStyle: "italic" }}>
               Large-Acreage Properties
             </em>
@@ -111,10 +111,10 @@ export default function CommercialLandscaping() {
 
           <FeatureRow heading="Maintenance Schedules That Work for Your Operation" image={scheduleImg} imageAlt="Operator on a commercial maintenance schedule" reverse>
             <p>
-              We review the property, requested work and operating constraints before proposing an agreed scope and service schedule. Site-assessment availability, access requirements and any fee are confirmed during qualification.
+              Keep entrances, turf, planted areas, and perimeter vegetation on a predictable care schedule. We plan visits around deliveries, staff and visitor access, seasonal growth, and the presentation standards of your property.
             </p>
             <p>
-              The work plan identifies priorities, delivery responsibilities and the next review. Confirm the scope, equipment needs and any specialist involvement before work begins.
+              Your grounds program identifies routine activities, seasonal tasks, and follow-up observations. Larger corrective projects are priced and approved separately, so recurring care remains easy to budget and manage.
             </p>
           </FeatureRow>
 
@@ -125,10 +125,10 @@ export default function CommercialLandscaping() {
             <ul className="space-y-4">
               {[
                 "1-acre minimum — we're built for large properties, not small lawns",
-                "A coordinated exterior-work scope, defined for your property",
-                "Upstate SC and Charlotte NC serviceability reviewed during qualification",
-                "Project-relevant insurance, licensing and procurement documentation reviewed on request",
-                "Site-assessment availability and terms confirmed during qualification"
+                "Nearly 30 years of experience in land and property care",
+                "Commercial grounds management across Upstate SC and greater Charlotte",
+                "Recurring schedules coordinated around your operating hours",
+                "Free site assessment and a clear written grounds program"
               ].map((item, i) => (
                 <li key={i} className="flex items-center gap-3 text-lg text-secondary/80 font-medium">
                   <div className="w-2 h-2 rounded-full bg-primary" />
@@ -149,7 +149,7 @@ export default function CommercialLandscaping() {
         </div>
       </section>
 
-      <section className="site-shell py-12"><h2 className="text-2xl font-bold">Looking for a connected exterior site plan?</h2><p className="mt-4 text-muted-foreground">Explore how commercial landscaping, drainage, land, corrective work, and <Link href="/commercial-snow-ice-management" className="font-bold text-primary underline">commercial snow and ice management</Link> can fit an agreed exterior-work scope.</p><div className="mt-5 flex flex-wrap gap-x-6 gap-y-3"><Link href="/commercial" className="font-bold text-primary underline">Commercial Site Management & Site Assessment</Link><Link href="/commercial/data-centers-secure-facilities" className="font-bold text-primary underline">Data center & secure facility grounds</Link></div></section>
+      <section className="site-shell py-12"><h2 className="text-2xl font-bold">Seasonal and specialist grounds care</h2><p className="mt-4 text-muted-foreground">Explore how commercial landscaping, drainage, land, corrective work, and <Link href="/services/commercial-snow-ice-management" className="font-bold text-primary underline">commercial snow and ice management</Link> can fit an agreed exterior-work scope.</p><div className="mt-5 flex flex-wrap gap-x-6 gap-y-3"><Link href="/commercial/data-centers-secure-facilities" className="font-bold text-primary underline">Data center & secure facility grounds</Link></div></section>
       <FinalCTA />
     </Layout>
   );

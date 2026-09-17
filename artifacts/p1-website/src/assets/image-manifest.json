@@ -671,24 +671,24 @@
         "format": "webp",
         "width": 480,
         "height": 270,
-        "bytes": 52978,
-        "quality": 88
+        "bytes": 37546,
+        "quality": 78
       },
       {
         "path": "optimized/features/grading-level-768.webp",
         "format": "webp",
         "width": 768,
         "height": 432,
-        "bytes": 96896,
-        "quality": 84
+        "bytes": 79504,
+        "quality": 78
       },
       {
         "path": "optimized/features/grading-level-1280.webp",
         "format": "webp",
         "width": 1280,
         "height": 720,
-        "bytes": 239192,
-        "quality": 88
+        "bytes": 165700,
+        "quality": 78
       }
     ]
   },
@@ -1546,6 +1546,633 @@
         "width": 1280,
         "height": 698,
         "bytes": 150652,
+        "quality": 78
+      }
+    ]
+  },
+  "locations/belmont-nc.png": {
+    "sourceBytes": 3067658,
+    "sourceHash": "eee281ce5e2e310c2fbfd9e65edc2e91c37f3189ee187ccab01e74c463f73387",
+    "width": 1536,
+    "height": 1024,
+    "default": "optimized/locations/belmont-nc-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/locations/belmont-nc-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 34872,
+        "quality": 78
+      },
+      {
+        "path": "optimized/locations/belmont-nc-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 512,
+        "bytes": 84186,
+        "quality": 78
+      },
+      {
+        "path": "optimized/locations/belmont-nc-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 853,
+        "bytes": 205800,
+        "quality": 78
+      }
+    ]
+  },
+  "locations/boiling-springs-sc.png": {
+    "sourceBytes": 3084038,
+    "sourceHash": "d550a2763b35805015391a93bd8a98effd7974520f585f6b6d5c1bee18002b86",
+    "width": 1536,
+    "height": 1024,
+    "default": "optimized/locations/boiling-springs-sc-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/locations/boiling-springs-sc-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 34438,
+        "quality": 78
+      },
+      {
+        "path": "optimized/locations/boiling-springs-sc-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 512,
+        "bytes": 82168,
+        "quality": 78
+      },
+      {
+        "path": "optimized/locations/boiling-springs-sc-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 853,
+        "bytes": 199454,
+        "quality": 78
+      }
+    ]
+  },
+  "locations/cornelius-nc.png": {
+    "sourceBytes": 3166696,
+    "sourceHash": "74b14ba072c357fac94e1e4458356fdc4f546724b8673c6195fbb7083ed8f404",
+    "width": 1536,
+    "height": 1024,
+    "default": "optimized/locations/cornelius-nc-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/locations/cornelius-nc-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 34736,
+        "quality": 78
+      },
+      {
+        "path": "optimized/locations/cornelius-nc-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 512,
+        "bytes": 86434,
+        "quality": 78
+      },
+      {
+        "path": "optimized/locations/cornelius-nc-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 853,
+        "bytes": 218366,
+        "quality": 78
+      }
+    ]
+  },
+  "locations/duncan-sc.png": {
+    "sourceBytes": 3040276,
+    "sourceHash": "253efef27ab92e2ce03f23d5205890783d99daf972f2d2797dcde653495f4f26",
+    "width": 1536,
+    "height": 1024,
+    "default": "optimized/locations/duncan-sc-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/locations/duncan-sc-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 28800,
+        "quality": 78
+      },
+      {
+        "path": "optimized/locations/duncan-sc-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 512,
+        "bytes": 71554,
+        "quality": 78
+      },
+      {
+        "path": "optimized/locations/duncan-sc-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 853,
+        "bytes": 179960,
+        "quality": 78
+      }
+    ]
+  },
+  "locations/easley-sc.png": {
+    "sourceBytes": 2844526,
+    "sourceHash": "88488100d80a9d597d2f1838c490d3ea015b8c81be2cfd78ddd3a855f62e04a7",
+    "width": 1536,
+    "height": 1024,
+    "default": "optimized/locations/easley-sc-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/locations/easley-sc-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 30300,
+        "quality": 78
+      },
+      {
+        "path": "optimized/locations/easley-sc-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 512,
+        "bytes": 72166,
+        "quality": 78
+      },
+      {
+        "path": "optimized/locations/easley-sc-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 853,
+        "bytes": 171184,
+        "quality": 78
+      }
+    ]
+  },
+  "locations/fort-mill-sc.png": {
+    "sourceBytes": 3209821,
+    "sourceHash": "12f9ee3b13a3324cc5ee1767ea64747d8b8224ebcdfcd2d2e28948598f94b4cb",
+    "width": 1536,
+    "height": 1024,
+    "default": "optimized/locations/fort-mill-sc-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/locations/fort-mill-sc-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 36364,
+        "quality": 78
+      },
+      {
+        "path": "optimized/locations/fort-mill-sc-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 512,
+        "bytes": 87816,
+        "quality": 78
+      },
+      {
+        "path": "optimized/locations/fort-mill-sc-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 853,
+        "bytes": 221288,
+        "quality": 78
+      }
+    ]
+  },
+  "locations/gaffney-sc.png": {
+    "sourceBytes": 2884581,
+    "sourceHash": "fd250345144763ca2cf8468e685866ebb9bd1b88ec08be74632caacf67869c0d",
+    "width": 1536,
+    "height": 1024,
+    "default": "optimized/locations/gaffney-sc-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/locations/gaffney-sc-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 29124,
+        "quality": 78
+      },
+      {
+        "path": "optimized/locations/gaffney-sc-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 512,
+        "bytes": 70122,
+        "quality": 78
+      },
+      {
+        "path": "optimized/locations/gaffney-sc-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 853,
+        "bytes": 166578,
+        "quality": 78
+      }
+    ]
+  },
+  "locations/greer-sc.png": {
+    "sourceBytes": 2904971,
+    "sourceHash": "c006e137e3d26b0fc84154fa44728c0ce48a4973a38cd032c8b1c034ef2cb04c",
+    "width": 1536,
+    "height": 1024,
+    "default": "optimized/locations/greer-sc-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/locations/greer-sc-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 24554,
+        "quality": 78
+      },
+      {
+        "path": "optimized/locations/greer-sc-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 512,
+        "bytes": 61204,
+        "quality": 78
+      },
+      {
+        "path": "optimized/locations/greer-sc-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 853,
+        "bytes": 160578,
+        "quality": 78
+      }
+    ]
+  },
+  "locations/huntersville-nc.png": {
+    "sourceBytes": 3059086,
+    "sourceHash": "dd5efc2d9a7f0b91122afc97ee3091a10d7e8ef2b9459df5bbc704ed6afd4146",
+    "width": 1536,
+    "height": 1024,
+    "default": "optimized/locations/huntersville-nc-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/locations/huntersville-nc-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 34160,
+        "quality": 78
+      },
+      {
+        "path": "optimized/locations/huntersville-nc-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 512,
+        "bytes": 83186,
+        "quality": 78
+      },
+      {
+        "path": "optimized/locations/huntersville-nc-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 853,
+        "bytes": 207308,
+        "quality": 78
+      }
+    ]
+  },
+  "locations/indian-land-sc.png": {
+    "sourceBytes": 3147306,
+    "sourceHash": "3145d74b012924708bc5f488d4c701d1fbd8c3b8f7b2191acdca0dd3b69248ee",
+    "width": 1536,
+    "height": 1024,
+    "default": "optimized/locations/indian-land-sc-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/locations/indian-land-sc-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 32926,
+        "quality": 78
+      },
+      {
+        "path": "optimized/locations/indian-land-sc-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 512,
+        "bytes": 80848,
+        "quality": 78
+      },
+      {
+        "path": "optimized/locations/indian-land-sc-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 853,
+        "bytes": 198634,
+        "quality": 78
+      }
+    ]
+  },
+  "locations/indian-trail-nc.png": {
+    "sourceBytes": 3228535,
+    "sourceHash": "05b6d148be9b2a97ff6fad3b8b0082c8ba6fd4f39b429f1115c8807607ee4693",
+    "width": 1536,
+    "height": 1024,
+    "default": "optimized/locations/indian-trail-nc-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/locations/indian-trail-nc-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 36142,
+        "quality": 78
+      },
+      {
+        "path": "optimized/locations/indian-trail-nc-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 512,
+        "bytes": 88306,
+        "quality": 78
+      },
+      {
+        "path": "optimized/locations/indian-trail-nc-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 853,
+        "bytes": 221390,
+        "quality": 78
+      }
+    ]
+  },
+  "locations/inman-sc.png": {
+    "sourceBytes": 3126663,
+    "sourceHash": "c8f04eef705bdb835c87a7b258d4f87acd25dda503f5b24935309d7a6e18220b",
+    "width": 1536,
+    "height": 1024,
+    "default": "optimized/locations/inman-sc-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/locations/inman-sc-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 32548,
+        "quality": 78
+      },
+      {
+        "path": "optimized/locations/inman-sc-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 512,
+        "bytes": 79892,
+        "quality": 78
+      },
+      {
+        "path": "optimized/locations/inman-sc-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 853,
+        "bytes": 201850,
+        "quality": 78
+      }
+    ]
+  },
+  "locations/kannapolis-nc.png": {
+    "sourceBytes": 3161252,
+    "sourceHash": "ae06e607ed85203606ce637cfb6b0d238198fe9fa7011113733ecbf27789ecc6",
+    "width": 1536,
+    "height": 1024,
+    "default": "optimized/locations/kannapolis-nc-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/locations/kannapolis-nc-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 34928,
+        "quality": 78
+      },
+      {
+        "path": "optimized/locations/kannapolis-nc-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 512,
+        "bytes": 84426,
+        "quality": 78
+      },
+      {
+        "path": "optimized/locations/kannapolis-nc-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 853,
+        "bytes": 211462,
+        "quality": 78
+      }
+    ]
+  },
+  "locations/matthews-nc.png": {
+    "sourceBytes": 3294282,
+    "sourceHash": "3ae1535d04b7fd07b8f99f1b0fe4e44e079ce7287a1adaca897cf1f8193a8182",
+    "width": 1536,
+    "height": 1024,
+    "default": "optimized/locations/matthews-nc-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/locations/matthews-nc-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 40134,
+        "quality": 78
+      },
+      {
+        "path": "optimized/locations/matthews-nc-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 512,
+        "bytes": 95696,
+        "quality": 78
+      },
+      {
+        "path": "optimized/locations/matthews-nc-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 853,
+        "bytes": 234264,
+        "quality": 78
+      }
+    ]
+  },
+  "locations/monroe-nc.png": {
+    "sourceBytes": 3040081,
+    "sourceHash": "574ac3c80f75db84c0dadacb1b0c1120b212c5bf3375e4e0eaefa1b4e9fde360",
+    "width": 1536,
+    "height": 1024,
+    "default": "optimized/locations/monroe-nc-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/locations/monroe-nc-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 28826,
+        "quality": 78
+      },
+      {
+        "path": "optimized/locations/monroe-nc-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 512,
+        "bytes": 72392,
+        "quality": 78
+      },
+      {
+        "path": "optimized/locations/monroe-nc-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 853,
+        "bytes": 186918,
+        "quality": 78
+      }
+    ]
+  },
+  "locations/mount-holly-nc.png": {
+    "sourceBytes": 3361703,
+    "sourceHash": "5cc6751cdc1e040ab4306a45895f3d3471e51202d60592352ebc50267b854bb1",
+    "width": 1536,
+    "height": 1024,
+    "default": "optimized/locations/mount-holly-nc-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/locations/mount-holly-nc-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 41770,
+        "quality": 78
+      },
+      {
+        "path": "optimized/locations/mount-holly-nc-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 512,
+        "bytes": 87538,
+        "quality": 73
+      },
+      {
+        "path": "optimized/locations/mount-holly-nc-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 853,
+        "bytes": 243468,
+        "quality": 78
+      }
+    ]
+  },
+  "locations/rock-hill-sc.png": {
+    "sourceBytes": 3308079,
+    "sourceHash": "560e005af7c006b854a7950788deef4eadde377213d7271084a39e83847e6fc4",
+    "width": 1536,
+    "height": 1024,
+    "default": "optimized/locations/rock-hill-sc-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/locations/rock-hill-sc-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 41126,
+        "quality": 78
+      },
+      {
+        "path": "optimized/locations/rock-hill-sc-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 512,
+        "bytes": 98896,
+        "quality": 78
+      },
+      {
+        "path": "optimized/locations/rock-hill-sc-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 853,
+        "bytes": 243654,
+        "quality": 78
+      }
+    ]
+  },
+  "locations/simpsonville-sc.png": {
+    "sourceBytes": 3121916,
+    "sourceHash": "50730c46695f21225ce37b9ce21470ad5e0e52d97d2129de8afdb3f58adef226",
+    "width": 1536,
+    "height": 1024,
+    "default": "optimized/locations/simpsonville-sc-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/locations/simpsonville-sc-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 31256,
+        "quality": 78
+      },
+      {
+        "path": "optimized/locations/simpsonville-sc-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 512,
+        "bytes": 78196,
+        "quality": 78
+      },
+      {
+        "path": "optimized/locations/simpsonville-sc-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 853,
+        "bytes": 198600,
+        "quality": 78
+      }
+    ]
+  },
+  "locations/waxhaw-nc.png": {
+    "sourceBytes": 3124662,
+    "sourceHash": "36eff6e46408f910be545bc26fd506d050adbb4dbfe250aff1f411f7fa00e271",
+    "width": 1536,
+    "height": 1024,
+    "default": "optimized/locations/waxhaw-nc-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/locations/waxhaw-nc-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 37232,
+        "quality": 78
+      },
+      {
+        "path": "optimized/locations/waxhaw-nc-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 512,
+        "bytes": 90326,
+        "quality": 78
+      },
+      {
+        "path": "optimized/locations/waxhaw-nc-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 853,
+        "bytes": 222300,
         "quality": 78
       }
     ]

@@ -189,7 +189,7 @@ export default function CharlotteNorthCarolina() {
       </section>
 
       <aside className="site-shell pb-12 text-lg">
-        <p><Link href="/services" className="text-primary underline">Compare land management services</Link>, review <Link href="/commercial-snow-ice-management" className="text-primary underline">commercial snow and ice management</Link>, or <Link href="/contact" className="text-primary underline">tell us about your property</Link>.</p>
+        <p><Link href="/services" className="text-primary underline">Compare land management services</Link>, review <Link href="/services/commercial-snow-ice-management" className="text-primary underline">commercial snow and ice management</Link>, or <Link href="/contact" className="text-primary underline">tell us about your property</Link>.</p>
       </aside>
       <FinalCTA />
     </Layout>

@@ -38,7 +38,7 @@ export function SiteFooter() {
           <h4 className="font-serif text-[11px] font-bold uppercase tracking-[0.2em] text-tan mb-6">Services</h4>
           <ul className="space-y-3 text-sm text-secondary-foreground/70">
             <li><Link href="/services/commercial-landscaping" className="hover:text-primary transition-colors">Commercial Landscaping</Link></li>
-            <li><Link href="/commercial-snow-ice-management" className="hover:text-primary transition-colors">Commercial Snow & Ice</Link></li>
+            <li><Link href="/services/commercial-snow-ice-management" className="hover:text-primary transition-colors">Commercial Snow & Ice</Link></li>
             <li><Link href="/services/industrial-agricultural" className="hover:text-primary transition-colors">Industrial & Agricultural</Link></li>
             <li><Link href="/services/land-clearing" className="hover:text-primary transition-colors">Land Clearing</Link></li>
             <li><Link href="/services/grading-site-preparation" className="hover:text-primary transition-colors">Grading & Site Prep</Link></li>
@@ -78,7 +78,7 @@ export function SiteFooter() {
             <li><Link href="/about" className="hover:text-primary transition-colors">About Us</Link></li>
             <li><Link href="/gallery" className="hover:text-primary transition-colors">Service Gallery</Link></li>
             <li><Link href="/blog" className="hover:text-primary transition-colors">Blog & Resources</Link></li>
-            <li><Link href="/contact" className="hover:text-primary transition-colors">Contact / Free Estimate</Link></li>
+            <li><Link href="/contact" className="hover:text-primary transition-colors">Contact / Site Assessment</Link></li>
           </ul>
         </div>
 
@@ -91,7 +91,7 @@ export function SiteFooter() {
             <li>Sunday: Closed</li>
             <li className="pt-4">
               <Button asChild variant="outline" className="w-full bg-transparent border-secondary-foreground/20 hover:bg-secondary-foreground/10 text-white">
-                <Link href="/contact">Free Estimate</Link>
+                <Link href="/contact">Get a Free Site Assessment</Link>
               </Button>
             </li>
           </ul>
