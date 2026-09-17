@@ -193,7 +193,7 @@ async function selectTemplates(
   }));
   return { sources, content };
 }
-function present(row: any) {
+export function presentComposition(row: any) {
   const { creation_key, creation_fingerprint, ...view } = row;
   try {
     return {
@@ -211,7 +211,7 @@ export async function readComposition(key: string) {
     ])
   ).rows[0];
   if (!row) throw new HttpError(404, "Agreement draft not found");
-  return present(row);
+  return presentComposition(row);
 }
 export async function createComposition(userId: string, raw: unknown) {
   const b = compositionCreate.parse(raw),
@@ -232,7 +232,7 @@ export async function createComposition(userId: string, raw: unknown) {
           409,
           "Draft creation key was already used for another request",
         );
-      return present(existing);
+      return presentComposition(existing);
     }
     const context = await contextSnapshot(c, b.context),
       selected = await selectTemplates(c, b.selection),
@@ -258,7 +258,7 @@ export async function createComposition(userId: string, raw: unknown) {
         ],
       )
     ).rows[0];
-    const result = present(row);
+    const result = presentComposition(row);
     await audit(c, userId, "created", key, {
       sources: selected.sources.map((row) => ({
         id: row.id,
@@ -293,7 +293,7 @@ export async function editComposition(
         [key, b.title, JSON.stringify(b.content), JSON.stringify(b.dates)],
       )
     ).rows[0];
-    const result = present(row);
+    const result = presentComposition(row);
     await audit(c, userId, "updated", key, { version: row.version });
     return result;
   });
@@ -334,7 +334,7 @@ export async function changeCompositionContext(
       )
     ).rows[0];
     await audit(c, userId, "context-changed", key, { version: row.version });
-    return present(row);
+    return presentComposition(row);
   });
 }
 
@@ -403,7 +403,7 @@ export async function replaceCompositionTemplates(
         }),
       )
       .digest("hex");
-    const reviewed = present({ ...old, content });
+    const reviewed = presentComposition({ ...old, content });
     if (!apply)
       return {
         draftId: key,
@@ -446,6 +446,6 @@ export async function replaceCompositionTemplates(
       })),
       reviewToken,
     });
-    return present(row);
+    return presentComposition(row);
   });
 }

@@ -6893,3 +6893,30 @@ export const reviewAgreementDraftPricing = async (id: string,
 
 
 
+export const getSaveAgreementDraftPricingUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/agreement-drafts/${id}/pricing`
+}
+
+/**
+ * Sales only. Revalidates pricing under the draft row lock, checks expectedVersion and saves a versioned plan. Changes to draft content/context invalidate this plan. Does not prepare or send an estimate.
+ * @summary Save validated private pricing allocations
+ */
+export const saveAgreementDraftPricing = async (id: string,
+    reviewAgreementDraftPricing: ReviewAgreementDraftPricing, options?: RequestInit): Promise<AgreementDraft> => {
+
+  return customFetch<AgreementDraft>(getSaveAgreementDraftPricingUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      reviewAgreementDraftPricing,)
+  }
+);}
+
+
+

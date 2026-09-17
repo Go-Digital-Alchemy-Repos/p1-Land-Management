@@ -11,7 +11,10 @@ import {
   replaceCompositionTemplates,
 } from "./agreement-composition.service";
 import { prepareReusableTemplate } from "./agreement-template-export";
-import { reviewCompositionPricing } from "./agreement-pricing.service";
+import {
+  reviewCompositionPricing,
+  saveCompositionPricing,
+} from "./agreement-pricing.service";
 export const agreementCompositionApi = Router();
 agreementCompositionApi.get("/agreement-drafts", async (req, res) => {
   requireAnyCapability(await actor(req), [
@@ -152,6 +155,21 @@ agreementCompositionApi.post(
     requireCapability(await actor(req), "revenue.sales");
     res.json(
       await reviewCompositionPricing(
+        z.string().uuid().parse(req.params.id),
+        req.body,
+      ),
+    );
+  },
+);
+
+agreementCompositionApi.post(
+  "/agreement-drafts/:id/pricing",
+  async (req, res) => {
+    const a = await actor(req);
+    requireCapability(a, "revenue.sales");
+    res.json(
+      await saveCompositionPricing(
+        a.id,
         z.string().uuid().parse(req.params.id),
         req.body,
       ),

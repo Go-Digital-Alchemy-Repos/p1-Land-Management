@@ -40,6 +40,37 @@ export default function AgreementDraftPreview({
           </ul>
         </div>
       )}
+      {row.pricing_plan && (
+        <section aria-label="Saved pricing plan">
+          <h3>Saved pricing plan · version {row.pricing_plan.sourceVersion}</h3>
+          <p>
+            Proposed authorized maximum:{" "}
+            {row.pricing_plan.review.authorizedAmountCents === null
+              ? "Needs review"
+              : dollars(row.pricing_plan.review.authorizedAmountCents)}
+            . This has not been approved or sent.
+          </p>
+          <dl>
+            {row.pricing_plan.review.allocations.map((allocation) => (
+              <div key={allocation.basis}>
+                <dt>{basisLabels[allocation.basis]} maximum</dt>
+                <dd>
+                  {allocation.authorizedAmountCents === null
+                    ? "Needs review"
+                    : dollars(allocation.authorizedAmountCents)}
+                  {allocation.maximumVisits
+                    ? ` · up to ${allocation.maximumVisits} visits`
+                    : ""}
+                </dd>
+              </div>
+            ))}
+          </dl>
+          <p>
+            Saving changes to agreement content or context clears this plan so
+            its limits can be reviewed again.
+          </p>
+        </section>
+      )}
       <h3>{row.title}</h3>
       <p>
         {row.context_snapshot["client.name"] || "Client not attached"} ·{" "}

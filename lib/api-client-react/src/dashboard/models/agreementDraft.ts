@@ -9,6 +9,7 @@ import type { AgreementDraftContent } from './agreementDraftContent';
 import type { AgreementDraftContextSnapshot } from './agreementDraftContextSnapshot';
 import type { AgreementDraftDates } from './agreementDraftDates';
 import type { AgreementDraftPreview } from './agreementDraftPreview';
+import type { AgreementDraftPricingPlan } from './agreementDraftPricingPlan';
 import type { AgreementDraftStatus } from './agreementDraftStatus';
 import type { AgreementDraftTemplateSource } from './agreementDraftTemplateSource';
 
@@ -31,4 +32,5 @@ export interface AgreementDraft {
   context_snapshot: AgreementDraftContextSnapshot;
   created_by: string;
   preview: AgreementDraftPreview;
+  pricing_plan?: AgreementDraftPricingPlan | null;
 }

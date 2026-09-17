@@ -73,7 +73,13 @@ export default function AgreementDraftEditor({
     }
   }
   if (pricing)
-    return <AgreementPricingReview row={row} close={() => setPricing(false)} />;
+    return (
+      <AgreementPricingReview
+        row={row}
+        changed={changed}
+        close={() => setPricing(false)}
+      />
+    );
   if (exporting)
     return (
       <AgreementTemplateExport row={row} close={() => setExporting(false)} />

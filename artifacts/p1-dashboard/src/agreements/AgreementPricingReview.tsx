@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { reviewAgreementDraftPricing } from "@workspace/api-client-react/dashboard";
+import {
+  reviewAgreementDraftPricing,
+  saveAgreementDraftPricing,
+} from "@workspace/api-client-react/dashboard";
 import type {
   AgreementDraft,
   AgreementDraftPricingReview,
@@ -16,19 +19,35 @@ type Basis = keyof typeof basisLabels;
 export default function AgreementPricingReview({
   row,
   close,
+  changed,
 }: {
   row: AgreementDraft;
   close: () => void;
+  changed: (row: AgreementDraft) => void;
 }) {
   const bases = (Object.keys(basisLabels) as Basis[]).filter((basis) =>
     row.content.costs.items.some((item) => item.basis === basis),
   );
+  const savedPlan = row.pricing_plan;
+  const savedMonthly = savedPlan?.allocations.find(
+    (allocation) => allocation.basis === "fixed_monthly",
+  );
+  const savedVisits = savedPlan?.allocations.find(
+    (allocation) => allocation.basis === "per_visit",
+  );
+  const [reviewedInput, setReviewedInput] =
+    useState<ReviewAgreementDraftPricing | null>(null);
   const [scope, setScope] = useState<Record<Basis, string[]>>({
-    one_time: [],
-    fixed_monthly: [],
-    per_visit: [],
+    one_time:
+      savedPlan?.allocations.find(
+        (allocation) => allocation.basis === "one_time",
+      )?.scopeRowIds || [],
+    fixed_monthly: savedMonthly?.scopeRowIds || [],
+    per_visit: savedVisits?.scopeRowIds || [],
   });
-  const [visits, setVisits] = useState("");
+  const [visits, setVisits] = useState(
+    savedVisits?.basis === "per_visit" ? String(savedVisits.maximumVisits) : "",
+  );
   const [calendar] = useState(() => {
     try {
       return {
@@ -43,14 +62,24 @@ export default function AgreementPricingReview({
     }
   });
   const [periods, setPeriods] = useState(() =>
-    calendar.periods.map((period) => ({
-      ...period,
-      amount: "",
-      reviewReason: "",
-    })),
+    calendar.periods.map((period) => {
+      const saved =
+        savedMonthly?.basis === "fixed_monthly"
+          ? savedMonthly.periods.find(
+              (item) =>
+                item.startsOn === period.startsOn &&
+                item.endsOn === period.endsOn,
+            )
+          : undefined;
+      return {
+        ...period,
+        amount: saved ? (saved.amountCents / 100).toFixed(2) : "",
+        reviewReason: saved?.reviewReason || "",
+      };
+    }),
   );
   const [result, setResult] = useState<AgreementDraftPricingReview | null>(
-    null,
+    savedPlan?.review || null,
   );
   const [error, setError] = useState(""),
     [busy, setBusy] = useState(false),
@@ -65,12 +94,14 @@ export default function AgreementPricingReview({
   }, []);
   function invalidate() {
     setResult(null);
+    setReviewedInput(null);
     setError("");
     setTouched(true);
   }
   async function review() {
     if (gate.current) return;
     setResult(null);
+    setReviewedInput(null);
     setError("");
     gate.current = true;
     setBusy(true);
@@ -98,13 +129,33 @@ export default function AgreementPricingReview({
           };
         },
       );
-      const reviewed = await reviewAgreementDraftPricing(row.id, {
-        expectedVersion: row.version,
-        allocations,
-      });
-      if (alive.current) setResult(reviewed);
+      const input = { expectedVersion: row.version, allocations };
+      const reviewed = await reviewAgreementDraftPricing(row.id, input);
+      if (alive.current) {
+        setResult(reviewed);
+        setReviewedInput(input);
+      }
     } catch (error) {
       if (alive.current) setError(message(error));
+    } finally {
+      gate.current = false;
+      if (alive.current) setBusy(false);
+    }
+  }
+  async function save() {
+    if (gate.current || !reviewedInput || !result?.pricingValid) return;
+    gate.current = true;
+    setBusy(true);
+    setError("");
+    try {
+      const updated = await saveAgreementDraftPricing(row.id, reviewedInput);
+      if (alive.current) changed(updated);
+    } catch (error) {
+      if (alive.current) {
+        setError(message(error));
+        setResult(null);
+        setReviewedInput(null);
+      }
     } finally {
       gate.current = false;
       if (alive.current) setBusy(false);
@@ -119,8 +170,10 @@ export default function AgreementPricingReview({
         applicable group.
       </p>
       <p>
-        This calculation is private and is not saved. Closing it discards your
-        review inputs. It does not prepare or send a proposal.
+        Calculate and review the amounts, then save the pricing plan to this
+        private draft. Closing discards unsaved review inputs. Saving agreement
+        content or context changes invalidates the saved plan. This does not
+        prepare or send a proposal.
       </p>
       <form
         onSubmit={(event) => {
@@ -312,6 +365,11 @@ export default function AgreementPricingReview({
                 {agreementMoney(result.authorizedAmountCents)}
               </strong>
             </p>
+          )}
+          {result.pricingValid && reviewedInput && (
+            <button disabled={busy} onClick={() => void save()}>
+              {busy ? "Saving pricing…" : "Save reviewed pricing plan"}
+            </button>
           )}
           <p>
             These are proposed limits. Client/property eligibility, scheduling,

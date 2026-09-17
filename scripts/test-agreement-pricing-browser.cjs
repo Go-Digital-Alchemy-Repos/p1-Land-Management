@@ -61,7 +61,9 @@ const { randomUUID } = require("node:crypto");
     };
     let readOnly = false,
       stale = false,
-      requests = [];
+      requests = [],
+      lastReview,
+      savedInput;
     const errors = [];
     page.on("pageerror", (error) => errors.push(error.message));
     await page.route("**/api/**", async (route) => {
@@ -111,6 +113,20 @@ const { randomUUID } = require("node:crypto");
           })),
         };
       }
+      if (path === `/api/v1/agreement-drafts/${row.id}/pricing/review`)
+        lastReview = body;
+      if (path === `/api/v1/agreement-drafts/${row.id}/pricing`) {
+        savedInput = route.request().postDataJSON();
+        assert.equal(savedInput.expectedVersion, row.version);
+        row.version += 1;
+        row.pricing_plan = {
+          schemaVersion: 1,
+          sourceVersion: row.version,
+          allocations: savedInput.allocations,
+          review: { ...lastReview, sourceVersion: row.version },
+        };
+        body = row;
+      }
       return route.fulfill({ json: body });
     });
     await page.goto(`http://127.0.0.1:4347/agreements/drafts/${row.id}`);
@@ -149,6 +165,33 @@ const { randomUUID } = require("node:crypto");
       .getByRole("button", { name: "Calculate authorized amounts" })
       .click();
     await page.getByText("Combined authorized maximum: $450.04").waitFor();
+    await page
+      .getByRole("button", { name: "Save reviewed pricing plan" })
+      .click();
+    await page
+      .getByRole("region", { name: "Saved pricing plan", exact: true })
+      .waitFor();
+    assert.equal(savedInput.allocations[1].periods[0].amountCents, 5000);
+    assert.equal(row.status, "draft");
+    assert.equal(row.estimate_id, null);
+    await page
+      .getByRole("button", { name: "Review pricing allocations" })
+      .click();
+    assert.equal(
+      await page.getByLabel("Maximum authorized visits").inputValue(),
+      "2",
+    );
+    assert.equal(
+      await page
+        .getByLabel("Period amount (USD)", { exact: true })
+        .nth(0)
+        .inputValue(),
+      "50.00",
+    );
+    assert.equal(
+      await page.getByLabel("Charge review explanation").nth(0).inputValue(),
+      "Reviewed first partial month",
+    );
     await page.getByLabel("Maximum authorized visits").fill("3");
     assert.equal(
       await page.getByRole("region", { name: "Pricing review result" }).count(),
@@ -185,7 +228,7 @@ const { randomUUID } = require("node:crypto");
     );
     assert.deepEqual(errors, []);
     console.log(
-      "Agreement pricing UI passed: exact amounts, leap/partial periods, explicit scope, blockers, invalidation, conflict retention, mobile, and read-only access.",
+      "Agreement pricing UI passed: exact amounts, leap/partial periods, explicit scope, blockers, invalidation, versioned save/reopen, conflict retention, mobile, and read-only access.",
     );
   } finally {
     await browser.close();

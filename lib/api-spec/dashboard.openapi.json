@@ -12231,6 +12231,61 @@
         "summary": "Review finite pricing allocations for a saved agreement draft",
         "description": "Sales only. Read-only financial calculation. Does not prepare, approve, schedule or send an estimate. Validate current context and operational allocations separately before preparation."
       }
+    },
+    "/agreement-drafts/{id}/pricing": {
+      "post": {
+        "operationId": "saveAgreementDraftPricing",
+        "responses": {
+          "200": {
+            "description": "Updated private draft",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgreementDraft"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "403": {
+            "description": "Sales capability required"
+          },
+          "404": {
+            "description": "Draft or context not found"
+          },
+          "409": {
+            "description": "Stale version, incompatible context or reused creation key"
+          },
+          "422": {
+            "description": "Pricing review has unresolved blockers"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewAgreementDraftPricing"
+              }
+            }
+          }
+        },
+        "summary": "Save validated private pricing allocations",
+        "description": "Sales only. Revalidates pricing under the draft row lock, checks expectedVersion and saves a versioned plan. Changes to draft content/context invalidate this plan. Does not prepare or send an estimate."
+      }
     }
   },
   "components": {
@@ -24456,6 +24511,14 @@
           },
           "preview": {
             "$ref": "#/components/schemas/AgreementDraftPreview"
+          },
+          "pricing_plan": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AgreementDraftPricingPlan"
+              }
+            ],
+            "nullable": true
           }
         },
         "required": [
@@ -25005,6 +25068,131 @@
           "blockers",
           "unallocatedScopeRowIds"
         ]
+      },
+      "AgreementDraftPricingPlan": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schemaVersion",
+          "sourceVersion",
+          "allocations",
+          "review"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "integer",
+            "enum": [
+              1
+            ]
+          },
+          "sourceVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "allocations": {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "basis": {
+                      "type": "string",
+                      "enum": [
+                        "one_time"
+                      ]
+                    },
+                    "scopeRowIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "minItems": 1,
+                      "maxItems": 200,
+                      "uniqueItems": true
+                    }
+                  },
+                  "required": [
+                    "basis",
+                    "scopeRowIds"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "basis": {
+                      "type": "string",
+                      "enum": [
+                        "fixed_monthly"
+                      ]
+                    },
+                    "scopeRowIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "minItems": 1,
+                      "maxItems": 200,
+                      "uniqueItems": true
+                    },
+                    "periods": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/AgreementPricingPeriod"
+                      },
+                      "maxItems": 120
+                    }
+                  },
+                  "required": [
+                    "basis",
+                    "scopeRowIds",
+                    "periods"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "basis": {
+                      "type": "string",
+                      "enum": [
+                        "per_visit"
+                      ]
+                    },
+                    "scopeRowIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "minItems": 1,
+                      "maxItems": 200,
+                      "uniqueItems": true
+                    },
+                    "maximumVisits": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 10000
+                    }
+                  },
+                  "required": [
+                    "basis",
+                    "scopeRowIds",
+                    "maximumVisits"
+                  ]
+                }
+              ]
+            },
+            "maxItems": 3
+          },
+          "review": {
+            "$ref": "#/components/schemas/AgreementDraftPricingReview"
+          }
+        }
       }
     }
   }

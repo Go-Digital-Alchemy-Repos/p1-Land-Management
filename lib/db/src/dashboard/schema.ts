@@ -1846,6 +1846,7 @@ export const agreementCompositionDraft = pgTable("agreement_composition_draft", 
   status: text().default("draft").notNull(),
   version: integer().default(1).notNull(),
   content: jsonb().notNull(), dates: jsonb().notNull(),
+  pricingPlan: jsonb("pricing_plan"),
   sourceTemplates: jsonb("source_templates").notNull(),
   contextSnapshot: jsonb("context_snapshot").notNull(),
   createdBy: text("created_by").notNull().references(()=>user.id),
@@ -1853,4 +1854,12 @@ export const agreementCompositionDraft = pgTable("agreement_composition_draft", 
   creationFingerprint: text("creation_fingerprint").notNull(),
   createdAt: timestamp("created_at", {withTimezone:true,mode:"string"}).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", {withTimezone:true,mode:"string"}).defaultNow().notNull(),
-});
+}, table => [check("agreement_draft_pricing_shape", sql`${table.pricingPlan} IS NULL OR COALESCE(
+  jsonb_typeof(${table.pricingPlan})='object'
+  AND ${table.pricingPlan}->'schemaVersion'='1'::jsonb
+  AND ${table.pricingPlan}->'sourceVersion'=to_jsonb(${table.version})
+  AND jsonb_typeof(${table.pricingPlan}->'allocations')='array'
+  AND jsonb_typeof(${table.pricingPlan}->'review')='object'
+  AND ${table.pricingPlan}->'review'->'sourceVersion'=to_jsonb(${table.version})
+  AND ${table.pricingPlan}->'review'->'pricingValid'='true'::jsonb,
+false)`)]);

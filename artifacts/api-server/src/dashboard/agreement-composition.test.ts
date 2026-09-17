@@ -320,6 +320,142 @@ test(
       ).rows[0].n,
       0,
     );
+    {
+      // A pricing plan is private, version-bound and invalidated by every content/context mutation.
+      const planning = (
+        await call(sales, "/agreement-drafts", {
+          ...request,
+          operationId: randomUUID(),
+          title: "Pricing persistence fixture",
+        })
+      ).body;
+      const planPath = `/agreement-drafts/${planning.id}/pricing`;
+      const priceRequest = {
+        expectedVersion: planning.version,
+        allocations: [
+          {
+            basis: "one_time",
+            scopeRowIds: [planning.content.scope.items[0].id],
+          },
+        ],
+      };
+      assert.equal((await call(sales, planPath, priceRequest)).status, 422);
+      for (const who of [reader, manager, portal])
+        assert.equal((await call(who, planPath, priceRequest)).status, 403);
+      let planned = (
+        await call(
+          sales,
+          `/agreement-drafts/${planning.id}`,
+          {
+            expectedVersion: planning.version,
+            title: planning.title,
+            dates: planning.dates,
+            content: { ...planning.content, terms: "Reviewed terms" },
+          },
+          "PUT",
+        )
+      ).body;
+      priceRequest.expectedVersion = planned.version;
+      const planRace = await Promise.all([
+        call(sales, planPath, priceRequest),
+        call(sales, planPath, priceRequest),
+      ]);
+      assert.deepEqual(
+        planRace.map((result) => result.status).sort(),
+        [200, 409],
+      );
+      planned = planRace.find((result) => result.status === 200)!.body;
+      assert.equal(planned.pricing_plan.sourceVersion, planned.version);
+      assert.equal(planned.pricing_plan.review.authorizedAmountCents, 12501);
+      assert.equal(planned.status, "draft");
+      assert.equal(planned.estimate_id, null);
+      assert.equal(
+        (await call(reader, `/agreement-drafts/${planning.id}`)).body
+          .pricing_plan.sourceVersion,
+        planned.version,
+      );
+      assert.equal(
+        (
+          await pool.query(
+            "SELECT count(*)::int AS n FROM audit_event WHERE action='agreement-draft.pricing_saved' AND entity_id=$1",
+            [planning.id],
+          )
+        ).rows[0].n,
+        1,
+      );
+      const savedPlan = structuredClone(planned.pricing_plan);
+      await assert.rejects(
+        pool.query(
+          "UPDATE agreement_composition_draft SET pricing_plan=$2 WHERE id=$1",
+          [planning.id, JSON.stringify({ ...savedPlan, sourceVersion: 999 })],
+        ),
+        /agreement_draft_pricing_shape/,
+      );
+      await pool.query(
+        "UPDATE agreement_composition_draft SET title=title || ' revised' WHERE id=$1",
+        [planning.id],
+      );
+      assert.equal(
+        (await call(sales, `/agreement-drafts/${planning.id}`)).body
+          .pricing_plan,
+        null,
+      );
+      priceRequest.expectedVersion = planned.version;
+      planned = (await call(sales, planPath, priceRequest)).body;
+      assert(planned.pricing_plan);
+      const refreshed = await call(
+        sales,
+        `/agreement-drafts/${planning.id}/context`,
+        { expectedVersion: planned.version, context: request.context },
+      );
+      assert.equal(refreshed.status, 200);
+      assert.equal(refreshed.body.pricing_plan, null);
+      planned = refreshed.body;
+      priceRequest.expectedVersion = planned.version;
+      const contentRace = await Promise.all([
+        call(sales, planPath, priceRequest),
+        call(
+          sales,
+          `/agreement-drafts/${planning.id}`,
+          {
+            expectedVersion: planned.version,
+            title: planned.title,
+            dates: planned.dates,
+            content: {
+              ...planned.content,
+              terms: "Changed during pricing save",
+            },
+          },
+          "PUT",
+        ),
+      ]);
+      assert.deepEqual(
+        contentRace.map((result) => result.status).sort(),
+        [200, 409],
+      );
+      const finalPlan = (await call(sales, `/agreement-drafts/${planning.id}`))
+        .body;
+      assert.equal(
+        Boolean(finalPlan.pricing_plan),
+        contentRace[0].status === 200,
+      );
+      assert.equal(finalPlan.estimate_id, null);
+      priceRequest.expectedVersion = finalPlan.version;
+      const beforePriceChange = (await call(sales, planPath, priceRequest))
+        .body;
+      assert(beforePriceChange.pricing_plan);
+      await pool.query(
+        "UPDATE agreement_composition_draft SET content=jsonb_set(content,'{costs,items,0,unitPriceCents}','201'::jsonb),pricing_plan=$2 WHERE id=$1",
+        [planning.id, JSON.stringify(beforePriceChange.pricing_plan)],
+      );
+      const afterPriceChange = (
+        await call(sales, `/agreement-drafts/${planning.id}`)
+      ).body;
+      assert.equal(afterPriceChange.pricing_plan, null);
+      priceRequest.expectedVersion = afterPriceChange.version;
+      const repriced = (await call(sales, planPath, priceRequest)).body;
+      assert.equal(repriced.pricing_plan.review.authorizedAmountCents, 251);
+    }
     const secondResult = await call(sales, "/agreement-drafts", {
       ...request,
       operationId: randomUUID(),
@@ -499,7 +635,7 @@ test(
       }
       cursor = result.body.nextCursor;
     } while (cursor);
-    assert.equal(seen.size, 3);
+    assert.equal(seen.size, 4); // Includes the independent pricing-plan fixture.
     assert(seen.has(first.id));
     assert(seen.has(third.body.id));
     assert(seen.has(prospect.body.id));
