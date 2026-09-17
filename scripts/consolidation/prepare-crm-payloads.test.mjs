@@ -1,3 +1,4 @@
+import { parseCrmJson } from "./prepare-crm-payloads.mjs";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { mkdtemp, readFile, writeFile, stat, rm } from "node:fs/promises";
@@ -209,4 +210,23 @@ test("unsafe integers in arbitrary source metadata are rejected rather than roun
   const input = fixture();
   input.records.leads[0].metadata.unsafe = Number.MAX_SAFE_INTEGER + 1;
   assert.throws(() => prepareCrmPayloads(input), /JSON values/);
+});
+
+test("JSON input precision is checked before numeric rounding can silently change metadata", () => {
+  for (const token of [
+    "9007199254740993",
+    "1.234567890123456789",
+    "1e-999",
+    "1e999",
+  ])
+    assert.throws(
+      () => parseCrmJson('{"value":' + token + "}"),
+      /cannot be preserved/,
+    );
+  assert.deepEqual(parseCrmJson('{"a":1.2300,"b":1e3,"c":1e-8,"d":-0}'), {
+    a: 1.23,
+    b: 1000,
+    c: 1e-8,
+    d: -0,
+  });
 });

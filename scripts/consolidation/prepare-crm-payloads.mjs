@@ -120,6 +120,37 @@ function canonical(value, depth = 0) {
     );
   throw Error("Payload must contain JSON values only");
 }
+// Compare decimal values without rounding through Number. JSONB may contain more precision than JavaScript.
+function decimalIdentity(token) {
+  const match = /^(-?)(\d+)(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/.exec(token);
+  if (!match) throw Error("Invalid JSON number");
+  let digits = (match[2] + (match[3] || "")).replace(/^0+/, "");
+  if (!digits) return "0";
+  const trailing = digits.length - digits.replace(/0+$/, "").length;
+  digits = digits.slice(0, digits.length - trailing);
+  const exponent =
+    BigInt(match[4] || "0") -
+    BigInt((match[3] || "").length) +
+    BigInt(trailing);
+  return match[1] + digits + "e" + exponent;
+}
+export function parseCrmJson(raw) {
+  let supported = false;
+  JSON.parse("1", (_key, value, context) => {
+    supported = context?.source === "1";
+    return value;
+  });
+  if (!supported) throw Error("A JSON source-aware Node runtime is required");
+  return JSON.parse(raw, (_key, value, context) => {
+    if (
+      typeof value === "number" &&
+      (!Number.isFinite(value) ||
+        decimalIdentity(context.source) !== decimalIdentity(String(value)))
+    )
+      throw Error("JSON number cannot be preserved by this runtime");
+    return value;
+  });
+}
 export const digestCrmValue = (value) =>
   createHash("sha256")
     .update(JSON.stringify(canonical(value)))
@@ -341,7 +372,7 @@ export async function main(args) {
     throw Error("Export exceeds 32 MiB");
   const raw = await readFile(args[1]);
   if (raw.length > 32 * 1024 * 1024) throw Error("Export exceeds 32 MiB");
-  const manifest = prepareCrmPayloads(JSON.parse(raw.toString("utf8")));
+  const manifest = prepareCrmPayloads(parseCrmJson(raw.toString("utf8")));
   manifest.inputFileSha256 = createHash("sha256").update(raw).digest("hex");
   await writeFile(args[3], JSON.stringify(manifest, null, 2) + "\n", {
     flag: "wx",

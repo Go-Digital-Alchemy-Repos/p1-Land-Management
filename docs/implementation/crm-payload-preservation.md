@@ -1,6 +1,6 @@
 # CRM payload preservation manifest
 
-Status: implemented offline preparation. A [reviewed matched-record importer](crm-payload-import.md) is now implemented for archive and native note/task transfer; source extraction, full reconciliation and cutover remain open. This command does not connect to Core or the dashboard, create records, merge customers, assign staff or grant access.
+Status: implemented offline preparation. A [reviewed matched-record importer](crm-payload-import.md) is now implemented for archive and native note/task transfer; a [read-only exporter](crm-payload-export.md) is also implemented. Production source/freeze verification, full reconciliation and cutover remain open. This command does not connect to Core or the dashboard, create records, merge customers, assign staff or grant access.
 
 ```sh
 node scripts/consolidation/prepare-crm-payloads.mjs --input /absolute/private/crm-export.json --output /absolute/private/crm-payload-manifest.json
@@ -40,4 +40,4 @@ Every manifest retains `automaticImportAllowed: false` and `releaseApproval: fal
 
 The matched-record importer now rederives and validates the manifest, locks current target state, checks open-task assignment grants, stores source snapshots and native notes/tasks transactionally, and protects replay against source/mapping conflicts without overwriting later native edits. See its runbook for the verified scope and the external Core identity-link/freeze requirements. Full production count/checksum reconciliation, role-separated visibility and restoration verification remain release gates.
 
-A source extraction/freeze procedure, reconciliation of incompatible source values, unmatched parent creation policy, protected archive access, idempotent import, restore rehearsal and retirement gates remain necessary before `/admin/` can be removed. No production inventory, export, import or cutover was run for this checkpoint.
+The read-only exporter supports the extraction step, but a verified production source freeze, reconciliation of incompatible source values, unmatched parent creation policy, protected archive access, idempotent import, restore rehearsal and retirement gates remain necessary before `/admin/` can be removed. No production inventory, export, import or cutover was run for this checkpoint.

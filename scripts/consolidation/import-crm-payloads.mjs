@@ -2,7 +2,11 @@ import { randomUUID } from "node:crypto";
 import { readFile, stat } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { pathToFileURL } from "node:url";
-import { prepareCrmPayloads, digestCrmValue } from "./prepare-crm-payloads.mjs";
+import {
+  prepareCrmPayloads,
+  digestCrmValue,
+  parseCrmJson,
+} from "./prepare-crm-payloads.mjs";
 const uuid = (v) =>
   typeof v === "string" &&
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v);
@@ -307,7 +311,7 @@ async function privateJson(path) {
     fail("crm_import_file_too_large");
   const raw = await readFile(path);
   if (raw.length > 32 * 1024 * 1024) fail("crm_import_file_too_large");
-  return JSON.parse(raw.toString("utf8"));
+  return parseCrmJson(raw.toString("utf8"));
 }
 export async function main(args) {
   if (

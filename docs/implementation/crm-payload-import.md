@@ -10,7 +10,7 @@ The importer creates lead/customer notes and tasks using their existing provenan
 
 ## Preparation and review
 
-1. Finish source extraction, timestamp-convention verification, identity reconciliation and a frozen-source inventory. Run [payload preparation](crm-payload-preservation.md) on the exact export. Preserve the source file and generated manifest in protected storage.
+1. Verify the timestamp convention and arrange identity reconciliation and a source freeze. Use the [read-only exporter](crm-payload-export.md) to capture the source and matching inventory. Run [payload preparation](crm-payload-preservation.md) on the exact export. Preserve the source file and generated manifest in protected storage.
 2. Resolve all payload blockers. Review every reconciliation issue, candidate identity and matched target. This version supports existing matched parents only. A unique exported identity link does not prove the live Core link remains active: the release operator must verify/freeze those links as part of cutover preparation. The dashboard database does not own Core's identity-link table.
 3. Record explicit review using the generated `manifestSha256` (not `sourceContentSha256` or the file digest):
 
@@ -59,4 +59,4 @@ Preexisting native provenance without its reviewed archive is rejected, not auto
 
 Before production cutover, verify per-source counts/content hashes, note/task projection counts, role-separated UI/API visibility and all reconciliation exceptions against the frozen source. Retain a database backup and rehearse restoration. Application rollback should retain the additive archive and native history; deleting immutable source/history records is not a rollback mechanism. Correcting an erroneous applied mapping requires an explicitly reviewed recovery procedure or restoration, not a casual rerun with changed inputs.
 
-Source extraction/freezing, unmatched parent creation policy, complete source-field functionality, archive access, full import reconciliation/restoration rehearsals and `/admin/` retirement remain open release gates.
+Production source extraction/freezing, unmatched parent creation policy, complete source-field functionality, archive access, full import reconciliation/restoration rehearsals and `/admin/` retirement remain open release gates.
