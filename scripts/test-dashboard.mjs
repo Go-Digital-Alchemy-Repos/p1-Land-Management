@@ -138,6 +138,8 @@ try {
       "src/dashboard/agreement-template.test.ts",
       "src/dashboard/agreement-composition.test.ts",
       "src/dashboard/agreement-pricing.test.ts",
+      "src/dashboard/composed-estimate-preparation.test.ts",
+      "src/dashboard/composed-estimate-preparation.integration.test.ts",
       "src/dashboard/estimate-allocation.test.ts",
       "src/dashboard/commercial-assessment.test.ts",
       "../p1-dashboard/tests/schedule-dates.test.ts",

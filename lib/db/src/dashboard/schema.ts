@@ -1165,6 +1165,7 @@ export const estimate = pgTable(
     agreementTemplateVersion: integer("agreement_template_version"),
     agreementTemplateSnapshot: text("agreement_template_snapshot"),
     documentSnapshot: jsonb("document_snapshot"),
+    compositionSnapshot: jsonb("composition_snapshot"),
   },
   (table) => [
     uniqueIndex("estimate_series_id_idx")
@@ -1193,6 +1194,7 @@ export const estimate = pgTable(
     foreignKey({ columns: [table.requestId], foreignColumns: [serviceRequest.id], name: "estimate_request_id_fkey" }),
     foreignKey({ columns: [table.agreementTemplateId], foreignColumns: [agreementTemplate.id], name: "estimate_agreement_template_id_fkey" }),
     check("estimate_amount_cents_check", sql`amount_cents >= 0`),
+    check("estimate_composition_snapshot_shape", sql`composition_snapshot IS NULL OR COALESCE(kind='composed' AND jsonb_typeof(composition_snapshot)='object' AND composition_snapshot->'schemaVersion'='1'::jsonb AND jsonb_typeof(composition_snapshot->'content')='object' AND jsonb_typeof(composition_snapshot->'party')='object',false)`),
     check("estimate_document_snapshot_object", sql`document_snapshot IS NULL OR COALESCE((jsonb_typeof(document_snapshot)='object' AND document_snapshot->>'schemaVersion'='1' AND jsonb_typeof(document_snapshot->'document')='object'),false)`),
     check(
       "estimate_status_check",
@@ -1202,6 +1204,9 @@ export const estimate = pgTable(
 );
 
 export const estimateLineItem = pgTable("estimate_line_item", {
+  billingBasis: text("billing_basis"),
+  sourceRowId: uuid("source_row_id"),
+  estimateAllocationId: uuid("estimate_allocation_id"),
   id: uuid().primaryKey().notNull(),
   estimateId: uuid("estimate_id").notNull().references(() => estimate.id),
   position: integer().notNull(),
@@ -1209,7 +1214,10 @@ export const estimateLineItem = pgTable("estimate_line_item", {
   unit: text(),
   quantity: numeric().notNull(),
   unitPriceCents: bigint("unit_price_cents", { mode: "number" }).notNull(),
-});
+}, table => [
+  foreignKey({ columns: [table.estimateAllocationId, table.estimateId], foreignColumns: [estimateAllocation.id, estimateAllocation.estimateId], name: "estimate_line_item_allocation_parent" }),
+  check("estimate_line_item_billing_basis_check", sql`${table.billingBasis} IN ('one_time','fixed_monthly','per_visit')`),
+]);
 
 export const estimateRecipient = pgTable("estimate_recipient", {
   id: uuid().primaryKey().notNull(),
@@ -1866,6 +1874,7 @@ export const agreementCompositionDraft = pgTable("agreement_composition_draft", 
   createdBy: text("created_by").notNull().references(()=>user.id),
   creationKey: uuid("creation_key").notNull(),
   creationFingerprint: text("creation_fingerprint").notNull(),
+  preparationFingerprint: text("preparation_fingerprint"),
   createdAt: timestamp("created_at", {withTimezone:true,mode:"string"}).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", {withTimezone:true,mode:"string"}).defaultNow().notNull(),
 }, table => [check("agreement_draft_pricing_shape", sql`${table.pricingPlan} IS NULL OR COALESCE(

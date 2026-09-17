@@ -40,7 +40,7 @@ async function audit(
     ],
   );
 }
-async function contextSnapshot(
+export async function contextSnapshot(
   c: PoolClient,
   context: z.infer<typeof compositionContext>,
 ) {
@@ -194,7 +194,7 @@ async function selectTemplates(
   return { sources, content };
 }
 export function presentComposition(row: any) {
-  const { creation_key, creation_fingerprint, ...view } = row;
+  const { creation_key, creation_fingerprint, preparation_fingerprint, ...view } = row;
   try {
     return {
       ...view,
