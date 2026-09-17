@@ -28,3 +28,15 @@ Run TypeScript checking, the Google Analytics service/route tests, frontend form
 After deploying Core, verify unauthenticated APIs reject access, a permitted admin receives real reports for property 554712298, and no credential appears in browser responses or bundles. Check all fixed report combinations against the live API. The public website proxy already serves the Core `/api` namespace; no browser-to-Google Data API request is needed.
 
 No database migration is introduced. Rollback restores the previous Core deployment; remove the dedicated server credential and revoke its Google grant if retiring the integration. Existing public GA tagging remains independent. Record deployment revision and verification evidence before closeout.
+
+## Search Console tab
+
+A separate source tab under Analytics uses `/api/p1/google-analytics/search-console` with the same CRM authorization and date controls. It operates independently of GA4 availability. Reports include provider totals and prior-period totals, daily trends, search queries, pages, countries and devices. Search type is Web; only finalized data is requested. Google uses Pacific time for Search Console dates. These clicks are not interchangeable with GA sessions.
+
+Set `P1_GSC_SITE_URL` on Core to the exact authorized property. The signed-in owner's existing property was observed as `https://p1landmanagement.com/`; this is an apex URL-prefix property, not proof of coverage for the canonical www host. Confirm the intended property coverage before interpreting results; a verified domain property would include both hosts. Accepted configuration values are that apex property, `https://www.p1landmanagement.com/`, or `sc-domain:p1landmanagement.com`.
+
+Enable Search Console API in the P1 Google project and grant the dedicated reporting service account Restricted property access for reporting, subject to API verification. The token requests only `webmasters.readonly`. It shares the existing server-side credential but uses a separate scoped token. OAuth alternatives require consent including this scope; an existing Analytics-only refresh token does not automatically gain access. No Google property ownership or indexing mutations are requested.
+
+The integration is implemented but not connected or deployed yet. Credential/access authorization remains pending. Do not label local fixture metrics as live results. Each breakdown is limited to 10,000 top rows and exposes truncation. Google may omit anonymized queries and other rows; exports are not an exhaustive search log. Totals are never computed by summing breakdowns, and missing dates are not fabricated as zero. The API does not provide the full Search Console indexing-coverage or Core Web Vitals reports through this endpoint.
+
+Reference: https://developers.google.com/webmaster-tools/v1/searchanalytics/query

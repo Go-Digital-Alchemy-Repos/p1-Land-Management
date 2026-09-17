@@ -1,3 +1,4 @@
+import type { SearchConsoleResponse } from "@shared/p1-search-console";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -47,6 +48,12 @@ import type {
 // Totals come directly from GA, never from summing distinct segment users.
 const COLORS = ["#0d9488", "#3b82f6", "#8b5cf6", "#f59e0b", "#ec4899", "#64748b"];
 const LABELS: Record<string, string> = {
+  clicks: "Search clicks",
+  impressions: "Impressions",
+  ctr: "Click-through rate",
+  position: "Average position",
+  query: "Search query",
+  page: "Page",
   activeUsers: "Active users",
   totalUsers: "Total users",
   newUsers: "New users",
@@ -486,251 +493,407 @@ export default function AnalyticsPage() {
             {error}
           </p>
         )}
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-muted-foreground">
-          <span className="inline-flex items-center gap-2">
-            <Radio className="size-4 text-teal-600" />
-            Last 30 minutes:{" "}
-            <strong className="text-foreground">
-              {live.data
-                ? metricFormat(
-                    live.data.reports.totals?.rows[0]?.metrics.activeUsers ?? 0,
-                    "activeUsers",
-                  )
-                : live.isError
-                  ? "Unavailable"
-                  : "…"}
-            </strong>{" "}
-            active users
-          </span>
-          {data && (
-            <>
-              <span>Updated {new Date(data.fetchedAt).toLocaleTimeString()}</span>
-              <span>
-                Property timezone: {reports?.totals?.metadata.timeZone || "Google property setting"}
+        <Tabs defaultValue="google-analytics" className="space-y-6">
+          <TabsList aria-label="Analytics source">
+            <TabsTrigger value="google-analytics">Google Analytics</TabsTrigger>
+            <TabsTrigger value="search-console">Search Console</TabsTrigger>
+          </TabsList>
+          <TabsContent value="google-analytics" className="space-y-6">
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-muted-foreground">
+              <span className="inline-flex items-center gap-2">
+                <Radio className="size-4 text-teal-600" />
+                Last 30 minutes:{" "}
+                <strong className="text-foreground">
+                  {live.data
+                    ? metricFormat(
+                        live.data.reports.totals?.rows[0]?.metrics.activeUsers ?? 0,
+                        "activeUsers",
+                      )
+                    : live.isError
+                      ? "Unavailable"
+                      : "…"}
+                </strong>{" "}
+                active users
               </span>
-              <span>
-                Compared with {data.previousDateRange.startDate} – {data.previousDateRange.endDate}
-              </span>
-            </>
-          )}
-        </div>
-        {query.isLoading ? (
-          <div role="status" className="grid gap-4 sm:grid-cols-3">
-            {cards.map(([key]) => (
-              <div key={key} className="h-32 animate-pulse rounded-xl bg-muted" />
-            ))}
-            <span className="sr-only">Loading Google Analytics reports</span>
-          </div>
-        ) : query.isError ? (
-          <Card>
-            <CardContent className="space-y-3 p-8">
-              <h2 className="text-lg font-semibold">Reports are unavailable</h2>
-              <p role="alert" className="text-sm text-muted-foreground">
-                {query.error.message}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Live tracking and report access are separate connections. No sample numbers are
-                shown.
-              </p>
-              <Button onClick={() => void query.refetch()}>Try again</Button>
-            </CardContent>
-          </Card>
-        ) : (
-          data && (
-            <>
-              {data.status === "empty" && (
-                <div
-                  role="status"
-                  className="rounded-lg border border-teal-500/20 bg-teal-500/5 p-4 text-sm"
-                >
-                  No processed data is available for this period yet. Tracking began September 16,
-                  2026; standard Google Analytics reports can take 24–48 hours to populate.
-                </div>
+              {data && (
+                <>
+                  <span>Updated {new Date(data.fetchedAt).toLocaleTimeString()}</span>
+                  <span>
+                    Property timezone:{" "}
+                    {reports?.totals?.metadata.timeZone || "Google property setting"}
+                  </span>
+                  <span>
+                    Compared with {data.previousDateRange.startDate} –{" "}
+                    {data.previousDateRange.endDate}
+                  </span>
+                </>
               )}
-              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
-                {cards.map(([metric, title, Icon]) => (
-                  <Card key={metric} className="overflow-hidden shadow-sm">
-                    <CardContent className="p-5">
-                      <div className="flex items-center justify-between text-sm text-muted-foreground">
-                        <span>{title}</span>
-                        <Icon className="size-4 text-teal-600" />
-                      </div>
-                      <p className="mt-4 text-3xl font-semibold tracking-tight tabular-nums">
-                        {totals?.[metric] === undefined
-                          ? "—"
-                          : metricFormat(totals[metric], metric)}
-                      </p>
-                      <p className="mt-2 text-xs text-muted-foreground">
-                        {comparison(totals?.[metric], previous?.[metric])}
-                      </p>
-                    </CardContent>
-                  </Card>
+            </div>
+            {query.isLoading ? (
+              <div role="status" className="grid gap-4 sm:grid-cols-3">
+                {cards.map(([key]) => (
+                  <div key={key} className="h-32 animate-pulse rounded-xl bg-muted" />
                 ))}
+                <span className="sr-only">Loading Google Analytics reports</span>
               </div>
-              <Note report={reports?.totals} />
-              <Tabs defaultValue="overview" className="space-y-5">
-                <div className="overflow-x-auto">
-                  <TabsList className="h-11 w-max">
-                    <TabsTrigger value="overview">Overview</TabsTrigger>
-                    <TabsTrigger value="acquisition">Acquisition</TabsTrigger>
-                    <TabsTrigger value="content">Content</TabsTrigger>
-                    <TabsTrigger value="audience">Audience & technology</TabsTrigger>
-                    <TabsTrigger value="events">Events</TabsTrigger>
-                  </TabsList>
-                </div>
-                <TabsContent value="overview" className="space-y-5">
-                  <Card className="shadow-sm">
-                    <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-3">
-                      <div>
-                        <CardTitle className="text-base">Traffic over time</CardTitle>
-                        <p className="mt-1 text-xs text-muted-foreground">
-                          Daily totals in the property timezone
-                        </p>
-                      </div>
-                      <select
-                        className="rounded-md border bg-background px-3 py-2 text-sm"
-                        aria-label="Trend metric"
-                        value={trend}
-                        onChange={(e) => setTrend(e.target.value)}
-                      >
-                        {["sessions", "activeUsers", "screenPageViews"].map((m) => (
-                          <option key={m} value={m}>
-                            {label(m)}
-                          </option>
-                        ))}
-                      </select>
-                    </CardHeader>
-                    <CardContent>
-                      <Note report={reports?.daily} />
-                      {daily.length ? (
-                        <div
-                          className="h-80"
-                          role="img"
-                          aria-label={`${label(trend)} over the selected period. Exact values available in the daily activity table.`}
-                        >
-                          <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart
-                              data={daily}
-                              accessibilityLayer
-                              margin={{ left: 0, right: 16, top: 12, bottom: 0 }}
+            ) : query.isError ? (
+              <Card>
+                <CardContent className="space-y-3 p-8">
+                  <h2 className="text-lg font-semibold">Reports are unavailable</h2>
+                  <p role="alert" className="text-sm text-muted-foreground">
+                    {query.error.message}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Live tracking and report access are separate connections. No sample numbers are
+                    shown.
+                  </p>
+                  <Button onClick={() => void query.refetch()}>Try again</Button>
+                </CardContent>
+              </Card>
+            ) : (
+              data && (
+                <>
+                  {data.status === "empty" && (
+                    <div
+                      role="status"
+                      className="rounded-lg border border-teal-500/20 bg-teal-500/5 p-4 text-sm"
+                    >
+                      No processed data is available for this period yet. Tracking began September
+                      16, 2026; standard Google Analytics reports can take 24–48 hours to populate.
+                    </div>
+                  )}
+                  <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+                    {cards.map(([metric, title, Icon]) => (
+                      <Card key={metric} className="overflow-hidden shadow-sm">
+                        <CardContent className="p-5">
+                          <div className="flex items-center justify-between text-sm text-muted-foreground">
+                            <span>{title}</span>
+                            <Icon className="size-4 text-teal-600" />
+                          </div>
+                          <p className="mt-4 text-3xl font-semibold tracking-tight tabular-nums">
+                            {totals?.[metric] === undefined
+                              ? "—"
+                              : metricFormat(totals[metric], metric)}
+                          </p>
+                          <p className="mt-2 text-xs text-muted-foreground">
+                            {comparison(totals?.[metric], previous?.[metric])}
+                          </p>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                  <Note report={reports?.totals} />
+                  <Tabs defaultValue="overview" className="space-y-5">
+                    <div className="overflow-x-auto">
+                      <TabsList className="h-11 w-max">
+                        <TabsTrigger value="overview">Overview</TabsTrigger>
+                        <TabsTrigger value="acquisition">Acquisition</TabsTrigger>
+                        <TabsTrigger value="content">Content</TabsTrigger>
+                        <TabsTrigger value="audience">Audience & technology</TabsTrigger>
+                        <TabsTrigger value="events">Events</TabsTrigger>
+                      </TabsList>
+                    </div>
+                    <TabsContent value="overview" className="space-y-5">
+                      <Card className="shadow-sm">
+                        <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-3">
+                          <div>
+                            <CardTitle className="text-base">Traffic over time</CardTitle>
+                            <p className="mt-1 text-xs text-muted-foreground">
+                              Daily totals in the property timezone
+                            </p>
+                          </div>
+                          <select
+                            className="rounded-md border bg-background px-3 py-2 text-sm"
+                            aria-label="Trend metric"
+                            value={trend}
+                            onChange={(e) => setTrend(e.target.value)}
+                          >
+                            {["sessions", "activeUsers", "screenPageViews"].map((m) => (
+                              <option key={m} value={m}>
+                                {label(m)}
+                              </option>
+                            ))}
+                          </select>
+                        </CardHeader>
+                        <CardContent>
+                          <Note report={reports?.daily} />
+                          {daily.length ? (
+                            <div
+                              className="h-80"
+                              role="img"
+                              aria-label={`${label(trend)} over the selected period. Exact values available in the daily activity table.`}
                             >
-                              <defs>
-                                <linearGradient id="ga-trend" x1="0" y1="0" x2="0" y2="1">
-                                  <stop offset="0%" stopColor="#0d9488" stopOpacity={0.3} />
-                                  <stop offset="100%" stopColor="#0d9488" stopOpacity={0.01} />
-                                </linearGradient>
-                              </defs>
-                              <CartesianGrid
-                                vertical={false}
-                                stroke="currentColor"
-                                opacity={0.08}
-                              />
-                              <XAxis
-                                dataKey="date"
-                                tick={{ fontSize: 11 }}
-                                minTickGap={45}
-                                tickFormatter={(s) => s.slice(5)}
-                                axisLine={false}
-                                tickLine={false}
-                              />
-                              <YAxis
-                                tick={{ fontSize: 11 }}
-                                allowDecimals={false}
-                                axisLine={false}
-                                tickLine={false}
-                              />
-                              <Tooltip
-                                contentStyle={{
-                                  background: "hsl(var(--card))",
-                                  borderColor: "hsl(var(--border))",
-                                  borderRadius: 10,
-                                }}
-                              />
-                              <Area
-                                dataKey={trend}
-                                name={label(trend)}
-                                type="monotone"
-                                stroke="#0d9488"
-                                strokeWidth={2.5}
-                                fill="url(#ga-trend)"
-                                isAnimationActive={false}
-                              />
-                            </AreaChart>
-                          </ResponsiveContainer>
-                        </div>
-                      ) : (
-                        <Empty />
-                      )}
-                    </CardContent>
-                  </Card>
-                  <div className="grid gap-5 lg:grid-cols-2">
-                    <Breakdown title="Acquisition mix" report={reports?.channels} />
-                    <Breakdown title="Devices" report={reports?.devices} donut />
-                  </div>
-                  <ReportTable title="Daily activity" report={reports?.daily} />
-                </TabsContent>
-                <TabsContent value="acquisition" className="space-y-5">
-                  <div className="grid gap-5 lg:grid-cols-2">
-                    <Breakdown title="Traffic channels" report={reports?.channels} />
-                    <Breakdown title="Top sources" report={reports?.sourceMedium} />
-                  </div>
-                  <ReportTable title="Channels" report={reports?.channels} />
-                  <ReportTable title="Source and medium" report={reports?.sourceMedium} />
-                  <ReportTable title="Campaigns" report={reports?.campaigns} />
-                </TabsContent>
-                <TabsContent value="content" className="space-y-5">
-                  <ReportTable title="Pages and screens" report={reports?.pages} />
-                  <ReportTable title="Landing pages" report={reports?.landingPages} />
-                </TabsContent>
-                <TabsContent value="audience" className="space-y-5">
-                  <div className="grid gap-5 lg:grid-cols-2">
-                    <Breakdown title="Device mix" report={reports?.devices} donut />
-                    <Breakdown title="Top countries" report={reports?.countries} />
-                  </div>
-                  {[
-                    ["Countries", "countries"],
-                    ["Regions", "regions"],
-                    ["Cities", "cities"],
-                    ["Devices", "devices"],
-                    ["Browsers", "browsers"],
-                  ].map(([title, key]) => (
-                    <ReportTable key={key} title={title} report={reports?.[key as GAReportKey]} />
-                  ))}
-                </TabsContent>
-                <TabsContent value="events" className="space-y-5">
-                  <div className="rounded-lg border bg-muted/30 p-4 text-sm text-muted-foreground">
-                    Key events are events marked as important in Google Analytics. They are not
-                    confirmed inquiries or qualified leads. Review accepted inquiries and sales
-                    outcomes in the{" "}
-                    <a className="font-medium text-primary underline" href="/admin/crm">
-                      CRM pipeline
-                    </a>
-                    . The current tag tracks page views; form and call conversions have not been
-                    configured in GA.
-                  </div>
-                  <ReportTable title="Events" report={reports?.events} />
-                </TabsContent>
-              </Tabs>
-              <footer className="space-y-1 border-t pt-4 text-xs text-muted-foreground">
-                <p>
-                  Source: Google Analytics Data API · property {data.propertyId} · reports cached
-                  for 5 minutes. Realtime refreshes once a minute.
-                </p>
-                <p>
-                  Active users are distinct within each report; daily or segment user counts should
-                  not be added together. Engagement rate is engaged sessions divided by sessions.
-                  Average session duration is measured in seconds. Recent data can change as Google
-                  processes it.
-                </p>
-                <p>
-                  Search keywords, ad costs, revenue, and confirmed lead attribution require
-                  additional linked sources or event configuration; they are not inferred here.
-                </p>
-              </footer>
-            </>
-          )
-        )}
+                              <ResponsiveContainer width="100%" height="100%">
+                                <AreaChart
+                                  data={daily}
+                                  accessibilityLayer
+                                  margin={{ left: 0, right: 16, top: 12, bottom: 0 }}
+                                >
+                                  <defs>
+                                    <linearGradient id="ga-trend" x1="0" y1="0" x2="0" y2="1">
+                                      <stop offset="0%" stopColor="#0d9488" stopOpacity={0.3} />
+                                      <stop offset="100%" stopColor="#0d9488" stopOpacity={0.01} />
+                                    </linearGradient>
+                                  </defs>
+                                  <CartesianGrid
+                                    vertical={false}
+                                    stroke="currentColor"
+                                    opacity={0.08}
+                                  />
+                                  <XAxis
+                                    dataKey="date"
+                                    tick={{ fontSize: 11 }}
+                                    minTickGap={45}
+                                    tickFormatter={(s) => s.slice(5)}
+                                    axisLine={false}
+                                    tickLine={false}
+                                  />
+                                  <YAxis
+                                    tick={{ fontSize: 11 }}
+                                    allowDecimals={false}
+                                    axisLine={false}
+                                    tickLine={false}
+                                  />
+                                  <Tooltip
+                                    contentStyle={{
+                                      background: "hsl(var(--card))",
+                                      borderColor: "hsl(var(--border))",
+                                      borderRadius: 10,
+                                    }}
+                                  />
+                                  <Area
+                                    dataKey={trend}
+                                    name={label(trend)}
+                                    type="monotone"
+                                    stroke="#0d9488"
+                                    strokeWidth={2.5}
+                                    fill="url(#ga-trend)"
+                                    isAnimationActive={false}
+                                  />
+                                </AreaChart>
+                              </ResponsiveContainer>
+                            </div>
+                          ) : (
+                            <Empty />
+                          )}
+                        </CardContent>
+                      </Card>
+                      <div className="grid gap-5 lg:grid-cols-2">
+                        <Breakdown title="Acquisition mix" report={reports?.channels} />
+                        <Breakdown title="Devices" report={reports?.devices} donut />
+                      </div>
+                      <ReportTable title="Daily activity" report={reports?.daily} />
+                    </TabsContent>
+                    <TabsContent value="acquisition" className="space-y-5">
+                      <div className="grid gap-5 lg:grid-cols-2">
+                        <Breakdown title="Traffic channels" report={reports?.channels} />
+                        <Breakdown title="Top sources" report={reports?.sourceMedium} />
+                      </div>
+                      <ReportTable title="Channels" report={reports?.channels} />
+                      <ReportTable title="Source and medium" report={reports?.sourceMedium} />
+                      <ReportTable title="Campaigns" report={reports?.campaigns} />
+                    </TabsContent>
+                    <TabsContent value="content" className="space-y-5">
+                      <ReportTable title="Pages and screens" report={reports?.pages} />
+                      <ReportTable title="Landing pages" report={reports?.landingPages} />
+                    </TabsContent>
+                    <TabsContent value="audience" className="space-y-5">
+                      <div className="grid gap-5 lg:grid-cols-2">
+                        <Breakdown title="Device mix" report={reports?.devices} donut />
+                        <Breakdown title="Top countries" report={reports?.countries} />
+                      </div>
+                      {[
+                        ["Countries", "countries"],
+                        ["Regions", "regions"],
+                        ["Cities", "cities"],
+                        ["Devices", "devices"],
+                        ["Browsers", "browsers"],
+                      ].map(([title, key]) => (
+                        <ReportTable
+                          key={key}
+                          title={title}
+                          report={reports?.[key as GAReportKey]}
+                        />
+                      ))}
+                    </TabsContent>
+                    <TabsContent value="events" className="space-y-5">
+                      <div className="rounded-lg border bg-muted/30 p-4 text-sm text-muted-foreground">
+                        Key events are events marked as important in Google Analytics. They are not
+                        confirmed inquiries or qualified leads. Review accepted inquiries and sales
+                        outcomes in the{" "}
+                        <a className="font-medium text-primary underline" href="/admin/crm">
+                          CRM pipeline
+                        </a>
+                        . The current tag tracks page views; form and call conversions have not been
+                        configured in GA.
+                      </div>
+                      <ReportTable title="Events" report={reports?.events} />
+                    </TabsContent>
+                  </Tabs>
+                  <footer className="space-y-1 border-t pt-4 text-xs text-muted-foreground">
+                    <p>
+                      Source: Google Analytics Data API · property {data.propertyId} · reports
+                      cached for 5 minutes. Realtime refreshes once a minute.
+                    </p>
+                    <p>
+                      Active users are distinct within each report; daily or segment user counts
+                      should not be added together. Engagement rate is engaged sessions divided by
+                      sessions. Average session duration is measured in seconds. Recent data can
+                      change as Google processes it.
+                    </p>
+                    <p>
+                      Search keywords, ad costs, revenue, and confirmed lead attribution require
+                      additional linked sources or event configuration; they are not inferred here.
+                    </p>
+                  </footer>
+                </>
+              )
+            )}
+          </TabsContent>
+          <TabsContent value="search-console">
+            <SearchConsolePanel range={range} />
+          </TabsContent>
+        </Tabs>
       </main>
     </AdminSidebar>
+  );
+}
+
+function SearchConsolePanel({ range }: { range: { startDate: string; endDate: string } }) {
+  const [metric, setMetric] = useState("clicks");
+  const url = `/api/p1/google-analytics/search-console?${new URLSearchParams(range)}`;
+  const query = useQuery<SearchConsoleResponse>({
+    queryKey: [url],
+    queryFn: async () => (await apiRequest("GET", url)).json(),
+    staleTime: 300000,
+    retry: false,
+  });
+  const data = query.data;
+  const totals = data?.reports.totals.rows[0]?.metrics;
+  const previous = data?.reports.previousTotals.rows[0]?.metrics;
+  return (
+    <section className="space-y-5" aria-label="Google Search Console reports">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="text-xl font-semibold">Organic search performance</h2>
+          <p className="text-sm text-muted-foreground">How people discover P1 in Google Search.</p>
+        </div>
+        <Button variant="outline" onClick={() => void query.refetch()} disabled={query.isFetching}>
+          Refresh Search Console
+        </Button>
+      </div>
+      <p className="text-sm text-muted-foreground">
+        Web search · finalized data · Pacific time. Recent days may not be available yet. Search
+        clicks differ from Analytics sessions.
+      </p>
+      {query.isLoading ? (
+        <p role="status">Loading Search Console reports…</p>
+      ) : query.isError ? (
+        <Card>
+          <CardContent className="p-6">
+            <p role="alert">{query.error.message}</p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              No demo data is substituted. Search Console needs its own property permission and API
+              access.
+            </p>
+          </CardContent>
+        </Card>
+      ) : (
+        data && (
+          <>
+            {data.status === "empty" && (
+              <p role="status">No finalized search data is available for this period.</p>
+            )}
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              {["clicks", "impressions", "ctr", "position"].map((key) => (
+                <Card key={key}>
+                  <CardContent className="p-5">
+                    <p className="text-sm text-muted-foreground">{LABELS[key]}</p>
+                    <p className="mt-3 text-3xl font-semibold">
+                      {totals?.[key] === undefined ? "—" : metricFormat(totals[key], key)}
+                    </p>
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      {comparison(totals?.[key], previous?.[key])}
+                    </p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+            <Card>
+              <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-3">
+                <CardTitle className="text-base">Search visibility over time</CardTitle>
+                <select
+                  aria-label="Search trend metric"
+                  className="rounded-md border bg-background p-2 text-sm"
+                  value={metric}
+                  onChange={(event) => setMetric(event.target.value)}
+                >
+                  {["clicks", "impressions", "ctr", "position"].map((key) => (
+                    <option key={key} value={key}>
+                      {LABELS[key]}
+                    </option>
+                  ))}
+                </select>
+              </CardHeader>
+              <CardContent>
+                <div
+                  className="h-72"
+                  role="img"
+                  aria-label="Search trend. Exact values are available in the daily search performance table."
+                >
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart
+                      data={flatten(data.reports.daily).sort((a, b) =>
+                        String(a.date).localeCompare(String(b.date)),
+                      )}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                      <XAxis dataKey="date" tick={{ fontSize: 11 }} minTickGap={36} />
+                      <YAxis
+                        tick={{ fontSize: 11 }}
+                        tickFormatter={(value) => metricFormat(value, metric)}
+                      />
+                      <Tooltip formatter={(value) => metricFormat(Number(value), metric)} />
+                      <Area
+                        type="monotone"
+                        dataKey={metric}
+                        name={LABELS[metric]}
+                        stroke="#0d9488"
+                        fill="#0d9488"
+                        fillOpacity={0.15}
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+            <ReportTable title="Daily search performance" report={data.reports.daily} />
+            <ReportTable title="Search queries" report={data.reports.queries} />
+            <ReportTable title="Search pages" report={data.reports.pages} />
+            <div className="grid gap-5 xl:grid-cols-2">
+              <ReportTable title="Search countries" report={data.reports.countries} />
+              <ReportTable title="Search devices" report={data.reports.devices} />
+            </div>
+            <footer className="space-y-2 border-t pt-4 text-xs text-muted-foreground">
+              <p>
+                Source: Google Search Console API · {data.siteUrl} · refreshed{" "}
+                {new Date(data.fetchedAt).toLocaleString()} · cached for 5 minutes.
+              </p>
+              <p>
+                Comparison: {data.previousDateRange.startDate} – {data.previousDateRange.endDate}.
+                CTR is clicks divided by impressions. Lower average position is generally better.
+                Totals come directly from Google, not sums of query or page rows.
+              </p>
+              <p>
+                Google omits anonymized queries and returns top rows rather than every search. Each
+                breakdown loads at most 10,000 rows; table exports include loaded rows only. Empty
+                dates are not assumed to have zero traffic. This tab does not represent indexing
+                coverage or a rank-tracking guarantee.
+              </p>
+            </footer>
+          </>
+        )
+      )}
+    </section>
   );
 }
