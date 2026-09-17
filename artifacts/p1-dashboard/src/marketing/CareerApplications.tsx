@@ -6,6 +6,7 @@ import {
 } from "@workspace/api-client-react/dashboard";
 import type { MarketingCareerApplication } from "../../../../lib/api-client-react/src/dashboard/models";
 import { MarketingCareerApplicationStatus } from "../../../../lib/api-client-react/src/dashboard/models";
+import { CareerResumeDownload } from "./CareerResumeDownload";
 import { careerError } from "./CareerJobEditor";
 import { useCmsUnsavedChanges } from "./useCmsUnsavedChanges";
 function jobTitle(row: MarketingCareerApplication) {
@@ -97,12 +98,7 @@ function Review({
           application to check whether a previous attempt completed.
         </p>
       )}
-      <a
-        href={`/api/v1/marketing/cms/careers/applications/${encodeURIComponent(row.id)}/resume`}
-        download={row.resumeFileName || "resume"}
-      >
-        Download resume
-      </a>
+      <CareerResumeDownload key={row.id} id={row.id} fileName={row.resumeFileName || "resume"} />
       {(["linkedinUrl", "portfolioUrl"] as const).map((key) =>
         safeLink(row[key]) ? (
           <p key={key}>

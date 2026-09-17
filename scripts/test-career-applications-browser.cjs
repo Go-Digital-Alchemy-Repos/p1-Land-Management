@@ -2,6 +2,7 @@ const { chromium } = require(
   process.cwd() + "/platform/p1-core/node_modules/@playwright/test",
 );
 const assert = require("node:assert/strict");
+const { readFile } = require("node:fs/promises");
 (async () => {
   const browser = await chromium.launch({
     headless: true,
@@ -16,11 +17,13 @@ const assert = require("node:assert/strict");
     page.on("dialog", (d) => d.accept());
     const errors = [];
     page.on("pageerror", (e) => errors.push(e.message));
+    const resumeBytes = Buffer.from([0, 255, 13, 10, 37, 80, 68, 70]);
+    let resumeRequests = 0;
     let row = {
         id: "app",
         jobId: "job",
-      job: {title:"Synthetic field technician"},
-      source:"website",
+        job: { title: "Synthetic field technician" },
+        source: "website",
         firstName: "Synthetic",
         lastName: "Applicant",
         email: "applicant@example.test",
@@ -36,6 +39,18 @@ const assert = require("node:assert/strict");
     await page.route("**/api/**", async (route) => {
       const request = route.request(),
         path = new URL(request.url()).pathname;
+      if (path === "/api/v1/marketing/cms/careers/applications/app/resume") {
+        resumeRequests++;
+        if (resumeRequests === 1)
+          return route.fulfill({ status: 404, json: { message: "Missing" } });
+        if (resumeRequests === 2) return route.abort("failed");
+        if (resumeRequests === 3)
+          return route.fulfill({ status: 403, json: { message: "Denied" } });
+        return route.fulfill({
+          contentType: "application/octet-stream",
+          body: resumeBytes,
+        });
+      }
       let json = [];
       if (path === "/api/v1/setup")
         json = { initialized: true, configured: true };
@@ -110,12 +125,33 @@ const assert = require("node:assert/strict");
       await page.getByRole("link", { name: "LinkedIn profile" }).count(),
       0,
     );
-    assert.equal(
+    await page
+      .getByLabel("Review note", { exact: true })
+      .fill("Preserved during download");
+    for (const message of [
+      "This resume is unavailable",
+      "could not be downloaded",
+      "Your access has changed",
+    ]) {
       await page
-        .getByRole("link", { name: "Download resume" })
-        .getAttribute("href"),
-      "/api/v1/marketing/cms/careers/applications/app/resume",
-    );
+        .getByRole("button", { name: "Download resume", exact: true })
+        .click();
+      await page.getByRole("alert").filter({ hasText: message }).waitFor();
+      assert.equal(
+        await page.getByLabel("Review note", { exact: true }).inputValue(),
+        "Preserved during download",
+      );
+      assert.equal(writes.length, 0);
+    }
+    const downloadEvent = page.waitForEvent("download");
+    await page
+      .getByRole("button", { name: "Download resume", exact: true })
+      .click();
+    const download = await downloadEvent;
+    assert.equal(download.suggestedFilename(), "synthetic.pdf");
+    assert.deepEqual(await readFile(await download.path()), resumeBytes);
+    assert.equal(await page.getByRole("alert").count(), 0);
+    assert.equal(resumeRequests, 4);
     await page
       .getByLabel("Application status", { exact: true })
       .selectOption("shortlisted");
@@ -160,7 +196,10 @@ const assert = require("node:assert/strict");
     await page
       .getByRole("button", { name: "Reload saved application" })
       .click();
-    await page.locator("ol").getByText("Committed note", { exact: true }).waitFor();
+    await page
+      .locator("ol")
+      .getByText("Committed note", { exact: true })
+      .waitFor();
     assert.equal(writes.length, 2);
     assert.equal(
       await page.getByLabel("Review note", { exact: true }).inputValue(),
@@ -180,14 +219,14 @@ const assert = require("node:assert/strict");
         () => document.documentElement.scrollWidth <= innerWidth,
       ),
     );
-    await page.evaluate(()=>window.scrollTo(0,0));
+    await page.evaluate(() => window.scrollTo(0, 0));
     await page.screenshot({
       path: "/tmp/p1-career-application-mobile.png",
       fullPage: true,
     });
     assert.deepEqual(errors, []);
     console.log(
-      "Career application browser passed: literal applicant text, safe links, resume endpoint, stale-review retention, lost-response recovery and mobile layout.",
+      "Career application browser passed: literal applicant text, safe links, resume download bytes/filename and missing/network/access recovery, stale-review retention, lost-response recovery and mobile layout.",
     );
   } finally {
     await browser.close();

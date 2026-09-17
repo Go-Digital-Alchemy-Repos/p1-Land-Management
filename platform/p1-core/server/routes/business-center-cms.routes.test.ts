@@ -2,7 +2,7 @@ import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import express from "express";
 import type { Server } from "node:http";
 const state = vi.hoisted(() => ({
-  careerReview:vi.fn(),careerJobs:vi.fn(),careerSettings:vi.fn(),careerCreate:vi.fn(),careerGet:vi.fn(),careerUpdate:vi.fn(),careerSlug:vi.fn(),
+  careerApplication:vi.fn(),careerResume:vi.fn(),careerReview:vi.fn(),careerJobs:vi.fn(),careerSettings:vi.fn(),careerCreate:vi.fn(),careerGet:vi.fn(),careerUpdate:vi.fn(),careerSlug:vi.fn(),
   authenticate: vi.fn(),
   user: vi.fn(),
   enabled: vi.fn(),
@@ -105,7 +105,7 @@ vi.mock("../storage", () => ({
       deleteComment: state.commentDelete,
       countByStatus: async () => ({ pending: 0, approved: 0, spam: 0, rejected: 0 }),
     },
-    careers:{reviewApplication:state.careerReview,getJobs:state.careerJobs,createJob:state.careerCreate,getJob:state.careerGet,updateJob:state.careerUpdate,getJobSlugOwner:state.careerSlug},
+    careers:{getApplication:state.careerApplication,reviewApplication:state.careerReview,getJobs:state.careerJobs,createJob:state.careerCreate,getJob:state.careerGet,updateJob:state.careerUpdate,getJobSlugOwner:state.careerSlug},
     events: {updateCanceledEvent:state.eventCancel,updateEvent:state.eventUpdate,getAllEvents:state.events,getEvent:state.eventGet,createEvent:state.eventCreate,getEventSlugOwner:state.eventSlug},
     eventVenues:{getAllVenues:state.venues},
     eventOrganizers:{getAllOrganizers:state.organizers},
@@ -117,7 +117,7 @@ vi.mock("../storage", () => ({
 vi.mock("../services/email.service", () => ({sendEventCanceledEmail:state.eventMail,sendEventReminderEmail:state.eventMail,sendRecordingAvailableEmail:state.eventMail}));
 vi.mock("../services/commercial-backfill.service", () => ({ backfillCommercialInquiries: vi.fn() }));
 vi.mock("../storage/index", async () => await import("../storage"));
-vi.mock("../services/careers.service",()=>({getCareerSettings:state.careerSettings,saveCareerSettings:vi.fn(),dispatchCareerWebhook:vi.fn(),loadCareerResume:vi.fn()}));
+vi.mock("../services/careers.service",()=>({getCareerSettings:state.careerSettings,saveCareerSettings:vi.fn(),dispatchCareerWebhook:vi.fn(),loadCareerResume:state.careerResume}));
 vi.mock("../services/site-features.service", () => ({ isSiteFeatureEnabled: state.enabled }));
 vi.mock("../services/system-cms-sections.service", () => ({ ensureSystemCmsSections: vi.fn() }));
 vi.mock("../services/cms-media-upload.service", async (original) => ({
@@ -953,4 +953,32 @@ it("Careers application review retains its version and trusted actor, returning 
  expect(result.status).toBe(200);expect(state.careerReview).toHaveBeenCalledWith('application',{status:'reviewing',note:'Review note',expectedUpdatedAt:'2030-01-01T00:00:00.000Z'},'linked');
  state.careerReview.mockResolvedValue({kind:'conflict'});expect((await request('/careers/applications/application','PUT',{},'/service',{note:'Retained note'})).status).toBe(409);
  state.careerReview.mockResolvedValue({kind:'missing'});expect((await request('/careers/applications/application','PUT',{},'/service',{note:'Retained note'})).status).toBe(404);
+});
+
+
+it("Career resumes require fresh access and are private binary attachments with encoded filenames", async () => {
+  const bytes = Buffer.from([0, 255, 13, 10, 37, 80, 68, 70]);
+  state.careerApplication.mockResolvedValue({id:"application",resumeStorageKey:"local:synthetic.pdf",resumeFileName:'résumé\r\nInjected: value.pdf',resumeMimeType:"text/html"});
+  state.careerResume.mockResolvedValue({buffer:bytes,contentType:"text/html"});
+  const path="/careers/applications/application/resume";
+  expect((await request(path)).status).toBe(403);
+  expect(state.careerResume).not.toHaveBeenCalled();
+  identity.capabilities=["marketing.content.careers"];
+  const response=await request(path);
+  expect(response.status).toBe(200);
+  expect(Buffer.from(await response.arrayBuffer())).toEqual(bytes);
+  expect(response.headers.get("content-type")).toBe("application/octet-stream");
+  expect(response.headers.get("content-disposition")).toMatch(/^attachment;/);
+  expect(response.headers.get("content-disposition")).toContain("filename*=UTF-8''");
+  expect(response.headers.get("injected")).toBeNull();
+  expect(response.headers.get("cache-control")).toBe("private, no-store");
+  expect(response.headers.get("x-content-type-options")).toBe("nosniff");
+  state.careerResume.mockResolvedValue(null);
+  expect((await request(path)).status).toBe(404);
+  state.careerApplication.mockResolvedValue(undefined);
+  state.careerResume.mockClear();
+  expect((await request(path)).status).toBe(404);
+  expect(state.careerResume).not.toHaveBeenCalled();
+  identity.capabilities=[];
+  expect((await request(path)).status).toBe(403);
 });

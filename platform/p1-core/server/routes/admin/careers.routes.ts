@@ -231,11 +231,10 @@ router.get(
     if (!application) return res.status(404).json({ message: "Application not found" });
     const file = await loadCareerResume(application.resumeStorageKey);
     if (!file) return res.status(404).json({ message: "Resume file not found" });
-    res.setHeader("Content-Type", file.contentType || application.resumeMimeType);
-    res.setHeader(
-      "Content-Disposition",
-      `attachment; filename="${application.resumeFileName.replace(/"/g, "")}"`,
-    );
+    res.attachment(application.resumeFileName || "resume");
+    res.setHeader("Content-Type", "application/octet-stream");
+    res.setHeader("X-Content-Type-Options", "nosniff");
+    res.setHeader("Cache-Control", "private, no-store");
     res.send(file.buffer);
   }),
 );

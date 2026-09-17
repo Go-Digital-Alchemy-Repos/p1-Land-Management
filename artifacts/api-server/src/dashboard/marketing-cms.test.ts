@@ -443,3 +443,51 @@ test("event form selector is resolved before the event detail wildcard", () => {
       cmsOperations.indexOf(operation("GET", "/events/:id")),
   );
 });
+
+test("Career resume transport preserves binary bytes, bounds response size and retains missing-file errors", async () => {
+  const resume = operation("GET", "/careers/applications/:id/resume");
+  const bytes = Buffer.from([0, 255, 13, 10, 37, 80, 68, 70]);
+  const response = await callCms(
+    connection,
+    resume,
+    { id: "application" },
+    {},
+    undefined,
+    "grant",
+    async () =>
+      new Response(bytes, {
+        headers: {
+          "content-type": "application/pdf",
+          "set-cookie": "do-not-forward=1",
+        },
+      }),
+  );
+  assert.equal(response.status, 200);
+  assert.deepEqual(response.body, bytes);
+  assert.equal(response.contentType, "application/octet-stream");
+  assert.equal("headers" in response, false);
+  const missing = await callCms(
+    connection,
+    resume,
+    { id: "application" },
+    {},
+    undefined,
+    "grant",
+    async () =>
+      Response.json({ message: "Resume file not found" }, { status: 404 }),
+  );
+  assert.equal(missing.status, 404);
+  await assert.rejects(
+    () =>
+      callCms(
+        connection,
+        resume,
+        { id: "application" },
+        {},
+        undefined,
+        "grant",
+        async () => new Response(Buffer.alloc(11 * 1024 * 1024 + 1)),
+      ),
+    /unavailable/,
+  );
+});
