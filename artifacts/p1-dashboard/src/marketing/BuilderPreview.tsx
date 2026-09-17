@@ -15,9 +15,11 @@ import {
 export function BuilderPreview({
   previewUrl,
   blocks,
+  label = "section",
 }: {
   previewUrl?: string | null;
   blocks: unknown[];
+  label?: "section" | "page";
 }) {
   const [device, setDevice] = useState<"Desktop" | "Tablet" | "Mobile">(
     "Desktop",
@@ -104,11 +106,11 @@ export function BuilderPreview({
     return (
       <p role="status">
         Website preview is not configured yet. You can continue editing and
-        saving this section.
+        saving.
       </p>
     );
   return (
-    <section className="builder-preview" aria-label="Section draft preview">
+    <section className="builder-preview" aria-label={`${label} draft preview`}>
       <div className="section-actions" role="group" aria-label="Preview device">
         {(["Desktop", "Tablet", "Mobile"] as const).map((value) => (
           <button
@@ -129,7 +131,7 @@ export function BuilderPreview({
         <iframe
           key={target.channel}
           ref={frame}
-          title={`${device} section preview`}
+          title={`${device} ${label} preview`}
           src={target.url.href}
           sandbox="allow-scripts allow-same-origin"
           referrerPolicy="no-referrer"

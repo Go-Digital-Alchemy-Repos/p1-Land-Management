@@ -66,3 +66,5 @@
   gap: 12px;
   min-width: 0;
 }
+
+.section-manager .cms-block-editor { border: 0; padding: 0; }

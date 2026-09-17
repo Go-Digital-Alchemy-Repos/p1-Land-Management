@@ -1,6 +1,5 @@
-import { SavedSectionLibrary } from "./SavedSectionLibrary";
+import { CmsBlockEditor } from "./CmsBlockEditor";
 import { BuilderPreview } from "./BuilderPreview";
-import { createFallbackBlockDef } from "../../../../platform/p1-core/shared/cms-builder/fallback-block";
 import { useEffect, useState } from "react";
 import {
   listMarketingSections,
@@ -16,7 +15,6 @@ import type {
   MarketingSectionInput,
   MarketingSectionBuilder,
 } from "../../../../lib/api-client-react/src/dashboard/models";
-import { BlockFields } from "./BlockFields";
 import { useSectionReservation } from "./useSectionReservation";
 import { useCmsUnsavedChanges } from "./useCmsUnsavedChanges";
 import "./section-manager.css";
@@ -62,10 +60,7 @@ function Editor({
     [error, setError] = useState(""),
     [notice, setNotice] = useState(""),
     [busy, setBusy] = useState(false),
-    [type, setType] = useState(""),
-    [showPreview, setShowPreview] = useState(false),
-    [showLibrary, setShowLibrary] = useState(false),
-    [insertPosition, setInsertPosition] = useState("end");
+    [showPreview, setShowPreview] = useState(false);
   const lock = useSectionReservation(id === "new" ? null : id);
   const dirty = JSON.stringify(draft) !== JSON.stringify(saved);
   useCmsUnsavedChanges(dirty);
@@ -105,23 +100,6 @@ function Editor({
       </section>
     );
   const blocks = draft.blocks || [];
-  function insertBlocks(additions: MarketingSection["blocks"]) {
-    const index =
-      insertPosition === "end"
-        ? blocks.length
-        : Math.max(0, Math.min(blocks.length, Number(insertPosition)));
-    setDraft({
-      ...draft!,
-      blocks: [...blocks.slice(0, index), ...additions, ...blocks.slice(index)],
-    });
-  }
-  function move(index: number, direction: number) {
-    const next = [...blocks],
-      target = index + direction;
-    if (target < 0 || target >= next.length) return;
-    [next[index], next[target]] = [next[target], next[index]];
-    setDraft({ ...draft!, blocks: next });
-  }
   return (
     <section className="section-manager">
       <button disabled={busy} onClick={close}>
@@ -220,172 +198,14 @@ function Editor({
               }
             />
           </label>
-          <h3>Content blocks</h3>
-          {blocks.map((block, index) => {
-            const kind = String(block.type || ""),
-              definition = catalog.blocks.find(
-                (def) => def.type === (catalog.aliases[kind] || kind),
-              ),
-              props =
-                block.props &&
-                typeof block.props === "object" &&
-                !Array.isArray(block.props)
-                  ? (block.props as Record<string, unknown>)
-                  : {};
-            const editorDefinition =
-              definition || createFallbackBlockDef(kind || "unknown", props);
-            return (
-              <article
-                className="section-block"
-                key={String(block.id || index)}
-              >
-                <h4>
-                  {index + 1}. {editorDefinition.label}
-                </h4>
-                <div className="section-actions">
-                  <button
-                    type="button"
-                    disabled={index === 0}
-                    aria-label={`Move block ${index + 1} up`}
-                    onClick={() => move(index, -1)}
-                  >
-                    Move up
-                  </button>
-                  <button
-                    type="button"
-                    disabled={index === blocks.length - 1}
-                    aria-label={`Move block ${index + 1} down`}
-                    onClick={() => move(index, 1)}
-                  >
-                    Move down
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setDraft({
-                        ...draft,
-                        blocks: [
-                          ...blocks.slice(0, index + 1),
-                          {
-                            ...structuredClone(block),
-                            id: crypto.randomUUID(),
-                          },
-                          ...blocks.slice(index + 1),
-                        ],
-                      })
-                    }
-                  >
-                    Duplicate block
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (confirm("Remove this block from the section?"))
-                        setDraft({
-                          ...draft,
-                          blocks: blocks.filter((_, i) => i !== index),
-                        });
-                    }}
-                  >
-                    Remove block
-                  </button>
-                </div>
-                {!definition && (
-                  <p>
-                    Compatibility editor: unrecognized nested values remain
-                    unchanged.
-                  </p>
-                )}
-                {
-                  <details>
-                    <summary>Edit {editorDefinition.label}</summary>
-                    <BlockFields
-                      fields={editorDefinition.propDefs}
-                      values={props}
-                      catalog={catalog}
-                      canUseMedia={canUseMedia}
-                      disabled={busy || !lock.owned}
-                      onChange={(next) =>
-                        setDraft({
-                          ...draft,
-                          blocks: blocks.map((old, i) =>
-                            i === index ? { ...old, props: next } : old,
-                          ),
-                        })
-                      }
-                    />
-                  </details>
-                }
-              </article>
-            );
-          })}
-          <label>
-            Insert position
-            <select
-              aria-label="Insert position"
-              value={insertPosition}
-              onChange={(event) => setInsertPosition(event.target.value)}
-            >
-              <option value="end">End of section</option>
-              {blocks.map((block, index) => (
-                <option key={String(block.id || index)} value={String(index)}>
-                  Before block {index + 1}: {String(block.type || "Unknown")}
-                </option>
-              ))}
-            </select>
-          </label>
-          <button
-            type="button"
-            aria-expanded={showLibrary}
-            onClick={() => setShowLibrary((value) => !value)}
-          >
-            {showLibrary ? "Close saved sections" : "Browse saved sections"}
-          </button>
-          {showLibrary && (
-            <SavedSectionLibrary
-              catalog={catalog}
-              disabled={busy || !lock.owned}
-              onInsert={(additions, name) => {
-                insertBlocks(additions);
-                setShowLibrary(false);
-                setNotice(
-                  `Inserted ${additions.length} ${additions.length === 1 ? "block" : "blocks"} from ${name}. Save to keep this copy.`,
-                );
-              }}
-            />
-          )}
-          <label>
-            Add block
-            <select
-              aria-label="Add block"
-              value={type}
-              onChange={(e) => setType(e.target.value)}
-            >
-              <option value="">Choose a block</option>
-              {catalog.blocks.map((def) => (
-                <option key={def.type} value={def.type}>
-                  {def.category} — {def.label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <button
-            type="button"
-            disabled={!type}
-            onClick={() => {
-              const def = catalog.blocks.find((row) => row.type === type);
-              if (def)
-                insertBlocks([
-                  {
-                    id: crypto.randomUUID(),
-                    type,
-                    props: structuredClone(def.defaultProps),
-                  },
-                ]);
-            }}
-          >
-            Add selected block
-          </button>
+          <CmsBlockEditor
+            blocks={blocks}
+            onChange={(blocks) => setDraft({ ...draft, blocks })}
+            catalog={catalog}
+            canUseMedia={canUseMedia}
+            disabled={busy || !lock.owned}
+            onNotice={setNotice}
+          />
           <button type="submit">Save section</button>
         </fieldset>
       </form>
