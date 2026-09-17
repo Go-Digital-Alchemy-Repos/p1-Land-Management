@@ -1,3 +1,4 @@
+import { requireBusinessCapability } from "../../middleware/auth";
 import { Router } from "express";
 import { z } from "zod";
 import { BLOG_COMMENT_STATUSES, blogCommentSettingsSchema } from "@shared/schema";
@@ -17,6 +18,7 @@ import {
 } from "../../services/blog-comments.service";
 
 const router = Router();
+router.use(requireBusinessCapability("marketing.content.blog"));
 
 const blogPostSchemaWithCoercedDate = insertBlogPostSchema.extend({
   publishedAt: z.coerce.date().optional().nullable(),
@@ -141,6 +143,11 @@ async function normalizePostImages(post: BlogPost): Promise<BlogPost> {
     ogImageUrl: (await r2Service.normalizePublicUrl(post.ogImageUrl)) ?? null,
   };
 }
+
+router.get("/references", asyncHandler(async (_req,res)=>{
+  const sidebars=await storage.cmsSidebars.getAll();
+  res.json({sidebars:sidebars.map(sidebar=>({id:sidebar.id,name:sidebar.name}))});
+}));
 
 router.get(
   "/settings/taxonomies",
@@ -310,7 +317,9 @@ router.put(
       slug: data.slug?.trim() || buildUniqueTaxonomySlug(nextType, nextName, allTaxonomies, id),
       type: nextType,
       parentId:
-        nextType === "category" ? (data.parentId ?? existingTaxonomy.parentId ?? null) : null,
+        nextType === "category"
+          ? (data.parentId === undefined ? existingTaxonomy.parentId ?? null : data.parentId)
+          : null,
       sortOrder: data.sortOrder ?? existingTaxonomy.sortOrder,
     });
 

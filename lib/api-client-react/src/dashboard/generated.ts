@@ -78,6 +78,9 @@ import type {
   DashboardMe,
   DashboardProperty,
   DashboardPropertyEditReceipt,
+  DeleteMarketingBlog200,
+  DeleteMarketingBlogComment200,
+  DeleteMarketingBlogTaxonomy200,
   DeleteMarketingMedia200,
   DeleteWebsiteMenu200,
   EditServiceAgreement,
@@ -103,10 +106,23 @@ import type {
   ListManagedInvitations200,
   ListManagedUserHistory200,
   ListManagedUsers200,
+  ListMarketingBlogCommentsParams,
   ListServiceAgreementsParams,
   ManagedAccountUpdate,
   ManagedInvitationInput,
   MarketingAnalytics,
+  MarketingBlogComment,
+  MarketingBlogCommentSettings,
+  MarketingBlogCommentSettingsOverview,
+  MarketingBlogCommentStatus,
+  MarketingBlogCommentUpdate,
+  MarketingBlogInput,
+  MarketingBlogPatch,
+  MarketingBlogPost,
+  MarketingBlogReferences,
+  MarketingBlogTaxonomy,
+  MarketingBlogTaxonomyInput,
+  MarketingBlogTaxonomyPatch,
   MarketingMedia,
   MarketingMediaMetadata,
   MarketingRealtime,
@@ -3834,6 +3850,360 @@ export const updateMarketingTeam = async (id: string,
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
       marketingTeamInput,)
+  }
+);}
+
+
+
+export const getListMarketingBlogUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/blog`
+}
+
+export const listMarketingBlog = async ( options?: RequestInit): Promise<MarketingBlogPost[]> => {
+
+  return customFetch<MarketingBlogPost[]>(getListMarketingBlogUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateMarketingBlogUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/blog`
+}
+
+export const createMarketingBlog = async (marketingBlogInput: MarketingBlogInput, options?: RequestInit): Promise<MarketingBlogPost> => {
+
+  return customFetch<MarketingBlogPost>(getCreateMarketingBlogUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingBlogInput,)
+  }
+);}
+
+
+
+export const getGetMarketingBlogUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/blog/${id}`
+}
+
+export const getMarketingBlog = async (id: string, options?: RequestInit): Promise<MarketingBlogPost> => {
+
+  return customFetch<MarketingBlogPost>(getGetMarketingBlogUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getUpdateMarketingBlogUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/blog/${id}`
+}
+
+export const updateMarketingBlog = async (id: string,
+    marketingBlogPatch: MarketingBlogPatch, options?: RequestInit): Promise<MarketingBlogPost> => {
+
+  return customFetch<MarketingBlogPost>(getUpdateMarketingBlogUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingBlogPatch,)
+  }
+);}
+
+
+
+export const getDeleteMarketingBlogUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/blog/${id}`
+}
+
+export const deleteMarketingBlog = async (id: string, options?: RequestInit): Promise<DeleteMarketingBlog200> => {
+
+  return customFetch<DeleteMarketingBlog200>(getDeleteMarketingBlogUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+export const getGetMarketingBlogReferencesUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/blog/references`
+}
+
+export const getMarketingBlogReferences = async ( options?: RequestInit): Promise<MarketingBlogReferences> => {
+
+  return customFetch<MarketingBlogReferences>(getGetMarketingBlogReferencesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getListMarketingBlogTaxonomiesUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/blog/settings/taxonomies`
+}
+
+export const listMarketingBlogTaxonomies = async ( options?: RequestInit): Promise<MarketingBlogTaxonomy[]> => {
+
+  return customFetch<MarketingBlogTaxonomy[]>(getListMarketingBlogTaxonomiesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateMarketingBlogTaxonomyUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/blog/settings/taxonomies`
+}
+
+export const createMarketingBlogTaxonomy = async (marketingBlogTaxonomyInput: MarketingBlogTaxonomyInput, options?: RequestInit): Promise<MarketingBlogTaxonomy> => {
+
+  return customFetch<MarketingBlogTaxonomy>(getCreateMarketingBlogTaxonomyUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingBlogTaxonomyInput,)
+  }
+);}
+
+
+
+export const getUpdateMarketingBlogTaxonomyUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/blog/settings/taxonomies/${id}`
+}
+
+export const updateMarketingBlogTaxonomy = async (id: string,
+    marketingBlogTaxonomyPatch: MarketingBlogTaxonomyPatch, options?: RequestInit): Promise<MarketingBlogTaxonomy> => {
+
+  return customFetch<MarketingBlogTaxonomy>(getUpdateMarketingBlogTaxonomyUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingBlogTaxonomyPatch,)
+  }
+);}
+
+
+
+export const getDeleteMarketingBlogTaxonomyUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/blog/settings/taxonomies/${id}`
+}
+
+export const deleteMarketingBlogTaxonomy = async (id: string, options?: RequestInit): Promise<DeleteMarketingBlogTaxonomy200> => {
+
+  return customFetch<DeleteMarketingBlogTaxonomy200>(getDeleteMarketingBlogTaxonomyUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+export const getGetMarketingBlogCommentSettingsUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/blog/settings/comments`
+}
+
+export const getMarketingBlogCommentSettings = async ( options?: RequestInit): Promise<MarketingBlogCommentSettingsOverview> => {
+
+  return customFetch<MarketingBlogCommentSettingsOverview>(getGetMarketingBlogCommentSettingsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getSaveMarketingBlogCommentSettingsUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/blog/settings/comments`
+}
+
+export const saveMarketingBlogCommentSettings = async (marketingBlogCommentSettings: MarketingBlogCommentSettings, options?: RequestInit): Promise<MarketingBlogCommentSettings> => {
+
+  return customFetch<MarketingBlogCommentSettings>(getSaveMarketingBlogCommentSettingsUrl(),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingBlogCommentSettings,)
+  }
+);}
+
+
+
+export const getListMarketingBlogCommentsUrl = (params?: ListMarketingBlogCommentsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/marketing/cms/blog/comments?${stringifiedParams}` : `/api/v1/marketing/cms/blog/comments`
+}
+
+export const listMarketingBlogComments = async (params?: ListMarketingBlogCommentsParams, options?: RequestInit): Promise<MarketingBlogComment[]> => {
+
+  return customFetch<MarketingBlogComment[]>(getListMarketingBlogCommentsUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getSetMarketingBlogCommentStatusUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/blog/comments/${id}/status`
+}
+
+export const setMarketingBlogCommentStatus = async (id: string,
+    marketingBlogCommentStatus: MarketingBlogCommentStatus, options?: RequestInit): Promise<MarketingBlogComment> => {
+
+  return customFetch<MarketingBlogComment>(getSetMarketingBlogCommentStatusUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingBlogCommentStatus,)
+  }
+);}
+
+
+
+export const getUpdateMarketingBlogCommentUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/blog/comments/${id}`
+}
+
+export const updateMarketingBlogComment = async (id: string,
+    marketingBlogCommentUpdate: MarketingBlogCommentUpdate, options?: RequestInit): Promise<MarketingBlogComment> => {
+
+  return customFetch<MarketingBlogComment>(getUpdateMarketingBlogCommentUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingBlogCommentUpdate,)
+  }
+);}
+
+
+
+export const getDeleteMarketingBlogCommentUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/blog/comments/${id}`
+}
+
+export const deleteMarketingBlogComment = async (id: string, options?: RequestInit): Promise<DeleteMarketingBlogComment200> => {
+
+  return customFetch<DeleteMarketingBlogComment200>(getDeleteMarketingBlogCommentUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
   }
 );}
 

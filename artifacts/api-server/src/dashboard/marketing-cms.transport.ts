@@ -91,6 +91,22 @@ cmsOperations.push({
   binary: true,
 });
 
+for (const method of ["GET", "POST"] as const) add("blog", method, "/blog");
+add("blog", "GET", "/blog/references");
+for (const method of ["GET", "POST"] as const)
+  add("blog", method, "/blog/settings/taxonomies");
+for (const method of ["PUT", "DELETE"] as const)
+  add("blog", method, "/blog/settings/taxonomies/:id");
+for (const method of ["GET", "PUT"] as const)
+  add("blog", method, "/blog/settings/comments");
+add("blog", "GET", "/blog/comments");
+add("blog", "PATCH", "/blog/comments/:id/status");
+for (const method of ["PUT", "DELETE"] as const)
+  add("blog", method, "/blog/comments/:id");
+
+for (const method of ["GET", "PUT", "DELETE"] as const)
+  add("blog", method, "/blog/:id");
+
 const lockCapabilities: Record<string, Capability | null> = {
   cms_page: "marketing.content.pages",
   blog_post: "marketing.content.blog",
@@ -139,6 +155,16 @@ export function cmsDestination(
       throw new HttpError(400, "Invalid CMS record identifier");
     return value;
   });
+  if (operation.method === "GET" && operation.path === "/blog/comments") {
+    if (
+      Object.keys(query).some((key) => key !== "status") ||
+      (query.status !== undefined &&
+        (typeof query.status !== "string" ||
+          !["pending", "approved", "spam", "rejected"].includes(query.status)))
+    )
+      throw new HttpError(400, "Invalid comment filters");
+    return path + (query.status === undefined ? "" : `?status=${query.status}`);
+  }
   if (operation.method === "GET" && operation.path === "/galleries") {
     if (
       Object.keys(query).some(

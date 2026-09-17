@@ -54,7 +54,7 @@ router.use("/", dashboardRoutes);
 router.use("/users", requireRole("admin"), usersRoutes);
 
 router.use("/events", requireEventsEnabled, requireAdminPermission("content"), eventsRoutes);
-router.use("/blog", requireBlogEnabled, requireAdminPermission("content"), blogRoutes);
+router.use("/blog", requireBlogEnabled, requireBusinessCapability("marketing.content.blog"), blogRoutes);
 router.use("/", registrationRoutes);
 router.use("/cms", requireCmsEnabled, cmsRoutes);
 router.use("/client-stack-onboarding", requireRole("admin"), clientStackOnboardingRoutes);

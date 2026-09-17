@@ -313,3 +313,13 @@ test("Media sources are bounded binary responses with safe content types; metada
     },
   );
 });
+
+test("Blog moderation accepts only known scalar status filters and static routes precede post IDs",()=>{
+ const comments=operation("GET","/blog/comments");
+ assert.equal(cmsDestination(comments,{},{}),"/blog/comments");
+ assert.equal(cmsDestination(comments,{},{status:"pending"}),"/blog/comments?status=pending");
+ for(const query of [{status:"unknown"},{status:["pending"]},{url:"https://external.test"}])assert.throws(()=>cmsDestination(comments,{},query),/filters/);
+ const postIndex=cmsOperations.indexOf(operation("GET","/blog/:id"));
+ for(const path of ["/blog/comments","/blog/references"])assert(cmsOperations.indexOf(operation("GET",path))<postIndex);
+ for(const op of cmsOperations.filter(item=>item.path.startsWith("/blog")))assert.deepEqual(op.capabilities,["marketing.content.blog"]);
+});

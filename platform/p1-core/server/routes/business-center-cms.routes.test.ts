@@ -11,14 +11,32 @@ const state = vi.hoisted(() => ({
   menus: vi.fn(),
   updateMenu: vi.fn(),
   list: vi.fn(),
+  blogCreate: vi.fn(),
+  blogUpdate: vi.fn(),
+  blogGet: vi.fn(),
+  blogDelete: vi.fn(),
+  taxonomies: vi.fn(),
+  taxonomyGet: vi.fn(),
+  taxonomyCreate: vi.fn(),
+  taxonomyUpdate: vi.fn(),
+  taxonomyDelete: vi.fn(),
+  renameCategories: vi.fn(),
+  renameTags: vi.fn(),
+  clearParent: vi.fn(),
+  comments: vi.fn(),
+  commentUpdate: vi.fn(),
+  commentStatus: vi.fn(),
+  commentDelete: vi.fn(),
+  commentSettings: vi.fn(),
+  saveCommentSettings: vi.fn(),
   websiteGet: vi.fn(),
   websiteSave: vi.fn(),
   mediaGet: vi.fn(),
   mediaCreate: vi.fn(),
   mediaDownload: vi.fn(),
-  teamCreate:vi.fn(),
-  teamUpdate:vi.fn(),
-  activity:vi.fn(),
+  teamCreate: vi.fn(),
+  teamUpdate: vi.fn(),
+  activity: vi.fn(),
 }));
 vi.mock("../services/federation-runtime", () => ({
   federationConsumer: () => ({
@@ -44,10 +62,33 @@ vi.mock("../storage", () => ({
     cmsGalleries: { getAll: state.list },
     cmsSidebars: { getAll: state.list },
     redirects: { getAll: state.list },
-    team: { list: state.list, create:state.teamCreate, update:state.teamUpdate },
-    activity:{log:state.activity},
+    team: { list: state.list, create: state.teamCreate, update: state.teamUpdate },
+    activity: { log: state.activity },
     seoSettings: { get: async () => ({}) },
-    blog: { getAllPosts: state.list },
+    blog: {
+      getAllPosts: state.list,
+      getPost: state.blogGet,
+      createPost: state.blogCreate,
+      updatePost: state.blogUpdate,
+      deletePost: state.blogDelete,
+      renameCategoryReferences: state.renameCategories,
+      renameTagReferences: state.renameTags,
+    },
+    blogTaxonomies: {
+      getAllTaxonomies: state.taxonomies,
+      getTaxonomy: state.taxonomyGet,
+      createTaxonomy: state.taxonomyCreate,
+      updateTaxonomy: state.taxonomyUpdate,
+      deleteTaxonomy: state.taxonomyDelete,
+      clearParent: state.clearParent,
+    },
+    blogComments: {
+      getCommentsForModeration: state.comments,
+      updateComment: state.commentUpdate,
+      updateCommentStatus: state.commentStatus,
+      deleteComment: state.commentDelete,
+      countByStatus: async () => ({ pending: 0, approved: 0, spam: 0, rejected: 0 }),
+    },
     events: { getAllEvents: state.list },
     forms: { getAll: state.list },
     editorLocks: { listActiveByResourceType: state.list },
@@ -60,7 +101,16 @@ vi.mock("../services/cms-media-upload.service", async (original) => ({
   ...(await original<typeof import("../services/cms-media-upload.service")>()),
   createCmsMediaAssetFromUpload: state.mediaCreate,
 }));
-vi.mock("../services/r2.service", () => ({ downloadFile: state.mediaDownload }));
+vi.mock("../services/r2.service", () => ({
+  downloadFile: state.mediaDownload,
+  normalizePublicUrl: async (value: unknown) => value,
+}));
+vi.mock("../services/blog-comments.service", () => ({
+  getBlogCommentSettings: state.commentSettings,
+  saveBlogCommentSettings: state.saveCommentSettings,
+}));
+import blog from "./admin/blog.routes";
+import { errorHandler } from "../middleware/error-handler";
 import router from "./business-center-cms.routes";
 import pages from "./admin/cms.routes";
 import sections from "./admin/cms-sections.routes";
@@ -114,6 +164,7 @@ beforeEach(async () => {
       req.dashboardIdentity = identity;
       next();
     },
+    express.Router().use("/blog", blog),
     pages,
     sections,
     galleries,
@@ -125,6 +176,7 @@ beforeEach(async () => {
     team,
     media,
   );
+  app.use(errorHandler);
   server = app.listen(0, "127.0.0.1");
   await new Promise<void>((resolve) => server.once("listening", resolve));
   base = `http://127.0.0.1:${(server.address() as any).port}`;
@@ -434,15 +486,157 @@ it("runs retained multipart and source handlers through the authenticated servic
   expect(state.mediaDownload).toHaveBeenCalledWith("synthetic-key");
 });
 
-it("Team service writes retain local audit identity and require independent Team access", async()=>{
- const body={name:"Synthetic member",role:"Field lead",biography:"<p>Biography</p>",excerpt:"",photoUrl:"",photoAlt:"",status:"draft"};
- const write=(path:string,method:string,input:unknown)=>fetch(base+"/service"+path,{method,headers:{authorization:`Bearer ${key}`,"x-p1-user-grant":grantId,"content-type":"application/json"},body:JSON.stringify(input)});
- identity.capabilities=["marketing.content.team"];state.teamCreate.mockResolvedValue({...body,id:"member"});state.teamUpdate.mockResolvedValue({...body,id:"member",status:"archived"});
- expect((await write("/team","POST",body)).status).toBe(201);
- expect(state.teamCreate).toHaveBeenCalledWith(body,"linked");expect(state.activity).toHaveBeenCalledWith("linked","team_member_created","member");
- expect((await write("/team/member","PUT",{...body,status:"archived"})).status).toBe(200);
- expect(state.teamUpdate).toHaveBeenCalledWith("member",{...body,status:"archived"},"linked");
- identity.capabilities=["settings.people.manage","marketing.content.media"];
- expect((await write("/team","POST",body)).status).toBe(403);expect((await write("/team/member","PUT",body)).status).toBe(403);
- expect(state.teamCreate).toHaveBeenCalledTimes(1);expect(state.teamUpdate).toHaveBeenCalledTimes(1);
+it("Team service writes retain local audit identity and require independent Team access", async () => {
+  const body = {
+    name: "Synthetic member",
+    role: "Field lead",
+    biography: "<p>Biography</p>",
+    excerpt: "",
+    photoUrl: "",
+    photoAlt: "",
+    status: "draft",
+  };
+  const write = (path: string, method: string, input: unknown) =>
+    fetch(base + "/service" + path, {
+      method,
+      headers: {
+        authorization: `Bearer ${key}`,
+        "x-p1-user-grant": grantId,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(input),
+    });
+  identity.capabilities = ["marketing.content.team"];
+  state.teamCreate.mockResolvedValue({ ...body, id: "member" });
+  state.teamUpdate.mockResolvedValue({ ...body, id: "member", status: "archived" });
+  expect((await write("/team", "POST", body)).status).toBe(201);
+  expect(state.teamCreate).toHaveBeenCalledWith(body, "linked");
+  expect(state.activity).toHaveBeenCalledWith("linked", "team_member_created", "member");
+  expect((await write("/team/member", "PUT", { ...body, status: "archived" })).status).toBe(200);
+  expect(state.teamUpdate).toHaveBeenCalledWith(
+    "member",
+    { ...body, status: "archived" },
+    "linked",
+  );
+  identity.capabilities = ["settings.people.manage", "marketing.content.media"];
+  expect((await write("/team", "POST", body)).status).toBe(403);
+  expect((await write("/team/member", "PUT", body)).status).toBe(403);
+  expect(state.teamCreate).toHaveBeenCalledTimes(1);
+  expect(state.teamUpdate).toHaveBeenCalledTimes(1);
+});
+
+it("requires Blog access on every retained post, taxonomy and moderation operation", async () => {
+  identity.capabilities = ["marketing.content.pages", "marketing.content.media", "revenue.sales"];
+  for (const [method, path] of [
+    ["GET", "/blog"],
+    ["POST", "/blog"],
+    ["GET", "/blog/post"],
+    ["PUT", "/blog/post"],
+    ["DELETE", "/blog/post"],
+    ["GET", "/blog/references"],
+    ["GET", "/blog/settings/taxonomies"],
+    ["POST", "/blog/settings/taxonomies"],
+    ["PUT", "/blog/settings/taxonomies/category"],
+    ["DELETE", "/blog/settings/taxonomies/category"],
+    ["GET", "/blog/settings/comments"],
+    ["PUT", "/blog/settings/comments"],
+    ["GET", "/blog/comments"],
+    ["PATCH", "/blog/comments/comment/status"],
+    ["PUT", "/blog/comments/comment"],
+    ["DELETE", "/blog/comments/comment"],
+  ])
+    for (const prefix of ["/service", "/legacy"])
+      expect((await request(path, method, {}, prefix)).status).toBe(403);
+  expect(state.blogCreate).not.toHaveBeenCalled();
+  expect(state.comments).not.toHaveBeenCalled();
+  expect(state.taxonomies).not.toHaveBeenCalled();
+});
+it("retains Blog scheduling rules, feature isolation and minimized references", async () => {
+  identity.capabilities = ["marketing.content.blog"];
+  state.enabled.mockImplementation(async (feature: string) => feature === "blogEnabled");
+  state.taxonomies.mockResolvedValue([]);
+  state.blogCreate.mockImplementation(async (data) => ({ ...data, id: "post" }));
+  const write = (body: unknown) =>
+    fetch(base + "/service/blog", {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${key}`,
+        "x-p1-user-grant": grantId,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+  const input = {
+    title: "Synthetic post",
+    slug: "synthetic-post",
+    content: "<p>Post</p>",
+    authorName: "Synthetic author",
+    isPublished: true,
+    scheduledAt: "2099-01-01T10:00:00Z",
+  };
+  const result = await write(input);
+  expect(result.status).toBe(201);
+  expect((await result.json()).isPublished).toBe(false);
+  expect(state.blogCreate).toHaveBeenCalledWith(
+    expect.objectContaining({
+      isPublished: false,
+      publishedAt: null,
+      scheduledAt: new Date(input.scheduledAt),
+    }),
+  );
+  expect((await write({ ...input, scheduledAt: "2000-01-01T00:00:00Z" })).status).toBe(400);
+  state.list.mockResolvedValue([
+    { id: "sidebar", name: "News", content: { private: "not returned" } },
+  ]);
+  const refs = await request("/blog/references");
+  expect(await refs.json()).toEqual({ sidebars: [{ id: "sidebar", name: "News" }] });
+  expect((await request("/sidebars")).status).toBe(404);
+  state.enabled.mockResolvedValue(false);
+  expect((await request("/blog")).status).toBe(404);
+});
+it("retains Blog moderation filters and category conflicts without broader settings access", async () => {
+  identity.capabilities = ["marketing.content.blog"];
+  state.comments.mockResolvedValue([
+    { id: "comment", body: "Synthetic comment", status: "pending" },
+  ]);
+  expect((await request("/blog/comments?status=pending")).status).toBe(200);
+  expect(state.comments).toHaveBeenCalledWith("pending");
+  expect((await request("/blog/comments?status=unknown")).status).toBe(400);
+  state.taxonomies.mockResolvedValue([
+    { id: "category", type: "category", name: "News", slug: "news" },
+  ]);
+  const headers = {
+    authorization: `Bearer ${key}`,
+    "x-p1-user-grant": grantId,
+    "content-type": "application/json",
+  };
+  expect(
+    (
+      await fetch(base + "/service/blog/settings/taxonomies", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ name: "News", type: "category" }),
+      })
+    ).status,
+  ).toBe(409);
+  state.commentStatus.mockResolvedValue({ id: "comment", status: "approved" });
+  expect(
+    (
+      await fetch(base + "/service/blog/comments/comment/status", {
+        method: "PATCH",
+        headers,
+        body: JSON.stringify({ status: "approved", moderationNote: "Reviewed" }),
+      })
+    ).status,
+  ).toBe(200);
+  expect(state.commentStatus).toHaveBeenCalledWith("comment", "approved", "Reviewed");
+});
+
+it("allows explicitly clearing a Blog category parent while preserving omitted parents",async()=>{
+ identity.capabilities=["marketing.content.blog"];
+ const existing={id:"child",name:"Child",slug:"child",type:"category",parentId:"parent",sortOrder:2};
+ state.taxonomyGet.mockResolvedValue(existing);state.taxonomies.mockResolvedValue([existing]);state.taxonomyUpdate.mockImplementation(async(id,data)=>({id,...data}));
+ const update=(body:unknown)=>fetch(base+"/service/blog/settings/taxonomies/child",{method:"PUT",headers:{authorization:`Bearer ${key}`,"x-p1-user-grant":grantId,"content-type":"application/json"},body:JSON.stringify(body)});
+ expect((await update({sortOrder:3})).status).toBe(200);expect(state.taxonomyUpdate).toHaveBeenLastCalledWith("child",expect.objectContaining({parentId:"parent",sortOrder:3}));
+ expect((await update({parentId:null})).status).toBe(200);expect(state.taxonomyUpdate).toHaveBeenLastCalledWith("child",expect.objectContaining({parentId:null}));
 });

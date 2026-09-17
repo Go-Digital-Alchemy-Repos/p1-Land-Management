@@ -4,7 +4,7 @@ import {
   authenticateMarketingService,
   resolveMarketingActor,
 } from "../middleware/marketing-service";
-import { requireCmsEnabled } from "../middleware/site-features";
+import { requireCmsEnabled, requireBlogEnabled } from "../middleware/site-features";
 import { FederationError } from "../services/federation-client";
 import pages from "./admin/cms.routes";
 import sections from "./admin/cms-sections.routes";
@@ -16,6 +16,7 @@ import redirects from "./admin/cms-redirects.routes";
 import audit from "./admin/cms-audit.routes";
 import team from "./admin/team.routes";
 import editorLocks from "./admin/editor-locks.routes";
+import blog from "./admin/blog.routes";
 import media from "./admin/cms-media.routes";
 import website from "./admin/client-site-content.routes";
 
@@ -43,6 +44,7 @@ router.use(async (req, res, next) => {
   }
 });
 router.use("/editor-locks", editorLocks);
+router.use("/blog", requireBlogEnabled, blog);
 router.use(requireCmsEnabled);
 router.use("/website", website);
 router.use(pages, sections, galleries, menus, sidebars, seo, redirects, audit, team, media);

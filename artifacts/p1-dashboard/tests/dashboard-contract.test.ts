@@ -807,3 +807,10 @@ test("generated Marketing Media client preserves multipart files, metadata and b
   };
   try{const file=new File([bytes],"photo.png",{type:"image/png"});await uploadMarketingMedia({file});await replaceMarketingMedia("media",{file});await updateMarketingMedia("media",{alt:"Field"});const source=await getMarketingMediaSource("media");assert(source instanceof Blob);assert.deepEqual(new Uint8Array(await source.arrayBuffer()),bytes);assert.equal(calls,4);}finally{globalThis.fetch=original;}
 });
+
+test("generated Blog client preserves scheduling nulls, category detachment and moderation filters",async()=>{
+ const {updateMarketingBlog,updateMarketingBlogTaxonomy,listMarketingBlogComments}=await import("@workspace/api-client-react/dashboard");
+ const original=globalThis.fetch;const calls:{url:string;method:string|undefined;body:unknown}[]=[];
+ globalThis.fetch=async(input,init)=>{calls.push({url:String(input),method:init?.method,body:init?.body?JSON.parse(String(init.body)):undefined});return Response.json(String(input).includes("comments")?[]:{id:"record"});};
+ try{await updateMarketingBlog("post",{scheduledAt:null,isPublished:true});await updateMarketingBlogTaxonomy("category",{parentId:null});await listMarketingBlogComments({status:"pending"});assert.deepEqual(calls,[{url:"/api/v1/marketing/cms/blog/post",method:"PUT",body:{scheduledAt:null,isPublished:true}},{url:"/api/v1/marketing/cms/blog/settings/taxonomies/category",method:"PUT",body:{parentId:null}},{url:"/api/v1/marketing/cms/blog/comments?status=pending",method:"GET",body:undefined}]);}finally{globalThis.fetch=original;}
+});
