@@ -111,7 +111,16 @@ const listen = async (server) => {
     const social=page.getByRole("navigation",{name:"Social profiles",exact:true});
     await social.waitFor();assert.equal(await social.getByRole("link").count(),10);assert.equal(await social.locator("svg").count(),10);
     assert.equal(await social.getByRole("link",{name:"P1 on Facebook",exact:true}).getAttribute("rel"),"noopener noreferrer");
-    await page.setViewportSize({width:390,height:844});await social.screenshot({path:"/tmp/p1-social-footer-mobile.png"});const widthAudit=await social.evaluate(e=>{const withLinks=document.documentElement.scrollWidth;e.style.display='none';const withoutLinks=document.documentElement.scrollWidth;e.style.display='';return {withLinks,withoutLinks,viewport:innerWidth,overflow:[...document.querySelectorAll('body *')].filter(node=>node instanceof HTMLElement&&node.getBoundingClientRect().right>innerWidth+1).slice(0,5).map(node=>({tag:node.tagName,className:node.className,right:node.getBoundingClientRect().right}))};});assert.equal(widthAudit.withLinks,widthAudit.withoutLinks);if(widthAudit.withLinks>widthAudit.viewport)console.log('Existing mobile overflow unchanged by social links:',JSON.stringify(widthAudit));assert(await social.evaluate(e=>e.scrollWidth<=e.clientWidth));await page.setViewportSize({width:1280,height:800});
+    for(const width of [320,390,768,1024,1280]) {
+      await page.setViewportSize({width,height:844});
+      assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`Homepage overflows at ${width}px`);
+      assert(await social.evaluate(e=>e.scrollWidth<=e.clientWidth),`Social row overflows at ${width}px`);
+      const feature=page.getByAltText("Grading for new construction",{exact:true});
+      assert(await feature.evaluate(e=>{const r=e.getBoundingClientRect();return r.width>0&&r.left>=0&&r.right<=innerWidth;}),`Feature image exceeds viewport at ${width}px`);
+    }
+    await page.setViewportSize({width:390,height:844});await social.screenshot({path:"/tmp/p1-social-footer-mobile.png"});
+    await page.getByAltText("Grading for new construction",{exact:true}).locator("..").screenshot({path:"/tmp/p1-feature-image-mobile.png"});
+    await page.setViewportSize({width:1280,height:800});
     await page.goto(`http://127.0.0.1:${port}/service-areas/inman-sc`, {waitUntil:"domcontentloaded"});
     await page.waitForFunction(()=>{const h=document.querySelector("h1");return h && getComputedStyle(h).color === "rgb(255, 0, 0)";});
     await page.waitForFunction(()=>{const h=document.querySelector("h2");return h && getComputedStyle(h).color === "rgb(0, 255, 0)";});
