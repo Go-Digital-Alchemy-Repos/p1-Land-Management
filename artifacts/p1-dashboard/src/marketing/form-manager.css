@@ -62,3 +62,23 @@
 .form-manager dt {
   font-weight: 600;
 }
+.form-field-builder,
+.form-field-card {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+.form-field-card {
+  display: block;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+}
+.form-field-card > summary {
+  cursor: pointer;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.form-field-card[open] > :not(summary) {
+  margin-top: 14px;
+}

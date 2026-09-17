@@ -93,6 +93,43 @@ const assert = require("node:assert/strict");
     await page
       .getByLabel("Description", { exact: true })
       .fill("Changed description");
+    await page.locator(".form-field-card summary").first().click();
+    await page
+      .getByRole("button", { name: "Duplicate field", exact: true })
+      .click();
+    await page.locator(".form-field-card summary").nth(1).click();
+    await page
+      .locator(".form-field-card")
+      .nth(1)
+      .getByLabel("Field label", { exact: true })
+      .fill("Second email");
+    await page
+      .locator(".form-field-card")
+      .nth(1)
+      .getByRole("button", { name: "Move up", exact: true })
+      .click();
+    const copyKey = await page
+      .locator(".form-field-card")
+      .first()
+      .getByLabel("Field key", { exact: true })
+      .inputValue();
+    await page
+      .locator(".form-field-card")
+      .first()
+      .getByLabel("Field key", { exact: true })
+      .fill("email");
+    await page.getByRole("button", { name: "Save form", exact: true }).click();
+    await page
+      .getByRole("alert")
+      .filter({ hasText: "Field keys and IDs must be unique" })
+      .waitFor();
+    assert.equal(mutations, 0);
+    await page
+      .locator(".form-field-card")
+      .first()
+      .getByLabel("Field key", { exact: true })
+      .fill(copyKey);
+
     page.once("dialog", (d) => d.accept());
     await page.getByRole("button", { name: "Save form", exact: true }).click();
     await page
@@ -103,7 +140,11 @@ const assert = require("node:assert/strict");
       await page.getByLabel("Description", { exact: true }).inputValue(),
       "Changed description",
     );
-    assert.deepEqual(saved.fields, form.fields);
+    assert.deepEqual(saved.fields[1], form.fields[0]);
+    assert.equal(saved.fields[0].label, "Second email");
+    assert.notEqual(saved.fields[0].id, saved.fields[1].id);
+    assert.notEqual(saved.fields[0].key, saved.fields[1].key);
+    assert.deepEqual(saved.fields[0].config, form.fields[0].config);
     assert.deepEqual(saved.settings.unknownSetting, { keep: true });
     fail = false;
     page.once("dialog", (d) => d.accept());
@@ -128,6 +169,35 @@ const assert = require("node:assert/strict");
       .getByRole("button", { name: "Create form", exact: true })
       .click();
     await page.getByLabel("Name", { exact: true }).fill("Unsaved form");
+    await page
+      .getByLabel("New field type", { exact: true })
+      .selectOption("image-choice");
+    await page.getByRole("button", { name: "Add field", exact: true }).click();
+    await page.locator(".form-field-card summary").first().click();
+    await page
+      .getByLabel("Selection mode", { exact: true })
+      .selectOption("multiple");
+    await page.getByRole("button", { name: "Add choice", exact: true }).click();
+    assert.equal(
+      await page.getByLabel("Choice label", { exact: true }).count(),
+      2,
+    );
+    await page
+      .getByLabel("New field type", { exact: true })
+      .selectOption("list");
+    await page.getByRole("button", { name: "Add field", exact: true }).click();
+    await page.locator(".form-field-card summary").nth(1).click();
+    await page.getByRole("button", { name: "Add column", exact: true }).click();
+    assert.equal(
+      await page.getByLabel("Column label", { exact: true }).count(),
+      2,
+    );
+    assert(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    );
+
     page.once("dialog", (d) => d.dismiss());
     await page.getByRole("button", { name: "Cancel", exact: true }).click();
     assert.equal(

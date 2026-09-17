@@ -12,6 +12,7 @@ import type {
 } from "../../../../lib/api-client-react/src/dashboard/models";
 import { useCmsUnsavedChanges } from "./useCmsUnsavedChanges";
 import "./form-manager.css";
+import { FormFieldsEditor, validateFormFields } from "./FormFieldsEditor";
 
 const message = (error: unknown) =>
   (error as { data?: { message?: string; error?: string } }).data?.message ||
@@ -92,6 +93,11 @@ function Editor({
     }));
   async function save() {
     if (gate.current) return;
+    const fieldError = validateFormFields(value.fields || []);
+    if (fieldError) {
+      setError(fieldError);
+      return;
+    }
     if (
       value.isActive &&
       !window.confirm(
@@ -241,20 +247,11 @@ function Editor({
           </p>
         </fieldset>
         <fieldset disabled={busy}>
-          <legend>Saved fields ({value.fields?.length || 0})</legend>
-          <p>
-            Saved field definitions remain unchanged when updating these
-            settings.
-          </p>
-          <ol>
-            {value.fields?.map((field, index) => (
-              <li key={index}>
-                <strong>{String(field.label || field.key || "Field")}</strong> ·{" "}
-                {String(field.type || "Unknown type")}
-                {field.required ? " · Required" : ""}
-              </li>
-            ))}
-          </ol>
+          <legend>Fields ({value.fields?.length || 0})</legend>
+          <FormFieldsEditor
+            fields={value.fields || []}
+            onChange={(fields) => patch({ fields })}
+          />
         </fieldset>
         <div className="form-actions">
           <button disabled={busy} type="submit">
