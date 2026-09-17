@@ -1,3 +1,4 @@
+import { agreementCompositionApi } from "./agreement-composition.routes";
 import { agreementTemplateApi } from "./agreement-template.routes";
 import { Router } from "express";
 import { createHash, randomBytes, randomUUID } from "node:crypto";
@@ -199,7 +200,7 @@ async function decideEstimate(estimateId: string, status: "approved" | "declined
 }
 
 export const jobsLifecycleApi = Router();
-jobsLifecycleApi.use(agreementTemplateApi);
+jobsLifecycleApi.use(agreementTemplateApi, agreementCompositionApi);
 jobsLifecycleApi.post("/estimates", async (req, res) => res.status(201).json(await createEstimate(await actor(req), req.body)));
 jobsLifecycleApi.post("/requests/:id/estimates", async (req, res) => res.status(201).json(await createEstimate(await actor(req), req.body, id.parse(req.params.id))));
 jobsLifecycleApi.get("/estimates/:id/document", async (req, res) => {

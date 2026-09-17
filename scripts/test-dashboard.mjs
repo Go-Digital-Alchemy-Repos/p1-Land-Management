@@ -135,6 +135,7 @@ try {
       "src/dashboard/service-request.test.ts",
       "src/dashboard/jobs-lifecycle.test.ts",
       "src/dashboard/agreement-template.test.ts",
+      "src/dashboard/agreement-composition.test.ts",
       "src/dashboard/commercial-assessment.test.ts",
       "../p1-dashboard/tests/schedule-dates.test.ts",
       "../p1-dashboard/tests/phone.test.ts",

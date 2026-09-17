@@ -21,6 +21,7 @@ import type {
   AgreementChargeReviewReceipt,
   AgreementChargeReviewRecordInput,
   AgreementChargeSource,
+  AgreementDraft,
   AgreementEstimateOption,
   AgreementPreparationJob,
   AgreementPreparationJobPage,
@@ -41,6 +42,7 @@ import type {
   BillingDraft,
   BookAssessmentSlot,
   CancelServiceAgreement,
+  ChangeAgreementDraftContext,
   ClientContact,
   ClientOnboardingReceipt,
   ClientWorkspace,
@@ -55,6 +57,7 @@ import type {
   CommercialInquiry,
   CommercialInquiryDetail,
   CommercialInquiryPage,
+  CreateAgreementDraft,
   CreateAgreementTemplate,
   CreateAssessmentBlackout,
   CreateBillingDraft,
@@ -113,6 +116,8 @@ import type {
   ListAgreementChargeQueueParams,
   ListAgreementChargeReviewsParams,
   ListAgreementChargesParams,
+  ListAgreementDrafts200,
+  ListAgreementDraftsParams,
   ListAgreementPreparationJobsParams,
   ListAgreementTemplatesParams,
   ListCommercialInquiriesParams,
@@ -238,6 +243,7 @@ import type {
   SyncFieldEventsBody,
   UnpublishMarketingPageParams,
   UpdateAccountMfaPolicy,
+  UpdateAgreementDraft,
   UpdateAgreementTemplate,
   UpdateClientContact,
   UpdateDashboardClient,
@@ -6653,6 +6659,123 @@ export const reviseAgreementTemplate = async (id: string,
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
       reviseAgreementTemplateBody,)
+  }
+);}
+
+
+
+export const getListAgreementDraftsUrl = (params?: ListAgreementDraftsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/agreement-drafts?${stringifiedParams}` : `/api/v1/agreement-drafts`
+}
+
+export const listAgreementDrafts = async (params?: ListAgreementDraftsParams, options?: RequestInit): Promise<ListAgreementDrafts200> => {
+
+  return customFetch<ListAgreementDrafts200>(getListAgreementDraftsUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateAgreementDraftUrl = () => {
+
+
+
+
+  return `/api/v1/agreement-drafts`
+}
+
+export const createAgreementDraft = async (createAgreementDraft: CreateAgreementDraft, options?: RequestInit): Promise<AgreementDraft> => {
+
+  return customFetch<AgreementDraft>(getCreateAgreementDraftUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createAgreementDraft,)
+  }
+);}
+
+
+
+export const getGetAgreementDraftUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/agreement-drafts/${id}`
+}
+
+export const getAgreementDraft = async (id: string, options?: RequestInit): Promise<AgreementDraft> => {
+
+  return customFetch<AgreementDraft>(getGetAgreementDraftUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getUpdateAgreementDraftUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/agreement-drafts/${id}`
+}
+
+export const updateAgreementDraft = async (id: string,
+    updateAgreementDraft: UpdateAgreementDraft, options?: RequestInit): Promise<AgreementDraft> => {
+
+  return customFetch<AgreementDraft>(getUpdateAgreementDraftUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      updateAgreementDraft,)
+  }
+);}
+
+
+
+export const getChangeAgreementDraftContextUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/agreement-drafts/${id}/context`
+}
+
+export const changeAgreementDraftContext = async (id: string,
+    changeAgreementDraftContext: ChangeAgreementDraftContext, options?: RequestInit): Promise<AgreementDraft> => {
+
+  return customFetch<AgreementDraft>(getChangeAgreementDraftContextUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      changeAgreementDraftContext,)
   }
 );}
 

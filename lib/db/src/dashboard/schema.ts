@@ -1831,3 +1831,24 @@ export const businessAccountAccess = pgTable("business_account_access", {
   reviewedBy: text("reviewed_by").references(() => user.id),
   updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" }).defaultNow().notNull(),
 }, table => [check("business_account_access_version_check", sql`${table.version} > 0`)]);
+
+
+export const agreementCompositionDraft = pgTable("agreement_composition_draft", {
+  id: uuid().primaryKey().notNull(),
+  title: text().notNull(),
+  clientId: uuid("client_id").references(()=>client.id),
+  propertyId: uuid("property_id").references(()=>property.id),
+  leadId: uuid("lead_id").references(()=>lead.id),
+  sourceEstimateId: uuid("source_estimate_id").references(()=>estimate.id),
+  estimateId: uuid("estimate_id").unique().references(()=>estimate.id),
+  status: text().default("draft").notNull(),
+  version: integer().default(1).notNull(),
+  content: jsonb().notNull(), dates: jsonb().notNull(),
+  sourceTemplates: jsonb("source_templates").notNull(),
+  contextSnapshot: jsonb("context_snapshot").notNull(),
+  createdBy: text("created_by").notNull().references(()=>user.id),
+  creationKey: uuid("creation_key").notNull(),
+  creationFingerprint: text("creation_fingerprint").notNull(),
+  createdAt: timestamp("created_at", {withTimezone:true,mode:"string"}).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", {withTimezone:true,mode:"string"}).defaultNow().notNull(),
+});

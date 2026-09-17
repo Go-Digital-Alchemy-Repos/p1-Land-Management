@@ -11771,6 +11771,261 @@
           }
         }
       }
+    },
+    "/agreement-drafts": {
+      "get": {
+        "operationId": "listAgreementDrafts",
+        "responses": {
+          "200": {
+            "description": "Private agreement draft",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/AgreementDraftSummary"
+                      }
+                    },
+                    "nextCursor": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  },
+                  "required": [
+                    "items",
+                    "nextCursor"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "403": {
+            "description": "Sales write or Agreements read capability required"
+          },
+          "404": {
+            "description": "Draft or context not found"
+          },
+          "409": {
+            "description": "Stale version, incompatible context or reused creation key"
+          }
+        },
+        "parameters": [
+          {
+            "name": "clientId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "leadId",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "createAgreementDraft",
+        "responses": {
+          "201": {
+            "description": "Private agreement draft",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgreementDraft"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "403": {
+            "description": "Sales write or Agreements read capability required"
+          },
+          "404": {
+            "description": "Draft or context not found"
+          },
+          "409": {
+            "description": "Stale version, incompatible context or reused creation key"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAgreementDraft"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agreement-drafts/{id}": {
+      "get": {
+        "operationId": "getAgreementDraft",
+        "responses": {
+          "200": {
+            "description": "Private agreement draft",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgreementDraft"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "403": {
+            "description": "Sales write or Agreements read capability required"
+          },
+          "404": {
+            "description": "Draft or context not found"
+          },
+          "409": {
+            "description": "Stale version, incompatible context or reused creation key"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      },
+      "put": {
+        "operationId": "updateAgreementDraft",
+        "responses": {
+          "200": {
+            "description": "Private agreement draft",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgreementDraft"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "403": {
+            "description": "Sales write or Agreements read capability required"
+          },
+          "404": {
+            "description": "Draft or context not found"
+          },
+          "409": {
+            "description": "Stale version, incompatible context or reused creation key"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAgreementDraft"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agreement-drafts/{id}/context": {
+      "post": {
+        "operationId": "changeAgreementDraftContext",
+        "responses": {
+          "200": {
+            "description": "Private agreement draft",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgreementDraft"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "403": {
+            "description": "Sales write or Agreements read capability required"
+          },
+          "404": {
+            "description": "Draft or context not found"
+          },
+          "409": {
+            "description": "Stale version, incompatible context or reused creation key"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeAgreementDraftContext"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -23552,6 +23807,539 @@
         },
         "required": [
           "expectedEditVersion"
+        ]
+      },
+      "AgreementDraftContext": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "clientId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "propertyId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "leadId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "sourceEstimateId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          }
+        },
+        "required": [],
+        "description": "At least a client or inquiry is required. Property and source estimate must match the selected context."
+      },
+      "AgreementDraftSelection": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "packageId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "msaId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "scopeId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "costId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          }
+        },
+        "required": [],
+        "description": "Choose one package or individual published components; package references retain their exact fixed versions."
+      },
+      "AgreementDraftDates": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "preparedOn": {
+            "type": "string",
+            "format": "date",
+            "nullable": true
+          },
+          "startsOn": {
+            "type": "string",
+            "format": "date",
+            "nullable": true
+          },
+          "endsOn": {
+            "type": "string",
+            "format": "date",
+            "nullable": true
+          }
+        },
+        "required": []
+      },
+      "AgreementDraftContent": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "terms": {
+            "type": "string"
+          },
+          "scope": {
+            "$ref": "#/components/schemas/AgreementScopePayload"
+          },
+          "costs": {
+            "$ref": "#/components/schemas/AgreementCostPayload"
+          },
+          "notes": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "scope": {
+                "type": "string"
+              },
+              "cost": {
+                "type": "string"
+              },
+              "package": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "scope",
+              "cost",
+              "package"
+            ]
+          }
+        },
+        "required": [
+          "terms",
+          "scope",
+          "costs",
+          "notes"
+        ]
+      },
+      "AgreementDraftPreviewCosts": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "unit": {
+                  "type": "string"
+                },
+                "quantity": {
+                  "type": "number",
+                  "minimum": 0,
+                  "exclusiveMinimum": true,
+                  "maximum": 1000000,
+                  "multipleOf": 0.01
+                },
+                "unitPriceCents": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000000000
+                },
+                "basis": {
+                  "type": "string",
+                  "enum": [
+                    "one_time",
+                    "fixed_monthly",
+                    "per_visit"
+                  ]
+                },
+                "totalCents": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "id",
+                "description",
+                "unit",
+                "quantity",
+                "unitPriceCents",
+                "basis",
+                "totalCents"
+              ]
+            }
+          }
+        },
+        "required": [
+          "items"
+        ]
+      },
+      "AgreementDraftPreviewContent": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "terms": {
+            "type": "string"
+          },
+          "scope": {
+            "$ref": "#/components/schemas/AgreementScopePayload"
+          },
+          "costs": {
+            "$ref": "#/components/schemas/AgreementDraftPreviewCosts"
+          },
+          "notes": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "scope": {
+                "type": "string"
+              },
+              "cost": {
+                "type": "string"
+              },
+              "package": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "scope",
+              "cost",
+              "package"
+            ]
+          }
+        },
+        "required": [
+          "terms",
+          "scope",
+          "costs",
+          "notes"
+        ]
+      },
+      "AgreementDraftPreview": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "content": {
+            "$ref": "#/components/schemas/AgreementDraftPreviewContent"
+          },
+          "unresolvedPlaceholders": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "totalsByBasis": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "one_time": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "fixed_monthly": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "per_visit": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "one_time",
+              "fixed_monthly",
+              "per_visit"
+            ]
+          }
+        },
+        "required": [
+          "content",
+          "unresolvedPlaceholders",
+          "totalsByBasis"
+        ]
+      },
+      "AgreementDraftTemplateSource": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "msa",
+              "scope",
+              "cost",
+              "package"
+            ]
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "name": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/AgreementTemplatePayload"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "version",
+          "name",
+          "body",
+          "payload"
+        ]
+      },
+      "AgreementDraftSummary": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "client_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "property_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "lead_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "prepared"
+            ]
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "client_id",
+          "property_id",
+          "lead_id",
+          "status",
+          "version",
+          "created_at",
+          "updated_at"
+        ]
+      },
+      "AgreementDraft": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "client_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "property_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "lead_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "prepared"
+            ]
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "source_estimate_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "estimate_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "content": {
+            "$ref": "#/components/schemas/AgreementDraftContent"
+          },
+          "dates": {
+            "$ref": "#/components/schemas/AgreementDraftDates"
+          },
+          "source_templates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AgreementDraftTemplateSource"
+            }
+          },
+          "context_snapshot": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "nullable": true
+            }
+          },
+          "created_by": {
+            "type": "string"
+          },
+          "preview": {
+            "$ref": "#/components/schemas/AgreementDraftPreview"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "client_id",
+          "property_id",
+          "lead_id",
+          "status",
+          "version",
+          "created_at",
+          "updated_at",
+          "source_estimate_id",
+          "estimate_id",
+          "content",
+          "dates",
+          "source_templates",
+          "context_snapshot",
+          "created_by",
+          "preview"
+        ]
+      },
+      "CreateAgreementDraft": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "operationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "context": {
+            "$ref": "#/components/schemas/AgreementDraftContext"
+          },
+          "selection": {
+            "$ref": "#/components/schemas/AgreementDraftSelection"
+          },
+          "dates": {
+            "$ref": "#/components/schemas/AgreementDraftDates"
+          }
+        },
+        "required": [
+          "operationId",
+          "title",
+          "context"
+        ]
+      },
+      "UpdateAgreementDraft": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "title": {
+            "type": "string"
+          },
+          "content": {
+            "$ref": "#/components/schemas/AgreementDraftContent"
+          },
+          "dates": {
+            "$ref": "#/components/schemas/AgreementDraftDates"
+          }
+        },
+        "required": [
+          "expectedVersion",
+          "title",
+          "content",
+          "dates"
+        ]
+      },
+      "ChangeAgreementDraftContext": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "context": {
+            "$ref": "#/components/schemas/AgreementDraftContext"
+          }
+        },
+        "required": [
+          "expectedVersion",
+          "context"
         ]
       }
     }

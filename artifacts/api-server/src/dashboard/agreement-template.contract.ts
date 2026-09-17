@@ -2,7 +2,7 @@ import { z } from "zod";
 export const templateKind = z.enum(["msa", "scope", "cost", "package"]);
 const rowId = z.string().uuid();
 const prose = z.string().max(50_000);
-const scopePayload = z
+export const scopePayload = z
   .object({
     items: z
       .array(
@@ -18,7 +18,7 @@ const scopePayload = z
     exclusions: prose,
   })
   .strict();
-const costPayload = z
+export const costPayload = z
   .object({
     items: z
       .array(
