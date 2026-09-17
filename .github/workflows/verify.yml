@@ -57,6 +57,7 @@ jobs:
           pnpm --filter @workspace/p1-website check:navigation
           pnpm --filter @workspace/p1-website check:media
           pnpm --filter @workspace/p1-website check:images
+          pnpm --filter @workspace/p1-website check:analytics
           pnpm --filter @workspace/p1-website check:faq
 
   core-platform:
