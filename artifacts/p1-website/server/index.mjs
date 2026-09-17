@@ -8,6 +8,7 @@ import { createGzip, createBrotliCompress } from 'node:zlib';
 import { createContentStore } from './content.mjs';
 import { clientIp } from './client-ip.mjs';
 import { createGoogleReviewsStore } from './google-reviews.mjs';
+import { BUSINESS_CENTER_ORIGIN } from '../config/preview-origins.mjs';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const publicDir = path.join(root,'dist/public');
 const manifest = JSON.parse(await readFile(path.join(root,'config/client-site-manifest.json'),'utf8'));
@@ -130,7 +131,14 @@ const server=http.createServer(async(req,res)=>{
     if(!['GET','HEAD'].includes(req.method))return send(req,res,405,'Method not allowed');
     res.setHeader('Content-Security-Policy',"default-src 'self'; script-src 'self' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com; frame-ancestors 'self'; base-uri 'self'; object-src 'none'; form-action 'self'");
     if(pathname==='/robots.txt' && !indexableDeployment)return send(req,res,200,'User-agent: *\nDisallow: /\n','text/plain; charset=utf-8');
-    if(url.searchParams.has('cmsPreview'))res.setHeader('X-Robots-Tag','noindex, nofollow');
+    if(url.searchParams.has('cmsPreview')) {
+      res.setHeader('X-Robots-Tag','noindex, nofollow');
+      if (content.routes.has(pathname)) {
+        // Only public preview documents may be framed by the consolidated editor.
+        res.removeHeader('X-Frame-Options');
+        res.setHeader('Content-Security-Policy', String(res.getHeader('Content-Security-Policy')).replace("frame-ancestors 'self'", `frame-ancestors 'self' ${BUSINESS_CENTER_ORIGIN}`));
+      }
+    }
     if(pathname==='/sitemap.xml') {
       const snapshots=await Promise.all([...content.routes.keys()].filter(p=>!retiredRoutes.has(p)).map(p=>content.snapshot(p)));
       const body=`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${snapshots.map(s=>`<url><loc>${canonical}${escape(s.route)}</loc>${s.publishedAt?`<lastmod>${escape(new Date(s.publishedAt).toISOString())}</lastmod>`:''}</url>`).join('')}</urlset>`;

@@ -1,7 +1,8 @@
 import { Router, type Response } from "express";
+import { requireBusinessCapability } from "../../middleware/auth";
 import { z } from "zod";
 import { storage } from "../../storage";
-import { ClientSiteContentConflictError } from "../../storage/client-site-content.storage";
+import { ClientSiteContentConflictError } from "../../services/client-site-content-workflow";
 import { logger } from "../../utils/logger";
 import {
   contentIdentity,
@@ -11,6 +12,7 @@ import {
 } from "../../services/client-site-content.service";
 
 const router = Router();
+router.use(requireBusinessCapability("marketing.content.website"));
 const revisionBody = z.object({ expectedRevision: z.number().int().nonnegative() }).strict();
 const draftBody = revisionBody.extend({ content: z.unknown() });
 

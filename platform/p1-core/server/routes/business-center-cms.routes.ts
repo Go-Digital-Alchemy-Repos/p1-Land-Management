@@ -16,6 +16,7 @@ import redirects from "./admin/cms-redirects.routes";
 import audit from "./admin/cms-audit.routes";
 import team from "./admin/team.routes";
 import editorLocks from "./admin/editor-locks.routes";
+import website from "./admin/client-site-content.routes";
 
 /** Retained CMS handlers, with their canonical tool gates, own validation and writes.
  * No arbitrary Core URL, local cookie, role or client-supplied identity is accepted.
@@ -42,6 +43,7 @@ router.use(async (req, res, next) => {
 });
 router.use("/editor-locks", editorLocks);
 router.use(requireCmsEnabled);
+router.use("/website", website);
 router.use(pages, sections, galleries, menus, sidebars, seo, redirects, audit, team);
 router.use((_req, res) => res.status(404).json({ message: "CMS operation not found" }));
 export default router;

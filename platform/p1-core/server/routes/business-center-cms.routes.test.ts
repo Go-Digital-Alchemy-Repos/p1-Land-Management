@@ -11,6 +11,8 @@ const state = vi.hoisted(() => ({
   menus: vi.fn(),
   updateMenu: vi.fn(),
   list: vi.fn(),
+  websiteGet: vi.fn(),
+  websiteSave: vi.fn(),
 }));
 vi.mock("../services/federation-runtime", () => ({
   federationConsumer: () => ({
@@ -23,6 +25,7 @@ vi.mock("../services/federation-runtime", () => ({
 vi.mock("../storage", () => ({
   storage: {
     users: { getUser: state.user },
+    clientSiteContent: { get: state.websiteGet, saveDraft: state.websiteSave },
     cmsPages: {
       getAllPages: state.pages,
       getPageByIdOrSlug: state.page,
@@ -57,6 +60,7 @@ import audit from "./admin/cms-audit.routes";
 import team from "./admin/team.routes";
 import media from "./admin/cms-media.routes";
 import publicCms from "./cms-public.routes";
+import { ClientSiteContentConflictError } from "../services/client-site-content-workflow";
 const key = "s".repeat(43),
   grantId = "11111111-1111-4111-8111-111111111111";
 let server: Server, base: string;
@@ -320,4 +324,33 @@ it("projects menu selector references without page bodies, form rules or submiss
   });
   identity.capabilities = ["marketing.content.pages"];
   expect((await request("/menu-references")).status).toBe(403);
+});
+
+it("bridges Website content with its own grant, bounded validation and revision conflicts", async () => {
+  vi.stubEnv("CLIENT_SITE_MANIFEST_PATH", "docs/pilots/better-farms/client-site-manifest.example.json");
+  const path = "/website/fund-a-farm/fund-a-farm-page";
+  expect((await request(path)).status).toBe(403);
+  expect(state.websiteGet).not.toHaveBeenCalled();
+  identity.capabilities = ["marketing.content.website"];
+  state.websiteGet.mockResolvedValue(undefined);
+  const catalog = await request("/website");
+  expect(catalog.status).toBe(200);
+  expect((await catalog.json()).some((row: any) => row.routeId === "fund-a-farm")).toBe(true);
+  const response = await request(path);
+  expect(response.status).toBe(200);
+  const detail = await response.json();
+  expect(detail.previewUrl).toBe("https://better-farms.example/fund-a-farm?cmsPreview=1&cmsComponent=fund-a-farm-page");
+  const save = (body: unknown) => fetch(base + "/service" + path + "/draft", {
+    method: "PUT", headers: { authorization: `Bearer ${key}`, "x-p1-user-grant": grantId, "content-type": "application/json" }, body: JSON.stringify(body),
+  });
+  expect((await save({ content: detail.draftContent, expectedRevision: -1 })).status).toBe(400);
+  expect(state.websiteSave).not.toHaveBeenCalled();
+  state.websiteSave.mockRejectedValue(new ClientSiteContentConflictError("Draft revision changed"));
+  const conflict = await save({ content: detail.draftContent, expectedRevision: 0 });
+  expect(conflict.status).toBe(409);
+  expect(await conflict.json()).toEqual({ error: "Draft revision changed" });
+  expect(state.websiteSave).toHaveBeenCalledWith(expect.any(Object), detail.draftContent, 0, "linked");
+  identity.capabilities = [];
+  expect((await save({ content: detail.draftContent, expectedRevision: 0 })).status).toBe(403);
+  expect(state.websiteSave).toHaveBeenCalledTimes(1);
 });

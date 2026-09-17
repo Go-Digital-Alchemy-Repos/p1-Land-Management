@@ -119,6 +119,14 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
     assert(!upstreamRequests.some(item => /draft|preview/.test(item.path)));
     assert(!/<script[^>]+src="[^"]*(?:admin|dashboard)/.test(response.body));
     const preview = await request(port, '/?cmsPreview=1'); assert.equal(preview.headers['x-robots-tag'], 'noindex, nofollow');
+    assert.equal(preview.headers['x-frame-options'], undefined);
+    assert(preview.headers['content-security-policy'].includes("frame-ancestors 'self' https://dashboard.p1landmanagement.com;"));
+    assert.equal(preview.headers['cache-control'], 'private, no-store');
+    assert.equal(response.headers['x-frame-options'], 'SAMEORIGIN');
+    assert(!response.headers['content-security-policy'].includes('dashboard.p1landmanagement.com'));
+    const unknown = await request(port, '/not-a-page?cmsPreview=1');
+    assert.equal(unknown.headers['x-frame-options'], 'SAMEORIGIN');
+    assert(!unknown.headers['content-security-policy'].includes('dashboard.p1landmanagement.com'));
   });
   await t.test('Google reviews endpoint fails closed until server credentials are configured', async () => {
     const response = await request(port, '/api/p1/google-reviews');
@@ -185,6 +193,7 @@ test('staging manifest blocks indexing across public and proxied responses regar
   await copyFile(resolve(root, 'server/content.mjs'), resolve(temporary, 'server/content.mjs'));
   await copyFile(resolve(root, 'server/client-ip.mjs'), resolve(temporary, 'server/client-ip.mjs')); 
   await copyFile(resolve(root, 'server/google-reviews.mjs'), resolve(temporary, 'server/google-reviews.mjs'));
+  await copyFile(resolve(root, 'config/preview-origins.mjs'), resolve(temporary, 'config/preview-origins.mjs'));
   await symlink(resolve(root, 'dist'), resolve(temporary, 'dist'), 'dir');
   const manifest = JSON.parse(await readFile(resolve(root, 'config/client-site-manifest.json'), 'utf8'));
   manifest.origins.publicSite = 'https://p1-staging-example.up.railway.app';

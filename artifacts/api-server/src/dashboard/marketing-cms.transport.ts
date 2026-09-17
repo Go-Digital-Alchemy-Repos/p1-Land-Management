@@ -60,6 +60,12 @@ add("team", "GET", "/team");
 add("team", "POST", "/team");
 add("team", "PUT", "/team/:id");
 add("menus", "GET", "/menu-references");
+add("website", "GET", "/website");
+add("website", "GET", "/website/:routeId/:componentKey");
+add("website", "PUT", "/website/:routeId/:componentKey/draft");
+add("website", "POST", "/website/:routeId/:componentKey/publish");
+add("website", "GET", "/website/:routeId/:componentKey/revisions");
+add("website", "POST", "/website/:routeId/:componentKey/revisions/:revision/restore");
 
 const lockCapabilities: Record<string, Capability | null> = {
   cms_page: "marketing.content.pages",

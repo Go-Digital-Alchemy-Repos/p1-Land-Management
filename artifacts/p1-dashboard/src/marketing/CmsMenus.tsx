@@ -519,8 +519,7 @@ export default function CmsMenus() {
         <div>
           <h2>Website menus</h2>
           <p className="muted">
-            Manage navigation, footer links and form popups. Saving updates the
-            website menu.
+          Manage CMS navigation, footer links and form popups. P1 website navigation is managed in the Website editor.
           </p>
         </div>
         <button
@@ -559,7 +558,7 @@ export default function CmsMenus() {
                   onClick={() => {
                     if (
                       window.confirm(
-                        `Delete ${menu.name}? This removes it from the website.`,
+                        `Delete ${menu.name}? This removes this CMS menu.`,
                       )
                     )
                       void perform(async () => {

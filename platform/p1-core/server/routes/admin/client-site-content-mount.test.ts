@@ -116,14 +116,13 @@ describe("actual mounted client site content permissions", () => {
   });
   afterAll(() => vi.unstubAllEnvs());
   const path = "/api/admin/client-site-content/fund-a-farm/fund-a-farm-page";
-  it("allows content editors through real content router and manifest serialization", async () => {
+  it("denies legacy content grants without canonical Website authority", async () => {
     const result = await request(path, "editor", "GET", undefined, ["content"]);
-    expect(result.status).toBe(200);
-    expect((await result.json()).previewUrl).toBe("https://better-farms.example/fund-a-farm?cmsPreview=1&cmsComponent=fund-a-farm-page");
-    expect(state.get).toHaveBeenCalledOnce();
+    expect(result.status).toBe(403);
+    expect(state.get).not.toHaveBeenCalled();
   });
-  it("allows administrators", async () => {
-    expect((await request(path, "admin")).status).toBe(200);
+  it("does not give legacy administrators implicit Website authority", async () => {
+    expect((await request(path, "admin")).status).toBe(403);
   });
   it("requires authentication", async () => {
     expect((await request(path)).status).toBe(401);
@@ -133,7 +132,7 @@ describe("actual mounted client site content permissions", () => {
     expect((await request(path, "client")).status).toBe(403);
     expect(state.get).not.toHaveBeenCalled();
   });
-  it("honors the CMS feature gate", async () => {
+  it("honors the earlier CMS feature gate without touching storage", async () => {
     state.enabled = false;
     for (const role of ["admin", "editor"])
       expect((await request(path, role, "GET", undefined, ["content"])).status).toBe(404);

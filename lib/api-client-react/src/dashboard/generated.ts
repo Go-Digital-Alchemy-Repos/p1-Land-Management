@@ -160,7 +160,12 @@ import type {
   UpdateProject,
   UpdateProjectPhase,
   UploadFieldPhotoHeaders,
+  WebsiteContent,
+  WebsiteContentEntry,
+  WebsiteContentRevision,
+  WebsiteDraftInput,
   WebsiteEditorReservation,
+  WebsiteExpectedRevision,
   WebsiteMenu,
   WebsiteMenuInput,
   WebsiteMenuReferences,
@@ -3459,6 +3464,168 @@ export const releaseWebsiteMenuReservation = async (id: string, options?: Reques
     method: 'POST'
 
 
+  }
+);}
+
+
+
+export const getListWebsiteContentUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/website`
+}
+
+/**
+ * Requires marketing.content.website. Uses the configured site manifest and retained revision-checked publishing workflow. Conflicts must retain unsaved edits. Private/no-store.
+ */
+export const listWebsiteContent = async ( options?: RequestInit): Promise<WebsiteContentEntry[]> => {
+
+  return customFetch<WebsiteContentEntry[]>(getListWebsiteContentUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getGetWebsiteContentUrl = (routeId: string,
+    componentKey: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/website/${routeId}/${componentKey}`
+}
+
+/**
+ * Requires marketing.content.website. Uses the configured site manifest and retained revision-checked publishing workflow. Conflicts must retain unsaved edits. Private/no-store.
+ */
+export const getWebsiteContent = async (routeId: string,
+    componentKey: string, options?: RequestInit): Promise<WebsiteContent> => {
+
+  return customFetch<WebsiteContent>(getGetWebsiteContentUrl(routeId,componentKey),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getSaveWebsiteContentDraftUrl = (routeId: string,
+    componentKey: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/website/${routeId}/${componentKey}/draft`
+}
+
+/**
+ * Requires marketing.content.website. Uses the configured site manifest and retained revision-checked publishing workflow. Conflicts must retain unsaved edits. Private/no-store.
+ */
+export const saveWebsiteContentDraft = async (routeId: string,
+    componentKey: string,
+    websiteDraftInput: WebsiteDraftInput, options?: RequestInit): Promise<WebsiteContent> => {
+
+  return customFetch<WebsiteContent>(getSaveWebsiteContentDraftUrl(routeId,componentKey),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      websiteDraftInput,)
+  }
+);}
+
+
+
+export const getPublishWebsiteContentUrl = (routeId: string,
+    componentKey: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/website/${routeId}/${componentKey}/publish`
+}
+
+/**
+ * Requires marketing.content.website. Uses the configured site manifest and retained revision-checked publishing workflow. Conflicts must retain unsaved edits. Private/no-store.
+ */
+export const publishWebsiteContent = async (routeId: string,
+    componentKey: string,
+    websiteExpectedRevision: WebsiteExpectedRevision, options?: RequestInit): Promise<WebsiteContent> => {
+
+  return customFetch<WebsiteContent>(getPublishWebsiteContentUrl(routeId,componentKey),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      websiteExpectedRevision,)
+  }
+);}
+
+
+
+export const getGetWebsiteContentRevisionsUrl = (routeId: string,
+    componentKey: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/website/${routeId}/${componentKey}/revisions`
+}
+
+/**
+ * Requires marketing.content.website. Uses the configured site manifest and retained revision-checked publishing workflow. Conflicts must retain unsaved edits. Private/no-store.
+ */
+export const getWebsiteContentRevisions = async (routeId: string,
+    componentKey: string, options?: RequestInit): Promise<WebsiteContentRevision[]> => {
+
+  return customFetch<WebsiteContentRevision[]>(getGetWebsiteContentRevisionsUrl(routeId,componentKey),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getRestoreWebsiteContentRevisionUrl = (routeId: string,
+    componentKey: string,
+    revision: number,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/website/${routeId}/${componentKey}/revisions/${revision}/restore`
+}
+
+/**
+ * Requires marketing.content.website. Uses the configured site manifest and retained revision-checked publishing workflow. Conflicts must retain unsaved edits. Private/no-store.
+ */
+export const restoreWebsiteContentRevision = async (routeId: string,
+    componentKey: string,
+    revision: number,
+    websiteExpectedRevision: WebsiteExpectedRevision, options?: RequestInit): Promise<WebsiteContent> => {
+
+  return customFetch<WebsiteContent>(getRestoreWebsiteContentRevisionUrl(routeId,componentKey,revision),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      websiteExpectedRevision,)
   }
 );}
 

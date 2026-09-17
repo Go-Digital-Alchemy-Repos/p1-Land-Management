@@ -6484,6 +6484,356 @@
           }
         ]
       }
+    },
+    "/marketing/cms/website": {
+      "get": {
+        "operationId": "listWebsiteContent",
+        "description": "Requires marketing.content.website. Uses the configured site manifest and retained revision-checked publishing workflow. Conflicts must retain unsaved edits. Private/no-store.",
+        "responses": {
+          "200": {
+            "description": "Website content result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WebsiteContentEntry"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid content or revision"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Website editor grant or linked identity required"
+          },
+          "404": {
+            "description": "Unknown manifest route/component/revision"
+          },
+          "409": {
+            "description": "Stale revision; preserve edits and reload explicitly"
+          },
+          "503": {
+            "description": "Website unavailable; refresh before retrying a mutation"
+          }
+        }
+      }
+    },
+    "/marketing/cms/website/{routeId}/{componentKey}": {
+      "get": {
+        "operationId": "getWebsiteContent",
+        "description": "Requires marketing.content.website. Uses the configured site manifest and retained revision-checked publishing workflow. Conflicts must retain unsaved edits. Private/no-store.",
+        "responses": {
+          "200": {
+            "description": "Website content result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid content or revision"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Website editor grant or linked identity required"
+          },
+          "404": {
+            "description": "Unknown manifest route/component/revision"
+          },
+          "409": {
+            "description": "Stale revision; preserve edits and reload explicitly"
+          },
+          "503": {
+            "description": "Website unavailable; refresh before retrying a mutation"
+          }
+        },
+        "parameters": [
+          {
+            "name": "routeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "componentKey",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/website/{routeId}/{componentKey}/draft": {
+      "put": {
+        "operationId": "saveWebsiteContentDraft",
+        "description": "Requires marketing.content.website. Uses the configured site manifest and retained revision-checked publishing workflow. Conflicts must retain unsaved edits. Private/no-store.",
+        "responses": {
+          "200": {
+            "description": "Website content result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid content or revision"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Website editor grant or linked identity required"
+          },
+          "404": {
+            "description": "Unknown manifest route/component/revision"
+          },
+          "409": {
+            "description": "Stale revision; preserve edits and reload explicitly"
+          },
+          "503": {
+            "description": "Website unavailable; refresh before retrying a mutation"
+          }
+        },
+        "parameters": [
+          {
+            "name": "routeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "componentKey",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebsiteDraftInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/marketing/cms/website/{routeId}/{componentKey}/publish": {
+      "post": {
+        "operationId": "publishWebsiteContent",
+        "description": "Requires marketing.content.website. Uses the configured site manifest and retained revision-checked publishing workflow. Conflicts must retain unsaved edits. Private/no-store.",
+        "responses": {
+          "200": {
+            "description": "Website content result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid content or revision"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Website editor grant or linked identity required"
+          },
+          "404": {
+            "description": "Unknown manifest route/component/revision"
+          },
+          "409": {
+            "description": "Stale revision; preserve edits and reload explicitly"
+          },
+          "503": {
+            "description": "Website unavailable; refresh before retrying a mutation"
+          }
+        },
+        "parameters": [
+          {
+            "name": "routeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "componentKey",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebsiteExpectedRevision"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/marketing/cms/website/{routeId}/{componentKey}/revisions": {
+      "get": {
+        "operationId": "getWebsiteContentRevisions",
+        "description": "Requires marketing.content.website. Uses the configured site manifest and retained revision-checked publishing workflow. Conflicts must retain unsaved edits. Private/no-store.",
+        "responses": {
+          "200": {
+            "description": "Website content result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WebsiteContentRevision"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid content or revision"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Website editor grant or linked identity required"
+          },
+          "404": {
+            "description": "Unknown manifest route/component/revision"
+          },
+          "409": {
+            "description": "Stale revision; preserve edits and reload explicitly"
+          },
+          "503": {
+            "description": "Website unavailable; refresh before retrying a mutation"
+          }
+        },
+        "parameters": [
+          {
+            "name": "routeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "componentKey",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/website/{routeId}/{componentKey}/revisions/{revision}/restore": {
+      "post": {
+        "operationId": "restoreWebsiteContentRevision",
+        "description": "Requires marketing.content.website. Uses the configured site manifest and retained revision-checked publishing workflow. Conflicts must retain unsaved edits. Private/no-store.",
+        "responses": {
+          "200": {
+            "description": "Website content result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteContent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid content or revision"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Website editor grant or linked identity required"
+          },
+          "404": {
+            "description": "Unknown manifest route/component/revision"
+          },
+          "409": {
+            "description": "Stale revision; preserve edits and reload explicitly"
+          },
+          "503": {
+            "description": "Website unavailable; refresh before retrying a mutation"
+          }
+        },
+        "parameters": [
+          {
+            "name": "routeId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "componentKey",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "revision",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebsiteExpectedRevision"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -13976,6 +14326,199 @@
             }
           }
         }
+      },
+      "WebsiteContentEntry": {
+        "type": "object",
+        "properties": {
+          "routeId": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "componentKey": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "routeId",
+          "path",
+          "componentKey",
+          "label"
+        ]
+      },
+      "WebsiteContentField": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "text",
+              "textarea",
+              "image",
+              "imageAlt",
+              "ctaTarget"
+            ]
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "maxLength": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "allowedImageOrigins": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "path",
+          "label",
+          "type"
+        ]
+      },
+      "WebsiteContent": {
+        "type": "object",
+        "properties": {
+          "stackId": {
+            "type": "string"
+          },
+          "route": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "path": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "path"
+            ]
+          },
+          "component": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string"
+              },
+              "fields": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/WebsiteContentField"
+                }
+              }
+            },
+            "required": [
+              "key",
+              "fields"
+            ]
+          },
+          "previewUrl": {
+            "type": "string"
+          },
+          "draftContent": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "draftRevision": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "publishedRevision": {
+            "type": "integer",
+            "nullable": true
+          },
+          "publishedAt": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "stackId",
+          "route",
+          "component",
+          "previewUrl",
+          "draftContent",
+          "draftRevision",
+          "publishedRevision",
+          "publishedAt"
+        ]
+      },
+      "WebsiteContentRevision": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "revision": {
+            "type": "integer"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "content": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "createdAt": {
+            "type": "string",
+            "nullable": true
+          },
+          "changedBy": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "revision",
+          "kind",
+          "content"
+        ]
+      },
+      "WebsiteExpectedRevision": {
+        "type": "object",
+        "properties": {
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "expectedRevision"
+        ]
+      },
+      "WebsiteDraftInput": {
+        "type": "object",
+        "properties": {
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "content": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "expectedRevision",
+          "content"
+        ]
       }
     }
   }

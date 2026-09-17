@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { authenticateToken, requireAdminPermission, requireRole } from "../../middleware/auth";
+import { authenticateToken, requireAdminPermission, requireBusinessCapability, requireRole } from "../../middleware/auth";
 import dashboardRoutes from "./dashboard.routes";
 import usersRoutes from "./users.routes";
 import eventsRoutes from "./events.routes";
@@ -41,7 +41,7 @@ router.use("/crm", requireCrmEnabled, requireAdminPermission("crm"), crmRoutes);
 router.use(
   "/client-site-content",
   requireCmsEnabled,
-  requireAdminPermission("content"),
+  requireBusinessCapability("marketing.content.website"),
   clientSiteContentRoutes,
 );
 
