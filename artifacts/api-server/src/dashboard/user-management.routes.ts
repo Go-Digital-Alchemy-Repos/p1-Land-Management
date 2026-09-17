@@ -4,6 +4,7 @@ import { actor } from "./access";
 import { requireRole } from "./policy";
 import { pool } from "./database";
 import {
+  requestManagedPasswordRecovery,
   changeInvitation,
   inviteManagedAccount,
   listManagedAccounts,
@@ -78,5 +79,17 @@ userManagementApi.get(
         )
       ).rows,
     });
+  },
+);
+
+userManagementApi.post(
+  "/user-management/users/:id/password-recovery",
+  async (req, res) => {
+    res.json(
+      await requestManagedPasswordRecovery(
+        (await actor(req)).id,
+        z.string().min(1).parse(req.params.id),
+      ),
+    );
   },
 );

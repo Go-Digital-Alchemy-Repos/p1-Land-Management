@@ -35,12 +35,20 @@ const assert = require("node:assert/strict");
     };
     let conflict = true;
     const writes = [];
+    let recoveryRequests = 0,
+      acceptRecovery = false;
+    page.on("dialog", (dialog) =>
+      acceptRecovery ? dialog.accept() : dialog.dismiss(),
+    );
     await page.route("**/api/v1/**", async (route) => {
       const request = route.request(),
         path = new URL(request.url()).pathname;
       let result = {},
         status = 200;
-      if (path.endsWith("/users") && request.method() === "GET")
+      if (path.endsWith("/password-recovery")) {
+        recoveryRequests++;
+        result = { ok: true };
+      } else if (path.endsWith("/users") && request.method() === "GET")
         result = { items: [account] };
       else if (path.endsWith("/invitations") && request.method() === "GET")
         result = { items: [] };
@@ -86,6 +94,25 @@ const assert = require("node:assert/strict");
     await page
       .getByLabel("First name", { exact: true })
       .fill("My unsaved name");
+    await page
+      .getByRole("button", { name: "Send password recovery", exact: true })
+      .click();
+    assert.equal(recoveryRequests, 0);
+    acceptRecovery = true;
+    await page
+      .getByRole("button", { name: "Send password recovery", exact: true })
+      .click();
+    await page
+      .locator("dialog")
+      .getByRole("status")
+      .filter({ hasText: "Password recovery email queued" })
+      .waitFor();
+    assert.equal(recoveryRequests, 1);
+    assert.equal(writes.length, 0);
+    assert.equal(
+      await page.getByLabel("First name", { exact: true }).inputValue(),
+      "My unsaved name",
+    );
     await page.getByRole("button", { name: "Save user", exact: true }).click();
     await page.getByRole("alert").waitFor();
     assert.equal(

@@ -9913,6 +9913,58 @@
           }
         ]
       }
+    },
+    "/user-management/users/{id}/password-recovery": {
+      "post": {
+        "operationId": "requestManagedPasswordRecovery",
+        "description": "Owner-only password recovery through canonical dashboard authentication. Sends to the saved email address, retains MFA requirements, and audits the request without exposing a recovery token.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "ok"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sign in required"
+          },
+          "403": {
+            "description": "Owner access required"
+          },
+          "409": {
+            "description": "Stale version or conflicting lifecycle"
+          },
+          "429": {
+            "description": "Wait before requesting another recovery email"
+          },
+          "404": {
+            "description": "Account not found"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
     }
   },
   "components": {

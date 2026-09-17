@@ -117,6 +117,88 @@ test(
       });
     }
     const path = `/user-management/users/${member.id}`;
+    const recoveryPath = `${path}/password-recovery`;
+    assert.equal(
+      (await call(recoveryPath, {}, "POST", manager.cookie)).status,
+      403,
+    );
+    assert.equal(
+      (await call("/user-management/users/missing/password-recovery", {}))
+        .status,
+      404,
+    );
+    await pool.query("UPDATE staff_profile SET active=false WHERE user_id=$1", [
+      member.id,
+    ]);
+    assert.equal((await call(recoveryPath, {})).status, 409);
+    await pool.query(
+      "UPDATE staff_profile SET active=true,mfa_required=true WHERE user_id=$1",
+      [member.id],
+    );
+    const recovery = await call(recoveryPath, {
+      email: "ignored@example.test",
+      redirectTo: "https://invalid.example.test",
+    });
+    assert.equal(recovery.status, 200);
+    assert.deepEqual(await recovery.json(), { ok: true });
+    const email = (
+      await pool.query(
+        "SELECT payload FROM outbox WHERE kind='email' AND payload->>'to'=$1 AND payload->>'subject'='Reset your P1 password'",
+        [`${member.id}@example.test`],
+      )
+    ).rows;
+    assert.equal(email.length, 1);
+    const resetLink = new URL(email[0].payload.text);
+    assert.equal(resetLink.origin, base);
+    assert.equal(
+      new URL(resetLink.searchParams.get("callbackURL")!).href,
+      `${base}/?reset=1`,
+    );
+    assert.equal(
+      (
+        await pool.query(
+          "SELECT mfa_required FROM staff_profile WHERE user_id=$1",
+          [member.id],
+        )
+      ).rows[0].mfa_required,
+      true,
+    );
+    const recoveryAudit = (
+      await pool.query(
+        "SELECT user_id,details FROM audit_event WHERE entity_id=$1 AND action='account.password_recovery.requested'",
+        [member.id],
+      )
+    ).rows;
+    assert.equal(recoveryAudit.length, 1);
+    assert.equal(recoveryAudit[0].user_id, owner.id);
+    assert.deepEqual(recoveryAudit[0].details, {});
+    assert.equal((await call(recoveryPath, {})).status, 429);
+    await pool.query(
+      "UPDATE audit_event SET created_at=now()-interval '2 minutes' WHERE entity_id=$1 AND action='account.password_recovery.requested'",
+      [member.id],
+    );
+    const concurrentRecovery = await Promise.all([
+      call(recoveryPath, {}),
+      call(recoveryPath, {}),
+    ]);
+    assert.deepEqual(
+      concurrentRecovery.map((response) => response.status).sort(),
+      [200, 429],
+    );
+    assert.equal(
+      (
+        await pool.query(
+          "SELECT count(*)::int AS count FROM outbox WHERE kind='email' AND payload->>'to'=$1 AND payload->>'subject'='Reset your P1 password'",
+          [`${member.id}@example.test`],
+        )
+      ).rows[0].count,
+      2,
+    );
+
+    await pool.query(
+      "UPDATE staff_profile SET mfa_required=false WHERE user_id=$1",
+      [member.id],
+    );
     const update = {
       firstName: "Synthetic",
       lastName: "Member",

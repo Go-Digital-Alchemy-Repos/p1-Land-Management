@@ -1,5 +1,6 @@
 import { isCapability } from "@workspace/api-zod/business-access";
 import {
+  requestManagedPasswordRecovery,
   listManagedUsers,
   listManagedInvitations,
   updateManagedUser,
@@ -128,6 +129,7 @@ export function UserManager({
     }
   }
   function edit(account: Account) {
+    setNotice("");
     setError("");
     setHistory([]);
     const pieces = account.name.trim().split(/\s+/);
@@ -184,6 +186,7 @@ export function UserManager({
           onClick={() => {
             setError("");
             setHistory([]);
+            setNotice("");
             setDraft(blank());
           }}
         >
@@ -195,7 +198,7 @@ export function UserManager({
           {error}
         </p>
       )}
-      {notice && (
+      {notice && !draft && (
         <p role="status" className="notice">
           {notice}
         </p>
@@ -378,6 +381,11 @@ export function UserManager({
                 {error} Your draft is retained.
               </p>
             )}
+            {notice && (
+              <p role="status" className="notice">
+                {notice}
+              </p>
+            )}
             <fieldset disabled={busy}>
               <div className="user-name-fields">
                 <label>
@@ -521,6 +529,26 @@ export function UserManager({
                     }
                   >
                     Revoke sessions
+                  </button>
+                  <button
+                    type="button"
+                    disabled={!selected?.active}
+                    onClick={() => {
+                      if (
+                        !confirm(
+                          `Send a password recovery email to ${selected?.email}? This uses the saved account email and does not change MFA requirements.`,
+                        )
+                      )
+                        return;
+                      void run(async () => {
+                        await requestManagedPasswordRecovery(draft.id!);
+                        setNotice(
+                          "Password recovery email queued for delivery.",
+                        );
+                      });
+                    }}
+                  >
+                    Send password recovery
                   </button>
                   <button
                     type="button"

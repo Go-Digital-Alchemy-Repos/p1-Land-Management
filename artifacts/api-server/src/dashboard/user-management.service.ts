@@ -1,3 +1,4 @@
+import { auth, origin } from "./auth";
 import { randomBytes, randomUUID, createHash } from "node:crypto";
 import type { PoolClient } from "pg";
 import {
@@ -238,6 +239,44 @@ export async function revokeManagedSessions(ownerId: string, targetId: string) {
       );
     await c.query('DELETE FROM session WHERE "userId"=$1', [targetId]);
     await audit(c, ownerId, "account.sessions.revoked", targetId);
+    return { ok: true };
+  });
+}
+
+export async function requestManagedPasswordRecovery(
+  ownerId: string,
+  targetId: string,
+) {
+  return transaction(async (c) => {
+    await ownerLock(c, ownerId);
+    const target = (
+      await c.query(
+        `SELECT u.email,p.active FROM staff_profile p JOIN "user" u ON u.id=p.user_id WHERE p.user_id=$1 FOR UPDATE OF p`,
+        [targetId],
+      )
+    ).rows[0];
+    if (!target) throw new HttpError(404, "Account not found");
+    if (!target.active)
+      throw new HttpError(
+        409,
+        "Reactivate this account before requesting password recovery",
+      );
+    const recent = await c.query(
+      "SELECT 1 FROM audit_event WHERE entity_id=$1 AND action='account.password_recovery.requested' AND created_at>now()-interval '1 minute' LIMIT 1",
+      [targetId],
+    );
+    if (recent.rowCount)
+      throw new HttpError(
+        429,
+        "Wait one minute before sending another recovery email",
+      );
+    await auth.api.requestPasswordReset({
+      body: {
+        email: target.email,
+        redirectTo: new URL("/?reset=1", origin).href,
+      },
+    });
+    await audit(c, ownerId, "account.password_recovery.requested", targetId);
     return { ok: true };
   });
 }

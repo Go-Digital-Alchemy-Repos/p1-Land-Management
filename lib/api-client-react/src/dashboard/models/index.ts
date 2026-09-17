@@ -362,6 +362,7 @@ export * from './recurringJobConfigurationCadence';
 export * from './recurringJobConfigurationPeriodsItem';
 export * from './recurringServicePause';
 export * from './replaceMarketingMediaBody';
+export * from './requestManagedPasswordRecovery200';
 export * from './rescheduleWork';
 export * from './resendManagedInvitation200';
 export * from './revokeManagedInvitation200';

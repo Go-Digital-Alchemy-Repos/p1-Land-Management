@@ -180,6 +180,7 @@ import type {
   RecurringJob,
   RecurringServicePause,
   ReplaceMarketingMediaBody,
+  RequestManagedPasswordRecovery200,
   RescheduleWork,
   ResendManagedInvitation200,
   RevokeManagedInvitation200,
@@ -5641,6 +5642,30 @@ export const getReleaseMarketingPageReservationUrl = (id: string,) => {
 export const releaseMarketingPageReservation = async (id: string, options?: RequestInit): Promise<WebsiteEditorReservation> => {
 
   return customFetch<WebsiteEditorReservation>(getReleaseMarketingPageReservationUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+export const getRequestManagedPasswordRecoveryUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/user-management/users/${id}/password-recovery`
+}
+
+/**
+ * Owner-only password recovery through canonical dashboard authentication. Sends to the saved email address, retains MFA requirements, and audits the request without exposing a recovery token.
+ */
+export const requestManagedPasswordRecovery = async (id: string, options?: RequestInit): Promise<RequestManagedPasswordRecovery200> => {
+
+  return customFetch<RequestManagedPasswordRecovery200>(getRequestManagedPasswordRecoveryUrl(id),
   {
     ...options,
     method: 'POST'
