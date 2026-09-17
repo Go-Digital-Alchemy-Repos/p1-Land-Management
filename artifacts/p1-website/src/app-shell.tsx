@@ -1,3 +1,4 @@
+import { createGoogleAnalytics } from "@/lib/google-analytics";
 import { trackAcquisition } from "@/lib/acquisition";
 import {
   Component,
@@ -7,6 +8,8 @@ import {
   useEffect,
 } from "react";
 import { Router as WouterRouter, useLocation } from "wouter";
+
+const trackGooglePage = createGoogleAnalytics(import.meta.env.VITE_GA_MEASUREMENT_ID);
 
 class RouteErrorBoundary extends Component<
   { children: ReactNode },
@@ -39,6 +42,7 @@ function ScrollToTop() {
   useEffect(() => {
     window.scrollTo(0, 0);
     trackAcquisition("page_view");
+    try { trackGooglePage(); } catch { /* Optional analytics must not break navigation. */ }
   }, [location]);
   useEffect(() => {
     const trackLink = (event: MouseEvent) => {
