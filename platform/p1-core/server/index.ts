@@ -1,3 +1,4 @@
+import { builderPreviewPolicy } from "./middleware/builder-preview";
 import businessCenterReportingRoutes from "./routes/business-center-reporting.routes";
 import businessCenterCmsRoutes from "./routes/business-center-cms.routes";
 import { pool } from "./db";
@@ -157,6 +158,7 @@ const startup = (async () => {
     process.env.CLIENT_SITE_CORE_VERSION || "1.0.0",
   );
   if (runtime.isStopping()) return;
+  app.use(builderPreviewPolicy());
 
   if (process.env.NODE_ENV === "production") {
     const { runMigrations } = await import("./migrate");

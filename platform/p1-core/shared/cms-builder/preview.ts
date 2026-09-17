@@ -2,6 +2,7 @@ import { z } from "zod";
 import type { BlockInstance } from "./block-registry.shared";
 
 export const CMS_BUILDER_PREVIEW_VERSION = 1;
+export const CMS_BUILDER_PREVIEW_PATH = "/cms-preview/builder";
 export const CMS_BUILDER_PREVIEW_LIMITS = {
   bytes: 1024 * 1024,
   blocks: 200,

@@ -1,3 +1,5 @@
+import { CMS_BUILDER_PREVIEW_PATH } from "../shared/cms-builder/preview";
+import { builderPreviewHtml } from "./middleware/builder-preview";
 import express, { type Express } from "express";
 import fs from "fs";
 import path from "path";
@@ -74,6 +76,16 @@ export function serveStatic(app: Express) {
   );
 
   app.use("/admin/assets", (_req, res) => res.status(404).send("Not found"));
+
+  app.get(CMS_BUILDER_PREVIEW_PATH, async (_req, res) => {
+    if (!res.locals.builderPreviewOrigin) {
+      res.status(404).send("Preview unavailable");
+      return;
+    }
+    res
+      .type("html")
+      .send(builderPreviewHtml(await getIndexTemplate(), res.locals.builderPreviewOrigin));
+  });
 
   // The public website is served by the gateway; only dashboard routes fall through.
   app.use("/admin{/*path}", async (req, res) => {

@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import App from "./App";
+import { CMS_BUILDER_PREVIEW_PATH } from "@shared/cms-builder/preview";
 import "./index.css";
 
 const VITE_PRELOAD_RECOVERY_KEY = "vite-preload-recovery";
@@ -23,4 +23,11 @@ if (typeof window !== "undefined") {
   document.getElementById("seo-prerender")?.remove();
 }
 
-createRoot(document.getElementById("root")!).render(<App />);
+const root = document.getElementById("root")!;
+if (window.location.pathname === CMS_BUILDER_PREVIEW_PATH) {
+  void import("./features/preview/builder-preview-entry").then(({ mountBuilderPreview }) =>
+    mountBuilderPreview(root),
+  );
+} else {
+  void import("./App").then(({ default: App }) => createRoot(root).render(<App />));
+}
