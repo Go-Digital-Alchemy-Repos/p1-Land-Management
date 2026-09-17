@@ -1,3 +1,4 @@
+import { typographyPreview } from "./typography-preview.mjs";
 import { createWebsiteFontStore } from "./website-fonts.mjs";
 import { createWebsiteColorStore } from "./website-colors.mjs";
 import { createHeadTagStore, insertHeadTags } from "./head-tags.mjs";
@@ -136,6 +137,14 @@ const server=http.createServer(async(req,res)=>{
     if(backendPath)return proxy(req,res);
     if(!['GET','HEAD'].includes(req.method))return send(req,res,405,'Method not allowed');
     res.setHeader('Content-Security-Policy',"default-src 'self'; script-src 'self' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com; frame-ancestors 'self'; base-uri 'self'; object-src 'none'; form-action 'self'");
+    if(pathname==='/cms-preview/typography') {
+      res.setHeader('X-Robots-Tag','noindex, nofollow');
+      res.removeHeader('X-Frame-Options');
+      res.setHeader('Referrer-Policy','no-referrer');
+      res.setHeader('Content-Security-Policy',`default-src 'none'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'none'; frame-ancestors 'self' ${BUSINESS_CENTER_ORIGIN}; base-uri 'none'; form-action 'none'`);
+      try { return send(req,res,200,typographyPreview(url.searchParams),'text/html; charset=utf-8','no-store'); }
+      catch { return send(req,res,400,'Invalid typography preview','text/plain; charset=utf-8','no-store'); }
+    }
     if(pathname==='/robots.txt' && !indexableDeployment)return send(req,res,200,'User-agent: *\nDisallow: /\n','text/plain; charset=utf-8');
     if(url.searchParams.has('cmsPreview')) {
       res.setHeader('X-Robots-Tag','noindex, nofollow');

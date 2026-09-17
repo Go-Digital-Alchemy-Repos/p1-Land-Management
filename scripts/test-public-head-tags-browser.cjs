@@ -118,6 +118,31 @@ const listen = async (server) => {
     assert.equal(await page.locator("#p1-website-colors").count(), 1);
     assert.equal(await page.locator("#p1-website-fonts").count(), 1);
     await page.waitForFunction(()=>{const h=document.querySelector("h1");return h && getComputedStyle(h).color === "rgb(255, 0, 0)";});
+    await page.goto(`http://127.0.0.1:${port}/cms-preview/typography?body=Lora&bodyType=serif&heading=Inter&headingType=sans-serif`,{waitUntil:"domcontentloaded"});
+    await page.waitForFunction(()=>getComputedStyle(document.body).fontFamily.includes("Lora"));
+    await page.waitForFunction(()=>{const h=document.querySelector("h1");return h && getComputedStyle(h).fontFamily.includes("Inter");});
+    assert.equal(await page.locator("script,form").count(),0);
+    await page.setViewportSize({width:375,height:844});
+    assert(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth));
+    await page.screenshot({path:"/tmp/p1-font-specimen-mobile.png"});
+    assert.equal(await page.locator('meta[name="p1-head-browser"]').count(),0);
+    assert.equal(await page.locator("#p1-website-colors").count(),0);
+    const editor = await browser.newPage();
+    await editor.route("**/*",async route=>{
+      const url=new URL(route.request().url());
+      if(url.origin==="https://dashboard.p1landmanagement.com")return route.fulfill({contentType:"text/html",body:'<!doctype html><html><body><iframe title="Draft specimen" sandbox="" referrerpolicy="no-referrer" src="https://www.p1landmanagement.com/cms-preview/typography?body=Lora&amp;bodyType=serif&amp;heading=Inter&amp;headingType=sans-serif"></iframe></body></html>'});
+      if(url.origin==="https://www.p1landmanagement.com" && url.pathname==="/cms-preview/typography"){
+        const response=await fetch(`http://127.0.0.1:${port}${url.pathname}${url.search}`);
+        return route.fulfill({status:response.status,headers:{"content-type":response.headers.get("content-type"),"content-security-policy":response.headers.get("content-security-policy"),"referrer-policy":response.headers.get("referrer-policy")},body:await response.text()});
+      }
+      return route.abort();
+    });
+    await editor.goto("https://dashboard.p1landmanagement.com/typography-test");
+    const specimen=editor.frameLocator('iframe[title="Draft specimen"]');
+    await specimen.getByRole("heading",{name:"Land & property management",exact:true}).waitFor();
+    assert.match(await specimen.locator("h1").evaluate(e=>getComputedStyle(e).fontFamily),/Inter/);
+    assert.equal(await specimen.locator("script,form").count(),0);
+    await editor.close();
     await page.goto(`http://127.0.0.1:${port}/admin/`, {
       waitUntil: "domcontentloaded",
     });
@@ -125,7 +150,7 @@ const listen = async (server) => {
     assert.equal(await page.locator("#p1-website-colors").count(), 0);
     assert.equal(await page.locator("#p1-website-fonts").count(), 0);
     console.log(
-      "Public branding browser passed: palette and font declarations computed on home/location/preview, link hover, admin exclusion, head metadata, inline CSP blocking and external networking blocked.",
+      "Public branding browser passed: palette and font declarations computed on home/location/preview and stateless draft specimen, link hover, admin exclusion, head metadata, inline CSP blocking and external networking blocked.",
     );
   } finally {
     if (browser) await browser.close();

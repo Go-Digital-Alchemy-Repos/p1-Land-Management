@@ -80,6 +80,16 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
     const fontReads=upstreamRequests.filter(r=>r.path==='/api/p1/website-fonts');assert.equal(fontReads.length,1);assert.equal(fontReads[0].headers.cookie,undefined);assert.equal(fontReads[0].headers.authorization,undefined);
     const reads=upstreamRequests.filter(r=>r.path==='/api/p1/website-colors');assert.equal(reads.length,1);assert.equal(reads[0].headers.cookie,undefined);assert.equal(reads[0].headers.authorization,undefined);
   });
+  await t.test('draft typography is stateless, no-store, non-indexable and framed only by the approved editor',async()=>{
+    const before=upstreamRequests.length;
+    const response=await request(port,'/cms-preview/typography?body=Inter&bodyType=sans-serif&heading=Lora&headingType=serif');
+    assert.equal(response.status,200);assert.equal(response.headers['cache-control'],'no-store');assert.equal(response.headers['x-robots-tag'],'noindex, nofollow');assert.equal(response.headers['referrer-policy'],'no-referrer');assert.equal(response.headers['x-frame-options'],undefined);
+    assert(response.headers['content-security-policy'].includes("script-src 'none'"));assert(response.headers['content-security-policy'].includes("frame-ancestors 'self' https://dashboard.p1landmanagement.com"));
+    assert(response.body.includes("--app-font-display:'Lora',serif"));assert(!response.body.includes('p1-head-fixture'));assert(!response.body.includes('id="p1-website-colors"'));
+    assert.equal(upstreamRequests.length,before);
+    const bad=await request(port,'/cms-preview/typography?body=%3Cscript%3E&bodyType=serif');assert.equal(bad.status,400);assert(!bad.body.includes('<script>'));
+    assert.equal((await request(port,'/cms-preview/typography',{},'POST')).status,405);
+  });
   await t.test('absolute and network-path targets reject without forwarding credentials', async () => {
     const before = upstreamRequests.length;
     for (const target of [`http://127.0.0.1:${trapPort}/api/secret`, `//127.0.0.1:${trapPort}/api/secret`, '/%E0%A4%A']) {
@@ -215,6 +225,7 @@ test('staging manifest blocks indexing across public and proxied responses regar
   await copyFile(resolve(root, 'server/head-tags.mjs'), resolve(temporary, 'server/head-tags.mjs'));
   await copyFile(resolve(root, 'server/website-colors.mjs'), resolve(temporary, 'server/website-colors.mjs'));
   await copyFile(resolve(root, 'server/website-fonts.mjs'), resolve(temporary, 'server/website-fonts.mjs'));
+  await copyFile(resolve(root, 'server/typography-preview.mjs'), resolve(temporary, 'server/typography-preview.mjs'));
   await copyFile(resolve(root, 'server/content.mjs'), resolve(temporary, 'server/content.mjs'));
   await copyFile(resolve(root, 'server/client-ip.mjs'), resolve(temporary, 'server/client-ip.mjs')); 
   await copyFile(resolve(root, 'server/google-reviews.mjs'), resolve(temporary, 'server/google-reviews.mjs'));

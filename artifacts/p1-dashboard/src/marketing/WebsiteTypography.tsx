@@ -1,3 +1,4 @@
+import { TypographyPreview } from "./TypographyPreview";
 import { useEffect, useRef, useState } from "react";
 import {
   getWebsiteTypography,
@@ -208,6 +209,7 @@ export default function WebsiteTypography() {
           </button>
         </form>
       )}
+      {saved && values && <TypographyPreview fonts={values} options={saved.options}/>}
     </section>
   );
 }
