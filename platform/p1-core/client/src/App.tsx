@@ -31,6 +31,7 @@ const ForgotPasswordPage = lazy(() => import("@/features/auth/forgot-password-pa
 const ResetPasswordPage = lazy(() => import("@/features/auth/reset-password-page"));
 const AdminSetupPage = lazy(() => import("@/features/auth/admin-setup-page"));
 
+const AdminAnalyticsPage = lazy(() => import("@/features/admin/analytics-page"));
 const AdminDashboardPage = lazy(() => import("@/features/admin/dashboard-page"));
 const AdminUsersPage = lazy(() => import("@/features/admin/users-page"));
 const AdminFormsPage = lazy(() => import("@/features/admin/forms-page"));
@@ -148,6 +149,11 @@ function Router() {
         <Route path="/admin">
           <ProtectedRoute roles={["admin", "editor"]}>
             <AdminIndexRoute />
+          </ProtectedRoute>
+        </Route>
+        <Route path="/admin/analytics">
+          <ProtectedRoute roles={["admin", "editor"]} adminPermissions={["crm"]}>
+            <AdminAnalyticsPage />
           </ProtectedRoute>
         </Route>
         <Route path="/admin/users">

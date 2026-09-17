@@ -27,6 +27,7 @@ import { DEFAULT_SITE_FEATURES, type SiteFeatures } from "@shared/site-features"
 import type { AdminPermission } from "@shared/types";
 import { useQuery } from "@tanstack/react-query";
 import {
+  BarChart3,
   Blocks,
   BookOpen,
   BriefcaseBusiness,
@@ -97,6 +98,22 @@ export function buildNavGroups(
           : []),
       ],
     },
+
+    ...(hasAdminPermission("crm")
+      ? [
+          {
+            label: "Insights",
+            items: [
+              {
+                title: "Website analytics",
+                href: "/admin/analytics",
+                icon: BarChart3,
+                iconColor: "text-cyan-600",
+              },
+            ],
+          },
+        ]
+      : []),
 
     ...(siteFeatures.crmEnabled && hasAdminPermission("crm")
       ? ([
