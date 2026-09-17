@@ -166,7 +166,7 @@ try {
   );
   console.log("Migration replay passed. All data was synthetic.");
 } catch (error) {
-  console.error(error.stdout || error.message);
+  console.error([error.stdout, error.stderr].filter(Boolean).join("\n") || error.message);
   process.exitCode = 1;
 } finally {
   if (server) {

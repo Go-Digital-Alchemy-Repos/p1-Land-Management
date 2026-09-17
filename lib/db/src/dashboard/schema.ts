@@ -692,12 +692,14 @@ export const workOrder = pgTable(
     projectId: uuid("project_id"),
     projectPhaseId: uuid("project_phase_id"),
     estimateAllocationId: uuid("estimate_allocation_id"),
+    serviceAgreementId: uuid("service_agreement_id").references(() => serviceAgreement.id),
     estimateId: uuid("estimate_id"),
     requestId: uuid("request_id"),
     jobKind: text("job_kind").default("one_time").notNull(),
     internalReason: text("internal_reason"),
   },
   (table) => [
+    index("work_order_agreement_allowance").on(table.serviceAgreementId,table.status),
     foreignKey({ columns: [table.estimateAllocationId, table.estimateId], foreignColumns: [estimateAllocation.id, estimateAllocation.estimateId], name: "work_order_allocation_parent" }),
     check("work_order_allocation_estimate", sql`${table.estimateAllocationId} IS NULL OR ${table.estimateId} IS NOT NULL`),
     index("work_order_assigned_to_scheduled_at_idx").using(

@@ -74,6 +74,7 @@ try {
       "src/dashboard/agreement-review.test.ts",
     ],
     ["exec", "tsx", "--test", "src/dashboard/agreement-preparation.test.ts"],
+    ["exec", "tsx", "--test", "src/dashboard/recurring-visit-authorization.test.ts"],
   ]) {
     const result = spawnSync(
       process.execPath,
