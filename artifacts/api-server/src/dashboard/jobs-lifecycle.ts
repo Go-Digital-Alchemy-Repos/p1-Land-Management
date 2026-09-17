@@ -12,8 +12,7 @@ import { actor, propertyAccess, type Actor } from "./access";
 import { pool, transaction } from "./database";
 import { HttpError, requireRole, requireCapability, requireAnyCapability } from "./policy";
 import { requireOperationalProperty } from "./operational-property";
-import { assessActivation } from "./service-agreement.activation";
-import { agreementAudit, lockedAgreement } from "./service-agreement.persistence";
+import { activateRecurringJob } from "./recurring-job-activation";
 import { notifyClientContacts, notifyStaff } from "./job-notifications";
 
 const id = z.string().uuid();
@@ -266,25 +265,7 @@ jobsLifecycleApi.post("/jobs/internal", async (req, res) => {
 });
 jobsLifecycleApi.get("/recurring-jobs", async (req,res) => { const a=await actor(req); requireCapability(a, "operations.recurring"); res.json(await listRecurringJobs()); });
 jobsLifecycleApi.post("/recurring-jobs/:id/activate", async (req, res) => {
-  const a = await actor(req); requireCapability(a, "operations.recurring");
-  const key = id.parse(req.params.id);
-  const b = z.object({ assignedTo: z.string().min(1), nextDate: z.string().date(), localTime: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/) }).parse(req.body);
-  await transaction(async (c) => {
-    const recurring = (await c.query("SELECT * FROM recurring_service WHERE id=$1 FOR UPDATE", [key])).rows[0];
-    if (!recurring?.agreement_id) throw new HttpError(404, "Recurring Job not found");
-    if (!recurring.paused) throw new HttpError(409, "Recurring Job is already active");
-    const staff = await c.query("SELECT 1 FROM staff_profile WHERE user_id=$1 AND active=true AND role<>'client'", [b.assignedTo]);
-    if (!staff.rowCount) throw new HttpError(400, "Choose an active team member");
-    const context = await lockedAgreement(c, recurring.agreement_id);
-    if (!context.agreement.accepted_at || context.agreement.status !== "draft") throw new HttpError(409, "Accepted agreement is not ready for activation");
-    const { preview, periods, today } = await assessActivation(c, context);
-    if (!preview.canActivate) throw new HttpError(409, preview.blockedReasons[0]);
-    await c.query("UPDATE recurring_service SET assigned_to=$2,next_date=$3,local_time=$4,paused=false,anchor_day=extract(day from $3::date) WHERE id=$1", [key, b.assignedTo, b.nextDate, b.localTime]);
-    await c.query("UPDATE service_agreement SET status='active',activated_by=$2,activated_on=$3,activated_at=now(),version=version+1,updated_at=now() WHERE id=$1", [recurring.agreement_id, a.id, today]);
-    await agreementAudit(c, a.id, "agreement.activated", recurring.agreement_id, { version: context.agreement.version, plannedCents: preview.plannedCents, perVisitCents: preview.perVisitCents, periods, clientAcceptedAt: context.agreement.accepted_at });
-    await audit(c, a.id, "recurring_job.activated", key, { agreementId: recurring.agreement_id, nextDate: b.nextDate });
-  });
-  res.json({ ok: true });
+  res.json(await activateRecurringJob(await actor(req), id.parse(req.params.id), req.body));
 });
 
 const publicHits = new Map<string, { count: number; reset: number }>();

@@ -1,3 +1,5 @@
+import { generateRecurring } from "./recurrence";
+import { prepareAgreementCharge } from "./service-agreement.billing";
 import { after, test } from "node:test";
 import assert from "node:assert/strict";
 import { randomUUID, createHash, createHmac } from "node:crypto";
@@ -41,13 +43,13 @@ test(
       "INSERT INTO property(id,client_id,name,address) VALUES($1,$2,'Synthetic property','Synthetic address')",
       [property, client],
     );
-    async function draft() {
+    async function draft(startsOn = "2032-01-01", endsOn = "2032-01-31") {
       const created = await createComposition(user, {
         operationId: randomUUID(),
         title: "Synthetic composed proposal",
         context: { clientId: client, propertyId: property },
         selection: {},
-        dates: { startsOn: "2032-01-01", endsOn: "2032-01-31" },
+        dates: { startsOn, endsOn },
       });
       const ids = [randomUUID(), randomUUID(), randomUUID()];
       const edited = await editComposition(user, created.id, {
@@ -90,8 +92,8 @@ test(
             scopeRowIds: [ids[1]],
             periods: [
               {
-                startsOn: "2032-01-01",
-                endsOn: "2032-01-31",
+                startsOn,
+                endsOn,
                 amountCents: 100,
                 reviewReason: "PRIVATE-PRICING-REVIEW-NOTE",
               },
@@ -698,6 +700,230 @@ test(
         )
       ).rows[0].n,
       1,
+    );
+    // Exercise the real Operations handoff against the approved components.
+    // It must validate submitted choices, not only the pre-update schedule.
+    const operationsToken = randomUUID();
+    await pool.query(
+      "INSERT INTO staff_profile(user_id,role) VALUES($1,'manager')",
+      [user],
+    );
+    await pool.query(
+      "INSERT INTO business_account_access(user_id,capabilities) VALUES($1,$2)",
+      [user, ["operations.recurring"]],
+    );
+    await pool.query(
+      `INSERT INTO session(id,"expiresAt",token,"userId") VALUES($1,now()+interval '1 hour',$2,$3)`,
+      [randomUUID(), operationsToken, user],
+    );
+    const operationsCookie =
+      "p1-dashboard.session_token=" +
+      encodeURIComponent(
+        operationsToken +
+          "." +
+          createHmac("sha256", process.env.BETTER_AUTH_SECRET!)
+            .update(operationsToken)
+            .digest("base64"),
+      );
+    for (const recurrence of recurrences) {
+      const allocation = allocations.find(
+        (row) => row.id === recurrence.estimate_allocation_id,
+      )!;
+      const activate = (overrides = {}) =>
+        fetch(
+          `${process.env.DASHBOARD_TEST_ORIGIN}/api/v1/recurring-jobs/${recurrence.id}/activate`,
+          {
+            method: "POST",
+            headers: {
+              cookie: operationsCookie,
+              origin: process.env.DASHBOARD_TEST_ORIGIN!,
+              "content-type": "application/json",
+            },
+            body: JSON.stringify({
+              assignedTo: user,
+              nextDate: allocation.configuration.firstVisitOn,
+              localTime: allocation.configuration.localTime,
+              ...overrides,
+            }),
+          },
+        );
+      for (const mismatch of [
+        { localTime: "23:59" },
+        { nextDate: "2032-01-03" },
+        { nextDate: "2032-02-01" },
+      ]) {
+        const denied = await activate(mismatch);
+        assert.equal(denied.status, 409, await denied.text());
+        const unchanged = (
+          await pool.query(
+            "SELECT r.paused,a.status FROM recurring_service r JOIN service_agreement a ON a.id=r.agreement_id WHERE r.id=$1",
+            [recurrence.id],
+          )
+        ).rows[0];
+        assert.equal(unchanged.paused, true);
+        assert.equal(unchanged.status, "draft");
+      }
+      const activated = await activate();
+      assert.equal(activated.status, 200, await activated.text());
+      const saved = (
+        await pool.query(
+          "SELECT r.paused,r.assigned_to,r.next_date::text,r.local_time::text,a.status FROM recurring_service r JOIN service_agreement a ON a.id=r.agreement_id WHERE r.id=$1",
+          [recurrence.id],
+        )
+      ).rows[0];
+      assert.equal(saved.paused, false);
+      assert.equal(saved.status, "active");
+      assert.equal(saved.assigned_to, user);
+      assert.equal(saved.next_date, allocation.configuration.firstVisitOn);
+      assert.equal(
+        saved.local_time.slice(0, 5),
+        allocation.configuration.localTime,
+      );
+      assert.equal((await activate()).status, 409);
+    }
+    // Rehearse the mixed proposal handoff using today's finite one-day term.
+    // No provider worker runs; sending creates only a synthetic outbox entry.
+    const today = (
+      await pool.query(
+        "SELECT (now() AT TIME ZONE 'America/New_York')::date::text AS d",
+      )
+    ).rows[0].d;
+    await pool.query(
+      "UPDATE business_account_access SET capabilities=$2 WHERE user_id=$1",
+      [user, ["operations.recurring", "revenue.sales"]],
+    );
+    const callStaff = async (path: string, body: unknown) => {
+      const response = await fetch(
+        `${process.env.DASHBOARD_TEST_ORIGIN}/api/v1${path}`,
+        {
+          method: "POST",
+          headers: {
+            cookie: operationsCookie,
+            origin: process.env.DASHBOARD_TEST_ORIGIN!,
+            "content-type": "application/json",
+          },
+          body: JSON.stringify(body),
+        },
+      );
+      const result = (await response.json()) as any;
+      assert(response.ok, JSON.stringify(result));
+      return result;
+    };
+    const liveDraft = await draft(today, today);
+    const livePrepared = await callStaff(
+      `/agreement-drafts/${liveDraft.id}/prepare`,
+      {
+        expectedVersion: liveDraft.version,
+        schedules: ["fixed_monthly", "per_visit"].map((basis) => ({
+          basis,
+          cadence: "weekly",
+          intervalCount: 1,
+          localTime: "08:00",
+          firstVisitOn: today,
+        })),
+      },
+    );
+    await callStaff(`/estimates/${livePrepared.estimateId}/send`, {
+      recipientContactIds: [contact],
+    });
+    const mail = (
+      await pool.query("SELECT payload FROM outbox WHERE dedup_key=$1", [
+        `estimate:${livePrepared.estimateId}:${contact}:v1`,
+      ])
+    ).rows[0];
+    const approvalToken = mail.payload.text.split("/estimate-approval/")[1];
+    assert(approvalToken);
+    const accepted = await fetch(
+      `${process.env.DASHBOARD_TEST_ORIGIN}/api/public/estimates/${approvalToken}/decision`,
+      {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ status: "approved" }),
+      },
+    );
+    assert.equal(accepted.status, 200, await accepted.text());
+    const liveRecurrences = (
+      await pool.query(
+        "SELECT id,agreement_id,billing_mode FROM recurring_service WHERE estimate_id=$1",
+        [livePrepared.estimateId],
+      )
+    ).rows;
+    assert.equal(liveRecurrences.length, 2);
+    for (const recurrence of liveRecurrences)
+      await callStaff(`/recurring-jobs/${recurrence.id}/activate`, {
+        assignedTo: user,
+        nextDate: today,
+        localTime: "08:00",
+      });
+    await generateRecurring();
+    const liveJobs = (
+      await pool.query(
+        "SELECT w.* FROM work_order w JOIN recurring_service r ON r.id=w.recurring_service_id WHERE r.estimate_id=$1",
+        [livePrepared.estimateId],
+      )
+    ).rows;
+    assert.equal(liveJobs.length, 2);
+    const billingActor = {
+      ...actor,
+      capabilities: ["revenue.billing" as const],
+    };
+    for (const recurrence of liveRecurrences) {
+      const work = liveJobs.find(
+        (row) => row.recurring_service_id === recurrence.id,
+      )!;
+      assert.equal(work.service_agreement_id, recurrence.agreement_id);
+      const source =
+        recurrence.billing_mode === "fixed_monthly"
+          ? { periodStart: today }
+          : { workOrderId: work.id };
+      if (recurrence.billing_mode === "per_visit") {
+        await assert.rejects(
+          prepareAgreementCharge(billingActor, recurrence.agreement_id, source),
+          /manager-reviewed/,
+        );
+        // Execution evidence/review is simulated here; its own lifecycle tests
+        // cover the crew completion and manager-review HTTP workflow.
+        await pool.query(
+          "UPDATE work_order SET status='reviewed' WHERE id=$1",
+          [work.id],
+        );
+      }
+      const charge = await prepareAgreementCharge(
+        billingActor,
+        recurrence.agreement_id,
+        source,
+      );
+      assert.deepEqual(
+        await prepareAgreementCharge(
+          billingActor,
+          recurrence.agreement_id,
+          source,
+        ),
+        charge,
+      );
+    }
+    const billed = (
+      await pool.query(
+        "SELECT b.amount_cents,b.estimate_allocation_id,a.basis FROM billing_draft b JOIN estimate_allocation a ON a.id=b.estimate_allocation_id WHERE b.estimate_id=$1 ORDER BY a.basis",
+        [livePrepared.estimateId],
+      )
+    ).rows;
+    assert.equal(billed.length, 2);
+    assert.deepEqual(
+      billed.map((row) => row.basis),
+      ["fixed_monthly", "per_visit"],
+    );
+    assert(billed.every((row) => Number(row.amount_cents) === 100));
+    await generateRecurring();
+    assert.equal(
+      (
+        await pool.query(
+          "SELECT count(*)::int AS n FROM work_order w JOIN recurring_service r ON r.id=w.recurring_service_id WHERE r.estimate_id=$1",
+          [livePrepared.estimateId],
+        )
+      ).rows[0].n,
+      2,
+      "No generation beyond finite one-day term",
     );
     const changeInput = {
       operationId: randomUUID(),
