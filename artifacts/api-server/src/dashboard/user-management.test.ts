@@ -191,6 +191,59 @@ test(
       await call(historyPath + "?limit=1")
     ).json()) as any;
     assert.equal(refreshed.items[0].action, "account.newer");
+    const invitationIds = Array.from({ length: 205 }, () => randomUUID());
+    await pool.query(
+      `INSERT INTO invitation(id,email,role,token_hash,expires_at,created_at,accepted_at,revoked_at)
+      SELECT entry,entry::text||'@example.test','member','synthetic:'||entry::text,'2000-01-01',
+      '1990-01-01'::timestamptz+(ordinality%3)*interval '1 microsecond',
+      CASE WHEN ordinality%3=0 THEN '1990-01-02'::timestamptz END,
+      CASE WHEN ordinality%3=1 THEN '1990-01-02'::timestamptz END
+      FROM unnest($1::uuid[]) WITH ORDINALITY AS t(entry,ordinality)`,
+      [invitationIds],
+    );
+    assert.equal(
+      (
+        await call(
+          "/user-management/invitations",
+          undefined,
+          "GET",
+          member.cookie,
+        )
+      ).status,
+      403,
+    );
+    assert.equal(
+      (await call("/user-management/invitations?cursor=invalid")).status,
+      400,
+    );
+    assert.equal(
+      (await call("/user-management/invitations?limit=101")).status,
+      400,
+    );
+    const invitationSeen = new Set<string>();
+    let invitationCursor: string | null = null;
+    do {
+      const response = await call(
+        "/user-management/invitations?limit=31" +
+          (invitationCursor
+            ? "&cursor=" + encodeURIComponent(invitationCursor)
+            : ""),
+      );
+      assert.equal(response.status, 200);
+      const page = (await response.json()) as any;
+      assert(page.items.length <= 31);
+      for (const entry of page.items) {
+        assert(!invitationSeen.has(entry.id));
+        invitationSeen.add(entry.id);
+        assert.equal("token_hash" in entry, false);
+        assert.equal("cursor_at" in entry, false);
+      }
+      invitationCursor = page.nextCursor;
+    } while (invitationCursor);
+    assert(
+      invitationIds.every((id) => invitationSeen.has(id)),
+      "All historical invitation states are reachable beyond the former 200-row cutoff",
+    );
     const ownerPreferencePath = `/user-management/users/${owner.id}/owner-notifications`;
     const ownerForm = randomUUID();
     await pool.query(

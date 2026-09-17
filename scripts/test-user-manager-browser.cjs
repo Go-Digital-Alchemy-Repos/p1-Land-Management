@@ -42,6 +42,7 @@ const assert = require("node:assert/strict");
       formNotificationIds: ["11111111-1111-4111-8111-111111111111"],
     };
     let historyFails = true;
+    let invitationsFail = true;
     let ownerConflict = true;
     const ownerWrites = [];
     let conflict = true,
@@ -57,10 +58,34 @@ const assert = require("node:assert/strict");
         path = new URL(request.url()).pathname;
       let result = {},
         status = 200;
-      if (path.endsWith('/history')) {
-        const cursor = new URL(request.url()).searchParams.get('cursor');
-        if(cursor && historyFails) { historyFails=false; status=503; result={error:'History temporarily unavailable'}; }
-        else result = cursor ? {items:[{id:'older',action:'account.older',createdAt:'2026-01-01T00:00:00Z'}],nextCursor:null} : {items:[{id:'newer',action:'account.newer',createdAt:'2026-02-01T00:00:00Z'}],nextCursor:'older-page'};
+      if (path.endsWith("/history")) {
+        const cursor = new URL(request.url()).searchParams.get("cursor");
+        if (cursor && historyFails) {
+          historyFails = false;
+          status = 503;
+          result = { error: "History temporarily unavailable" };
+        } else
+          result = cursor
+            ? {
+                items: [
+                  {
+                    id: "older",
+                    action: "account.older",
+                    createdAt: "2026-01-01T00:00:00Z",
+                  },
+                ],
+                nextCursor: null,
+              }
+            : {
+                items: [
+                  {
+                    id: "newer",
+                    action: "account.newer",
+                    createdAt: "2026-02-01T00:00:00Z",
+                  },
+                ],
+                nextCursor: "older-page",
+              };
       } else if (path.endsWith("/owner/owner-notifications")) {
         const body = request.postDataJSON();
         ownerWrites.push(body);
@@ -101,9 +126,44 @@ const assert = require("node:assert/strict");
         result = { ok: true };
       } else if (path.endsWith("/users") && request.method() === "GET")
         result = { items: [account, ownerAccount] };
-      else if (path.endsWith("/invitations") && request.method() === "GET")
-        result = { items: [] };
-      else if (path.endsWith("/users/member") && request.method() === "PATCH") {
+      else if (path.endsWith("/invitations") && request.method() === "GET") {
+        const cursor = new URL(request.url()).searchParams.get("cursor");
+        if (cursor && invitationsFail) {
+          invitationsFail = false;
+          status = 503;
+          result = { error: "Invitations temporarily unavailable" };
+        } else
+          result = cursor
+            ? {
+                items: [
+                  {
+                    id: "accepted-invite",
+                    email: "accepted@example.test",
+                    role: "member",
+                    acceptedAt: "2026-01-01",
+                    revokedAt: null,
+                    expiresAt: "2026-01-01",
+                  },
+                ],
+                nextCursor: null,
+              }
+            : {
+                items: [
+                  {
+                    id: "revoked-invite",
+                    email: "revoked@example.test",
+                    role: "member",
+                    acceptedAt: null,
+                    revokedAt: "2026-01-01",
+                    expiresAt: "2026-01-01",
+                  },
+                ],
+                nextCursor: "older-invitations",
+              };
+      } else if (
+        path.endsWith("/users/member") &&
+        request.method() === "PATCH"
+      ) {
         const body = request.postDataJSON();
         writes.push(body);
         if (conflict) {
@@ -141,16 +201,54 @@ const assert = require("node:assert/strict");
       (process.env.USER_MANAGER_BROWSER_ORIGIN || "http://127.0.0.1:4347") +
         "/tests/user-manager-browser.html",
     );
+    await page.getByRole("button", { name: "Load older invitations" }).click();
+    await page
+      .getByRole("alert")
+      .filter({ hasText: "Invitations temporarily unavailable" })
+      .waitFor();
+    await page.getByText("revoked@example.test", { exact: true }).waitFor();
+    await page.getByRole("button", { name: "Load older invitations" }).click();
+    await page.getByText("accepted@example.test", { exact: true }).waitFor();
+    assert.equal(
+      await page.getByText("revoked@example.test", { exact: true }).count(),
+      1,
+    );
+    assert.equal(
+      await page
+        .getByRole("button", { name: "Load older invitations" })
+        .count(),
+      0,
+    );
     await page.getByRole("button", { name: "Manage", exact: true }).click();
-    await page.getByRole('button',{name:'View access history',exact:true}).click();
-    await page.getByText('account.newer',{exact:false}).waitFor();
-    await page.getByRole('button',{name:'Load older access history'}).click();
-    await page.getByRole('alert').filter({hasText:'History temporarily unavailable'}).waitFor();
-    assert.equal(await page.getByText('account.newer',{exact:false}).count(),1);
-    await page.getByRole('button',{name:'Load older access history'}).click();
-    await page.getByText('account.older',{exact:false}).waitFor();
-    assert.equal(await page.getByText('account.newer',{exact:false}).count(),1);
-    assert.equal(await page.getByRole('button',{name:'Load older access history'}).count(),0);
+    await page
+      .getByRole("button", { name: "View access history", exact: true })
+      .click();
+    await page.getByText("account.newer", { exact: false }).waitFor();
+    await page
+      .getByRole("button", { name: "Load older access history" })
+      .click();
+    await page
+      .getByRole("alert")
+      .filter({ hasText: "History temporarily unavailable" })
+      .waitFor();
+    assert.equal(
+      await page.getByText("account.newer", { exact: false }).count(),
+      1,
+    );
+    await page
+      .getByRole("button", { name: "Load older access history" })
+      .click();
+    await page.getByText("account.older", { exact: false }).waitFor();
+    assert.equal(
+      await page.getByText("account.newer", { exact: false }).count(),
+      1,
+    );
+    assert.equal(
+      await page
+        .getByRole("button", { name: "Load older access history" })
+        .count(),
+      0,
+    );
     await page
       .getByRole("button", { name: "Choose notification forms", exact: true })
       .click();
@@ -338,14 +436,12 @@ const assert = require("node:assert/strict");
     await page
       .getByRole("button", { name: "Notification preferences", exact: true })
       .click();
-    const ownerDialog = page
-      .getByRole("dialog")
-      .filter({
-        has: page.getByRole("heading", {
-          name: "Owner notification preferences",
-          exact: true,
-        }),
-      });
+    const ownerDialog = page.getByRole("dialog").filter({
+      has: page.getByRole("heading", {
+        name: "Owner notification preferences",
+        exact: true,
+      }),
+    });
     assert.equal(
       await ownerDialog.getByLabel("First name", { exact: true }).count(),
       0,

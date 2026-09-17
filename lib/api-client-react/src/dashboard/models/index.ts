@@ -271,6 +271,7 @@ export * from './listCommercialInquiriesOverdue';
 export * from './listCommercialInquiriesParams';
 export * from './listCommercialInquiriesStatus';
 export * from './listManagedInvitations200';
+export * from './listManagedInvitationsParams';
 export * from './listManagedNotificationForms200';
 export * from './listManagedNotificationForms200ItemsItem';
 export * from './listManagedUserHistory200';

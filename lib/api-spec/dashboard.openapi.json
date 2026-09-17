@@ -5775,7 +5775,8 @@
                   "type": "object",
                   "additionalProperties": false,
                   "required": [
-                    "items"
+                    "items",
+                    "nextCursor"
                   ],
                   "properties": {
                     "items": {
@@ -5783,6 +5784,10 @@
                       "items": {
                         "$ref": "#/components/schemas/ManagedInvitation"
                       }
+                    },
+                    "nextCursor": {
+                      "type": "string",
+                      "nullable": true
                     }
                   }
                 }
@@ -5797,8 +5802,31 @@
           },
           "409": {
             "description": "Stale version or conflicting lifecycle"
+          },
+          "400": {
+            "description": "Invalid invitation cursor or query"
           }
-        }
+        },
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "schema": {
+              "type": "string",
+              "maxLength": 2000
+            }
+          }
+        ]
       },
       "post": {
         "operationId": "createManagedInvitation",

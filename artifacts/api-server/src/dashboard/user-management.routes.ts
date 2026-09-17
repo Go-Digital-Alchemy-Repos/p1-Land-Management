@@ -1,3 +1,4 @@
+import { listManagedInvitationPage } from "./user-management.invitations";
 import { listManagedAccountHistory } from "./user-management.history";
 import {
   ownerNotificationsInput,
@@ -65,14 +66,8 @@ userManagementApi.post(
     );
   },
 );
-userManagementApi.get("/user-management/invitations", async (_req, res) => {
-  res.json({
-    items: (
-      await pool.query(`SELECT id,email,role,first_name AS "firstName",last_name AS "lastName",capabilities,
-    expires_at AS "expiresAt",accepted_at AS "acceptedAt",revoked_at AS "revokedAt",created_at AS "createdAt"
-    FROM invitation ORDER BY created_at DESC,id DESC LIMIT 200`)
-    ).rows,
-  });
+userManagementApi.get("/user-management/invitations", async (req, res) => {
+  res.json(await listManagedInvitationPage(req.query));
 });
 userManagementApi.post("/user-management/invitations", async (req, res) => {
   const input = invitationInput.parse(req.body);

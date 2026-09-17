@@ -132,6 +132,7 @@ import type {
   ListAgreementTemplatesParams,
   ListCommercialInquiriesParams,
   ListManagedInvitations200,
+  ListManagedInvitationsParams,
   ListManagedNotificationForms200,
   ListManagedUserHistory200,
   ListManagedUserHistoryParams,
@@ -3172,20 +3173,27 @@ export const listManagedUserHistory = async (id: string,
 
 
 
-export const getListManagedInvitationsUrl = () => {
+export const getListManagedInvitationsUrl = (params?: ListManagedInvitationsParams,) => {
+  const normalizedParams = new URLSearchParams();
 
+  Object.entries(params || {}).forEach(([key, value]) => {
 
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
 
+  const stringifiedParams = normalizedParams.toString();
 
-  return `/api/v1/user-management/invitations`
+  return stringifiedParams.length > 0 ? `/api/v1/user-management/invitations?${stringifiedParams}` : `/api/v1/user-management/invitations`
 }
 
 /**
  * Owner-only account administration. Explicit permissions are versioned; legacy role names confer no automatic tool access.
  */
-export const listManagedInvitations = async ( options?: RequestInit): Promise<ListManagedInvitations200> => {
+export const listManagedInvitations = async (params?: ListManagedInvitationsParams, options?: RequestInit): Promise<ListManagedInvitations200> => {
 
-  return customFetch<ListManagedInvitations200>(getListManagedInvitationsUrl(),
+  return customFetch<ListManagedInvitations200>(getListManagedInvitationsUrl(params),
   {
     ...options,
     method: 'GET'

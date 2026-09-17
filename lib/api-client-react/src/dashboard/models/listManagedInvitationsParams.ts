@@ -5,9 +5,15 @@
  * Shared field, scheduling and commercial inbox contract. Other office routes remain documented in docs/dashboard/API.md.
  * OpenAPI spec version: 0.1.0
  */
-import type { ManagedInvitation } from './managedInvitation';
 
-export type ListManagedInvitations200 = {
-  items: ManagedInvitation[];
-  nextCursor: string | null;
+export type ListManagedInvitationsParams = {
+/**
+ * @minimum 1
+ * @maximum 100
+ */
+limit?: number;
+/**
+ * @maxLength 2000
+ */
+cursor?: string;
 };

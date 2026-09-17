@@ -75,6 +75,7 @@ export function UserManager({
 }) {
   const [accounts, setAccounts] = useState<Account[]>([]),
     [invitations, setInvitations] = useState<Invite[]>([]);
+  const [invitationCursor, setInvitationCursor] = useState<string | null>(null);
   const [ownerTarget, setOwnerTarget] = useState<Account | null>(null);
   const [search, setSearch] = useState(""),
     [error, setError] = useState(""),
@@ -98,6 +99,7 @@ export function UserManager({
     if (alive.current) {
       setAccounts(users.items);
       setInvitations(invites.items);
+      setInvitationCursor(invites.nextCursor);
     }
     return users.items as Account[];
   }
@@ -388,6 +390,30 @@ export function UserManager({
           </tbody>
         </table>
       </div>
+      {invitationCursor && (
+        <button
+          disabled={busy || loading}
+          onClick={() =>
+            void run(async () => {
+              const page = await listManagedInvitations({
+                cursor: invitationCursor,
+              });
+              if (alive.current) {
+                setInvitations((rows) => [
+                  ...rows,
+                  ...page.items.filter(
+                    (item) => !rows.some((row) => row.id === item.id),
+                  ),
+                ]);
+                setInvitationCursor(page.nextCursor);
+              }
+            })
+          }
+        >
+          Load older invitations
+        </button>
+      )}
+      {!loading && !invitations.length && <p>No invitations found.</p>}
       <dialog
         className="user-editor"
         ref={dialog}
