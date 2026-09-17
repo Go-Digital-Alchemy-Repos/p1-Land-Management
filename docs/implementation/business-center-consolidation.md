@@ -1,6 +1,6 @@
 # Business Center consolidation implementation evidence
 
-Status: in progress. This is not a release candidate and must not be deployed as a completed consolidation.
+Status: in progress. This is not a release candidate and must not be deployed as a completed consolidation. Current requirement-level status is tracked in [consolidation acceptance](consolidation-acceptance.md); the entries below are chronological evidence.
 
 ## Branch and source preservation
 
@@ -31,7 +31,9 @@ The reporting implementation from `codex/admin-google-analytics` was integrated 
 
 The baseline property-workspace test omitted nullable structured-address and property-type fields already returned by the baseline API. Its expectation was aligned with the verified response; production behavior was not changed to satisfy that assertion.
 
-## Required remaining work
+## Historical foundation backlog
+
+This list records the initial checkpoint and has been partly superseded by later implementation. Use the [current acceptance tracker](consolidation-acceptance.md) for present gaps.
 
 1. Complete the API capability matrix and migrate all remaining legacy role gates, including projections, shared lookups, assignment choices, notifications and exports. Initial domain changes and navigation are not full enforcement. Replace broad frontend role-based preloading/action conditions. Preserve crew/client record scope and offline queues.
 2. Complete User Manager recovery and Core form-notification selection, existing-account linkage, history/pagination and migration reconciliation. Review crew grants versus scoped field workflow before cutover.
@@ -1130,3 +1132,9 @@ Added Branding with all six retained company/image settings, the existing Brandi
 Validation: 58 focused Core/shared tests passed. The full dashboard/database suite passed 119 tests with migration replay on rerun; its first run failed an unrelated global client-count assertion in onboarding while other fixtures changed that table. No onboarding code was changed. Shared-library/API/Core/dashboard type checks and API/Core/dashboard builds passed with existing bundle warnings. Browser checks passed exact grant visibility, retained legacy values, partial saves, failed load/stale/lost-response recovery, clearing, upload-before-apply and mobile containment; the screenshot was inspected. Existing OpenAPI contracts were compared and preserved. An initial type check caught the new view missing from the illustration mapping; that mapping was added before validation passed.
 
 The [identity runbook](website-identity-editor.md) records the read/write/upload contracts and consumer boundaries. The current public P1 header/footer/favicon/contact content remains static or snapshot-based; public delivery and reconciliation are still required, and the editor makes that limitation explicit. Live provider storage was not exercised. Remaining System/CMS parity, identity/capability/CRM work, agreement handoff, appearance acceptance, reconciliation/restoration and retirement remain open. Full goal active, not a release candidate. No production changes; original checkout and Blythe untouched.
+
+### Acceptance status reconciled against current source
+
+Added a requirement-level acceptance tracker grounded in the current routes, services, tools and recorded tests. Corrected the stale proposal checkpoint that said composed preparation/conversion were still internal or unimplemented: the mounted native flow, immutable documents, approval conversion and synthetic mixed-billing rehearsal already exist. Marked the initial implementation backlog as historical so completed pagination/recovery/proposal work is not incorrectly reported as missing. The tracker distinguishes implemented code from provider, migration, crew/browser and release acceptance.
+
+This was a documentation/source audit; no application behavior or production state changed. Markdown relative links and `git diff --check` were verified. The full goal remains active and no completion percentage is asserted.
