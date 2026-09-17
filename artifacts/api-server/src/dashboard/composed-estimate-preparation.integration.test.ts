@@ -516,5 +516,262 @@ test(
       ),
       /completely prepared/,
     );
+    const approve = () =>
+      fetch(
+        `${process.env.DASHBOARD_TEST_ORIGIN}/api/public/estimates/${token}/decision`,
+        {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ status: "approved" }),
+        },
+      );
+    await pool.query("UPDATE contact SET archived=true WHERE id=$1", [contact]);
+    assert.equal((await approve()).status, 404);
+    await pool.query("UPDATE contact SET archived=false WHERE id=$1", [
+      contact,
+    ]);
+    await pool.query("UPDATE property SET client_id=$2 WHERE id=$1", [
+      property,
+      otherClient,
+    ]);
+    assert.equal((await approve()).status, 409);
+    const wrongPortalDecision = await fetch(
+      `${process.env.DASHBOARD_TEST_ORIGIN}/api/v1/estimates/${result.estimateId}/decision`,
+      {
+        method: "POST",
+        headers: {
+          cookie,
+          "content-type": "application/json",
+          origin: process.env.DASHBOARD_TEST_ORIGIN!,
+        },
+        body: JSON.stringify({
+          status: "approved",
+          revision: estimate.revision,
+        }),
+      },
+    );
+    assert.equal(wrongPortalDecision.status, 409);
+    await pool.query("UPDATE property SET client_id=$2 WHERE id=$1", [
+      property,
+      client,
+    ]);
+    const failureFunction = "fail_composed_" + randomUUID().replaceAll("-", "");
+    await pool.query(
+      `CREATE FUNCTION ${failureFunction}() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.action='estimate.approved' AND NEW.entity_id='${result.estimateId}' THEN RAISE EXCEPTION 'Synthetic approval audit failure'; END IF; RETURN NEW; END $$`,
+    );
+    await pool.query(
+      `CREATE TRIGGER ${failureFunction} BEFORE INSERT ON audit_event FOR EACH ROW EXECUTE FUNCTION ${failureFunction}()`,
+    );
+    try {
+      assert.equal((await approve()).status, 500);
+      assert.equal(
+        (
+          await pool.query("SELECT status FROM estimate WHERE id=$1", [
+            result.estimateId,
+          ])
+        ).rows[0].status,
+        "sent",
+      );
+      for (const table of [
+        "work_order",
+        "recurring_service",
+        "service_agreement",
+        "billing_draft",
+      ])
+        assert.equal(
+          (
+            await pool.query(
+              `SELECT count(*)::int AS n FROM ${table} WHERE estimate_id=$1`,
+              [result.estimateId],
+            )
+          ).rows[0].n,
+          0,
+          table,
+        );
+      assert.equal(
+        (
+          await pool.query(
+            "SELECT decision FROM estimate_recipient WHERE estimate_id=$1",
+            [result.estimateId],
+          )
+        ).rows[0].decision,
+        null,
+      );
+    } finally {
+      await pool.query(`DROP TRIGGER ${failureFunction} ON audit_event`);
+      await pool.query(`DROP FUNCTION ${failureFunction}()`);
+    }
+    const approvals = await Promise.all([approve(), approve()]);
+    assert.equal(
+      approvals.filter((response) => response.status === 200).length,
+      1,
+    );
+    assert(
+      approvals
+        .filter((response) => response.status !== 200)
+        .every((response) => [404, 409].includes(response.status)),
+    );
+    const receipt = (await approvals
+      .find((response) => response.status === 200)!
+      .json()) as any;
+    assert.equal(receipt.components.length, 3);
+    assert.equal((await approve()).status, 404);
+    const jobs = (
+      await pool.query("SELECT * FROM work_order WHERE estimate_id=$1", [
+        result.estimateId,
+      ])
+    ).rows;
+    assert.equal(jobs.length, 1);
+    const oneTime = allocations.find((row) => row.basis === "one_time")!;
+    assert.equal(jobs[0].estimate_allocation_id, oneTime.id);
+    assert.equal(jobs[0].scope, oneTime.scope);
+    assert.equal(jobs[0].scheduled_at, null);
+    const recurrences = (
+      await pool.query(
+        "SELECT *,next_date::text AS first_date FROM recurring_service WHERE estimate_id=$1 ORDER BY billing_mode",
+        [result.estimateId],
+      )
+    ).rows;
+    const agreements = (
+      await pool.query(
+        "SELECT * FROM service_agreement WHERE estimate_id=$1 ORDER BY billing_mode",
+        [result.estimateId],
+      )
+    ).rows;
+    assert.equal(recurrences.length, 2);
+    assert.equal(agreements.length, 2);
+    for (const recurrence of recurrences) {
+      const allocation = allocations.find(
+        (row) => row.id === recurrence.estimate_allocation_id,
+      )!;
+      const agreement = agreements.find(
+        (row) => row.id === recurrence.agreement_id,
+      )!;
+      assert.equal(recurrence.paused, true);
+      assert.equal(
+        recurrence.first_date,
+        allocation.configuration.firstVisitOn,
+      );
+      assert.equal(
+        recurrence.anchor_day,
+        Number(allocation.configuration.firstVisitOn.slice(-2)),
+      );
+      assert.equal(
+        recurrence.interval_count,
+        allocation.configuration.intervalCount,
+      );
+      assert.equal(recurrence.scope, allocation.scope);
+      assert.equal(agreement.status, "draft");
+      assert.equal(agreement.estimate_allocation_id, allocation.id);
+      assert.equal(agreement.scope_snapshot, allocation.scope);
+      assert.equal(agreement.template_snapshot, projected.terms);
+      assert.equal(agreement.accepted_by_contact_id, contact);
+      assert(agreement.accepted_at);
+      const periods = (
+        await pool.query(
+          "SELECT starts_on::text AS starts_on,ends_on::text AS ends_on,amount_cents FROM fixed_charge_period WHERE agreement_id=$1",
+          [agreement.id],
+        )
+      ).rows;
+      assert.equal(
+        periods.length,
+        allocation.basis === "fixed_monthly" ? 1 : 0,
+      );
+      if (periods.length) assert.equal(Number(periods[0].amount_cents), 100);
+    }
+    assert.equal(
+      (
+        await pool.query(
+          "SELECT count(*)::int AS n FROM billing_draft WHERE estimate_id=$1",
+          [result.estimateId],
+        )
+      ).rows[0].n,
+      0,
+    );
+    assert.equal(
+      (
+        await pool.query(
+          "SELECT count(*)::int AS n FROM audit_event WHERE entity_id=$1 AND action='estimate.approved'",
+          [result.estimateId],
+        )
+      ).rows[0].n,
+      1,
+    );
+    for (const bases of [["one_time"], ["fixed_monthly", "per_visit"]]) {
+      const original = await draft();
+      const plans = original.pricing_plan.allocations.filter((row: any) =>
+        bases.includes(row.basis),
+      );
+      const scopeIds = new Set(plans.flatMap((row: any) => row.scopeRowIds));
+      const content = structuredClone(original.content);
+      content.costs.items = content.costs.items.filter((row: any) =>
+        bases.includes(row.basis),
+      );
+      content.scope.items = content.scope.items.filter((row: any) =>
+        scopeIds.has(row.id),
+      );
+      const edited = await editComposition(user, original.id, {
+        expectedVersion: original.version,
+        title: original.title,
+        dates: original.dates,
+        content,
+      });
+      const priced = await saveCompositionPricing(user, original.id, {
+        expectedVersion: edited.version,
+        allocations: plans,
+      });
+      const prepared = await prepareComposedEstimate(actor, original.id, {
+        expectedVersion: priced.version,
+        schedules: input.schedules.filter((row) => bases.includes(row.basis)),
+      });
+      await pool.query("UPDATE estimate SET status='sent' WHERE id=$1", [
+        prepared.estimateId,
+      ]);
+      const decisionToken = randomUUID() + randomUUID();
+      await pool.query(
+        "INSERT INTO estimate_recipient(id,estimate_id,contact_id,email,token_hash,expires_at) VALUES($1,$2,$3,$4,$5,now()+interval '1 day')",
+        [
+          randomUUID(),
+          prepared.estimateId,
+          contact,
+          `${contact}@example.test`,
+          createHash("sha256").update(decisionToken).digest("hex"),
+        ],
+      );
+      const decision = await fetch(
+        `${process.env.DASHBOARD_TEST_ORIGIN}/api/public/estimates/${decisionToken}/decision`,
+        {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ status: "approved" }),
+        },
+      );
+      assert.equal(
+        decision.status,
+        200,
+        JSON.stringify(await decision.clone().json()),
+      );
+      const receipt = (await decision.json()) as any;
+      assert.equal(receipt.components.length, bases.length);
+      assert.equal(receipt.recurring, !bases.includes("one_time"));
+      assert.equal(
+        (
+          await pool.query(
+            "SELECT count(*)::int AS n FROM work_order WHERE estimate_id=$1",
+            [prepared.estimateId],
+          )
+        ).rows[0].n,
+        bases.includes("one_time") ? 1 : 0,
+      );
+      assert.equal(
+        (
+          await pool.query(
+            "SELECT count(*)::int AS n FROM recurring_service WHERE estimate_id=$1",
+            [prepared.estimateId],
+          )
+        ).rows[0].n,
+        bases.includes("one_time") ? 0 : 2,
+      );
+    }
   },
 );

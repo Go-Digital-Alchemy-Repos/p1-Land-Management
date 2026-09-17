@@ -1,3 +1,4 @@
+import { convertComposedEstimate, validateComposedDecisionParty } from "./composed-estimate-approval";
 import { estimateAllocationApi } from "./estimate-allocation.routes";
 import { estimateDocument } from "./estimate-document";
 import { renderEstimatePdf, estimatePdfBlocks, validatePdfText } from "./estimate-pdf";
@@ -140,6 +141,7 @@ async function createEstimate(a: Actor, raw: unknown, requestId?: string) {
 
 
 async function convertApprovedEstimate(c: any, estimate: any, actorId: string | null, contactId: string | null) {
+  if (estimate.kind === "composed") return convertComposedEstimate(c, estimate, actorId, contactId);
   if (estimate.status !== "sent") throw new HttpError(409, "Estimate is no longer awaiting a decision");
   if (!estimate.is_current || new Date(estimate.expires_at).getTime() <= Date.now()) throw new HttpError(409, "Estimate has expired or been revised");
   await c.query("UPDATE estimate SET status='approved',approved_by=$2,approved_at=now() WHERE id=$1", [estimate.id, actorId]);
@@ -181,6 +183,10 @@ async function decideEstimate(estimateId: string, status: "approved" | "declined
   return transaction(async (c) => {
     const estimate = (await c.query("SELECT * FROM estimate WHERE id=$1 FOR UPDATE", [estimateId])).rows[0];
     if (!estimate) throw new HttpError(404, "Estimate not found");
+    if (estimate.kind === "composed") {
+      if (!estimate.is_current || new Date(estimate.expires_at).getTime() <= Date.now()) throw new HttpError(409, "Estimate has expired or been revised");
+      await validateComposedDecisionParty(c, estimate, actorId, contactId);
+    }
     if (status === "declined") {
       if (estimate.status !== "sent") throw new HttpError(409, "Estimate is no longer awaiting a decision");
       await c.query("UPDATE estimate SET status='declined' WHERE id=$1", [estimateId]);
@@ -189,8 +195,14 @@ async function decideEstimate(estimateId: string, status: "approved" | "declined
       return { ok: true, declined: true };
     }
     const result = await convertApprovedEstimate(c, estimate, actorId, contactId);
-    await notifyStaff(c, estimate.created_by, "Estimate approved", `${estimate.title} is approved and ready for dispatch.`, `estimate-approved:${estimateId}`, "revenue.sales");
-    await notifyClientContacts(c, estimate.property_id, "Estimate approved", `${estimate.title} has been approved. P1 will schedule your Job.`, `estimate-approved-client:${estimateId}`);
+    const staffMessage = estimate.kind === "composed" && result.recurring
+      ? `${estimate.title} is approved. Review the generated work and activate the recurring services before scheduling.`
+      : `${estimate.title} is approved and ready for dispatch.`;
+    const clientMessage = estimate.kind === "composed"
+      ? `${estimate.title} has been approved. P1 will coordinate the next steps and service schedule.`
+      : `${estimate.title} has been approved. P1 will schedule your Job.`;
+    await notifyStaff(c, estimate.created_by, "Estimate approved", staffMessage, `estimate-approved:${estimateId}`, "revenue.sales");
+    await notifyClientContacts(c, estimate.property_id, "Estimate approved", clientMessage, `estimate-approved-client:${estimateId}`);
     return { ok: true, ...result };
   });
 }
