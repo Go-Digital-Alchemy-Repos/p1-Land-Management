@@ -1,3 +1,4 @@
+import { validateAddedFormSubscriptions } from "./form-notification-selection";
 import { test, after } from "node:test";
 import assert from "node:assert/strict";
 import { randomUUID, createHmac } from "node:crypto";
@@ -466,3 +467,49 @@ test(
     // Entire suite uses a disposable database; retain fixtures for migration replay.
   },
 );
+
+test("notification selections validate only additions and require active known forms and Forms access", async () => {
+  let calls = 0;
+  const load = async () => {
+    calls++;
+    return [
+      { id: "active", isActive: true },
+      { id: "inactive", isActive: false },
+    ];
+  };
+  await validateAddedFormSubscriptions(["legacy"], ["legacy"], [], load);
+  await validateAddedFormSubscriptions(["legacy"], [], [], load);
+  assert.equal(calls, 0);
+  await assert.rejects(
+    validateAddedFormSubscriptions([], ["active"], [], load),
+    /Grant Forms access/,
+  );
+  assert.equal(calls, 0);
+  await validateAddedFormSubscriptions(
+    ["legacy"],
+    ["legacy", "active"],
+    ["marketing.content.forms"],
+    load,
+  );
+  for (const id of ["inactive", "unknown"])
+    await assert.rejects(
+      validateAddedFormSubscriptions(
+        [],
+        [id],
+        ["marketing.content.forms"],
+        load,
+      ),
+      /Choose active forms/,
+    );
+  await assert.rejects(
+    validateAddedFormSubscriptions(
+      [],
+      ["active"],
+      ["marketing.content.forms"],
+      async () => {
+        throw new Error("unavailable");
+      },
+    ),
+    /unavailable/,
+  );
+});

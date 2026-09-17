@@ -33,7 +33,8 @@ const assert = require("node:assert/strict");
       mfaRequired: false,
       twoFactorEnabled: false,
     };
-    let conflict = true;
+    let conflict = true,
+      catalogFails = true;
     const writes = [];
     let recoveryRequests = 0,
       acceptRecovery = false;
@@ -45,7 +46,29 @@ const assert = require("node:assert/strict");
         path = new URL(request.url()).pathname;
       let result = {},
         status = 200;
-      if (path.endsWith("/password-recovery")) {
+      if (path.endsWith("/notification-forms")) {
+        status = catalogFails ? 503 : 200;
+        result = catalogFails
+          ? { error: "Synthetic catalog unavailable" }
+          : {
+              items: [
+                {
+                  id: "11111111-1111-4111-8111-111111111111",
+                  name: "Estimate request",
+                  slug: "estimate",
+                  isActive: true,
+                  isSystem: true,
+                },
+                {
+                  id: "22222222-2222-4222-8222-222222222222",
+                  name: "Old form",
+                  slug: "old",
+                  isActive: false,
+                  isSystem: false,
+                },
+              ],
+            };
+      } else if (path.endsWith("/password-recovery")) {
         recoveryRequests++;
         result = { ok: true };
       } else if (path.endsWith("/users") && request.method() === "GET")
@@ -91,6 +114,38 @@ const assert = require("node:assert/strict");
         "/tests/user-manager-browser.html",
     );
     await page.getByRole("button", { name: "Manage", exact: true }).click();
+    await page
+      .getByRole("button", { name: "Choose notification forms", exact: true })
+      .click();
+    await page
+      .getByRole("alert")
+      .filter({ hasText: "Existing selections are preserved" })
+      .waitFor();
+    catalogFails = false;
+    await page
+      .getByRole("button", { name: "Retry form catalog", exact: true })
+      .click();
+    const estimateChoice = page.getByRole("checkbox", {
+      name: "Estimate request · estimate · System",
+      exact: true,
+    });
+    await estimateChoice.waitFor();
+    assert.equal(await estimateChoice.isDisabled(), true);
+    await page
+      .locator("summary")
+      .filter({ hasText: "Marketing · Content" })
+      .click();
+    await page.getByRole("checkbox", { name: "Forms", exact: true }).check();
+    await estimateChoice.check();
+    assert.equal(
+      await page
+        .getByRole("checkbox", {
+          name: "Old form · old · Inactive",
+          exact: true,
+        })
+        .isDisabled(),
+      true,
+    );
     await page
       .getByLabel("First name", { exact: true })
       .fill("My unsaved name");

@@ -1,7 +1,15 @@
+import {
+  accountUpdateInput,
+  invitationInput,
+} from "./user-management.contract";
+import {
+  loadManagedNotificationForms,
+  validateAddedFormSubscriptions,
+} from "./form-notification-selection";
 import { Router } from "express";
 import { z } from "zod";
 import { actor } from "./access";
-import { requireRole } from "./policy";
+import { HttpError, requireRole } from "./policy";
 import { pool } from "./database";
 import {
   requestManagedPasswordRecovery,
@@ -21,6 +29,20 @@ userManagementApi.get("/user-management/users", async (_req, res) =>
   res.json({ items: await listManagedAccounts() }),
 );
 userManagementApi.patch("/user-management/users/:id", async (req, res) => {
+  const input = accountUpdateInput.parse(req.body);
+  const current = (
+    await pool.query(
+      "SELECT a.form_notification_ids FROM staff_profile p LEFT JOIN business_account_access a ON a.user_id=p.user_id WHERE p.user_id=$1",
+      [z.string().min(1).parse(req.params.id)],
+    )
+  ).rows[0];
+  if (!current) throw new HttpError(404, "Account not found");
+  await validateAddedFormSubscriptions(
+    current.form_notification_ids || [],
+    input.formNotificationIds,
+    input.capabilities,
+    () => loadManagedNotificationForms(req),
+  );
   res.json(
     await updateManagedAccount(
       (await actor(req)).id,
@@ -50,6 +72,13 @@ userManagementApi.get("/user-management/invitations", async (_req, res) => {
   });
 });
 userManagementApi.post("/user-management/invitations", async (req, res) => {
+  const input = invitationInput.parse(req.body);
+  await validateAddedFormSubscriptions(
+    [],
+    input.formNotificationIds,
+    input.capabilities,
+    () => loadManagedNotificationForms(req),
+  );
   res
     .status(201)
     .json(await inviteManagedAccount((await actor(req)).id, req.body));

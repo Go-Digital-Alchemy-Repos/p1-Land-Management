@@ -32,7 +32,14 @@ export const invitationInput = z
     ]),
     clientId: z.string().uuid().optional(),
     capabilities,
-    formNotificationIds: z.array(z.string().uuid()).max(200).default([]),
+    formNotificationIds: z
+      .array(z.string().uuid())
+      .max(200)
+      .refine(
+        (values) => new Set(values).size === values.length,
+        "Duplicate form subscription",
+      )
+      .default([]),
   })
   .strict()
   .superRefine((value, ctx) => {
@@ -70,7 +77,13 @@ export const accountUpdateInput = z
     version: z.number().int().positive(),
     active: z.boolean(),
     capabilities,
-    formNotificationIds: z.array(z.string().uuid()).max(200),
+    formNotificationIds: z
+      .array(z.string().uuid())
+      .max(200)
+      .refine(
+        (values) => new Set(values).size === values.length,
+        "Duplicate form subscription",
+      ),
   })
   .strict();
 

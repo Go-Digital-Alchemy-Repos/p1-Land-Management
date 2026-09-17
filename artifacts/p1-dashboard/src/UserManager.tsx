@@ -1,3 +1,4 @@
+import { FormNotificationChoices } from "./FormNotificationChoices";
 import { isCapability } from "@workspace/api-zod/business-access";
 import {
   requestManagedPasswordRecovery,
@@ -546,13 +547,18 @@ export function UserManager({
                   )}
                 </>
               )}
-              {!["client", "crew"].includes(draft.role) &&
-                draft.formNotificationIds.length > 0 && (
-                  <p>
-                    {draft.formNotificationIds.length} existing form
-                    notification subscriptions will be preserved.
-                  </p>
-                )}
+              {!["client", "crew"].includes(draft.role) && (
+                <FormNotificationChoices
+                  value={draft.formNotificationIds}
+                  disabled={busy}
+                  canSubscribe={draft.capabilities.includes(
+                    "marketing.content.forms",
+                  )}
+                  onChange={(formNotificationIds) =>
+                    setDraft({ ...draft, formNotificationIds })
+                  }
+                />
+              )}
               {draft.id && (
                 <div className="row-actions">
                   <button
