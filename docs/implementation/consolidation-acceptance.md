@@ -2,7 +2,7 @@
 
 Current assessment: **implementation in progress; not a release candidate**. Reviewed against application source at `a000cc3` on `codex/business-center-consolidation` on September 17, 2026. This tracker summarizes present acceptance gaps; the chronological [implementation evidence](business-center-consolidation.md) retains checkpoint details. Earlier entries in that log and the proposal are historical, not a current backlog. No completion percentage is assigned because route counts and passing test counts do not establish feature or migration parity.
 
-The [approved scope](../proposals/p1-business-center-consolidation.md) remains unchanged. No production cutover, migration, account reconciliation or `/admin/` retirement has occurred. Original checkout and Blythe remain outside this worktree's write scope.
+The [approved scope](../proposals/p1-business-center-consolidation.md) remains unchanged. The Owner authorized an incremental production release on September 17. The dashboard and worker are deployed with additive migrations through `0046`; the public-site checkpoint is deployed. Core is also deployed; the Owner account-linking step is pending. No CRM import, real-account reconciliation or `/admin/` retirement has occurred. Original checkout and Blythe remain outside this worktree's write scope.
 
 ## Requirement-level status
 
@@ -24,7 +24,7 @@ The [approved scope](../proposals/p1-business-center-consolidation.md) remains u
 | Approval → operations → activation → billing | `composed-estimate-preparation.integration.test.ts` and recorded mixed-billing rehearsal cover preparation, outbox-only send, approval, activation, visit generation and retry-safe billing. | Actual crew execution/review in the complete browser journey, offline behavior, cancellation/successor/change-order regressions and operational acceptance. Crew completion was simulated in that fixture; external posting was not exercised. |
 | Preserve public/media/preview/intake/offline compatibility | Existing retained handlers, stable data stores and targeted runtime/route checks. | Full compatibility inventory and cutover tests spanning both applications. No blanket parity claim is supported yet. |
 | Migration, restore, rollback and retirement | `scripts/consolidation/` has identity/CRM analysis, extraction, reviewed import and independent verification tools with synthetic tests. | Complete retirement/redirect inventory, isolated backup/restore rehearsal, identity+CRM reconciliation, ordering/freeze/rollback procedure and release evidence packet. Tool existence is not an executed restore. |
-| Validated release candidate and Owner acceptance | Validated commits pushed to task branch. No production deployment or GitHub Actions enabled. | Full requirement audit, resolved release blockers, candidate-wide validation, reviewed migration/rollback artifacts and separate Owner release acceptance. |
+| Validated release candidate and Owner acceptance | Validated commits pushed to task branch. Incremental production release authorized and underway; GitHub Actions remain disabled. | Full requirement audit, resolved release blockers, candidate-wide validation, reviewed migration/rollback artifacts and final full-goal acceptance. |
 
 ## Remaining work sequence
 
