@@ -70,7 +70,8 @@
         "href": "/service-areas/duncan-sc"
       }
     ],
-    "parent": null
+    "parent": null,
+    "imageAlt": "Broad maintained lawns surrounding a warehouse property."
   },
   {
     "city": "Simpsonville",
@@ -139,7 +140,8 @@
         "href": "/service-areas/greer-sc"
       }
     ],
-    "parent": null
+    "parent": null,
+    "imageAlt": "Landscaped commercial campus with maintained lawns and planting beds."
   },
   {
     "city": "Easley",
@@ -208,7 +210,8 @@
         "href": "/service-areas/anderson-sc"
       }
     ],
-    "parent": null
+    "parent": null,
+    "imageAlt": "Manufacturing campus with maintained slopes and a stormwater pond."
   },
   {
     "city": "Gaffney",
@@ -281,7 +284,8 @@
         "href": "/service-areas/spartanburg-sc"
       }
     ],
-    "parent": null
+    "parent": null,
+    "imageAlt": "Distribution property adjoining pasture and a pond."
   },
   {
     "city": "Duncan",
@@ -350,7 +354,8 @@
         "href": "/service-areas/spartanburg-sc"
       }
     ],
-    "parent": null
+    "parent": null,
+    "imageAlt": "Warehouse grounds with maintained turf and a drainage swale."
   },
   {
     "city": "Inman",
@@ -419,7 +424,9 @@
         "href": "/service-areas/boiling-springs-sc"
       }
     ],
-    "parent": null
+    "parent": null,
+    "imageAlt": "Operator on an orange commercial zero-turn mower beside industrial buildings, a drainage channel, and neighboring farmland.",
+    "imagePosition": "75% center"
   },
   {
     "city": "Boiling Springs",
@@ -488,7 +495,8 @@
         "href": "/service-areas/inman-sc"
       }
     ],
-    "parent": null
+    "parent": null,
+    "imageAlt": "Landscaped institutional campus with broad lawns and pedestrian paths."
   },
   {
     "city": "Huntersville",
@@ -565,7 +573,8 @@
         "href": "/service-areas/cornelius-nc"
       }
     ],
-    "parent": null
+    "parent": null,
+    "imageAlt": "Office campus with landscaped lakeside grounds."
   },
   {
     "city": "Matthews",
@@ -638,7 +647,8 @@
         "href": "/service-areas/waxhaw-nc"
       }
     ],
-    "parent": "/service-areas/union-county-nc"
+    "parent": "/service-areas/union-county-nc",
+    "imageAlt": "Landscaped office entrance with maintained parking-area planting beds."
   },
   {
     "city": "Kannapolis",
@@ -707,7 +717,8 @@
         "href": "/service-areas/charlotte-north-carolina"
       }
     ],
-    "parent": null
+    "parent": null,
+    "imageAlt": "Institutional research campus with maintained lawns and a pond."
   },
   {
     "city": "Waxhaw",
@@ -780,7 +791,9 @@
         "href": "/service-areas/matthews-nc"
       }
     ],
-    "parent": "/service-areas/union-county-nc"
+    "parent": "/service-areas/union-county-nc",
+    "imageAlt": "Operator on an orange commercial zero-turn mower maintaining an institutional campus with equestrian pasture beyond.",
+    "imagePosition": "75% center"
   },
   {
     "city": "Fort Mill",
@@ -849,7 +862,8 @@
         "href": "/service-areas/rock-hill-sc"
       }
     ],
-    "parent": "/service-areas/york-county-sc"
+    "parent": "/service-areas/york-county-sc",
+    "imageAlt": "Landscaped corporate office entrance with maintained lawns and planting beds."
   },
   {
     "city": "Rock Hill",
@@ -918,7 +932,8 @@
         "href": "/service-areas/fort-mill-sc"
       }
     ],
-    "parent": "/service-areas/york-county-sc"
+    "parent": "/service-areas/york-county-sc",
+    "imageAlt": "Maintained lawns surrounding a brick institutional campus."
   },
   {
     "city": "Indian Land",
@@ -987,7 +1002,8 @@
         "href": "/service-areas/charlotte-north-carolina"
       }
     ],
-    "parent": "/service-areas/lancaster-county-sc"
+    "parent": "/service-areas/lancaster-county-sc",
+    "imageAlt": "Commercial campus with maintained lawns and a pond."
   },
   {
     "city": "Indian Trail",
@@ -1060,7 +1076,8 @@
         "href": "/service-areas/matthews-nc"
       }
     ],
-    "parent": "/service-areas/union-county-nc"
+    "parent": "/service-areas/union-county-nc",
+    "imageAlt": "Industrial property with a maintained roadside drainage swale."
   },
   {
     "city": "Monroe",
@@ -1133,7 +1150,8 @@
         "href": "/service-areas/indian-trail-nc"
       }
     ],
-    "parent": "/service-areas/union-county-nc"
+    "parent": "/service-areas/union-county-nc",
+    "imageAlt": "Maintained industrial grounds beside an airport-area property."
   },
   {
     "city": "Belmont",
@@ -1206,7 +1224,8 @@
         "href": "/service-areas/mount-holly-nc"
       }
     ],
-    "parent": null
+    "parent": null,
+    "imageAlt": "Maintained riverside grounds beside brick commercial and institutional buildings."
   },
   {
     "city": "Mount Holly",
@@ -1275,7 +1294,9 @@
         "href": "/service-areas/belmont-nc"
       }
     ],
-    "parent": null
+    "parent": null,
+    "imageAlt": "Operator on an orange commercial zero-turn mower maintaining civic grounds beside a greenway and drainage swale.",
+    "imagePosition": "75% center"
   },
   {
     "city": "Cornelius",
@@ -1348,6 +1369,7 @@
         "href": "/service-areas/mooresville-lake-norman-nc"
       }
     ],
-    "parent": null
+    "parent": null,
+    "imageAlt": "Grounds worker maintaining landscaped waterfront commercial property beside a marina."
   }
 ]

@@ -9,7 +9,7 @@ import { breadcrumbSchema, faqSchema, localBusinessSchema, serviceAreaSchema } f
 
 type LocationContent = {
   city: string; state: string; path: string; title: string; description: string;
-  heading: string; market: string; intro: string; parent: string | null;
+  heading: string; imageAlt: string; imagePosition?: string; market: string; intro: string; parent: string | null;
   sections: { heading: string; body: string }[];
   faqs: { question: string; answer: string }[];
   links: { label: string; href: string }[];
@@ -45,7 +45,7 @@ export function LocationPage({ page, image }: { page: LocationContent; image: st
       breadcrumbSchema(crumbs), faqSchema(page.faqs),
     ]} />
     <PageHero eyebrow={`Service Area · ${page.state}`} title={page.heading} subtitle={page.intro}
-      image={image} imageAlt={`Illustrative ${page.city} service-area landscape showing ${page.city === "Inman" || page.city === "Waxhaw" ? "managed agricultural acreage" : "large-property grounds and site care"}`} />
+      image={image} imageAlt={page.imageAlt} imagePosition={page.imagePosition} />
     <div className="site-shell py-8">
       <nav aria-label="Breadcrumb"><ol className="flex flex-wrap gap-2 text-sm text-muted-foreground">{crumbs.map((crumb, index) => <li key={crumb.path}>
         {index > 0 && <span aria-hidden="true" className="mr-2">›</span>}

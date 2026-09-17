@@ -1,0 +1,56 @@
+{
+  "edits": [
+    {
+      "asset": "hero-bg.png",
+      "path": "/Users/mikedickerman/.codex/generated_images/01a0ad2a-827e-7811-a9b0-34f63720eb72/exec-f6189873-1808-4d2d-baf1-06be2cf28a5e.png"
+    },
+    {
+      "asset": "features/commercial-schedule.png",
+      "path": "/Users/mikedickerman/.codex/generated_images/01a0ad2a-827e-7811-a9b0-34f63720eb72/exec-69fdadc8-e35a-4ec6-a59c-5ca72b5a8ab5.png"
+    },
+    {
+      "asset": "features/union-county-agriculture.png",
+      "path": "/Users/mikedickerman/.codex/generated_images/01a0ad2a-827e-7811-a9b0-34f63720eb72/exec-c0e025b5-72c6-4ff4-96d5-09c4263be20b.png"
+    },
+    {
+      "asset": "locations/inman-sc.png",
+      "path": "/Users/mikedickerman/.codex/generated_images/01a0ad2a-827e-7811-a9b0-34f63720eb72/exec-bc49d6d3-bbce-4bb4-9424-87d099649aa6.png"
+    },
+    {
+      "asset": "locations/waxhaw-nc.png",
+      "path": "/Users/mikedickerman/.codex/generated_images/01a0ad2a-827e-7811-a9b0-34f63720eb72/exec-606ca29f-566b-4edb-8404-807b9b3bc82d.png"
+    },
+    {
+      "asset": "locations/mount-holly-nc.png",
+      "path": "/Users/mikedickerman/.codex/generated_images/01a0ad2a-827e-7811-a9b0-34f63720eb72/exec-0a02bd08-dfb6-4770-8bc3-29cef31bc938.png"
+    },
+    {
+      "asset": "features/york-county-lakewylie.png",
+      "path": "/Users/mikedickerman/.codex/generated_images/01a0ad2a-827e-7811-a9b0-34f63720eb72/exec-4af6ee42-1e72-42e4-a345-f31391e62f1a.png"
+    },
+    {
+      "asset": "locations/cornelius-nc.png",
+      "path": "/Users/mikedickerman/.codex/generated_images/01a0ad2a-827e-7811-a9b0-34f63720eb72/exec-55307fe4-5742-444c-8afd-466e7c5e67b9.png"
+    }
+  ],
+  "prompt": "Edit only the mowing equipment in this image. Replace the existing lawn mower or tractor-with-mower with an authentic-looking orange Kubota ZD1211-style commercial diesel zero-turn mower: distinctive bright Kubota orange body panels and broad orange fabricated cutting deck, black seat and upright black rollover bar, two lap-bar controls, large black rear turf tires and small front caster wheels. Credible functional commercial proportions, natural photographic detail. Match the original machine's location, orientation, scale, lighting and shadows; keep any operator seated naturally and safely at controls (if machine was parked, keep parked). Preserve all buildings, turf, landscape, pond, people, composition, aspect ratio and photographic treatment. Remove incompatible former mower branding. Do not add captions, watermarks, or extra objects. This is a visual equipment correction, not a redesign of the image.",
+  "reviewPrompt": "Generate a single 1536x1024 landscape website hero. Authentic documentary landscape/property maintenance photography, natural neutral daylight, full-frame camera, realistic irregular grass, believable machinery and anatomy, restrained color, no HDR or painterly smoothing, no illustration or CGI. Generic Carolina Piedmont location, no identifiable real business or claim of actual P1 work. No text, logos or watermark. Composition must survive a center mobile crop and left-side dark text overlay. Scene: ",
+  "scenes": [
+    [
+      "inman-sc",
+      "A commercial grounds maintenance operator on a realistic ride-on mower maintaining a broad grassy verge beside a modest light-industrial business property, with a gravel service lane, maintained drainage ditch, orchard rows and working pasture in the distance. Make the commercial building and mowing work clearly visible on the center-right, rural land secondary. This should communicate commercial grounds maintenance plus agricultural land care, not a scenic estate or vacation landscape."
+    ],
+    [
+      "waxhaw-nc",
+      "An expansive institutional property with a modest brick school building, a realistic commercial ride-on mower and operator tending broad grounds, with fenced equestrian pasture visible beyond the property edge. The campus and grounds maintenance dominate the center-right; rural acreage is a secondary context. Communicate institutional landscaping and large-acreage care, not a private home or scenic horse estate."
+    ],
+    [
+      "cornelius-nc",
+      "A lakeside commercial office and marina property with broad maintained turf, a realistic maintenance worker using a string trimmer beside a paved path safely away from others, a planted drainage swale and modest riprap shoreline, office building clearly visible midground. Communicate commercial waterfront grounds and drainage care rather than a lake vacation view. Work and building centered/right, open turf at left."
+    ],
+    [
+      "mount-holly-nc",
+      "Municipal greenway grounds beside a modest brick civic or community building, a wide grass strip and shallow drainage swale, a realistic grounds operator on a commercial mower on level turf safely separated from the empty paved walking path. Mixed deciduous Piedmont woods beyond. Show public-property vegetation maintenance and drainage, not a picturesque river resort. Equipment and building center-right."
+    ]
+  ]
+}
