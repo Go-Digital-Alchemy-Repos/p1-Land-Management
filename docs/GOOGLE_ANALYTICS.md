@@ -1,6 +1,6 @@
 # Public website Google Analytics
 
-Status: integration prepared; account creation, measurement ID and production collection are not verified yet.
+Measurement ID: `G-YX69CJ1QNJ`. Property: P1 Website (`554712298`); web stream: P1 Land Management (`15792694292`). Owner supplied the tag on September 16, 2026. Enhanced Measurement was verified disabled in Google Analytics. The production website build variable is configured; verify live collection after each tracking change.
 
 ## Enable
 
