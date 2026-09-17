@@ -6078,6 +6078,412 @@
           }
         }
       }
+    },
+    "/marketing/cms/menus": {
+      "get": {
+        "operationId": "listWebsiteMenus",
+        "description": "Requires marketing.content.menus. Core owns menu content and editor reservations. Private/no-store; no automatic mutation retry.",
+        "responses": {
+          "200": {
+            "description": "Website menu result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WebsiteMenu"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid menu or identifier"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Menus access or linked Core identity required"
+          },
+          "404": {
+            "description": "Menu not found"
+          },
+          "409": {
+            "description": "Conflict"
+          },
+          "503": {
+            "description": "Website unavailable; refresh before retrying a change"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createWebsiteMenu",
+        "description": "Requires marketing.content.menus. Core owns menu content and editor reservations. Private/no-store; no automatic mutation retry.",
+        "responses": {
+          "201": {
+            "description": "Website menu result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteMenu"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid menu or identifier"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Menus access or linked Core identity required"
+          },
+          "404": {
+            "description": "Menu not found"
+          },
+          "409": {
+            "description": "Conflict"
+          },
+          "503": {
+            "description": "Website unavailable; refresh before retrying a change"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebsiteMenuInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/marketing/cms/menus/{id}": {
+      "get": {
+        "operationId": "getWebsiteMenu",
+        "description": "Requires marketing.content.menus. Core owns menu content and editor reservations. Private/no-store; no automatic mutation retry.",
+        "responses": {
+          "200": {
+            "description": "Website menu result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteMenu"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid menu or identifier"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Menus access or linked Core identity required"
+          },
+          "404": {
+            "description": "Menu not found"
+          },
+          "409": {
+            "description": "Conflict"
+          },
+          "503": {
+            "description": "Website unavailable; refresh before retrying a change"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "put": {
+        "operationId": "updateWebsiteMenu",
+        "description": "Requires marketing.content.menus. Core owns menu content and editor reservations. Private/no-store; no automatic mutation retry.",
+        "responses": {
+          "200": {
+            "description": "Website menu result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteMenu"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid menu or identifier"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Menus access or linked Core identity required"
+          },
+          "404": {
+            "description": "Menu not found"
+          },
+          "409": {
+            "description": "Conflict"
+          },
+          "503": {
+            "description": "Website unavailable; refresh before retrying a change"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebsiteMenuInput"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteWebsiteMenu",
+        "description": "Requires marketing.content.menus. Core owns menu content and editor reservations. Private/no-store; no automatic mutation retry.",
+        "responses": {
+          "200": {
+            "description": "Website menu result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid menu or identifier"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Menus access or linked Core identity required"
+          },
+          "404": {
+            "description": "Menu not found"
+          },
+          "409": {
+            "description": "Conflict"
+          },
+          "503": {
+            "description": "Website unavailable; refresh before retrying a change"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/menu-references": {
+      "get": {
+        "operationId": "getWebsiteMenuReferences",
+        "description": "Requires marketing.content.menus. Core owns menu content and editor reservations. Private/no-store; no automatic mutation retry.",
+        "responses": {
+          "200": {
+            "description": "Website menu result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteMenuReferences"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid menu or identifier"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Menus access or linked Core identity required"
+          },
+          "404": {
+            "description": "Menu not found"
+          },
+          "409": {
+            "description": "Conflict"
+          },
+          "503": {
+            "description": "Website unavailable; refresh before retrying a change"
+          }
+        }
+      }
+    },
+    "/marketing/cms/editor-locks/cms_menu/{id}/acquire": {
+      "post": {
+        "operationId": "acquireWebsiteMenuReservation",
+        "description": "Requires marketing.content.menus. Core owns menu content and editor reservations. Private/no-store; no automatic mutation retry.",
+        "responses": {
+          "200": {
+            "description": "Website menu result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteEditorReservation"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid menu or identifier"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Menus access or linked Core identity required"
+          },
+          "404": {
+            "description": "Menu not found"
+          },
+          "409": {
+            "description": "Conflict"
+          },
+          "503": {
+            "description": "Website unavailable; refresh before retrying a change"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/editor-locks/cms_menu/{id}/heartbeat": {
+      "post": {
+        "operationId": "heartbeatWebsiteMenuReservation",
+        "description": "Requires marketing.content.menus. Core owns menu content and editor reservations. Private/no-store; no automatic mutation retry.",
+        "responses": {
+          "200": {
+            "description": "Website menu result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteEditorReservation"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid menu or identifier"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Menus access or linked Core identity required"
+          },
+          "404": {
+            "description": "Menu not found"
+          },
+          "409": {
+            "description": "Conflict"
+          },
+          "503": {
+            "description": "Website unavailable; refresh before retrying a change"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/editor-locks/cms_menu/{id}/release": {
+      "post": {
+        "operationId": "releaseWebsiteMenuReservation",
+        "description": "Requires marketing.content.menus. Core owns menu content and editor reservations. Private/no-store; no automatic mutation retry.",
+        "responses": {
+          "200": {
+            "description": "Website menu result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteEditorReservation"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid menu or identifier"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Menus access or linked Core identity required"
+          },
+          "404": {
+            "description": "Menu not found"
+          },
+          "409": {
+            "description": "Conflict"
+          },
+          "503": {
+            "description": "Website unavailable; refresh before retrying a change"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -13327,6 +13733,247 @@
           },
           "message": {
             "type": "string"
+          }
+        }
+      },
+      "WebsiteMenuItem": {
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "url",
+          "openInNewTab",
+          "children"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "url": {
+            "type": "string",
+            "minLength": 1
+          },
+          "openInNewTab": {
+            "type": "boolean"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "internal-link",
+              "custom-link",
+              "form-modal"
+            ]
+          },
+          "pageId": {
+            "type": "string",
+            "nullable": true
+          },
+          "labelSource": {
+            "type": "string",
+            "enum": [
+              "page",
+              "custom"
+            ]
+          },
+          "formSlug": {
+            "type": "string",
+            "nullable": true
+          },
+          "modalTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "modalDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "children": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WebsiteMenuItem"
+            }
+          }
+        }
+      },
+      "WebsiteMenuInput": {
+        "type": "object",
+        "required": [
+          "name",
+          "location",
+          "items"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "location": {
+            "type": "string"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WebsiteMenuItem"
+            }
+          }
+        }
+      },
+      "WebsiteMenu": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "location",
+          "items"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "location": {
+            "type": "string"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WebsiteMenuItem"
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        }
+      },
+      "WebsiteMenuReferences": {
+        "type": "object",
+        "required": [
+          "pages",
+          "forms"
+        ],
+        "properties": {
+          "pages": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "title",
+                "slug",
+                "status"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "slug": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "forms": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "name",
+                "slug"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "slug": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "WebsiteEditorReservation": {
+        "type": "object",
+        "required": [
+          "status",
+          "ownedByCurrentUser",
+          "resourceType",
+          "resourceId",
+          "lock"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "acquired",
+              "locked_by_other",
+              "expired_available"
+            ]
+          },
+          "ownedByCurrentUser": {
+            "type": "boolean"
+          },
+          "resourceType": {
+            "type": "string"
+          },
+          "resourceId": {
+            "type": "string"
+          },
+          "lock": {
+            "type": "object",
+            "nullable": true,
+            "required": [
+              "id",
+              "lockedByUserId",
+              "lockedByName",
+              "lockedAt",
+              "lastHeartbeatAt",
+              "expiresAt"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "lockedByUserId": {
+                "type": "string"
+              },
+              "lockedByName": {
+                "type": "string"
+              },
+              "lockedAt": {
+                "type": "string"
+              },
+              "lastHeartbeatAt": {
+                "type": "string"
+              },
+              "expiresAt": {
+                "type": "string"
+              }
+            }
           }
         }
       }

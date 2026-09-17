@@ -8,6 +8,17 @@ import { logger } from "../../utils/logger";
 
 const router = Router();
 
+// Menu selectors need titles/paths, never draft bodies or form submissions/settings.
+router.get("/menu-references", p1Authorize("marketing.content.menus"), async (_req, res, next) => {
+  try {
+    const [pages, forms] = await Promise.all([storage.cmsPages.getAllPages(), storage.forms.getAll()]);
+    res.json({
+      pages: pages.map(({id, title, slug, status}) => ({id, title, slug, status})),
+      forms: forms.map(({id, name, slug}) => ({id, name, slug})),
+    });
+  } catch (error) { next(error); }
+});
+
 const menuBodySchema = z.object({
   name: z.string().min(1, "Name is required"),
   location: z.enum(MENU_LOCATIONS).default("unassigned"),

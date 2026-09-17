@@ -59,6 +59,7 @@ add("seo", "GET", "/seo-audit");
 add("team", "GET", "/team");
 add("team", "POST", "/team");
 add("team", "PUT", "/team/:id");
+add("menus", "GET", "/menu-references");
 
 const lockCapabilities: Record<string, Capability | null> = {
   cms_page: "marketing.content.pages",

@@ -75,6 +75,7 @@ import {
 } from "./dashboard-routes";
 const auth = createAuthClient({ plugins: [twoFactorClient()] });
 const MarketingReports = lazy(() => import("./marketing/MarketingReports").then(module => ({default: module.MarketingReports})));
+const CmsMenus = lazy(() => import("./marketing/CmsMenus"));
 const PropertyMap = lazy(() =>
   import("./PropertyMap").then(({ PropertyMap }) => ({ default: PropertyMap })),
 );
@@ -103,6 +104,7 @@ type NavItem = DashboardPageRoute & {
 };
 const icons: Record<DashboardPageRoute["view"] | "Settings:security" | "Settings:integrations" | "Settings:preferences" | "Settings:term-libraries", typeof LayoutDashboard> = {
   Analytics: BarChart3,
+  "Website Menus": Menu,
   "Search Console": Search,
   Overview: LayoutDashboard,
   Properties: MapPin,
@@ -241,6 +243,7 @@ function App() {
     route: Extract<DashboardRoute, { kind: "page" }>,
     historyMode: "push" | "replace" | "none" = "push",
   ) => {
+    if (historyMode !== "replace" && (historyMode === "none" || location.pathname !== pathForRoute(route)) && !window.dispatchEvent(new Event("p1:before-navigation", {cancelable:true}))) return;
     setRouteMissing(false);
     setViewState(route.page.view);
     setSettingsSection(route.page.settingsSection || "people");
@@ -321,6 +324,7 @@ function App() {
     const onPopState = () => {
       const next = routeFromLocation();
       if (next.kind === "not-found") {
+        if (!window.dispatchEvent(new Event("p1:before-navigation", {cancelable:true}))) return;
         setRouteMissing(true);
         setRecordRoute(undefined);
       } else {
@@ -1164,9 +1168,11 @@ function App() {
                   <ChevronDown size={15} aria-hidden="true" />
                 </button>
                 <div id={groupId} className="nav-group-items" hidden={!expanded}>
-                  {entries.map((item) => {
+                  {entries.map((item, index) => {
                     const Icon = item.icon;
                     return (
+                      <React.Fragment key={item.path}>
+                      {item.section && entries[index - 1]?.section !== item.section && <p className="nav-section-label">{item.section}</p>}
                       <button
                         key={item.path}
                         className={activeNav(item) ? "active" : ""}
@@ -1182,6 +1188,7 @@ function App() {
                           <b>{data.requests.length}</b>
                         )}
                       </button>
+                      </React.Fragment>
                     );
                   })}
                 </div>
@@ -1381,6 +1388,7 @@ function App() {
             />
           )}
           {(view === "Analytics" || view === "Search Console") && <Suspense fallback={<p role="status">Loading reporting tools…</p>}><MarketingReports key={`${person.id}:${view}:${(person.capabilities || []).join(",")}`} source={view === "Analytics" ? "analytics" : "search-console"}/></Suspense>}
+          {view === "Website Menus" && <Suspense fallback={<p role="status">Loading website menus…</p>}><CmsMenus key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Agreements" && (
             <ServiceAgreements
               role={person.role}

@@ -78,6 +78,7 @@ import type {
   DashboardMe,
   DashboardProperty,
   DashboardPropertyEditReceipt,
+  DeleteWebsiteMenu200,
   EditServiceAgreement,
   EstimateChangeOrder,
   EstimateDecision,
@@ -159,6 +160,10 @@ import type {
   UpdateProject,
   UpdateProjectPhase,
   UploadFieldPhotoHeaders,
+  WebsiteEditorReservation,
+  WebsiteMenu,
+  WebsiteMenuInput,
+  WebsiteMenuReferences,
   WorkOrder,
   WorkOrderStatusUpdate,
   WorkVersion,
@@ -3233,6 +3238,225 @@ export const getMarketingSearchConsole = async (params?: GetMarketingSearchConso
   {
     ...options,
     method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getListWebsiteMenusUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/menus`
+}
+
+/**
+ * Requires marketing.content.menus. Core owns menu content and editor reservations. Private/no-store; no automatic mutation retry.
+ */
+export const listWebsiteMenus = async ( options?: RequestInit): Promise<WebsiteMenu[]> => {
+
+  return customFetch<WebsiteMenu[]>(getListWebsiteMenusUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateWebsiteMenuUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/menus`
+}
+
+/**
+ * Requires marketing.content.menus. Core owns menu content and editor reservations. Private/no-store; no automatic mutation retry.
+ */
+export const createWebsiteMenu = async (websiteMenuInput: WebsiteMenuInput, options?: RequestInit): Promise<WebsiteMenu> => {
+
+  return customFetch<WebsiteMenu>(getCreateWebsiteMenuUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      websiteMenuInput,)
+  }
+);}
+
+
+
+export const getGetWebsiteMenuUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/menus/${id}`
+}
+
+/**
+ * Requires marketing.content.menus. Core owns menu content and editor reservations. Private/no-store; no automatic mutation retry.
+ */
+export const getWebsiteMenu = async (id: string, options?: RequestInit): Promise<WebsiteMenu> => {
+
+  return customFetch<WebsiteMenu>(getGetWebsiteMenuUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getUpdateWebsiteMenuUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/menus/${id}`
+}
+
+/**
+ * Requires marketing.content.menus. Core owns menu content and editor reservations. Private/no-store; no automatic mutation retry.
+ */
+export const updateWebsiteMenu = async (id: string,
+    websiteMenuInput: WebsiteMenuInput, options?: RequestInit): Promise<WebsiteMenu> => {
+
+  return customFetch<WebsiteMenu>(getUpdateWebsiteMenuUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      websiteMenuInput,)
+  }
+);}
+
+
+
+export const getDeleteWebsiteMenuUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/menus/${id}`
+}
+
+/**
+ * Requires marketing.content.menus. Core owns menu content and editor reservations. Private/no-store; no automatic mutation retry.
+ */
+export const deleteWebsiteMenu = async (id: string, options?: RequestInit): Promise<DeleteWebsiteMenu200> => {
+
+  return customFetch<DeleteWebsiteMenu200>(getDeleteWebsiteMenuUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+export const getGetWebsiteMenuReferencesUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/menu-references`
+}
+
+/**
+ * Requires marketing.content.menus. Core owns menu content and editor reservations. Private/no-store; no automatic mutation retry.
+ */
+export const getWebsiteMenuReferences = async ( options?: RequestInit): Promise<WebsiteMenuReferences> => {
+
+  return customFetch<WebsiteMenuReferences>(getGetWebsiteMenuReferencesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getAcquireWebsiteMenuReservationUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/editor-locks/cms_menu/${id}/acquire`
+}
+
+/**
+ * Requires marketing.content.menus. Core owns menu content and editor reservations. Private/no-store; no automatic mutation retry.
+ */
+export const acquireWebsiteMenuReservation = async (id: string, options?: RequestInit): Promise<WebsiteEditorReservation> => {
+
+  return customFetch<WebsiteEditorReservation>(getAcquireWebsiteMenuReservationUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+export const getHeartbeatWebsiteMenuReservationUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/editor-locks/cms_menu/${id}/heartbeat`
+}
+
+/**
+ * Requires marketing.content.menus. Core owns menu content and editor reservations. Private/no-store; no automatic mutation retry.
+ */
+export const heartbeatWebsiteMenuReservation = async (id: string, options?: RequestInit): Promise<WebsiteEditorReservation> => {
+
+  return customFetch<WebsiteEditorReservation>(getHeartbeatWebsiteMenuReservationUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+export const getReleaseWebsiteMenuReservationUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/editor-locks/cms_menu/${id}/release`
+}
+
+/**
+ * Requires marketing.content.menus. Core owns menu content and editor reservations. Private/no-store; no automatic mutation retry.
+ */
+export const releaseWebsiteMenuReservation = async (id: string, options?: RequestInit): Promise<WebsiteEditorReservation> => {
+
+  return customFetch<WebsiteEditorReservation>(getReleaseWebsiteMenuReservationUrl(id),
+  {
+    ...options,
+    method: 'POST'
 
 
   }

@@ -38,6 +38,7 @@ vi.mock("../storage", () => ({
     seoSettings: { get: async () => ({}) },
     blog: { getAllPosts: state.list },
     events: { getAllEvents: state.list },
+    forms: { getAll: state.list },
     editorLocks: { listActiveByResourceType: state.list },
   },
 }));
@@ -290,4 +291,33 @@ it("exposes resource-scoped lock reads through the confidential service boundary
   expect((await request("/editor-locks/resource/doc")).status).toBe(200);
   identity.ownerAttested = false;
   expect((await request("/editor-locks/resource/doc")).status).toBe(403);
+});
+it("projects menu selector references without page bodies, form rules or submissions", async () => {
+  identity.capabilities = ["marketing.content.menus"];
+  state.pages.mockResolvedValue([
+    {
+      id: "page",
+      title: "About",
+      slug: "about",
+      status: "draft",
+      content: { private: "draft body" },
+    },
+  ]);
+  state.list.mockResolvedValue([
+    {
+      id: "form",
+      name: "Estimate",
+      slug: "estimate",
+      notificationEmails: ["private@example.test"],
+      fields: [{ secret: true }],
+    },
+  ]);
+  const response = await request("/menu-references");
+  expect(response.status).toBe(200);
+  expect(await response.json()).toEqual({
+    pages: [{ id: "page", title: "About", slug: "about", status: "draft" }],
+    forms: [{ id: "form", name: "Estimate", slug: "estimate" }],
+  });
+  identity.capabilities = ["marketing.content.pages"];
+  expect((await request("/menu-references")).status).toBe(403);
 });

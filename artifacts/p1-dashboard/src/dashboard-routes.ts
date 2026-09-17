@@ -16,6 +16,7 @@ export type DashboardView =
   | "Settings"
   | "Profile"
   | "Analytics"
+  | "Website Menus"
   | "Search Console";
 
 export type SettingsSection =
@@ -65,6 +66,7 @@ export type DashboardPageRoute = {
   group: NavigationGroup;
   settingsSection?: SettingsSection;
   navigation?: boolean;
+  section?: "Content" | "Design" | "Website System" | "Reporting";
 };
 
 export type DashboardRoute =
@@ -85,8 +87,9 @@ export const DASHBOARD_PAGES: readonly DashboardPageRoute[] = [
   { view: "Agreements", label: "Agreements", path: "/agreements", group: "Revenue" },
   { view: "Billing", label: "Billing", path: "/billing", group: "Revenue" },
   { view: "Expenses", label: "Expenses", path: "/expenses", group: "Revenue" },
-  { view: "Analytics", label: "Google Analytics", path: "/marketing/reporting/analytics", group: "Marketing" },
-  { view: "Search Console", label: "Search Console", path: "/marketing/reporting/search-console", group: "Marketing" },
+  { view: "Website Menus", label: "Menus", path: "/marketing/content/menus", group: "Marketing", section: "Content" },
+  { view: "Analytics", label: "Google Analytics", path: "/marketing/reporting/analytics", group: "Marketing", section: "Reporting" },
+  { view: "Search Console", label: "Search Console", path: "/marketing/reporting/search-console", group: "Marketing", section: "Reporting" },
   { view: "Profile", label: "My profile", path: "/profile", group: "Workspace", navigation: false },
   { view: "Settings", label: "User Manager", path: "/settings/people", group: "Settings", settingsSection: "people" },
   { view: "Settings", label: "Security", path: "/settings/security", group: "Settings", settingsSection: "security" },
@@ -185,6 +188,7 @@ export function pathForRoute(route: Extract<DashboardRoute, { kind: "page" }>) {
 
 const viewCapability: Partial<Record<DashboardView, Capability>> = {
   Analytics: "marketing.analytics.view",
+  "Website Menus": "marketing.content.menus",
   "Search Console": "marketing.search-console.view",
   Overview: "workspace.overview", "My Day": "workspace.my-day",
   Clients: "customers.clients", Properties: "customers.properties", Requests: "customers.requests",
