@@ -2075,15 +2075,20 @@ function App() {
                 rows={data["recurring-jobs"] || []}
                 columns={[
                   "title",
+                  "generation_status",
+                  "visits_remaining",
                   "client_name",
                   "property_name",
                   "agreement_status",
+                  "visit_allowance",
+                  "visits_reserved",
                   "cadence",
                   "next_visit",
                   "paused",
                 ]}
                 empty="No recurring services yet."
               />
+              <p>Visit allowances include reserved work and charged visits. Cancelled or skipped visits release a slot only when uncharged. Blank counts indicate a service without a per-visit allowance for its next date.</p>
               {(data["recurring-jobs"] || []).filter((item: any) => item.paused && item.agreement_status === "draft").map((item: any) => <button key={item.id} onClick={() => openForm("activate-recurring", item)}>Schedule and activate {item.title}</button>)}
             </section>
           )}

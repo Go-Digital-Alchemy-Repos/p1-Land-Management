@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import { pool } from "./database";
 import { generateRecurring } from "./recurrence";
+import { listRecurringJobs } from "./recurring-jobs";
 import {
   createServiceAgreement,
   activateServiceAgreement,
@@ -119,6 +120,16 @@ test(
   { skip: !enabled },
   async () => {
     const f = await fixture(2);
+    const status = async () =>
+      (await listRecurringJobs()).find((row) => row.id === f.recurrence)!;
+    assert.equal(
+      (await status()).generation_status,
+      "Authorized for next visit",
+    );
+    assert.equal((await status()).visits_remaining, 2);
+    assert.equal("configuration" in (await status()), false);
+    assert.equal("amount_cents" in (await status()), false);
+
     await Promise.all([generateRecurring(), generateRecurring()]);
     for (let i = 0; i < 3; i++) await generateRecurring();
     let rows = (
@@ -128,6 +139,14 @@ test(
       )
     ).rows;
     assert.equal(rows.length, 2);
+    assert.equal(
+      (await status()).generation_status,
+      "Visit allowance exhausted",
+    );
+    assert.equal((await status()).visit_allowance, 2);
+    assert.equal((await status()).visits_reserved, 2);
+    assert.equal((await status()).visits_remaining, 0);
+
     assert(
       rows.every(
         (row) =>
@@ -148,6 +167,7 @@ test(
     await pool.query("UPDATE work_order SET status='cancelled' WHERE id=$1", [
       rows[0].id,
     ]);
+    assert.equal((await status()).visits_remaining, 1);
     await generateRecurring();
     assert.equal(
       (

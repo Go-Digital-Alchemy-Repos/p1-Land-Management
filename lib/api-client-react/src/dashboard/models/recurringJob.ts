@@ -20,4 +20,21 @@ export interface RecurringJob {
   agreement_status?: string | null;
   /** @nullable */
   next_visit?: string | null;
+  /** Operational authorization status for the next occurrence. */
+  generation_status?: string;
+  /**
+     * @minimum 0
+     * @nullable
+     */
+  visit_allowance?: number | null;
+  /**
+     * @minimum 0
+     * @nullable
+     */
+  visits_reserved?: number | null;
+  /**
+     * @minimum 0
+     * @nullable
+     */
+  visits_remaining?: number | null;
 }

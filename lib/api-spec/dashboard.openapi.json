@@ -12640,6 +12640,31 @@
               "null"
             ],
             "format": "date-time"
+          },
+          "generation_status": {
+            "type": "string",
+            "description": "Operational authorization status for the next occurrence."
+          },
+          "visit_allowance": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "visits_reserved": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "visits_remaining": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
           }
         }
       },

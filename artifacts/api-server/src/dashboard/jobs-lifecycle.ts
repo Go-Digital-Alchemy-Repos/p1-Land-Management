@@ -1,3 +1,4 @@
+import { listRecurringJobs } from "./recurring-jobs";
 import { convertComposedEstimate, validateComposedDecisionParty } from "./composed-estimate-approval";
 import { estimateAllocationApi } from "./estimate-allocation.routes";
 import { estimateDocument } from "./estimate-document";
@@ -263,7 +264,7 @@ jobsLifecycleApi.post("/estimates/:id/decision", async (req, res) => {
 jobsLifecycleApi.post("/jobs/internal", async (req, res) => {
   const a = await actor(req); requireCapability(a, "operations.schedule"); const b = z.object({ propertyId: id, title: text, scope: z.string().max(10_000).default(""), reason: z.string().trim().min(1).max(1_000), assignedTo: z.string().optional(), scheduledAt: z.string().datetime().optional() }).parse(req.body); await propertyAccess(a,b.propertyId); const key=randomUUID(); await transaction(async c=>{ await requireOperationalProperty(c,b.propertyId); await c.query("INSERT INTO work_order(id,property_id,title,scope,assigned_to,scheduled_at,job_kind,internal_reason) VALUES($1,$2,$3,$4,$5,$6,'internal',$7)",[key,b.propertyId,b.title,b.scope,b.assignedTo||null,b.scheduledAt||null,b.reason]); await audit(c,a.id,"job.internal_created",key,{reason:b.reason}); }); res.status(201).json({id:key});
 });
-jobsLifecycleApi.get("/recurring-jobs", async (req,res) => { const a=await actor(req); requireCapability(a, "operations.recurring"); res.json((await pool.query(`SELECT r.*,p.name AS property_name,c.name AS client_name,a.status AS agreement_status,COUNT(w.id)::int AS visit_count,MIN(w.scheduled_at) FILTER (WHERE w.scheduled_at>=now()) AS next_visit FROM recurring_service r JOIN property p ON p.id=r.property_id JOIN client c ON c.id=p.client_id LEFT JOIN service_agreement a ON a.id=r.agreement_id LEFT JOIN work_order w ON w.recurring_service_id=r.id WHERE p.lifecycle='operational' GROUP BY r.id,p.name,c.name,a.status ORDER BY r.next_date`)).rows); });
+jobsLifecycleApi.get("/recurring-jobs", async (req,res) => { const a=await actor(req); requireCapability(a, "operations.recurring"); res.json(await listRecurringJobs()); });
 jobsLifecycleApi.post("/recurring-jobs/:id/activate", async (req, res) => {
   const a = await actor(req); requireCapability(a, "operations.recurring");
   const key = id.parse(req.params.id);
