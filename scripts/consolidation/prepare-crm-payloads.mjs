@@ -135,6 +135,8 @@ function decimalIdentity(token) {
   return match[1] + digits + "e" + exponent;
 }
 export function parseCrmJson(raw) {
+  if (typeof raw !== "string")
+    raw = new TextDecoder("utf-8", { fatal: true }).decode(raw);
   let supported = false;
   JSON.parse("1", (_key, value, context) => {
     supported = context?.source === "1";
@@ -372,7 +374,7 @@ export async function main(args) {
     throw Error("Export exceeds 32 MiB");
   const raw = await readFile(args[1]);
   if (raw.length > 32 * 1024 * 1024) throw Error("Export exceeds 32 MiB");
-  const manifest = prepareCrmPayloads(parseCrmJson(raw.toString("utf8")));
+  const manifest = prepareCrmPayloads(parseCrmJson(raw));
   manifest.inputFileSha256 = createHash("sha256").update(raw).digest("hex");
   await writeFile(args[3], JSON.stringify(manifest, null, 2) + "\n", {
     flag: "wx",

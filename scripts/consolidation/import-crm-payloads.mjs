@@ -35,7 +35,11 @@ export async function importCrmPayloads(
     fail("crm_import_review_mismatch");
   if (manifest.counts.blocked || manifest.records.length > 10000)
     fail("crm_import_unresolved_or_oversized");
-  if (manifest.records.some((r) => !uuid(r.targetId)))
+  if (
+    manifest.records.some(
+      (r) => !uuid(r.targetId) || r.targetId !== r.targetId.toLowerCase(),
+    )
+  )
     fail("crm_import_invalid_target");
   const client = await pool.connect();
   let broken = false;
@@ -311,7 +315,7 @@ async function privateJson(path) {
     fail("crm_import_file_too_large");
   const raw = await readFile(path);
   if (raw.length > 32 * 1024 * 1024) fail("crm_import_file_too_large");
-  return parseCrmJson(raw.toString("utf8"));
+  return parseCrmJson(raw);
 }
 export async function main(args) {
   if (

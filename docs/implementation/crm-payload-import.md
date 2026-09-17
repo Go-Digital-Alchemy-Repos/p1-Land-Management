@@ -35,7 +35,7 @@ node scripts/consolidation/import-crm-payloads.mjs --input /absolute/private/crm
 
 Dry-run executes the same transaction, eligibility checks and constraints, then rolls it back. It reports `wouldCreate` and no committed creations. It briefly takes database locks and does not simulate a source freeze.
 
-After separate production release authority, the same command can use `--mode apply`. No default CLI mode exists. Inputs are capped at 32 MiB and a batch at 10,000 total source rows. To split a larger export, retain required parent rows/inventory in each batch and prepare/review each batch independently; immutable parent snapshots replay rather than duplicate.
+After separate production release authority, the same command can use `--mode apply`. No default CLI mode exists. Target IDs must use canonical lowercase UUID spelling so stored mappings and replay hashes agree. Malformed UTF-8 input is rejected. Inputs are capped at 32 MiB and a batch at 10,000 total source rows. To split a larger export, retain required parent rows/inventory in each batch and prepare/review each batch independently; immutable parent snapshots replay rather than duplicate.
 
 The transaction:
 
@@ -57,6 +57,6 @@ Preexisting native provenance without its reviewed archive is rejected, not auto
 
 `node scripts/test-dashboard.mjs` runs the importer tests against a disposable PostgreSQL instance and replays migrations. Coverage includes dry-run, simultaneous apply/replay, exact source storage, original target/receipt preservation, task edits surviving replay, stale target/identity/assignment checks, immutable archives, late audit-failure rollback, provenance conflicts, cross-batch parent uniqueness and actual CLI behavior. Offline preparation/reconciliation tests remain separate.
 
-Before production cutover, verify per-source counts/content hashes, note/task projection counts, role-separated UI/API visibility and all reconciliation exceptions against the frozen source. Retain a database backup and rehearse restoration. Application rollback should retain the additive archive and native history; deleting immutable source/history records is not a rollback mechanism. Correcting an erroneous applied mapping requires an explicitly reviewed recovery procedure or restoration, not a casual rerun with changed inputs.
+Use the [read-only post-import verifier](crm-import-verification.md) with the complete source export to check archives, native origin/history and audit/receipt mappings. Before production cutover, verify per-source counts/content hashes, note/task projection counts, role-separated UI/API visibility and all reconciliation exceptions against the frozen source. Retain a database backup and rehearse restoration. Application rollback should retain the additive archive and native history; deleting immutable source/history records is not a rollback mechanism. Correcting an erroneous applied mapping requires an explicitly reviewed recovery procedure or restoration, not a casual rerun with changed inputs.
 
 Production source extraction/freezing, unmatched parent creation policy, complete source-field functionality, archive access, full import reconciliation/restoration rehearsals and `/admin/` retirement remain open release gates.

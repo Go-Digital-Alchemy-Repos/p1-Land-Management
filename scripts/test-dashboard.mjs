@@ -124,6 +124,7 @@ try {
       "src/dashboard/lead-details.test.ts",
       "../../scripts/consolidation/import-crm-payloads.test.mjs",
       "../../scripts/consolidation/export-crm-payloads.test.mjs",
+      "../../scripts/consolidation/verify-crm-import.test.mjs",
       "src/dashboard/inquiry-list.test.ts",
       "src/dashboard/marketing-reporting.test.ts",
       "src/dashboard/marketing-cms.test.ts",

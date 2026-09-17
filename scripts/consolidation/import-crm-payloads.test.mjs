@@ -3,7 +3,8 @@ import { after, test } from "node:test";
 import assert from "node:assert/strict";
 import { randomUUID, createHmac } from "node:crypto";
 import { createRequire } from "node:module";
-import { fixture, at } from "./crm-payload-fixture.mjs";
+import { setupCrmImportFixture } from "./crm-import-fixture.mjs";
+import { at } from "./crm-payload-fixture.mjs";
 import { prepareCrmPayloads } from "./prepare-crm-payloads.mjs";
 import { importCrmPayloads } from "./import-crm-payloads.mjs";
 const base = process.env.DASHBOARD_TEST_ORIGIN;
@@ -27,61 +28,8 @@ const review = (input, owner) => ({
   manifestSha256: prepareCrmPayloads(input).manifestSha256,
   reviewedBy: owner,
 });
-async function setup() {
-  const owner = randomUUID(),
-    person = randomUUID(),
-    lead = randomUUID(),
-    client = randomUUID(),
-    instance = randomUUID(),
-    submission = randomUUID();
-  for (const [id, role] of [
-    [owner, "owner"],
-    [person, "member"],
-  ]) {
-    await pool.query(
-      'INSERT INTO "user"(id,name,email,"emailVerified") VALUES($1,$2,$3,true)',
-      [id, "Synthetic " + role, id + "@example.test"],
-    );
-    await pool.query("INSERT INTO staff_profile(user_id,role) VALUES($1,$2)", [
-      id,
-      role,
-    ]);
-  }
-  await pool.query(
-    "INSERT INTO business_account_access(user_id,capabilities) VALUES($1,ARRAY['revenue.sales','customers.clients'])",
-    [person],
-  );
-  await pool.query(
-    "INSERT INTO client(id,name,email) VALUES($1,'Existing customer','existing@example.test')",
-    [client],
-  );
-  await pool.query(
-    "INSERT INTO lead(id,name,email,location,description,converted_client_id) VALUES($1,'Existing lead','existing@example.test','Existing site','Existing intake',$2)",
-    [lead, client],
-  );
-  await pool.query(
-    "INSERT INTO commercial_intake_receipt(id,source_instance_id,submission_id,event_id,schema_version,payload_sha256,accepted_at,lead_id,raw_intake) VALUES($1,$2,$3,$4,1,$5,now(),$6,'{\"original\":true}')",
-    [randomUUID(), instance, submission, randomUUID(), "a".repeat(64), lead],
-  );
-  const input = fixture();
-  input.sourceInstanceId = instance;
-  input.records.leads[0].formSubmissionId = submission;
-  input.targetInventory = {
-    dashboardLeads: [{ id: lead, status: "new", convertedClientId: client }],
-    dashboardClients: [{ id: client }],
-    canonicalUsers: [{ id: person }],
-    identityLinks: [
-      { coreUserId: "source-user", canonicalUserId: person, revokedAt: null },
-    ],
-    recordLinks: [],
-    receipts: [
-      { sourceInstanceId: instance, submissionId: submission, leadId: lead },
-    ],
-  };
-  input.records.leadTasks[0].completed = false;
-  input.records.leadTasks[0].assignedToId = "source-user";
-  return { owner, person, lead, client, instance, input };
-}
+const setup = () => setupCrmImportFixture(pool);
+
 const count = async (instance) =>
   (
     await pool.query(
@@ -503,5 +451,22 @@ test(
       /duplicate key/,
     );
     assert.equal(await count(instance), 6);
+  },
+);
+
+test(
+  "Noncanonical target UUIDs fail before import rather than creating an unreplayable mapping",
+  { skip: !base },
+  async () => {
+    const s = await setup(),
+      input = structuredClone(s.input),
+      upper = "ABCDEFAB-0000-4000-8000-000000000001";
+    input.targetInventory.dashboardLeads[0].id = upper;
+    input.targetInventory.receipts[0].leadId = upper;
+    await assert.rejects(
+      importCrmPayloads(pool, input, review(input, s.owner), { dryRun: false }),
+      /invalid_target/,
+    );
+    assert.equal(await count(s.instance), 0);
   },
 );

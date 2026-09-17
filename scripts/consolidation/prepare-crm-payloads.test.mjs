@@ -230,3 +230,13 @@ test("JSON input precision is checked before numeric rounding can silently chang
     d: -0,
   });
 });
+
+test("Invalid UTF-8 input is rejected instead of substituting replacement characters", () => {
+  assert.throws(
+    () => parseCrmJson(Buffer.from([123, 34, 120, 34, 58, 34, 255, 34, 125])),
+    /encoded data/,
+  );
+  assert.deepEqual(parseCrmJson(Buffer.from('{"x":"\\uFFFD"}')), {
+    x: "\uFFFD",
+  });
+});
