@@ -162,6 +162,7 @@ import type {
   ListMarketingFormDeliveryJobs200,
   ListMarketingFormDeliveryJobsParams,
   ListMarketingGalleriesParams,
+  ListSalesInquiriesParams,
   ListServiceAgreementsParams,
   ManagedAccountUpdate,
   ManagedInvitationInput,
@@ -266,6 +267,7 @@ import type {
   ReviseAgreementTemplateBody,
   RevokeManagedInvitation200,
   RevokeManagedUserSessions200,
+  SalesInquiryPage,
   SalesLead,
   SalesLeadConversion,
   SalesLeadConversionReceipt,
@@ -316,6 +318,34 @@ import type {
 } from './models';
 
 import { customFetch } from '../custom-fetch';
+
+export const getListSalesInquiriesUrl = (params?: ListSalesInquiriesParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/sales/inquiries?${stringifiedParams}` : `/api/v1/sales/inquiries`
+}
+
+export const listSalesInquiries = async (params?: ListSalesInquiriesParams, options?: RequestInit): Promise<SalesInquiryPage> => {
+
+  return customFetch<SalesInquiryPage>(getListSalesInquiriesUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
 
 export const getGetLeadFollowUpUrl = (id: string,) => {
 

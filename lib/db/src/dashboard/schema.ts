@@ -1112,6 +1112,7 @@ export const lead = pgTable(
     convertedPropertyId: uuid("converted_property_id"),
   },
   (table) => [
+    index("lead_history_idx").on(table.createdAt.desc(), table.id.desc()),
     index("lead_commercial_followup").on(
       table.inquiryType,
       table.ownerId,

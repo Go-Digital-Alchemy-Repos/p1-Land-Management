@@ -124,6 +124,21 @@ const { randomUUID } = require("node:crypto");
             created_at: new Date().toISOString(),
           },
         ];
+      if (path === "/api/v1/sales/inquiries")
+        body = {
+          items: [
+            {
+              id: leadId,
+              name: "Synthetic inquiry",
+              location: "Inquiry location",
+              email: "",
+              description: "",
+              status: "new",
+              created_at: new Date().toISOString(),
+            },
+          ],
+          nextCursor: null,
+        };
       if (path === "/api/v1/agreement-templates") {
         if (catalogFail)
           return route.fulfill({

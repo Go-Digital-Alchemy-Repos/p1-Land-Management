@@ -46,10 +46,13 @@ const assert = require("node:assert/strict");
         };
       if (path === "/api/v1/workspace/references")
         json = { clients: [], properties: [], staff: [] };
-      if (path === "/api/v1/leads")
-        json = [
-          { ...lead, location: "Test site", description: "Original inquiry" },
-        ];
+      if (path === "/api/v1/sales/inquiries")
+        json = {
+          items: [
+            { ...lead, location: "Test site", description: "Original inquiry" },
+          ],
+          nextCursor: null,
+        };
       if (path === "/api/v1/commercial-inquiries")
         json = { items: [], nextCursor: null };
       if (path === `/api/v1/leads/${id}/follow-up`) {

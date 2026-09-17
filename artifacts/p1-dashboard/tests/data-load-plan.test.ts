@@ -9,7 +9,7 @@ test("data loading never infers business data access from old roles or reporting
   }
 });
 test("Sales uses minimal references instead of full Customers or security data", () => {
-  assert.deepEqual(dataLoadPlan({ role: "member", capabilities: ["revenue.sales"] }), { paths: ["leads", "estimates", "agreement-templates"], references: true });
+  assert.deepEqual(dataLoadPlan({ role: "member", capabilities: ["revenue.sales"] }), { paths: ["estimates", "agreement-templates"], references: true });
   assert.deepEqual(dataLoadPlan({ role: "member", capabilities: ["revenue.agreement-templates.manage"] }), { paths: ["agreement-templates"], references: false });
   const owner = dataLoadPlan({ role: "owner" });
   assert(owner.paths.includes("account-mfa-policies"));

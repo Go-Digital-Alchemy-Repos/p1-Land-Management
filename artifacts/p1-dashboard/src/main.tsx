@@ -1,6 +1,4 @@
-import { LeadFollowUp } from "./LeadFollowUp";
-import { CrmTasks } from "./CrmTasks";
-import { LeadNotes } from "./LeadNotes";
+import { InquiryList } from "./InquiryList";
 import ComposedEstimateActions from "./agreements/ComposedEstimateActions";
 import { ComposedProposal } from "./ComposedProposal";
 import BillingEstimatePicker from "./BillingAllocationPicker";
@@ -261,6 +259,7 @@ function App() {
       initialRoute.kind === "page" ? initialRoute.record : undefined,
     ),
     [routeMissing, setRouteMissing] = useState(initialRoute.kind === "not-found"),
+    [inquiryRevision, setInquiryRevision] = useState(0),
     [data, setData] = useState<any>({}),
     [form, setForm] = useState<string | null>(null),
     [selected, setSelected] = useState<any>(null),
@@ -776,6 +775,7 @@ function App() {
         });
         setNotice("Saved on this device. Use Sync Now when connected.");
       }
+      if (form === "lead" || form === "convert") setInquiryRevision(value => value + 1);
       setForm(null);
       await refresh();
     });
@@ -1965,47 +1965,13 @@ function App() {
                 )}
               </section>
               {can("revenue.sales") && (
-                <section className="panel">
-                  <div className="panel-heading">
-                    <h2>Inquiries</h2>
-                    <button onClick={() => openForm("lead")}>
-                      <Plus size={16} /> Add inquiry
-                    </button>
-                  </div>
-                  {(data.leads || []).map((lead: any) => (
-                    <div className="schedule-row" key={lead.id}>
-                      <div>
-                        <strong>{lead.name}</strong>
-                        <small>
-                          {lead.location} · {lead.description}
-                        </small>
-                      </div>
-                      <span className="badge">{lead.status}</span>
-                      {!lead.converted_property_id &&
-                        can("revenue.sales") && (
-                          <button onClick={() => openForm("convert", lead)}>
-                            Convert inquiry
-                          </button>
-                        )}
-                      <LeadFollowUp
-                        leadId={lead.id}
-                        onSaved={(snapshot) => setData((old: any) => ({
-                          ...old,
-                          leads: (old.leads || []).map((row: any) =>
-                            row.id === snapshot.id && (row.version || 0) <= snapshot.version
-                              ? { ...row, ...snapshot }
-                              : row,
-                          ),
-                        }))}
-                      />
-                      <LeadNotes leadId={lead.id} />
-                      <CrmTasks kind="lead" parentId={lead.id} />
-                    </div>
-                  ))}
-                  {!data.leads?.length && (
-                    <p className="empty">No inquiries recorded.</p>
-                  )}
-                </section>
+                <InquiryList
+                  key={person.id}
+                  revision={inquiryRevision}
+                  owners={data.staff || []}
+                  onCreate={() => openForm("lead")}
+                  onConvert={(lead) => openForm("convert", lead)}
+                />
               )}
             </>
           )}

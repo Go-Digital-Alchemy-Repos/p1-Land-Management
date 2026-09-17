@@ -48,16 +48,19 @@ const assert = require("node:assert/strict");
           properties: [],
           staff: [],
         };
-      if (path === "/api/v1/leads")
-        json = [
-          {
-            id: lead,
-            name: "Synthetic inquiry",
-            location: "Test",
-            description: "Synthetic only",
-            status: "new",
-          },
-        ];
+      if (path === "/api/v1/sales/inquiries")
+        json = {
+          items: [
+            {
+              id: lead,
+              name: "Synthetic inquiry",
+              location: "Test",
+              description: "Synthetic only",
+              status: "new",
+            },
+          ],
+          nextCursor: null,
+        };
       if (path === "/api/v1/commercial-inquiries")
         json = { items: [], nextCursor: null };
       if (path === `/api/v1/clients/${client}/workspace`)

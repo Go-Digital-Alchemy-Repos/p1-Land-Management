@@ -1,0 +1,35 @@
+.inquiry-filters {
+  padding: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  align-items: end;
+}
+.inquiry-filters label {
+  min-width: 0;
+}
+.inquiry-filters input,
+.inquiry-filters select {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.inquiry-filters > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.inquiry-filters .inquiry-overdue {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.inquiry-overdue input {
+  width: auto;
+}
+.inquiry-list-notice {
+  padding: 1rem;
+}
+.inquiry-list .schedule-row {
+  overflow-wrap: anywhere;
+}

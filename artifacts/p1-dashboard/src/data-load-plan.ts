@@ -19,7 +19,7 @@ export function dataLoadPlan(subject: CapabilitySubject): { paths: string[]; ref
   add("operations.recurring", ["recurring-services", "recurring-jobs"]);
   add("operations.projects", ["projects"]);
   add("operations.inspections", ["inspections"]);
-  add("revenue.sales", ["leads", "estimates", "agreement-templates"]);
+  add("revenue.sales", ["estimates", "agreement-templates"]);
   add("revenue.agreements", ["estimates", "agreement-templates"]);
   add("revenue.agreement-templates.manage", ["agreement-templates"], false);
   add("revenue.billing", ["billing", "estimates", "quickbooks/invoices"]);

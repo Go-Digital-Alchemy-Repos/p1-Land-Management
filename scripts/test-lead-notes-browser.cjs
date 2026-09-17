@@ -36,16 +36,19 @@ const assert = require("node:assert/strict");
         };
       if (path === "/api/v1/workspace/references")
         json = { clients: [], properties: [], staff: [] };
-      if (path === "/api/v1/leads")
-        json = [
-          {
-            id: lead,
-            name: "Synthetic inquiry",
-            location: "Test site",
-            description: "Synthetic only",
-            status: "new",
-          },
-        ];
+      if (path === "/api/v1/sales/inquiries")
+        json = {
+          items: [
+            {
+              id: lead,
+              name: "Synthetic inquiry",
+              location: "Test site",
+              description: "Synthetic only",
+              status: "new",
+            },
+          ],
+          nextCursor: null,
+        };
       if (path.includes("commercial") && path.endsWith("inquiries"))
         json = { items: [], nextCursor: null };
       if (path === `/api/v1/leads/${lead}/notes`) {
