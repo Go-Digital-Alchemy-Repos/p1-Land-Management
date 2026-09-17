@@ -522,6 +522,18 @@ Do not merge incompatible solutions merely because both appear locally valid.
 
 ## 22. Release Workflow
 
+### Standing Owner instruction — GitHub pushes
+
+After each task is complete and its applicable validation passes, commit the
+completed task's changes and push the current task branch to GitHub automatically.
+The Owner authorized this on September 17, 2026; do not ask for confirmation again
+for ordinary commits and pushes within the assigned scope. Include relevant
+implementation and documentation, and leave unrelated uncommitted work intact.
+Use normal pushes without rewriting history. Report the commit and branch, or
+explain any blocker. This instruction does not independently authorize merging
+into the production branch or deploying to production.
+
+
 When authorized by project policy, complete all required:
 
 - documentation;

@@ -80,7 +80,7 @@ export default function YorkCountySC() {
       <section className="py-24 bg-background">
         <div className="site-shell space-y-16">
 
-          <FeatureRow heading="Your York County Property Partner" image={featureImg} imageAlt="Commercial lakeside property maintenance near Lake Wylie in York County, SC">
+          <FeatureRow heading="Your York County Property Partner" image={featureImg} imageAlt="Illustrative commercial marina grounds with an orange Kubota zero-turn mower beside the lake">
             <p>
               York County is one of South Carolina's fastest-growing counties and the seventh-most populous in the state. Its eastern side along the I-77 corridor — Fort Mill, Tega Cay, Rock Hill, and Lake Wylie — has become one of the region's most active commercial and industrial markets, drawing corporate relocations and major public investment across the state line from Charlotte. Meanwhile, the western half around York, Clover, Sharon, Hickory Grove, and McConnells retains its agricultural character, with working farmland, pasture, and timber stretching between the Catawba and Broad Rivers.
             </p>

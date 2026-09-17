@@ -128,7 +128,9 @@ const server=http.createServer(async(req,res)=>{
     if(pathname==='/healthz')return send(req,res,200,'{"status":"ok"}','application/json','no-store');
     if(backendPath)return proxy(req,res);
     if(!['GET','HEAD'].includes(req.method))return send(req,res,405,'Method not allowed');
-    res.setHeader('Content-Security-Policy',"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'self'; base-uri 'self'; object-src 'none'; form-action 'self'");
+    // The directory map can be reached through client-side navigation from any page.
+    // Allow only its tile provider; scripts and the bundled map worker remain same-origin.
+    res.setHeader('Content-Security-Policy',`default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://tiles.openfreemap.org; frame-ancestors 'self'; base-uri 'self'; object-src 'none'; form-action 'self'`);
     if(pathname==='/robots.txt' && !indexableDeployment)return send(req,res,200,'User-agent: *\nDisallow: /\n','text/plain; charset=utf-8');
     if(url.searchParams.has('cmsPreview'))res.setHeader('X-Robots-Tag','noindex, nofollow');
     if(pathname==='/sitemap.xml') {
