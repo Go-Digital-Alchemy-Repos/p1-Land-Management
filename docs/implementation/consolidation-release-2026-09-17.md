@@ -54,3 +54,10 @@ An Owner screenshot exposed the normal Dashboard sign-in callback returning raw 
 Validation: 12 focused server/client tests passed, including fixed redirects, cookie cleanup, invalid-state/conflict denials, explicit confirmation and visible expanded recovery form; Core type checking and production build passed. An initial UI test needed the repository's React test-global setup; it passed after adding it. Deployment verification is pending.
 
 Recovery fix `78b893f` deployed successfully to staging (`472364f4-657a-43cc-805d-20c5f2bf78f7`) and production (`6660c45f-30da-4c3d-be56-746ff7f6189d`). Staging browser verification showed the recovery explanation and expanded credential form. In the existing production Owner browser session, selecting Dashboard sign-in now returns to `/admin/login?federation=link-required` instead of raw JSON. No credentials were entered or accounts linked by the agent.
+
+
+## Owner account-link verification
+
+After the Owner confirmed completion, a read-only production Core query returned one active identity link. Refreshing Analytics and Search Console in the existing Owner session removed the access-unavailable error; both now display `Website reporting is not connected yet.` The Marketing Website Editor successfully loaded existing website routes and shared content. No CMS content or account permissions were changed during verification.
+
+The transport maps the current reporting response to `not_configured`. Google provider configuration and real report results remain separate acceptance work; this check did not establish which credential or property setting is missing. Earlier account-link-pending observations above are superseded. Full account/grant reconciliation and all other open consolidation requirements remain incomplete.
