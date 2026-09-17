@@ -1,40 +1,24 @@
-import { createHash, timingSafeEqual } from "node:crypto";
 import { Router } from "express";
 import { z } from "zod";
 import { requireBusinessCapability } from "../middleware/auth";
-import { federationConsumer } from "../services/federation-runtime";
-import { federationEnabled, FederationError } from "../services/federation-client";
+import { FederationError } from "../services/federation-client";
 import { analyticsReport, realtimeReport, searchConsoleReport } from "./p1-google-analytics.routes";
 
-export function validMarketingServiceRequest(
-  headers: { authorization?: string; cookie?: string; origin?: string; "sec-fetch-site"?: string },
-  key: string,
-) {
-  if (
-    headers.cookie ||
-    headers.origin ||
-    headers["sec-fetch-site"] ||
-    !/^[A-Za-z0-9_-]{43,}$/.test(key)
-  )
-    return false;
-  const supplied = headers.authorization || "";
-  return timingSafeEqual(
-    createHash("sha256").update(supplied).digest(),
-    createHash("sha256").update(`Bearer ${key}`).digest(),
-  );
-}
 const body = z.object({ grantId: z.string().uuid() }).strict();
 const dates = z
   .object({ startDate: z.string().date().optional(), endDate: z.string().date().optional() })
   .strict();
+import {
+  authenticateMarketingService,
+  resolveMarketingActor,
+} from "../middleware/marketing-service";
+export { validMarketingServiceRequest } from "../middleware/marketing-service";
+
 const router = Router();
+router.use(authenticateMarketingService);
 router.use(async (req, res, next) => {
   res.set("Cache-Control", "private, no-store");
-  if (
-    req.method !== "POST" ||
-    !federationEnabled() ||
-    !validMarketingServiceRequest(req.headers, process.env.DASHBOARD_MARKETING_SERVICE_KEY || "")
-  ) {
+  if (req.method !== "POST") {
     res.status(401).json({ message: "Unauthorized" });
     return;
   }
@@ -48,12 +32,9 @@ router.use(async (req, res, next) => {
     return;
   }
   try {
-    const context = await federationConsumer().authenticateServiceGrant(parsed.data.grantId);
-    const { storage } = await import("../storage/index");
-    const user = await storage.users.getUser(context.userId);
-    if (!user || user.isSuspended) throw new FederationError(403, "federation_local_access_denied");
-    req.user = user;
-    req.dashboardIdentity = context.grant;
+    const context = await resolveMarketingActor(parsed.data.grantId);
+    req.user = context.user;
+    req.dashboardIdentity = context.identity;
     next();
   } catch (error) {
     res

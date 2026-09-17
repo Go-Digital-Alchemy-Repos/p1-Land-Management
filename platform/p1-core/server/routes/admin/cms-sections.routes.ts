@@ -1,4 +1,4 @@
-import { requireAdminPermission as p1Authorize } from "../../middleware/auth";
+import { requireBusinessCapability as p1Authorize } from "../../middleware/auth";
 import { Router } from "express";
 import { z } from "zod";
 import { asyncHandler } from "../../middleware/error-handler";
@@ -19,7 +19,7 @@ const createSectionSchema = z.object({
 const updateSectionSchema = createSectionSchema.partial();
 
 router.get(
-  "/sections", p1Authorize("content", "design"),
+  "/sections", p1Authorize("marketing.content.sections"),
   asyncHandler(async (_req, res) => {
     const sections = await storage.cmsSections.getAllSections();
     res.json(sections);
@@ -27,7 +27,7 @@ router.get(
 );
 
 router.post(
-  "/sections/system/starter-library", p1Authorize("content", "design"),
+  "/sections/system/starter-library", p1Authorize("marketing.content.sections"),
   asyncHandler(async (_req, res) => {
     const result = await ensureSystemCmsSections({ refreshExisting: true });
     res.json({ success: true, ...result });
@@ -35,7 +35,7 @@ router.post(
 );
 
 router.get(
-  "/sections/:id", p1Authorize("content", "design"),
+  "/sections/:id", p1Authorize("marketing.content.sections"),
   asyncHandler(async (req, res) => {
     const id = paramString(req.params.id);
     const section = await storage.cmsSections.getSection(id);
@@ -45,7 +45,7 @@ router.get(
 );
 
 router.post(
-  "/sections", p1Authorize("content", "design"),
+  "/sections", p1Authorize("marketing.content.sections"),
   asyncHandler(async (req, res) => {
     const parsed = createSectionSchema.safeParse(req.body);
     if (!parsed.success) {
@@ -61,7 +61,7 @@ router.post(
 );
 
 router.put(
-  "/sections/:id", p1Authorize("content", "design"),
+  "/sections/:id", p1Authorize("marketing.content.sections"),
   asyncHandler(async (req, res) => {
     const id = paramString(req.params.id);
     const existing = await storage.cmsSections.getSection(id);
@@ -79,7 +79,7 @@ router.put(
 );
 
 router.delete(
-  "/sections/:id", p1Authorize("content", "design"),
+  "/sections/:id", p1Authorize("marketing.content.sections"),
   asyncHandler(async (req, res) => {
     const id = paramString(req.params.id);
     const ok = await storage.cmsSections.deleteSection(id);

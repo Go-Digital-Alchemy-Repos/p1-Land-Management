@@ -1,4 +1,4 @@
-import { requireAdminPermission as p1Authorize } from "../../middleware/auth";
+import { requireBusinessCapability as p1Authorize } from "../../middleware/auth";
 import { Router } from "express";
 import { z } from "zod";
 import { storage } from "../../storage";
@@ -15,7 +15,7 @@ const sidebarBodySchema = z.object({
   widgets: z.array(sidebarWidgetSchema).default([]),
 });
 
-router.get("/sidebars", p1Authorize("design"), async (req, res) => {
+router.get("/sidebars", p1Authorize("marketing.content.sidebars"), async (req, res) => {
   try {
     const sidebars = await storage.cmsSidebars.getAll();
     res.json(sidebars);
@@ -25,7 +25,7 @@ router.get("/sidebars", p1Authorize("design"), async (req, res) => {
   }
 });
 
-router.get("/sidebars/:id", p1Authorize("design"), async (req, res) => {
+router.get("/sidebars/:id", p1Authorize("marketing.content.sidebars"), async (req, res) => {
   try {
     const id = paramString(req.params.id);
     const sidebar = await storage.cmsSidebars.getById(id);
@@ -37,7 +37,7 @@ router.get("/sidebars/:id", p1Authorize("design"), async (req, res) => {
   }
 });
 
-router.post("/sidebars", p1Authorize("design"), async (req, res) => {
+router.post("/sidebars", p1Authorize("marketing.content.sidebars"), async (req, res) => {
   try {
     const parsed = sidebarBodySchema.safeParse(req.body);
     if (!parsed.success) {
@@ -53,7 +53,7 @@ router.post("/sidebars", p1Authorize("design"), async (req, res) => {
   }
 });
 
-router.put("/sidebars/:id", p1Authorize("design"), async (req, res) => {
+router.put("/sidebars/:id", p1Authorize("marketing.content.sidebars"), async (req, res) => {
   try {
     const id = paramString(req.params.id);
     const existing = await storage.cmsSidebars.getById(id);
@@ -74,7 +74,7 @@ router.put("/sidebars/:id", p1Authorize("design"), async (req, res) => {
   }
 });
 
-router.delete("/sidebars/:id", p1Authorize("design"), async (req, res) => {
+router.delete("/sidebars/:id", p1Authorize("marketing.content.sidebars"), async (req, res) => {
   try {
     const id = paramString(req.params.id);
     const sidebar = await storage.cmsSidebars.getById(id);

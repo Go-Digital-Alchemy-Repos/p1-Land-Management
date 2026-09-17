@@ -1,4 +1,4 @@
-import { requireAdminPermission as p1Authorize } from "../../middleware/auth";
+import { requireBusinessCapability as p1Authorize } from "../../middleware/auth";
 import { Router } from "express";
 import { storage } from "../../storage/index";
 import type { BlogPost, CmsPage, Event } from "@shared/schema";
@@ -36,7 +36,7 @@ function eventIssues(event: Event): string[] {
   return issues;
 }
 
-router.get("/seo-audit", p1Authorize("content"), async (_req, res) => {
+router.get("/seo-audit", p1Authorize("marketing.content.seo"), async (_req, res) => {
   try {
     const [pages, posts, events] = await Promise.all([
       storage.cmsPages.getAllPages(),

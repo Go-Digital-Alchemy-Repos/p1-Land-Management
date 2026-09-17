@@ -1,4 +1,4 @@
-import { requireAdminPermission as p1Authorize } from "../../middleware/auth";
+import { requireBusinessCapability as p1Authorize } from "../../middleware/auth";
 import { Router } from "express";
 import { z } from "zod";
 import { storage } from "../../storage";
@@ -24,7 +24,7 @@ function validateDepth(items: z.infer<typeof menuItemSchema>[], depth = 1): bool
   return true;
 }
 
-router.get("/menus", p1Authorize("design"), async (req, res) => {
+router.get("/menus", p1Authorize("marketing.content.menus"), async (req, res) => {
   try {
     const menus = await storage.cmsMenus.getAll();
     res.json(menus);
@@ -34,7 +34,7 @@ router.get("/menus", p1Authorize("design"), async (req, res) => {
   }
 });
 
-router.get("/menus/:id", p1Authorize("design"), async (req, res) => {
+router.get("/menus/:id", p1Authorize("marketing.content.menus"), async (req, res) => {
   try {
     const id = paramString(req.params.id);
     const menu = await storage.cmsMenus.getById(id);
@@ -46,7 +46,7 @@ router.get("/menus/:id", p1Authorize("design"), async (req, res) => {
   }
 });
 
-router.post("/menus", p1Authorize("design"), async (req, res) => {
+router.post("/menus", p1Authorize("marketing.content.menus"), async (req, res) => {
   try {
     const parsed = menuBodySchema.safeParse(req.body);
     if (!parsed.success) {
@@ -72,7 +72,7 @@ router.post("/menus", p1Authorize("design"), async (req, res) => {
   }
 });
 
-router.put("/menus/:id", p1Authorize("design"), async (req, res) => {
+router.put("/menus/:id", p1Authorize("marketing.content.menus"), async (req, res) => {
   try {
     const id = paramString(req.params.id);
     const existing = await storage.cmsMenus.getById(id);
@@ -102,7 +102,7 @@ router.put("/menus/:id", p1Authorize("design"), async (req, res) => {
   }
 });
 
-router.delete("/menus/:id", p1Authorize("design"), async (req, res) => {
+router.delete("/menus/:id", p1Authorize("marketing.content.menus"), async (req, res) => {
   try {
     const id = paramString(req.params.id);
     const menu = await storage.cmsMenus.getById(id);

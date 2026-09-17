@@ -1,5 +1,5 @@
 import { getBaseUrl } from "../../utils/route-helpers";
-import { requireAdminPermission as p1Authorize } from "../../middleware/auth";
+import { requireBusinessCapability as p1Authorize } from "../../middleware/auth";
 import { Router } from "express";
 import { z } from "zod";
 import { storage } from "../../storage";
@@ -59,7 +59,7 @@ async function resolvePage(identifier: string) {
   return storage.cmsPages.getPageByIdOrSlug(identifier);
 }
 
-router.get("/pages", p1Authorize("content"), async (req, res) => {
+router.get("/pages", p1Authorize("marketing.content.pages"), async (req, res) => {
   try {
     const pages = await storage.cmsPages.getAllPages();
     res.json(pages);
@@ -69,7 +69,7 @@ router.get("/pages", p1Authorize("content"), async (req, res) => {
   }
 });
 
-router.post("/pages", p1Authorize("content"), async (req, res) => {
+router.post("/pages", p1Authorize("marketing.content.pages"), async (req, res) => {
   try {
     const parsed = createPageSchema.safeParse(req.body);
     if (!parsed.success) {
@@ -113,7 +113,7 @@ router.post("/pages", p1Authorize("content"), async (req, res) => {
   }
 });
 
-router.get("/pages/:id", p1Authorize("content"), async (req, res) => {
+router.get("/pages/:id", p1Authorize("marketing.content.pages"), async (req, res) => {
   try {
     const id = paramString(req.params.id);
     const page = await resolvePage(id);
@@ -125,7 +125,7 @@ router.get("/pages/:id", p1Authorize("content"), async (req, res) => {
   }
 });
 
-router.get("/pages/:id/relationships", p1Authorize("content"), async (req, res) => {
+router.get("/pages/:id/relationships", p1Authorize("marketing.content.pages"), async (req, res) => {
   try {
     const id = paramString(req.params.id);
     const page = await resolvePage(id);
@@ -145,7 +145,7 @@ router.get("/pages/:id/relationships", p1Authorize("content"), async (req, res) 
   }
 });
 
-router.post("/pages/:id/relationships/remove-menu-items", p1Authorize("content"), async (req, res) => {
+router.post("/pages/:id/relationships/remove-menu-items", p1Authorize("marketing.content.pages"), p1Authorize("marketing.content.menus"), async (req, res) => {
   try {
     const id = paramString(req.params.id);
     const page = await resolvePage(id);
@@ -159,7 +159,7 @@ router.post("/pages/:id/relationships/remove-menu-items", p1Authorize("content")
   }
 });
 
-router.get("/pages/:id/preview-link", p1Authorize("content"), async (req, res) => {
+router.get("/pages/:id/preview-link", p1Authorize("marketing.content.pages"), async (req, res) => {
   try {
     const id = paramString(req.params.id);
     const page = await resolvePage(id);
@@ -184,7 +184,7 @@ router.get("/pages/:id/preview-link", p1Authorize("content"), async (req, res) =
   }
 });
 
-router.post("/pages/:id/duplicate", p1Authorize("content"), async (req, res) => {
+router.post("/pages/:id/duplicate", p1Authorize("marketing.content.pages"), async (req, res) => {
   try {
     const id = paramString(req.params.id);
     const page = await resolvePage(id);
@@ -234,7 +234,7 @@ router.post("/pages/:id/duplicate", p1Authorize("content"), async (req, res) => 
   }
 });
 
-router.put("/pages/:id", p1Authorize("content"), async (req, res) => {
+router.put("/pages/:id", p1Authorize("marketing.content.pages"), async (req, res) => {
   try {
     const id = paramString(req.params.id);
     const page = await resolvePage(id);
@@ -281,7 +281,7 @@ router.put("/pages/:id", p1Authorize("content"), async (req, res) => {
   }
 });
 
-router.delete("/pages/:id", p1Authorize("content"), async (req, res) => {
+router.delete("/pages/:id", p1Authorize("marketing.content.pages"), async (req, res) => {
   try {
     const id = paramString(req.params.id);
     const page = await resolvePage(id);
@@ -312,7 +312,7 @@ router.delete("/pages/:id", p1Authorize("content"), async (req, res) => {
   }
 });
 
-router.post("/pages/:id/publish", p1Authorize("content"), async (req, res) => {
+router.post("/pages/:id/publish", p1Authorize("marketing.content.pages"), async (req, res) => {
   try {
     const id = paramString(req.params.id);
     const adminId = req.user!.id;
@@ -327,7 +327,7 @@ router.post("/pages/:id/publish", p1Authorize("content"), async (req, res) => {
   }
 });
 
-router.post("/pages/:id/schedule", p1Authorize("content"), async (req, res) => {
+router.post("/pages/:id/schedule", p1Authorize("marketing.content.pages"), async (req, res) => {
   try {
     const id = paramString(req.params.id);
     const adminId = req.user!.id;
@@ -350,7 +350,7 @@ router.post("/pages/:id/schedule", p1Authorize("content"), async (req, res) => {
   }
 });
 
-router.post("/pages/:id/unpublish", p1Authorize("content"), async (req, res) => {
+router.post("/pages/:id/unpublish", p1Authorize("marketing.content.pages"), async (req, res) => {
   try {
     const id = paramString(req.params.id);
     const adminId = req.user!.id;
@@ -376,7 +376,7 @@ router.post("/pages/:id/unpublish", p1Authorize("content"), async (req, res) => 
   }
 });
 
-router.get("/pages/:id/revisions", p1Authorize("content"), async (req, res) => {
+router.get("/pages/:id/revisions", p1Authorize("marketing.content.pages"), async (req, res) => {
   try {
     const id = paramString(req.params.id);
     const page = await resolvePage(id);
@@ -389,7 +389,7 @@ router.get("/pages/:id/revisions", p1Authorize("content"), async (req, res) => {
   }
 });
 
-router.post("/pages/:pageId/revisions/:revisionId/restore", p1Authorize("content"), async (req, res) => {
+router.post("/pages/:pageId/revisions/:revisionId/restore", p1Authorize("marketing.content.pages"), async (req, res) => {
   try {
     const pageId = paramString(req.params.pageId);
     const revisionId = paramString(req.params.revisionId);

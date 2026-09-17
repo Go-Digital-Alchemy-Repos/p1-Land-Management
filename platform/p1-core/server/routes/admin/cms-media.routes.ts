@@ -1,4 +1,4 @@
-import { requireAdminPermission as p1Authorize } from "../../middleware/auth";
+import { requireBusinessCapability as p1Authorize } from "../../middleware/auth";
 import { assertUploadMutationsAllowed } from "../../services/upload-mutation-policy";
 import { Router } from "express";
 import path from "path";
@@ -90,7 +90,7 @@ function buildUniqueDisplayName(
 }
 
 router.post(
-  "/upload", p1Authorize("content", "design", "crm"),
+  "/upload", p1Authorize("marketing.content.media"),
   cmsUpload.single("file"),
   asyncHandler(async (req, res) => {
     if (!req.file) {
@@ -112,7 +112,7 @@ router.post(
 );
 
 router.get(
-  "/media", p1Authorize("content", "design", "crm"),
+  "/media", p1Authorize("marketing.content.media"),
   asyncHandler(async (_req, res) => {
     const assets = await storage.cmsMedia.getAllMedia();
     const normalizedAssets = await Promise.all(
@@ -126,7 +126,7 @@ router.get(
 );
 
 router.get(
-  "/media/:id/source", p1Authorize("content", "design", "crm"),
+  "/media/:id/source", p1Authorize("marketing.content.media"),
   asyncHandler(async (req, res) => {
     const id = paramString(req.params.id);
     const asset = await storage.cmsMedia.getMedia(id);
@@ -161,7 +161,7 @@ router.get(
 );
 
 router.patch(
-  "/media/:id", p1Authorize("content", "design"),
+  "/media/:id", p1Authorize("marketing.content.media"),
   asyncHandler(async (req, res) => {
     const id = paramString(req.params.id);
     const asset = await storage.cmsMedia.getMedia(id);
@@ -207,7 +207,7 @@ router.patch(
 );
 
 router.post(
-  "/media/:id/replace", p1Authorize("content", "design"),
+  "/media/:id/replace", p1Authorize("marketing.content.media"),
   cmsUpload.single("file"),
   asyncHandler(async (req, res) => {
     assertUploadMutationsAllowed();
@@ -260,7 +260,7 @@ router.post(
 );
 
 router.patch(
-  "/media/:id/alt", p1Authorize("content", "design", "crm"),
+  "/media/:id/alt", p1Authorize("marketing.content.media"),
   asyncHandler(async (req, res) => {
     const id = paramString(req.params.id);
     const { alt } = req.body;
@@ -277,7 +277,7 @@ router.patch(
 );
 
 router.delete(
-  "/media/:id", p1Authorize("content", "design"),
+  "/media/:id", p1Authorize("marketing.content.media"),
   asyncHandler(async (req, res) => {
     assertUploadMutationsAllowed();
     const id = paramString(req.params.id);

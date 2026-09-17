@@ -1,4 +1,4 @@
-import { requireAdminPermission as p1Authorize } from "../../middleware/auth";
+import { requireBusinessCapability as p1Authorize } from "../../middleware/auth";
 import { Router } from "express";
 import { z } from "zod";
 import { storage } from "../../storage";
@@ -11,7 +11,7 @@ const router = Router();
 const updateSeoSettingsSchema = insertSeoSettingsSchema.partial();
 
 router.get(
-  "/seo", p1Authorize("content"),
+  "/seo", p1Authorize("marketing.content.seo"),
   asyncHandler(async (_req, res) => {
     const settings = await storage.seoSettings.get();
     res.json(settings ?? {});
@@ -19,7 +19,7 @@ router.get(
 );
 
 router.put(
-  "/seo", p1Authorize("content"),
+  "/seo", p1Authorize("marketing.content.seo"),
   asyncHandler(async (req, res) => {
     const parsed = updateSeoSettingsSchema.safeParse(req.body);
     if (!parsed.success) {
@@ -33,7 +33,7 @@ router.put(
 );
 
 router.get(
-  "/seo/robots-txt", p1Authorize("content"),
+  "/seo/robots-txt", p1Authorize("marketing.content.seo"),
   asyncHandler(async (_req, res) => {
     const settings = await storage.seoSettings.get();
     res.json(buildRobotsTxtPayload(settings));
@@ -41,7 +41,7 @@ router.get(
 );
 
 router.put(
-  "/seo/robots-txt", p1Authorize("content"),
+  "/seo/robots-txt", p1Authorize("marketing.content.seo"),
   asyncHandler(async (req, res) => {
     const parsed = z
       .object({

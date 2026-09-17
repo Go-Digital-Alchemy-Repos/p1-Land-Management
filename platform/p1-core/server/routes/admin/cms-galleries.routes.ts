@@ -1,4 +1,4 @@
-import { requireAdminPermission as p1Authorize } from "../../middleware/auth";
+import { requireBusinessCapability as p1Authorize } from "../../middleware/auth";
 import { Router } from "express";
 import { z } from "zod";
 import {
@@ -55,7 +55,7 @@ const galleryMutationSchema = insertCmsGallerySchema
   });
 
 router.get(
-  "/galleries", p1Authorize("content"),
+  "/galleries", p1Authorize("marketing.content.galleries"),
   asyncHandler(async (req, res) => {
     const galleries = await storage.cmsGalleries.getAll({
       search: typeof req.query.search === "string" ? req.query.search : undefined,
@@ -70,7 +70,7 @@ router.get(
 );
 
 router.post(
-  "/galleries", p1Authorize("content"),
+  "/galleries", p1Authorize("marketing.content.galleries"),
   asyncHandler(async (req, res) => {
     const data = galleryMutationSchema.parse(req.body);
     if (data.status === "published" && data.items.length === 0) {
@@ -113,7 +113,7 @@ router.post(
 );
 
 router.get(
-  "/galleries/:id", p1Authorize("content"),
+  "/galleries/:id", p1Authorize("marketing.content.galleries"),
   asyncHandler(async (req, res) => {
     const gallery = await storage.cmsGalleries.getByIdOrSlug(paramString(req.params.id));
     if (!gallery) return res.status(404).json({ message: "Gallery not found" });
@@ -122,7 +122,7 @@ router.get(
 );
 
 router.put(
-  "/galleries/:id", p1Authorize("content"),
+  "/galleries/:id", p1Authorize("marketing.content.galleries"),
   asyncHandler(async (req, res) => {
     const id = paramString(req.params.id);
     const existingGallery = await storage.cmsGalleries.getByIdOrSlug(id);
@@ -172,7 +172,7 @@ router.put(
 );
 
 router.delete(
-  "/galleries/:id", p1Authorize("content"),
+  "/galleries/:id", p1Authorize("marketing.content.galleries"),
   asyncHandler(async (req, res) => {
     const gallery = await storage.cmsGalleries.getByIdOrSlug(paramString(req.params.id));
     if (!gallery) return res.status(404).json({ message: "Gallery not found" });
@@ -182,7 +182,7 @@ router.delete(
 );
 
 router.post(
-  "/galleries/:id/duplicate", p1Authorize("content"),
+  "/galleries/:id/duplicate", p1Authorize("marketing.content.galleries"),
   asyncHandler(async (req, res) => {
     const gallery = await storage.cmsGalleries.getByIdOrSlug(paramString(req.params.id));
     if (!gallery) return res.status(404).json({ message: "Gallery not found" });
@@ -192,7 +192,7 @@ router.post(
 );
 
 router.post(
-  "/galleries/:id/publish", p1Authorize("content"),
+  "/galleries/:id/publish", p1Authorize("marketing.content.galleries"),
   asyncHandler(async (req, res) => {
     const gallery = await storage.cmsGalleries.getByIdOrSlug(paramString(req.params.id));
     if (!gallery) return res.status(404).json({ message: "Gallery not found" });
@@ -204,7 +204,7 @@ router.post(
 );
 
 router.post(
-  "/galleries/:id/unpublish", p1Authorize("content"),
+  "/galleries/:id/unpublish", p1Authorize("marketing.content.galleries"),
   asyncHandler(async (req, res) => {
     const gallery = await storage.cmsGalleries.getByIdOrSlug(paramString(req.params.id));
     if (!gallery) return res.status(404).json({ message: "Gallery not found" });

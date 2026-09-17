@@ -121,6 +121,7 @@ try {
       "src/dashboard/business-access.test.ts",
       "src/dashboard/sales-access.test.ts",
       "src/dashboard/marketing-reporting.test.ts",
+      "src/dashboard/marketing-cms.test.ts",
       "src/dashboard/user-management.test.ts",
       "src/dashboard/contacts.test.ts",
       "src/dashboard/client-workspace.test.ts",

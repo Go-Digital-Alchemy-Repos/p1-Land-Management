@@ -42,7 +42,7 @@ vi.mock("../services/image-optimizer", () => ({
 vi.mock("../services/email.service", () => ({ sendEmail: vi.fn() }));
 vi.mock("../services/cms-media-usage.service", () => ({ buildCmsMediaLibraryAssets: vi.fn() }));
 vi.mock("../middleware/auth", () => ({
-  requireAdminPermission: () => (_req: unknown, _res: unknown, next: () => void) => next(),
+  requireBusinessCapability: () => (_req: unknown, _res: unknown, next: () => void) => next(),
   authenticateToken: (_req: unknown, _res: unknown, next: () => void) => next(),
 }));
 vi.mock("multer", () => ({

@@ -1,4 +1,4 @@
-import { requireAdminPermission as p1Authorize } from "../../middleware/auth";
+import { requireBusinessCapability as p1Authorize } from "../../middleware/auth";
 import { Router } from "express";
 import { storage } from "../../storage/index";
 import { insertRedirectSchema } from "../../../shared/schema/redirects";
@@ -9,7 +9,7 @@ function hasPostgresCode(error: unknown, code: string): boolean {
   return typeof error === "object" && error !== null && "code" in error && error.code === code;
 }
 
-router.get("/redirects", p1Authorize("content"), async (_req, res) => {
+router.get("/redirects", p1Authorize("marketing.content.seo"), async (_req, res) => {
   try {
     const all = await storage.redirects.getAll();
     res.json(all);
@@ -18,7 +18,7 @@ router.get("/redirects", p1Authorize("content"), async (_req, res) => {
   }
 });
 
-router.post("/redirects", p1Authorize("content"), async (req, res) => {
+router.post("/redirects", p1Authorize("marketing.content.seo"), async (req, res) => {
   const parsed = insertRedirectSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ error: "Invalid data", details: parsed.error.flatten() });
@@ -34,7 +34,7 @@ router.post("/redirects", p1Authorize("content"), async (req, res) => {
   }
 });
 
-router.put("/redirects/:id", p1Authorize("content"), async (req, res) => {
+router.put("/redirects/:id", p1Authorize("marketing.content.seo"), async (req, res) => {
   const parsed = insertRedirectSchema.partial().safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ error: "Invalid data", details: parsed.error.flatten() });
@@ -48,7 +48,7 @@ router.put("/redirects/:id", p1Authorize("content"), async (req, res) => {
   }
 });
 
-router.delete("/redirects/:id", p1Authorize("content"), async (req, res) => {
+router.delete("/redirects/:id", p1Authorize("marketing.content.seo"), async (req, res) => {
   try {
     const deleted = await storage.redirects.delete(String(req.params.id));
     if (!deleted) return res.status(404).json({ error: "Redirect not found" });

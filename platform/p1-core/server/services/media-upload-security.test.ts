@@ -6,7 +6,7 @@ const mocks = vi.hoisted(() => ({ download: vi.fn() }));
 vi.mock("../storage", () => ({ storage: {} }));
 vi.mock("../services/r2.service", () => ({ downloadFile: mocks.download }));
 vi.mock("../services/cms-media-usage.service", () => ({ buildCmsMediaLibraryAssets: vi.fn() }));
-vi.mock("../middleware/auth", () => ({ requireAdminPermission: () => (_req: unknown, _res: unknown, next: () => void) => next() }));
+vi.mock("../middleware/auth", () => ({ requireBusinessCapability: () => (_req: unknown, _res: unknown, next: () => void) => next() }));
 import { createCmsMediaAssetFromUpload, isCompatibleMediaUpload, validateMediaUpload } from "./cms-media-upload.service";
 import mediaRoutes from "../routes/admin/cms-media.routes";
 import publicRoutes from "../routes/r2-public.routes";

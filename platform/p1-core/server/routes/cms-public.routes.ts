@@ -5,7 +5,7 @@ import { storage } from "../storage";
 import { paramString } from "../utils/params";
 import { PUBLIC_MENU_LOCATIONS, type CmsMenu, type PublicMenuLocation } from "@shared/schema";
 import { verifyCmsPreviewToken } from "../utils/cms-preview-token";
-import { optionalAuth, authenticateToken, requireAdminPermission } from "../middleware/auth";
+import { optionalAuth, authenticateToken, requireBusinessCapability } from "../middleware/auth";
 import { sanitizePublicCmsContent } from "../utils/sanitize-rich-html";
 
 const router = Router();
@@ -39,8 +39,9 @@ router.get(
 
 router.get(
   "/pages/preview/:id",
+  (_req, res, next) => { res.set("Cache-Control", "private, no-store"); next(); },
   authenticateToken,
-  requireAdminPermission("content"),
+  requireBusinessCapability("marketing.content.pages"),
   asyncHandler(async (req, res) => {
     const id = paramString(req.params.id);
     const token = typeof req.query.token === "string" ? req.query.token : null;

@@ -2,6 +2,7 @@ import { after, test } from "node:test";
 import assert from "node:assert/strict";
 import { randomUUID, createHmac } from "node:crypto";
 import { pool } from "./database";
+import { cmsOperations } from "./marketing-cms.transport";
 
 const base = process.env.DASHBOARD_TEST_ORIGIN;
 if (base && !base.startsWith("http://localhost:"))
@@ -112,6 +113,14 @@ test(
     }
     assert.equal((await call(legacy, "/marketing/reporting/analytics")).status, 403);
     assert.equal((await call(legacy, "/marketing/reporting/realtime")).status, 403);
+    for (const operation of cmsOperations) {
+      const path = operation.path.replace(/:[A-Za-z]+/g, "synthetic-id");
+      const response = await fetch(`${base}/api/v1/marketing/cms${path}`, {
+        method: operation.method,
+        headers: { Cookie: reporting.cookie, Origin: base! },
+      });
+      assert.equal(response.status, 403, `${operation.method} ${path} requires its CMS tool grant`);
+    }
     const references = await call(sales, "/workspace/references");
     assert.equal(references.status, 200);
     const refs = await references.json() as { clients: Record<string, unknown>[]; properties: Record<string, unknown>[]; staff: Record<string, unknown>[] };

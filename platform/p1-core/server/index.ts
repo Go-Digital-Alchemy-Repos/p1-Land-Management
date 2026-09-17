@@ -1,4 +1,5 @@
 import businessCenterReportingRoutes from "./routes/business-center-reporting.routes";
+import businessCenterCmsRoutes from "./routes/business-center-cms.routes";
 import { pool } from "./db";
 import { createRuntimeLifecycle, shutdownTimeoutMs } from "./utils/runtime-lifecycle";
 import { startFormEffectJobService } from "./services/form-effect-jobs.service";
@@ -123,6 +124,7 @@ app.use("/api", apiLimiter);
 // Confidential service ingress rejects browser headers and authenticates every request.
 // Mount before browser Origin checks; ordinary browser routes retain those checks.
 app.use("/api/integrations/business-center/reporting", businessCenterReportingRoutes);
+app.use("/api/integrations/business-center/cms", businessCenterCmsRoutes);
 app.use(originCheck);
 
 app.use("/uploads/career-resumes", (_req, res) => res.status(404).send("Not found"));
