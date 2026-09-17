@@ -28,6 +28,8 @@ export const BusinessCapability = {
   marketingcontentpages: 'marketing.content.pages',
   marketingcontentteam: 'marketing.content.team',
   marketingcontentforms: 'marketing.content.forms',
+  marketingcontentevents: 'marketing.content.events',
+  marketingcontentcareers: 'marketing.content.careers',
   marketingcontentblog: 'marketing.content.blog',
   marketingcontentgalleries: 'marketing.content.galleries',
   marketingcontentmedia: 'marketing.content.media',

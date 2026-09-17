@@ -1,0 +1,168 @@
+import express from "express";
+import type { Server } from "node:http";
+import { afterEach, beforeEach, expect, it, vi } from "vitest";
+const state = vi.hoisted(() => ({ rows: new Map<string, any>(), work: vi.fn() }));
+vi.mock("../../storage", () => ({
+  storage: {
+    editorLocks: {
+      async getByResource(type: string, id: string) {
+        state.work();
+        return state.rows.get(`${type}:${id}`);
+      },
+      async create(row: any) {
+        state.work();
+        const key = `${row.resourceType}:${row.resourceId}`;
+        if (state.rows.has(key)) throw Error("conflict");
+        const value = { ...row, id: key };
+        state.rows.set(key, value);
+        return value;
+      },
+      async update(id: string, values: any) {
+        state.work();
+        const row = state.rows.get(id);
+        if (!row) return undefined;
+        const next = { ...row, ...values };
+        state.rows.set(id, next);
+        return next;
+      },
+      async deleteById(id: string) {
+        state.work();
+        return state.rows.delete(id);
+      },
+      async deleteExpiredForResource(type: string, id: string, now: Date) {
+        state.work();
+        const key = `${type}:${id}`;
+        const row = state.rows.get(key);
+        if (row && row.expiresAt <= now) state.rows.delete(key);
+      },
+      async listActiveByResourceType(type: string, now: Date) {
+        state.work();
+        return [...state.rows.values()].filter(
+          (row) => row.resourceType === type && row.expiresAt > now,
+        );
+      },
+    },
+  },
+}));
+import router from "./editor-locks.routes";
+import { errorHandler } from "../../middleware/error-handler";
+let server: Server, base: string;
+let actor: any, grant: any;
+beforeEach(async () => {
+  state.rows.clear();
+  state.work.mockClear();
+  actor = {
+    id: "one",
+    role: "admin",
+    firstName: "First",
+    lastName: "Editor",
+    email: "synthetic@example.test",
+  };
+  grant = {
+    active: true,
+    role: "member",
+    capabilities: ["marketing.content.pages"],
+    ownerAttested: false,
+  };
+  const app = express();
+  app.use(express.json());
+  app.use((req, _res, next) => {
+    req.user = actor;
+    req.dashboardIdentity = grant;
+    next();
+  });
+  app.use(router);
+  app.use(errorHandler);
+  server = app.listen(0, "127.0.0.1");
+  await new Promise<void>((resolve) => server.once("listening", resolve));
+  base = `http://127.0.0.1:${(server.address() as any).port}`;
+});
+afterEach(async () => {
+  await new Promise<void>((resolve) => server.close(() => resolve()));
+});
+function request(path: string, body?: unknown) {
+  return fetch(base + path, {
+    method: body === undefined ? "GET" : "POST",
+    headers: { "content-type": "application/json" },
+    body: body === undefined ? undefined : JSON.stringify(body),
+  });
+}
+it("retains acquisition, ownership, heartbeat, collision and release across both route forms", async () => {
+  const first = await request("/cms_page/page/acquire", {});
+  expect(first.status).toBe(200);
+  expect(await first.json()).toMatchObject({
+    status: "acquired",
+    ownedByCurrentUser: true,
+    lock: { lockedByUserId: "one" },
+  });
+  expect(await (await request("/resource/cms_page")).json()).toHaveLength(1);
+  actor.id = "two";
+  expect(
+    await (await request("/acquire", { resourceType: "cms_page", resourceId: "page" })).json(),
+  ).toMatchObject({ status: "locked_by_other", ownedByCurrentUser: false });
+  await request("/cms_page/page/release", {});
+  expect(state.rows.size).toBe(1);
+  actor.id = "one";
+  expect(
+    await (await request("/heartbeat", { resourceType: "cms_page", resourceId: "page" })).json(),
+  ).toMatchObject({ status: "acquired", ownedByCurrentUser: true });
+  await request("/release", { resourceType: "cms_page", resourceId: "page" });
+  expect(state.rows.size).toBe(0);
+});
+it("authorizes by resource on all reads and writes, including legacy body-scoped operations", async () => {
+  const capabilities: Record<string, string> = {
+    cms_page: "pages",
+    blog_post: "blog",
+    event: "events",
+    form: "forms",
+    cms_section: "sections",
+    cms_menu: "menus",
+    cms_sidebar: "sidebars",
+  };
+  for (const [resource, tool] of Object.entries(capabilities)) {
+    grant.capabilities = [];
+    const before = state.work.mock.calls.length;
+    for (const path of [`/resource/${resource}`, `/${resource}/record`])
+      expect((await request(path)).status).toBe(403);
+    for (const action of ["acquire", "heartbeat", "release"]) {
+      expect(
+        (await request(`/${action}`, { resourceType: resource, resourceId: "record" })).status,
+      ).toBe(403);
+      expect((await request(`/${resource}/record/${action}`, {})).status).toBe(403);
+    }
+    expect(state.work.mock.calls.length).toBe(before);
+    grant.capabilities = [`marketing.content.${tool}`];
+    expect((await request(`/${resource}/record/acquire`, { resourceType: "doc" })).status).toBe(
+      200,
+    );
+    expect(state.rows.has(`${resource}:record`)).toBe(true);
+    expect(state.rows.has("doc:record")).toBe(false);
+  }
+});
+it("reserves website system locks for an active attested Owner", async () => {
+  for (const resource of ["doc", "email_template"]) {
+    expect((await request(`/${resource}/record/acquire`, {})).status).toBe(403);
+    grant.role = "owner";
+    expect((await request(`/${resource}/record/acquire`, {})).status).toBe(403);
+    grant.ownerAttested = true;
+    expect((await request(`/${resource}/record/acquire`, {})).status).toBe(200);
+    grant.active = false;
+    expect((await request(`/${resource}/record/heartbeat`, {})).status).toBe(403);
+    grant = { active: true, role: "member", capabilities: [], ownerAttested: false };
+  }
+});
+it("blocks revoked grants from extending reservations; abandoned locks still expire", async () => {
+  await request("/cms_page/page/acquire", {});
+  const before = state.work.mock.calls.length;
+  grant.capabilities = [];
+  expect((await request("/cms_page/page/heartbeat", {})).status).toBe(403);
+  expect((await request("/cms_page/page/release", {})).status).toBe(403);
+  expect(state.work.mock.calls.length).toBe(before);
+  state.rows.get("cms_page:page").expiresAt = new Date(0);
+  grant.capabilities = ["marketing.content.pages"];
+  actor.id = "next";
+  expect(await (await request("/cms_page/page/acquire", {})).json()).toMatchObject({
+    status: "acquired",
+    lock: { lockedByUserId: "next" },
+  });
+});

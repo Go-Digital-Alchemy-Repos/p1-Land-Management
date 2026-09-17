@@ -7,6 +7,7 @@ export interface CmsOperation {
   path: string;
   capabilities: readonly Capability[];
   force?: boolean;
+  ownerOnly?: boolean;
 }
 /** Explicit method/path pairs. Adding a Core route never exposes it automatically. */
 export const cmsOperations: CmsOperation[] = [];
@@ -58,6 +59,40 @@ add("seo", "GET", "/seo-audit");
 add("team", "GET", "/team");
 add("team", "POST", "/team");
 add("team", "PUT", "/team/:id");
+
+const lockCapabilities: Record<string, Capability | null> = {
+  cms_page: "marketing.content.pages",
+  blog_post: "marketing.content.blog",
+  event: "marketing.content.events",
+  form: "marketing.content.forms",
+  cms_section: "marketing.content.sections",
+  cms_menu: "marketing.content.menus",
+  cms_sidebar: "marketing.content.sidebars",
+  doc: null,
+  email_template: null,
+};
+for (const [resource, capability] of Object.entries(lockCapabilities)) {
+  const access = {
+    capabilities: capability ? [capability] : [],
+    ownerOnly: capability === null,
+  };
+  cmsOperations.push({
+    method: "GET",
+    path: `/editor-locks/resource/${resource}`,
+    ...access,
+  });
+  cmsOperations.push({
+    method: "GET",
+    path: `/editor-locks/${resource}/:id`,
+    ...access,
+  });
+  for (const action of ["acquire", "heartbeat", "release"])
+    cmsOperations.push({
+      method: "POST",
+      path: `/editor-locks/${resource}/:id/${action}`,
+      ...access,
+    });
+}
 
 export function cmsDestination(
   operation: CmsOperation,

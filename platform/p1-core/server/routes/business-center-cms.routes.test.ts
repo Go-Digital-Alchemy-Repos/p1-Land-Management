@@ -38,6 +38,7 @@ vi.mock("../storage", () => ({
     seoSettings: { get: async () => ({}) },
     blog: { getAllPosts: state.list },
     events: { getAllEvents: state.list },
+    editorLocks: { listActiveByResourceType: state.list },
   },
 }));
 vi.mock("../storage/index", async () => await import("../storage"));
@@ -279,4 +280,14 @@ it("requires Pages on the authenticated public preview route before reading a dr
     404,
   );
   expect(state.page).toHaveBeenCalledWith("page");
+});
+it("exposes resource-scoped lock reads through the confidential service boundary", async () => {
+  expect((await request("/editor-locks/resource/cms_page")).status).toBe(200);
+  expect((await request("/editor-locks/resource/cms_menu")).status).toBe(403);
+  expect((await request("/editor-locks/resource/doc")).status).toBe(403);
+  identity = { active: true, role: "owner", ownerAttested: true, capabilities: [] };
+  state.enabled.mockResolvedValue(false);
+  expect((await request("/editor-locks/resource/doc")).status).toBe(200);
+  identity.ownerAttested = false;
+  expect((await request("/editor-locks/resource/doc")).status).toBe(403);
 });

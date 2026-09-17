@@ -22,8 +22,17 @@ test("CMS allowlist uses current leaf grants, exact paths and bounded query para
   assert(
     cmsOperations.every(
       (item) =>
-        item.capabilities.length && item.capabilities.every(isCapability),
+        item.ownerOnly ||
+        (item.capabilities.length && item.capabilities.every(isCapability)),
     ),
+  );
+  assert.deepEqual(
+    operation("POST", "/editor-locks/cms_page/:id/acquire").capabilities,
+    ["marketing.content.pages"],
+  );
+  assert.equal(
+    operation("POST", "/editor-locks/doc/:id/acquire").ownerOnly,
+    true,
   );
   assert.deepEqual(
     operation("POST", "/pages/:id/relationships/remove-menu-items")

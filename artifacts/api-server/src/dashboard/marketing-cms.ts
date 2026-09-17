@@ -21,6 +21,8 @@ for (const operation of cmsOperations) {
     `/marketing/cms${operation.path}`,
     async (req, res) => {
       const a = await actor(req);
+      if (operation.ownerOnly && a.role !== "owner")
+        throw new HttpError(403, "Owner access required");
       for (const capability of operation.capabilities)
         requireCapability(a, capability);
       cmsDestination(operation, req.params, req.query);

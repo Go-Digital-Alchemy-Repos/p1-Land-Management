@@ -49,6 +49,8 @@ export const ACCESS_GROUPS = [
       { id: "marketing.content.pages", label: "Pages" },
       { id: "marketing.content.team", label: "Team biographies" },
       { id: "marketing.content.forms", label: "Forms" },
+      { id: "marketing.content.events", label: "Events" },
+      { id: "marketing.content.careers", label: "Careers" },
       { id: "marketing.content.blog", label: "Blog" },
       { id: "marketing.content.galleries", label: "Galleries" },
       { id: "marketing.content.media", label: "Media" },
