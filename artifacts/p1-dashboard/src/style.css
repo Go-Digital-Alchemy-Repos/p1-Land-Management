@@ -226,6 +226,11 @@ small {
 .sidebar .brand {
   padding-left: 7px;
 }
+.sidebar .brand > img {
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+}
 .nav-caption {
   font-size: 9px;
   letter-spacing: 1.5px;

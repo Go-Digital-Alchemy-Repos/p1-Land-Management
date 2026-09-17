@@ -1159,7 +1159,7 @@ function App() {
     <div className="app">
       <aside className={menu ? "sidebar open" : "sidebar"}>
         <div className="brand">
-          <img src="/icon.svg" alt="P1" width="48" height="36" />
+          <img src="/icon-sidebar-reversed.svg" alt="P1" width="48" height="36" />
           <div>
             LAND & PROPERTY<small>OPERATIONS WORKSPACE</small>
           </div>
