@@ -77,6 +77,7 @@ import type {
   CreateEstimate,
   CreateExpense,
   CreateInspectionReport,
+  CreateLeadNote,
   CreateManagedInvitation201,
   CreateManualAssessmentSlot,
   CreateProject,
@@ -125,6 +126,8 @@ import type {
   GetSetupStatus200,
   InspectionReport,
   IntegrationHealth,
+  LeadNotePage,
+  LeadNoteReceipt,
   ListAgreementChargeQueueParams,
   ListAgreementChargeReviewsParams,
   ListAgreementChargesParams,
@@ -133,6 +136,7 @@ import type {
   ListAgreementPreparationJobsParams,
   ListAgreementTemplatesParams,
   ListCommercialInquiriesParams,
+  ListLeadNotesParams,
   ListManagedInvitations200,
   ListManagedInvitationsParams,
   ListManagedNotificationForms200,
@@ -296,6 +300,59 @@ import type {
 } from './models';
 
 import { customFetch } from '../custom-fetch';
+
+export const getListLeadNotesUrl = (id: string,
+    params?: ListLeadNotesParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/leads/${id}/notes?${stringifiedParams}` : `/api/v1/leads/${id}/notes`
+}
+
+export const listLeadNotes = async (id: string,
+    params?: ListLeadNotesParams, options?: RequestInit): Promise<LeadNotePage> => {
+
+  return customFetch<LeadNotePage>(getListLeadNotesUrl(id,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateLeadNoteUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/leads/${id}/notes`
+}
+
+export const createLeadNote = async (id: string,
+    createLeadNote: CreateLeadNote, options?: RequestInit): Promise<LeadNoteReceipt> => {
+
+  return customFetch<LeadNoteReceipt>(getCreateLeadNoteUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createLeadNote,)
+  }
+);}
+
+
 
 export const getGetMyWorkOrdersUrl = () => {
 

@@ -1919,3 +1919,20 @@ export const estimateAllocation = pgTable("estimate_allocation", {
   check("estimate_allocation_cost_row_ids_check", sql`cardinality(${table.costRowIds})>0`),
   check("estimate_allocation_check", sql`(${table.basis}='one_time' AND ${table.configuration} IS NULL) OR (${table.basis}<>'one_time' AND COALESCE(jsonb_typeof(${table.configuration})='object',false))`),
 ]);
+
+// Append-only Sales inquiry history; trigger and provenance checks live in 0039.
+export const leadNote = pgTable("lead_note", {
+  id: uuid().primaryKey(),
+  leadId: uuid("lead_id").notNull().references(() => lead.id),
+  authorId: text("author_id").references(() => user.id),
+  body: text().notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true, mode: "string" }).defaultNow().notNull(),
+  sourceInstanceId: text("source_instance_id"),
+  sourceNoteId: text("source_note_id"),
+  sourceAuthorId: text("source_author_id"),
+}, (t) => [
+  index("lead_note_history_idx").on(t.leadId, t.createdAt.desc(), t.id.desc()),
+  unique().on(t.sourceInstanceId, t.sourceNoteId),
+  check("lead_note_body_check", sql`length(btrim(${t.body})) BETWEEN 1 AND 10000`),
+  check("lead_note_origin", sql`(${t.sourceInstanceId} IS NULL AND ${t.sourceNoteId} IS NULL AND ${t.sourceAuthorId} IS NULL AND ${t.authorId} IS NOT NULL) OR (length(btrim(${t.sourceInstanceId})) > 0 AND ${t.sourceInstanceId} IS NOT NULL AND length(btrim(${t.sourceNoteId})) > 0 AND ${t.sourceNoteId} IS NOT NULL)`),
+]);

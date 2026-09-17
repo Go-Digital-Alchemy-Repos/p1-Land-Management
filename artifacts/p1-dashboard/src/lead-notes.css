@@ -1,0 +1,26 @@
+.schedule-row:has(> .lead-notes) {
+  flex-wrap: wrap;
+}
+.schedule-row > .lead-notes {
+  flex: 1 0 100%;
+  min-width: 0;
+}
+.lead-notes {
+  min-width: 0;
+  margin-block: 1rem;
+}
+.lead-notes section {
+  margin-top: 1rem;
+}
+.lead-notes form {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+.lead-notes form button {
+  justify-self: start;
+}
+.lead-notes textarea {
+  box-sizing: border-box;
+  width: 100%;
+}

@@ -125,6 +125,7 @@ try {
       "src/dashboard/user-management.test.ts",
       "src/dashboard/contacts.test.ts",
       "src/dashboard/client-workspace.test.ts",
+      "src/dashboard/lead-notes.test.ts",
       "src/dashboard/client-onboarding.test.ts",
       "src/dashboard/assessments.test.ts",
       "src/dashboard/schedule.test.ts",

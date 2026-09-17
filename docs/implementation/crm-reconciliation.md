@@ -103,7 +103,7 @@ This preflight does not compare or copy payload content, timestamps, due dates, 
 
 - Reuse matched dashboard leads. Keep original submission snapshots and explicit source record mappings; preserve additional CRM notes/tasks rather than re-running form intake.
 - Resolve source client links against existing operational clients. Won status alone must not trigger onboarding, access grants, property creation or billing.
-- Lead notes/tasks need a canonical Sales workflow and source-ID-safe import. Extend the existing customer-note behavior for client notes instead of introducing a competing operational note store. Its current required author/inner join must be addressed for historical deleted or unmapped authors.
+- Lead notes now have a native append-only Sales workflow (`0039_lead_notes.sql`); tasks and source-ID-safe import remain open. Extend the existing customer-note behavior for client notes instead of introducing a competing operational note store. Its current required author/inner join must be addressed for historical deleted or unmapped authors.
 - Retain completed tasks, original authors/assignees, due dates, creation/update times and both source owner fields. An unresolved author/owner must be preserved for review, never silently assigned to the migration operator.
 - Verify field-level payload reconciliation, idempotent replay, audit history, version conflicts, counts and checksums, restoration/rollback, scoped UI/API access and frozen-source cutover before retiring Core CRM.
 

@@ -1,3 +1,4 @@
+import { LeadNotes } from "./LeadNotes";
 import { CommercialContextPanel } from "./CommercialContextPanel";
 import { CommercialAssessmentPanel } from "./CommercialAssessmentPanel";
 import type { ContextTransport } from "./commercial-context.types";
@@ -135,6 +136,7 @@ export function CommercialInbox({
   }
   async function select(id: string) {
     if (interactionBusy.current) return;
+    if (selected && selected.id !== id && !window.dispatchEvent(new Event("p1:before-navigation", {cancelable:true}))) return;
     interactionBusy.current = true;
     setDetailLoading(true);
     const current = ++detailGeneration.current;
@@ -321,6 +323,7 @@ export function CommercialInbox({
               ))}
             </dl>
             <p className="commercial-message">{selected.description}</p>
+            <LeadNotes key={selected.id} leadId={selected.id} />
             <form
               key={selected.id + ":" + detailRevision}
               onSubmit={(e) => {

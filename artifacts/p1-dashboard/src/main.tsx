@@ -1,3 +1,4 @@
+import { LeadNotes } from "./LeadNotes";
 import ComposedEstimateActions from "./agreements/ComposedEstimateActions";
 import { ComposedProposal } from "./ComposedProposal";
 import BillingEstimatePicker from "./BillingAllocationPicker";
@@ -1984,6 +1985,7 @@ function App() {
                             Convert inquiry
                           </button>
                         )}
+                      <LeadNotes leadId={lead.id} />
                     </div>
                   ))}
                   {!data.leads?.length && (
