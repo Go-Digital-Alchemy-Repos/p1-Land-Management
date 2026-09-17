@@ -1,4 +1,4 @@
-import { isWebsiteOwner, requireWebsiteOwner } from "../middleware/website-owner";
+import { isWebsiteOwner, requireWebsiteOwner, websiteSettingScope } from "../middleware/website-owner";
 import { getBaseUrl } from "../utils/route-helpers";
 import { CRM_PIPELINE_SETTING_KEY } from "@shared/crm-pipeline-settings";
 import { Router, type NextFunction, type Request, type Response } from "express";
@@ -65,7 +65,7 @@ function requireAdminOrDesignEditor(req: Request, res: Response, next: NextFunct
 }
 
 function requireSettingWritePermission(req: Request, res: Response, next: NextFunction) {
-  if (req.body?.key === "public_head_html" || req.body?.category === "head_tag_additions") return requireWebsiteOwner(req,res,next);
+  if (websiteSettingScope(req.body?.key, req.body?.category)) return requireWebsiteOwner(req,res,next);
   if (req.user?.role === "admin") {
     next();
     return;
@@ -126,18 +126,14 @@ router.put(
       isRetiredPrivateProofSetting(existingPrivate?.key, existingPrivate?.category)
     )
       return res.status(403).json({ message: "This retired private proof setting is protected" });
-    if (req.user?.role !== "admin" && !(isWebsiteOwner(req) && (data.key === "public_head_html" || data.category === "head_tag_additions"))) {
-      const existing = (await storage.settings.getAllSettings()).find(
-        (setting) => setting.key === data.key,
-      );
-      if (existing && (existing.category !== "branding" || existing.isSecret)) {
-        return res.status(403).json({ message: "Forbidden" });
-      }
+    const scope = websiteSettingScope(data.key,data.category) || websiteSettingScope(existingPrivate?.key,existingPrivate?.category);
+    if (scope && !isWebsiteOwner(req)) return res.status(403).json({message:"Owner access required"});
+    if (req.user?.role !== "admin" && !(scope && isWebsiteOwner(req))) {
+      if (existingPrivate && (existingPrivate.category !== "branding" || existingPrivate.isSecret))
+        return res.status(403).json({message:"Forbidden"});
     }
-    const isHead = data.key === "public_head_html" || data.category === "head_tag_additions" || existingPrivate?.category === "head_tag_additions";
-    if (isHead && !isWebsiteOwner(req)) return res.status(403).json({message:"Owner access required"});
-    const setting = isHead
-      ? (await storage.settings.upsertSettings([data],undefined,{userId:req.user!.id,action:"website_head_tags_updated",details:"public_head_html (legacy settings route)"}))[0]
+    const setting = scope
+      ? (await storage.settings.upsertSettings([data],undefined,{userId:req.user!.id,action:scope === "head-tags" ? "website_head_tags_updated" : "website_features_updated",details:scope === "head-tags" ? "public_head_html (legacy settings route)" : `${data.key} (legacy settings route)`}))[0]
       : await storage.settings.upsertSetting(data.key,data.value,data.category,data.isSecret);
 
     if (data.category === "cloudflare_r2") {
@@ -214,9 +210,10 @@ router.delete(
     );
     if (isRetiredPrivateProofSetting(paramString(req.params.key), existing?.category))
       return res.status(403).json({ message: "This retired private proof setting is protected" });
-    if (paramString(req.params.key) === "public_head_html" || existing?.category === "head_tag_additions") {
+    const scope = websiteSettingScope(paramString(req.params.key), existing?.category);
+    if (scope) {
       if (!isWebsiteOwner(req)) return res.status(403).json({message:"Owner access required"});
-      return res.status(400).json({message:"Clear website head markup in Marketing > Website System > Head tag additions"});
+      return res.status(400).json({message:scope === "head-tags" ? "Clear website head markup in Marketing > Website System > Head tag additions" : "Change feature flags in Marketing > Website System > Website modules"});
     }
     await storage.settings.deleteSetting(paramString(req.params.key));
     res.json({ message: "Setting deleted" });

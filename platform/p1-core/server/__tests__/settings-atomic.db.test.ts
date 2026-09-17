@@ -1,3 +1,4 @@
+import { parseSiteFeatures } from "@shared/site-features";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import pg from "pg";
 import { drizzle } from "drizzle-orm/node-postgres";
@@ -272,6 +273,21 @@ suite("atomic settings real database", () => {
     expect(await settings.getSetting(key)).toBe("<script>literal()</script>");
     expect((await pool.query("SELECT action,details FROM activity_logs WHERE action=$1",[audit.action])).rows).toEqual([{action:audit.action,details:key}]);
     await expect(settings.upsertSettings([entry(key,"stale",category)],{category,version:first.version,publicOnly:true},audit)).rejects.toMatchObject({statusCode:409});
+  });
+
+  it("website feature flags commit as one set, preserve unknown settings, and invalidate runtime caches",async()=>{
+    await pool.query("CREATE TABLE IF NOT EXISTS activity_logs (id varchar PRIMARY KEY DEFAULT gen_random_uuid(),user_id varchar NOT NULL,action text NOT NULL,details text,created_at timestamp DEFAULT now())");
+    const category="system_configuration", keys=["enable_cms","enable_blog","enable_events","enable_crm","enable_careers"];
+    await settings.upsertSettings([...keys.map(key=>entry(key,"true",category)),entry("future_setting","preserve",category)]);
+    expect(Object.values(parseSiteFeatures(await settings.getDecryptedCategory(category)))).toEqual(Array(5).fill(true));
+    const snapshot=await settings.getCategorySnapshot(category,true),changes=keys.map(key=>entry(key,"false",category)),audit={userId:"owner",action:"website_features_updated",details:"fixture"};
+    await pool.query("ALTER TABLE system_settings ADD CONSTRAINT fixture_reject_flag CHECK(key<>'enable_crm' OR value<>'false')");
+    try{await expect(settings.upsertSettings(changes,{category,version:snapshot.version,publicOnly:true},audit)).rejects.toThrow();expect(Object.values(parseSiteFeatures(await settings.getDecryptedCategory(category)))).toEqual(Array(5).fill(true));}finally{await pool.query("ALTER TABLE system_settings DROP CONSTRAINT fixture_reject_flag");}
+    await settings.upsertSettings(changes,{category,version:snapshot.version,publicOnly:true},audit);
+    expect(Object.values(parseSiteFeatures(await settings.getDecryptedCategory(category)))).toEqual(Array(5).fill(false));
+    expect(await settings.getSetting("future_setting")).toBe("preserve");
+    await expect(settings.upsertSettings(keys.map(key=>entry(key,"true",category)),{category,version:snapshot.version,publicOnly:true},audit)).rejects.toMatchObject({statusCode:409});
+    expect((await pool.query("SELECT count(*)::int n FROM activity_logs WHERE action='website_features_updated'")).rows[0].n).toBe(1);
   });
 
 });

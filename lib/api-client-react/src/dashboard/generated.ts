@@ -283,6 +283,7 @@ import type {
   SalesLead,
   SalesLeadConversion,
   SalesLeadConversionReceipt,
+  SaveWebsiteFeatures200,
   SaveWebsiteHeadTags200,
   SchedulePage,
   ServiceAgreement,
@@ -322,6 +323,8 @@ import type {
   WebsiteDraftInput,
   WebsiteEditorReservation,
   WebsiteExpectedRevision,
+  WebsiteFeaturesInput,
+  WebsiteFeaturesState,
   WebsiteHeadTags,
   WebsiteHeadTagsInput,
   WebsiteMenu,
@@ -8108,6 +8111,55 @@ export const saveWebsiteHeadTags = async (websiteHeadTagsInput: WebsiteHeadTagsI
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
       websiteHeadTagsInput,)
+  }
+);}
+
+
+
+export const getGetWebsiteFeaturesUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/website-system/features`
+}
+
+/**
+ * Owner-only website module controls. Does not disable native Business Center areas.
+ */
+export const getWebsiteFeatures = async ( options?: RequestInit): Promise<WebsiteFeaturesState> => {
+
+  return customFetch<WebsiteFeaturesState>(getGetWebsiteFeaturesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getSaveWebsiteFeaturesUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/website-system/features`
+}
+
+/**
+ * Owner-only website module controls. Does not disable native Business Center areas.
+ */
+export const saveWebsiteFeatures = async (websiteFeaturesInput: WebsiteFeaturesInput, options?: RequestInit): Promise<SaveWebsiteFeatures200> => {
+
+  return customFetch<SaveWebsiteFeatures200>(getSaveWebsiteFeaturesUrl(),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      websiteFeaturesInput,)
   }
 );}
 

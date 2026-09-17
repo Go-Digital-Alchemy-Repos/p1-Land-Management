@@ -14318,6 +14318,58 @@
           }
         }
       }
+    },
+    "/marketing/cms/website-system/features": {
+      "get": {
+        "operationId": "getWebsiteFeatures",
+        "description": "Owner-only website module controls. Does not disable native Business Center areas.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteFeaturesState"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "saveWebsiteFeatures",
+        "description": "Owner-only website module controls. Does not disable native Business Center areas.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "saved"
+                  ],
+                  "properties": {
+                    "saved": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebsiteFeaturesInput"
+              }
+            }
+          }
+        }
+      }
     }
 
   },
@@ -29172,6 +29224,67 @@
           "html": {
             "type": "string",
             "maxLength": 100000
+          },
+          "expectedVersion": {
+            "type": "string"
+          }
+        }
+      },
+      "WebsiteFeatures": {
+        "type": "object",
+        "required": [
+          "cmsEnabled",
+          "blogEnabled",
+          "eventsEnabled",
+          "crmEnabled",
+          "careersEnabled"
+        ],
+        "properties": {
+          "cmsEnabled": {
+            "type": "boolean"
+          },
+          "blogEnabled": {
+            "type": "boolean"
+          },
+          "eventsEnabled": {
+            "type": "boolean"
+          },
+          "crmEnabled": {
+            "type": "boolean"
+          },
+          "careersEnabled": {
+            "type": "boolean"
+          }
+        }
+      },
+      "WebsiteFeaturesState": {
+        "type": "object",
+        "required": [
+          "features",
+          "defaults",
+          "version"
+        ],
+        "properties": {
+          "features": {
+            "$ref": "#/components/schemas/WebsiteFeatures"
+          },
+          "defaults": {
+            "$ref": "#/components/schemas/WebsiteFeatures"
+          },
+          "version": {
+            "type": "string"
+          }
+        }
+      },
+      "WebsiteFeaturesInput": {
+        "type": "object",
+        "required": [
+          "features",
+          "expectedVersion"
+        ],
+        "properties": {
+          "features": {
+            "$ref": "#/components/schemas/WebsiteFeatures"
           },
           "expectedVersion": {
             "type": "string"

@@ -106,3 +106,14 @@ it("retagging an existing protected setting is denied, while unrelated legacy wr
   );
   expect(state.legacySave).toHaveBeenCalledWith("other", "literal", "other", false);
 });
+
+it("legacy website feature keys and categories require canonical ownership and remain audited",async()=>{
+ for(const key of ["enable_cms","enable_blog","enable_events","enable_crm","enable_careers"]){
+  expect((await put({...body,key,category:"system_configuration",value:"false"})).status).toBe(403);
+  expect((await put({...body,key,category:"other",value:"false"})).status).toBe(403);
+ }
+ expect(state.save).not.toHaveBeenCalled();
+ state.identity={active:true,role:"owner",ownerAttested:true};state.role="editor";
+ const feature={key:"enable_events",category:"system_configuration",value:"true",isSecret:false};expect((await put(feature)).status).toBe(200);expect(state.save).toHaveBeenCalledWith([feature],undefined,{userId:"linked",action:"website_features_updated",details:"enable_events (legacy settings route)"});
+ expect((await fetch(base+"/settings/enable_events",{method:"DELETE"})).status).toBe(400);expect(state.remove).not.toHaveBeenCalled();
+});

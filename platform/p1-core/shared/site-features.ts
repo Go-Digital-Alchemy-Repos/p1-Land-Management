@@ -23,3 +23,19 @@ export function normalizeBooleanSetting(value: unknown, fallback = true): boolea
   }
   return fallback;
 }
+
+export const SITE_FEATURE_SETTING_KEYS: Record<keyof SiteFeatures, string> = {
+  cmsEnabled: "enable_cms",
+  blogEnabled: "enable_blog",
+  eventsEnabled: "enable_events",
+  crmEnabled: "enable_crm",
+  careersEnabled: "enable_careers",
+};
+export function parseSiteFeatures(settings: Record<string, unknown>): SiteFeatures {
+  return Object.fromEntries(
+    Object.entries(SITE_FEATURE_SETTING_KEYS).map(([feature, key]) => [
+      feature,
+      normalizeBooleanSetting(settings[key], DEFAULT_SITE_FEATURES[feature as keyof SiteFeatures]),
+    ]),
+  ) as unknown as SiteFeatures;
+}

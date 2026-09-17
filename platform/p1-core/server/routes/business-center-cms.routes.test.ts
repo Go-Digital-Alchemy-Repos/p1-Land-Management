@@ -1072,3 +1072,24 @@ it("website head settings require an attested Owner and stay available when CMS 
  state.headSave.mockRejectedValueOnce(Object.assign(new Error("Changed"),{statusCode:409}));expect((await request("/website-system/head-tags","PUT",{},"/service",body)).status).toBe(409);
  identity.active=false;expect((await request("/website-system/head-tags")).status).toBe(403);
 });
+
+it("website module flags normalize retained values and save one Owner-only versioned set outside module gates",async()=>{
+ const defaults={cmsEnabled:true,blogEnabled:true,eventsEnabled:false,crmEnabled:true,careersEnabled:false};
+ for(const value of [{active:true,role:"member",ownerAttested:false},{active:true,role:"owner",ownerAttested:false},{active:false,role:"owner",ownerAttested:true}]){
+  identity={...value,capabilities:["marketing.content.pages","marketing.content.events"]};
+  expect((await request("/website-system/features")).status).toBe(403);
+  expect((await request("/website-system/features","PUT",{},"/service",{})).status).toBe(403);
+ }
+ identity={active:true,role:"owner",ownerAttested:true,capabilities:[]};state.enabled.mockResolvedValue(false);
+ state.headSnapshot.mockResolvedValue({values:{enable_cms:"OFF",enable_blog:"yes",enable_events:"1",enable_crm:"invalid",unrelated:"not projected"},version:'b'.repeat(64)});
+ const response=await request("/website-system/features");expect(response.status).toBe(200);expect(await response.json()).toEqual({features:{...defaults,cmsEnabled:false,eventsEnabled:true},defaults,version:'b'.repeat(64)});
+ const features={cmsEnabled:false,blogEnabled:false,eventsEnabled:false,crmEnabled:false,careersEnabled:false};
+ expect((await request("/website-system/features","PUT",{},"/service",{features,expectedVersion:'b'.repeat(64)})).status).toBe(200);
+ const [entries,revision,audit]=state.headSave.mock.calls.at(-1)!;
+ expect(entries).toEqual(['enable_cms','enable_blog','enable_events','enable_crm','enable_careers'].map(key=>({key,category:"system_configuration",value:"false",isSecret:false})));
+ expect(revision).toEqual({category:"system_configuration",version:'b'.repeat(64),publicOnly:true});
+ expect(audit).toEqual({userId:"linked",action:"website_features_updated",details:JSON.stringify(features)});
+ expect((await request("/website-system/features")).status).toBe(200);
+ for(const bad of [{features:{...features,eventsEnabled:"true"},expectedVersion:'b'.repeat(64)},{features:{cmsEnabled:true},expectedVersion:'b'.repeat(64)},{features:{...features,unknown:true},expectedVersion:'b'.repeat(64)},{features,expectedVersion:'b'.repeat(64),category:'branding'}]) expect((await request("/website-system/features","PUT",{},"/service",bad)).status).toBe(400);
+ state.headSave.mockRejectedValueOnce(Object.assign(new Error("Changed"),{statusCode:409}));expect((await request("/website-system/features","PUT",{},"/service",{features,expectedVersion:'b'.repeat(64)})).status).toBe(409);
+});

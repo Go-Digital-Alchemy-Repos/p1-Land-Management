@@ -30,6 +30,7 @@ export type DashboardView =
   | "Website Team"
   | "Media Library"
   | "Website Editor"
+  | "Website Features"
   | "Website Head Tags"
   | "Website Menus"
   | "Search Console";
@@ -118,6 +119,7 @@ export const DASHBOARD_PAGES: readonly DashboardPageRoute[] = [
   { view: "Website Blog", label: "Blog", path: "/marketing/content/blog", group: "Marketing", section: "Content" },
   { view: "Website Team", label: "Team", path: "/marketing/content/team", group: "Marketing", section: "Content" },
   { view: "Website Menus", label: "Menus", path: "/marketing/content/menus", group: "Marketing", section: "Content" },
+  { view: "Website Features", label: "Website modules", path: "/marketing/system/features", group: "Marketing", section: "Website System" },
   { view: "Website Head Tags", label: "Head tag additions", path: "/marketing/system/head-tags", group: "Marketing", section: "Website System" },
   { view: "Analytics", label: "Google Analytics", path: "/marketing/reporting/analytics", group: "Marketing", section: "Reporting" },
   { view: "Search Console", label: "Search Console", path: "/marketing/reporting/search-console", group: "Marketing", section: "Reporting" },
@@ -265,7 +267,7 @@ export function canAccessRoute(route: DashboardRoute, role: string | null | unde
   const { view, settingsSection } = route.page;
   if ((route.record?.kind === "client" || route.record?.kind === "property") && !canAccessWorkspaceTab(route.record.kind, route.record.tab, role, capabilities)) return false;
   if (view === "Profile") return true;
-  if (view === "Website Head Tags") return role === "owner";
+  if (view === "Website Head Tags" || view === "Website Features") return role === "owner";
   // Field and customer portals keep their existing record-scoped routes.
   if (role === "crew") return ["My Day", "Properties"].includes(view);
   if (role === "client") return ["Overview", "Properties", "Schedule", "Sales", "Billing", "Requests", "Inspections"].includes(view);
