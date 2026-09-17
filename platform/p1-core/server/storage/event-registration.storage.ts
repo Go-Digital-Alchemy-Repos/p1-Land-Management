@@ -118,6 +118,19 @@ export class EventRegistrationStorage {
     return result.rowCount ?? 0;
   }
 
+  /** Event-scoped attendance only; never changes registration or payment state.
+   * Repeating a successful check-in preserves its original timestamp.
+   */
+  async setEventAttendance(eventId: string, id: string, attended: boolean): Promise<EventRegistration | undefined> {
+    const [row] = await db.update(eventRegistrations).set({
+      attended,
+      checkedInAt: attended
+        ? sql`case when ${eventRegistrations.attended} = true then coalesce(${eventRegistrations.checkedInAt}, now()) else now() end`
+        : null,
+    }).where(and(eq(eventRegistrations.id, id), eq(eventRegistrations.eventId, eventId))).returning();
+    return row;
+  }
+
   async checkInRegistration(id: string, attended: boolean): Promise<EventRegistration | undefined> {
     const [reg] = await db
       .update(eventRegistrations)

@@ -1,3 +1,4 @@
+import eventAttendees from "./business-center-event-attendees.routes";
 import events from "./admin/events.routes";
 import { Router } from "express";
 import { z } from "zod";
@@ -73,6 +74,7 @@ router.get("/notification-forms", async (req, res, next) => {
 });
 router.use("/editor-locks", editorLocks);
 router.use("/blog", requireBlogEnabled, blog);
+router.use(eventAttendees);
 router.use("/events", requireEventsEnabled, events);
 router.use(requireCmsEnabled);
 router.use("/website", website);

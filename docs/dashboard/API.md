@@ -139,3 +139,7 @@ Orval 8.9.1 incorrectly serializes binary image requests using JSON.stringify. T
 ### Website form concurrency
 
 `PUT /marketing/cms/forms/{id}` requires `expectedUpdatedAt`, copied from the saved form's `updatedAt` (`null` only for a legacy null timestamp). Core applies this precondition atomically with the update and returns `409` when it no longer matches, or `400` when omitted/invalid. The retained `/api/admin/forms/{id}` update has the same requirement. Clients must retain the local draft on conflict and reload explicitly; do not silently replace the precondition and retry. Form creation does not require a precondition. Deploy the updated editors and Core handler together. No database migration is needed.
+
+#### Website event attendance
+
+`GET /marketing/cms/events/{eventId}/attendees` lists minimized attendee records. `PUT /marketing/cms/events/{eventId}/attendees/{id}/checkin` accepts exactly `{ "attended": boolean }`. Both require the Events capability and enabled website Events feature. The atomic attendance write is scoped to the event and attendee; missing or mismatched records return 404. Repeated `true` preserves the existing check-in timestamp; `false` clears it. No payment, registration-status, email or waitlist changes occur. Payment-provider IDs and local website account links are never included in these responses. Large lists remain subject to the CMS transport response-size bound; failures must not be presented as complete attendee exports.

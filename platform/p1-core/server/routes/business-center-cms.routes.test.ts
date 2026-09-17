@@ -48,6 +48,7 @@ const state = vi.hoisted(() => ({
   formDeleteSubmission: vi.fn(),
   formJobs: vi.fn(),
   formRetry: vi.fn(),
+  attendees: vi.fn(), attendance: vi.fn(),
   events: vi.fn(), eventGet: vi.fn(), eventCreate: vi.fn(), eventSlug: vi.fn(), eventMail: vi.fn(), venues:vi.fn(), organizers:vi.fn(), eventAnalytics:vi.fn(),
 }));
 vi.mock("../services/federation-runtime", () => ({
@@ -104,7 +105,7 @@ vi.mock("../storage", () => ({
     events: {getAllEvents:state.events,getEvent:state.eventGet,createEvent:state.eventCreate,getEventSlugOwner:state.eventSlug},
     eventVenues:{getAllVenues:state.venues},
     eventOrganizers:{getAllOrganizers:state.organizers},
-    eventRegistrations:{getEventAnalytics:state.eventAnalytics},
+    eventRegistrations:{getEventAnalytics:state.eventAnalytics,getRegistrationsByEvent:state.attendees,setEventAttendance:state.attendance},
     forms: { getAll: state.list, getById: state.form, getBySlug: state.formSlug, create: state.formCreate, update: state.formUpdate, updateIfUnchanged: state.formUpdate, delete: state.formDelete, getSubmissionsByFormId: state.formSubmissions, deleteSubmission: state.formDeleteSubmission, listDeliveryJobs: state.formJobs, requeueFailedEffectJob: state.formRetry },
     editorLocks: { listActiveByResourceType: state.list },
   },
@@ -835,4 +836,26 @@ it("bridges Events with its own feature and capability boundaries", async () => 
   expect(state.eventMail).not.toHaveBeenCalled();
   identity.capabilities=["marketing.content.events"];state.enabled.mockResolvedValue(false);
   expect((await request("/events")).status).toBe(404);
+});
+
+
+it("limits event attendance to event-scoped updates and minimizes returned identity data", async () => {
+  const row = {id:"attendee",eventId:"event",fullName:"Synthetic",email:"test@example.test",phone:null,status:"confirmed",paymentStatus:"paid",notes:null,attended:false,checkedInAt:null,registeredAt:null,canceledAt:null,userId:"private-user",paymentIntentId:"private-payment",stripeCheckoutSessionId:"private-checkout",amountPaid:500};
+  state.eventGet.mockResolvedValue({id:"event"});state.attendees.mockResolvedValue([row]);state.attendance.mockResolvedValue({...row,attended:true});
+  expect((await request("/events/event/attendees")).status).toBe(403);
+  expect((await request("/events/event/attendees/attendee/checkin","PUT",{},"/service",{attended:true})).status).toBe(403);
+  expect(state.attendance).not.toHaveBeenCalled();expect(state.attendees).not.toHaveBeenCalled();
+  identity.capabilities=["marketing.content.events"];
+  state.enabled.mockImplementation(async feature=>feature==="eventsEnabled");
+  const response=await request("/events/event/attendees");expect(response.status).toBe(200);
+  const [dto]=await response.json();expect(dto.fullName).toBe("Synthetic");
+  for(const field of ["userId","paymentIntentId","stripeCheckoutSessionId","amountPaid"])expect(dto).not.toHaveProperty(field);
+  for(const body of [{attended:"true"},{},{attended:true,paymentStatus:"paid"}])expect((await request("/events/event/attendees/attendee/checkin","PUT",{},"/service",body)).status).toBe(400);
+  const update=await request("/events/event/attendees/attendee/checkin","PUT",{},"/service",{attended:true});expect(update.status).toBe(200);expect(await update.json()).toMatchObject({attended:true,paymentStatus:"paid"});
+  expect(state.attendance).toHaveBeenCalledExactlyOnceWith("event","attendee",true);
+  expect(state.activity).toHaveBeenCalledWith("linked","event_attendance_updated","attendee");
+  state.attendance.mockResolvedValue(undefined);
+  expect((await request("/events/other/attendees/attendee/checkin","PUT",{},"/service",{attended:false})).status).toBe(404);
+  state.eventGet.mockResolvedValue(undefined);expect((await request("/events/missing/attendees")).status).toBe(404);
+  state.enabled.mockResolvedValue(false);expect((await request("/events/event/attendees")).status).toBe(404);
 });

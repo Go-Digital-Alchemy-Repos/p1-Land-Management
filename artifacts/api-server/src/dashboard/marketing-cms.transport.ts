@@ -75,6 +75,8 @@ for (const path of ["/events/:id", "/events/venues/:venueId", "/events/organizer
 }
 add("events", "GET", "/events/:id");
 add("events", "GET", "/events/:id/analytics");
+add("events", "GET", "/events/:eventId/attendees");
+add("events", "PUT", "/events/:eventId/attendees/:id/checkin");
 add("events", "POST", "/events/:id/duplicate");
 add("events", "POST", "/events/:id/notify");
 

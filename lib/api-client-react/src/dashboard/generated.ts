@@ -139,6 +139,7 @@ import type {
   MarketingBlogTaxonomyPatch,
   MarketingDeleteResult,
   MarketingEvent,
+  MarketingEventAttendee,
   MarketingEventInput,
   MarketingEventOrganizer,
   MarketingEventOrganizerInput,
@@ -228,6 +229,7 @@ import type {
   ServiceRequestLifecycle,
   ServiceRequestTransition,
   ServiceRequestTransitionReceipt,
+  SetMarketingEventAttendanceBody,
   SyncFieldEventsBody,
   UnpublishMarketingPageParams,
   UpdateAccountMfaPolicy,
@@ -6423,6 +6425,58 @@ export const notifyMarketingEvent = async (id: string,
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
       notifyMarketingEventBody,)
+  }
+);}
+
+
+
+export const getListMarketingEventAttendeesUrl = (eventId: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/events/${eventId}/attendees`
+}
+
+/**
+ * Requires marketing.content.events. Attendance changes do not change registration or payment status.
+ */
+export const listMarketingEventAttendees = async (eventId: string, options?: RequestInit): Promise<MarketingEventAttendee[]> => {
+
+  return customFetch<MarketingEventAttendee[]>(getListMarketingEventAttendeesUrl(eventId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getSetMarketingEventAttendanceUrl = (eventId: string,
+    id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/events/${eventId}/attendees/${id}/checkin`
+}
+
+/**
+ * Requires marketing.content.events. Attendance changes do not change registration or payment status.
+ */
+export const setMarketingEventAttendance = async (eventId: string,
+    id: string,
+    setMarketingEventAttendanceBody: SetMarketingEventAttendanceBody, options?: RequestInit): Promise<MarketingEventAttendee> => {
+
+  return customFetch<MarketingEventAttendee>(getSetMarketingEventAttendanceUrl(eventId,id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      setMarketingEventAttendanceBody,)
   }
 );}
 

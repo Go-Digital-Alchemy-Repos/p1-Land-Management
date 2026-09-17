@@ -26,6 +26,23 @@ const assert = require("node:assert/strict");
       venueSaved,
       venueWrites = 0,
       deleted = 0;
+    let attendanceWrites = 0,
+      attendeeLoadFails = true,
+      attendanceFails = true;
+    let attendee = {
+      id: "person",
+      eventId: "event",
+      fullName: "Example Guest",
+      email: "guest@example.test",
+      phone: null,
+      status: "confirmed",
+      paymentStatus: "paid",
+      notes: "<script>unsafe()</script>",
+      attended: false,
+      checkedInAt: null,
+      registeredAt: "2026-09-17T12:00:00Z",
+      canceledAt: null,
+    };
     let venues = [
       {
         id: "venue",
@@ -77,6 +94,34 @@ const assert = require("node:assert/strict");
       const req = route.request(),
         path = new URL(req.url()).pathname;
       let body = [];
+      if (path === "/api/v1/marketing/cms/events/event/attendees") {
+        if (attendeeLoadFails)
+          return route.fulfill({
+            status: 503,
+            json: { message: "Attendees temporarily unavailable" },
+          });
+        body = [attendee];
+      }
+      if (
+        path === "/api/v1/marketing/cms/events/event/attendees/person/checkin"
+      ) {
+        attendanceWrites++;
+        assert.deepEqual(Object.keys(req.postDataJSON()), ["attended"]);
+        if (attendanceFails)
+          return route.fulfill({
+            status: 503,
+            json: { message: "Attendance temporarily unavailable" },
+          });
+        attendee = {
+          ...attendee,
+          attended: req.postDataJSON().attended,
+          checkedInAt: req.postDataJSON().attended
+            ? "2026-09-17T13:00:00Z"
+            : null,
+        };
+        body = attendee;
+      }
+
       if (path === "/api/v1/setup")
         body = { initialized: true, configured: true };
       if (path === "/api/v1/me")
@@ -383,6 +428,101 @@ const assert = require("node:assert/strict");
     );
     page.once("dialog", (d) => d.accept());
     await page.getByRole("button", { name: "Cancel", exact: true }).click();
+    await page
+      .getByRole("button", {
+        name: "Attendees for Updated workshop",
+        exact: true,
+      })
+      .click();
+    await page
+      .getByRole("alert")
+      .filter({ hasText: "Attendees temporarily unavailable" })
+      .waitFor();
+    attendeeLoadFails = false;
+    await page
+      .getByRole("button", { name: "Refresh attendees", exact: true })
+      .click();
+    await page
+      .getByRole("heading", { name: "Example Guest", exact: true })
+      .waitFor();
+    assert.equal(
+      await page
+        .getByText("<script>unsafe()</script>", { exact: true })
+        .count(),
+      1,
+    );
+    await page.getByLabel("Search attendees", { exact: true }).fill("missing");
+    await page.getByText("No matching attendees.", { exact: true }).waitFor();
+    await page.getByLabel("Search attendees", { exact: true }).fill("");
+    page.once("dialog", (d) => d.dismiss());
+    await page
+      .getByRole("button", {
+        name: "Mark attended · Example Guest",
+        exact: true,
+      })
+      .click();
+    assert.equal(attendanceWrites, 0);
+    page.once("dialog", (d) => d.accept());
+    await page
+      .getByRole("button", {
+        name: "Mark attended · Example Guest",
+        exact: true,
+      })
+      .click();
+    await page
+      .getByRole("alert")
+      .filter({ hasText: "Refresh attendees to verify" })
+      .waitFor();
+    assert(
+      await page
+        .getByRole("button", {
+          name: "Mark attended · Example Guest",
+          exact: true,
+        })
+        .isDisabled(),
+    );
+    attendanceFails = false;
+    await page
+      .getByRole("button", { name: "Refresh attendees", exact: true })
+      .click();
+    page.once("dialog", (d) => d.accept());
+    await page
+      .getByRole("button", {
+        name: "Mark attended · Example Guest",
+        exact: true,
+      })
+      .click();
+    await page
+      .getByRole("button", {
+        name: "Clear attendance · Example Guest",
+        exact: true,
+      })
+      .waitFor();
+    assert.equal(attendee.paymentStatus, "paid");
+    assert.equal(attendee.status, "confirmed");
+    page.once("dialog", (d) => d.accept());
+    await page
+      .getByRole("button", {
+        name: "Clear attendance · Example Guest",
+        exact: true,
+      })
+      .click();
+    await page
+      .getByRole("button", {
+        name: "Mark attended · Example Guest",
+        exact: true,
+      })
+      .waitFor();
+    assert.equal(attendee.checkedInAt, null);
+    assert.equal(attendanceWrites, 3);
+    assert(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    );
+    await page
+      .getByRole("button", { name: "Back to events", exact: true })
+      .click();
     deny = true;
     await page.reload();
     await page.waitForTimeout(500);

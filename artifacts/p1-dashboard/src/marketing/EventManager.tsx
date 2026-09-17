@@ -1,3 +1,4 @@
+import { EventAttendees } from "./EventAttendees";
 import { EventDirectoryManager } from "./EventDirectoryManager";
 import { EventReferences } from "./EventReferences";
 import { useEffect, useRef, useState } from "react";
@@ -429,6 +430,7 @@ export default function EventManager({
 }: {
   canUseMedia?: boolean;
 }) {
+  const [attendees, setAttendees] = useState<MarketingEvent | null>(null);
   const [directory, setDirectory] = useState<"venue" | "organizer" | null>(
     null,
   );
@@ -495,6 +497,15 @@ export default function EventManager({
       if (alive.current) setDuplicating(false);
     }
   }
+  if (attendees)
+    return (
+      <EventAttendees
+        key={attendees.id}
+        eventId={attendees.id}
+        title={attendees.title}
+        close={() => setAttendees(null)}
+      />
+    );
   if (directory)
     return (
       <EventDirectoryManager
@@ -603,6 +614,12 @@ export default function EventManager({
                   onClick={() => setSelected(event.id)}
                 >
                   Edit {event.title}
+                </button>
+                <button
+                  disabled={duplicating}
+                  onClick={() => setAttendees(event)}
+                >
+                  Attendees for {event.title}
                 </button>
                 <button
                   disabled={duplicating}
