@@ -274,6 +274,7 @@ export * from './listManagedInvitations200';
 export * from './listManagedNotificationForms200';
 export * from './listManagedNotificationForms200ItemsItem';
 export * from './listManagedUserHistory200';
+export * from './listManagedUserHistoryParams';
 export * from './listManagedUsers200';
 export * from './listMarketingBlogCommentsParams';
 export * from './listMarketingBlogCommentsStatus';

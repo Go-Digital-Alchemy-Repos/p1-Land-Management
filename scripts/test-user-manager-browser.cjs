@@ -41,6 +41,7 @@ const assert = require("node:assert/strict");
       email: "owner@example.test",
       formNotificationIds: ["11111111-1111-4111-8111-111111111111"],
     };
+    let historyFails = true;
     let ownerConflict = true;
     const ownerWrites = [];
     let conflict = true,
@@ -56,7 +57,11 @@ const assert = require("node:assert/strict");
         path = new URL(request.url()).pathname;
       let result = {},
         status = 200;
-      if (path.endsWith("/owner/owner-notifications")) {
+      if (path.endsWith('/history')) {
+        const cursor = new URL(request.url()).searchParams.get('cursor');
+        if(cursor && historyFails) { historyFails=false; status=503; result={error:'History temporarily unavailable'}; }
+        else result = cursor ? {items:[{id:'older',action:'account.older',createdAt:'2026-01-01T00:00:00Z'}],nextCursor:null} : {items:[{id:'newer',action:'account.newer',createdAt:'2026-02-01T00:00:00Z'}],nextCursor:'older-page'};
+      } else if (path.endsWith("/owner/owner-notifications")) {
         const body = request.postDataJSON();
         ownerWrites.push(body);
         if (ownerConflict) {
@@ -137,6 +142,15 @@ const assert = require("node:assert/strict");
         "/tests/user-manager-browser.html",
     );
     await page.getByRole("button", { name: "Manage", exact: true }).click();
+    await page.getByRole('button',{name:'View access history',exact:true}).click();
+    await page.getByText('account.newer',{exact:false}).waitFor();
+    await page.getByRole('button',{name:'Load older access history'}).click();
+    await page.getByRole('alert').filter({hasText:'History temporarily unavailable'}).waitFor();
+    assert.equal(await page.getByText('account.newer',{exact:false}).count(),1);
+    await page.getByRole('button',{name:'Load older access history'}).click();
+    await page.getByText('account.older',{exact:false}).waitFor();
+    assert.equal(await page.getByText('account.newer',{exact:false}).count(),1);
+    assert.equal(await page.getByRole('button',{name:'Load older access history'}).count(),0);
     await page
       .getByRole("button", { name: "Choose notification forms", exact: true })
       .click();
@@ -389,7 +403,7 @@ const assert = require("node:assert/strict");
     assert.equal(ownerAccount.role, "owner");
     assert.deepEqual(errors, []);
     console.log(
-      "PASS User Manager: stale draft preservation, fresh reload/version, isolated report grant, invitation and mobile dialog.",
+      "PASS User Manager: history pagination and failed-page retry, stale draft preservation, fresh reload/version, isolated report grant, invitation and mobile dialog.",
     );
   } finally {
     await browser.close();

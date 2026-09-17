@@ -5,9 +5,15 @@
  * Shared field, scheduling and commercial inbox contract. Other office routes remain documented in docs/dashboard/API.md.
  * OpenAPI spec version: 0.1.0
  */
-import type { AccountAccessEvent } from './accountAccessEvent';
 
-export type ListManagedUserHistory200 = {
-  items: AccountAccessEvent[];
-  nextCursor: string | null;
+export type ListManagedUserHistoryParams = {
+/**
+ * @minimum 1
+ * @maximum 100
+ */
+limit?: number;
+/**
+ * @maxLength 2000
+ */
+cursor?: string;
 };

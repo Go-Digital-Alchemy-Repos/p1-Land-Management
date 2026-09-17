@@ -83,8 +83,10 @@ export function UserManager({
     [busy, setBusy] = useState(false),
     [draft, setDraft] = useState<Draft | null>(null);
   const [history, setHistory] = useState<
-    { action: string; createdAt: string }[]
+    { id: string; action: string; createdAt: string }[]
   >([]);
+  const [historyCursor, setHistoryCursor] = useState<string | null>(null);
+  const [historyLoaded, setHistoryLoaded] = useState(false);
   const dialog = useRef<HTMLDialogElement>(null),
     gate = useRef(false),
     alive = useRef(true);
@@ -135,6 +137,8 @@ export function UserManager({
     setNotice("");
     setError("");
     setHistory([]);
+    setHistoryCursor(null);
+    setHistoryLoaded(false);
     const pieces = account.name.trim().split(/\s+/);
     setDraft({
       ...account,
@@ -633,7 +637,11 @@ export function UserManager({
                     onClick={() =>
                       void run(async () => {
                         const data = await listManagedUserHistory(draft.id!);
-                        if (alive.current) setHistory(data.items);
+                        if (alive.current) {
+                          setHistory(data.items);
+                          setHistoryCursor(data.nextCursor);
+                          setHistoryLoaded(true);
+                        }
                       })
                     }
                   >
@@ -660,13 +668,40 @@ export function UserManager({
               )}
               {history.length > 0 && (
                 <ul>
-                  {history.map((entry, index) => (
-                    <li key={index}>
+                  {history.map((entry) => (
+                    <li key={entry.id}>
                       {entry.action} ·{" "}
                       {new Date(entry.createdAt).toLocaleString()}
                     </li>
                   ))}
                 </ul>
+              )}
+              {historyLoaded && history.length === 0 && (
+                <p>No access history recorded.</p>
+              )}
+              {historyCursor && draft.id && (
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={() =>
+                    void run(async () => {
+                      const data = await listManagedUserHistory(draft.id!, {
+                        cursor: historyCursor,
+                      });
+                      if (alive.current) {
+                        setHistory((rows) => [
+                          ...rows,
+                          ...data.items.filter(
+                            (item) => !rows.some((row) => row.id === item.id),
+                          ),
+                        ]);
+                        setHistoryCursor(data.nextCursor);
+                      }
+                    })
+                  }
+                >
+                  Load older access history
+                </button>
               )}
             </fieldset>
             <footer>

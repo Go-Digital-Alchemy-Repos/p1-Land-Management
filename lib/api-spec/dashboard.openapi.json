@@ -5700,7 +5700,8 @@
                   "type": "object",
                   "additionalProperties": false,
                   "required": [
-                    "items"
+                    "items",
+                    "nextCursor"
                   ],
                   "properties": {
                     "items": {
@@ -5708,6 +5709,10 @@
                       "items": {
                         "$ref": "#/components/schemas/AccountAccessEvent"
                       }
+                    },
+                    "nextCursor": {
+                      "type": "string",
+                      "nullable": true
                     }
                   }
                 }
@@ -5722,6 +5727,9 @@
           },
           "409": {
             "description": "Stale version or conflicting lifecycle"
+          },
+          "400": {
+            "description": "Invalid account history cursor or query"
           }
         },
         "parameters": [
@@ -5731,6 +5739,24 @@
             "required": true,
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "schema": {
+              "type": "string",
+              "maxLength": 2000
             }
           }
         ]

@@ -1,3 +1,4 @@
+import { listManagedAccountHistory } from "./user-management.history";
 import {
   ownerNotificationsInput,
   accountUpdateInput,
@@ -102,14 +103,12 @@ for (const action of ["resend", "revoke"] as const) {
 userManagementApi.get(
   "/user-management/users/:id/history",
   async (req, res) => {
-    res.json({
-      items: (
-        await pool.query(
-          'SELECT id,user_id AS "actorId",action,details,created_at AS "createdAt" FROM audit_event WHERE entity_id=$1 AND action LIKE \'account.%\' ORDER BY created_at DESC,id DESC LIMIT 100',
-          [z.string().min(1).parse(req.params.id)],
-        )
-      ).rows,
-    });
+    res.json(
+      await listManagedAccountHistory(
+        z.string().min(1).parse(req.params.id),
+        req.query,
+      ),
+    );
   },
 );
 

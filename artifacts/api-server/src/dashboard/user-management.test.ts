@@ -135,6 +135,62 @@ test(
         body: body === undefined ? undefined : JSON.stringify(body),
       });
     }
+    const historyPath = `/user-management/users/${member.id}/history`;
+    const historicalIds = Array.from({ length: 107 }, () => randomUUID());
+    for (const [index, eventId] of historicalIds.entries())
+      await pool.query(
+        "INSERT INTO audit_event(id,user_id,action,entity_id,details,created_at) VALUES($1,$2,'account.fixture',$3,'{}','1990-01-01T00:00:00Z'::timestamptz + ($4::int % 3) * interval '1 microsecond')",
+        [eventId, owner.id, member.id, index],
+      );
+    await pool.query(
+      "INSERT INTO audit_event(id,user_id,action,entity_id,details) VALUES($1,$2,'account.unrelated',$3,'{}')",
+      [randomUUID(), owner.id, manager.id],
+    );
+    assert.equal(
+      (await call(historyPath, undefined, "GET", manager.cookie)).status,
+      403,
+    );
+    assert.equal((await call(historyPath + "?cursor=invalid")).status, 400);
+    assert.equal((await call(historyPath + "?limit=101")).status, 400);
+    const historySeen = new Set<string>();
+    let historyCursor: string | null = null;
+    do {
+      const response = await call(
+        historyPath +
+          "?limit=7" +
+          (historyCursor ? "&cursor=" + encodeURIComponent(historyCursor) : ""),
+      );
+      assert.equal(response.status, 200);
+      const page = (await response.json()) as any;
+      assert(page.items.length <= 7);
+      if (!historySeen.size) {
+        assert(page.nextCursor);
+        assert.equal(
+          (
+            await call(
+              `/user-management/users/${manager.id}/history?cursor=${encodeURIComponent(page.nextCursor)}`,
+            )
+          ).status,
+          400,
+        );
+        await pool.query(
+          "INSERT INTO audit_event(id,user_id,action,entity_id,details,created_at) VALUES($1,$2,'account.newer',$3,'{}','1991-01-01')",
+          [randomUUID(), owner.id, member.id],
+        );
+      }
+      for (const entry of page.items) {
+        assert(!historySeen.has(entry.id));
+        historySeen.add(entry.id);
+        assert.equal(entry.action, "account.fixture");
+        assert.equal("cursor_at" in entry, false);
+      }
+      historyCursor = page.nextCursor;
+    } while (historyCursor);
+    assert.deepEqual([...historySeen].sort(), historicalIds.sort());
+    const refreshed = (await (
+      await call(historyPath + "?limit=1")
+    ).json()) as any;
+    assert.equal(refreshed.items[0].action, "account.newer");
     const ownerPreferencePath = `/user-management/users/${owner.id}/owner-notifications`;
     const ownerForm = randomUUID();
     await pool.query(

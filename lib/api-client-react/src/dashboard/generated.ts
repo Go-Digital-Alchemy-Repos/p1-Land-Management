@@ -134,6 +134,7 @@ import type {
   ListManagedInvitations200,
   ListManagedNotificationForms200,
   ListManagedUserHistory200,
+  ListManagedUserHistoryParams,
   ListManagedUsers200,
   ListMarketingBlogCommentsParams,
   ListMarketingFormDeliveryJobs200,
@@ -3138,20 +3139,29 @@ export const revokeManagedUserSessions = async (id: string, options?: RequestIni
 
 
 
-export const getListManagedUserHistoryUrl = (id: string,) => {
+export const getListManagedUserHistoryUrl = (id: string,
+    params?: ListManagedUserHistoryParams,) => {
+  const normalizedParams = new URLSearchParams();
 
+  Object.entries(params || {}).forEach(([key, value]) => {
 
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
 
+  const stringifiedParams = normalizedParams.toString();
 
-  return `/api/v1/user-management/users/${id}/history`
+  return stringifiedParams.length > 0 ? `/api/v1/user-management/users/${id}/history?${stringifiedParams}` : `/api/v1/user-management/users/${id}/history`
 }
 
 /**
  * Owner-only account administration. Explicit permissions are versioned; legacy role names confer no automatic tool access.
  */
-export const listManagedUserHistory = async (id: string, options?: RequestInit): Promise<ListManagedUserHistory200> => {
+export const listManagedUserHistory = async (id: string,
+    params?: ListManagedUserHistoryParams, options?: RequestInit): Promise<ListManagedUserHistory200> => {
 
-  return customFetch<ListManagedUserHistory200>(getListManagedUserHistoryUrl(id),
+  return customFetch<ListManagedUserHistory200>(getListManagedUserHistoryUrl(id,params),
   {
     ...options,
     method: 'GET'
