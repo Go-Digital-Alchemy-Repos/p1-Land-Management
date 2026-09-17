@@ -66,6 +66,10 @@ it("batches fixed reports, singleflights, expires cache and preserves metadata",
   for (const [url, opts] of fetcher.mock.calls.filter(([url]) => !url.includes("oauth2"))) {
     expect(url).toContain("properties/554712298:batchRunReports");
     expect(JSON.parse(opts.body).requests.length).toBeLessThanOrEqual(5);
+    for (const request of JSON.parse(opts.body).requests) {
+      expect(request.metrics.length).toBeLessThanOrEqual(10);
+      expect(request.dimensions.length).toBeLessThanOrEqual(9);
+    }
     expect(opts.signal).toBeInstanceOf(AbortSignal);
   }
 });
