@@ -96,6 +96,7 @@ import type {
   DeleteMarketingBlog200,
   DeleteMarketingBlogComment200,
   DeleteMarketingBlogTaxonomy200,
+  DeleteMarketingCareerJob200,
   DeleteMarketingEvent200,
   DeleteMarketingEventOrganizer200,
   DeleteMarketingEventVenue200,
@@ -157,6 +158,12 @@ import type {
   MarketingBlogTaxonomy,
   MarketingBlogTaxonomyInput,
   MarketingBlogTaxonomyPatch,
+  MarketingCareerApplication,
+  MarketingCareerApplicationUpdate,
+  MarketingCareerJob,
+  MarketingCareerJobInput,
+  MarketingCareerJobUpdate,
+  MarketingCareerSettings,
   MarketingDeleteResult,
   MarketingEvent,
   MarketingEventAttendee,
@@ -7033,6 +7040,276 @@ export const createAgreementChangeOrder = async (estimateId: string,
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
       agreementChangeOrderInput,)
+  }
+);}
+
+
+
+export const getListMarketingCareerJobsUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/careers/jobs`
+}
+
+/**
+ * Requires marketing.content.careers. Retains Core Careers storage and its feature flag.
+ */
+export const listMarketingCareerJobs = async ( options?: RequestInit): Promise<MarketingCareerJob[]> => {
+
+  return customFetch<MarketingCareerJob[]>(getListMarketingCareerJobsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateMarketingCareerJobUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/careers/jobs`
+}
+
+/**
+ * Requires marketing.content.careers. Retains Core Careers storage and its feature flag.
+ */
+export const createMarketingCareerJob = async (marketingCareerJobInput: MarketingCareerJobInput, options?: RequestInit): Promise<MarketingCareerJob> => {
+
+  return customFetch<MarketingCareerJob>(getCreateMarketingCareerJobUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingCareerJobInput,)
+  }
+);}
+
+
+
+export const getGetMarketingCareerJobUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/careers/jobs/${id}`
+}
+
+/**
+ * Requires marketing.content.careers. Retains Core Careers storage and its feature flag.
+ */
+export const getMarketingCareerJob = async (id: string, options?: RequestInit): Promise<MarketingCareerJob> => {
+
+  return customFetch<MarketingCareerJob>(getGetMarketingCareerJobUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getUpdateMarketingCareerJobUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/careers/jobs/${id}`
+}
+
+/**
+ * Requires marketing.content.careers. Retains Core Careers storage and its feature flag.
+ */
+export const updateMarketingCareerJob = async (id: string,
+    marketingCareerJobUpdate: MarketingCareerJobUpdate, options?: RequestInit): Promise<MarketingCareerJob> => {
+
+  return customFetch<MarketingCareerJob>(getUpdateMarketingCareerJobUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingCareerJobUpdate,)
+  }
+);}
+
+
+
+export const getDeleteMarketingCareerJobUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/careers/jobs/${id}`
+}
+
+/**
+ * Requires marketing.content.careers. Retains Core Careers storage and its feature flag.
+ */
+export const deleteMarketingCareerJob = async (id: string, options?: RequestInit): Promise<DeleteMarketingCareerJob200> => {
+
+  return customFetch<DeleteMarketingCareerJob200>(getDeleteMarketingCareerJobUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+export const getListMarketingCareerApplicationsUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/careers/applications`
+}
+
+/**
+ * Requires marketing.content.careers. Retains Core Careers storage and its feature flag.
+ */
+export const listMarketingCareerApplications = async ( options?: RequestInit): Promise<MarketingCareerApplication[]> => {
+
+  return customFetch<MarketingCareerApplication[]>(getListMarketingCareerApplicationsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getGetMarketingCareerApplicationUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/careers/applications/${id}`
+}
+
+/**
+ * Requires marketing.content.careers. Retains Core Careers storage and its feature flag.
+ */
+export const getMarketingCareerApplication = async (id: string, options?: RequestInit): Promise<MarketingCareerApplication> => {
+
+  return customFetch<MarketingCareerApplication>(getGetMarketingCareerApplicationUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getUpdateMarketingCareerApplicationUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/careers/applications/${id}`
+}
+
+/**
+ * Requires marketing.content.careers. Retains Core Careers storage and its feature flag.
+ */
+export const updateMarketingCareerApplication = async (id: string,
+    marketingCareerApplicationUpdate: MarketingCareerApplicationUpdate, options?: RequestInit): Promise<MarketingCareerApplication> => {
+
+  return customFetch<MarketingCareerApplication>(getUpdateMarketingCareerApplicationUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingCareerApplicationUpdate,)
+  }
+);}
+
+
+
+export const getDownloadMarketingCareerResumeUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/careers/applications/${id}/resume`
+}
+
+/**
+ * Requires marketing.content.careers. Retains Core Careers storage and its feature flag.
+ */
+export const downloadMarketingCareerResume = async (id: string, options?: RequestInit): Promise<Blob> => {
+
+  return customFetch<Blob>(getDownloadMarketingCareerResumeUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getGetMarketingCareerSettingsUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/careers/settings`
+}
+
+/**
+ * Owner-only Careers settings. Retains Core Careers storage and its feature flag.
+ */
+export const getMarketingCareerSettings = async ( options?: RequestInit): Promise<MarketingCareerSettings> => {
+
+  return customFetch<MarketingCareerSettings>(getGetMarketingCareerSettingsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getUpdateMarketingCareerSettingsUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/careers/settings`
+}
+
+/**
+ * Owner-only Careers settings. Retains Core Careers storage and its feature flag.
+ */
+export const updateMarketingCareerSettings = async (marketingCareerSettings: MarketingCareerSettings, options?: RequestInit): Promise<MarketingCareerSettings> => {
+
+  return customFetch<MarketingCareerSettings>(getUpdateMarketingCareerSettingsUrl(),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingCareerSettings,)
   }
 );}
 

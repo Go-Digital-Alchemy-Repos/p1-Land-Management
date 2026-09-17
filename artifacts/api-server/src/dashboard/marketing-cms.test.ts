@@ -16,6 +16,22 @@ const operation = (method: string, path: string) =>
 
 test("CMS allowlist uses current leaf grants, exact paths and bounded query parameters", () => {
   assert(cmsOperations.length > 40);
+  for (const path of [
+    "/careers/jobs",
+    "/careers/applications",
+    "/careers/applications/:id/resume",
+  ])
+    assert.deepEqual(operation("GET", path).capabilities, [
+      "marketing.content.careers",
+    ]);
+  assert.equal(
+    operation("GET", "/careers/applications/:id/resume").binary,
+    true,
+  );
+  for (const method of ["GET", "PUT"])
+    assert.equal(operation(method, "/careers/settings").ownerOnly, true);
+  assert.equal(operation("POST", "/careers/applications"), undefined);
+
   assert.equal(operation("GET", "/notification-forms").ownerOnly, true);
   assert.deepEqual(operation("GET", "/notification-forms").capabilities, []);
   assert.equal(
@@ -368,21 +384,62 @@ test("preview framing admits only a fully configured exact Core origin", () => {
     );
 });
 
-
 test("Forms delivery queries are bounded and backfill remains owner-only", () => {
-  assert.deepEqual(operation("GET", "/form-builder").capabilities, ["marketing.content.forms"]);
-  assert.deepEqual(operation("GET", "/forms").capabilities, ["marketing.content.forms"]);
-  assert.equal(operation("POST", "/form-delivery-jobs/commercial-backfill").ownerOnly, true);
+  assert.deepEqual(operation("GET", "/form-builder").capabilities, [
+    "marketing.content.forms",
+  ]);
+  assert.deepEqual(operation("GET", "/forms").capabilities, [
+    "marketing.content.forms",
+  ]);
+  assert.equal(
+    operation("POST", "/form-delivery-jobs/commercial-backfill").ownerOnly,
+    true,
+  );
   const jobs = operation("GET", "/form-delivery-jobs");
-  assert.equal(cmsDestination(jobs, {}, { limit: "20", status: "all", cursor: "abc_123" }), "/form-delivery-jobs?limit=20&status=all&cursor=abc_123");
-  for (const query of [{ limit: "201" }, { limit: "0" }, { status: "unknown" }, { cursor: ["a", "b"] }, { cursor: "../" }, { extra: "x" }]) assert.throws(() => cmsDestination(jobs, {}, query), /Invalid form delivery filters/);
+  assert.equal(
+    cmsDestination(jobs, {}, { limit: "20", status: "all", cursor: "abc_123" }),
+    "/form-delivery-jobs?limit=20&status=all&cursor=abc_123",
+  );
+  for (const query of [
+    { limit: "201" },
+    { limit: "0" },
+    { status: "unknown" },
+    { cursor: ["a", "b"] },
+    { cursor: "../" },
+    { extra: "x" },
+  ])
+    assert.throws(
+      () => cmsDestination(jobs, {}, query),
+      /Invalid form delivery filters/,
+    );
 });
 
-
 test("event management is explicitly scoped to Events", () => {
-  for (const [method,path] of [["GET","/events/registration-forms"],["GET","/events/:eventId/attendees"],["PUT","/events/:eventId/attendees/:id/checkin"],["GET","/events"],["POST","/events"],["GET","/events/:id"],["PUT","/events/:id"],["DELETE","/events/:id"],["POST","/events/:id/notify"],["POST","/events/:id/duplicate"],["GET","/events/:id/analytics"],["GET","/events/venues"],["PUT","/events/venues/:venueId"],["GET","/events/organizers"],["DELETE","/events/organizers/:organizerId"]] as const) assert.deepEqual(operation(method,path).capabilities,["marketing.content.events"]);
+  for (const [method, path] of [
+    ["GET", "/events/registration-forms"],
+    ["GET", "/events/:eventId/attendees"],
+    ["PUT", "/events/:eventId/attendees/:id/checkin"],
+    ["GET", "/events"],
+    ["POST", "/events"],
+    ["GET", "/events/:id"],
+    ["PUT", "/events/:id"],
+    ["DELETE", "/events/:id"],
+    ["POST", "/events/:id/notify"],
+    ["POST", "/events/:id/duplicate"],
+    ["GET", "/events/:id/analytics"],
+    ["GET", "/events/venues"],
+    ["PUT", "/events/venues/:venueId"],
+    ["GET", "/events/organizers"],
+    ["DELETE", "/events/organizers/:organizerId"],
+  ] as const)
+    assert.deepEqual(operation(method, path).capabilities, [
+      "marketing.content.events",
+    ]);
 });
 
 test("event form selector is resolved before the event detail wildcard", () => {
-  assert(cmsOperations.indexOf(operation("GET", "/events/registration-forms")) < cmsOperations.indexOf(operation("GET", "/events/:id")));
+  assert(
+    cmsOperations.indexOf(operation("GET", "/events/registration-forms")) <
+      cmsOperations.indexOf(operation("GET", "/events/:id")),
+  );
 });

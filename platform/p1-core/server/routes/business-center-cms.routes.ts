@@ -1,3 +1,5 @@
+import careers from "./admin/careers.routes";
+import { requireBusinessCapability } from "../middleware/auth";
 import eventAttendees from "./business-center-event-attendees.routes";
 import events from "./admin/events.routes";
 import { Router } from "express";
@@ -11,6 +13,7 @@ import {
   requireCmsEnabled,
   requireBlogEnabled,
   requireEventsEnabled,
+  requireCareersEnabled,
 } from "../middleware/site-features";
 import { FederationError } from "../services/federation-client";
 import forms from "./admin/forms.routes";
@@ -76,6 +79,23 @@ router.use("/editor-locks", editorLocks);
 router.use("/blog", requireBlogEnabled, blog);
 router.use(eventAttendees);
 router.use("/events", requireEventsEnabled, events);
+router.use(
+  "/careers",
+  requireCareersEnabled,
+  (req, res, next) => {
+    if (/^\/settings\/?$/i.test(req.path)) {
+      const identity = req.dashboardIdentity;
+      if (!identity?.active || identity.role !== "owner" || !identity.ownerAttested) {
+        res.status(403).json({ message: "Owner access required" });
+        return;
+      }
+      next();
+      return;
+    }
+    requireBusinessCapability("marketing.content.careers")(req, res, next);
+  },
+  careers,
+);
 router.use(requireCmsEnabled);
 router.use("/website", website);
 router.use(forms, pages, sections, galleries, menus, sidebars, seo, redirects, audit, team, media);

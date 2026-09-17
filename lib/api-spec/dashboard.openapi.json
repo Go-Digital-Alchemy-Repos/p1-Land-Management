@@ -12559,6 +12559,405 @@
           }
         }
       }
+    },
+    "/marketing/cms/careers/jobs": {
+      "get": {
+        "operationId": "listMarketingCareerJobs",
+        "description": "Requires marketing.content.careers. Retains Core Careers storage and its feature flag.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MarketingCareerJob"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Careers request"
+          },
+          "403": {
+            "description": "Required access missing"
+          },
+          "404": {
+            "description": "Not found or feature disabled"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createMarketingCareerJob",
+        "description": "Requires marketing.content.careers. Retains Core Careers storage and its feature flag.",
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingCareerJob"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Careers request"
+          },
+          "403": {
+            "description": "Required access missing"
+          },
+          "404": {
+            "description": "Not found or feature disabled"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketingCareerJobInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/marketing/cms/careers/jobs/{id}": {
+      "get": {
+        "operationId": "getMarketingCareerJob",
+        "description": "Requires marketing.content.careers. Retains Core Careers storage and its feature flag.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingCareerJob"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Careers request"
+          },
+          "403": {
+            "description": "Required access missing"
+          },
+          "404": {
+            "description": "Not found or feature disabled"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "put": {
+        "operationId": "updateMarketingCareerJob",
+        "description": "Requires marketing.content.careers. Retains Core Careers storage and its feature flag.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingCareerJob"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Careers request"
+          },
+          "403": {
+            "description": "Required access missing"
+          },
+          "404": {
+            "description": "Not found or feature disabled"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketingCareerJobUpdate"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteMarketingCareerJob",
+        "description": "Requires marketing.content.careers. Retains Core Careers storage and its feature flag.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Careers request"
+          },
+          "403": {
+            "description": "Required access missing"
+          },
+          "404": {
+            "description": "Not found or feature disabled"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/careers/applications": {
+      "get": {
+        "operationId": "listMarketingCareerApplications",
+        "description": "Requires marketing.content.careers. Retains Core Careers storage and its feature flag.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MarketingCareerApplication"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Careers request"
+          },
+          "403": {
+            "description": "Required access missing"
+          },
+          "404": {
+            "description": "Not found or feature disabled"
+          }
+        }
+      }
+    },
+    "/marketing/cms/careers/applications/{id}": {
+      "get": {
+        "operationId": "getMarketingCareerApplication",
+        "description": "Requires marketing.content.careers. Retains Core Careers storage and its feature flag.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingCareerApplication"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Careers request"
+          },
+          "403": {
+            "description": "Required access missing"
+          },
+          "404": {
+            "description": "Not found or feature disabled"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "put": {
+        "operationId": "updateMarketingCareerApplication",
+        "description": "Requires marketing.content.careers. Retains Core Careers storage and its feature flag.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingCareerApplication"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Careers request"
+          },
+          "403": {
+            "description": "Required access missing"
+          },
+          "404": {
+            "description": "Not found or feature disabled"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketingCareerApplicationUpdate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/marketing/cms/careers/applications/{id}/resume": {
+      "get": {
+        "operationId": "downloadMarketingCareerResume",
+        "description": "Requires marketing.content.careers. Retains Core Careers storage and its feature flag.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Careers request"
+          },
+          "403": {
+            "description": "Required access missing"
+          },
+          "404": {
+            "description": "Not found or feature disabled"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/careers/settings": {
+      "get": {
+        "operationId": "getMarketingCareerSettings",
+        "description": "Owner-only Careers settings. Retains Core Careers storage and its feature flag.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingCareerSettings"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Careers request"
+          },
+          "403": {
+            "description": "Required access missing"
+          },
+          "404": {
+            "description": "Not found or feature disabled"
+          }
+        }
+      },
+      "put": {
+        "operationId": "updateMarketingCareerSettings",
+        "description": "Owner-only Careers settings. Retains Core Careers storage and its feature flag.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingCareerSettings"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Careers request"
+          },
+          "403": {
+            "description": "Required access missing"
+          },
+          "404": {
+            "description": "Not found or feature disabled"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketingCareerSettings"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -25744,6 +26143,614 @@
             "type": "string",
             "minLength": 1,
             "maxLength": 200
+          }
+        }
+      },
+      "MarketingCareerJobInput": {
+        "type": "object",
+        "properties": {
+          "department": {
+            "type": "string",
+            "nullable": true
+          },
+          "location": {
+            "type": "string",
+            "nullable": true
+          },
+          "locationAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "directoryProfileId": {
+            "type": "string",
+            "nullable": true
+          },
+          "summary": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "requirements": {
+            "type": "string",
+            "nullable": true
+          },
+          "benefits": {
+            "type": "string",
+            "nullable": true
+          },
+          "applicationInstructions": {
+            "type": "string",
+            "nullable": true
+          },
+          "metaTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "metaDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "salaryCurrency": {
+            "type": "string"
+          },
+          "salaryPeriod": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "published",
+              "closed",
+              "archived"
+            ]
+          },
+          "visibility": {
+            "type": "string",
+            "enum": [
+              "public",
+              "internal"
+            ]
+          },
+          "employmentType": {
+            "type": "string",
+            "enum": [
+              "full_time",
+              "part_time",
+              "contract",
+              "temporary",
+              "internship",
+              "volunteer"
+            ]
+          },
+          "workMode": {
+            "type": "string",
+            "enum": [
+              "on_site",
+              "hybrid",
+              "remote"
+            ]
+          },
+          "salaryMin": {
+            "type": "integer",
+            "nullable": true
+          },
+          "salaryMax": {
+            "type": "integer",
+            "nullable": true
+          },
+          "salaryVisible": {
+            "type": "boolean"
+          },
+          "noindex": {
+            "type": "boolean"
+          },
+          "publishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "closesAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "integrationMetadata": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "title"
+        ],
+        "additionalProperties": false
+      },
+      "MarketingCareerJobUpdate": {
+        "type": "object",
+        "properties": {
+          "department": {
+            "type": "string",
+            "nullable": true
+          },
+          "location": {
+            "type": "string",
+            "nullable": true
+          },
+          "locationAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "directoryProfileId": {
+            "type": "string",
+            "nullable": true
+          },
+          "summary": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "requirements": {
+            "type": "string",
+            "nullable": true
+          },
+          "benefits": {
+            "type": "string",
+            "nullable": true
+          },
+          "applicationInstructions": {
+            "type": "string",
+            "nullable": true
+          },
+          "metaTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "metaDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "salaryCurrency": {
+            "type": "string"
+          },
+          "salaryPeriod": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "published",
+              "closed",
+              "archived"
+            ]
+          },
+          "visibility": {
+            "type": "string",
+            "enum": [
+              "public",
+              "internal"
+            ]
+          },
+          "employmentType": {
+            "type": "string",
+            "enum": [
+              "full_time",
+              "part_time",
+              "contract",
+              "temporary",
+              "internship",
+              "volunteer"
+            ]
+          },
+          "workMode": {
+            "type": "string",
+            "enum": [
+              "on_site",
+              "hybrid",
+              "remote"
+            ]
+          },
+          "salaryMin": {
+            "type": "integer",
+            "nullable": true
+          },
+          "salaryMax": {
+            "type": "integer",
+            "nullable": true
+          },
+          "salaryVisible": {
+            "type": "boolean"
+          },
+          "noindex": {
+            "type": "boolean"
+          },
+          "publishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "closesAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "integrationMetadata": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "MarketingCareerJob": {
+        "type": "object",
+        "properties": {
+          "department": {
+            "type": "string",
+            "nullable": true
+          },
+          "location": {
+            "type": "string",
+            "nullable": true
+          },
+          "locationAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "directoryProfileId": {
+            "type": "string",
+            "nullable": true
+          },
+          "summary": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "requirements": {
+            "type": "string",
+            "nullable": true
+          },
+          "benefits": {
+            "type": "string",
+            "nullable": true
+          },
+          "applicationInstructions": {
+            "type": "string",
+            "nullable": true
+          },
+          "metaTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "metaDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "salaryCurrency": {
+            "type": "string"
+          },
+          "salaryPeriod": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "published",
+              "closed",
+              "archived"
+            ]
+          },
+          "visibility": {
+            "type": "string",
+            "enum": [
+              "public",
+              "internal"
+            ]
+          },
+          "employmentType": {
+            "type": "string",
+            "enum": [
+              "full_time",
+              "part_time",
+              "contract",
+              "temporary",
+              "internship",
+              "volunteer"
+            ]
+          },
+          "workMode": {
+            "type": "string",
+            "enum": [
+              "on_site",
+              "hybrid",
+              "remote"
+            ]
+          },
+          "salaryMin": {
+            "type": "integer",
+            "nullable": true
+          },
+          "salaryMax": {
+            "type": "integer",
+            "nullable": true
+          },
+          "salaryVisible": {
+            "type": "boolean"
+          },
+          "noindex": {
+            "type": "boolean"
+          },
+          "publishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "closesAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "integrationMetadata": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "id": {
+            "type": "string"
+          },
+          "createdBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "updatedBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "slug",
+          "status"
+        ],
+        "additionalProperties": true
+      },
+      "MarketingCareerApplication": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "jobId": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "resumeFileName": {
+            "type": "string"
+          },
+          "resumeMimeType": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "coverLetter": {
+            "type": "string",
+            "nullable": true
+          },
+          "linkedinUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "portfolioUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "new",
+              "reviewing",
+              "shortlisted",
+              "interviewing",
+              "offered",
+              "hired",
+              "rejected",
+              "withdrawn"
+            ]
+          },
+          "notes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "applicationId": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "note": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "statusFrom": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "statusTo": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "createdBy": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "createdAt": {
+                  "type": "string",
+                  "nullable": true
+                }
+              },
+              "additionalProperties": true
+            }
+          }
+        },
+        "required": [
+          "id",
+          "jobId",
+          "firstName",
+          "lastName",
+          "email",
+          "status"
+        ],
+        "additionalProperties": true
+      },
+      "MarketingCareerApplicationUpdate": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "new",
+              "reviewing",
+              "shortlisted",
+              "interviewing",
+              "offered",
+              "hired",
+              "rejected",
+              "withdrawn"
+            ]
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "MarketingCareerSettings": {
+        "type": "object",
+        "properties": {
+          "sharing": {
+            "type": "object",
+            "properties": {
+              "enabled": {
+                "type": "boolean"
+              },
+              "copyLink": {
+                "type": "boolean"
+              },
+              "nativeShare": {
+                "type": "boolean"
+              },
+              "email": {
+                "type": "boolean"
+              },
+              "linkedin": {
+                "type": "boolean"
+              },
+              "facebook": {
+                "type": "boolean"
+              },
+              "x": {
+                "type": "boolean"
+              }
+            }
+          },
+          "integrations": {
+            "type": "object",
+            "properties": {
+              "googleIndexingEnabled": {
+                "type": "boolean"
+              },
+              "indeedFeedEnabled": {
+                "type": "boolean"
+              },
+              "indeedApplyEnabled": {
+                "type": "boolean"
+              },
+              "indeedDispositionSyncEnabled": {
+                "type": "boolean"
+              },
+              "zipRecruiterEnabled": {
+                "type": "boolean"
+              },
+              "linkedinApiEnabled": {
+                "type": "boolean"
+              },
+              "genericWebhookEnabled": {
+                "type": "boolean"
+              },
+              "googleServiceAccountJson": {
+                "type": "string"
+              },
+              "indeedApplySecret": {
+                "type": "string"
+              },
+              "zipRecruiterApiKey": {
+                "type": "string"
+              },
+              "linkedinPartnerId": {
+                "type": "string"
+              },
+              "genericWebhookUrl": {
+                "type": "string"
+              },
+              "genericWebhookSecret": {
+                "type": "string"
+              }
+            }
           }
         }
       }

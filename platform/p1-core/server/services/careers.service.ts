@@ -89,10 +89,11 @@ export async function saveCareerSettings(settings: CareerSettings): Promise<Care
     ["generic_webhook_secret", normalized.integrations.genericWebhookSecret, true],
   ];
 
-  await Promise.all(
-    entries.map(([key, value, isSecret]) =>
-      storage.settings.upsertSetting(key, value, CAREER_SETTINGS_CATEGORY, isSecret),
-    ),
+  // Reads redact credentials. Empty secret fields mean retain the stored value,
+  // so ordinary sharing/integration edits cannot erase existing credentials.
+  await storage.settings.upsertSettings(
+    entries.filter(([,value,isSecret]) => !isSecret || value.trim() !== "")
+      .map(([key,value,isSecret]) => ({key,value,category:CAREER_SETTINGS_CATEGORY,isSecret})),
   );
   storage.settings.invalidateCategory(CAREER_SETTINGS_CATEGORY);
   return getCareerSettings(false);

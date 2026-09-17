@@ -59,7 +59,7 @@ function normalizeBlankStrings(data: Record<string, unknown>) {
   );
 }
 
-function coerceJobPayload(body: Record<string, unknown>, userId?: string): Record<string, unknown> {
+function coerceJobPayload(body: Record<string, unknown>, userId?: string, creating = false): Record<string, unknown> {
   const normalized = normalizeBlankStrings(body);
   for (const field of dateFields) {
     const value = normalized[field];
@@ -72,7 +72,9 @@ function coerceJobPayload(body: Record<string, unknown>, userId?: string): Recor
     normalized.salaryMin = Number(normalized.salaryMin) || null;
   if (typeof normalized.salaryMax === "string")
     normalized.salaryMax = Number(normalized.salaryMax) || null;
-  if (!normalized.createdBy && userId) normalized.createdBy = userId;
+  delete normalized.createdBy;
+  delete normalized.updatedBy;
+  if (creating && userId) normalized.createdBy = userId;
   if (userId) normalized.updatedBy = userId;
   return normalized;
 }
@@ -118,7 +120,7 @@ router.get(
 router.post(
   "/jobs",
   asyncHandler(async (req, res) => {
-    const payload = coerceJobPayload(req.body, req.user?.id);
+    const payload = coerceJobPayload(req.body, req.user?.id, true);
     const validationError = validateJobData(payload);
     if (validationError) return res.status(400).json({ message: validationError });
     payload.slug = await buildUniqueSlug(

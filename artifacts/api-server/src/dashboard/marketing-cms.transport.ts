@@ -68,10 +68,16 @@ add("sections", "GET", "/section-builder");
 add("pages", "GET", "/page-builder");
 add("forms", "GET", "/form-builder");
 for (const path of ["/events", "/events/venues", "/events/organizers"]) {
-  add("events", "GET", path); add("events", "POST", path);
+  add("events", "GET", path);
+  add("events", "POST", path);
 }
-for (const path of ["/events/:id", "/events/venues/:venueId", "/events/organizers/:organizerId"]) {
-  add("events", "PUT", path); add("events", "DELETE", path);
+for (const path of [
+  "/events/:id",
+  "/events/venues/:venueId",
+  "/events/organizers/:organizerId",
+]) {
+  add("events", "PUT", path);
+  add("events", "DELETE", path);
 }
 add("events", "GET", "/events/registration-forms");
 add("events", "GET", "/events/:id");
@@ -80,6 +86,31 @@ add("events", "GET", "/events/:eventId/attendees");
 add("events", "PUT", "/events/:eventId/attendees/:id/checkin");
 add("events", "POST", "/events/:id/duplicate");
 add("events", "POST", "/events/:id/notify");
+
+for (const path of [
+  "/careers/jobs",
+  "/careers/jobs/:id",
+  "/careers/applications",
+  "/careers/applications/:id",
+])
+  add("careers", "GET", path);
+add("careers", "POST", "/careers/jobs");
+add("careers", "PUT", "/careers/jobs/:id");
+add("careers", "DELETE", "/careers/jobs/:id");
+add("careers", "PUT", "/careers/applications/:id");
+cmsOperations.push({
+  method: "GET",
+  path: "/careers/applications/:id/resume",
+  capabilities: ["marketing.content.careers"],
+  binary: true,
+});
+for (const method of ["GET", "PUT"] as const)
+  cmsOperations.push({
+    method,
+    path: "/careers/settings",
+    capabilities: [],
+    ownerOnly: true,
+  });
 
 add("website", "GET", "/website");
 add("website", "GET", "/website/:routeId/:componentKey");

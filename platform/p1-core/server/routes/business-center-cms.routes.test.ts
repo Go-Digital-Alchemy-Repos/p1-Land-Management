@@ -2,6 +2,7 @@ import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import express from "express";
 import type { Server } from "node:http";
 const state = vi.hoisted(() => ({
+  careerJobs:vi.fn(),careerSettings:vi.fn(),careerCreate:vi.fn(),careerGet:vi.fn(),careerUpdate:vi.fn(),careerSlug:vi.fn(),
   authenticate: vi.fn(),
   user: vi.fn(),
   enabled: vi.fn(),
@@ -104,6 +105,7 @@ vi.mock("../storage", () => ({
       deleteComment: state.commentDelete,
       countByStatus: async () => ({ pending: 0, approved: 0, spam: 0, rejected: 0 }),
     },
+    careers:{getJobs:state.careerJobs,createJob:state.careerCreate,getJob:state.careerGet,updateJob:state.careerUpdate,getJobSlugOwner:state.careerSlug},
     events: {updateCanceledEvent:state.eventCancel,updateEvent:state.eventUpdate,getAllEvents:state.events,getEvent:state.eventGet,createEvent:state.eventCreate,getEventSlugOwner:state.eventSlug},
     eventVenues:{getAllVenues:state.venues},
     eventOrganizers:{getAllOrganizers:state.organizers},
@@ -115,6 +117,7 @@ vi.mock("../storage", () => ({
 vi.mock("../services/email.service", () => ({sendEventCanceledEmail:state.eventMail,sendEventReminderEmail:state.eventMail,sendRecordingAvailableEmail:state.eventMail}));
 vi.mock("../services/commercial-backfill.service", () => ({ backfillCommercialInquiries: vi.fn() }));
 vi.mock("../storage/index", async () => await import("../storage"));
+vi.mock("../services/careers.service",()=>({getCareerSettings:state.careerSettings,saveCareerSettings:vi.fn(),dispatchCareerWebhook:vi.fn(),loadCareerResume:vi.fn()}));
 vi.mock("../services/site-features.service", () => ({ isSiteFeatureEnabled: state.enabled }));
 vi.mock("../services/system-cms-sections.service", () => ({ ensureSystemCmsSections: vi.fn() }));
 vi.mock("../services/cms-media-upload.service", async (original) => ({
@@ -904,4 +907,30 @@ it("notifies the exact atomic cancellation result, including pending registratio
   state.eventCancel.mockRejectedValue(new Error("Synthetic transaction failure"));
   expect((await request("/events/event","PUT",{},"/service",{status:"canceled"})).status).toBe(500);
   expect(state.eventMail).toHaveBeenCalledTimes(2);
+});
+
+it("Careers requires its own leaf grant and preserves feature and Owner settings gates",async()=>{
+ state.careerJobs.mockResolvedValue([{id:'job',title:'Synthetic job'}]);
+ const headers={authorization:`Bearer ${key}`,'x-p1-user-grant':grantId};
+ const get=(path:string)=>fetch(base+'/service/careers'+path,{headers});
+ expect((await get('/jobs')).status).toBe(403);
+ identity.capabilities=['marketing.content.careers'];
+ const jobs=await get('/jobs');expect(jobs.status).toBe(200);expect(await jobs.json()).toEqual([{id:'job',title:'Synthetic job'}]);
+ expect((await get('/settings')).status).toBe(403);
+ expect((await get('/SETTINGS/')).status).toBe(403);
+ identity.role='owner';identity.ownerAttested=false;expect((await get('/settings')).status).toBe(403);
+ identity.ownerAttested=true;state.careerSettings.mockResolvedValue({sharing:{enabled:true}});expect((await get('/settings')).status).toBe(200);
+ state.enabled.mockResolvedValue(false);expect((await get('/jobs')).status).toBe(404);
+});
+
+it("Careers author fields come from the linked actor and updates preserve original authorship",async()=>{
+ identity.capabilities=['marketing.content.careers'];
+ state.careerSlug.mockResolvedValue(null);
+ state.careerCreate.mockImplementation(async data=>({id:'career',...data}));
+ const created=await request('/careers/jobs','POST',{},'/service',{title:'Synthetic opening',createdBy:'forged',updatedBy:'forged'});
+ expect(created.status).toBe(201);expect(state.careerCreate.mock.calls[0][0]).toMatchObject({createdBy:'linked',updatedBy:'linked'});
+ state.careerGet.mockResolvedValue({id:'career',title:'Synthetic opening',slug:'synthetic-opening',createdBy:'original'});
+ state.careerUpdate.mockResolvedValue({id:'career'});
+ const updated=await request('/careers/jobs/career','PUT',{},'/service',{summary:'Edited',createdBy:'forged',updatedBy:'forged'});
+ expect(updated.status).toBe(200);expect(state.careerUpdate.mock.calls[0][1]).toMatchObject({updatedBy:'linked'});expect(state.careerUpdate.mock.calls[0][1]).not.toHaveProperty('createdBy');
 });
