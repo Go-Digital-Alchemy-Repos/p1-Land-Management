@@ -174,10 +174,15 @@ router.delete(
   "/jobs/:id",
   asyncHandler(async (req, res) => {
     const id = paramString(req.params.id);
-    const existing = await storage.careers.getJob(id);
-    if (!existing) return res.status(404).json({ message: "Job not found" });
-    await storage.careers.deleteJob(id);
-    await dispatchCareerWebhook("career.job.deleted", existing);
+    const input = z.object({expectedUpdatedAt:z.string().datetime().optional()}).safeParse(req.body ?? {});
+    if (!input.success || (req.dashboardIdentity && !input.data.expectedUpdatedAt))
+      return res.status(400).json({message:"Reload the job before deleting it."});
+    const result = await storage.careers.deleteJob(id,input.data.expectedUpdatedAt);
+    if(result.kind==="missing")return res.status(404).json({message:"Job not found"});
+    if(result.kind==="conflict")return res.status(409).json({message:"This job changed. Reload the saved job before deleting it."});
+    if(result.kind==="has_applications")return res.status(409).json({message:"This job has applications. Archive it to preserve applications and review history."});
+    if(result.kind!=="deleted")return;
+    await dispatchCareerWebhook("career.job.deleted", result.job);
     res.json({ success: true });
   }),
 );

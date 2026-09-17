@@ -12709,6 +12709,10 @@
       "delete": {
         "operationId": "deleteMarketingCareerJob",
         "description": "Requires marketing.content.careers. Retains Core Careers storage and its feature flag.",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "type": "object", "required": ["expectedUpdatedAt"], "properties": { "expectedUpdatedAt": { "type": "string", "format": "date-time" } } } } }
+        },
         "responses": {
           "200": {
             "description": "Success",
@@ -12731,6 +12735,7 @@
           "403": {
             "description": "Required access missing"
           },
+          "409": {"description": "Job changed or has applications; archive instead to preserve history"},
           "404": {
             "description": "Not found or feature disabled"
           }

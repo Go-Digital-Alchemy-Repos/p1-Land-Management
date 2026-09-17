@@ -2,7 +2,7 @@ import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import express from "express";
 import type { Server } from "node:http";
 const state = vi.hoisted(() => ({
-  careerSave:vi.fn(),careerApplication:vi.fn(),careerResume:vi.fn(),careerReview:vi.fn(),careerJobs:vi.fn(),careerSettings:vi.fn(),careerCreate:vi.fn(),careerGet:vi.fn(),careerUpdate:vi.fn(),careerSlug:vi.fn(),
+  careerWebhook:vi.fn(),careerDelete:vi.fn(),careerSave:vi.fn(),careerApplication:vi.fn(),careerResume:vi.fn(),careerReview:vi.fn(),careerJobs:vi.fn(),careerSettings:vi.fn(),careerCreate:vi.fn(),careerGet:vi.fn(),careerUpdate:vi.fn(),careerSlug:vi.fn(),
   authenticate: vi.fn(),
   user: vi.fn(),
   enabled: vi.fn(),
@@ -105,7 +105,7 @@ vi.mock("../storage", () => ({
       deleteComment: state.commentDelete,
       countByStatus: async () => ({ pending: 0, approved: 0, spam: 0, rejected: 0 }),
     },
-    careers:{getApplication:state.careerApplication,reviewApplication:state.careerReview,getJobs:state.careerJobs,createJob:state.careerCreate,getJob:state.careerGet,updateJob:state.careerUpdate,getJobSlugOwner:state.careerSlug},
+    careers:{deleteJob:state.careerDelete,getApplication:state.careerApplication,reviewApplication:state.careerReview,getJobs:state.careerJobs,createJob:state.careerCreate,getJob:state.careerGet,updateJob:state.careerUpdate,getJobSlugOwner:state.careerSlug},
     events: {updateCanceledEvent:state.eventCancel,updateEvent:state.eventUpdate,getAllEvents:state.events,getEvent:state.eventGet,createEvent:state.eventCreate,getEventSlugOwner:state.eventSlug},
     eventVenues:{getAllVenues:state.venues},
     eventOrganizers:{getAllOrganizers:state.organizers},
@@ -117,7 +117,7 @@ vi.mock("../storage", () => ({
 vi.mock("../services/email.service", () => ({sendEventCanceledEmail:state.eventMail,sendEventReminderEmail:state.eventMail,sendRecordingAvailableEmail:state.eventMail}));
 vi.mock("../services/commercial-backfill.service", () => ({ backfillCommercialInquiries: vi.fn() }));
 vi.mock("../storage/index", async () => await import("../storage"));
-vi.mock("../services/careers.service",()=>({getCareerSettings:state.careerSettings,saveCareerSettings:state.careerSave,dispatchCareerWebhook:vi.fn(),loadCareerResume:state.careerResume}));
+vi.mock("../services/careers.service",()=>({getCareerSettings:state.careerSettings,saveCareerSettings:state.careerSave,dispatchCareerWebhook:state.careerWebhook,loadCareerResume:state.careerResume}));
 vi.mock("../services/site-features.service", () => ({ isSiteFeatureEnabled: state.enabled }));
 vi.mock("../services/system-cms-sections.service", () => ({ ensureSystemCmsSections: vi.fn() }));
 vi.mock("../services/cms-media-upload.service", async (original) => ({
@@ -1028,4 +1028,25 @@ it("Career credential removals require Owner access and validated explicit selec
  expect((await request("/careers/settings","PUT",{},"/service",{...payload,integrations:{indeedApplyEnabled:true}})).status).toBe(400);
  expect((await request("/careers/settings","PUT",{},"/service",{...payload,clearCredentials:["unknown"]})).status).toBe(400);
  expect(state.careerSave).toHaveBeenCalledTimes(1);
+});
+
+
+it("Career deletion rejects missing/stale versions and applications before deletion webhooks",async()=>{
+ identity.capabilities=["marketing.content.careers"];
+ expect((await request("/careers/jobs/job","DELETE")).status).toBe(400);
+ expect(state.careerDelete).not.toHaveBeenCalled();
+ const payload={expectedUpdatedAt:"2030-01-01T00:00:00.000Z"};
+ for (const [kind,status] of [["conflict",409],["has_applications",409],["missing",404]] as const) {
+  state.careerDelete.mockResolvedValue({kind});
+  expect((await request("/careers/jobs/job","DELETE",{},"/service",payload)).status).toBe(status);
+ }
+ expect(state.careerDelete).toHaveBeenCalledWith("job",payload.expectedUpdatedAt);
+ expect(state.careerWebhook).not.toHaveBeenCalled();
+ state.careerDelete.mockResolvedValue({kind:"deleted",job:{id:"job",title:"Synthetic"}});
+ const response=await request("/careers/jobs/job","DELETE",{},"/service",payload);
+ expect(response.status).toBe(200);expect(await response.json()).toEqual({success:true});
+ expect(state.careerWebhook).toHaveBeenCalledWith("career.job.deleted",{id:"job",title:"Synthetic"});
+ identity.capabilities=[];
+ expect((await request("/careers/jobs/job","DELETE",{},"/service",payload)).status).toBe(403);
+ expect(state.careerDelete).toHaveBeenCalledTimes(4);
 });

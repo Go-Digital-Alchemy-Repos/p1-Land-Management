@@ -129,9 +129,30 @@ export class CareerStorage {
     return job;
   }
 
-  async deleteJob(id: string): Promise<boolean> {
-    await db.delete(careerJobs).where(eq(careerJobs.id, id));
-    return true;
+  async deleteJob(
+    id: string,
+    expectedUpdatedAt?: string,
+  ): Promise<
+    { kind: "missing" | "conflict" | "has_applications" } | { kind: "deleted"; job: CareerJob }
+  > {
+    return db.transaction(async (tx) => {
+      // FOR UPDATE conflicts with the FK key-share lock of incoming applications.
+      const [job] = await tx.select().from(careerJobs).where(eq(careerJobs.id, id)).for("update");
+      if (!job) return { kind: "missing" };
+      if (
+        expectedUpdatedAt &&
+        job.updatedAt.toISOString() !== new Date(expectedUpdatedAt).toISOString()
+      )
+        return { kind: "conflict" };
+      const [application] = await tx
+        .select({ id: careerApplications.id })
+        .from(careerApplications)
+        .where(eq(careerApplications.jobId, id))
+        .limit(1);
+      if (application) return { kind: "has_applications" };
+      await tx.delete(careerJobs).where(eq(careerJobs.id, id));
+      return { kind: "deleted", job };
+    });
   }
 
   async getApplications(): Promise<CareerApplicationWithJob[]> {

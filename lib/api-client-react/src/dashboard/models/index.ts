@@ -214,6 +214,7 @@ export * from './deleteMarketingBlog200';
 export * from './deleteMarketingBlogComment200';
 export * from './deleteMarketingBlogTaxonomy200';
 export * from './deleteMarketingCareerJob200';
+export * from './deleteMarketingCareerJobBody';
 export * from './deleteMarketingEvent200';
 export * from './deleteMarketingEventOrganizer200';
 export * from './deleteMarketingEventVenue200';

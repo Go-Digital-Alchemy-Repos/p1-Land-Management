@@ -2,6 +2,7 @@ import { CmsRichTextEditor } from "./CmsRichTextEditor";
 import { useEffect, useRef, useState } from "react";
 import {
   createMarketingCareerJob,
+  deleteMarketingCareerJob,
   updateMarketingCareerJob,
   getMarketingCareerJob,
 } from "@workspace/api-client-react/dashboard";
@@ -111,6 +112,7 @@ export default function CareerJobEditor({
     [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
     [uncertain, setUncertain] = useState(false);
+  const [deleteUncertain, setDeleteUncertain] = useState(false);
   const alive = useRef(true),
     gate = useRef(false);
   useEffect(() => {
@@ -125,7 +127,7 @@ export default function CareerJobEditor({
     setValue((row) => ({ ...row, [key]: v }));
   const existing = job !== "new";
   async function save() {
-    if (gate.current || (!existing && uncertain)) return;
+    if (gate.current || deleteUncertain || (!existing && uncertain)) return;
     gate.current = true;
     setBusy(true);
     setError("");
@@ -147,6 +149,34 @@ export default function CareerJobEditor({
       if (alive.current) setBusy(false);
     }
   }
+  async function remove() {
+    if (!existing || !job.updatedAt || dirty || gate.current || deleteUncertain)
+      return;
+    if (
+      !confirm(
+        `Delete “${job.title}”? Jobs with applications cannot be deleted. Archive the job instead to keep its recruiting history.`,
+      )
+    )
+      return;
+    gate.current = true;
+    setBusy(true);
+    setError("");
+    try {
+      await deleteMarketingCareerJob(job.id, {
+        expectedUpdatedAt: job.updatedAt,
+      });
+      if (alive.current) close();
+    } catch (cause) {
+      if (alive.current) {
+        setError(careerError(cause));
+        const status = (cause as { status?: number }).status;
+        if (![400, 403, 409].includes(status ?? 0)) setDeleteUncertain(true);
+      }
+    } finally {
+      gate.current = false;
+      if (alive.current) setBusy(false);
+    }
+  }
   return (
     <section className="template-library" aria-label="Career job editor">
       <h2>{existing ? "Edit job" : "New job"}</h2>
@@ -156,6 +186,12 @@ export default function CareerJobEditor({
         listings.
       </p>
       {error && <p role="alert">{error} Your edits have been kept.</p>}
+      {deleteUncertain && (
+        <p role="alert">
+          The deletion result is uncertain. Reload the saved job or return to
+          the job list to check before making further changes.
+        </p>
+      )}
       {uncertain && (
         <p role="alert">
           The creation result is uncertain. Return to the job list and refresh
@@ -294,7 +330,10 @@ export default function CareerJobEditor({
           )}
           <button
             disabled={
-              busy || (!existing && uncertain) || (existing && !job.updatedAt)
+              busy ||
+              deleteUncertain ||
+              (!existing && uncertain) ||
+              (existing && !job.updatedAt)
             }
           >
             {busy ? "Saving…" : existing ? "Save job" : "Create job"}
@@ -320,6 +359,21 @@ export default function CareerJobEditor({
             >
               Reload saved job
             </button>
+          )}
+          {existing && (
+            <div>
+              <p>
+                To retain recruiting history, set Status to Archived and save.
+                Save or discard local edits before deleting a job.
+              </p>
+              <button
+                type="button"
+                disabled={dirty || !job.updatedAt || deleteUncertain}
+                onClick={() => void remove()}
+              >
+                Delete job
+              </button>
+            </div>
           )}
           <button
             type="button"

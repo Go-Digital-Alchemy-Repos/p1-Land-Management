@@ -97,6 +97,7 @@ import type {
   DeleteMarketingBlogComment200,
   DeleteMarketingBlogTaxonomy200,
   DeleteMarketingCareerJob200,
+  DeleteMarketingCareerJobBody,
   DeleteMarketingEvent200,
   DeleteMarketingEventOrganizer200,
   DeleteMarketingEventVenue200,
@@ -7156,14 +7157,16 @@ export const getDeleteMarketingCareerJobUrl = (id: string,) => {
 /**
  * Requires marketing.content.careers. Retains Core Careers storage and its feature flag.
  */
-export const deleteMarketingCareerJob = async (id: string, options?: RequestInit): Promise<DeleteMarketingCareerJob200> => {
+export const deleteMarketingCareerJob = async (id: string,
+    deleteMarketingCareerJobBody: DeleteMarketingCareerJobBody, options?: RequestInit): Promise<DeleteMarketingCareerJob200> => {
 
   return customFetch<DeleteMarketingCareerJob200>(getDeleteMarketingCareerJobUrl(id),
   {
     ...options,
-    method: 'DELETE'
-
-
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      deleteMarketingCareerJobBody,)
   }
 );}
 

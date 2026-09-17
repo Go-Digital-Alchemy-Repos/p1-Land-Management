@@ -174,6 +174,54 @@ it.skipIf(process.env.P1_CAREER_CONCURRENCY_TEST !== "true")(
           )
         ).kind,
       ).toBe("conflict");
+
+      const retainedNotes = await storage.getApplicationNotes(applicant.id);
+      expect(await storage.deleteJob(original.id)).toEqual({ kind: "has_applications" });
+      expect(await storage.getApplication(applicant.id)).toBeDefined();
+      expect(await storage.getApplicationNotes(applicant.id)).toEqual(retainedNotes);
+      const empty = await storage.createJob({ title: "Unused job", slug: "unused-job" });
+      await storage.updateJob(empty.id, { summary: "Changed" });
+      expect(await storage.deleteJob(empty.id, empty.updatedAt.toISOString())).toEqual({
+        kind: "conflict",
+      });
+      const fresh = (await storage.getJob(empty.id))!;
+      expect((await storage.deleteJob(empty.id, fresh.updatedAt.toISOString())).kind).toBe(
+        "deleted",
+      );
+      expect(await storage.getJob(empty.id)).toBeUndefined();
+      expect(await storage.deleteJob(empty.id)).toEqual({ kind: "missing" });
+
+      const raceJob = await storage.createJob({
+        title: "Incoming application",
+        slug: "incoming-application",
+      });
+      const intake = await pool.connect();
+      try {
+        await intake.query("BEGIN");
+        await intake.query(
+          `INSERT INTO career_applications(job_id,first_name,last_name,email,resume_file_name,resume_mime_type,resume_file_size,resume_storage_key) VALUES($1,'Synthetic','Incoming','incoming@example.test','resume.pdf','application/pdf',1,'local:synthetic.pdf')`,
+          [raceJob.id],
+        );
+        const removal = storage.deleteJob(raceJob.id, raceJob.updatedAt.toISOString());
+        let blocked = false;
+        for (let i = 0; i < 100; i++) {
+          const result = await pool.query(
+            "SELECT 1 FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock' AND query ILIKE '%career_jobs%for update%'",
+          );
+          if (result.rowCount) {
+            blocked = true;
+            break;
+          }
+          await new Promise((resolve) => setTimeout(resolve, 10));
+        }
+        expect(blocked).toBe(true);
+        await intake.query("COMMIT");
+        expect(await removal).toEqual({ kind: "has_applications" });
+        expect(await storage.getApplicationsForJob(raceJob.id)).toHaveLength(1);
+      } finally {
+        await intake.query("ROLLBACK");
+        intake.release();
+      }
     } finally {
       if (pool) await pool.end();
       vi.unstubAllEnvs();

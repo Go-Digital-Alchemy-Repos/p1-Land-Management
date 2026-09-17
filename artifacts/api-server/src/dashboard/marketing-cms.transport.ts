@@ -330,7 +330,8 @@ export async function callCms(
     ? (body as Buffer)
     : operation.method === "POST" ||
         operation.method === "PUT" ||
-        operation.method === "PATCH"
+        operation.method === "PATCH" ||
+        (operation.method === "DELETE" && operation.path === "/careers/jobs/:id")
       ? JSON.stringify(body ?? {})
       : undefined;
   if (

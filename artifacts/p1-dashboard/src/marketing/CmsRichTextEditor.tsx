@@ -210,7 +210,7 @@ export function CmsRichTextEditor({
       editor.commands.setContent(value, { emitUpdate: false });
   }, [editor, value]);
   useEffect(() => {
-    editor?.setEditable(!disabled);
+    editor?.setEditable(!disabled, false);
   }, [editor, disabled]);
   useEffect(() => {
     if (mediaOpen) dialog.current?.showModal();

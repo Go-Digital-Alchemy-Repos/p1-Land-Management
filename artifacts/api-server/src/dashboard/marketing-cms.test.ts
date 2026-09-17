@@ -491,3 +491,17 @@ test("Career resume transport preserves binary bytes, bounds response size and r
     /unavailable/,
   );
 });
+
+
+test("Career deletion forwards its version body without adding bodies to legacy delete operations", async () => {
+  const body={expectedUpdatedAt:"2030-01-01T00:00:00.000Z"};
+  await callCms(connection,operation("DELETE","/careers/jobs/:id"),{id:"job"},{},body,"grant",async(_url,options)=>{
+    assert.equal(options?.method,"DELETE");
+    assert.deepEqual(JSON.parse(String(options?.body)),body);
+    return Response.json({success:true});
+  });
+  await callCms(connection,operation("DELETE","/blog/:id"),{id:"post"},{},body,"grant",async(_url,options)=>{
+    assert.equal(options?.body,undefined);
+    return Response.json({success:true});
+  });
+});
