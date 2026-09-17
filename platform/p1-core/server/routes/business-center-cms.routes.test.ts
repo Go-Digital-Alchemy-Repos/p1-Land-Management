@@ -101,7 +101,7 @@ vi.mock("../storage", () => ({
       countByStatus: async () => ({ pending: 0, approved: 0, spam: 0, rejected: 0 }),
     },
     events: { getAllEvents: state.list },
-    forms: { getAll: state.list, getById: state.form, getBySlug: state.formSlug, create: state.formCreate, update: state.formUpdate, delete: state.formDelete, getSubmissionsByFormId: state.formSubmissions, deleteSubmission: state.formDeleteSubmission, listDeliveryJobs: state.formJobs, requeueFailedEffectJob: state.formRetry },
+    forms: { getAll: state.list, getById: state.form, getBySlug: state.formSlug, create: state.formCreate, update: state.formUpdate, updateIfUnchanged: state.formUpdate, delete: state.formDelete, getSubmissionsByFormId: state.formSubmissions, deleteSubmission: state.formDeleteSubmission, listDeliveryJobs: state.formJobs, requeueFailedEffectJob: state.formRetry },
     editorLocks: { listActiveByResourceType: state.list },
   },
 }));
@@ -783,12 +783,17 @@ it("gates Forms reads and preserves system form identity against mutation bypass
   state.form.mockResolvedValue({ id: "system", name: "Estimate", slug: "p1-estimate", kind: "custom", isSystem: true });
   state.formSlug.mockResolvedValue(undefined);
   state.formUpdate.mockImplementation(async (_id, data) => ({ id: "system", ...data }));
-  const payload = { name: "Updated", slug: "p1-estimate", kind: "custom", isSystem: true, fields: [], settings: {} };
+  const payload = { expectedUpdatedAt: null, name: "Updated", slug: "p1-estimate", kind: "custom", isSystem: true, fields: [], settings: {} };
   expect((await request("/forms", "POST", {}, "/service", payload)).status).toBe(400);
   expect((await request("/forms/system", "PUT", {}, "/service", { ...payload, isSystem: false })).status).toBe(409);
   expect((await request("/forms/system", "PUT", {}, "/service", { ...payload, slug: "renamed" })).status).toBe(409);
   expect((await request("/forms/system", "PUT", {}, "/service", payload)).status).toBe(200);
   expect(state.formUpdate).toHaveBeenCalledTimes(1);
+  expect(state.formUpdate.mock.calls[0][2]).toBeNull();
+  state.formUpdate.mockResolvedValueOnce(undefined);
+  expect((await request("/forms/system", "PUT", {}, "/service", payload)).status).toBe(409);
+  const {expectedUpdatedAt:_, ...missingVersion}=payload;
+  expect((await request("/forms/system", "PUT", {}, "/service", missingVersion)).status).toBe(400);
   expect((await request("/forms/system", "DELETE")).status).toBe(400);
   expect(state.formDelete).not.toHaveBeenCalled();
   state.formSubmissions.mockResolvedValue([{ id: "receipt", formId: "system", data: { message: "Synthetic" } }]);

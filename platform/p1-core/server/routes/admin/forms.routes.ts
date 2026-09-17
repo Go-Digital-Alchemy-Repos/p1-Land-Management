@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { getCmsBuilderPreviewUrl } from "../../services/cms-builder-references";
 import { requireBusinessCapability as authorize } from "../../middleware/auth";
 import { backfillCommercialInquiries } from "../../services/commercial-backfill.service";
@@ -143,7 +144,9 @@ router.put(
   "/forms/:id",
   authorize("marketing.content.forms"),
   asyncHandler(async (req, res) => {
-    const parsed = insertCmsFormSchema.safeParse(req.body);
+    const parsed = insertCmsFormSchema
+      .extend({ expectedUpdatedAt: z.string().datetime().nullable() })
+      .safeParse(req.body);
     if (!parsed.success) {
       return res
         .status(400)
@@ -173,7 +176,15 @@ router.put(
       return res.status(409).json({ message: "A form with that slug already exists" });
     }
 
-    const form = await storage.forms.update(id, parsed.data);
+    const { expectedUpdatedAt, ...changes } = parsed.data;
+    const form = await storage.forms.updateIfUnchanged(id, changes, expectedUpdatedAt);
+    if (!form)
+      return res
+        .status(409)
+        .json({
+          message:
+            "This form changed since you opened it. Reload the saved form before applying your changes.",
+        });
     res.json(form);
   }),
 );

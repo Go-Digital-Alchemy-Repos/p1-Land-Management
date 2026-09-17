@@ -72,6 +72,22 @@ describe.skipIf(!testUrl)("managed form outbox disposable PostgreSQL", () => {
   beforeAll(async () => {
     await runMigrations();
   }, 60_000);
+  it("rejects stale form updates atomically at millisecond precision, including null timestamps", async () => {
+    await pool.query("UPDATE cms_forms SET updated_at = '2026-09-17 12:00:00.123456'::timestamp WHERE id = $1",[formId]);
+    const original=(await forms.getById(formId))!;
+    expect(original.updatedAt!.toISOString()).toBe("2026-09-17T12:00:00.123Z");
+    const expected=original.updatedAt!.toISOString();
+    const outcomes=await Promise.all([forms.updateIfUnchanged(formId,{name:"First writer"},expected),forms.updateIfUnchanged(formId,{name:"Second writer"},expected)]);
+    expect(outcomes.filter(Boolean)).toHaveLength(1);
+    const saved=(await forms.getById(formId))!;
+    expect(saved.name).toBe(outcomes.find(Boolean)!.name);
+    expect(saved.updatedAt!.getTime()).toBeGreaterThan(original.updatedAt!.getTime());
+    expect(await forms.updateIfUnchanged(formId,{name:"Stale writer"},expected)).toBeUndefined();
+    expect(await forms.updateIfUnchanged(formId,{name:"False null"},null)).toBeUndefined();
+    await pool.query("UPDATE cms_forms SET updated_at = NULL WHERE id = $1",[formId]);
+    expect((await forms.updateIfUnchanged(formId,{name:"Legacy null"},null))?.name).toBe("Legacy null");
+    expect(await forms.updateIfUnchanged(formId,{name:"Stale null"},null)).toBeUndefined();
+  });
   it("atomically fans out recipients and continuation with claim fencing", async () => {
     const dispatch = {
       kind: "dashboard_form_notification_dispatch" as const,

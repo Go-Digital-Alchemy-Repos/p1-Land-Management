@@ -19,6 +19,7 @@ const assert = require("node:assert/strict");
       queued = false,
       retryCalls = 0;
     const deliveryQueries = [];
+    let conflict = false;
     let mediaAllowed = true;
     let deny = false,
       fail = true,
@@ -32,6 +33,7 @@ const assert = require("node:assert/strict");
       isSystem: true,
       isActive: true,
       description: "Saved description",
+      updatedAt: "2026-09-17T00:00:00.123Z",
       fields: [
         {
           id: "field",
@@ -68,10 +70,19 @@ const assert = require("node:assert/strict");
           mfaRequired: false,
         };
       if (path === "/api/v1/marketing/cms/forms") body = [form];
-      if (path === "/api/v1/marketing/cms/form-builder") body = {previewUrl:"https://www.p1landmanagement.com/cms-preview/builder"};
+      if (path === "/api/v1/marketing/cms/form-builder")
+        body = {
+          previewUrl: "https://www.p1landmanagement.com/cms-preview/builder",
+        };
+      if (path.endsWith("/forms/system") && req.method() === "GET") body = form;
       if (path.endsWith("/forms/system") && req.method() === "PUT") {
         mutations++;
         saved = req.postDataJSON();
+        if (conflict)
+          return route.fulfill({
+            status: 409,
+            json: { message: "This form changed since you opened it." },
+          });
         if (fail)
           return route.fulfill({
             status: 503,
@@ -151,11 +162,18 @@ const assert = require("node:assert/strict");
         ];
       await route.fulfill({ json: body });
     });
-    await page.route("https://www.p1landmanagement.com/cms-preview/builder**",route=>route.fulfill({contentType:"text/html",body:`<!doctype html><p id="status">Waiting</p><script>
+    await page.route(
+      "https://www.p1landmanagement.com/cms-preview/builder**",
+      (route) =>
+        route.fulfill({
+          contentType: "text/html",
+          body: `<!doctype html><p id="status">Waiting</p><script>
      window.received=[]; const channel=new URLSearchParams(location.hash.slice(1)).get('channel');
      addEventListener('message',e=>{if(e.origin==='http://127.0.0.1:4347'&&e.data.channel===channel){window.received.push(e.data);document.querySelector('#status').textContent='Draft received';}});
      parent.postMessage({type:'p1:builder-preview-ready',version:2,channel},'http://127.0.0.1:4347');
-    </script>`}));
+    </script>`,
+        }),
+    );
     await page.goto("http://127.0.0.1:4347/marketing/content/forms");
     await page
       .getByRole("button", { name: "Delivery monitoring", exact: true })
@@ -216,14 +234,20 @@ const assert = require("node:assert/strict");
       .click();
     assert(await page.getByLabel("Slug", { exact: true }).isDisabled());
     assert(await page.getByLabel("Kind", { exact: true }).isDisabled());
-    await page.getByRole("button",{name:"Preview form",exact:true}).click();
-    const previewFrame=page.frameLocator('iframe');
-    await previewFrame.getByText("Draft received",{exact:true}).waitFor();
-    const draftPreview=await previewFrame.locator("body").evaluate(()=>window.received.at(-1));
-    assert.deepEqual(draftPreview.form.fields,form.fields);
-    assert.deepEqual(draftPreview.blocks,[]);
-    assert.equal(mutations,0);
-    await page.getByRole("button",{name:"Hide form preview",exact:true}).click();
+    await page
+      .getByRole("button", { name: "Preview form", exact: true })
+      .click();
+    const previewFrame = page.frameLocator("iframe");
+    await previewFrame.getByText("Draft received", { exact: true }).waitFor();
+    const draftPreview = await previewFrame
+      .locator("body")
+      .evaluate(() => window.received.at(-1));
+    assert.deepEqual(draftPreview.form.fields, form.fields);
+    assert.deepEqual(draftPreview.blocks, []);
+    assert.equal(mutations, 0);
+    await page
+      .getByRole("button", { name: "Hide form preview", exact: true })
+      .click();
 
     await page
       .getByLabel("Description", { exact: true })
@@ -275,6 +299,7 @@ const assert = require("node:assert/strict");
       await page.getByLabel("Description", { exact: true }).inputValue(),
       "Changed description",
     );
+    assert.equal(saved.expectedUpdatedAt, "2026-09-17T00:00:00.123Z");
     assert.deepEqual(saved.fields[1], form.fields[0]);
     assert.equal(saved.fields[0].label, "Second email");
     assert.notEqual(saved.fields[0].id, saved.fields[1].id);
@@ -286,6 +311,45 @@ const assert = require("node:assert/strict");
     await page.getByRole("button", { name: "Save form", exact: true }).click();
     await page.getByText("Form saved.", { exact: true }).waitFor();
     assert.equal(mutations, 2);
+    await page
+      .getByRole("button", { name: "Edit Estimate request", exact: true })
+      .click();
+    await page
+      .getByLabel("Description", { exact: true })
+      .fill("Unsaved conflict");
+    conflict = true;
+    form.updatedAt = "2026-09-17T00:01:00.123Z";
+    form.description = "Teammate saved description";
+    page.once("dialog", (d) => d.accept());
+    await page.getByRole("button", { name: "Save form", exact: true }).click();
+    await page
+      .getByRole("alert")
+      .filter({ hasText: "changed since you opened" })
+      .waitFor();
+    assert.equal(
+      await page.getByLabel("Description", { exact: true }).inputValue(),
+      "Unsaved conflict",
+    );
+    page.once("dialog", (d) => d.dismiss());
+    await page
+      .getByRole("button", { name: "Reload saved form", exact: true })
+      .click();
+    assert.equal(
+      await page.getByLabel("Description", { exact: true }).inputValue(),
+      "Unsaved conflict",
+    );
+    page.once("dialog", (d) => d.accept());
+    await page
+      .getByRole("button", { name: "Reload saved form", exact: true })
+      .click();
+    await page.waitForFunction(
+      () =>
+        document.querySelector('textarea[aria-label="Description"]').value ===
+        "Teammate saved description",
+    );
+    conflict = false;
+    await page.getByRole("button", { name: "Cancel", exact: true }).click();
+
     await page
       .getByRole("button", { name: "View Estimate request submissions" })
       .click();
@@ -349,7 +413,7 @@ const assert = require("node:assert/strict");
       await page.getByLabel("Choice image URL", { exact: true }).inputValue(),
       "/uploads/cms/choice.png",
     );
-    assert.equal(mutations, 2);
+    assert.equal(mutations, 3);
     await page
       .getByLabel("Selection mode", { exact: true })
       .selectOption("multiple");

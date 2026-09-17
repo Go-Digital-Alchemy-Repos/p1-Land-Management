@@ -10242,7 +10242,24 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/MarketingFormInput"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/MarketingFormInput"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "expectedUpdatedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                      }
+                    },
+                    "required": [
+                      "expectedUpdatedAt"
+                    ]
+                  }
+                ]
               }
             }
           }
@@ -20565,6 +20582,12 @@
           "settings": {
             "type": "object",
             "additionalProperties": true
+          },
+          "expectedUpdatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Saved timestamp used for an atomic optimistic update. Required when updating an existing form."
           }
         }
       },

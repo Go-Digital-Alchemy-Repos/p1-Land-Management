@@ -431,6 +431,7 @@ export * from './updateDashboardProperty';
 export * from './updateManagedOwnerNotifications200';
 export * from './updateManagedOwnerNotificationsBody';
 export * from './updateManagedUser200';
+export * from './updateMarketingFormBody';
 export * from './updateProject';
 export * from './updateProjectPhase';
 export * from './uploadFieldPhotoHeaders';

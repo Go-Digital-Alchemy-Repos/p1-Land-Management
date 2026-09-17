@@ -4,7 +4,7 @@ import {
   type CommercialIntakeResult,
 } from "../../shared/commercial-intake-contract";
 import { randomUUID } from "node:crypto";
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, isNull, sql } from "drizzle-orm";
 import { db } from "../db";
 import {
   cmsForms,
@@ -92,8 +92,34 @@ export class FormsStorage {
   async update(id: string, data: Partial<InsertCmsForm>): Promise<CmsForm | undefined> {
     const [form] = await db
       .update(cmsForms)
-      .set({ ...data, updatedAt: new Date() })
+      .set({
+        ...data,
+        updatedAt: sql`greatest(timezone('UTC', clock_timestamp()), ${cmsForms.updatedAt} + interval '1 millisecond')`,
+      })
       .where(eq(cmsForms.id, id))
+      .returning();
+    return normalizeForm(form);
+  }
+
+  async updateIfUnchanged(
+    id: string,
+    data: Partial<InsertCmsForm>,
+    expectedUpdatedAt: string | null,
+  ): Promise<CmsForm | undefined> {
+    const [form] = await db
+      .update(cmsForms)
+      .set({
+        ...data,
+        updatedAt: sql`greatest(timezone('UTC', clock_timestamp()), ${cmsForms.updatedAt} + interval '1 millisecond')`,
+      })
+      .where(
+        and(
+          eq(cmsForms.id, id),
+          expectedUpdatedAt === null
+            ? isNull(cmsForms.updatedAt)
+            : sql`date_trunc('milliseconds', ${cmsForms.updatedAt}) = ${expectedUpdatedAt}::timestamp`,
+        ),
+      )
       .returning();
     return normalizeForm(form);
   }

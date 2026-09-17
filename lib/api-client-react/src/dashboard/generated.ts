@@ -222,6 +222,7 @@ import type {
   UpdateManagedOwnerNotifications200,
   UpdateManagedOwnerNotificationsBody,
   UpdateManagedUser200,
+  UpdateMarketingFormBody,
   UpdateProject,
   UpdateProjectPhase,
   UploadFieldPhotoHeaders,
@@ -5825,7 +5826,7 @@ export const getUpdateMarketingFormUrl = (id: string,) => {
  * Requires the Forms capability; commercial backfill additionally requires Owner. Uses canonical website validation and storage.
  */
 export const updateMarketingForm = async (id: string,
-    marketingFormInput: MarketingFormInput, options?: RequestInit): Promise<MarketingForm> => {
+    updateMarketingFormBody: UpdateMarketingFormBody, options?: RequestInit): Promise<MarketingForm> => {
 
   return customFetch<MarketingForm>(getUpdateMarketingFormUrl(id),
   {
@@ -5833,7 +5834,7 @@ export const updateMarketingForm = async (id: string,
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
-      marketingFormInput,)
+      updateMarketingFormBody,)
   }
 );}
 

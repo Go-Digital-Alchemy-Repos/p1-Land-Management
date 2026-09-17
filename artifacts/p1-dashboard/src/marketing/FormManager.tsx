@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   listMarketingForms,
   getMarketingFormBuilder,
+  getMarketingForm,
   createMarketingForm,
   updateMarketingForm,
   listMarketingFormSubmissions,
@@ -55,6 +56,7 @@ function draft(form: MarketingForm | "new"): MarketingFormInput {
     settings,
   } = form;
   return structuredClone({
+    expectedUpdatedAt: form.updatedAt ?? null,
     name,
     slug,
     kind,
@@ -117,8 +119,10 @@ function Editor({
   close,
   saved,
   canUseMedia,
+  reloaded,
 }: {
   canUseMedia: boolean;
+  reloaded: (form: MarketingForm) => void;
   form: MarketingForm | "new";
   close: () => void;
   saved: () => void;
@@ -164,10 +168,39 @@ function Editor({
     setError("");
     try {
       if (form === "new") await createMarketingForm(value);
-      else await updateMarketingForm(form.id, value);
+      else
+        await updateMarketingForm(form.id, {
+          ...value,
+          expectedUpdatedAt: value.expectedUpdatedAt ?? null,
+        });
       if (alive.current) {
         setBaseline(JSON.stringify(value));
         saved();
+      }
+    } catch (error) {
+      if (alive.current) setError(message(error));
+    } finally {
+      gate.current = false;
+      if (alive.current) setBusy(false);
+    }
+  }
+  async function reloadSaved() {
+    if (
+      form === "new" ||
+      gate.current ||
+      !window.confirm("Discard this draft and reload the latest saved form?")
+    )
+      return;
+    gate.current = true;
+    setBusy(true);
+    setError("");
+    try {
+      const fresh = await getMarketingForm(form.id);
+      if (alive.current) {
+        const next = draft(fresh);
+        setValue(next);
+        setBaseline(JSON.stringify(next));
+        reloaded(fresh);
       }
     } catch (error) {
       if (alive.current) setError(message(error));
@@ -184,6 +217,15 @@ function Editor({
         their saved answers.
       </p>
       {error && <p role="alert">{error}</p>}
+      {error && form !== "new" && (
+        <button
+          type="button"
+          disabled={busy}
+          onClick={() => void reloadSaved()}
+        >
+          Reload saved form
+        </button>
+      )}
       <button
         type="button"
         onClick={() => setShowPreview((current) => !current)}
@@ -478,6 +520,11 @@ export default function FormManager({
     return (
       <Editor
         canUseMedia={canUseMedia}
+        reloaded={(fresh) =>
+          setRows((current) =>
+            current.map((row) => (row.id === fresh.id ? fresh : row)),
+          )
+        }
         key={selected === "new" ? "new" : selected.id}
         form={selected}
         close={() => setSelected(null)}

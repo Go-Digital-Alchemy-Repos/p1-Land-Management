@@ -73,7 +73,7 @@ import { useLockConflictGuard } from "@/hooks/use-lock-conflict-guard";
 import { useEditorSaveState } from "@/hooks/use-editor-save-state";
 import { useUnsavedChangesGuard } from "@/hooks/use-unsaved-changes-guard";
 
-type EditableForm = Omit<CmsForm, "createdAt" | "updatedAt">;
+type EditableForm = Omit<CmsForm, "createdAt" | "updatedAt"> & {expectedUpdatedAt: string | null};
 
 type FieldLibraryItem = {
   type: CmsFormFieldType;
@@ -409,6 +409,7 @@ function createField(type: CmsFormFieldType): CmsFormField {
 function createBlankForm(): EditableForm {
   return {
     id: `draft-${generateId()}`,
+    expectedUpdatedAt: null,
     name: "Untitled Form",
     slug: `form-${generateId().slice(0, 6)}`,
     description: "",
@@ -431,7 +432,7 @@ function createBlankForm(): EditableForm {
 function normalizeEditableForm(form: CmsForm): EditableForm {
   return {
     id: form.id,
-    name: form.name,
+    expectedUpdatedAt: form.updatedAt ? new Date(form.updatedAt).toISOString() : null,    name: form.name,
     slug: form.slug,
     description: form.description ?? "",
     kind: form.kind,
@@ -867,7 +868,7 @@ function FormsPageContent() {
         return (await response.json()) as CmsForm;
       }
 
-      const response = await apiRequest("PUT", `/api/admin/forms/${form.id}`, payload);
+      const response = await apiRequest("PUT", `/api/admin/forms/${form.id}`, {...payload,expectedUpdatedAt:form.expectedUpdatedAt});
       return (await response.json()) as CmsForm;
     },
     onSuccess: (saved) => {

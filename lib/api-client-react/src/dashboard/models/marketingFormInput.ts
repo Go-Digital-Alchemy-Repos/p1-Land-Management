@@ -18,4 +18,6 @@ export interface MarketingFormInput {
   isActive?: boolean;
   fields?: MarketingFormInputFieldsItem[];
   settings?: MarketingFormInputSettings;
+  /** Saved timestamp used for an atomic optimistic update. Required when updating an existing form. */
+  expectedUpdatedAt?: string | null;
 }
