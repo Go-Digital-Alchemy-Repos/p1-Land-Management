@@ -1,4 +1,8 @@
-import { formatEstimateExpiry } from "@workspace/api-zod/estimate-document";
+import {
+  composedProposalBlocks,
+  type ComposedProposalDocument,
+  formatEstimateExpiry,
+} from "@workspace/api-zod/estimate-document";
 import PDFDocument from "pdfkit";
 import { readFileSync } from "node:fs";
 import { HttpError } from "./policy";
@@ -14,6 +18,7 @@ export type PdfBlock = {
   kind?: "title" | "heading" | "body" | "muted";
 };
 export type EstimatePdfDocument = {
+  composition_document?: ComposedProposalDocument;
   title: string;
   revision: number;
   client_name: string;
@@ -32,6 +37,15 @@ export type EstimatePdfDocument = {
   }[];
 };
 export function estimatePdfBlocks(doc: EstimatePdfDocument): PdfBlock[] {
+  if (doc.composition_document)
+    return [
+      { kind: "title", text: doc.title },
+      { kind: "muted", text: `Estimate revision ${doc.revision}` },
+      { text: `${doc.client_name} · ${doc.property_name}` },
+      { text: doc.address },
+      { text: `Valid through: ${formatEstimateExpiry(doc.expires_at)}` },
+      ...composedProposalBlocks(doc.composition_document),
+    ];
   return [
     { kind: "title", text: doc.title },
     { kind: "muted", text: `Estimate revision ${doc.revision}` },

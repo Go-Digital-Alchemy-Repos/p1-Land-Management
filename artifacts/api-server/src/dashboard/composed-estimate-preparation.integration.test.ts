@@ -1,6 +1,10 @@
 import { after, test } from "node:test";
 import assert from "node:assert/strict";
-import { randomUUID } from "node:crypto";
+import { randomUUID, createHash, createHmac } from "node:crypto";
+import { estimateDocument } from "./estimate-document";
+import { composedEstimateDocument } from "./composed-estimate-document";
+import { composedProposalBlocks } from "@workspace/api-zod/estimate-document";
+import { estimatePdfBlocks } from "./estimate-pdf";
 import { pool, transaction } from "./database";
 import { prepareComposedEstimate } from "./composed-estimate-preparation.service";
 import {
@@ -87,6 +91,7 @@ test(
                 startsOn: "2032-01-01",
                 endsOn: "2032-01-31",
                 amountCents: 100,
+                reviewReason: "PRIVATE-PRICING-REVIEW-NOTE",
               },
             ],
           },
@@ -234,6 +239,226 @@ test(
       ).rows[0].n,
       1,
     );
+    const office = await estimateDocument(pool, result.estimateId);
+    const projected = composedEstimateDocument(
+      estimate.composition_snapshot,
+    ).document;
+    assert.deepEqual(office.composition_document, projected);
+    for (const change of ["missing_scope", "rate", "missing_cost", "basis"]) {
+      const malformed = structuredClone(estimate.composition_snapshot);
+      if (change === "missing_scope")
+        malformed.allocations[0].scopeRowIds = [randomUUID()];
+      if (change === "rate") malformed.allocations[0].rateCents = 1;
+      if (change === "missing_cost") malformed.content.costs.items.pop();
+      if (change === "basis")
+        malformed.content.costs.items[0].basis = "per_visit";
+      assert.throws(() => composedEstimateDocument(malformed), /needs review/);
+    }
+    const customerText = JSON.stringify(projected);
+    assert(
+      JSON.stringify(estimate.composition_snapshot).includes(
+        "PRIVATE-PRICING-REVIEW-NOTE",
+      ),
+    );
+    assert(!customerText.includes("PRIVATE-PRICING-REVIEW-NOTE"));
+    for (const privateKey of [
+      "sourceTemplates",
+      "pricingPlan",
+      "scopeRowIds",
+      "costRowIds",
+      "reviewReason",
+      "draftId",
+      "clientId",
+      "propertyId",
+      "preparation_fingerprint",
+    ])
+      assert(!customerText.includes(privateKey), privateKey);
+    for (const privateId of [
+      source.id,
+      client,
+      property,
+      user,
+      ...allocations.map((row) => row.id),
+    ])
+      assert(!customerText.includes(privateId));
+    assert.deepEqual(
+      projected.components.map((component) => component.authorizedAmountCents),
+      [100, 100, 300],
+    );
+    const narrative = composedProposalBlocks(projected);
+    assert.deepEqual(estimatePdfBlocks(office).slice(5), narrative);
+    const text = narrative.map((block) => block.text).join("\n");
+    for (const phrase of [
+      "per month",
+      "per visit",
+      "one time",
+      "Maximum authorized visits: 3",
+      "Maximum authorized amount: $5.00 USD",
+      "Scope notes",
+      "Cost notes",
+      "Package notes",
+      "Excluded work",
+      "America/New_York",
+    ])
+      assert(text.includes(phrase), phrase);
+    for (const table of ["client", "property"]) {
+      const key = table === "client" ? client : property;
+      await pool.query(`UPDATE ${table} SET archived=true WHERE id=$1`, [key]);
+      await assert.rejects(
+        pool.query("UPDATE estimate SET status='sent' WHERE id=$1", [
+          result.estimateId,
+        ]),
+        /eligibility changed/,
+      );
+      assert.equal(
+        (
+          await pool.query(
+            "SELECT document_snapshot FROM estimate WHERE id=$1",
+            [result.estimateId],
+          )
+        ).rows[0].document_snapshot,
+        null,
+      );
+      await pool.query(`UPDATE ${table} SET archived=false WHERE id=$1`, [key]);
+    }
+    const otherClient = randomUUID();
+    await pool.query(
+      "INSERT INTO client(id,name) VALUES($1,'Other synthetic client')",
+      [otherClient],
+    );
+    await pool.query("UPDATE property SET client_id=$2 WHERE id=$1", [
+      property,
+      otherClient,
+    ]);
+    await assert.rejects(
+      pool.query("UPDATE estimate SET status='sent' WHERE id=$1", [
+        result.estimateId,
+      ]),
+      /eligibility changed/,
+    );
+    await pool.query("UPDATE property SET client_id=$2 WHERE id=$1", [
+      property,
+      client,
+    ]);
+    await pool.query("UPDATE client SET name='New display name' WHERE id=$1", [
+      client,
+    ]);
+    await pool.query(
+      "UPDATE property SET name='New property display' WHERE id=$1",
+      [property],
+    );
+    await pool.query("UPDATE estimate SET status='sent' WHERE id=$1", [
+      result.estimateId,
+    ]);
+    const frozen = (
+      await pool.query("SELECT document_snapshot FROM estimate WHERE id=$1", [
+        result.estimateId,
+      ])
+    ).rows[0].document_snapshot.document;
+    assert.equal(frozen.client_name, "Synthetic proposal client");
+    assert.equal(frozen.property_name, "Synthetic property");
+    assert.equal(frozen.allocations.length, 3);
+    const issued = await estimateDocument(pool, result.estimateId);
+    assert.deepEqual(issued.composition_document, projected);
+    assert.equal(issued.client_name, "Synthetic proposal client");
+    const contact = randomUUID(),
+      token = randomUUID() + randomUUID();
+    await pool.query(
+      "INSERT INTO contact(id,client_id,name,email) VALUES($1,$2,'Synthetic recipient',$3)",
+      [contact, client, `${contact}@example.test`],
+    );
+    await pool.query(
+      "INSERT INTO estimate_recipient(id,estimate_id,contact_id,email,token_hash,expires_at) VALUES($1,$2,$3,$4,$5,$6)",
+      [
+        randomUUID(),
+        result.estimateId,
+        contact,
+        `${contact}@example.test`,
+        createHash("sha256").update(token).digest("hex"),
+        estimate.expires_at,
+      ],
+    );
+    const response = await fetch(
+      `${process.env.DASHBOARD_TEST_ORIGIN}/api/public/estimates/${token}`,
+    );
+    assert.equal(response.status, 200);
+    const publicDoc = (await response.json()) as Record<string, unknown>;
+    assert.deepEqual(publicDoc.composition_document, projected);
+    assert.equal("composition_snapshot" in publicDoc, false);
+    assert.equal("document_snapshot" in publicDoc, false);
+    assert.equal("allocations" in publicDoc, false);
+    const pdf = await fetch(
+      `${process.env.DASHBOARD_TEST_ORIGIN}/api/public/estimates/${token}/pdf`,
+    );
+    assert.equal(pdf.status, 200);
+    assert(
+      Buffer.from(await pdf.arrayBuffer())
+        .subarray(0, 5)
+        .equals(Buffer.from("%PDF-")),
+    );
+    await pool.query(
+      "UPDATE client SET name='Synthetic proposal client' WHERE id=$1",
+      [client],
+    );
+    await pool.query(
+      "UPDATE property SET name='Synthetic property' WHERE id=$1",
+      [property],
+    );
+    const portalUser = randomUUID(),
+      sessionToken = randomUUID();
+    await pool.query(
+      'INSERT INTO "user"(id,name,email,"emailVerified") VALUES($1,$2,$3,true)',
+      [portalUser, "Synthetic portal user", `${portalUser}@example.test`],
+    );
+    await pool.query(
+      "INSERT INTO staff_profile(user_id,role) VALUES($1,'client')",
+      [portalUser],
+    );
+    await pool.query(
+      "INSERT INTO client_access(user_id,client_id) VALUES($1,$2)",
+      [portalUser, client],
+    );
+    await pool.query(
+      `INSERT INTO session(id,"expiresAt",token,"userId") VALUES($1,now()+interval '1 hour',$2,$3)`,
+      [randomUUID(), sessionToken, portalUser],
+    );
+    const cookie =
+      "p1-dashboard.session_token=" +
+      encodeURIComponent(
+        sessionToken +
+          "." +
+          createHmac("sha256", process.env.BETTER_AUTH_SECRET!)
+            .update(sessionToken)
+            .digest("base64"),
+      );
+    const portalDocument = () =>
+      fetch(
+        `${process.env.DASHBOARD_TEST_ORIGIN}/api/v1/estimates/${result.estimateId}/document`,
+        { headers: { cookie } },
+      );
+    const ownDocument = await portalDocument();
+    assert.equal(ownDocument.status, 200);
+    assert.deepEqual(
+      ((await ownDocument.json()) as any).composition_document,
+      projected,
+    );
+    await pool.query("UPDATE client_access SET client_id=$2 WHERE user_id=$1", [
+      portalUser,
+      otherClient,
+    ]);
+    await pool.query("UPDATE property SET client_id=$2 WHERE id=$1", [
+      property,
+      otherClient,
+    ]);
+    assert.equal(
+      (await portalDocument()).status,
+      404,
+      "A new property owner cannot read the original client's composed agreement",
+    );
+    await pool.query("UPDATE property SET client_id=$2 WHERE id=$1", [
+      property,
+      client,
+    ]);
     const stale = await draft();
     await pool.query("UPDATE client SET name='Renamed client' WHERE id=$1", [
       client,
