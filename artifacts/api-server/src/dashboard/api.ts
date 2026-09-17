@@ -188,7 +188,7 @@ api.get("/me", async (req, res) => {
     // Deprecated compatibility alias for existing native clients.
     ownerMfaRequired: mfaRequired,
     role: p.rows[0]?.active ? p.rows[0].role : null,
-    capabilities: !p.rows[0]?.active || mfaRequired || p.rows[0].role === "client" ? [] : p.rows[0].role === "owner" ? [...CAPABILITIES] :
+    capabilities: !p.rows[0]?.active || mfaRequired || ["client", "crew"].includes(p.rows[0].role) ? [] : p.rows[0].role === "owner" ? [...CAPABILITIES] :
       (await pool.query("SELECT capabilities FROM business_account_access WHERE user_id=$1", [s.user.id])).rows[0]?.capabilities ?? [],
   });
 });

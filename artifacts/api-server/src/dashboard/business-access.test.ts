@@ -28,13 +28,13 @@ test("only owner has automatic known-tool access; roles do not imply grants", ()
     }
   }
   assert.equal(hasCapability({ role: "owner" }, "unknown.future-tool"), false);
-  assert.equal(
-    hasCapability(
-      { role: "client", capabilities: [...CAPABILITIES] },
-      "revenue.sales",
-    ),
-    false,
-  );
+  for (const role of ["client", "crew"])
+    for (const capability of CAPABILITIES) {
+      assert.equal(
+        hasCapability({ role, capabilities: [...CAPABILITIES] }, capability),
+        false,
+      );
+    }
 });
 test("reporting permissions are independent of CRM and each other", () => {
   const subject = {
@@ -75,6 +75,7 @@ test("legacy review proposals do not add reporting, marketing, or owner administ
     assert.equal(hasCapability({ role }, "revenue.sales"), false);
   }
   assert.deepEqual(suggestedLegacyCapabilities("client"), []);
+  assert.deepEqual(suggestedLegacyCapabilities("crew"), []);
 });
 
 test("office capability enforcement ignores old role privileges and keeps portal/crew boundaries", () => {

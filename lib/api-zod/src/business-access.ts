@@ -110,6 +110,7 @@ export function hasCapability(
   return (
     isCapability(capability) &&
     subject.role !== "client" &&
+    subject.role !== "crew" &&
     (subject.role === "owner" ||
       Boolean(subject.role && subject.capabilities?.includes(capability)))
   );
@@ -186,7 +187,7 @@ export function suggestedLegacyCapabilities(role: string): Capability[] {
       "revenue.billing",
       "revenue.expenses",
     ],
-    crew: ["workspace.my-day", "customers.properties"],
+    crew: [],
   };
   return [...(views[role] ?? [])];
 }

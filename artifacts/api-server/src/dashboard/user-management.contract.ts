@@ -48,6 +48,16 @@ export const invitationInput = z
           "Client invitations require a client and cannot include staff permissions or form notifications",
       });
     }
+    if (
+      value.role === "crew" &&
+      (value.capabilities.length || value.formNotificationIds.length)
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        message:
+          "Crew accounts use assigned work and cannot include office permissions or form notifications",
+      });
+    }
     if (value.role !== "client" && value.clientId)
       ctx.addIssue({
         code: "custom",

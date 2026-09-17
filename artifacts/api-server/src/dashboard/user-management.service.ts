@@ -68,12 +68,12 @@ export async function updateManagedAccount(
         "Owner access cannot be changed in User Manager",
       );
     if (
-      target.role === "client" &&
+      ["client", "crew"].includes(target.role) &&
       (data.capabilities.length || data.formNotificationIds.length)
     )
       throw new HttpError(
         400,
-        "Client accounts cannot receive staff permissions or form notifications",
+        "Client and crew accounts cannot receive office permissions or form notifications",
       );
     await c.query(
       "INSERT INTO business_account_access(user_id) VALUES($1) ON CONFLICT DO NOTHING",

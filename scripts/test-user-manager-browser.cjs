@@ -165,6 +165,31 @@ const assert = require("node:assert/strict");
     await page
       .getByRole("button", { name: "Invite user", exact: true })
       .click();
+    await page.getByLabel("Account type", { exact: true }).selectOption("crew");
+    await page
+      .getByText("Crew access is limited to assigned work.", { exact: false })
+      .waitFor();
+    assert.equal(
+      await page
+        .getByRole("heading", { name: "Tool access", exact: true })
+        .count(),
+      0,
+    );
+    await page
+      .getByLabel("Account type", { exact: true })
+      .selectOption("client");
+    assert.equal(
+      await page
+        .getByRole("heading", { name: "Tool access", exact: true })
+        .count(),
+      0,
+    );
+    await page
+      .getByLabel("Account type", { exact: true })
+      .selectOption("member");
+    await page
+      .getByRole("heading", { name: "Tool access", exact: true })
+      .waitFor();
     const bounds = await page.locator("dialog").boundingBox();
     assert(bounds.x >= 0 && bounds.x + bounds.width <= 390);
     assert.equal(
@@ -172,6 +197,48 @@ const assert = require("node:assert/strict");
         .locator("dialog")
         .evaluate((element) => element.scrollWidth > element.clientWidth),
       false,
+    );
+    await page
+      .getByRole("button", { name: "Close user editor", exact: true })
+      .click();
+    account = {
+      ...account,
+      role: "crew",
+      capabilities: ["revenue.sales"],
+      formNotificationIds: ["old-form"],
+    };
+    await page.reload();
+    await page.getByRole("button", { name: "Manage", exact: true }).click();
+    await page
+      .getByText(
+        /This account has 1 unsupported office grants and 1 form notification subscriptions/,
+      )
+      .waitFor();
+    assert.equal(
+      await page
+        .getByRole("heading", { name: "Tool access", exact: true })
+        .count(),
+      0,
+    );
+    await page
+      .getByRole("button", {
+        name: "Clear unsupported office access",
+        exact: true,
+      })
+      .click();
+    assert.equal(
+      await page
+        .getByRole("button", {
+          name: "Clear unsupported office access",
+          exact: true,
+        })
+        .count(),
+      0,
+    );
+    assert.deepEqual(
+      account.capabilities,
+      ["revenue.sales"],
+      "cleanup stays in draft until saved",
     );
     assert.deepEqual(errors, []);
     console.log(

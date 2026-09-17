@@ -21,6 +21,24 @@ test("user input rejects unknown grants, owner invitations and client staff acce
   };
   assert.equal(invitationInput.safeParse(input).success, true);
   assert.equal(
+    invitationInput.safeParse({ ...input, role: "crew" }).success,
+    false,
+  );
+  assert.equal(
+    invitationInput.safeParse({
+      ...input,
+      role: "crew",
+      capabilities: [],
+      formNotificationIds: [randomUUID()],
+    }).success,
+    false,
+  );
+  assert.equal(
+    invitationInput.safeParse({ ...input, role: "crew", capabilities: [] })
+      .success,
+    true,
+  );
+  assert.equal(
     invitationInput.safeParse({ ...input, role: "owner" }).success,
     false,
   );
@@ -116,6 +134,34 @@ test(
         body: body === undefined ? undefined : JSON.stringify(body),
       });
     }
+    const crew = await fixture("crew");
+    assert.equal(
+      (
+        await call(
+          `/user-management/users/${crew.id}`,
+          {
+            firstName: "Crew",
+            lastName: "Member",
+            version: 1,
+            active: true,
+            capabilities: ["revenue.sales"],
+            formNotificationIds: [],
+          },
+          "PATCH",
+        )
+      ).status,
+      400,
+    );
+    await pool.query(
+      "UPDATE business_account_access SET capabilities=$2 WHERE user_id=$1",
+      [crew.id, ["revenue.sales"]],
+    );
+    const crewSession = await call("/me", undefined, "GET", crew.cookie);
+    assert.equal(crewSession.status, 200);
+    assert.deepEqual(
+      ((await crewSession.json()) as { capabilities: string[] }).capabilities,
+      [],
+    );
     const path = `/user-management/users/${member.id}`;
     const recoveryPath = `${path}/password-recovery`;
     assert.equal(

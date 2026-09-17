@@ -51,7 +51,7 @@ export async function actor(req: Request): Promise<Actor> {
   if (!p.rowCount) throw new HttpError(403, "Complete account activation");
   if (p.rows[0].mfa_required && (!s.user.twoFactorEnabled || !p.rows[0].assured))
     throw new HttpError(403, "Multi-factor authentication is required for this account");
-  const capabilities: Capability[] = p.rows[0].role === "owner" ? [...CAPABILITIES] : p.rows[0].role === "client" ? [] :
+  const capabilities: Capability[] = p.rows[0].role === "owner" ? [...CAPABILITIES] : ["client", "crew"].includes(p.rows[0].role) ? [] :
     (await pool.query("SELECT capabilities FROM business_account_access WHERE user_id=$1", [s.user.id])).rows[0]?.capabilities ?? [];
   return { id: s.user.id, name: s.user.name, role: p.rows[0].role as Role, capabilities };
 }

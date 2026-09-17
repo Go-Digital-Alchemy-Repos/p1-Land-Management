@@ -426,6 +426,7 @@ export function UserManager({
                   <label>
                     Account type
                     <select
+                      aria-label="Account type"
                       value={draft.role}
                       onChange={(e) =>
                         setDraft({
@@ -481,7 +482,7 @@ export function UserManager({
                   Account active
                 </label>
               )}
-              {draft.role !== "client" && (
+              {!["client", "crew"].includes(draft.role) && (
                 <>
                   <h3>Tool access</h3>
                   <p>
@@ -511,12 +512,47 @@ export function UserManager({
                   />
                 </>
               )}
-              {draft.formNotificationIds.length > 0 && (
-                <p>
-                  {draft.formNotificationIds.length} existing form notification
-                  subscriptions will be preserved.
-                </p>
+              {["client", "crew"].includes(draft.role) && (
+                <>
+                  <p>
+                    {draft.role === "crew"
+                      ? "Crew access is limited to assigned work."
+                      : "Client access is limited to granted client properties."}{" "}
+                    Office permissions and form notifications do not apply to
+                    this account type.
+                  </p>
+                  {(draft.capabilities.length > 0 ||
+                    draft.formNotificationIds.length > 0) && (
+                    <>
+                      <p role="alert">
+                        This account has {draft.capabilities.length} unsupported
+                        office grants and {draft.formNotificationIds.length}{" "}
+                        form notification subscriptions. Clear them before
+                        saving.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setDraft({
+                            ...draft,
+                            capabilities: [],
+                            formNotificationIds: [],
+                          })
+                        }
+                      >
+                        Clear unsupported office access
+                      </button>
+                    </>
+                  )}
+                </>
               )}
+              {!["client", "crew"].includes(draft.role) &&
+                draft.formNotificationIds.length > 0 && (
+                  <p>
+                    {draft.formNotificationIds.length} existing form
+                    notification subscriptions will be preserved.
+                  </p>
+                )}
               {draft.id && (
                 <div className="row-actions">
                   <button
