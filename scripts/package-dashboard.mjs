@@ -16,6 +16,7 @@ for (const name of [
   "scripts",
   "artifacts/api-server",
   "artifacts/p1-dashboard",
+  "platform/p1-core/shared",
 ])
   await cp(join(root, name), join(dest, name), {
     recursive: true,

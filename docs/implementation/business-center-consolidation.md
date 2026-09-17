@@ -1142,3 +1142,13 @@ This was a documentation/source audit; no application behavior or production sta
 ### Owner-requested incomplete-work review
 
 Compared the original scope with the current legacy sidebar/router/settings, consolidated routes/allowlist, identity reconciliation contract and agreement implementation evidence. Confirmed missing consolidated destinations for Website Integrations, Email Templates, Developer Resources, System Backups and Client Stack Onboarding. Added those specifics to the acceptance tracker, together with the identity reconciliation limits and public identity/CSP delivery gap. No implementation or production changes were made. Documentation checks passed; the full goal remains active.
+
+### Incremental release preparation — September 17, 2026
+
+The Owner authorized deploying completed work and continuing the full goal. Production `main` at `23139c2` was merged into the task branch (`567dde0`) to preserve recent public-site content. The dashboard/database suite passed 119 tests and migration replay; public type checking/build and the branding browser check passed after integration.
+
+The first staging upload exceeded Railway's payload limit because it contained public source images. A dashboard-only upload reached the builder and exposed a clean-install resolution gap: shared Core builder source imported Zod from outside the pnpm workspace. Dashboard now declares the existing catalog Zod version and Vite resolves it from the dashboard package. Dashboard build/type checks pass. Both release packagers now include shared Core data modules. These changes add no dependency version upgrade.
+
+Read-only production checks confirmed 30 current migration files match the stored checksums; the ledger also retains historical `0019_optional_owner_mfa.sql`, which is absent from current source and is not replayed. Only one Owner is active; other fixture staff accounts are disabled. A fresh private custom-format dashboard database export was captured and its archive listing checked after Railway declined an additional manual snapshot at its backup quota. Existing snapshots were retained. This is backup evidence, not a full restore rehearsal.
+
+Production deployment is still pending at this checkpoint. `/admin/` retirement, real CRM/account reconciliation and final full-goal acceptance remain open.

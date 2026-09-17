@@ -2,6 +2,8 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 export default defineConfig({
   plugins: [react()],
+  // Shared Core source is outside this pnpm package; resolve its validator here.
+  resolve: { dedupe: ["react", "react-dom", "zod"] },
   server: {
     port: 4181,
     host: "127.0.0.1",
