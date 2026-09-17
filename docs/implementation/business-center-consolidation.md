@@ -35,7 +35,7 @@ The baseline property-workspace test omitted nullable structured-address and pro
 
 1. Complete the API capability matrix and migrate all remaining legacy role gates, including projections, shared lookups, assignment choices, notifications and exports. Initial domain changes and navigation are not full enforcement. Replace broad frontend role-based preloading/action conditions. Preserve crew/client record scope and offline queues.
 2. Complete User Manager recovery and Core form-notification selection, existing-account linkage, history/pagination and migration reconciliation. Review crew grants versus scoped field workflow before cutover.
-3. Adopt Core admin theme throughout the business dashboard with independent light/dark/system preference, responsive and accessibility verification.
+3. Complete module-by-module visual/accessibility verification of the adopted Core admin theme, including the remaining Marketing and template screens. Shared light/dark/system styling and sampled browser verification are implemented.
 4. Mount the retained CMS route modules under Marketing and build the allowlisted, user-scoped Core boundary. Separate Google Analytics and Search Console grants on all legacy and new server routes. Preserve original media/publishing/intake behavior.
 5. Merge CRM notes/tasks/history and client identity through explicit source mappings, repeatable import/reconciliation, and explicit Won onboarding.
 6. Implement reusable MSA/scope/cost/package templates, immutable published versions and client composition integrated into existing estimate/approval/activation workflows. Preserve legal-content and billing constraints in the accepted plan.
@@ -58,3 +58,13 @@ The web app now loads datasets from leaf grants and uses a typed `/workspace/ref
 - Disposable database suite passed 47 tests plus migration replay. Added direct unauthorized HTTP checks across Customers, Operations, Revenue and minimal references, minimized record-section assertions, and My Day member assignment checks. After removing the final string-role completion-review fallback, its targeted policy suite passed 5 tests. API/dashboard typechecks and agreement lifecycle/preparation/HTTP tests passed. No live providers used.
 
 Remaining access follow-through includes server-side assignee eligibility on every write path, notification history/delivery revocation, agreement-only editing versus billing projections, isolated-tool browser scenarios and the Core federation authority contract. Do not treat these checkpoints as complete system authorization coverage.
+
+## Unified admin appearance checkpoint
+
+The dashboard now uses the Core admin light/dark tokens from `platform/p1-core/client/src/index.css` through dashboard-owned `theme.css`. Earthtone feature styles use semantic surfaces, text, borders, actions and status colors. Decorative page illustrations are no longer mounted. Core/public branding files are unchanged. The light muted-text token is slightly darker than Core's source to meet 4.5:1 on the admin canvas.
+
+The header exposes Light/Dark/System for every signed-in workspace user, independently of business-settings permission. Selection is device-local under `p1-business-center-theme`; system changes and cross-tab storage changes are observed. A same-origin pre-render initializer prevents the wrong initial mode, and the offline shell caches that initializer. Storage failure retains a working in-session preference. App manifest colors and QR-code contrast were aligned. Ordinary modal layering now clears the mobile header.
+
+Validation: dashboard typecheck and production build passed (existing MapLibre chunk warning). `scripts/test-dashboard-theme-browser.cjs` passed in Chrome against mocked synthetic client data: light/dark/system, reload persistence, OS changes, key text/action contrast in both modes, absence of decorative backgrounds, client editing dialog, mobile containment and title hit testing. Light desktop, dark dialog and mobile screenshots were visually inspected. Existing User Manager conflict/invite/mobile browser regression passed with the new shared theme loaded.
+
+This proves the shared theme and sampled workflows; final visual acceptance still requires the remaining Marketing/report/template screens and the broader module-by-module parity pass. Production remains unchanged.

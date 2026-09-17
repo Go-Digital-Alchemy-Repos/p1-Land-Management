@@ -9,8 +9,8 @@
   min-width: 140px;
 }
 .calendar-toolbar [aria-pressed="true"] {
-  background: var(--green, #24513c);
-  color: white;
+  background: var(--green, hsl(var(--primary)));
+  color: hsl(var(--primary-foreground));
 }
 .calendar-checkbox {
   display: flex;
@@ -31,14 +31,14 @@
   grid-template-columns: 1fr;
 }
 .calendar-day {
-  background: #f5f6f2;
-  border: 1px solid #dfe5dc;
+  background: hsl(var(--muted));
+  border: 1px solid hsl(var(--border));
   border-radius: 10px;
   padding: 10px;
   min-height: 150px;
 }
 .calendar-day.today {
-  border-color: #397153;
+  border-color: hsl(var(--primary));
 }
 .calendar-day h3 {
   font-size: 14px;
@@ -58,20 +58,20 @@
   text-align: left;
   margin: 8px 0;
   padding: 10px;
-  background: white;
-  border-left: 3px solid #397153;
+  background: hsl(var(--card));
+  border-left: 3px solid hsl(var(--primary));
   white-space: normal;
 }
 .calendar-job span {
   font-size: 12px;
-  color: #526355;
+  color: hsl(var(--foreground));
 }
 .calendar-job .calendar-job-title {
-  color: #294537;
+  color: hsl(var(--foreground));
   font-weight: 650;
 }
 .calendar-job.delayed {
-  border-left-color: #b87b24;
+  border-left-color: hsl(var(--warning));
 }
 .calendar-job.cancelled,
 .calendar-job.skipped {
@@ -83,7 +83,7 @@
   gap: 10px;
 }
 .calendar-job:focus-visible {
-  outline: 3px solid #3773bd;
+  outline: 3px solid hsl(var(--primary));
   outline-offset: 2px;
 }
 @media (max-width: 700px) {

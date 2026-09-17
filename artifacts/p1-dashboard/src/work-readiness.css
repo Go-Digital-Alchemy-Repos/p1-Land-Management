@@ -1,6 +1,6 @@
 .work-readiness {
   margin-top: 1rem;
-  border-top: 1px solid #dde2d8;
+  border-top: 1px solid hsl(var(--border));
   padding-top: 1rem;
 }
 .work-readiness form,

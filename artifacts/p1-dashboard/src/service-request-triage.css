@@ -19,14 +19,14 @@
   width: 100%;
   min-height: 0;
   padding: 16px;
-  border-color: #dbe2d3;
+  border-color: hsl(var(--border));
   border-radius: 10px;
-  background: #fff;
+  background: hsl(var(--card));
   text-align: left;
 }
 .request-summary span,
 .request-summary small {
-  color: #6c776d;
+  color: hsl(var(--muted-foreground));
   font-size: 12px;
 }
 .request-summary strong {
@@ -34,27 +34,27 @@
   overflow: hidden;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 4;
-  color: #294537;
+  color: hsl(var(--foreground));
   line-height: 1.42;
 }
 .request-summary.selected {
-  border-color: #6d8c4c;
-  background: #f1f5e5;
-  box-shadow: inset 3px 0 #6d8c4c;
+  border-color: hsl(var(--primary));
+  background: hsl(var(--muted));
+  box-shadow: inset 3px 0 hsl(var(--foreground) / .10);
 }
 .request-detail {
   display: grid;
   gap: 0;
   overflow: hidden;
-  border: 1px solid #dbe2d3;
+  border: 1px solid hsl(var(--border));
   border-radius: 12px;
-  background: #fff;
+  background: hsl(var(--card));
 }
 .request-detail > .panel-heading {
   min-height: 0;
   padding: 22px var(--atlas-surface-inset) 20px;
-  border-bottom: 1px solid #e6ebe1;
-  background: #fbfcf9;
+  border-bottom: 1px solid hsl(var(--border));
+  background: hsl(var(--card));
 }
 .request-detail > .panel-heading > div { min-width: 0; }
 .request-detail > .panel-heading h3 { margin-top: 12px; line-height: 1.38; }
@@ -62,7 +62,7 @@
 .request-detail h3,
 .request-detail h4 {
   margin-bottom: 0;
-  color: #294537;
+  color: hsl(var(--foreground));
 }
 .request-transition {
   display: grid;
@@ -72,7 +72,7 @@
   margin: var(--atlas-surface-inset);
   padding: 16px;
   border-radius: 10px;
-  background: #f4f6ed;
+  background: hsl(var(--muted));
 }
 .request-transition label,
 .request-conversion-form label {
@@ -86,7 +86,7 @@
   gap: 12px;
   margin: 0 var(--atlas-surface-inset);
   padding: 20px 0 var(--atlas-surface-inset);
-  border-top: 1px solid #e3e8dc;
+  border-top: 1px solid hsl(var(--border));
 }
 .request-conversion-heading {
   display: flex;
@@ -96,7 +96,7 @@
 }
 .request-conversion-heading p {
   max-width: 640px;
-  color: #6c776d;
+  color: hsl(var(--muted-foreground));
   margin: 6px 0 0;
   line-height: 1.5;
 }
@@ -105,7 +105,7 @@
   gap: 12px;
   padding: 14px;
   border-radius: 10px;
-  background: #f4f6ed;
+  background: hsl(var(--muted));
 }
 .request-conversion-form textarea {
   min-height: 80px;
@@ -118,8 +118,8 @@
 .request-preview {
   margin: 0;
   padding: 11px;
-  border-left: 3px solid #7f984a;
-  background: #fff;
+  border-left: 3px solid hsl(var(--primary));
+  background: hsl(var(--card));
 }
 .request-card {
   display: flex;
@@ -127,13 +127,13 @@
   justify-content: space-between;
   gap: 16px;
   padding: 15px;
-  border: 1px solid #dbe2d3;
+  border: 1px solid hsl(var(--border));
   border-radius: 12px;
-  background: #fff;
+  background: hsl(var(--card));
 }
 .request-card h3 {
   margin: 0 0 5px;
-  color: #294537;
+  color: hsl(var(--foreground));
 }
 .request-card .eyebrow {
   margin-bottom: 8px;

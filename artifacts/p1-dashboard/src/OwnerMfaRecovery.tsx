@@ -48,7 +48,7 @@ export function OwnerMfaRecovery({
       errorCorrectionLevel: "M",
       margin: 1,
       width: 224,
-      color: { dark: "#173d31", light: "#f8f7f2" },
+      color: { dark: "#0f172a", light: "#ffffff" },
     })
       .then((dataUrl) => {
         if (active) setQrCode(dataUrl);

@@ -11,7 +11,7 @@ import { ClientContacts } from "./ClientContacts";
 import { RequestComposer } from "./RequestComposer";
 import { RichTextEditor } from "./RichTextEditor";
 import { ClientWorkspace, PropertyWorkspace } from "./AccountWorkspace";
-import { motifForPage } from "./motifs";
+import { ThemeControl } from "./ThemePreference";
 import { InspectionReports } from "./InspectionReports";
 import { ServiceRequestTriage } from "./ServiceRequestTriage";
 import { ProjectPhases } from "./ProjectPhases";
@@ -55,6 +55,7 @@ import {
   updateAccountMfaPolicy,
 } from "@workspace/api-client-react/dashboard";
 import * as offline from "./offline";
+import "./theme.css";
 import "./style.css";
 import { ServiceAgreements } from "./ServiceAgreements";
 import {
@@ -1212,6 +1213,7 @@ function App() {
                 : view}
             </strong>
           </div>
+          <ThemeControl />
           <button
             className="user account-menu-trigger"
             onClick={() => navigate("Profile")}
@@ -1231,10 +1233,7 @@ function App() {
             </div>
           </button>
         </header>
-        <main
-          className={view === "Overview" ? "content desk-workspace-preview" : "content workspace-motif"}
-          style={view === "Overview" ? undefined : ({ "--workspace-motif": motifForPage(view, settingsSection) } as React.CSSProperties)}
-        >
+        <main className="content">
           {!accountWorkspace && <div className={view === "Overview" ? "page-heading page-hero" : "page-heading"}>
             <div>
               <p className="eyebrow">P1 · PROPERTY OPERATIONS</p>
@@ -2222,7 +2221,7 @@ function App() {
                 <div>
                   <small>Workspace role</small>
                   <strong>{person.role}</strong>
-                  <p>Available navigation and actions reflect this role and current account assurance.</p>
+                  <p>Available navigation and actions reflect your assigned tool permissions and account security status.</p>
                 </div>
                 <div>
                   <small>Connection</small>

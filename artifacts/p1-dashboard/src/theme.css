@@ -1,0 +1,147 @@
+/* Business Center uses Core admin tokens; public website branding is independent. */
+:root {
+  --background: 210 40% 98%;
+  --foreground: 222 47% 11%;
+  --border: 214 32% 91%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --card-border: 214 32% 91%;
+
+  --sidebar: 222 47% 11%;
+  --sidebar-foreground: 210 40% 98%;
+  --sidebar-border: 217 33% 18%;
+  --sidebar-primary: 221 83% 53%;
+  --sidebar-primary-foreground: 210 40% 98%;
+  --sidebar-accent: 217 33% 17%;
+  --sidebar-accent-foreground: 210 40% 98%;
+  --sidebar-ring: 221 83% 53%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+  --popover-border: 214 32% 91%;
+
+  --primary: 221 83% 53%;
+  --primary-foreground: 210 40% 98%;
+
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 222 47% 11%;
+
+  --muted: 210 40% 96%;
+  --muted-foreground: 215 16% 44%; /* Readable on the admin canvas as well as white cards. */
+
+  --accent: 214 95% 93%;
+  --accent-foreground: 221 83% 40%;
+
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+
+  --input: 214 32% 91%;
+  --ring: 221 83% 53%;
+  --chart-1: 221 83% 53%;
+  --chart-2: 217 91% 60%;
+  --chart-3: 199 89% 48%;
+  --chart-4: 215 20% 65%;
+  --chart-5: 222 47% 25%;
+
+  --font-sans: "Inter", sans-serif;
+  --font-serif: "Inter", sans-serif;
+  --shadow-2xs: 0px 1px 2px 0px rgba(15, 23, 42, 0.03);
+  --shadow-xs: 0px 1px 3px 0px rgba(15, 23, 42, 0.05);
+  --shadow-sm: 0px 1px 3px 0px rgba(15, 23, 42, 0.06), 0px 1px 2px -1px rgba(15, 23, 42, 0.05);
+  --shadow: 0px 2px 4px 0px rgba(15, 23, 42, 0.06), 0px 1px 2px -1px rgba(15, 23, 42, 0.05);
+  --shadow-md: 0px 8px 16px -6px rgba(15, 23, 42, 0.1), 0px 4px 8px -4px rgba(15, 23, 42, 0.06);
+  --shadow-lg: 0px 16px 24px -8px rgba(15, 23, 42, 0.12), 0px 8px 16px -8px rgba(15, 23, 42, 0.08);
+}
+
+:root[data-theme="dark"] {
+  --background: 222 47% 8%;
+  --foreground: 210 40% 96%;
+  --border: 217 33% 18%;
+
+  --card: 222 39% 11%;
+  --card-foreground: 210 40% 96%;
+  --card-border: 217 33% 18%;
+
+  --sidebar: 222 47% 6%;
+  --sidebar-foreground: 210 40% 96%;
+  --sidebar-border: 217 33% 15%;
+  --sidebar-primary: 217 91% 60%;
+  --sidebar-primary-foreground: 222 47% 8%;
+  --sidebar-accent: 217 33% 17%;
+  --sidebar-accent-foreground: 210 40% 96%;
+  --sidebar-ring: 217 91% 60%;
+
+  --popover: 222 39% 11%;
+  --popover-foreground: 210 40% 96%;
+  --popover-border: 217 33% 18%;
+
+  --primary: 217 91% 60%;
+  --primary-foreground: 222 47% 8%;
+
+  --secondary: 217 33% 17%;
+  --secondary-foreground: 210 40% 96%;
+
+  --muted: 217 33% 14%;
+  --muted-foreground: 215 20% 65%;
+
+  --accent: 217 33% 17%;
+  --accent-foreground: 210 40% 96%;
+
+  --destructive: 0 62% 45%;
+  --destructive-foreground: 0 0% 100%;
+
+  --input: 217 33% 18%;
+  --ring: 217 91% 60%;
+  --chart-1: 217 91% 60%;
+  --chart-2: 199 89% 58%;
+  --chart-3: 221 83% 72%;
+  --chart-4: 215 20% 65%;
+  --chart-5: 210 40% 80%;
+
+  --font-sans: "Inter", sans-serif;
+  --font-serif: "Inter", sans-serif;
+  --shadow-2xs: 0px 1px 2px 0px rgba(0, 0, 0, 0.2);
+  --shadow-xs: 0px 1px 3px 0px rgba(0, 0, 0, 0.25);
+  --shadow-sm: 0px 1px 3px 0px rgba(0, 0, 0, 0.28), 0px 1px 2px -1px rgba(0, 0, 0, 0.22);
+  --shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28), 0px 1px 2px -1px rgba(0, 0, 0, 0.22);
+  --shadow-md: 0px 8px 16px -6px rgba(0, 0, 0, 0.38), 0px 4px 8px -4px rgba(0, 0, 0, 0.28);
+  --shadow-lg: 0px 16px 24px -8px rgba(0, 0, 0, 0.44), 0px 8px 16px -8px rgba(0, 0, 0, 0.3);
+}
+
+
+:root {
+  color-scheme: light;
+  --ink: hsl(var(--foreground));
+  --canvas: hsl(var(--background));
+  --surface: hsl(var(--card));
+  --surface-subtle: hsl(var(--muted));
+  --line: hsl(var(--border));
+  --line-soft: hsl(var(--border) / .65);
+  --forest: hsl(var(--primary));
+  --forest-strong: hsl(var(--primary) / .88);
+  --sage: hsl(var(--accent));
+  --focus: hsl(var(--ring));
+  --green: hsl(var(--primary));
+  --atlas-paper: var(--canvas);
+  --atlas-ink: var(--ink);
+  --atlas-lichen: hsl(var(--accent));
+  --atlas-copper: hsl(var(--primary));
+  --atlas-line: var(--line);
+  --atlas-subtle: var(--surface-subtle);
+  --success: 142 72% 29%;
+  --success-surface: 138 76% 97%;
+  --warning: 32 90% 30%;
+  --warning-surface: 48 100% 96%;
+  --danger-ink: 0 72% 40%;
+  --danger-surface: 0 86% 97%;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --success: 142 69% 72%;
+  --success-surface: 145 35% 14%;
+  --warning: 43 96% 72%;
+  --warning-surface: 32 45% 14%;
+  --danger-ink: 0 91% 78%;
+  --danger-surface: 0 40% 16%;
+}

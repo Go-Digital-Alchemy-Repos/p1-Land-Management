@@ -14,7 +14,7 @@
   background: var(--surface);
 }
 .user-editor::backdrop {
-  background: rgb(15 23 42 / 45%);
+  background: hsl(var(--foreground) / 0.45);
 }
 .user-editor header,
 .user-editor footer {

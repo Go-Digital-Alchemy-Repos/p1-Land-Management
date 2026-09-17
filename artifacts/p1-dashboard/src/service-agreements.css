@@ -28,7 +28,7 @@
   padding: 14px;
 }
 .agreement-list > button[aria-pressed="true"] {
-  outline: 2px solid var(--green, #214e3b);
+  outline: 2px solid var(--green, hsl(var(--primary)));
 }
 .agreement-list small,
 .agreement-list span {
@@ -60,7 +60,7 @@
 }
 .agreement-editor fieldset,
 .agreement-detail fieldset {
-  border: 1px solid #dce3da;
+  border: 1px solid hsl(var(--border));
   border-radius: 10px;
   padding: 16px;
   min-width: 0;
@@ -76,9 +76,9 @@
   margin-bottom: 0;
 }
 .agreement-plan {
-  background: #f3f6ef;
+  background: hsl(var(--muted));
   padding: 16px;
-  border: 1px solid #dce3da;
+  border: 1px solid hsl(var(--border));
   border-radius: 10px;
   margin: 18px 0;
   overflow-x: auto;
@@ -105,7 +105,7 @@
 .agreement-detail td {
   text-align: left;
   padding: 9px;
-  border-bottom: 1px solid #dce3da;
+  border-bottom: 1px solid hsl(var(--border));
 }
 .agreement-detail caption {
   text-align: left;
@@ -117,7 +117,7 @@
 }
 .agreement-queue {
   margin: 0;
-  border-top: 1px solid #dce3da;
+  border-top: 1px solid hsl(var(--border));
   padding: 22px 24px 24px;
 }
 .agreement-queue ul {
@@ -128,7 +128,7 @@
 }
 .agreement-queue li {
   padding: 16px;
-  border: 1px solid #dce3da;
+  border: 1px solid hsl(var(--border));
   border-radius: 10px;
 }
 .agreement-queue li > span {
