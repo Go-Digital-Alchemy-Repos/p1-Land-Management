@@ -741,3 +741,22 @@ it("reserves the isolated renderer and rejects rooted reserved page slugs before
     expect(await response.json()).toMatchObject({error:"This route is reserved"});
   }
 });
+
+
+it("exposes only notification form references to an attested active Owner", async () => {
+  const form = { id: "form", name: "Estimate", slug: "p1-estimate", isActive: false, isSystem: true, fields: [{ private: true }], settings: { recipients: ["private@example.test"] } };
+  state.list.mockResolvedValue([form]);
+  for (const grant of [
+    { active: true, role: "member", ownerAttested: false, capabilities: ["marketing.content.forms"] },
+    { active: true, role: "owner", ownerAttested: false, capabilities: [] },
+    { active: false, role: "owner", ownerAttested: true, capabilities: [] },
+  ]) {
+    identity = grant;
+    expect((await request("/notification-forms")).status).toBe(403);
+  }
+  expect(state.list).not.toHaveBeenCalled();
+  identity = { active: true, role: "owner", ownerAttested: true, capabilities: [] };
+  const response = await request("/notification-forms");
+  expect(response.status).toBe(200);
+  expect(await response.json()).toEqual({ items: [{ id: "form", name: "Estimate", slug: "p1-estimate", isActive: false, isSystem: true }] });
+});

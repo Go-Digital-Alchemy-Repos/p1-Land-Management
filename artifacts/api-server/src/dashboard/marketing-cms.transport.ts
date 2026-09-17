@@ -111,6 +111,13 @@ for (const method of ["PUT", "DELETE"] as const)
 for (const method of ["GET", "PUT", "DELETE"] as const)
   add("blog", method, "/blog/:id");
 
+cmsOperations.push({
+  method: "GET",
+  path: "/notification-forms",
+  capabilities: [],
+  ownerOnly: true,
+});
+
 const lockCapabilities: Record<string, Capability | null> = {
   cms_page: "marketing.content.pages",
   blog_post: "marketing.content.blog",

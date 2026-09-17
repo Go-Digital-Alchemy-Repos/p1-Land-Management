@@ -9965,6 +9965,65 @@
           }
         ]
       }
+    },
+    "/marketing/cms/notification-forms": {
+      "get": {
+        "operationId": "listManagedNotificationForms",
+        "description": "Owner-only minimized website form catalog for managing notification subscriptions. Includes inactive forms for explaining existing subscriptions; exposes no fields, submissions, recipients or integration settings.",
+        "responses": {
+          "200": {
+            "description": "Form references",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "items"
+                  ],
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "name",
+                          "slug",
+                          "isActive",
+                          "isSystem"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "slug": {
+                            "type": "string"
+                          },
+                          "isActive": {
+                            "type": "boolean"
+                          },
+                          "isSystem": {
+                            "type": "boolean"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Owner access required"
+          },
+          "503": {
+            "description": "Website connection unavailable"
+          }
+        }
+      }
     }
   },
   "components": {

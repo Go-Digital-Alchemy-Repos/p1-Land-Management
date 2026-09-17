@@ -16,6 +16,14 @@ const operation = (method: string, path: string) =>
 
 test("CMS allowlist uses current leaf grants, exact paths and bounded query parameters", () => {
   assert(cmsOperations.length > 40);
+  assert.equal(operation("GET", "/notification-forms").ownerOnly, true);
+  assert.deepEqual(operation("GET", "/notification-forms").capabilities, []);
+  assert.equal(
+    cmsOperations.some(
+      (item) => item.path === "/notification-forms" && item.method !== "GET",
+    ),
+    false,
+  );
   assert.equal(
     new Set(cmsOperations.map((item) => `${item.method} ${item.path}`)).size,
     cmsOperations.length,

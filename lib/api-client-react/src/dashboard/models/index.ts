@@ -187,6 +187,8 @@ export * from './listCommercialInquiriesOverdue';
 export * from './listCommercialInquiriesParams';
 export * from './listCommercialInquiriesStatus';
 export * from './listManagedInvitations200';
+export * from './listManagedNotificationForms200';
+export * from './listManagedNotificationForms200ItemsItem';
 export * from './listManagedUserHistory200';
 export * from './listManagedUsers200';
 export * from './listMarketingBlogCommentsParams';

@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { z } from "zod";
+import { storage } from "../storage";
 import {
   authenticateMarketingService,
   resolveMarketingActor,
@@ -41,6 +42,27 @@ router.use(async (req, res, next) => {
     res
       .status(error instanceof FederationError ? error.status : 503)
       .json({ message: "Website access unavailable" });
+  }
+});
+router.get("/notification-forms", async (req, res, next) => {
+  const identity = req.dashboardIdentity;
+  if (!identity?.active || identity.role !== "owner" || !identity.ownerAttested) {
+    res.status(403).json({ message: "Owner access required" });
+    return;
+  }
+  try {
+    const forms = await storage.forms.getAll();
+    res.json({
+      items: forms.map(({ id, name, slug, isActive, isSystem }) => ({
+        id,
+        name,
+        slug,
+        isActive,
+        isSystem,
+      })),
+    });
+  } catch (error) {
+    next(error);
   }
 });
 router.use("/editor-locks", editorLocks);

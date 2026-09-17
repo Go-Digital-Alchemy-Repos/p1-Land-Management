@@ -105,6 +105,7 @@ import type {
   ListAgreementPreparationJobsParams,
   ListCommercialInquiriesParams,
   ListManagedInvitations200,
+  ListManagedNotificationForms200,
   ListManagedUserHistory200,
   ListManagedUsers200,
   ListMarketingBlogCommentsParams,
@@ -5669,6 +5670,30 @@ export const requestManagedPasswordRecovery = async (id: string, options?: Reque
   {
     ...options,
     method: 'POST'
+
+
+  }
+);}
+
+
+
+export const getListManagedNotificationFormsUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/notification-forms`
+}
+
+/**
+ * Owner-only minimized website form catalog for managing notification subscriptions. Includes inactive forms for explaining existing subscriptions; exposes no fields, submissions, recipients or integration settings.
+ */
+export const listManagedNotificationForms = async ( options?: RequestInit): Promise<ListManagedNotificationForms200> => {
+
+  return customFetch<ListManagedNotificationForms200>(getListManagedNotificationFormsUrl(),
+  {
+    ...options,
+    method: 'GET'
 
 
   }
