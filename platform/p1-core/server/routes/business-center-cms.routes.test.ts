@@ -13,6 +13,9 @@ const state = vi.hoisted(() => ({
   list: vi.fn(),
   websiteGet: vi.fn(),
   websiteSave: vi.fn(),
+  mediaGet: vi.fn(),
+  mediaCreate: vi.fn(),
+  mediaDownload: vi.fn(),
 }));
 vi.mock("../services/federation-runtime", () => ({
   federationConsumer: () => ({
@@ -25,6 +28,7 @@ vi.mock("../services/federation-runtime", () => ({
 vi.mock("../storage", () => ({
   storage: {
     users: { getUser: state.user },
+    cmsMedia: { getMedia: state.mediaGet },
     clientSiteContent: { get: state.websiteGet, saveDraft: state.websiteSave },
     cmsPages: {
       getAllPages: state.pages,
@@ -48,6 +52,11 @@ vi.mock("../storage", () => ({
 vi.mock("../storage/index", async () => await import("../storage"));
 vi.mock("../services/site-features.service", () => ({ isSiteFeatureEnabled: state.enabled }));
 vi.mock("../services/system-cms-sections.service", () => ({ ensureSystemCmsSections: vi.fn() }));
+vi.mock("../services/cms-media-upload.service", async (original) => ({
+  ...(await original<typeof import("../services/cms-media-upload.service")>()),
+  createCmsMediaAssetFromUpload: state.mediaCreate,
+}));
+vi.mock("../services/r2.service", () => ({ downloadFile: state.mediaDownload }));
 import router from "./business-center-cms.routes";
 import pages from "./admin/cms.routes";
 import sections from "./admin/cms-sections.routes";
@@ -256,7 +265,8 @@ it("does not let Sales, Pages or reporting grants read or mutate the legacy Medi
     ["PATCH", "/media/id/alt"],
     ["DELETE", "/media/id"],
   ])
-    expect((await request(path, method, {}, "/legacy")).status).toBe(403);
+    for (const prefix of ["/legacy", "/service"])
+      expect((await request(path, method, {}, prefix)).status).toBe(403);
 });
 it("independently permits each CMS tool without granting its neighbors", async () => {
   for (const [tool, path] of [
@@ -327,7 +337,10 @@ it("projects menu selector references without page bodies, form rules or submiss
 });
 
 it("bridges Website content with its own grant, bounded validation and revision conflicts", async () => {
-  vi.stubEnv("CLIENT_SITE_MANIFEST_PATH", "docs/pilots/better-farms/client-site-manifest.example.json");
+  vi.stubEnv(
+    "CLIENT_SITE_MANIFEST_PATH",
+    "docs/pilots/better-farms/client-site-manifest.example.json",
+  );
   const path = "/website/fund-a-farm/fund-a-farm-page";
   expect((await request(path)).status).toBe(403);
   expect(state.websiteGet).not.toHaveBeenCalled();
@@ -339,18 +352,80 @@ it("bridges Website content with its own grant, bounded validation and revision 
   const response = await request(path);
   expect(response.status).toBe(200);
   const detail = await response.json();
-  expect(detail.previewUrl).toBe("https://better-farms.example/fund-a-farm?cmsPreview=1&cmsComponent=fund-a-farm-page");
-  const save = (body: unknown) => fetch(base + "/service" + path + "/draft", {
-    method: "PUT", headers: { authorization: `Bearer ${key}`, "x-p1-user-grant": grantId, "content-type": "application/json" }, body: JSON.stringify(body),
-  });
+  expect(detail.previewUrl).toBe(
+    "https://better-farms.example/fund-a-farm?cmsPreview=1&cmsComponent=fund-a-farm-page",
+  );
+  const save = (body: unknown) =>
+    fetch(base + "/service" + path + "/draft", {
+      method: "PUT",
+      headers: {
+        authorization: `Bearer ${key}`,
+        "x-p1-user-grant": grantId,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
   expect((await save({ content: detail.draftContent, expectedRevision: -1 })).status).toBe(400);
   expect(state.websiteSave).not.toHaveBeenCalled();
   state.websiteSave.mockRejectedValue(new ClientSiteContentConflictError("Draft revision changed"));
   const conflict = await save({ content: detail.draftContent, expectedRevision: 0 });
   expect(conflict.status).toBe(409);
   expect(await conflict.json()).toEqual({ error: "Draft revision changed" });
-  expect(state.websiteSave).toHaveBeenCalledWith(expect.any(Object), detail.draftContent, 0, "linked");
+  expect(state.websiteSave).toHaveBeenCalledWith(
+    expect.any(Object),
+    detail.draftContent,
+    0,
+    "linked",
+  );
   identity.capabilities = [];
   expect((await save({ content: detail.draftContent, expectedRevision: 0 })).status).toBe(403);
   expect(state.websiteSave).toHaveBeenCalledTimes(1);
+});
+
+it("requires Media authority before parsing multipart uploads and source requests", async () => {
+  identity.capabilities = ["marketing.content.media"];
+  expect((await request("/upload", "POST")).status).toBe(400);
+  identity.capabilities = [];
+  const body = new FormData();
+  body.set("file", new Blob(["synthetic"], { type: "image/png" }), "photo.png");
+  expect(
+    (
+      await fetch(base + "/service/upload", {
+        method: "POST",
+        headers: { authorization: `Bearer ${key}`, "x-p1-user-grant": grantId },
+        body,
+      })
+    ).status,
+  ).toBe(403);
+});
+
+it("runs retained multipart and source handlers through the authenticated service", async () => {
+  identity.capabilities = ["marketing.content.media"];
+  state.mediaCreate.mockResolvedValue({ id: "asset", mimeType: "image/png" });
+  const body = new FormData();
+  body.set("file", new Blob(["synthetic bytes"], { type: "image/png" }), "photo.png");
+  const result = await fetch(base + "/service/upload", {
+    method: "POST",
+    headers: { authorization: `Bearer ${key}`, "x-p1-user-grant": grantId },
+    body,
+  });
+  expect(result.status).toBe(201);
+  expect(state.mediaCreate).toHaveBeenCalledWith(
+    expect.objectContaining({
+      originalName: "photo.png",
+      mimeType: "image/png",
+      uploadedBy: "linked",
+      buffer: Buffer.from("synthetic bytes"),
+    }),
+  );
+  state.mediaGet.mockResolvedValue({ id: "asset", r2Key: "synthetic-key", mimeType: "image/png" });
+  state.mediaDownload.mockResolvedValue({
+    buffer: Buffer.from([0, 1, 255]),
+    contentType: "image/png",
+  });
+  const source = await request("/media/asset/source");
+  expect(source.status).toBe(200);
+  expect(source.headers.get("content-type")).toBe("image/png");
+  expect(Buffer.from(await source.arrayBuffer())).toEqual(Buffer.from([0, 1, 255]));
+  expect(state.mediaDownload).toHaveBeenCalledWith("synthetic-key");
 });

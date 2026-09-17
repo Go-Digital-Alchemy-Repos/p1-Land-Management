@@ -1,13 +1,15 @@
 import type { Capability } from "@workspace/api-zod/business-access";
 import { HttpError } from "./policy";
 
-type Method = "GET" | "POST" | "PUT" | "DELETE";
+type Method = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 export interface CmsOperation {
   method: Method;
   path: string;
   capabilities: readonly Capability[];
   force?: boolean;
   ownerOnly?: boolean;
+  multipart?: boolean;
+  binary?: boolean;
 }
 /** Explicit method/path pairs. Adding a Core route never exposes it automatically. */
 export const cmsOperations: CmsOperation[] = [];
@@ -65,7 +67,29 @@ add("website", "GET", "/website/:routeId/:componentKey");
 add("website", "PUT", "/website/:routeId/:componentKey/draft");
 add("website", "POST", "/website/:routeId/:componentKey/publish");
 add("website", "GET", "/website/:routeId/:componentKey/revisions");
-add("website", "POST", "/website/:routeId/:componentKey/revisions/:revision/restore");
+add(
+  "website",
+  "POST",
+  "/website/:routeId/:componentKey/revisions/:revision/restore",
+);
+
+add("media", "GET", "/media");
+add("media", "PATCH", "/media/:id");
+add("media", "PATCH", "/media/:id/alt");
+add("media", "DELETE", "/media/:id");
+for (const path of ["/upload", "/media/:id/replace"])
+  cmsOperations.push({
+    method: "POST",
+    path,
+    capabilities: ["marketing.content.media"],
+    multipart: true,
+  });
+cmsOperations.push({
+  method: "GET",
+  path: "/media/:id/source",
+  capabilities: ["marketing.content.media"],
+  binary: true,
+});
 
 const lockCapabilities: Record<string, Capability | null> = {
   cms_page: "marketing.content.pages",
@@ -142,9 +166,7 @@ export function cmsDestination(
   return path + (query.force === undefined ? "" : `?force=${query.force}`);
 }
 
-async function boundedJson(response: Response) {
-  if (!response.headers.get("content-type")?.includes("application/json"))
-    throw Error();
+async function boundedBytes(response: Response, limit: number) {
   const reader = response.body?.getReader();
   if (!reader) throw Error();
   let size = 0;
@@ -153,13 +175,20 @@ async function boundedJson(response: Response) {
     const { value, done } = await reader.read();
     if (done) break;
     size += value.length;
-    if (size > 8 * 1024 * 1024) {
+    if (size > limit) {
       await reader.cancel();
       throw Error();
     }
     chunks.push(value);
   }
-  return JSON.parse(Buffer.concat(chunks).toString("utf8"));
+  return Buffer.concat(chunks);
+}
+async function boundedJson(response: Response) {
+  if (!response.headers.get("content-type")?.includes("application/json"))
+    throw Error();
+  return JSON.parse(
+    (await boundedBytes(response, 8 * 1024 * 1024)).toString("utf8"),
+  );
 }
 export async function callCms(
   connection: { origin: string; key: string },
@@ -169,13 +198,29 @@ export async function callCms(
   body: unknown,
   grantId: string,
   transport: typeof fetch = fetch,
+  requestContentType?: string,
 ) {
   const path = cmsDestination(operation, params, query);
-  const payload =
-    operation.method === "POST" || operation.method === "PUT"
+  if (
+    operation.multipart &&
+    (!Buffer.isBuffer(body) ||
+      !requestContentType ||
+      !/^multipart\/form-data;\s*boundary=(?:[A-Za-z0-9'()+_,.\/:=?-]{1,70}|"[A-Za-z0-9'()+_,.\/:=?-]{1,70}")$/.test(
+        requestContentType,
+      ))
+  )
+    throw new HttpError(400, "A multipart file upload is required");
+  const payload = operation.multipart
+    ? (body as Buffer)
+    : operation.method === "POST" ||
+        operation.method === "PUT" ||
+        operation.method === "PATCH"
       ? JSON.stringify(body ?? {})
       : undefined;
-  if (payload && Buffer.byteLength(payload) > 8 * 1024 * 1024)
+  if (
+    payload &&
+    Buffer.byteLength(payload) > (operation.multipart ? 11 : 8) * 1024 * 1024
+  )
     throw new HttpError(413, "CMS content is too large");
   try {
     const response = await transport(
@@ -185,11 +230,13 @@ export async function callCms(
         redirect: "error",
         signal: AbortSignal.timeout(30000),
         headers: {
-          "content-type": "application/json",
+          "content-type": operation.multipart
+            ? requestContentType!
+            : "application/json",
           authorization: `Bearer ${connection.key}`,
           "x-p1-user-grant": grantId,
         },
-        body: payload,
+        body: payload as NonNullable<Parameters<typeof fetch>[1]>["body"],
       },
     );
     // Preserve domain validation/conflict payloads (e.g. linked menu references).
@@ -197,9 +244,30 @@ export async function callCms(
     if (![200, 201, 400, 404, 409, 422].includes(response.status)) {
       await response.body?.cancel();
       throw new HttpError(
-        [401, 403, 429].includes(response.status) ? response.status : 503,
+        [401, 403, 413, 429].includes(response.status) ? response.status : 503,
         "Website operation unavailable. Refresh before retrying any change.",
       );
+    }
+    if (operation.binary && response.status === 200) {
+      const contentType =
+        response.headers
+          .get("content-type")
+          ?.split(";")[0]
+          .trim()
+          .toLowerCase() || "application/octet-stream";
+      const safeType = [
+        "image/png",
+        "image/jpeg",
+        "image/webp",
+        "image/gif",
+      ].includes(contentType)
+        ? contentType
+        : "application/octet-stream";
+      return {
+        status: 200,
+        body: await boundedBytes(response, 11 * 1024 * 1024),
+        contentType: safeType,
+      };
     }
     return { status: response.status, body: await boundedJson(response) };
   } catch (error) {

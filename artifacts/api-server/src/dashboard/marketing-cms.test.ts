@@ -180,3 +180,136 @@ test("CMS transport bounds payloads, suppresses internal errors and never retrie
     /too large/,
   );
 });
+
+test("Media bridge preserves bounded multipart bytes and never forwards browser metadata", async () => {
+  const body = Buffer.from(
+    '--synthetic-boundary\r\nContent-Disposition: form-data; name="file"; filename="photo.png"\r\nContent-Type: image/png\r\n\r\nsynthetic\r\n--synthetic-boundary--\r\n',
+  );
+  const type = "multipart/form-data; boundary=synthetic-boundary";
+  const upload = operation("POST", "/upload");
+  const result = await callCms(
+    connection,
+    upload,
+    {},
+    {},
+    body,
+    "grant",
+    async (_url, init) => {
+      assert.equal(init?.body, body);
+      assert.equal(new Headers(init?.headers).get("content-type"), type);
+      assert.equal(new Headers(init?.headers).get("cookie"), null);
+      assert.equal(new Headers(init?.headers).get("origin"), null);
+      return Response.json({ id: "asset" }, { status: 201 });
+    },
+    type,
+  );
+  assert.equal(result.status, 201);
+  for (const invalidType of [
+    undefined,
+    "application/json",
+    "multipart/form-data",
+    "multipart/form-data; boundary=bad; x=evil",
+  ]) {
+    await assert.rejects(
+      () =>
+        callCms(
+          connection,
+          upload,
+          {},
+          {},
+          body,
+          "grant",
+          async () => {
+            throw Error("must not call");
+          },
+          invalidType,
+        ),
+      /multipart/,
+    );
+  }
+  await assert.rejects(
+    () =>
+      callCms(
+        connection,
+        upload,
+        {},
+        {},
+        Buffer.alloc(11 * 1024 * 1024 + 1),
+        "grant",
+        async () => {
+          throw Error("must not call");
+        },
+        type,
+      ),
+    /too large/,
+  );
+});
+
+test("Media sources are bounded binary responses with safe content types; metadata PATCH retains JSON", async () => {
+  const source = operation("GET", "/media/:id/source");
+  const bytes = Buffer.from([0, 1, 2, 255]);
+  const result = await callCms(
+    connection,
+    source,
+    { id: "asset" },
+    {},
+    undefined,
+    "grant",
+    async () =>
+      new Response(bytes, {
+        headers: { "content-type": "image/png", "set-cookie": "secret=1" },
+      }),
+  );
+  assert.deepEqual(result.body, bytes);
+  assert.equal(result.contentType, "image/png");
+  const unsafe = await callCms(
+    connection,
+    source,
+    { id: "asset" },
+    {},
+    undefined,
+    "grant",
+    async () =>
+      new Response("<html>unsafe</html>", {
+        headers: { "content-type": "text/html" },
+      }),
+  );
+  assert.equal(unsafe.contentType, "application/octet-stream");
+  await assert.rejects(
+    () =>
+      callCms(
+        connection,
+        source,
+        { id: "asset" },
+        {},
+        undefined,
+        "grant",
+        async () => new Response(Buffer.alloc(11 * 1024 * 1024 + 1)),
+      ),
+    /unavailable/,
+  );
+  const missing = await callCms(
+    connection,
+    source,
+    { id: "asset" },
+    {},
+    undefined,
+    "grant",
+    async () => Response.json({ error: "Media not found" }, { status: 404 }),
+  );
+  assert.equal(missing.status, 404);
+  assert.deepEqual(missing.body, { error: "Media not found" });
+  await callCms(
+    connection,
+    operation("PATCH", "/media/:id"),
+    { id: "asset" },
+    {},
+    { alt: "Synthetic" },
+    "grant",
+    async (_url, init) => {
+      assert.equal(init?.method, "PATCH");
+      assert.deepEqual(JSON.parse(String(init?.body)), { alt: "Synthetic" });
+      return Response.json({ id: "asset", alt: "Synthetic" });
+    },
+  );
+});

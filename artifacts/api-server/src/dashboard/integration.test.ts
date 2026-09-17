@@ -105,6 +105,11 @@ test(
   "local integration: bootstrap, isolation, approvals, offline replay, billing cap and slot collision",
   { skip: !base },
   async () => {
+    const securityResponse = await fetch(base + "/api/healthz");
+    const csp = securityResponse.headers.get("content-security-policy")!;
+    assert(csp.includes("frame-src https://www.p1landmanagement.com;"));
+    assert(csp.includes("frame-ancestors 'none'"));
+    assert(!csp.includes("frame-src *"));
     const owner = client();
     const suffix = randomUUID();
     const ownerEmail =

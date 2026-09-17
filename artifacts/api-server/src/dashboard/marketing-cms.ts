@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { Router } from "express";
+import { Router, raw } from "express";
 import { actor, identity } from "./access";
 import { pool } from "./database";
 import { HttpError, requireCapability } from "./policy";
@@ -16,6 +16,7 @@ for (const operation of cmsOperations) {
     | "get"
     | "post"
     | "put"
+    | "patch"
     | "delete";
   marketingCmsApi[method](
     `/marketing/cms${operation.path}`,
@@ -26,6 +27,15 @@ for (const operation of cmsOperations) {
       for (const capability of operation.capabilities)
         requireCapability(a, capability);
       cmsDestination(operation, req.params, req.query);
+      if (operation.multipart) {
+        if (!req.is("multipart/form-data"))
+          throw new HttpError(400, "A multipart file upload is required");
+        await new Promise<void>((resolve, reject) =>
+          raw({ type: () => true, limit: "11mb" })(req, res, (error) =>
+            error ? reject(error) : resolve(),
+          ),
+        );
+      }
       const connection = marketingConnection();
       const session = await identity(req);
       if (session.user.id !== a.id) throw new HttpError(401, "Sign in again");
@@ -43,12 +53,17 @@ for (const operation of cmsOperations) {
           req.query,
           req.body,
           grantId,
+          fetch,
+          req.get("content-type"),
         );
-        res.status(result.status).json(result.body);
+        if (result.contentType) {
+          res.set("Content-Type", result.contentType);
+          res.set("X-Content-Type-Options", "nosniff");
+          res.set("Content-Disposition", "attachment");
+          res.status(result.status).send(result.body);
+        } else res.status(result.status).json(result.body);
       } finally {
-        await pool.query("DELETE FROM core_federation_grant WHERE id=$1", [
-          grantId,
-        ]);
+        await pool.query("DELETE FROM core_federation_grant WHERE id=$1", [grantId]);
       }
     },
   );
