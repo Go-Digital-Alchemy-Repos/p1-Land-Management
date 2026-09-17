@@ -1,3 +1,4 @@
+import { EventRegistrationSettings } from "./EventRegistrationSettings";
 import { EventAttendees } from "./EventAttendees";
 import { EventDirectoryManager } from "./EventDirectoryManager";
 import { EventReferences } from "./EventReferences";
@@ -351,6 +352,11 @@ function Editor({
             />
           </label>
         </fieldset>
+        <EventRegistrationSettings
+          value={value}
+          patch={patch}
+          disabled={busy}
+        />
         <div className="event-actions">
           <button disabled={busy} type="submit">
             {busy ? "Saving…" : "Save event"}

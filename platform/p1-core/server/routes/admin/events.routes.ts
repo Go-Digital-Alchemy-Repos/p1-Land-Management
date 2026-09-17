@@ -169,6 +169,35 @@ function dateField(data: EventRequestData, field: string): string | number | Dat
 }
 
 function validateEventData(data: EventRequestData): string | null {
+  if (
+    data.registrationFormId !== undefined &&
+    data.registrationFormId !== null &&
+    typeof data.registrationFormId !== "string"
+  )
+    return "Registration form must be an ID or empty";
+  for (const field of DATE_FIELDS) {
+    const value = data[field];
+    if (
+      value !== undefined &&
+      value !== null &&
+      value !== "" &&
+      (!(typeof value === "string" || value instanceof Date) || !isValidDate(new Date(value)))
+    )
+      return `Invalid ${field} date`;
+  }
+  for (const field of ["registrationEnabled", "waitlistEnabled"] as const) {
+    if (data[field] !== undefined && data[field] !== null && typeof data[field] !== "boolean")
+      return `${field} must be a boolean`;
+  }
+  if (
+    data.capacity !== undefined &&
+    data.capacity !== null &&
+    (!Number.isInteger(data.capacity) ||
+      Number(data.capacity) < 1 ||
+      Number(data.capacity) > 2147483647)
+  )
+    return "Capacity must be a positive whole number or empty for unlimited";
+
   const status = textField(data, "status");
   const visibility = textField(data, "visibility");
   const registrationType = textField(data, "registrationType");
@@ -304,7 +333,16 @@ function validateEventData(data: EventRequestData): string | null {
   return null;
 }
 
-async function validateEventReferences(data: EventRequestData): Promise<string | null> {
+async function validateEventReferences(
+  data: EventRequestData,
+  previousFormId?: string | null,
+): Promise<string | null> {
+  const formId = textField(data, "registrationFormId");
+  if (formId && formId !== previousFormId) {
+    const form = await storage.forms.getById(formId);
+    if (!form || !form.isActive || form.kind === "application")
+      return "Select an active public registration form";
+  }
   const venueId = textField(data, "venueId");
   const organizerId = textField(data, "organizerId");
 
@@ -345,6 +383,18 @@ router.post(
     payload.slug = await buildUniqueEventSlug(payload.title ?? "Event", payload.slug);
     const event = await storage.events.createEvent(payload as InsertEvent);
     res.status(201).json(await normalizeEventImage(event));
+  }),
+);
+
+router.get(
+  "/registration-forms",
+  asyncHandler(async (_req, res) => {
+    const forms = await storage.forms.getAll();
+    res.json(
+      forms
+        .filter((form) => form.isActive && form.kind !== "application")
+        .map(({ id, name, slug }) => ({ id, name, slug })),
+    );
   }),
 );
 
@@ -526,18 +576,18 @@ router.get(
 router.put(
   "/:id",
   asyncHandler(async (req, res) => {
-    const error = validateEventData(req.body);
-    if (error) {
-      return res.status(400).json({ message: error });
-    }
-    const referenceError = await validateEventReferences(req.body);
-    if (referenceError) {
-      return res.status(400).json({ message: referenceError });
-    }
     const id = paramString(req.params.id);
     const oldEvent = await storage.events.getEvent(id);
     if (!oldEvent) {
       return notFound(res, "Event");
+    }
+    const error = validateEventData({ ...oldEvent, ...req.body });
+    if (error) {
+      return res.status(400).json({ message: error });
+    }
+    const referenceError = await validateEventReferences(req.body, oldEvent.registrationFormId);
+    if (referenceError) {
+      return res.status(400).json({ message: referenceError });
     }
 
     const payload = coerceDates(req.body) as EventRequestData;

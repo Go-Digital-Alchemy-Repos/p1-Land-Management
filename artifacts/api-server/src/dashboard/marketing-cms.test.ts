@@ -380,5 +380,9 @@ test("Forms delivery queries are bounded and backfill remains owner-only", () =>
 
 
 test("event management is explicitly scoped to Events", () => {
-  for (const [method,path] of [["GET","/events/:eventId/attendees"],["PUT","/events/:eventId/attendees/:id/checkin"],["GET","/events"],["POST","/events"],["GET","/events/:id"],["PUT","/events/:id"],["DELETE","/events/:id"],["POST","/events/:id/notify"],["POST","/events/:id/duplicate"],["GET","/events/:id/analytics"],["GET","/events/venues"],["PUT","/events/venues/:venueId"],["GET","/events/organizers"],["DELETE","/events/organizers/:organizerId"]] as const) assert.deepEqual(operation(method,path).capabilities,["marketing.content.events"]);
+  for (const [method,path] of [["GET","/events/registration-forms"],["GET","/events/:eventId/attendees"],["PUT","/events/:eventId/attendees/:id/checkin"],["GET","/events"],["POST","/events"],["GET","/events/:id"],["PUT","/events/:id"],["DELETE","/events/:id"],["POST","/events/:id/notify"],["POST","/events/:id/duplicate"],["GET","/events/:id/analytics"],["GET","/events/venues"],["PUT","/events/venues/:venueId"],["GET","/events/organizers"],["DELETE","/events/organizers/:organizerId"]] as const) assert.deepEqual(operation(method,path).capabilities,["marketing.content.events"]);
+});
+
+test("event form selector is resolved before the event detail wildcard", () => {
+  assert(cmsOperations.indexOf(operation("GET", "/events/registration-forms")) < cmsOperations.indexOf(operation("GET", "/events/:id")));
 });

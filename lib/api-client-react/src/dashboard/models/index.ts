@@ -253,6 +253,7 @@ export * from './marketingEventCategory';
 export * from './marketingEventDeliveryMode';
 export * from './marketingEventEventType';
 export * from './marketingEventFormat';
+export * from './marketingEventFormReference';
 export * from './marketingEventInput';
 export * from './marketingEventInputAudience';
 export * from './marketingEventInputCategory';

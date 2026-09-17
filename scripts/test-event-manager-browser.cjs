@@ -26,6 +26,7 @@ const assert = require("node:assert/strict");
       venueSaved,
       venueWrites = 0,
       deleted = 0;
+    let formsFail = true;
     let attendanceWrites = 0,
       attendeeLoadFails = true,
       attendanceFails = true;
@@ -94,6 +95,17 @@ const assert = require("node:assert/strict");
       const req = route.request(),
         path = new URL(req.url()).pathname;
       let body = [];
+      if (path === "/api/v1/marketing/cms/events/registration-forms") {
+        if (formsFail)
+          return route.fulfill({
+            status: 503,
+            json: { message: "Synthetic form catalog failure" },
+          });
+        body = [
+          { id: "active-form", name: "Workshop RSVP", slug: "workshop-rsvp" },
+        ];
+      }
+
       if (path === "/api/v1/marketing/cms/events/event/attendees") {
         if (attendeeLoadFails)
           return route.fulfill({
@@ -350,6 +362,29 @@ const assert = require("node:assert/strict");
       "Host team",
     );
     assert.equal(venueWrites, 2);
+    await page
+      .getByRole("button", { name: "Retry registration forms", exact: true })
+      .waitFor();
+    assert.equal(
+      await page.getByLabel("Registration form", { exact: true }).inputValue(),
+      "saved-form",
+    );
+    formsFail = false;
+    await page
+      .getByRole("button", { name: "Retry registration forms", exact: true })
+      .click();
+    await page
+      .getByLabel("Registration form", { exact: true })
+      .selectOption("active-form");
+    await page.getByLabel("Capacity", { exact: true }).fill("25");
+    await page.getByLabel("Approval", { exact: true }).selectOption("manual");
+    await page.getByLabel("Enable waitlist", { exact: true }).check();
+    await page
+      .getByLabel("Registration opens", { exact: true })
+      .fill("2026-09-20T09:00");
+    await page
+      .getByLabel("Registration closes", { exact: true })
+      .fill("2026-09-30T17:00");
     await page.getByLabel("Title", { exact: true }).fill("Updated workshop");
     page.once("dialog", (d) => d.dismiss());
     await page.getByRole("button", { name: "Save event", exact: true }).click();
@@ -368,7 +403,12 @@ const assert = require("node:assert/strict");
     assert.equal(saved.description, event.description);
     assert.deepEqual(saved.tags, ["saved"]);
     assert.equal(saved.registrationFee, 12500);
-    assert.equal(saved.registrationFormId, "saved-form");
+    assert.equal(saved.registrationFormId, "active-form");
+    assert.equal(saved.capacity, 25);
+    assert.equal(saved.registrationApprovalMode, "manual");
+    assert.equal(saved.waitlistEnabled, true);
+    assert.equal(saved.registrationOpensAt, "2026-09-20T13:00:00.000Z");
+    assert.equal(saved.registrationClosesAt, "2026-09-30T21:00:00.000Z");
     assert.equal(saved.recurrencePattern, "weekly");
     assert.equal(saved.recordingUrl, event.recordingUrl);
     assert(!Object.hasOwn(saved, "id"));

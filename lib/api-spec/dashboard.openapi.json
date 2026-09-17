@@ -11371,6 +11371,30 @@
           }
         }
       }
+    },
+    "/marketing/cms/events/registration-forms": {
+      "get": {
+        "operationId": "listMarketingEventRegistrationForms",
+        "description": "Events-authorized selector of active public forms. No form settings, fields or notification recipients.",
+        "responses": {
+          "200": {
+            "description": "Active public form references",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MarketingEventFormReference"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Events capability required"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -22748,6 +22772,25 @@
           "canceledAt",
           "attended"
         ]
+      },
+      "MarketingEventFormReference": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "slug"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          }
+        }
       }
     }
   }

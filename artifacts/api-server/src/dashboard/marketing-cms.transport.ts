@@ -73,6 +73,7 @@ for (const path of ["/events", "/events/venues", "/events/organizers"]) {
 for (const path of ["/events/:id", "/events/venues/:venueId", "/events/organizers/:organizerId"]) {
   add("events", "PUT", path); add("events", "DELETE", path);
 }
+add("events", "GET", "/events/registration-forms");
 add("events", "GET", "/events/:id");
 add("events", "GET", "/events/:id/analytics");
 add("events", "GET", "/events/:eventId/attendees");

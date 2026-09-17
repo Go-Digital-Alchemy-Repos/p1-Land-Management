@@ -48,6 +48,7 @@ const state = vi.hoisted(() => ({
   formDeleteSubmission: vi.fn(),
   formJobs: vi.fn(),
   formRetry: vi.fn(),
+  eventUpdate: vi.fn(),
   attendees: vi.fn(), attendance: vi.fn(),
   events: vi.fn(), eventGet: vi.fn(), eventCreate: vi.fn(), eventSlug: vi.fn(), eventMail: vi.fn(), venues:vi.fn(), organizers:vi.fn(), eventAnalytics:vi.fn(),
 }));
@@ -102,7 +103,7 @@ vi.mock("../storage", () => ({
       deleteComment: state.commentDelete,
       countByStatus: async () => ({ pending: 0, approved: 0, spam: 0, rejected: 0 }),
     },
-    events: {getAllEvents:state.events,getEvent:state.eventGet,createEvent:state.eventCreate,getEventSlugOwner:state.eventSlug},
+    events: {updateEvent:state.eventUpdate,getAllEvents:state.events,getEvent:state.eventGet,createEvent:state.eventCreate,getEventSlugOwner:state.eventSlug},
     eventVenues:{getAllVenues:state.venues},
     eventOrganizers:{getAllOrganizers:state.organizers},
     eventRegistrations:{getEventAnalytics:state.eventAnalytics,getRegistrationsByEvent:state.attendees,setEventAttendance:state.attendance},
@@ -858,4 +859,28 @@ it("limits event attendance to event-scoped updates and minimizes returned ident
   expect((await request("/events/other/attendees/attendee/checkin","PUT",{},"/service",{attended:false})).status).toBe(404);
   state.eventGet.mockResolvedValue(undefined);expect((await request("/events/missing/attendees")).status).toBe(404);
   state.enabled.mockResolvedValue(false);expect((await request("/events/event/attendees")).status).toBe(404);
+});
+
+
+it("provides minimized public form references and validates event registration settings", async () => {
+  identity.capabilities=["marketing.content.events"];
+  state.list.mockResolvedValue([{id:"active",name:"RSVP",slug:"rsvp",isActive:true,kind:"custom",fields:[{private:true}],settings:{recipients:["private@example.test"]}},{id:"inactive",name:"Closed",isActive:false},{id:"application",name:"Private",isActive:true,kind:"application"}]);
+  const response=await request("/events/registration-forms");expect(response.status).toBe(200);
+  expect(await response.json()).toEqual([{id:"active",name:"RSVP",slug:"rsvp"}]);
+  state.eventGet.mockResolvedValue({id:"event",title:"Event",date:new Date("2026-10-01T12:00:00Z"),registrationFormId:"inactive",registrationOpensAt:new Date("2026-09-20T12:00:00Z")});
+  state.eventUpdate.mockImplementation(async(id,data)=>({id,...data}));
+  // Unchanged saved references survive catalog changes; a new inactive selection is rejected.
+  expect((await request("/events/event","PUT",{},"/service",{registrationFormId:"inactive",registrationEnabled:false})).status).toBe(200);
+  state.form.mockResolvedValue({isActive:false,kind:"custom"});
+  expect((await request("/events/event","PUT",{},"/service",{registrationFormId:"other"})).status).toBe(400);
+  state.form.mockResolvedValue({isActive:true,kind:"application"});
+  expect((await request("/events/event","PUT",{},"/service",{registrationFormId:"other"})).status).toBe(400);
+  state.form.mockResolvedValue({isActive:true,kind:"custom"});
+  expect((await request("/events/event","PUT",{},"/service",{registrationFormId:"active",capacity:10,registrationApprovalMode:"manual"})).status).toBe(200);
+  expect((await request("/events/event","PUT",{},"/service",{registrationFormId:null,capacity:null})).status).toBe(200);
+  const writes=state.eventUpdate.mock.calls.length;
+  for(const body of [{registrationFormId:42},{capacity:0},{capacity:2.5},{capacity:"10"},{waitlistEnabled:"true"},{registrationEnabled:1},{registrationOpensAt:"invalid"},{registrationClosesAt:"2026-09-19T12:00:00Z"}])expect((await request("/events/event","PUT",{},"/service",body)).status).toBe(400);
+  expect(state.eventUpdate).toHaveBeenCalledTimes(writes);
+  identity.capabilities=["marketing.content.forms"];
+  expect((await request("/events/registration-forms")).status).toBe(403);
 });

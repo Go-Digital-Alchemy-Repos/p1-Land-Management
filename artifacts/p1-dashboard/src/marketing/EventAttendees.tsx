@@ -122,11 +122,16 @@ export function EventAttendees({
       <label>
         Attendee status
         <select value={status} onChange={(e) => setStatus(e.target.value)}>
-          {["all", "confirmed", "waitlisted", "canceled", "attended"].map(
-            (value) => (
-              <option key={value}>{value}</option>
-            ),
-          )}
+          {[
+            "all",
+            "confirmed",
+            "pending",
+            "waitlisted",
+            "canceled",
+            "attended",
+          ].map((value) => (
+            <option key={value}>{value}</option>
+          ))}
         </select>
       </label>
       {loading ? (

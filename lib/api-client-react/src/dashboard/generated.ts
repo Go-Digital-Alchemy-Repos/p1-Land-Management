@@ -140,6 +140,7 @@ import type {
   MarketingDeleteResult,
   MarketingEvent,
   MarketingEventAttendee,
+  MarketingEventFormReference,
   MarketingEventInput,
   MarketingEventOrganizer,
   MarketingEventOrganizerInput,
@@ -6477,6 +6478,30 @@ export const setMarketingEventAttendance = async (eventId: string,
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
       setMarketingEventAttendanceBody,)
+  }
+);}
+
+
+
+export const getListMarketingEventRegistrationFormsUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/events/registration-forms`
+}
+
+/**
+ * Events-authorized selector of active public forms. No form settings, fields or notification recipients.
+ */
+export const listMarketingEventRegistrationForms = async ( options?: RequestInit): Promise<MarketingEventFormReference[]> => {
+
+  return customFetch<MarketingEventFormReference[]>(getListMarketingEventRegistrationFormsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
   }
 );}
 
