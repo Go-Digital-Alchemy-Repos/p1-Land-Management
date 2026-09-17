@@ -113,8 +113,10 @@ export default function HeadTagSettings() {
         public website’s head. These settings belong to the website.
       </p>
       <p role="status">
-        Website delivery integration is pending. Saving here preserves the
-        markup but does not publish it to the website.
+        Saved markup appears on normal public page loads after a refresh of up
+        to 30 seconds. Admin pages and editor previews are excluded. Inline
+        scripts and unapproved script sources remain blocked by website security
+        policy.
       </p>
       <p>
         Use the structured Google Analytics integration for GA4 configuration.

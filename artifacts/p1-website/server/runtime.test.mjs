@@ -24,7 +24,9 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
   const upstreamRequests = [];
   const upstream = http.createServer((req, res) => {
     upstreamRequests.push({ path: req.url, headers: req.headers });
-    if (req.url.startsWith('/api/client-site-content/')) {
+    if (req.url === '/api/p1/website-head-tags') {
+      res.setHeader('Content-Type','application/json');res.end(JSON.stringify({schemaVersion:1,stackId:'p1-land-management',html:'<meta name="p1-head-fixture" content="literal $&"><script>window.syntheticHeadRan=true</script>'}));
+    } else if (req.url.startsWith('/api/client-site-content/')) {
       const [routeId, componentKey] = req.url.split('/').slice(-2);
       res.setHeader('Content-Type', 'application/json');
       res.end(JSON.stringify({ stackId: 'p1-land-management', routeId, componentKey, revision: 77,
@@ -58,6 +60,16 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
     child.stdout.on('data', chunk => { if (String(chunk).includes('P1 website listening')) { clearTimeout(timer); resolveReady(); } });
   });
 
+  await t.test('global head markup appears only on public documents without expanding CSP',async()=>{
+    const page=await request(port,'/');
+    assert.equal(page.status,200);assert(page.body.includes('<meta name="p1-head-fixture" content="literal $&">'));
+    assert(page.body.indexOf('name="p1-head-fixture"')<page.body.indexOf('</head>'));
+    assert(!page.headers['content-security-policy'].includes("script-src 'self' 'unsafe-inline'"));
+    assert(!page.headers['content-security-policy'].includes('sha256-'));
+    const preview=await request(port,'/?cmsPreview=1');assert(!preview.body.includes('p1-head-fixture'));
+    const admin=await request(port,'/admin/');assert(!admin.body.includes('p1-head-fixture'));
+    const requests=upstreamRequests.filter(r=>r.path==='/api/p1/website-head-tags');assert.equal(requests.length,1);assert.equal(requests[0].headers.cookie,undefined);assert.equal(requests[0].headers.authorization,undefined);
+  });
   await t.test('absolute and network-path targets reject without forwarding credentials', async () => {
     const before = upstreamRequests.length;
     for (const target of [`http://127.0.0.1:${trapPort}/api/secret`, `//127.0.0.1:${trapPort}/api/secret`, '/%E0%A4%A']) {
@@ -190,6 +202,7 @@ test('staging manifest blocks indexing across public and proxied responses regar
   t.after(() => rm(temporary, { recursive: true, force: true }));
   await mkdir(resolve(temporary, 'server')); await mkdir(resolve(temporary, 'config'));
   await copyFile(resolve(root, 'server/index.mjs'), resolve(temporary, 'server/index.mjs'));
+  await copyFile(resolve(root, 'server/head-tags.mjs'), resolve(temporary, 'server/head-tags.mjs'));
   await copyFile(resolve(root, 'server/content.mjs'), resolve(temporary, 'server/content.mjs'));
   await copyFile(resolve(root, 'server/client-ip.mjs'), resolve(temporary, 'server/client-ip.mjs')); 
   await copyFile(resolve(root, 'server/google-reviews.mjs'), resolve(temporary, 'server/google-reviews.mjs'));
