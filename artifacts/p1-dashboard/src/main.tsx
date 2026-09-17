@@ -77,6 +77,7 @@ const auth = createAuthClient({ plugins: [twoFactorClient()] });
 const MarketingReports = lazy(() => import("./marketing/MarketingReports").then(module => ({default: module.MarketingReports})));
 const SidebarManager = lazy(() => import("./marketing/SidebarManager"));
 const GalleryManager = lazy(() => import("./marketing/GalleryManager"));
+const TemplateLibrary = lazy(() => import("./agreements/TemplateLibrary"));
 const EventManager = lazy(() => import("./marketing/EventManager"));
 const FormManager = lazy(() => import("./marketing/FormManager"));
 const PageManager = lazy(() => import("./marketing/PageManager"));
@@ -135,6 +136,7 @@ const icons: Record<DashboardPageRoute["view"] | "Settings:security" | "Settings
   "My Day": ClipboardList,
   Sales: FileText,
   Agreements: FileText,
+  "Agreement Templates": FileText,
   Billing: Wallet,
   Requests: MessageSquare,
   Recurring: RefreshCw,
@@ -1289,7 +1291,7 @@ function App() {
                     ? "Your assignments and field notes, wherever work takes you."
                     : view === "Settings"
                       ? "Control access, account security, connections and workspace defaults."
-                      : view === "CMS Pages" ? "Manage CMS page content, publication, and revision history." : "Keep the details connected to the work."}
+                      : view === "Agreement Templates" ? "Manage reusable terms, scope, cost breakdowns, and published agreement packages." : view === "CMS Pages" ? "Manage CMS page content, publication, and revision history." : "Keep the details connected to the work."}
               </p>
             </div>
             {!routeUnavailable && <div className="heading-actions">
@@ -1422,6 +1424,8 @@ function App() {
           {view === "Website Blog" && <Suspense fallback={<p role="status">Loading blog…</p>}><BlogManager canUseMedia={(person.capabilities || []).includes("marketing.content.media")} key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Website Team" && <Suspense fallback={<p role="status">Loading team…</p>}><TeamManager canUseMedia={(person.capabilities || []).includes("marketing.content.media")} key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Website Menus" && <Suspense fallback={<p role="status">Loading website menus…</p>}><CmsMenus key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
+          {view === "Agreement Templates" && <Suspense fallback={<p role="status">Loading templates…</p>}><TemplateLibrary key={`${person.id}:${(person.capabilities || []).join(",")}`} canUseClauses={hasCapability(person,"settings.term-libraries")} canViewAgreements={hasCapability(person,"revenue.agreements")||hasCapability(person,"revenue.billing")}/></Suspense>}
+          {view === "Agreements" && hasCapability(person,"revenue.agreement-templates.manage") && <nav aria-label="Agreement workspace"><span aria-current="page">Agreements</span> <a href="/agreements/templates">Templates</a></nav>}
           {view === "Agreements" && (
             <ServiceAgreements
               role={person.role}

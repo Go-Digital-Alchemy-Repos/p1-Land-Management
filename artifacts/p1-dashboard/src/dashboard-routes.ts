@@ -7,6 +7,7 @@ export type DashboardView =
   | "My Day"
   | "Sales"
   | "Agreements"
+  | "Agreement Templates"
   | "Billing"
   | "Requests"
   | "Recurring"
@@ -96,6 +97,7 @@ export const DASHBOARD_PAGES: readonly DashboardPageRoute[] = [
   { view: "Inspections", label: "Inspections", path: "/inspections", group: "Operations" },
   { view: "Sales", label: "Sales", path: "/sales", group: "Revenue" },
   { view: "Agreements", label: "Agreements", path: "/agreements", group: "Revenue" },
+  { view: "Agreement Templates", label: "Agreement templates", path: "/agreements/templates", group: "Revenue" },
   { view: "Billing", label: "Billing", path: "/billing", group: "Revenue" },
   { view: "Expenses", label: "Expenses", path: "/expenses", group: "Revenue" },
   { view: "Website Events", label: "Events", path: "/marketing/content/events", group: "Marketing", section: "Content" },
@@ -209,6 +211,7 @@ export function pathForRoute(route: Extract<DashboardRoute, { kind: "page" }>) {
 }
 
 const viewCapability: Partial<Record<DashboardView, Capability>> = {
+  "Agreement Templates": "revenue.agreement-templates.manage",
   Analytics: "marketing.analytics.view",
   "Website Sidebars": "marketing.content.sidebars",
   "Website Galleries": "marketing.content.galleries",

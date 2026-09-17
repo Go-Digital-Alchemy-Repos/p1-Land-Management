@@ -1,0 +1,45 @@
+.template-library,
+.template-library form,
+.template-library label {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.template-library {
+  gap: 20px;
+}
+.template-library fieldset {
+  display: grid;
+  gap: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 20px;
+  min-width: 0;
+}
+.template-library input,
+.template-library textarea,
+.template-library select {
+  width: 100%;
+  min-width: 0;
+}
+.template-library textarea {
+  resize: vertical;
+}
+.template-actions {
+  display: flex;
+  gap: 12px;
+  align-items: end;
+  flex-wrap: wrap;
+}
+.template-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
+  gap: 18px;
+}
+.template-grid article {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 8px;
+  padding: 20px;
+  overflow-wrap: anywhere;
+}

@@ -113,3 +113,13 @@ test("website Events is separate from Forms and other content grants", () => {
   assert.equal(canAccessRoute(route,"member",["marketing.content.forms"]),false);
   assert.equal(canAccessRoute(route,"crew",["marketing.content.events"]),false);
 });
+
+
+test("agreement template management has its own route and does not inherit agreement access", () => {
+  const route=routeFromPath("/agreements/templates");
+  assert.equal(route.kind,"page");if(route.kind!=="page")return;
+  assert.equal(route.page.view,"Agreement Templates");assert.equal(route.record,undefined);
+  assert(canAccessRoute(route,"member",["revenue.agreement-templates.manage"]));
+  for(const role of ["member","crew","client"])assert.equal(canAccessRoute(route,role,["revenue.agreements","revenue.sales"]),false);
+  assert(canAccessRoute(route,"owner",[]));
+});
