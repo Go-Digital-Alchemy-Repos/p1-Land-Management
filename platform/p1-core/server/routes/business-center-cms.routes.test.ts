@@ -1119,3 +1119,19 @@ it("website colors require the precise fresh Design grant, preserve raw values a
  identity.active=false;expect((await request("/design/colors")).status).toBe(403);
  identity={active:true,role:"owner",ownerAttested:true,capabilities:["marketing.design.colors"]};expect((await request("/design/colors")).status).toBe(200);
 });
+
+it("typography retains the catalog and unknown saved values while requiring its exact grant",async()=>{
+ const body={fonts:{frontend_heading_font:"lora"},expectedVersion:"f".repeat(64)};
+ identity.capabilities=["marketing.design.colors"];expect((await request("/design/typography")).status).toBe(403);expect((await request("/design/typography","PUT",{},"/service",body)).status).toBe(403);
+ identity.capabilities=["marketing.design.typography"];state.enabled.mockResolvedValue(false);
+ state.headSnapshot.mockResolvedValue({values:{frontend_body_font:"custom old font",frontend_heading_font:"inter",company_name:"private projection"},version:"f".repeat(64)});
+ const read=await request("/design/typography");expect(read.status).toBe(200);const data=await read.json();expect(data.fonts).toEqual({frontend_body_font:"custom old font",frontend_heading_font:"inter"});expect(data.options).toHaveLength(20);expect(data.options.map((x:any)=>x.value)).toContain("source-serif-4");
+ expect((await request("/design/typography","PUT",{},"/service",body)).status).toBe(200);
+ expect(state.headSave).toHaveBeenCalledWith([{key:"frontend_heading_font",value:"lora",category:"branding",isSecret:false}],{category:"branding",version:body.expectedVersion,publicOnly:true},{userId:"linked",action:"website_typography_updated",details:'["frontend_heading_font"]'});
+ for(const fonts of [{},{frontend_heading_font:"unsupported"},{frontend_body_font:"url(evil)"},{other:"inter"},{frontend_body_font:null}])expect((await request("/design/typography","PUT",{},"/service",{...body,fonts})).status).toBe(400);
+ expect((await request("/design/typography?other=1")).status).toBe(400);
+ expect((await request("/design/typography","PUT",{},"/service",{...body,fonts:{frontend_heading_font:""}})).status).toBe(200);
+ state.headSave.mockRejectedValueOnce(Object.assign(Error("Changed"),{statusCode:409}));expect((await request("/design/typography","PUT",{},"/service",body)).status).toBe(409);
+ for(const role of ["crew","client"]){identity.role=role;expect((await request("/design/typography")).status).toBe(403);}
+ identity.role="member";identity.active=false;expect((await request("/design/typography")).status).toBe(403);
+});

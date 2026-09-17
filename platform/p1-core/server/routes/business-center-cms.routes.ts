@@ -1,3 +1,4 @@
+import websiteTypography from "./business-center-typography.routes";
 import websiteColors from "./business-center-colors.routes";
 import websiteSystem from "./business-center-website-system.routes";
 import careers from "./admin/careers.routes";
@@ -79,6 +80,7 @@ router.get("/notification-forms", async (req, res, next) => {
 });
 router.use("/website-system", websiteSystem);
 router.use("/design/colors", websiteColors);
+router.use("/design/typography", websiteTypography);
 router.use("/editor-locks", editorLocks);
 router.use("/blog", requireBlogEnabled, blog);
 router.use(eventAttendees);

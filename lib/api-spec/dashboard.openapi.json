@@ -11,6 +11,56 @@
     }
   ],
   "paths": {
+    "/marketing/cms/design/typography": {
+      "get": {
+        "operationId": "getWebsiteTypography",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteTypographyState"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "saveWebsiteTypography",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "saved"
+                  ],
+                  "properties": {
+                    "saved": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebsiteTypographyInput"
+              }
+            }
+          }
+        }
+      }
+    },
     "/marketing/cms/design/colors": {
       "get": {
         "operationId": "getWebsiteColors",
@@ -14425,6 +14475,97 @@
   },
   "components": {
     "schemas": {
+      "WebsiteFonts": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "frontend_body_font",
+          "frontend_heading_font"
+        ],
+        "properties": {
+          "frontend_body_font": {
+            "type": "string"
+          },
+          "frontend_heading_font": {
+            "type": "string"
+          }
+        }
+      },
+      "WebsiteFontChanges": {
+        "type": "object",
+        "additionalProperties": false,
+        "minProperties": 1,
+        "properties": {
+          "frontend_body_font": {
+            "type": "string"
+          },
+          "frontend_heading_font": {
+            "type": "string"
+          }
+        }
+      },
+      "WebsiteFontOption": {
+        "type": "object",
+        "required": [
+          "value",
+          "label",
+          "category"
+        ],
+        "properties": {
+          "value": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "sans",
+              "serif"
+            ]
+          }
+        }
+      },
+      "WebsiteTypographyState": {
+        "type": "object",
+        "required": [
+          "fonts",
+          "options",
+          "version"
+        ],
+        "properties": {
+          "fonts": {
+            "$ref": "#/components/schemas/WebsiteFonts"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WebsiteFontOption"
+            }
+          },
+          "version": {
+            "type": "string"
+          }
+        }
+      },
+      "WebsiteTypographyInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "fonts",
+          "expectedVersion"
+        ],
+        "properties": {
+          "fonts": {
+            "$ref": "#/components/schemas/WebsiteFontChanges"
+          },
+          "expectedVersion": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      },
       "WebsiteColors": {
         "type": "object",
         "additionalProperties": false,

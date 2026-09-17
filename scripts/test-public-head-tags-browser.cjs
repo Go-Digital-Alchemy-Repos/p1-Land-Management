@@ -13,7 +13,10 @@ const listen = async (server) => {
 (async () => {
   let child, browser;
   const upstream = http.createServer((req, res) => {
-    if (req.url === "/api/p1/website-colors") {
+    if (req.url === "/api/p1/website-fonts") {
+      res.setHeader("Content-Type", "application/json");
+      res.end(JSON.stringify({schemaVersion:1,stackId:"p1-land-management",body:{name:"Inter",fallback:"sans-serif"},heading:{name:"Lora",fallback:"serif"}}));
+    } else if (req.url === "/api/p1/website-colors") {
       res.setHeader("Content-Type", "application/json");
       res.end(JSON.stringify({schemaVersion:1,stackId:"p1-land-management",colors:{brand_primary_color:"#FF0000",text_h1_color:"#FF0000",text_h2_color:"#00FF00",text_link_color:"#0000FF",text_link_hover_color:"#FF0000"}}));
     } else if (req.url === "/api/p1/website-head-tags") {
@@ -98,6 +101,9 @@ const listen = async (server) => {
       undefined,
     );
     await page.waitForFunction(()=>{const h=document.querySelector("h1");return h && getComputedStyle(h).color === "rgb(255, 0, 0)";});
+    await page.waitForFunction(()=>{const el=document.querySelector("h1");return el && getComputedStyle(el).fontFamily.includes("Lora");});
+    await page.waitForFunction(()=>getComputedStyle(document.body).fontFamily.includes("Inter"));
+    assert.match(await page.locator("#p1-website-font-source").getAttribute("href"), /^https:\/\/fonts.googleapis.com\/css2\?/);
     assert.equal(await page.locator("html").evaluate(e=>getComputedStyle(e).getPropertyValue("--primary").trim()), "0 100% 50%");
     await page.goto(`http://127.0.0.1:${port}/service-areas/inman-sc`, {waitUntil:"domcontentloaded"});
     await page.waitForFunction(()=>{const h=document.querySelector("h1");return h && getComputedStyle(h).color === "rgb(255, 0, 0)";});
@@ -110,14 +116,16 @@ const listen = async (server) => {
     });
     assert.equal(await page.locator('meta[name="p1-head-browser"]').count(), 0);
     assert.equal(await page.locator("#p1-website-colors").count(), 1);
+    assert.equal(await page.locator("#p1-website-fonts").count(), 1);
     await page.waitForFunction(()=>{const h=document.querySelector("h1");return h && getComputedStyle(h).color === "rgb(255, 0, 0)";});
     await page.goto(`http://127.0.0.1:${port}/admin/`, {
       waitUntil: "domcontentloaded",
     });
     assert.equal(await page.locator('meta[name="p1-head-browser"]').count(), 0);
     assert.equal(await page.locator("#p1-website-colors").count(), 0);
+    assert.equal(await page.locator("#p1-website-fonts").count(), 0);
     console.log(
-      "Public branding browser passed: palette computed on home/location/preview, link hover, admin exclusion, head metadata, inline CSP blocking and external networking blocked.",
+      "Public branding browser passed: palette and font declarations computed on home/location/preview, link hover, admin exclusion, head metadata, inline CSP blocking and external networking blocked.",
     );
   } finally {
     if (browser) await browser.close();

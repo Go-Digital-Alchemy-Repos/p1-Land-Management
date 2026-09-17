@@ -1,3 +1,4 @@
+import websiteFontsPublic from "./website-fonts-public.routes";
 import websiteColorsPublic from "./website-colors-public.routes";
 import websiteHeadPublic from "./website-head-public.routes";
 import p1GoogleAnalyticsRoutes from "./p1-google-analytics.routes";
@@ -46,6 +47,7 @@ export function registerApiRoutes(app: Express) {
   app.use("/api/p1/google-analytics", p1GoogleAnalyticsRoutes);
   app.use("/api/p1", websiteHeadPublic);
   app.use("/api/p1", websiteColorsPublic);
+  app.use("/api/p1", websiteFontsPublic);
   app.use("/api/p1", p1AnalyticsRoutes);
   app.use("/r2", r2PublicRoutes);
   app.use("/api/auth/federation", federationRoutes);

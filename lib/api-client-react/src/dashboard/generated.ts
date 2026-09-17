@@ -286,6 +286,7 @@ import type {
   SaveWebsiteColors200,
   SaveWebsiteFeatures200,
   SaveWebsiteHeadTags200,
+  SaveWebsiteTypography200,
   SchedulePage,
   ServiceAgreement,
   ServiceAgreementFinancial,
@@ -333,6 +334,8 @@ import type {
   WebsiteMenu,
   WebsiteMenuInput,
   WebsiteMenuReferences,
+  WebsiteTypographyInput,
+  WebsiteTypographyState,
   WorkOrder,
   WorkOrderStatusUpdate,
   WorkVersion,
@@ -340,6 +343,49 @@ import type {
 } from './models';
 
 import { customFetch } from '../custom-fetch';
+
+export const getGetWebsiteTypographyUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/design/typography`
+}
+
+export const getWebsiteTypography = async ( options?: RequestInit): Promise<WebsiteTypographyState> => {
+
+  return customFetch<WebsiteTypographyState>(getGetWebsiteTypographyUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getSaveWebsiteTypographyUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/design/typography`
+}
+
+export const saveWebsiteTypography = async (websiteTypographyInput: WebsiteTypographyInput, options?: RequestInit): Promise<SaveWebsiteTypography200> => {
+
+  return customFetch<SaveWebsiteTypography200>(getSaveWebsiteTypographyUrl(),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      websiteTypographyInput,)
+  }
+);}
+
+
 
 export const getGetWebsiteColorsUrl = () => {
 

@@ -128,3 +128,11 @@ it("legacy generic color mutations direct all callers to the versioned Design ed
  }
  expect(state.save).not.toHaveBeenCalled();expect(state.legacySave).not.toHaveBeenCalled();expect(state.remove).not.toHaveBeenCalled();
 });
+
+it("legacy generic typography writes and deletes cannot bypass the versioned leaf-grant editor",async()=>{
+ for(const key of ["frontend_body_font","frontend_heading_font"]){
+  for(const category of ["branding","other"])expect((await put({key,category,value:"inter",isSecret:false})).status).toBe(409);
+  expect((await fetch(base+"/settings/"+key,{method:"DELETE"})).status).toBe(409);
+ }
+ expect(state.save).not.toHaveBeenCalled();expect(state.legacySave).not.toHaveBeenCalled();expect(state.remove).not.toHaveBeenCalled();
+});
