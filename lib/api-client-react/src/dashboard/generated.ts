@@ -32,6 +32,7 @@ import type {
   AgreementPreparationRetryReceipt,
   AgreementRecurrenceOption,
   AgreementTemplate,
+  AgreementTemplateExport,
   AgreementTemplateVersionRequest,
   AgreementVersion,
   ApplyAgreementDraftTemplates,
@@ -196,6 +197,7 @@ import type {
   NotifyMarketingEventBody,
   OperationReceipt,
   PhotoUploadReceipt,
+  PrepareAgreementTemplateExport,
   Project,
   ProjectEditReceipt,
   ProjectPhase,
@@ -6831,6 +6833,32 @@ export const applyAgreementDraftTemplates = async (id: string,
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
       applyAgreementDraftTemplates,)
+  }
+);}
+
+
+
+export const getPrepareAgreementTemplateExportUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/agreement-drafts/${id}/template-export`
+}
+
+/**
+ * @summary Prepare a reusable template for review
+ */
+export const prepareAgreementTemplateExport = async (id: string,
+    prepareAgreementTemplateExport: PrepareAgreementTemplateExport, options?: RequestInit): Promise<AgreementTemplateExport> => {
+
+  return customFetch<AgreementTemplateExport>(getPrepareAgreementTemplateExportUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      prepareAgreementTemplateExport,)
   }
 );}
 

@@ -11,16 +11,19 @@ import type {
 import { costDraft, costPayload, message } from "./template-draft";
 import { TemplateRows } from "./TemplateRows";
 import { useCmsUnsavedChanges } from "../marketing/useCmsUnsavedChanges";
+import AgreementTemplateExport from "./AgreementTemplateExport";
 import AgreementTemplateSwitch from "./AgreementTemplateSwitch";
 import AgreementContextFields from "./AgreementContextFields";
 import AgreementDraftPreview from "./AgreementDraftPreview";
 export default function AgreementDraftEditor({
   row,
   canEdit,
+  canManageTemplates,
   changed,
 }: {
   row: AgreementDraft;
   canEdit: boolean;
+  canManageTemplates: boolean;
   changed: (row: AgreementDraft) => void;
 }) {
   const [value, setValue] = useState(() => ({
@@ -32,6 +35,7 @@ export default function AgreementDraftEditor({
     dates: { ...row.dates },
   }));
   const [baseline] = useState(() => JSON.stringify(value));
+  const [exporting, setExporting] = useState(false);
   const [switching, setSwitching] = useState(false);
   const [context, setContext] = useState<AgreementDraftContext | null>(null),
     [contextReady, setContextReady] = useState(false);
@@ -66,6 +70,10 @@ export default function AgreementDraftEditor({
       if (alive.current) setBusy(false);
     }
   }
+  if (exporting)
+    return (
+      <AgreementTemplateExport row={row} close={() => setExporting(false)} />
+    );
   return (
     <section className="template-library" aria-label="Client agreement draft">
       <a href="/agreements/drafts">All agreement drafts</a>
@@ -91,6 +99,14 @@ export default function AgreementDraftEditor({
       >
         Reload saved draft
       </button>
+      {canManageTemplates && (
+        <button
+          disabled={busy || dirty || Boolean(context) || switching}
+          onClick={() => setExporting(true)}
+        >
+          Save as new template
+        </button>
+      )}
       <details>
         <summary>Source template history</summary>
         {row.source_templates.length ? (

@@ -23,21 +23,28 @@ export default function TemplateEditor({
   close,
   changed,
   canUseClauses,
+  initialValue,
+  requireReview = false,
 }: {
   row: AgreementTemplate | null;
   kind: AgreementTemplateKind;
   close: () => void;
   changed: (row: AgreementTemplate) => void;
   canUseClauses: boolean;
+  initialValue?: Draft;
+  requireReview?: boolean;
 }) {
-  const [value, setValue] = useState(() => draft(row)),
-    [baseline] = useState(() => JSON.stringify(draft(row))),
+  const [value, setValue] = useState(() =>
+      structuredClone(initialValue || draft(row)),
+    ),
+    [baseline] = useState(() => JSON.stringify(initialValue || draft(row))),
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false);
   const [options, setOptions] = useState<AgreementTemplate[]>([]),
     [catalogError, setCatalogError] = useState(""),
     [catalogAttempt, setCatalogAttempt] = useState(0),
     [loading, setLoading] = useState(kind === "package");
+  const [reviewed, setReviewed] = useState(false);
   const gate = useRef(false),
     alive = useRef(true);
   useEffect(() => {
@@ -69,8 +76,10 @@ export default function TemplateEditor({
     return () => controller.abort();
   }, [kind, catalogAttempt]);
   const editable = !row || row.status === "draft";
-  const patch = (change: Partial<Draft>) =>
+  const patch = (change: Partial<Draft>) => {
+    setReviewed(false);
     setValue((old) => ({ ...old, ...change }));
+  };
   async function run(action: () => Promise<AgreementTemplate>) {
     if (gate.current) return;
     gate.current = true;
@@ -87,6 +96,7 @@ export default function TemplateEditor({
     }
   }
   async function save() {
+    if (requireReview && !reviewed) return;
     await run(async () => {
       const content = {
         name: value.name,
@@ -222,9 +232,23 @@ export default function TemplateEditor({
             </>
           )}
         </fieldset>
+        {requireReview && (
+          <label className="agreement-section-choice">
+            <input
+              type="checkbox"
+              checked={reviewed}
+              onChange={(e) => setReviewed(e.target.checked)}
+            />
+            I reviewed the reusable text, removed client-specific details, and
+            checked the default quantities and pricing.
+          </label>
+        )}
         <div className="template-actions">
           {editable && (
-            <button type="submit" disabled={busy}>
+            <button
+              type="submit"
+              disabled={busy || (requireReview && !reviewed)}
+            >
               Save draft
             </button>
           )}

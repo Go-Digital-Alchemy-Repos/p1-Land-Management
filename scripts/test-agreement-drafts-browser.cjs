@@ -59,6 +59,8 @@ const { randomUUID } = require("node:crypto");
         exclusions: "Replacement exclusion",
       },
     };
+    let manage = false,
+      exportedTemplate;
     let applyConflict = true,
       applyCount = 0;
     let row,
@@ -103,7 +105,10 @@ const { randomUUID } = require("node:crypto");
           role: "member",
           capabilities: deny
             ? []
-            : [readOnly ? "revenue.agreements" : "revenue.sales"],
+            : [
+                readOnly ? "revenue.agreements" : "revenue.sales",
+                ...(manage ? ["revenue.agreement-templates.manage"] : []),
+              ],
           mfaRequired: false,
         };
       if (path === "/api/v1/workspace/references") body = refs;
@@ -125,7 +130,18 @@ const { randomUUID } = require("node:crypto");
             status: 503,
             json: { message: "Synthetic catalog unavailable" },
           });
-        body = [template, replacement];
+        if (method === "POST") {
+          exportedTemplate = request.postDataJSON();
+          body = {
+            ...exportedTemplate,
+            id: randomUUID(),
+            family_id: randomUUID(),
+            status: "draft",
+            active: false,
+            version: 1,
+            edit_version: 1,
+          };
+        } else body = [template, replacement];
       }
       if (path === "/api/v1/agreement-drafts") {
         if (method === "POST") {
@@ -267,6 +283,32 @@ const { randomUUID } = require("node:crypto");
         };
         row.preview = preview();
         body = row;
+      }
+
+      if (
+        row &&
+        path === `/api/v1/agreement-drafts/${row.id}/template-export`
+      ) {
+        const input = request.postDataJSON();
+        assert.equal(input.kind, "cost");
+        assert.equal(input.expectedVersion, row.version);
+        body = {
+          kind: "cost",
+          name: "Reusable cost breakdown",
+          description: "",
+          body: "Review reusable cost notes",
+          payload: {
+            items: row.content.costs.items.map((item) => ({
+              ...item,
+              id: randomUUID(),
+              quantity: 1,
+              unitPriceCents: 0,
+            })),
+          },
+          sourceVersion: row.version,
+          removedDetails: 1,
+          resetCostRows: 1,
+        };
       }
       return route.fulfill({ json: body });
     });
@@ -506,6 +548,74 @@ const { randomUUID } = require("node:crypto");
     assert.equal(row.content.terms, "Private terms for {{client.name}}");
     assert.equal(row.content.costs.items[0].unitPriceCents, 10001);
     assert.equal(row.content.scope.items[0].title, "Replacement scope item");
+
+    assert.equal(
+      await page
+        .getByRole("button", { name: "Save as new template", exact: true })
+        .count(),
+      0,
+    );
+    const originalAgreement = JSON.stringify(row);
+    manage = true;
+    await page.reload();
+    await page
+      .getByRole("button", { name: "Save as new template", exact: true })
+      .click();
+    await page
+      .getByLabel("Reusable component", { exact: true })
+      .selectOption("cost");
+    await page
+      .getByRole("button", { name: "Prepare template review", exact: true })
+      .click();
+    await page
+      .getByRole("heading", { name: "Review reusable defaults", exact: true })
+      .waitFor();
+    assert.equal(
+      await page.getByLabel("Quantity", { exact: true }).inputValue(),
+      "1",
+    );
+    assert.equal(
+      await page.getByLabel("Unit price (USD)", { exact: true }).inputValue(),
+      "0.00",
+    );
+    assert.equal(
+      await page
+        .getByRole("button", { name: "Save draft", exact: true })
+        .isDisabled(),
+      true,
+    );
+    const acknowledgement = page.getByRole("checkbox", {
+      name: "I reviewed the reusable text",
+      exact: false,
+    });
+    await acknowledgement.check();
+    await page
+      .getByLabel("Name", { exact: true })
+      .fill("Reusable service rates");
+    assert.equal(await acknowledgement.isChecked(), false);
+    assert.equal(
+      await page
+        .getByRole("button", { name: "Save draft", exact: true })
+        .isDisabled(),
+      true,
+    );
+    await page.getByLabel("Unit price (USD)", { exact: true }).fill("25.25");
+    await acknowledgement.check();
+    await page.getByRole("button", { name: "Save draft", exact: true }).click();
+    await page
+      .getByRole("heading", {
+        name: "Reusable template draft saved",
+        exact: true,
+      })
+      .waitFor();
+    assert.equal(exportedTemplate.kind, "cost");
+    assert.equal(exportedTemplate.payload.items[0].unitPriceCents, 2525);
+    assert.equal(exportedTemplate.payload.items[0].quantity, 1);
+    assert.equal(exportedTemplate.client_id, undefined);
+    assert.equal(JSON.stringify(row), originalAgreement);
+    await page
+      .getByRole("button", { name: "Return to agreement draft", exact: true })
+      .click();
     readOnly = true;
     await page.reload();
     await page

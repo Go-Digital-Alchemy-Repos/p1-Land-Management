@@ -12128,6 +12128,57 @@
         },
         "summary": "Apply a reviewed template replacement"
       }
+    },
+    "/agreement-drafts/{id}/template-export": {
+      "post": {
+        "operationId": "prepareAgreementTemplateExport",
+        "responses": {
+          "200": {
+            "description": "Private agreement draft",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgreementTemplateExport"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "403": {
+            "description": "Sales write or Agreements read capability required"
+          },
+          "404": {
+            "description": "Draft or context not found"
+          },
+          "409": {
+            "description": "Stale version, incompatible context or reused creation key"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PrepareAgreementTemplateExport"
+              }
+            }
+          }
+        },
+        "summary": "Prepare a reusable template for review"
+      }
     }
   },
   "components": {
@@ -24568,6 +24619,72 @@
             "items": {
               "$ref": "#/components/schemas/AgreementDraftTemplateSource"
             }
+          }
+        }
+      },
+      "PrepareAgreementTemplateExport": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expectedVersion",
+          "kind"
+        ],
+        "properties": {
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "msa",
+              "scope",
+              "cost"
+            ]
+          }
+        }
+      },
+      "AgreementTemplateExport": {
+        "type": "object",
+        "required": [
+          "kind",
+          "name",
+          "description",
+          "body",
+          "payload",
+          "sourceVersion",
+          "removedDetails",
+          "resetCostRows"
+        ],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "msa",
+              "scope",
+              "cost"
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/AgreementTemplatePayload"
+          },
+          "sourceVersion": {
+            "type": "integer"
+          },
+          "removedDetails": {
+            "type": "integer"
+          },
+          "resetCostRows": {
+            "type": "integer"
           }
         }
       }

@@ -6,6 +6,7 @@ import {
   compositionContent,
   previewComposition,
 } from "./agreement-composition.contract";
+import { reusableContent } from "./agreement-template-export";
 const base = process.env.DASHBOARD_TEST_ORIGIN;
 if (base && !base.startsWith("http://localhost:"))
   throw new Error("Composition tests require an isolated local origin");
@@ -55,6 +56,60 @@ test("agreement preview resolves only supported placeholders and rounds exact ce
     content.terms,
     "{{client.name}} {{agreement.starts_on}} {{toString}}",
   );
+});
+
+test("reusable template preparation strips known context without rewriting placeholders or word fragments", () => {
+  const identifier = randomUUID();
+  const source = compositionContent.parse({
+    terms: `Ann keeps annual care. ANN at 123 Main St. Email unknown@example.test, call (864) 555-0101. Record ${identifier}. Existing {{client.name}}. {{private@example.test}}. {{Ann}}.`,
+    scope: {
+      items: [
+        { id: randomUUID(), title: "Ann scope", description: "123 Main St" },
+      ],
+      exclusions: "Ann",
+    },
+    costs: {
+      items: [
+        {
+          id: randomUUID(),
+          description: "For Ann",
+          unit: "acre",
+          quantity: 9.5,
+          unitPriceCents: 98765,
+          basis: "fixed_monthly",
+        },
+      ],
+    },
+    notes: { scope: "Ann", cost: "Ann", package: "Ann" },
+  });
+  const before = structuredClone(source);
+  const output = reusableContent(source, [
+    { value: "Ann", placeholder: "client.name" },
+    { value: "123 Main St", placeholder: "property.address" },
+    { value: "8645550101", phone: true },
+  ]);
+  assert(
+    output.content.terms.startsWith(
+      "{{client.name}} keeps annual care. {{client.name}} at {{property.address}}",
+    ),
+  );
+  assert(output.content.terms.includes("Existing {{client.name}}"));
+  for (const value of [
+    identifier,
+    "unknown@example.test",
+    "private@example.test",
+    "{{Ann}}",
+    "864",
+    "555-0101",
+  ])
+    assert(!output.content.terms.includes(value));
+  assert.equal(output.content.costs.items[0].quantity, 1);
+  assert.equal(output.content.costs.items[0].unitPriceCents, 0);
+  assert.equal(output.content.costs.items[0].basis, "fixed_monthly");
+  assert.notEqual(output.content.costs.items[0].id, source.costs.items[0].id);
+  assert.notEqual(output.content.scope.items[0].id, source.scope.items[0].id);
+  assert.deepEqual(source, before);
+  assert(output.removedDetails > 0);
 });
 test(
   "client agreement drafts snapshot templates independently, serialize retries and edits, preserve inquiry-only context and paginate exact timestamps",
@@ -572,6 +627,116 @@ test(
         )
       ).rows[0].n,
       1,
+    );
+
+    const exporter = await user([
+      "revenue.agreements",
+      "revenue.agreement-templates.manage",
+    ]);
+    const organizationId = randomUUID(),
+      contactId = randomUUID();
+    await pool.query(
+      "INSERT INTO business_organization(id,display_name,legal_name,client_id,owner_id) VALUES($1,'Private Organization','Private Legal Company',$2,$3)",
+      [organizationId, clientA, sales.id],
+    );
+    await pool.query(
+      "INSERT INTO contact(id,name,email,phone) VALUES($1,'Private Procurement','private@example.test','8645550101')",
+      [contactId],
+    );
+    await pool.query(
+      "INSERT INTO organization_contact(organization_id,contact_id,role,source) VALUES($1,$2,'procurement','synthetic-test')",
+      [organizationId, contactId],
+    );
+    const exportSource = (await call(sales, `/agreement-drafts/${first.id}`))
+      .body;
+    assert.equal(
+      (
+        await call(
+          sales,
+          `/agreement-drafts/${first.id}`,
+          {
+            expectedVersion: exportSource.version,
+            title: exportSource.title,
+            dates: exportSource.dates,
+            content: {
+              ...exportSource.content,
+              terms:
+                "Client A / Private Organization / Private Legal Company / Private Procurement / private@example.test / (864) 555-0101",
+            },
+          },
+          "PUT",
+        )
+      ).status,
+      200,
+    );
+    const exportPath = `/agreement-drafts/${first.id}/template-export`;
+    const savedBeforeExport = (
+      await call(sales, `/agreement-drafts/${first.id}`)
+    ).body;
+    const exportRequest = {
+      expectedVersion: savedBeforeExport.version,
+      kind: "msa",
+    };
+    for (const who of [sales, manager, reader, portal])
+      assert.equal((await call(who, exportPath, exportRequest)).status, 403);
+    assert.equal(
+      (
+        await call(exporter, exportPath, {
+          ...exportRequest,
+          expectedVersion: 1,
+        })
+      ).status,
+      409,
+    );
+    const tableCount = (
+      await pool.query("SELECT count(*)::int AS n FROM agreement_template")
+    ).rows[0].n;
+    for (const kind of ["msa", "scope", "cost"]) {
+      const candidate = await call(exporter, exportPath, {
+        ...exportRequest,
+        kind,
+      });
+      assert.equal(candidate.status, 200, JSON.stringify(candidate.body));
+      assert.equal(candidate.body.kind, kind);
+      if (kind === "msa") {
+        assert(candidate.body.body.includes("{{client.name}}"));
+        for (const value of [
+          "Private Organization",
+          "Private Legal Company",
+          "Private Procurement",
+          "private@example.test",
+          "864",
+        ])
+          assert(!candidate.body.body.includes(value));
+      }
+
+      assert.equal(candidate.body.sourceVersion, savedBeforeExport.version);
+      for (const field of [
+        "id",
+        "client_id",
+        "lead_id",
+        "source_templates",
+        "context_snapshot",
+      ])
+        assert.equal(candidate.body[field], undefined);
+      assert(!candidate.body.name.includes(savedBeforeExport.title));
+      if (kind === "cost") {
+        assert.equal(candidate.body.payload.items[0].quantity, 1);
+        assert.equal(candidate.body.payload.items[0].unitPriceCents, 0);
+        assert.notEqual(
+          candidate.body.payload.items[0].id,
+          savedBeforeExport.content.costs.items[0].id,
+        );
+      }
+    }
+    assert.equal(
+      (await pool.query("SELECT count(*)::int AS n FROM agreement_template"))
+        .rows[0].n,
+      tableCount,
+    );
+    assert.deepEqual(
+      (await call(sales, `/agreement-drafts/${first.id}`)).body,
+      savedBeforeExport,
     );
     assert.equal(
       (

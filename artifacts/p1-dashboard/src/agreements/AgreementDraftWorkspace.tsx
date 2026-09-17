@@ -98,6 +98,7 @@ export default function AgreementDraftWorkspace({
         key={`${row.id}:${row.version}:${editorRevision}`}
         row={row}
         canEdit={canEdit}
+        canManageTemplates={canManageTemplates}
         changed={(saved) => {
           setRow(saved);
           setEditorRevision((n) => n + 1);

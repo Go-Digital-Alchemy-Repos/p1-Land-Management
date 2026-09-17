@@ -10,6 +10,7 @@ import {
   readComposition,
   replaceCompositionTemplates,
 } from "./agreement-composition.service";
+import { prepareReusableTemplate } from "./agreement-template-export";
 export const agreementCompositionApi = Router();
 agreementCompositionApi.get("/agreement-drafts", async (req, res) => {
   requireAnyCapability(await actor(req), [
@@ -128,3 +129,18 @@ for (const action of ["review", "apply"] as const) {
     },
   );
 }
+
+agreementCompositionApi.post(
+  "/agreement-drafts/:id/template-export",
+  async (req, res) => {
+    const a = await actor(req);
+    requireCapability(a, "revenue.agreement-templates.manage");
+    requireAnyCapability(a, ["revenue.sales", "revenue.agreements"]);
+    res.json(
+      await prepareReusableTemplate(
+        z.string().uuid().parse(req.params.id),
+        req.body,
+      ),
+    );
+  },
+);
