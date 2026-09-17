@@ -67,3 +67,36 @@ describe("federation client trust boundary", () => {
     ).rejects.toMatchObject({ status: status === 500 ? 503 : status });
   });
 });
+
+it("validates bounded notification subjects and freshly resolved recipient identities", async () => {
+  const formId = "11111111-1111-4111-8111-111111111111";
+  let response: unknown = { subjects: ["user-a"], nextCursor: null };
+  const client = createFederationClient(federationConfig(env), async (_url, init) => {
+    expect(init?.redirect).toBe("error");
+    expect(init?.headers).not.toHaveProperty("cookie");
+    expect(JSON.parse(String(init?.body))).toMatchObject({
+      purpose: "p1-core-cms-v1",
+      form_id: formId,
+    });
+    return Response.json(response);
+  });
+  expect(await client.formNotificationSubjects(formId)).toEqual(response);
+  for (const invalid of [
+    { subjects: ["a", "a"], nextCursor: null },
+    { subjects: ["a"], nextCursor: "wrong" },
+    { subjects: Array.from({ length: 21 }, (_, i) => String(i)), nextCursor: null },
+  ]) {
+    response = invalid;
+    await expect(client.formNotificationSubjects(formId)).rejects.toMatchObject({ status: 503 });
+  }
+  response = { recipient: null };
+  expect(await client.formNotificationRecipient(formId, "user-a")).toBeNull();
+  response = { recipient: { subject: "user-a", email: "new@example.test" } };
+  expect(await client.formNotificationRecipient(formId, "user-a")).toEqual({
+    subject: "user-a",
+    email: "new@example.test",
+  });
+  await expect(client.formNotificationRecipient(formId, "user-b")).rejects.toMatchObject({
+    status: 503,
+  });
+});

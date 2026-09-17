@@ -117,6 +117,39 @@ export function createFederationClient(config: FederationConfig, transport: type
     return result.data;
   }
   return {
+    async formNotificationSubjects(formId: string, after = "") {
+      const result = z
+        .object({
+          subjects: z.array(z.string().min(1).max(256)).max(20),
+          nextCursor: z.string().min(1).max(256).nullable(),
+        })
+        .strict()
+        .safeParse(await post("form-notification-subjects", { purpose, form_id: formId, after }));
+      if (
+        !result.success ||
+        new Set(result.data.subjects).size !== result.data.subjects.length ||
+        result.data.subjects.includes(after) ||
+        (result.data.nextCursor !== null && result.data.nextCursor !== result.data.subjects.at(-1))
+      )
+        throw new FederationError(503, "federation_response_invalid");
+      return result.data;
+    },
+    async formNotificationRecipient(formId: string, subject: string) {
+      const result = z
+        .object({
+          recipient: z
+            .object({ subject: z.string().min(1).max(256), email: z.string().email().max(320) })
+            .strict()
+            .nullable(),
+        })
+        .strict()
+        .safeParse(
+          await post("form-notification-recipient", { purpose, form_id: formId, subject }),
+        );
+      if (!result.success || (result.data.recipient && result.data.recipient.subject !== subject))
+        throw new FederationError(503, "federation_response_invalid");
+      return result.data.recipient;
+    },
     async exchange(code: string, verifier: string) {
       return parse(
         tokenGrantSchema,

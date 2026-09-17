@@ -1,3 +1,7 @@
+import {
+  listFormNotificationSubjects,
+  resolveFormNotificationRecipient,
+} from "./form-notification-recipients";
 import { CAPABILITIES, isCapability } from "@workspace/api-zod/business-access";
 import {
   createHash,
@@ -543,6 +547,30 @@ coreFederationIngress.post("/federation/introspect", async (req, res) => {
     expiresAt: row.expires_at,
   });
 });
+coreFederationIngress.post(
+  "/federation/form-notification-subjects",
+  async (req, res) => {
+    authenticateServiceClient(req.get("authorization"));
+    const body = z.object({
+      purpose: z.literal(purpose),
+      form_id: z.string().uuid(),
+      after: z.string().max(256).default(""),
+    }).strict().parse(req.body);
+    res.json(await listFormNotificationSubjects(body.form_id, body.after));
+  },
+);
+coreFederationIngress.post(
+  "/federation/form-notification-recipient",
+  async (req, res) => {
+    authenticateServiceClient(req.get("authorization"));
+    const body = z.object({
+      purpose: z.literal(purpose),
+      form_id: z.string().uuid(),
+      subject: z.string().min(1).max(256),
+    }).strict().parse(req.body);
+    res.json(await resolveFormNotificationRecipient(body.form_id, body.subject));
+  },
+);
 coreFederationIngress.use(((error, _req, res, next) => {
   if (error?.type === "entity.too.large") {
     res.status(413).json({ error: "core_federation_payload_too_large" });

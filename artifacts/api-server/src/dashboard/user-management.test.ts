@@ -162,6 +162,102 @@ test(
       ((await crewSession.json()) as { capabilities: string[] }).capabilities,
       [],
     );
+    const notificationForm = randomUUID();
+    await pool.query(
+      "UPDATE business_account_access SET capabilities=$2,form_notification_ids=$3 WHERE user_id=$1",
+      [member.id, ["marketing.content.forms"], [notificationForm]],
+    );
+    async function notificationCall(
+      endpoint: string,
+      extra: Record<string, string> = {},
+    ) {
+      return fetch(`${base}/api/integrations/core/v1/federation/${endpoint}`, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          authorization:
+            "Basic " +
+            Buffer.from(
+              `${process.env.CORE_FEDERATION_CLIENT_ID}:${process.env.CORE_FEDERATION_CLIENT_SECRET_CURRENT}`,
+            ).toString("base64"),
+        },
+        body: JSON.stringify({
+          purpose: "p1-core-cms-v1",
+          form_id: notificationForm,
+          ...extra,
+        }),
+      });
+    }
+    assert.deepEqual(
+      await (await notificationCall("form-notification-subjects")).json(),
+      { subjects: [member.id], nextCursor: null },
+    );
+    assert.deepEqual(
+      await (
+        await notificationCall("form-notification-recipient", {
+          subject: member.id,
+        })
+      ).json(),
+      { recipient: { subject: member.id, email: `${member.id}@example.test` } },
+    );
+    for (const change of [
+      "UPDATE staff_profile SET active=false WHERE user_id=$1",
+      "UPDATE staff_profile SET mfa_required=true WHERE user_id=$1",
+      "UPDATE business_account_access SET capabilities='{}' WHERE user_id=$1",
+      "UPDATE business_account_access SET form_notification_ids='{}' WHERE user_id=$1",
+    ]) {
+      await pool.query(change, [member.id]);
+      assert.deepEqual(
+        await (
+          await notificationCall("form-notification-recipient", {
+            subject: member.id,
+          })
+        ).json(),
+        { recipient: null },
+      );
+      await pool.query(
+        "UPDATE staff_profile SET active=true,mfa_required=false WHERE user_id=$1",
+        [member.id],
+      );
+      await pool.query(
+        "UPDATE business_account_access SET capabilities=$2,form_notification_ids=$3 WHERE user_id=$1",
+        [member.id, ["marketing.content.forms"], [notificationForm]],
+      );
+    }
+    await pool.query(
+      "UPDATE business_account_access SET capabilities=$2,form_notification_ids=$3 WHERE user_id=$1",
+      [crew.id, ["marketing.content.forms"], [notificationForm]],
+    );
+    assert.deepEqual(
+      await (
+        await notificationCall("form-notification-recipient", {
+          subject: crew.id,
+        })
+      ).json(),
+      { recipient: null },
+    );
+    for (let i = 0; i < 21; i++) {
+      const extra = await fixture("member");
+      await pool.query(
+        "UPDATE business_account_access SET capabilities=$2,form_notification_ids=$3 WHERE user_id=$1",
+        [extra.id, ["marketing.content.forms"], [notificationForm]],
+      );
+    }
+    const firstSubjects = (await (
+      await notificationCall("form-notification-subjects")
+    ).json()) as { subjects: string[]; nextCursor: string };
+    assert.equal(firstSubjects.subjects.length, 20);
+    const secondSubjects = (await (
+      await notificationCall("form-notification-subjects", {
+        after: firstSubjects.nextCursor,
+      })
+    ).json()) as { subjects: string[]; nextCursor: null };
+    assert.equal(secondSubjects.subjects.length, 2);
+    assert.equal(secondSubjects.nextCursor, null);
+    assert.equal(
+      new Set([...firstSubjects.subjects, ...secondSubjects.subjects]).size,
+      22,
+    );
     const path = `/user-management/users/${member.id}`;
     const recoveryPath = `${path}/password-recovery`;
     assert.equal(
