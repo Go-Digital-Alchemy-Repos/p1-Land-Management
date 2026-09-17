@@ -266,6 +266,9 @@ small {
   display: grid;
   gap: 3px;
 }
+.nav-group-items[hidden] {
+  display: none;
+}
 .sidebar nav .nav-group-items > button {
   border: 0;
   background: transparent;
