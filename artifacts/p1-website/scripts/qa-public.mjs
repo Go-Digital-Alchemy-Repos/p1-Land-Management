@@ -42,6 +42,7 @@ try {
   for (const path of paths) {
     const result = render(path);
     assert(result.head?.title && result.head.description, `${path}: metadata`);
+    if (path === '/about') assert(result.html.includes('Built for the Property Owner Who Needs'), 'Fragment-based hero title uses title case');
     assert(result.head.title.length <= 60, `${path}: title must be 60 characters or fewer (${result.head.title.length})`);
     assert(result.head.description.length <= 160, `${path}: description must be 160 characters or fewer (${result.head.description.length})`);
     assert.equal((result.html.match(/<h1(?:\s|>)/g) || []).length, 1, `${path}: one heading`);

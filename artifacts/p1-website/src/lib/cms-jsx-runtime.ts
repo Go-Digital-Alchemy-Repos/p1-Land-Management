@@ -14,7 +14,15 @@ function Editable({ elementType, original, global, staticChildren, ...injectedPr
   const mapText = (child: any): any => typeof child === 'string' && child.trim() ? cmsValue(context, child, child.length > 120 ? 'textarea' : 'text', global) : Array.isArray(child) ? child.map(mapText) : child;
   if (props.children !== undefined && !['script','style','textarea','option'].includes(String(elementType))) props.children = mapText(props.children);
   if (titleText) {
-    const format = (child: any): any => typeof child === 'string' ? toTitleCase(child) : Array.isArray(child) ? child.map(format) : child;
+    const format = (child: any): any => {
+      if (typeof child === 'string') return toTitleCase(child);
+      if (Array.isArray(child)) return child.map(format);
+      // Hero titles can contain fragments with text alongside an emphasized line.
+      if (React.isValidElement<{ children?: React.ReactNode }>(child) && child.type === React.Fragment) {
+        return React.cloneElement(child, {}, format(child.props.children));
+      }
+      return child;
+    };
     props.children = format(props.children);
     if (isHeading && typeof props.className === 'string') props.className = props.className.replace(/\buppercase\b/g, '');
   }
