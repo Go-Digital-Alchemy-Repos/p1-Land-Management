@@ -67,6 +67,7 @@ const assert = require("node:assert/strict");
           const body = request.postDataJSON();
           assert.equal(body.version, settings.version);
           writes.push(body);
+          const { clearCredentials, ...persisted } = body;
           if (writes.length === 3) {
             settings = {
               ...settings,
@@ -83,15 +84,15 @@ const assert = require("node:assert/strict");
           }
           if (writes.length === 1) {
             settings = {
-              ...body,
+              ...persisted,
               version: "b".repeat(64),
               integrations: { ...body.integrations, indeedApplySecret: "" },
             };
             return route.abort("failed");
           }
           settings = {
-            ...body,
-            version: "c".repeat(64),
+            ...persisted,
+            version: String.fromCharCode(97 + writes.length).repeat(64),
             integrations: {
               ...body.integrations,
               googleServiceAccountJson: "",
@@ -100,6 +101,7 @@ const assert = require("node:assert/strict");
               genericWebhookSecret: "",
             },
           };
+          if (writes.length === 4) return route.abort("failed");
           json = settings;
         } else {
           reads++;
@@ -213,6 +215,61 @@ const assert = require("node:assert/strict");
         (input) => input.value === "other-session",
       ),
     );
+    await page.getByLabel("Indeed Apply", { exact: true }).check();
+    await page
+      .getByRole("checkbox", {
+        name: "Remove saved Indeed Apply shared secret",
+        exact: true,
+      })
+      .check();
+    assert.equal(
+      await page.getByLabel("Indeed Apply", { exact: true }).isChecked(),
+      false,
+    );
+    assert.equal(
+      await page.getByLabel("Indeed Apply", { exact: true }).isDisabled(),
+      true,
+    );
+    assert.equal(
+      await page
+        .getByLabel("Indeed Apply shared secret", { exact: true })
+        .isDisabled(),
+      true,
+    );
+    await page
+      .getByRole("button", { name: "Save Careers settings", exact: true })
+      .click();
+    await page.getByRole("alert").waitFor();
+    assert.deepEqual(writes[3].clearCredentials, ["indeedApplySecret"]);
+    assert.equal(writes[3].integrations.indeedApplyEnabled, false);
+    assert.equal(writes[3].integrations.indeedApplySecret, "");
+    assert.equal(
+      await page
+        .getByRole("checkbox", {
+          name: "Remove saved Indeed Apply shared secret",
+          exact: true,
+        })
+        .isChecked(),
+      true,
+    );
+    await page
+      .getByRole("button", { name: "Reload saved settings", exact: true })
+      .click();
+    await page.waitForFunction(
+      () =>
+        Array.from(document.querySelectorAll("label"))
+          .find(
+            (label) =>
+              label.textContent.trim() ===
+              "Remove saved Indeed Apply shared secret",
+          )
+          ?.querySelector("input")?.checked === false,
+    );
+    assert.equal(writes.length, 4);
+    assert.equal(
+      await page.getByLabel("Indeed Apply", { exact: true }).isChecked(),
+      false,
+    );
     await page.setViewportSize({ width: 390, height: 844 });
     await page.waitForFunction(
       () =>
@@ -243,7 +300,7 @@ const assert = require("node:assert/strict");
     assert.equal(reads, previousReads);
     assert.deepEqual(errors, []);
     console.log(
-      "Career settings browser passed: Owner visibility, loaded settings parity, secret replacement, failed-save retention, stale-version conflict/reload, cleared credential inputs, member exclusion and mobile layout.",
+      "Career settings browser passed: Owner visibility, loaded settings parity, secret replacement, failed-save retention, stale-version conflict/reload, explicit credential removal with integration disabled and lost-response recovery, member exclusion and mobile layout.",
     );
   } finally {
     await browser.close();

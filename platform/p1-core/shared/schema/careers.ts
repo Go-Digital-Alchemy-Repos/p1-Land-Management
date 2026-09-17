@@ -219,10 +219,57 @@ export const careerIntegrationSettingsSchema = z.object({
 });
 
 export const careerSettingsSchema = z.object({
-  version: z.string().regex(/^[a-f0-9]{64}$/).optional(),
+  version: z
+    .string()
+    .regex(/^[a-f0-9]{64}$/)
+    .optional(),
   sharing: careerShareSettingsSchema.default({}),
   integrations: careerIntegrationSettingsSchema.default({}),
 });
+
+export const CAREER_CREDENTIAL_INTEGRATIONS = {
+  googleServiceAccountJson: "googleIndexingEnabled",
+  indeedApplySecret: "indeedApplyEnabled",
+  zipRecruiterApiKey: "zipRecruiterEnabled",
+  genericWebhookSecret: "genericWebhookEnabled",
+} as const;
+export const careerSettingsUpdateSchema = careerSettingsSchema
+  .extend({
+    clearCredentials: z
+      .array(
+        z.enum([
+          "googleServiceAccountJson",
+          "indeedApplySecret",
+          "zipRecruiterApiKey",
+          "genericWebhookSecret",
+        ]),
+      )
+      .max(4)
+      .default([]),
+  })
+  .superRefine((value, ctx) => {
+    if (value.clearCredentials.length && !value.version)
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["version"],
+        message: "Reload settings before removing credentials",
+      });
+    for (const key of value.clearCredentials) {
+      if (value.integrations[key].trim())
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["clearCredentials"],
+          message: "A credential cannot be replaced and removed together",
+        });
+      if (value.integrations[CAREER_CREDENTIAL_INTEGRATIONS[key]])
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["clearCredentials"],
+          message: "Turn off the integration before removing its credential",
+        });
+    }
+  });
+export type CareerSettingsUpdate = z.infer<typeof careerSettingsUpdateSchema>;
 
 export type CareerShareSettings = z.infer<typeof careerShareSettingsSchema>;
 export type CareerIntegrationSettings = z.infer<typeof careerIntegrationSettingsSchema>;

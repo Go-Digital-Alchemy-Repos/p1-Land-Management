@@ -12955,7 +12955,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/MarketingCareerSettings"
+                "$ref": "#/components/schemas/MarketingCareerSettingsUpdate"
               }
             }
           }
@@ -26690,6 +26690,22 @@
           }
         },
         "additionalProperties": false
+      },
+      "MarketingCareerSettingsUpdate": {
+        "allOf": [
+          { "$ref": "#/components/schemas/MarketingCareerSettings" },
+          {
+            "type": "object",
+            "properties": {
+              "clearCredentials": {
+                "type": "array",
+                "maxItems": 4,
+                "description": "Explicit removal selections. Requires the loaded version and the corresponding integration disabled; cannot also supply a replacement.",
+                "items": { "type": "string", "enum": ["googleServiceAccountJson", "indeedApplySecret", "zipRecruiterApiKey", "genericWebhookSecret"] }
+              }
+            }
+          }
+        ]
       },
       "MarketingCareerSettings": {
         "type": "object",

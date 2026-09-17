@@ -82,3 +82,43 @@ it("versioned administrative reads bypass caches and saves forward the loaded ve
   await expect(saveCareerSettings(value)).rejects.toMatchObject({ statusCode: 409 });
   expect(state.invalidate).not.toHaveBeenCalled();
 });
+
+it("explicit removal writes only selected empty encrypted credentials with the integration disabled", async () => {
+  const value = {
+    ...structuredClone(DEFAULT_CAREER_SETTINGS),
+    version: "a".repeat(64),
+    clearCredentials: ["indeedApplySecret" as const],
+  };
+  value.integrations.indeedApplySecret = "   ";
+  await saveCareerSettings(value);
+  const entries = state.write.mock.calls[0][0];
+  expect(entries.filter((entry: any) => entry.isSecret)).toEqual([
+    { key: "indeed_apply_secret", value: "", category: "career_center", isSecret: true },
+  ]);
+  expect(entries).toContainEqual({
+    key: "indeed_apply_enabled",
+    value: "false",
+    category: "career_center",
+    isSecret: false,
+  });
+  expect(state.write.mock.calls[0][1]).toEqual({
+    category: "career_center",
+    version: value.version,
+  });
+});
+
+it("removal rejects missing versions, enabled integrations, replacements and unknown credentials before writes", async () => {
+  const base = {
+    ...structuredClone(DEFAULT_CAREER_SETTINGS),
+    version: "a".repeat(64),
+    clearCredentials: ["indeedApplySecret" as const],
+  };
+  for (const value of [
+    { ...base, version: undefined },
+    { ...base, integrations: { ...base.integrations, indeedApplyEnabled: true } },
+    { ...base, integrations: { ...base.integrations, indeedApplySecret: "replacement" } },
+    { ...base, clearCredentials: ["unknown"] },
+  ])
+    await expect(saveCareerSettings(value as any)).rejects.toThrow();
+  expect(state.write).not.toHaveBeenCalled();
+});

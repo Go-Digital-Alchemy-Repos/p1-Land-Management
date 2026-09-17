@@ -346,6 +346,8 @@ export * from './marketingCareerJobWorkMode';
 export * from './marketingCareerSettings';
 export * from './marketingCareerSettingsIntegrations';
 export * from './marketingCareerSettingsSharing';
+export * from './marketingCareerSettingsUpdate';
+export * from './marketingCareerSettingsUpdateClearCredentialsItem';
 export * from './marketingDateRange';
 export * from './marketingDeleteResult';
 export * from './marketingEvent';

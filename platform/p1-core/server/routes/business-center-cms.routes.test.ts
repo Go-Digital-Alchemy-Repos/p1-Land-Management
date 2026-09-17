@@ -1014,3 +1014,18 @@ it("Career settings forwards versions and reports stale or malformed updates",as
  expect((await request("/careers/settings","PUT",{},"/service",{})).status).toBe(400);
  expect(state.careerSave).toHaveBeenCalledTimes(1);
 });
+
+
+it("Career credential removals require Owner access and validated explicit selections",async()=>{
+ const payload={version:"a".repeat(64),clearCredentials:["indeedApplySecret"],integrations:{indeedApplyEnabled:false}};
+ identity.capabilities=["marketing.content.careers"];
+ expect((await request("/careers/settings","PUT",{},"/service",payload)).status).toBe(403);
+ expect(state.careerSave).not.toHaveBeenCalled();
+ identity.role="owner";identity.ownerAttested=true;
+ state.careerSave.mockResolvedValue({version:"b".repeat(64)});
+ expect((await request("/careers/settings","PUT",{},"/service",payload)).status).toBe(200);
+ expect(state.careerSave.mock.calls[0][0]).toMatchObject(payload);
+ expect((await request("/careers/settings","PUT",{},"/service",{...payload,integrations:{indeedApplyEnabled:true}})).status).toBe(400);
+ expect((await request("/careers/settings","PUT",{},"/service",{...payload,clearCredentials:["unknown"]})).status).toBe(400);
+ expect(state.careerSave).toHaveBeenCalledTimes(1);
+});

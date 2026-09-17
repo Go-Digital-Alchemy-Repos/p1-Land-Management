@@ -9,7 +9,7 @@ import {
   CAREER_JOB_STATUSES,
   CAREER_JOB_VISIBILITIES,
   CAREER_WORK_MODES,
-  careerSettingsSchema,
+  careerSettingsUpdateSchema,
   insertCareerJobSchema,
   type CareerJob,
   type InsertCareerJob,
@@ -249,7 +249,7 @@ router.get(
 router.put(
   "/settings",
   asyncHandler(async (req, res) => {
-    const parsed = careerSettingsSchema.safeParse(req.body);
+    const parsed = careerSettingsUpdateSchema.safeParse(req.body);
     if (!parsed.success) {
       return res
         .status(400)

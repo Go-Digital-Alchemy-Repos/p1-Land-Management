@@ -202,9 +202,14 @@ suite("atomic settings real database", () => {
         );
       let waiting = false;
       for (let i = 0; i < 100; i++) {
-        const result = await pool.query("SELECT 1 FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock' AND query LIKE 'LOCK TABLE system_settings%'");
-        if (result.rowCount) { waiting = true; break; }
-        await new Promise(resolve => setTimeout(resolve, 10));
+        const result = await pool.query(
+          "SELECT 1 FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock' AND query LIKE 'LOCK TABLE system_settings%'",
+        );
+        if (result.rowCount) {
+          waiting = true;
+          break;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 10));
       }
       expect(waiting).toBe(true);
       await legacy.query("COMMIT");
@@ -216,5 +221,36 @@ suite("atomic settings real database", () => {
       await legacy.query("ROLLBACK");
       legacy.release();
     }
+  });
+  it("credential removal keeps ciphertext storage, disables the integration atomically and cannot clear a newer value", async () => {
+    await settings.upsertSettings([
+      entry("indeed_apply_enabled", "true", "career_center"),
+      entry("indeed_apply_secret", "old", "career_center", true),
+    ]);
+    const snapshot = await settings.getCategorySnapshot("career_center");
+    const changes = [
+      entry("indeed_apply_enabled", "false", "career_center"),
+      entry("indeed_apply_secret", "", "career_center", true),
+    ];
+    await settings.upsertSettings(changes, {
+      category: "career_center",
+      version: snapshot.version,
+    });
+    const current = await settings.getCategorySnapshot("career_center");
+    expect(current.values).toEqual({ indeed_apply_enabled: "false", indeed_apply_secret: "" });
+    const stored = (
+      await pool.query(
+        "SELECT value,is_secret FROM system_settings WHERE key='indeed_apply_secret'",
+      )
+    ).rows[0];
+    expect(stored.is_secret).toBe(true);
+    expect(stored.value).toMatch(/^[0-9a-f]{32}:/);
+    await settings.upsertSetting("indeed_apply_secret", "newer", "career_center", true);
+    await expect(
+      settings.upsertSettings(changes, { category: "career_center", version: current.version }),
+    ).rejects.toMatchObject({ statusCode: 409 });
+    expect((await settings.getCategorySnapshot("career_center")).values.indeed_apply_secret).toBe(
+      "newer",
+    );
   });
 });

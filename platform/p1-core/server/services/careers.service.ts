@@ -7,6 +7,8 @@ import crypto from "crypto";
 import type { Request } from "express";
 import {
   careerSettingsSchema,
+  careerSettingsUpdateSchema,
+  type CareerSettingsUpdate,
   type CareerApplication,
   type CareerJob,
   type CareerSettings,
@@ -69,8 +71,17 @@ export async function getCareerSettings(
   return snapshot ? { ...parsed, version: snapshot.version } : parsed;
 }
 
-export async function saveCareerSettings(settings: CareerSettings): Promise<CareerSettings> {
-  const normalized = careerSettingsSchema.parse(settings);
+export async function saveCareerSettings(
+  settings: CareerSettings & { clearCredentials?: CareerSettingsUpdate["clearCredentials"] },
+): Promise<CareerSettings> {
+  const normalized = careerSettingsUpdateSchema.parse(settings);
+  const credentialKeys = {
+    googleServiceAccountJson: "google_service_account_json",
+    indeedApplySecret: "indeed_apply_secret",
+    zipRecruiterApiKey: "zip_recruiter_api_key",
+    genericWebhookSecret: "generic_webhook_secret",
+  } as const;
+  const clearKeys = new Set<string>(normalized.clearCredentials.map((key) => credentialKeys[key]));
   const entries: Array<[string, string, boolean]> = [
     ["share_enabled", String(normalized.sharing.enabled), false],
     ["share_copy_link", String(normalized.sharing.copyLink), false],
@@ -102,10 +113,10 @@ export async function saveCareerSettings(settings: CareerSettings): Promise<Care
   // so ordinary sharing/integration edits cannot erase existing credentials.
   await storage.settings.upsertSettings(
     entries
-      .filter(([, value, isSecret]) => !isSecret || value.trim() !== "")
+      .filter(([key, value, isSecret]) => !isSecret || value.trim() !== "" || clearKeys.has(key))
       .map(([key, value, isSecret]) => ({
         key,
-        value,
+        value: clearKeys.has(key) ? "" : value,
         category: CAREER_SETTINGS_CATEGORY,
         isSecret,
       })),

@@ -33,6 +33,14 @@ const credentials = [
   ["genericWebhookSecret", "Webhook signing secret"],
 ] as const;
 
+type Credential = (typeof credentials)[number][0];
+const credentialIntegration = {
+  googleServiceAccountJson: "googleIndexingEnabled",
+  indeedApplySecret: "indeedApplyEnabled",
+  zipRecruiterApiKey: "zipRecruiterEnabled",
+  genericWebhookSecret: "genericWebhookEnabled",
+} as const;
+
 function redacted(value: MarketingCareerSettings): MarketingCareerSettings {
   const next = {
     ...value,
@@ -47,11 +55,14 @@ export default function CareerSettings({ close }: { close: () => void }) {
   const [saved, setSaved] = useState<MarketingCareerSettings | null>(null);
   const [draft, setDraft] = useState<MarketingCareerSettings | null>(null);
   const [busy, setBusy] = useState(false);
+  const [clearCredentials, setClearCredentials] = useState<Credential[]>([]);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const pending = useRef<AbortController | null>(null);
   const dirty = Boolean(
-    draft && JSON.stringify(draft) !== JSON.stringify(saved),
+    draft &&
+    (JSON.stringify(draft) !== JSON.stringify(saved) ||
+      clearCredentials.length),
   );
   useCmsUnsavedChanges(dirty || busy);
 
@@ -71,9 +82,12 @@ export default function CareerSettings({ close }: { close: () => void }) {
     try {
       const result =
         save && draft
-          ? await updateMarketingCareerSettings(draft, {
-              signal: controller.signal,
-            })
+          ? await updateMarketingCareerSettings(
+              { ...draft, clearCredentials },
+              {
+                signal: controller.signal,
+              },
+            )
           : await getMarketingCareerSettings({
               signal: controller.signal,
               cache: "no-store",
@@ -82,9 +96,12 @@ export default function CareerSettings({ close }: { close: () => void }) {
       const clean = redacted(result);
       setSaved(clean);
       setDraft(clean);
+      setClearCredentials([]);
       if (save)
         setMessage(
-          "Careers settings saved. Credential fields have been cleared from this form.",
+          clearCredentials.length
+            ? "Careers settings saved. Selected credentials were removed and their integrations turned off."
+            : "Careers settings saved. Credential fields have been cleared from this form.",
         );
     } catch (cause) {
       if (!controller.signal.aborted) setError(careerError(cause));
@@ -182,6 +199,9 @@ export default function CareerSettings({ close }: { close: () => void }) {
                 <input
                   type="checkbox"
                   checked={draft.integrations?.[key] ?? false}
+                  disabled={clearCredentials.some(
+                    (credential) => credentialIntegration[credential] === key,
+                  )}
                   onChange={(event) =>
                     update("integrations", key, event.target.checked)
                   }
@@ -225,25 +245,58 @@ export default function CareerSettings({ close }: { close: () => void }) {
             </p>
           </fieldset>
           <fieldset disabled={busy}>
-            <legend>Replace credentials</legend>
+            <legend>Manage credentials</legend>
             <p>
               Stored credentials are hidden. Leave a field blank to keep its
-              saved value. Turn off the corresponding integration above to stop
-              using it.
+              saved value. Selecting removal also turns off that integration
+              when you save.
             </p>
             {credentials.map(([key, label]) => (
-              <label key={key}>
-                {label}
-                <input
-                  type="password"
-                  autoComplete="new-password"
-                  spellCheck={false}
-                  value={draft.integrations?.[key] ?? ""}
-                  onChange={(event) =>
-                    update("integrations", key, event.target.value)
-                  }
-                />
-              </label>
+              <div key={key}>
+                <label>
+                  {label}
+                  <input
+                    type="password"
+                    autoComplete="new-password"
+                    spellCheck={false}
+                    disabled={clearCredentials.includes(key)}
+                    value={draft.integrations?.[key] ?? ""}
+                    onChange={(event) =>
+                      update("integrations", key, event.target.value)
+                    }
+                  />
+                </label>
+                <label className="career-setting-toggle">
+                  <input
+                    type="checkbox"
+                    checked={clearCredentials.includes(key)}
+                    onChange={(event) => {
+                      const remove = event.target.checked;
+                      setClearCredentials((current) =>
+                        remove
+                          ? [...current, key]
+                          : current.filter((item) => item !== key),
+                      );
+                      if (remove) {
+                        setDraft((current) =>
+                          current
+                            ? {
+                                ...current,
+                                integrations: {
+                                  ...current.integrations,
+                                  [key]: "",
+                                  [credentialIntegration[key]]: false,
+                                },
+                              }
+                            : current,
+                        );
+                      }
+                      setMessage("");
+                    }}
+                  />
+                  Remove saved {label}
+                </label>
+              </div>
             ))}
           </fieldset>
           <button disabled={busy || !dirty || !draft.version}>

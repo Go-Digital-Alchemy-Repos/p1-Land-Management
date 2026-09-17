@@ -164,6 +164,7 @@ import type {
   MarketingCareerJobInput,
   MarketingCareerJobUpdate,
   MarketingCareerSettings,
+  MarketingCareerSettingsUpdate,
   MarketingDeleteResult,
   MarketingEvent,
   MarketingEventAttendee,
@@ -7301,7 +7302,7 @@ export const getUpdateMarketingCareerSettingsUrl = () => {
 /**
  * Owner-only Careers settings. Retains Core Careers storage and its feature flag.
  */
-export const updateMarketingCareerSettings = async (marketingCareerSettings: MarketingCareerSettings, options?: RequestInit): Promise<MarketingCareerSettings> => {
+export const updateMarketingCareerSettings = async (marketingCareerSettingsUpdate: MarketingCareerSettingsUpdate, options?: RequestInit): Promise<MarketingCareerSettings> => {
 
   return customFetch<MarketingCareerSettings>(getUpdateMarketingCareerSettingsUrl(),
   {
@@ -7309,7 +7310,7 @@ export const updateMarketingCareerSettings = async (marketingCareerSettings: Mar
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
-      marketingCareerSettings,)
+      marketingCareerSettingsUpdate,)
   }
 );}
 
