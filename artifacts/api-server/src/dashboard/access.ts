@@ -1,3 +1,4 @@
+import { CAPABILITIES, type Capability } from "@workspace/api-zod/business-access";
 import type { Request } from "express";
 import { fromNodeHeaders } from "better-auth/node";
 import { auth, origin } from "./auth";
@@ -41,7 +42,7 @@ export async function identity(req: Request) {
     throw new HttpError(401, "Sign in with a verified account");
   return s;
 }
-export async function actor(req: Request) {
+export async function actor(req: Request): Promise<Actor> {
   const s = await identity(req);
   const p = await pool.query(
     "SELECT role,mfa_required,EXISTS(SELECT 1 FROM session_assurance WHERE session_id=$2) AS assured FROM staff_profile WHERE user_id=$1 AND active=true",
@@ -50,9 +51,11 @@ export async function actor(req: Request) {
   if (!p.rowCount) throw new HttpError(403, "Complete account activation");
   if (p.rows[0].mfa_required && (!s.user.twoFactorEnabled || !p.rows[0].assured))
     throw new HttpError(403, "Multi-factor authentication is required for this account");
-  return { id: s.user.id, name: s.user.name, role: p.rows[0].role as Role };
+  const capabilities: Capability[] = p.rows[0].role === "owner" ? [...CAPABILITIES] : p.rows[0].role === "client" ? [] :
+    (await pool.query("SELECT capabilities FROM business_account_access WHERE user_id=$1", [s.user.id])).rows[0]?.capabilities ?? [];
+  return { id: s.user.id, name: s.user.name, role: p.rows[0].role as Role, capabilities };
 }
-export type Actor = Awaited<ReturnType<typeof actor>>;
+export type Actor = { id: string; name: string; role: Role; capabilities?: readonly Capability[] };
 export async function propertyAccess(a: Actor, id: string) {
   if (!(await pool.query("SELECT id FROM property WHERE id=$1 AND lifecycle='operational' AND client_id IS NOT NULL",[id])).rowCount) throw new HttpError(404,"Property not found");
   if (a.role === "client") {

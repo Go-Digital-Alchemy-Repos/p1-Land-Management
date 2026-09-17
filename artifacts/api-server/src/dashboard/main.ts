@@ -1,3 +1,4 @@
+import { userManagementApi } from "./user-management.routes";
 import { serviceAgreementApi } from "./service-agreement.routes";
 import { workReadinessApi } from "./work-readiness.routes";
 import { prospectContextApi } from "./prospect-context.routes";
@@ -93,6 +94,7 @@ app.use(
     }
     next();
   },
+  userManagementApi,
   coreFederationApi,
   prospectContextApi,
   commercialAssessmentApi,

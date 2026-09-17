@@ -1,6 +1,8 @@
+import { hasCapability, type Capability, type CapabilitySubject } from "@workspace/api-zod/business-access";
 import { createHash, timingSafeEqual } from "node:crypto";
 export type Role =
   | "owner"
+  | "member"
   | "manager"
   | "dispatch"
   | "sales"
@@ -14,6 +16,11 @@ export class HttpError extends Error {
   ) {
     super(message);
   }
+}
+/** Office tools require explicit grants. Crew and client identities retain their scoped workflows. */
+export function requireCapability(subject: CapabilitySubject, capability: Capability) {
+  if (subject.role === "crew" || !hasCapability(subject, capability))
+    throw new HttpError(403, "Access denied");
 }
 export function requireRole(role: Role, allowed: Role[]) {
   if (!allowed.includes(role)) throw new HttpError(403, "Access denied");

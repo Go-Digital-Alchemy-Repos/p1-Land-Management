@@ -2,7 +2,7 @@ import type pg from "pg";
 import { z } from "zod";
 import type { Actor } from "./access";
 import { transaction } from "./database";
-import { HttpError, requireRole } from "./policy";
+import { HttpError, requireCapability } from "./policy";
 import {
   activateAgreementInput,
   fixedPeriodInput,
@@ -119,7 +119,7 @@ export async function previewServiceAgreementActivation(
   id: string,
   input: unknown,
 ) {
-  requireRole(a.role, ["owner", "manager", "finance"]);
+  requireCapability(a, "revenue.billing");
   const b = activateAgreementInput.parse(input);
   return transaction(async (c) => {
     const context = await lockedAgreement(c, id);

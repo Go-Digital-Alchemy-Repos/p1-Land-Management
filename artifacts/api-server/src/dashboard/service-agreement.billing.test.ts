@@ -24,7 +24,7 @@ test(
     const user = randomUUID(),
       client = randomUUID(),
       property = randomUUID();
-    const a: Actor = { id: user, name: "Billing fixture", role: "manager" };
+    const a: Actor = { id: user, name: "Billing fixture", role: "manager", capabilities: ["revenue.agreements", "revenue.billing"] };
     try {
       await pool.query(
         'INSERT INTO "user"(id,name,email,"emailVerified") VALUES($1,$2,$3,true)',
@@ -84,13 +84,13 @@ test(
       }
       const fixed = await agreement(await estimate(1000), "fixed_monthly");
       await assert.rejects(
-        prepareAgreementCharge({ ...a, role: "dispatch" }, fixed.id, {
+        prepareAgreementCharge({ ...a, role: "dispatch", capabilities: ["revenue.agreements"] }, fixed.id, {
           periodStart: today,
         }),
         /Access denied/,
       );
       const preview = await previewAgreementCharge(
-        { ...a, role: "finance" },
+        { ...a, role: "finance", capabilities: ["revenue.billing"] },
         fixed.id,
         { periodStart: today },
       );
@@ -120,14 +120,14 @@ test(
         0,
       );
       const dispatch = await readServiceAgreement(
-        { ...a, role: "dispatch" },
+        { ...a, role: "dispatch", capabilities: ["revenue.agreements"] },
         fixed.id,
       );
       assert.equal(Object.hasOwn(dispatch, "unitAmountCents"), false);
       assert.equal(Object.hasOwn(dispatch, "periods"), false);
       assert.equal(Object.hasOwn(dispatch, "estimateId"), false);
       const listed = await listServiceAgreements(
-        { ...a, role: "dispatch" },
+        { ...a, role: "dispatch", capabilities: ["revenue.agreements"] },
         { propertyId: property },
       );
       assert.equal(listed.items.length, 1);
@@ -142,7 +142,7 @@ test(
       );
       const [first, retry] = await Promise.all([
         prepareAgreementCharge(a, fixed.id, { periodStart: today }),
-        prepareAgreementCharge({ ...a, role: "finance" }, fixed.id, {
+        prepareAgreementCharge({ ...a, role: "finance", capabilities: ["revenue.billing"] }, fixed.id, {
           periodStart: today,
         }),
       ]);
@@ -285,7 +285,7 @@ test(
         [unmatchedWork, property, unmatchedRecurrence, today],
       );
       const queue = await listAgreementChargeQueue(
-        { ...a, role: "finance" },
+        { ...a, role: "finance", capabilities: ["revenue.billing"] },
         {},
       );
       assert.equal(
@@ -335,7 +335,7 @@ test(
       assert.equal(new Set(seen).size, seen.length);
       assert.ok(seen.includes("work:" + unmatchedWork));
       await assert.rejects(
-        listAgreementChargeQueue({ ...a, role: "dispatch" }, {}),
+        listAgreementChargeQueue({ ...a, role: "dispatch", capabilities: ["revenue.agreements"] }, {}),
         /Access denied/,
       );
       const losing = results.findIndex((r) => r.status === "rejected");

@@ -25,6 +25,7 @@ try {
         id: randomUUID(),
         name: "Synthetic recovery manager",
         role: "manager" as const,
+        capabilities: ["revenue.agreements", "revenue.billing"] as const,
       },
       client = randomUUID(),
       property = randomUUID();
@@ -119,7 +120,7 @@ try {
         record.receipt,
       );
       const dispatch = await readServiceAgreement(
-        { ...actor, role: "dispatch" },
+        { ...actor, role: "dispatch", capabilities: ["revenue.agreements"] },
         record.id,
       );
       assert.ok(!("periods" in dispatch));

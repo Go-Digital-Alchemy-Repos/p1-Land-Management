@@ -19,7 +19,7 @@ test(
       property = randomUUID(),
       recurrence = randomUUID(),
       estimate = randomUUID();
-    const actor: Actor = { id: u, name: "Agreement fixture", role: "manager" };
+    const actor: Actor = { id: u, name: "Agreement fixture", role: "manager", capabilities: ["revenue.agreements", "revenue.billing"] };
     try {
       await pool.query(
         'INSERT INTO "user"(id,name,email,"emailVerified") VALUES($1,$2,$3,true)',
@@ -60,7 +60,7 @@ test(
         },
       };
       await assert.rejects(
-        createServiceAgreement({ ...actor, role: "finance" }, body),
+        createServiceAgreement({ ...actor, role: "finance", capabilities: ["revenue.billing"] }, body),
         /Access denied/,
       );
       const unapproved = randomUUID();
@@ -87,7 +87,7 @@ test(
         /ID conflict/,
       );
       const plan = await previewServiceAgreementActivation(
-        { ...actor, role: "finance" },
+        { ...actor, role: "finance", capabilities: ["revenue.billing"] },
         body.id,
         { version: 1 },
       );

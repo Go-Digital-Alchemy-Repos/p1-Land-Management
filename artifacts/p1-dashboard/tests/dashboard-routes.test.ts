@@ -63,12 +63,23 @@ test("dashboard routes fail closed for unknown and role-restricted destinations"
   assert.equal(canAccessRoute(routeFromPath("/profile"), "crew"), true);
 
   const agreement = routeFromPath("/agreements/44444444-4444-4444-8444-444444444444");
-  assert.equal(canAccessRoute(agreement, "finance"), true);
+  assert.equal(canAccessRoute(agreement, "finance", ["revenue.billing"]), true);
   assert.equal(canAccessRoute(agreement, "sales"), false);
-  assert.equal(canAccessRoute(routeFromPath("/projects"), "finance"), true);
+  assert.equal(canAccessRoute(routeFromPath("/projects"), "finance", ["operations.projects"]), true);
   assert.equal(canAccessRoute(routeFromPath("/projects"), "client"), false);
   assert.equal(canAccessRoute(routeFromPath("/clients/22222222-2222-4222-8222-222222222222"), "client"), false);
 
   assert.equal(defaultRouteForRole("crew").page.path, "/my-day");
   assert.equal(defaultRouteForRole("client").page.path, "/");
+});
+
+test("team navigation follows explicit tool grants and ungranted accounts land on their profile", () => {
+  for (const role of ["manager", "sales", "finance", "dispatch", "member"]) {
+    assert.equal(canAccessRoute(routeFromPath("/sales"), role), false);
+    assert.equal(canAccessRoute(routeFromPath("/sales"), role, ["revenue.sales"]), true);
+    assert.equal(canAccessRoute(routeFromPath("/billing"), role, ["revenue.sales"]), false);
+    assert.equal(canAccessRoute(routeFromPath("/settings/people"), role, ["settings.preferences"]), false);
+    assert.equal(defaultRouteForRole(role).page.path, "/profile");
+    assert.equal(defaultRouteForRole(role, ["revenue.sales"]).page.path, "/sales");
+  }
 });

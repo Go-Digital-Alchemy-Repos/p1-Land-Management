@@ -55,8 +55,11 @@ test("commercial assessment baselines are sales-only, idempotent, versioned and 
     });
   try {
     const path = `/commercial-inquiries/${leadId}/assessment-baselines`;
-    for (const role of ["dispatch", "finance", "crew", "client"])
+    for (const role of ["manager", "sales", "dispatch", "finance", "crew", "client"])
       assert.equal((await call(role, path)).status, 403);
+    for (const role of ["manager", "sales"]) await pool.query(
+      "INSERT INTO business_account_access(user_id,capabilities) VALUES($1,ARRAY['revenue.sales'])", [actors[role]],
+    );
     assert.equal(
       (await call("sales", path, {
         operationId: randomUUID(), expectedLeadVersion: 1, propertyId: randomUUID(), title: "Mismatched property",

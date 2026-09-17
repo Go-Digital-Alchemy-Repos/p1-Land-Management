@@ -18,6 +18,7 @@ export async function reviewFixture(cancelled = true) {
     id: randomUUID(),
     name: "Review fixture",
     role: "manager",
+    capabilities: ["revenue.agreements", "revenue.billing"],
   };
   const client = randomUUID(),
     property = randomUUID(),
@@ -32,6 +33,7 @@ export async function reviewFixture(cancelled = true) {
     "INSERT INTO staff_profile(user_id,role) VALUES($1,'manager')",
     [a.id],
   );
+  await pool.query("INSERT INTO business_account_access(user_id,capabilities) VALUES($1,$2)", [a.id, a.capabilities]);
   await pool.query(
     "INSERT INTO client(id,name,quickbooks_id) VALUES($1,'Review fixture',$2)",
     [client, "fixture-" + client],

@@ -4729,10 +4729,16 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "oneOf": [
-                { "$ref": "#/components/schemas/CreateEstimate" },
-                { "$ref": "#/components/schemas/CreateSalesEstimate" }
-              ] }
+              "schema": {
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/CreateEstimate"
+                  },
+                  {
+                    "$ref": "#/components/schemas/CreateSalesEstimate"
+                  }
+                ]
+              }
             }
           }
         },
@@ -5321,39 +5327,837 @@
     "/requests/{requestId}/estimates": {
       "post": {
         "operationId": "createEstimateFromRequest",
-        "parameters": [{ "name": "requestId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateEstimate" } } } },
-        "responses": { "201": { "description": "Draft estimate", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreatedResource" } } } }, "400": { "description": "Invalid lifecycle input" }, "401": { "description": "Verified session required" }, "403": { "description": "Access denied" } }
+        "parameters": [
+          {
+            "name": "requestId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEstimate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Draft estimate",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatedResource"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid lifecycle input"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Access denied"
+          }
+        }
       }
     },
     "/recurring-jobs": {
       "get": {
         "operationId": "listRecurringJobs",
-        "responses": { "200": { "description": "Staff-only recurring Job programs", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/RecurringJob" } } } } }, "401": { "description": "Verified session required" }, "403": { "description": "Dispatch role required" } }
+        "responses": {
+          "200": {
+            "description": "Staff-only recurring Job programs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RecurringJob"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Dispatch role required"
+          }
+        }
       }
     },
     "/recurring-jobs/{recurringJobId}/activate": {
       "post": {
         "operationId": "activateRecurringJob",
-        "parameters": [{ "name": "recurringJobId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ActivateRecurringJob" } } } },
-        "responses": { "200": { "description": "Activated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/OperationReceipt" } } } }, "400": { "description": "Invalid activation" }, "401": { "description": "Verified session required" }, "403": { "description": "Dispatch role required" }, "409": { "description": "Agreement activation safeguard prevented activation" } }
+        "parameters": [
+          {
+            "name": "recurringJobId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ActivateRecurringJob"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Activated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationReceipt"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid activation"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Dispatch role required"
+          },
+          "409": {
+            "description": "Agreement activation safeguard prevented activation"
+          }
+        }
       }
     },
     "/agreement-templates": {
-      "get": { "operationId": "listAgreementTemplates", "responses": { "200": { "description": "Versioned templates", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/AgreementTemplate" } } } } }, "401": { "description": "Verified session required" }, "403": { "description": "Office role required" } } },
-      "post": { "operationId": "createAgreementTemplate", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateAgreementTemplate" } } } }, "responses": { "201": { "description": "Created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreatedResource" } } } }, "400": { "description": "Invalid template" }, "401": { "description": "Verified session required" }, "403": { "description": "Manager role required" } } }
+      "get": {
+        "operationId": "listAgreementTemplates",
+        "responses": {
+          "200": {
+            "description": "Versioned templates",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AgreementTemplate"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Office role required"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createAgreementTemplate",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAgreementTemplate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatedResource"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid template"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Manager role required"
+          }
+        }
+      }
+    },
+    "/user-management/users": {
+      "get": {
+        "operationId": "listManagedUsers",
+        "description": "Owner-only account administration. Explicit permissions are versioned; legacy role names confer no automatic tool access.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "items"
+                  ],
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ManagedAccount"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sign in required"
+          },
+          "403": {
+            "description": "Owner access required"
+          },
+          "409": {
+            "description": "Stale version or conflicting lifecycle"
+          }
+        }
+      }
+    },
+    "/user-management/users/{id}": {
+      "patch": {
+        "operationId": "updateManagedUser",
+        "description": "Owner-only account administration. Explicit permissions are versioned; legacy role names confer no automatic tool access.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "version"
+                  ],
+                  "properties": {
+                    "version": {
+                      "type": "integer",
+                      "minimum": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sign in required"
+          },
+          "403": {
+            "description": "Owner access required"
+          },
+          "409": {
+            "description": "Stale version or conflicting lifecycle"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ManagedAccountUpdate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user-management/users/{id}/revoke-sessions": {
+      "post": {
+        "operationId": "revokeManagedUserSessions",
+        "description": "Owner-only account administration. Explicit permissions are versioned; legacy role names confer no automatic tool access.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "ok"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sign in required"
+          },
+          "403": {
+            "description": "Owner access required"
+          },
+          "409": {
+            "description": "Stale version or conflicting lifecycle"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/user-management/users/{id}/history": {
+      "get": {
+        "operationId": "listManagedUserHistory",
+        "description": "Owner-only account administration. Explicit permissions are versioned; legacy role names confer no automatic tool access.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "items"
+                  ],
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/AccountAccessEvent"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sign in required"
+          },
+          "403": {
+            "description": "Owner access required"
+          },
+          "409": {
+            "description": "Stale version or conflicting lifecycle"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/user-management/invitations": {
+      "get": {
+        "operationId": "listManagedInvitations",
+        "description": "Owner-only account administration. Explicit permissions are versioned; legacy role names confer no automatic tool access.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "items"
+                  ],
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ManagedInvitation"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sign in required"
+          },
+          "403": {
+            "description": "Owner access required"
+          },
+          "409": {
+            "description": "Stale version or conflicting lifecycle"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createManagedInvitation",
+        "description": "Owner-only account administration. Explicit permissions are versioned; legacy role names confer no automatic tool access.",
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "id"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sign in required"
+          },
+          "403": {
+            "description": "Owner access required"
+          },
+          "409": {
+            "description": "Stale version or conflicting lifecycle"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ManagedInvitationInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user-management/invitations/{id}/resend": {
+      "post": {
+        "operationId": "resendManagedInvitation",
+        "description": "Owner-only account administration. Explicit permissions are versioned; legacy role names confer no automatic tool access.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "ok"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sign in required"
+          },
+          "403": {
+            "description": "Owner access required"
+          },
+          "409": {
+            "description": "Stale version or conflicting lifecycle"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/user-management/invitations/{id}/revoke": {
+      "post": {
+        "operationId": "revokeManagedInvitation",
+        "description": "Owner-only account administration. Explicit permissions are versioned; legacy role names confer no automatic tool access.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "ok"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sign in required"
+          },
+          "403": {
+            "description": "Owner access required"
+          },
+          "409": {
+            "description": "Stale version or conflicting lifecycle"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
     }
   },
   "components": {
     "schemas": {
-      "EstimateLineItem": { "type": "object", "additionalProperties": false, "required": ["description", "quantity", "unitPriceCents"], "properties": { "description": { "type": "string", "minLength": 1 }, "unit": { "type": "string" }, "quantity": { "type": "number", "exclusiveMinimum": 0 }, "unitPriceCents": { "type": "integer", "minimum": 0 } } },
-      "RecurringJobConfiguration": { "type": "object", "additionalProperties": false, "required": ["cadence", "intervalCount", "startsOn", "endsOn", "localTime", "billingMode", "unitAmountCents", "periods"], "properties": { "cadence": { "type": "string", "enum": ["weekly", "monthly"] }, "intervalCount": { "type": "integer", "minimum": 1, "maximum": 52 }, "startsOn": { "type": "string", "format": "date" }, "endsOn": { "type": "string", "format": "date" }, "localTime": { "type": "string" }, "billingMode": { "type": "string", "enum": ["fixed_monthly", "per_visit"] }, "unitAmountCents": { "type": ["integer", "null"] }, "periods": { "type": "array", "items": { "type": "object", "required": ["startsOn", "endsOn", "amountCents"], "properties": { "startsOn": { "type": "string", "format": "date" }, "endsOn": { "type": "string", "format": "date" }, "amountCents": { "type": "integer" } } } } } },
-      "CreateEstimate": { "type": "object", "additionalProperties": false, "required": ["propertyId", "title", "scope", "lineItems", "kind"], "properties": { "propertyId": { "type": "string", "format": "uuid" }, "projectId": { "type": "string", "format": "uuid" }, "title": { "type": "string", "minLength": 1 }, "scope": { "type": "string", "minLength": 1 }, "terms": { "type": "string" }, "lineItems": { "type": "array", "minItems": 1, "items": { "$ref": "#/components/schemas/EstimateLineItem" } }, "kind": { "type": "string", "enum": ["one_time", "recurring"] }, "recurring": { "$ref": "#/components/schemas/RecurringJobConfiguration" }, "agreementTemplateId": { "type": "string", "format": "uuid" } } },
-      "AgreementTemplate": { "type": "object", "required": ["id", "name", "version", "body", "active"], "properties": { "id": { "type": "string", "format": "uuid" }, "name": { "type": "string" }, "version": { "type": "integer" }, "body": { "type": "string" }, "active": { "type": "boolean" } } },
-      "CreateAgreementTemplate": { "type": "object", "additionalProperties": false, "required": ["name", "body"], "properties": { "name": { "type": "string", "minLength": 1 }, "body": { "type": "string", "minLength": 1 } } },
-      "RecurringJob": { "type": "object", "required": ["id", "property_id", "title", "cadence", "interval_count", "next_date", "local_time", "paused"], "properties": { "id": { "type": "string", "format": "uuid" }, "property_id": { "type": "string", "format": "uuid" }, "title": { "type": "string" }, "cadence": { "type": "string", "enum": ["weekly", "monthly"] }, "interval_count": { "type": "integer" }, "next_date": { "type": "string", "format": "date" }, "local_time": { "type": "string" }, "paused": { "type": "boolean" }, "agreement_status": { "type": ["string", "null"] }, "next_visit": { "type": ["string", "null"], "format": "date-time" } } },
-      "ActivateRecurringJob": { "type": "object", "additionalProperties": false, "required": ["assignedTo", "nextDate", "localTime"], "properties": { "assignedTo": { "type": "string", "format": "uuid" }, "nextDate": { "type": "string", "format": "date" }, "localTime": { "type": "string" } } },
+      "EstimateLineItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "description",
+          "quantity",
+          "unitPriceCents"
+        ],
+        "properties": {
+          "description": {
+            "type": "string",
+            "minLength": 1
+          },
+          "unit": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "unitPriceCents": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "RecurringJobConfiguration": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "cadence",
+          "intervalCount",
+          "startsOn",
+          "endsOn",
+          "localTime",
+          "billingMode",
+          "unitAmountCents",
+          "periods"
+        ],
+        "properties": {
+          "cadence": {
+            "type": "string",
+            "enum": [
+              "weekly",
+              "monthly"
+            ]
+          },
+          "intervalCount": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 52
+          },
+          "startsOn": {
+            "type": "string",
+            "format": "date"
+          },
+          "endsOn": {
+            "type": "string",
+            "format": "date"
+          },
+          "localTime": {
+            "type": "string"
+          },
+          "billingMode": {
+            "type": "string",
+            "enum": [
+              "fixed_monthly",
+              "per_visit"
+            ]
+          },
+          "unitAmountCents": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "periods": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "startsOn",
+                "endsOn",
+                "amountCents"
+              ],
+              "properties": {
+                "startsOn": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "endsOn": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "amountCents": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      },
+      "CreateEstimate": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "propertyId",
+          "title",
+          "scope",
+          "lineItems",
+          "kind"
+        ],
+        "properties": {
+          "propertyId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "projectId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "scope": {
+            "type": "string",
+            "minLength": 1
+          },
+          "terms": {
+            "type": "string"
+          },
+          "lineItems": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/EstimateLineItem"
+            }
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "one_time",
+              "recurring"
+            ]
+          },
+          "recurring": {
+            "$ref": "#/components/schemas/RecurringJobConfiguration"
+          },
+          "agreementTemplateId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "AgreementTemplate": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "version",
+          "body",
+          "active"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer"
+          },
+          "body": {
+            "type": "string"
+          },
+          "active": {
+            "type": "boolean"
+          }
+        }
+      },
+      "CreateAgreementTemplate": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "body"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "body": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "RecurringJob": {
+        "type": "object",
+        "required": [
+          "id",
+          "property_id",
+          "title",
+          "cadence",
+          "interval_count",
+          "next_date",
+          "local_time",
+          "paused"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "property_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "cadence": {
+            "type": "string",
+            "enum": [
+              "weekly",
+              "monthly"
+            ]
+          },
+          "interval_count": {
+            "type": "integer"
+          },
+          "next_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "local_time": {
+            "type": "string"
+          },
+          "paused": {
+            "type": "boolean"
+          },
+          "agreement_status": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "next_visit": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        }
+      },
+      "ActivateRecurringJob": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "assignedTo",
+          "nextDate",
+          "localTime"
+        ],
+        "properties": {
+          "assignedTo": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "nextDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "localTime": {
+            "type": "string"
+          }
+        }
+      },
       "FieldOperation": {
         "type": "object",
         "properties": {
@@ -5969,6 +6773,7 @@
             "type": "string",
             "enum": [
               "owner",
+              "member",
               "manager",
               "dispatch",
               "sales",
@@ -6021,7 +6826,8 @@
           "avatarUrl",
           "mfaRequired",
           "ownerMfaRequired",
-          "role"
+          "role",
+          "capabilities"
         ],
         "properties": {
           "id": {
@@ -6061,6 +6867,7 @@
             ],
             "enum": [
               "owner",
+              "member",
               "manager",
               "dispatch",
               "sales",
@@ -6069,6 +6876,13 @@
               "client",
               null
             ]
+          },
+          "capabilities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BusinessCapability"
+            },
+            "description": "Explicit known tool grants; empty for inactive, unassured, client or unreviewed accounts. Owner receives all current tool grants."
           }
         }
       },
@@ -6755,7 +7569,10 @@
         ],
         "properties": {
           "id": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "format": "uuid"
           },
           "property_id": {
@@ -6815,7 +7632,10 @@
             "type": "array",
             "minItems": 1,
             "maxItems": 100,
-            "items": { "type": "string", "format": "uuid" },
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
             "description": "Participating client properties. The server derives client membership and never grants cross-client access."
           },
           "name": {
@@ -9176,19 +9996,34 @@
             "type": "string"
           },
           "address_line1": {
-            "type": ["string", "null"]
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "address_line2": {
-            "type": ["string", "null"]
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "city": {
-            "type": ["string", "null"]
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "state": {
-            "type": ["string", "null"]
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "postal_code": {
-            "type": ["string", "null"]
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "acreage": {
             "type": [
@@ -11524,6 +12359,327 @@
             }
           }
         ]
+      },
+      "BusinessCapability": {
+        "type": "string",
+        "enum": [
+          "workspace.overview",
+          "workspace.my-day",
+          "customers.clients",
+          "customers.properties",
+          "customers.requests",
+          "operations.schedule",
+          "operations.recurring",
+          "operations.projects",
+          "operations.inspections",
+          "revenue.sales",
+          "revenue.agreements",
+          "revenue.agreement-templates.manage",
+          "revenue.billing",
+          "revenue.expenses",
+          "marketing.content.website",
+          "marketing.content.pages",
+          "marketing.content.team",
+          "marketing.content.forms",
+          "marketing.content.blog",
+          "marketing.content.galleries",
+          "marketing.content.media",
+          "marketing.content.sections",
+          "marketing.content.seo",
+          "marketing.content.menus",
+          "marketing.content.sidebars",
+          "marketing.design.branding",
+          "marketing.design.colors",
+          "marketing.design.social-media",
+          "marketing.design.typography",
+          "marketing.analytics.view",
+          "marketing.search-console.view",
+          "settings.preferences",
+          "settings.term-libraries"
+        ]
+      },
+      "ManagedAccount": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name",
+          "email",
+          "emailVerified",
+          "twoFactorEnabled",
+          "role",
+          "active",
+          "firstName",
+          "lastName",
+          "capabilities",
+          "formNotificationIds",
+          "version",
+          "reviewedAt",
+          "mfaRequired",
+          "suggestedCapabilities"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "emailVerified": {
+            "type": "boolean"
+          },
+          "twoFactorEnabled": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "owner",
+              "member",
+              "manager",
+              "dispatch",
+              "sales",
+              "finance",
+              "crew",
+              "client"
+            ]
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "capabilities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BusinessCapability"
+            }
+          },
+          "formNotificationIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "reviewedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "mfaRequired": {
+            "type": "boolean"
+          },
+          "suggestedCapabilities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BusinessCapability"
+            }
+          }
+        }
+      },
+      "ManagedAccountUpdate": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "firstName",
+          "lastName",
+          "capabilities",
+          "formNotificationIds",
+          "version",
+          "active"
+        ],
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "capabilities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BusinessCapability"
+            }
+          },
+          "formNotificationIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "active": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ManagedInvitationInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "firstName",
+          "lastName",
+          "capabilities",
+          "formNotificationIds",
+          "email",
+          "role"
+        ],
+        "properties": {
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "capabilities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BusinessCapability"
+            }
+          },
+          "formNotificationIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "member",
+              "manager",
+              "dispatch",
+              "sales",
+              "finance",
+              "crew",
+              "client"
+            ]
+          },
+          "clientId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "ManagedInvitation": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "email",
+          "role",
+          "firstName",
+          "lastName",
+          "capabilities",
+          "expiresAt",
+          "acceptedAt",
+          "revokedAt",
+          "createdAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "capabilities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BusinessCapability"
+            }
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "acceptedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "revokedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "AccountAccessEvent": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "actorId",
+          "action",
+          "details",
+          "createdAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "actorId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "action": {
+            "type": "string"
+          },
+          "details": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
       }
     }
   }

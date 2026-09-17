@@ -3,7 +3,7 @@ import type pg from "pg";
 import { z } from "zod";
 import type { Actor } from "./access";
 import { transaction } from "./database";
-import { HttpError, requireRole } from "./policy";
+import { HttpError, requireCapability } from "./policy";
 import { prepareChargeInput } from "./service-agreement.contract";
 import { lockedAgreement, localToday, billedTotal, agreementAudit } from "./service-agreement.persistence";
 
@@ -32,7 +32,7 @@ type ChargeResult = z.infer<typeof chargePreview> | { receipt: z.infer<typeof ag
 export async function prepareAgreementChargeInTransaction(
   c: pg.PoolClient, principal: ChargePrincipal, agreementId: string, input: unknown, preview: boolean,
 ): Promise<ChargeResult> {
-  if (principal.kind === "staff") requireRole(principal.actor.role, ["owner", "manager", "finance"]);
+  if (principal.kind === "staff") requireCapability(principal.actor, "revenue.billing");
   if (preview && principal.kind !== "staff") throw new Error("Worker charge preparation cannot preview");
   const b = prepareChargeInput.parse(input);
   const sourceKey = "periodStart" in b ? "period:" + b.periodStart : "work:" + b.workOrderId;

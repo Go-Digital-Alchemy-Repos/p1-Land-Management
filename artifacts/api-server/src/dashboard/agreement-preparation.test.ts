@@ -9,7 +9,7 @@ import { runAgreementPreparationOnce, scanAgreementPreparation, previewAgreement
 
 test("agreement preparation scanner creates one durable draft job per source and preserves manual attribution", { skip: !process.env.AGREEMENT_TEST_DATABASE_URL }, async () => {
   const user = randomUUID(), client = randomUUID(), property = randomUUID();
-  const actor: Actor = { id: user, name: "Preparation fixture", role: "manager" };
+  const actor: Actor = { id: user, name: "Preparation fixture", role: "manager", capabilities: ["revenue.agreements", "revenue.billing"] };
   try {
     await pool.query('INSERT INTO "user"(id,name,email,"emailVerified") VALUES($1,$2,$3,true)', [user, actor.name, `${user}@example.test`]);
     await pool.query("INSERT INTO client(id,name) VALUES($1,'Preparation client')", [client]);

@@ -62,11 +62,13 @@ import type {
   CreateEstimate,
   CreateExpense,
   CreateInspectionReport,
+  CreateManagedInvitation201,
   CreateManualAssessmentSlot,
   CreateProject,
   CreateProjectPhase,
   CreatePropertyArea,
   CreateRecurringService,
+  CreateSalesEstimate,
   CreateSalesLead,
   CreateServiceAgreement,
   CreateServiceRequest,
@@ -94,7 +96,12 @@ import type {
   ListAgreementChargesParams,
   ListAgreementPreparationJobsParams,
   ListCommercialInquiriesParams,
+  ListManagedInvitations200,
+  ListManagedUserHistory200,
+  ListManagedUsers200,
   ListServiceAgreementsParams,
+  ManagedAccountUpdate,
+  ManagedInvitationInput,
   OperationReceipt,
   PhotoUploadReceipt,
   Project,
@@ -119,6 +126,9 @@ import type {
   RecurringJob,
   RecurringServicePause,
   RescheduleWork,
+  ResendManagedInvitation200,
+  RevokeManagedInvitation200,
+  RevokeManagedUserSessions200,
   SalesLead,
   SalesLeadConversion,
   SalesLeadConversionReceipt,
@@ -140,6 +150,7 @@ import type {
   UpdateClientContact,
   UpdateDashboardClient,
   UpdateDashboardProperty,
+  UpdateManagedUser200,
   UpdateProject,
   UpdateProjectPhase,
   UploadFieldPhotoHeaders,
@@ -2632,9 +2643,9 @@ export const getCreateLifecycleEstimateUrl = () => {
 }
 
 /**
- * Owner, manager, or sales only. Creates a draft estimate for an operational property. It does not send, approve, schedule, dispatch, publish, post billing, or collect payment.
+ * Owner, manager, or sales only. Creates a draft estimate for an operational property. New callers send itemized CreateEstimate input. The amount-only CreateSalesEstimate input remains supported for compatibility and becomes one line item. It does not send, approve, schedule, dispatch, publish, post billing, or collect payment.
  */
-export const createLifecycleEstimate = async (createEstimate: CreateEstimate, options?: RequestInit): Promise<CreatedResource> => {
+export const createLifecycleEstimate = async (createEstimateCreateSalesEstimate: CreateEstimate | CreateSalesEstimate, options?: RequestInit): Promise<CreatedResource> => {
 
   return customFetch<CreatedResource>(getCreateLifecycleEstimateUrl(),
   {
@@ -2642,7 +2653,7 @@ export const createLifecycleEstimate = async (createEstimate: CreateEstimate, op
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
-      createEstimate,)
+      createEstimateCreateSalesEstimate,)
   }
 );}
 
@@ -2913,6 +2924,201 @@ export const createAgreementTemplate = async (createAgreementTemplate: CreateAgr
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
       createAgreementTemplate,)
+  }
+);}
+
+
+
+export const getListManagedUsersUrl = () => {
+
+
+
+
+  return `/api/v1/user-management/users`
+}
+
+/**
+ * Owner-only account administration. Explicit permissions are versioned; legacy role names confer no automatic tool access.
+ */
+export const listManagedUsers = async ( options?: RequestInit): Promise<ListManagedUsers200> => {
+
+  return customFetch<ListManagedUsers200>(getListManagedUsersUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getUpdateManagedUserUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/user-management/users/${id}`
+}
+
+/**
+ * Owner-only account administration. Explicit permissions are versioned; legacy role names confer no automatic tool access.
+ */
+export const updateManagedUser = async (id: string,
+    managedAccountUpdate: ManagedAccountUpdate, options?: RequestInit): Promise<UpdateManagedUser200> => {
+
+  return customFetch<UpdateManagedUser200>(getUpdateManagedUserUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      managedAccountUpdate,)
+  }
+);}
+
+
+
+export const getRevokeManagedUserSessionsUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/user-management/users/${id}/revoke-sessions`
+}
+
+/**
+ * Owner-only account administration. Explicit permissions are versioned; legacy role names confer no automatic tool access.
+ */
+export const revokeManagedUserSessions = async (id: string, options?: RequestInit): Promise<RevokeManagedUserSessions200> => {
+
+  return customFetch<RevokeManagedUserSessions200>(getRevokeManagedUserSessionsUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+export const getListManagedUserHistoryUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/user-management/users/${id}/history`
+}
+
+/**
+ * Owner-only account administration. Explicit permissions are versioned; legacy role names confer no automatic tool access.
+ */
+export const listManagedUserHistory = async (id: string, options?: RequestInit): Promise<ListManagedUserHistory200> => {
+
+  return customFetch<ListManagedUserHistory200>(getListManagedUserHistoryUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getListManagedInvitationsUrl = () => {
+
+
+
+
+  return `/api/v1/user-management/invitations`
+}
+
+/**
+ * Owner-only account administration. Explicit permissions are versioned; legacy role names confer no automatic tool access.
+ */
+export const listManagedInvitations = async ( options?: RequestInit): Promise<ListManagedInvitations200> => {
+
+  return customFetch<ListManagedInvitations200>(getListManagedInvitationsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateManagedInvitationUrl = () => {
+
+
+
+
+  return `/api/v1/user-management/invitations`
+}
+
+/**
+ * Owner-only account administration. Explicit permissions are versioned; legacy role names confer no automatic tool access.
+ */
+export const createManagedInvitation = async (managedInvitationInput: ManagedInvitationInput, options?: RequestInit): Promise<CreateManagedInvitation201> => {
+
+  return customFetch<CreateManagedInvitation201>(getCreateManagedInvitationUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      managedInvitationInput,)
+  }
+);}
+
+
+
+export const getResendManagedInvitationUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/user-management/invitations/${id}/resend`
+}
+
+/**
+ * Owner-only account administration. Explicit permissions are versioned; legacy role names confer no automatic tool access.
+ */
+export const resendManagedInvitation = async (id: string, options?: RequestInit): Promise<ResendManagedInvitation200> => {
+
+  return customFetch<ResendManagedInvitation200>(getResendManagedInvitationUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+export const getRevokeManagedInvitationUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/user-management/invitations/${id}/revoke`
+}
+
+/**
+ * Owner-only account administration. Explicit permissions are versioned; legacy role names confer no automatic tool access.
+ */
+export const revokeManagedInvitation = async (id: string, options?: RequestInit): Promise<RevokeManagedInvitation200> => {
+
+  return customFetch<RevokeManagedInvitation200>(getRevokeManagedInvitationUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
   }
 );}
 

@@ -1,3 +1,4 @@
+import { hasCapability, type Capability } from "@workspace/api-zod/business-access";
 export type DashboardView =
   | "Overview"
   | "Properties"
@@ -82,7 +83,7 @@ export const DASHBOARD_PAGES: readonly DashboardPageRoute[] = [
   { view: "Billing", label: "Billing", path: "/billing", group: "Revenue" },
   { view: "Expenses", label: "Expenses", path: "/expenses", group: "Revenue" },
   { view: "Profile", label: "My profile", path: "/profile", group: "Workspace", navigation: false },
-  { view: "Settings", label: "People & access", path: "/settings/people", group: "Settings", settingsSection: "people" },
+  { view: "Settings", label: "User Manager", path: "/settings/people", group: "Settings", settingsSection: "people" },
   { view: "Settings", label: "Security", path: "/settings/security", group: "Settings", settingsSection: "security" },
   { view: "Settings", label: "Integrations", path: "/settings/integrations", group: "Settings", settingsSection: "integrations" },
   { view: "Settings", label: "Preferences", path: "/settings/preferences", group: "Settings", settingsSection: "preferences" },
@@ -176,28 +177,30 @@ export function pathForRoute(route: Extract<DashboardRoute, { kind: "page" }>) {
   }
 }
 
-export function defaultRouteForRole(role: string | null | undefined) {
-  const page =
-    role === "crew"
-      ? pageFor("My Day")!
-      : DASHBOARD_PAGES.find((candidate) => candidate.view === "Overview")!;
+const viewCapability: Partial<Record<DashboardView, Capability>> = {
+  Overview: "workspace.overview", "My Day": "workspace.my-day",
+  Clients: "customers.clients", Properties: "customers.properties", Requests: "customers.requests",
+  Schedule: "operations.schedule", Recurring: "operations.recurring", Projects: "operations.projects", Inspections: "operations.inspections",
+  Sales: "revenue.sales", Agreements: "revenue.agreements", Billing: "revenue.billing", Expenses: "revenue.expenses",
+};
+export function defaultRouteForRole(role: string | null | undefined, capabilities?: readonly string[]) {
+  const page = role === "crew" ? pageFor("My Day")! :
+    DASHBOARD_PAGES.find(page => page.navigation !== false && canAccessRoute({ kind: "page", page }, role, capabilities)) ?? pageFor("Profile")!;
   return { kind: "page", page } as const;
 }
 
-export function canAccessRoute(route: DashboardRoute, role: string | null | undefined) {
+export function canAccessRoute(route: DashboardRoute, role: string | null | undefined, capabilities?: readonly string[]) {
   if (route.kind !== "page" || !role) return false;
   const { view, settingsSection } = route.page;
   if (view === "Profile") return true;
+  // Field and customer portals keep their existing record-scoped routes.
   if (role === "crew") return ["My Day", "Properties"].includes(view);
-  if (role === "client") {
-    return ["Overview", "Properties", "Schedule", "Sales", "Billing", "Requests", "Inspections"].includes(view);
-  }
-  if (settingsSection) return ["owner", "manager"].includes(role);
-  if (view === "Clients") return ["owner", "manager", "dispatch", "sales", "finance"].includes(role);
-  if (view === "Agreements") return ["owner", "manager", "finance", "dispatch"].includes(role);
-  if (view === "Projects") return ["owner", "manager", "dispatch", "finance"].includes(role);
-  if (["Recurring", "Inspections"].includes(view)) return ["owner", "manager", "dispatch"].includes(role);
-  if (view === "Expenses" || view === "Billing") return ["owner", "manager", "finance"].includes(role);
-  if (view === "Sales") return ["owner", "manager", "sales"].includes(role);
-  return true;
+  if (role === "client") return ["Overview", "Properties", "Schedule", "Sales", "Billing", "Requests", "Inspections"].includes(view);
+  if (settingsSection === "people" || settingsSection === "integrations" || settingsSection === "security") return role === "owner";
+  const subject = { role, capabilities };
+  if (settingsSection === "preferences") return hasCapability(subject, "settings.preferences");
+  if (settingsSection === "term-libraries") return hasCapability(subject, "settings.term-libraries");
+  if (view === "Agreements" && hasCapability(subject, "revenue.billing")) return true;
+  const permission = viewCapability[view];
+  return permission ? hasCapability(subject, permission) : false;
 }

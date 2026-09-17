@@ -2,7 +2,7 @@ import { randomUUID, createHash } from "node:crypto";
 import { z } from "zod";
 import { pool, transaction } from "./database";
 import { type Actor } from "./access";
-import { HttpError, requireRole } from "./policy";
+import { HttpError, requireCapability } from "./policy";
 const id = z.string().uuid(),
   text = z.string().trim().min(1).max(500);
 const email = z.string().trim().email().max(254).nullable();
@@ -69,7 +69,7 @@ export const contextInput = z
     ]),
   })
   .strict();
-const sales = (a: Actor) => requireRole(a.role, ["owner", "manager", "sales"]);
+const sales = (a: Actor) => requireCapability(a, "revenue.sales");
 export async function readProspectContext(a: Actor, leadId: string) {
   sales(a);
   id.parse(leadId);

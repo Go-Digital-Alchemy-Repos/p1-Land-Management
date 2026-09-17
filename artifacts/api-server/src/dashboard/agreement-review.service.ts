@@ -1,7 +1,7 @@
 import { z } from "zod";
 import type { Actor } from "./access";
 import { transaction } from "./database";
-import { HttpError, requireRole } from "./policy";
+import { HttpError, requireCapability } from "./policy";
 import {
   agreementAudit,
   lockedAgreement,
@@ -22,7 +22,7 @@ import {
   fingerprint,
 } from "./agreement-review.persistence";
 const authorize = (a: Actor) =>
-  requireRole(a.role, ["owner", "manager", "finance"]);
+  requireCapability(a, "revenue.billing");
 export async function readAgreementChargeReview(a: Actor, id: string) {
   authorize(a);
   return transaction(async (c) => (await lockedChargeReview(c, id)).review);

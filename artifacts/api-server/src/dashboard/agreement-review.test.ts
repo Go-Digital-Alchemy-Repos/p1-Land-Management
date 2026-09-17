@@ -60,15 +60,15 @@ test(
     assert.equal(await snapshot(f.agreementId), before);
     for (const role of ["dispatch", "sales", "crew", "client"] as const) {
       await assert.rejects(
-        readAgreementChargeReview({ ...f.a, role }, f.charge.id),
+        readAgreementChargeReview({ ...f.a, role, capabilities: [] }, f.charge.id),
         /Access denied/,
       );
       await assert.rejects(
-        listAgreementCharges({ ...f.a, role }, f.agreementId, {}),
+        listAgreementCharges({ ...f.a, role, capabilities: [] }, f.agreementId, {}),
         /Access denied/,
       );
       await assert.rejects(
-        recordAgreementChargeReview({ ...f.a, role }, f.charge.id, b),
+        recordAgreementChargeReview({ ...f.a, role, capabilities: [] }, f.charge.id, b),
         /Access denied/,
       );
     }

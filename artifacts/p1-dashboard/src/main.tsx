@@ -1,3 +1,4 @@
+import { UserManager } from "./UserManager";
 import { WorkReadiness } from "./WorkReadiness";
 import { OwnerMfaRecovery } from "./OwnerMfaRecovery";
 import { CommercialInbox } from "./CommercialInbox";
@@ -85,6 +86,7 @@ type Person = {
   name: string;
   email: string;
   role: string | null;
+  capabilities?: string[];
   twoFactorEnabled: boolean;
   mfaRequired?: boolean;
   avatarUrl?: string | null;
@@ -917,7 +919,7 @@ function App() {
         : left.name.localeCompare(right.name),
     );
   const allowedNav = nav.filter((item) =>
-    item.navigation !== false && canAccessRoute({ kind: "page", page: item }, person?.role),
+    item.navigation !== false && canAccessRoute({ kind: "page", page: item }, person?.role, person?.capabilities),
   );
   const activePage = nav.find(
     (item) =>
@@ -928,7 +930,7 @@ function App() {
   const routeForbidden =
     Boolean(person?.role) &&
     locationRoute.kind === "page" &&
-    !canAccessRoute(locationRoute, person?.role);
+    !canAccessRoute(locationRoute, person?.role, person?.capabilities);
   const routeUnavailable = routeMissing || routeForbidden;
   const [expandedGroups, setExpandedGroups] = useState<Set<NavigationGroup>>(
     () => new Set(["Workspace"]),
@@ -947,12 +949,12 @@ function App() {
     if (
       person?.role &&
       current.kind === "page" &&
-      !canAccessRoute(current, person.role)
+      !canAccessRoute(current, person.role, person.capabilities)
     ) {
-      applyRoute(defaultRouteForRole(person.role), "replace");
-      setNotice("That area is not available for this workspace role.");
+      applyRoute(defaultRouteForRole(person.role, person.capabilities), "replace");
+      setNotice("That area is not included in your selected access.");
     }
-  }, [person?.role, view, settingsSection, recordRoute?.id]);
+  }, [person?.role, person?.capabilities, view, settingsSection, recordRoute?.id]);
   const activeNav = (item: NavItem) =>
     !routeUnavailable &&
     view === item.view &&
@@ -1387,7 +1389,7 @@ function App() {
                     ? "This area is not available for your workspace role. Your account permissions and data have not changed."
                     : "Check the link or return to your workspace. Your account permissions and data have not changed."}
                 </p>
-                <button onClick={() => navigate(defaultRouteForRole(person.role).page.view)}>
+                <button onClick={() => navigate(defaultRouteForRole(person.role, person.capabilities).page.view)}>
                   Return to workspace
                 </button>
               </div>
@@ -2181,50 +2183,8 @@ function App() {
               )}
             </section>
           )}
-          {view === "Settings" && settingsSection === "people" && (
-              <section className="panel">
-                <div className="panel-heading">
-                  <h2>People & access</h2>
-                  <button onClick={() => openForm("invite")}>
-                    <Plus size={16} /> Invite a person
-                  </button>
-                </div>
-                <Table
-                  rows={data.staff || []}
-                  columns={["name", "role", "mfaRequired"]}
-                  empty="No staff records."
-                />
-                {person.role === "owner" &&
-                  (data["account-mfa-policies"] || []).length > 0 && (
-                  <div className="stacked-actions">
-                    <h3>Two-factor requirements for every account</h3>
-                    {(data["account-mfa-policies"] || []).map((member: any) => (
-                      <div className="row-actions" key={member.id}>
-                        <span>
-                          {member.name} · {member.role} · <EmailLink email={member.email} /> —{" "}
-                          {member.mfaRequired ? "Required" : "Optional"}
-                        </span>
-                        <button
-                          onClick={() =>
-                            void run(async () => {
-                              await updateAccountMfaPolicy(member.id, {
-                                required: !member.mfaRequired,
-                              });
-                              // When an owner applies the requirement to their
-                              // own unassured session, immediately re-read the
-                              // policy so the enrollment gate replaces settings.
-                              if (member.id === person.id) await session();
-                              else await refresh();
-                            })
-                          }
-                        >
-                          Make {member.mfaRequired ? "optional" : "required"}
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </section>
+          {view === "Settings" && settingsSection === "people" && person.role === "owner" && (
+            <UserManager currentUserId={person.id} clients={data.clients || []} onSessionChanged={session} />
           )}
           {view === "Settings" && settingsSection === "integrations" && (
               <section className="panel">

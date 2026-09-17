@@ -165,7 +165,7 @@ export const staffProfile = pgTable(
     }),
     check(
       "staff_profile_role_check",
-      sql`role = ANY (ARRAY['owner'::text, 'manager'::text, 'dispatch'::text, 'sales'::text, 'finance'::text, 'crew'::text, 'client'::text])`,
+      sql`role = ANY (ARRAY['owner'::text, 'member'::text, 'manager'::text, 'dispatch'::text, 'sales'::text, 'finance'::text, 'crew'::text, 'client'::text])`,
     ),
   ],
 );
@@ -276,6 +276,13 @@ export const invitation = pgTable(
   {
     id: uuid().primaryKey().notNull(),
     email: text().notNull(),
+    capabilities: text().array().default(sql`'{}'`).notNull(),
+    firstName: text("first_name").default("").notNull(),
+    lastName: text("last_name").default("").notNull(),
+    formNotificationIds: text("form_notification_ids").array().default(sql`'{}'`).notNull(),
+    revokedAt: timestamp("revoked_at", { withTimezone: true, mode: "string" }),
+    createdBy: text("created_by").references(() => user.id),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" }).defaultNow().notNull(),
     role: text().notNull(),
     clientId: uuid("client_id"),
     tokenHash: text("token_hash").notNull(),
@@ -297,7 +304,7 @@ export const invitation = pgTable(
     unique("invitation_token_hash_key").on(table.tokenHash),
     check(
       "invitation_role_check",
-      sql`role = ANY (ARRAY['manager'::text, 'dispatch'::text, 'sales'::text, 'finance'::text, 'crew'::text, 'client'::text])`,
+      sql`role = ANY (ARRAY['member'::text, 'manager'::text, 'dispatch'::text, 'sales'::text, 'finance'::text, 'crew'::text, 'client'::text])`,
     ),
     check(
       "invitation_check",
@@ -1805,3 +1812,15 @@ export const agreementChargeReviewEvent = pgTable(
     ),
   ],
 );
+
+export const businessAccountAccess = pgTable("business_account_access", {
+  userId: text("user_id").primaryKey().references(() => user.id),
+  firstName: text("first_name").default("").notNull(),
+  lastName: text("last_name").default("").notNull(),
+  capabilities: text().array().default(sql`'{}'`).notNull(),
+  formNotificationIds: text("form_notification_ids").array().default(sql`'{}'`).notNull(),
+  version: integer().default(1).notNull(),
+  reviewedAt: timestamp("reviewed_at", { withTimezone: true, mode: "string" }),
+  reviewedBy: text("reviewed_by").references(() => user.id),
+  updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" }).defaultNow().notNull(),
+}, table => [check("business_account_access_version_check", sql`${table.version} > 0`)]);

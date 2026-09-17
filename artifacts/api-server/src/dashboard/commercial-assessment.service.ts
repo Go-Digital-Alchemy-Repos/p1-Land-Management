@@ -2,10 +2,10 @@ import { createHash, randomUUID } from "node:crypto";
 import { z } from "zod";
 import { type Actor } from "./access";
 import { pool, transaction } from "./database";
-import { HttpError, requireRole } from "./policy";
+import { HttpError, requireCapability } from "./policy";
 
 const id = z.string().uuid();
-const sales = (a: Actor) => requireRole(a.role, ["owner", "manager", "sales"]);
+const sales = (a: Actor) => requireCapability(a, "revenue.sales");
 const optionalText = (max: number) => z.string().trim().min(1).max(max).nullable().optional();
 const priority = z.enum(["low", "medium", "high"]).nullable().optional();
 const category = z.enum([

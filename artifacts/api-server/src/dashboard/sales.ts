@@ -4,13 +4,13 @@ import { randomUUID } from "node:crypto";
 import { z } from "zod";
 import { actor } from "./access";
 import { transaction } from "./database";
-import { requireRole, HttpError } from "./policy";
+import { requireCapability, HttpError } from "./policy";
 export const salesApi = Router();
 const id = z.string().uuid(),
   text = z.string().trim().min(1).max(10000);
 salesApi.post("/leads/:id/convert", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, ["owner", "manager", "sales"]);
+  requireCapability(a, "revenue.sales");
   const key = id.parse(req.params.id);
   const b = z
     .object({ clientId: id.optional(), propertyName: text, address: text })
@@ -58,7 +58,7 @@ salesApi.post("/leads/:id/convert", async (req, res) => {
 });
 salesApi.post("/estimates/:id/revise", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, ["owner", "manager", "sales"]);
+  requireCapability(a, "revenue.sales");
   const key = id.parse(req.params.id);
   const b = z
     .object({
@@ -119,7 +119,7 @@ salesApi.post("/estimates/:id/revise", async (req, res) => {
 });
 salesApi.post("/estimates/:id/change-order", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, ["owner", "manager", "sales"]);
+  requireCapability(a, "revenue.sales");
   const key = id.parse(req.params.id);
   const b = z
     .object({

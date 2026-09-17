@@ -2,7 +2,7 @@ import { assessActivation } from "./service-agreement.activation";
 import { createHash } from "node:crypto";
 import type { Actor } from "./access";
 import { transaction } from "./database";
-import { HttpError, requireRole } from "./policy";
+import { HttpError, requireCapability } from "./policy";
 import {
   createAgreementInput,
   editAgreementInput,
@@ -19,9 +19,8 @@ import {
   agreementAudit,
   agreementDto,
 } from "./service-agreement.persistence";
-const managers = ["owner", "manager"] as const;
 function management(a: Actor) {
-  requireRole(a.role, [...managers]);
+  requireCapability(a, "revenue.agreements");
 }
 function version(row: { version: number }, expected: number) {
   if (row.version !== expected)

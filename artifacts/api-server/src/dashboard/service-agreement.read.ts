@@ -1,21 +1,21 @@
+import { hasCapability } from "@workspace/api-zod/business-access";
 import { z } from "zod";
 import type { Actor } from "./access";
 import { pool, transaction } from "./database";
-import { requireRole } from "./policy";
+import { requireCapability } from "./policy";
 import {
   lockedAgreement,
   activePeriods,
   agreementDto,
 } from "./service-agreement.persistence";
-const readers = ["owner", "manager", "finance", "dispatch"] as const;
 export async function readServiceAgreement(a: Actor, id: string) {
-  requireRole(a.role, [...readers]);
+  requireCapability(a, hasCapability(a, "revenue.billing") ? "revenue.billing" : "revenue.agreements");
   return transaction(async (c) => {
     const { agreement } = await lockedAgreement(c, id);
     return agreementDto(
       agreement,
-      a.role === "dispatch" ? [] : await activePeriods(c, id),
-      a.role !== "dispatch",
+      hasCapability(a, "revenue.billing") ? await activePeriods(c, id) : [],
+      hasCapability(a, "revenue.billing"),
     );
   });
 }
@@ -27,7 +27,7 @@ const query = z
   })
   .strict();
 export async function listServiceAgreements(a: Actor, input: unknown) {
-  requireRole(a.role, [...readers]);
+  requireCapability(a, hasCapability(a, "revenue.billing") ? "revenue.billing" : "revenue.agreements");
   const b = query.parse(input);
   const rows = (
     await pool.query(
@@ -36,7 +36,7 @@ export async function listServiceAgreements(a: Actor, input: unknown) {
     )
   ).rows;
   const page = rows.slice(0, b.limit),
-    financial = a.role !== "dispatch";
+    financial = hasCapability(a, "revenue.billing");
   const periods =
     financial && page.length
       ? (

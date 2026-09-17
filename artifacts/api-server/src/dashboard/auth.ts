@@ -184,7 +184,7 @@ export const auth = betterAuth({
           );
         const token = ctx.headers?.get("x-p1-invitation") || "";
         const invite = await pool.query(
-          "SELECT id FROM invitation WHERE email=$1 AND token_hash=$2 AND accepted_at IS NULL AND expires_at>now()",
+          "SELECT id FROM invitation WHERE email=$1 AND token_hash=$2 AND accepted_at IS NULL AND revoked_at IS NULL AND expires_at>now()",
           [email, createHash("sha256").update(token).digest("hex")],
         );
         if (!bootstrap && !invite.rowCount)

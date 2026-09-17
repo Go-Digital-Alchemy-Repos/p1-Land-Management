@@ -14,6 +14,7 @@ export type DashboardMeRole = typeof DashboardMeRole[keyof typeof DashboardMeRol
 
 export const DashboardMeRole = {
   owner: 'owner',
+  member: 'member',
   manager: 'manager',
   dispatch: 'dispatch',
   sales: 'sales',

@@ -1,3 +1,4 @@
+import { CAPABILITIES } from "@workspace/api-zod/business-access";
 import {
   requireOperationalProperty,
   requireOperationalChild,
@@ -189,6 +190,8 @@ api.get("/me", async (req, res) => {
     // Deprecated compatibility alias for existing native clients.
     ownerMfaRequired: mfaRequired,
     role: p.rows[0]?.active ? p.rows[0].role : null,
+    capabilities: !p.rows[0]?.active || mfaRequired || p.rows[0].role === "client" ? [] : p.rows[0].role === "owner" ? [...CAPABILITIES] :
+      (await pool.query("SELECT capabilities FROM business_account_access WHERE user_id=$1", [s.user.id])).rows[0]?.capabilities ?? [],
   });
 });
 api.get("/staff", async (req, res) => {
@@ -231,7 +234,7 @@ api.post("/staff/:id/mfa-requirement", async (req, res) => {
 });
 api.post("/invitations", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, managers);
+  requireRole(a.role, ["owner"]);
   const b = z
     .object({
       email: z.string().email(),
@@ -279,7 +282,7 @@ api.post("/invitations/accept", async (req, res) => {
   const b = z.object({ token: text }).parse(req.body);
   await transaction(async (c) => {
     const r = await c.query(
-      "SELECT * FROM invitation WHERE token_hash=$1 AND email=$2 AND accepted_at IS NULL AND expires_at>now() FOR UPDATE",
+      "SELECT * FROM invitation WHERE token_hash=$1 AND email=$2 AND accepted_at IS NULL AND revoked_at IS NULL AND expires_at>now() FOR UPDATE",
       [
         createHash("sha256").update(b.token).digest("hex"),
         s.user.email.toLowerCase(),
@@ -291,12 +294,17 @@ api.post("/invitations/accept", async (req, res) => {
       "SELECT role FROM staff_profile WHERE user_id=$1",
       [s.user.id],
     );
-    if (existing.rowCount && existing.rows[0].role !== v.role)
-      throw new HttpError(409, "Account already has a different role");
+    if (existing.rowCount)
+      throw new HttpError(409, "Account already activated; Owner must manage its access");
     await c.query(
       "INSERT INTO staff_profile(user_id,role) VALUES($1,$2) ON CONFLICT(user_id) DO NOTHING",
       [s.user.id, v.role],
     );
+    await c.query(
+      "INSERT INTO business_account_access(user_id,first_name,last_name,capabilities,form_notification_ids,reviewed_by,reviewed_at) VALUES($1,$2,$3,$4,$5,$6,now())",
+      [s.user.id,v.first_name,v.last_name,v.capabilities,v.form_notification_ids,v.created_by],
+    );
+    if (v.first_name && v.last_name) await c.query('UPDATE "user" SET name=$2 WHERE id=$1', [s.user.id, `${v.first_name} ${v.last_name}`]);
     if (v.client_id)
       await c.query(
         "INSERT INTO client_access(user_id,client_id) VALUES($1,$2) ON CONFLICT DO NOTHING",

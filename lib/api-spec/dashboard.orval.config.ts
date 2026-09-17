@@ -9,7 +9,8 @@ export default defineConfig({
       client: "fetch",
       mode: "split",
       baseUrl: "/api/v1",
-      clean: true,
+      // Keep hand-written transport exports and the legacy estimate adapter.
+      clean: ["!index.ts", "!legacy-estimate.ts"],
       headers: true,
       override: {
         fetch: { includeHttpResponseReturnType: false },

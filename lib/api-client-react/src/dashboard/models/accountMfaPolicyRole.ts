@@ -11,6 +11,7 @@ export type AccountMfaPolicyRole = typeof AccountMfaPolicyRole[keyof typeof Acco
 
 export const AccountMfaPolicyRole = {
   owner: 'owner',
+  member: 'member',
   manager: 'manager',
   dispatch: 'dispatch',
   sales: 'sales',

@@ -3,7 +3,7 @@ import { readAgreementChargeReview } from "./agreement-review.service";
 import { z } from "zod";
 import type { Actor } from "./access";
 import { pool } from "./database";
-import { HttpError, requireRole } from "./policy";
+import { HttpError, requireCapability } from "./policy";
 import { previewAgreementCharge } from "./service-agreement.billing";
 const query = z
   .object({
@@ -37,7 +37,7 @@ export const agreementQueuePage = z
 // Sources remain visible when capped or partly cancelled; financial eligibility
 // is recalculated through the same locked preview used by draft preparation.
 export async function listAgreementChargeQueue(a: Actor, input: unknown) {
-  requireRole(a.role, ["owner", "manager", "finance"]);
+  requireCapability(a, "revenue.billing");
   const b = query.parse(input);
   const rows = (
     await pool.query(

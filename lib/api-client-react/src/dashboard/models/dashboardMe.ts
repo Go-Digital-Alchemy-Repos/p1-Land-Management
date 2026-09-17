@@ -5,6 +5,7 @@
  * Shared field, scheduling and commercial inbox contract. Other office routes remain documented in docs/dashboard/API.md.
  * OpenAPI spec version: 0.1.0
  */
+import type { BusinessCapability } from './businessCapability';
 import type { DashboardMeRole } from './dashboardMeRole';
 
 export interface DashboardMe {
@@ -26,4 +27,6 @@ export interface DashboardMe {
   ownerMfaRequired: boolean;
   /** @nullable */
   role: DashboardMeRole;
+  /** Explicit known tool grants; empty for inactive, unassured, client or unreviewed accounts. Owner receives all current tool grants. */
+  capabilities: BusinessCapability[];
 }

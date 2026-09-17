@@ -43,6 +43,8 @@ test(
             ["owner", "required_manager"].includes(role),
           ],
         );
+        const capabilities = role === "manager" ? ["revenue.agreements", "revenue.billing"] : role === "finance" ? ["revenue.billing"] : role === "dispatch" ? ["revenue.agreements"] : [];
+        await pool.query("INSERT INTO business_account_access(user_id,capabilities) VALUES($1,$2)", [id, capabilities]);
         await pool.query(
           'INSERT INTO session(id,"userId",token,"expiresAt") VALUES($1,$2,$3,now()+interval \'10 minutes\')',
           [sid, id, token],
