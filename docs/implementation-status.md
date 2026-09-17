@@ -2,11 +2,15 @@
 
 Historical implementation branch: `codex/p1-cms-crm`. Current integration and production source: GitHub `main`. Original public baseline: `5303da0`; copied Core source: `aad2057ca53e0a55a873bcbe9c62a73e267be541`. The [master plan](MASTER_PLAN.md) remains the full scope; a deployed dashboard slice does not complete it.
 
+## September 17 — verification policy
+
+GitHub Actions is disabled for this project, and the tracked workflow has been removed. Required checks run locally or through an approved non-GitHub-Actions process. References below to earlier Actions runs are retained only as historical release evidence and do not describe the current workflow.
+
 ## September 8 — verified-source release record
 
 GitHub `main` commit `39f40a310d2cb4b0acd434c727e1717f5aac6b12` was the latest verified technical release when this record was written. Railway reports `SUCCESS` for the public website (`e0ef3844-7725-410f-bf41-e517fbf9c0dc`), isolated Core API (`8f91e95d-d5fe-407c-824b-1d32ff66b190`) and dashboard web service (`d23da4ff-231c-4eff-bb82-0b1ca053a84d`), all from that exact source. Live checks returned HTTP 200 for `https://www.p1landmanagement.com/`, same-origin Core readiness (database connected), and `https://dashboard.p1landmanagement.com/api/healthz`. The dashboard worker remains healthy; Railway does not expose its source commit hash, so this record does not assert one.
 
-The root [Verify P1 workflow](../.github/workflows/verify.yml) completed successfully for this revision: [GitHub Actions run 34202777511](https://github.com/Go-Digital-Alchemy-Repos/p1-Land-Management/actions/runs/34202777511). Its public/dashboard, isolated Core, and native jobs each used locked installs; production dependency audits reported zero known vulnerabilities; type checks, tests, production builds, bundle budgets, the public/Core contract verifier, and Android/iOS Expo static exports passed.
+The historical Verify P1 workflow completed successfully for this revision: [GitHub Actions run 34202777511](https://github.com/Go-Digital-Alchemy-Repos/p1-Land-Management/actions/runs/34202777511). Its public/dashboard, isolated Core, and native jobs each used locked installs; production dependency audits reported zero known vulnerabilities; type checks, tests, production builds, bundle budgets, the public/Core contract verifier, and Android/iOS Expo static exports passed. That workflow is no longer active.
 
 The public home page renders “Your first impression starts at the curb.” The first noun is singular. The 51 source photographs are retained for the asset pipeline while every public site raster photograph is emitted as responsive WebP; the P1 SVG/ICO/Apple-touch icons and the wide JPEG Open Graph fallback remain intentionally format-specific for browser and social-preview compatibility.
 
