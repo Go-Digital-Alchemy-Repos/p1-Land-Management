@@ -72,6 +72,7 @@ import type {
   CreateBillingDraft,
   CreateClientContact,
   CreateClientNote,
+  CreateCrmTask,
   CreateDashboardClient,
   CreateDashboardProperty,
   CreateEstimate,
@@ -90,6 +91,12 @@ import type {
   CreateServiceRequest,
   CreateWorkOrder,
   CreatedResource,
+  CrmTask,
+  CrmTaskAssignee,
+  CrmTaskCreateReceipt,
+  CrmTaskHistory,
+  CrmTaskPage,
+  CrmTaskUpdateReceipt,
   DashboardClient,
   DashboardMe,
   DashboardProperty,
@@ -118,6 +125,8 @@ import type {
   FieldSyncResponse,
   GenerateAssessmentAvailability,
   GeneratedAssessmentAvailability,
+  GetClientTaskHistoryParams,
+  GetLeadTaskHistoryParams,
   GetMarketingAnalyticsParams,
   GetMarketingEventAnalytics200,
   GetMarketingFormBuilder200,
@@ -135,8 +144,10 @@ import type {
   ListAgreementDraftsParams,
   ListAgreementPreparationJobsParams,
   ListAgreementTemplatesParams,
+  ListClientTasksParams,
   ListCommercialInquiriesParams,
   ListLeadNotesParams,
+  ListLeadTasksParams,
   ListManagedInvitations200,
   ListManagedInvitationsParams,
   ListManagedNotificationForms200,
@@ -274,6 +285,7 @@ import type {
   UpdateAgreementDraft,
   UpdateAgreementTemplate,
   UpdateClientContact,
+  UpdateCrmTask,
   UpdateDashboardClient,
   UpdateDashboardProperty,
   UpdateManagedOwnerNotifications200,
@@ -300,6 +312,314 @@ import type {
 } from './models';
 
 import { customFetch } from '../custom-fetch';
+
+export const getListLeadTasksUrl = (id: string,
+    params?: ListLeadTasksParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/leads/${id}/tasks?${stringifiedParams}` : `/api/v1/leads/${id}/tasks`
+}
+
+export const listLeadTasks = async (id: string,
+    params?: ListLeadTasksParams, options?: RequestInit): Promise<CrmTaskPage> => {
+
+  return customFetch<CrmTaskPage>(getListLeadTasksUrl(id,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateLeadTaskUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/leads/${id}/tasks`
+}
+
+export const createLeadTask = async (id: string,
+    createCrmTask: CreateCrmTask, options?: RequestInit): Promise<CrmTaskCreateReceipt> => {
+
+  return customFetch<CrmTaskCreateReceipt>(getCreateLeadTaskUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createCrmTask,)
+  }
+);}
+
+
+
+export const getListLeadTaskAssigneesUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/leads/${id}/tasks/assignees`
+}
+
+export const listLeadTaskAssignees = async (id: string, options?: RequestInit): Promise<CrmTaskAssignee[]> => {
+
+  return customFetch<CrmTaskAssignee[]>(getListLeadTaskAssigneesUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getGetLeadTaskUrl = (id: string,
+    taskId: string,) => {
+
+
+
+
+  return `/api/v1/leads/${id}/tasks/${taskId}`
+}
+
+export const getLeadTask = async (id: string,
+    taskId: string, options?: RequestInit): Promise<CrmTask> => {
+
+  return customFetch<CrmTask>(getGetLeadTaskUrl(id,taskId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getUpdateLeadTaskUrl = (id: string,
+    taskId: string,) => {
+
+
+
+
+  return `/api/v1/leads/${id}/tasks/${taskId}`
+}
+
+export const updateLeadTask = async (id: string,
+    taskId: string,
+    updateCrmTask: UpdateCrmTask, options?: RequestInit): Promise<CrmTaskUpdateReceipt> => {
+
+  return customFetch<CrmTaskUpdateReceipt>(getUpdateLeadTaskUrl(id,taskId),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      updateCrmTask,)
+  }
+);}
+
+
+
+export const getGetLeadTaskHistoryUrl = (id: string,
+    taskId: string,
+    params?: GetLeadTaskHistoryParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/leads/${id}/tasks/${taskId}/history?${stringifiedParams}` : `/api/v1/leads/${id}/tasks/${taskId}/history`
+}
+
+export const getLeadTaskHistory = async (id: string,
+    taskId: string,
+    params?: GetLeadTaskHistoryParams, options?: RequestInit): Promise<CrmTaskHistory> => {
+
+  return customFetch<CrmTaskHistory>(getGetLeadTaskHistoryUrl(id,taskId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getListClientTasksUrl = (id: string,
+    params?: ListClientTasksParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/clients/${id}/tasks?${stringifiedParams}` : `/api/v1/clients/${id}/tasks`
+}
+
+export const listClientTasks = async (id: string,
+    params?: ListClientTasksParams, options?: RequestInit): Promise<CrmTaskPage> => {
+
+  return customFetch<CrmTaskPage>(getListClientTasksUrl(id,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateClientTaskUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/clients/${id}/tasks`
+}
+
+export const createClientTask = async (id: string,
+    createCrmTask: CreateCrmTask, options?: RequestInit): Promise<CrmTaskCreateReceipt> => {
+
+  return customFetch<CrmTaskCreateReceipt>(getCreateClientTaskUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createCrmTask,)
+  }
+);}
+
+
+
+export const getListClientTaskAssigneesUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/clients/${id}/tasks/assignees`
+}
+
+export const listClientTaskAssignees = async (id: string, options?: RequestInit): Promise<CrmTaskAssignee[]> => {
+
+  return customFetch<CrmTaskAssignee[]>(getListClientTaskAssigneesUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getGetClientTaskUrl = (id: string,
+    taskId: string,) => {
+
+
+
+
+  return `/api/v1/clients/${id}/tasks/${taskId}`
+}
+
+export const getClientTask = async (id: string,
+    taskId: string, options?: RequestInit): Promise<CrmTask> => {
+
+  return customFetch<CrmTask>(getGetClientTaskUrl(id,taskId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getUpdateClientTaskUrl = (id: string,
+    taskId: string,) => {
+
+
+
+
+  return `/api/v1/clients/${id}/tasks/${taskId}`
+}
+
+export const updateClientTask = async (id: string,
+    taskId: string,
+    updateCrmTask: UpdateCrmTask, options?: RequestInit): Promise<CrmTaskUpdateReceipt> => {
+
+  return customFetch<CrmTaskUpdateReceipt>(getUpdateClientTaskUrl(id,taskId),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      updateCrmTask,)
+  }
+);}
+
+
+
+export const getGetClientTaskHistoryUrl = (id: string,
+    taskId: string,
+    params?: GetClientTaskHistoryParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/clients/${id}/tasks/${taskId}/history?${stringifiedParams}` : `/api/v1/clients/${id}/tasks/${taskId}/history`
+}
+
+export const getClientTaskHistory = async (id: string,
+    taskId: string,
+    params?: GetClientTaskHistoryParams, options?: RequestInit): Promise<CrmTaskHistory> => {
+
+  return customFetch<CrmTaskHistory>(getGetClientTaskHistoryUrl(id,taskId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
 
 export const getListLeadNotesUrl = (id: string,
     params?: ListLeadNotesParams,) => {

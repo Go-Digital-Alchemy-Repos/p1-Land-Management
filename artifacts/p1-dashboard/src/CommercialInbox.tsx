@@ -1,3 +1,4 @@
+import { CrmTasks } from "./CrmTasks";
 import { LeadNotes } from "./LeadNotes";
 import { CommercialContextPanel } from "./CommercialContextPanel";
 import { CommercialAssessmentPanel } from "./CommercialAssessmentPanel";
@@ -324,6 +325,7 @@ export function CommercialInbox({
             </dl>
             <p className="commercial-message">{selected.description}</p>
             <LeadNotes key={selected.id} leadId={selected.id} />
+            <CrmTasks key={"tasks:"+selected.id} kind="lead" parentId={selected.id} />
             <form
               key={selected.id + ":" + detailRevision}
               onSubmit={(e) => {

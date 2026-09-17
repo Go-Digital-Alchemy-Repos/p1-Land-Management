@@ -1,3 +1,4 @@
+import { CrmTasks } from "./CrmTasks";
 import { LeadNotes } from "./LeadNotes";
 import ComposedEstimateActions from "./agreements/ComposedEstimateActions";
 import { ComposedProposal } from "./ComposedProposal";
@@ -1986,6 +1987,7 @@ function App() {
                           </button>
                         )}
                       <LeadNotes leadId={lead.id} />
+                      <CrmTasks kind="lead" parentId={lead.id} />
                     </div>
                   ))}
                   {!data.leads?.length && (

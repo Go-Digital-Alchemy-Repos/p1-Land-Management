@@ -32,6 +32,7 @@ import { qboApi, qboWebhook } from "./quickbooks";
 import { notificationsApi, smsWebhook } from "./notifications";
 import { clientWorkspaceApi } from "./client-workspace";
 import { propertyTypesApi } from "./property-types";
+import { crmTasksApi } from "./crm-tasks";
 import { leadNotesApi } from "./lead-notes";
 import { salesApi } from "./sales";
 import { estimatePublicApi, jobsLifecycleApi } from "./jobs-lifecycle";
@@ -121,6 +122,7 @@ app.use(
   notificationsApi,
   salesApi,
   leadNotesApi,
+  crmTasksApi,
 );
 app.use("/api", (_req, res) => {
   res.status(404).json({ error: "Endpoint not found" });

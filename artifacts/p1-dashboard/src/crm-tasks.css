@@ -1,0 +1,82 @@
+.schedule-row:has(> .crm-tasks) {
+  flex-wrap: wrap;
+}
+.schedule-row > .crm-tasks {
+  flex: 1 0 100%;
+  min-width: 0;
+}
+.crm-tasks {
+  margin-block: 1rem;
+  min-width: 0;
+}
+.crm-tasks section {
+  margin-top: 1rem;
+}
+.crm-task-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 0.75rem;
+  margin-block: 1rem;
+}
+.crm-task-list {
+  list-style: none;
+  padding: 0;
+}
+.crm-task-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  border-bottom: 1px solid hsl(var(--border));
+  padding-block: 1rem;
+}
+.crm-task-list li > div {
+  min-width: 0;
+}
+.crm-task-list button {
+  max-width: 100%;
+  white-space: normal;
+}
+.crm-tasks strong,
+.crm-tasks p,
+.crm-tasks button {
+  overflow-wrap: anywhere;
+}
+.crm-tasks small {
+  display: block;
+}
+.crm-task-editor {
+  border-top: 1px solid hsl(var(--border));
+  margin-top: 1rem;
+  padding-top: 1rem;
+}
+.crm-task-editor fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+}
+.crm-task-editor input,
+.crm-task-editor textarea,
+.crm-task-editor select {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.crm-task-completed {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.crm-task-completed input {
+  width: auto;
+}
+.crm-task-history {
+  padding-left: 1.5rem;
+}
+.crm-task-history li {
+  margin-block: 1rem;
+}

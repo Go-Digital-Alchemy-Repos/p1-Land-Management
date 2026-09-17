@@ -1936,3 +1936,43 @@ export const leadNote = pgTable("lead_note", {
   check("lead_note_body_check", sql`length(btrim(${t.body})) BETWEEN 1 AND 10000`),
   check("lead_note_origin", sql`(${t.sourceInstanceId} IS NULL AND ${t.sourceNoteId} IS NULL AND ${t.sourceAuthorId} IS NULL AND ${t.authorId} IS NOT NULL) OR (length(btrim(${t.sourceInstanceId})) > 0 AND ${t.sourceInstanceId} IS NOT NULL AND length(btrim(${t.sourceNoteId})) > 0 AND ${t.sourceNoteId} IS NOT NULL)`),
 ]);
+
+// CRM task and revision triggers are defined in migration 0040.
+export const crmTask = pgTable("crm_task", {
+  id: uuid().primaryKey(),
+  leadId: uuid("lead_id").references(() => lead.id),
+  clientId: uuid("client_id").references(() => client.id),
+  title: text().notNull(),
+  dueAt: timestamp("due_at", { withTimezone: true, mode: "string" }),
+  completed: boolean().default(false).notNull(),
+  assignedToId: text("assigned_to_id").references(() => user.id),
+  createdById: text("created_by_id").references(() => user.id),
+  changedById: text("changed_by_id").references(() => user.id),
+  createdAt: timestamp("created_at", { withTimezone: true, mode: "string" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" }).defaultNow().notNull(),
+  version: integer().default(1).notNull(),
+  creationPayload: jsonb("creation_payload"),
+  sourceInstanceId: text("source_instance_id"),
+  sourceTaskId: text("source_task_id"),
+  sourceCreatedById: text("source_created_by_id"),
+  sourceAssignedToId: text("source_assigned_to_id"),
+}, t => [
+  uniqueIndex("crm_task_source_lead_idx").on(t.sourceInstanceId,t.sourceTaskId).where(sql`${t.leadId} IS NOT NULL`),
+  uniqueIndex("crm_task_source_client_idx").on(t.sourceInstanceId,t.sourceTaskId).where(sql`${t.clientId} IS NOT NULL`),
+  index("crm_task_lead_history_idx").on(t.leadId,t.createdAt.desc(),t.id.desc()),
+  index("crm_task_client_history_idx").on(t.clientId,t.createdAt.desc(),t.id.desc()),
+  check("crm_task_title_check",sql`length(btrim(${t.title})) BETWEEN 1 AND 2000`),
+  check("crm_task_version_check",sql`${t.version}>0`),
+  check("crm_task_check",sql`num_nonnulls(${t.leadId},${t.clientId})=1`),
+  check("crm_task_origin",sql`(${t.sourceInstanceId} IS NULL AND ${t.sourceTaskId} IS NULL AND ${t.sourceCreatedById} IS NULL AND ${t.sourceAssignedToId} IS NULL AND ${t.createdById} IS NOT NULL AND ${t.changedById} IS NOT NULL AND ${t.creationPayload} IS NOT NULL) OR (${t.sourceInstanceId} IS NOT NULL AND length(btrim(${t.sourceInstanceId}))>0 AND ${t.sourceTaskId} IS NOT NULL AND length(btrim(${t.sourceTaskId}))>0)`),
+]);
+export const crmTaskRevision = pgTable("crm_task_revision", {
+  taskId: uuid("task_id").notNull().references(() => crmTask.id),
+  version: integer().notNull(),
+  title: text().notNull(),
+  dueAt: timestamp("due_at", { withTimezone: true, mode: "string" }),
+  completed: boolean().notNull(),
+  assignedToId: text("assigned_to_id").references(() => user.id),
+  changedById: text("changed_by_id").references(() => user.id),
+  recordedAt: timestamp("recorded_at", { withTimezone: true, mode: "string" }).defaultNow().notNull(),
+}, t => [primaryKey({columns:[t.taskId,t.version]})]);
