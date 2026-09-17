@@ -107,6 +107,24 @@ const assert = require("node:assert/strict");
       0,
     );
     await page
+      .getByLabel("Widget 2 type", { exact: true })
+      .selectOption("newsletter");
+    assert.equal(
+      await page
+        .getByLabel("Widget 2 assigned form", { exact: true })
+        .inputValue(),
+      "contact-form",
+    );
+    assert.equal(
+      await page
+        .getByRole("option", { name: "Saved form: contact-form", exact: true })
+        .count(),
+      1,
+    );
+    await page
+      .getByLabel("Widget 2 type", { exact: true })
+      .selectOption("form");
+    await page
       .getByRole("button", { name: "Move widget 2 up", exact: true })
       .click();
     await page

@@ -674,3 +674,11 @@ it("minimizes Sidebar form selectors and independently gates them", async()=>{
  identity.capabilities=["marketing.content.menus"];expect((await request("/sidebar-references")).status).toBe(403);
  expect((await request("/sidebar-references","GET",{},"/legacy")).status).toBe(403);
 });
+
+it("rejects gallery slugs that normalize to empty or separators before storage", async()=>{
+ identity.capabilities=["marketing.content.galleries"];
+ for(const slug of ["!!!","/","---"]){
+ const response=await fetch(base+"/service/galleries",{method:"POST",headers:{authorization:`Bearer ${key}`,"x-p1-user-grant":grantId,"content-type":"application/json"},body:JSON.stringify({title:"Gallery",slug,status:"draft",layout:"grid",settings:{},items:[]})});
+ expect(response.status).toBe(400);expect((await response.json()).message).toBe("Slug must contain letters or numbers");
+ }
+});

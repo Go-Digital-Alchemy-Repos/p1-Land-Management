@@ -26,6 +26,14 @@ const labels: Record<MarketingSidebarWidget["type"], string> = {
   "tag-cloud": "Tag cloud",
   "custom-html": "Custom HTML",
 };
+function formEligible(
+  form: MarketingSidebarReferences["forms"][number],
+  type: MarketingSidebarWidget["type"],
+) {
+  return type === "newsletter"
+    ? form.kind === "newsletter" || form.slug === "newsletter-signup"
+    : form.kind !== "application";
+}
 function newWidget(
   type: MarketingSidebarWidget["type"],
 ): MarketingSidebarWidget {
@@ -321,12 +329,7 @@ function SidebarEditor({
                     >
                       <option value="">Choose a form</option>
                       {forms
-                        .filter((f) =>
-                          widget.type === "newsletter"
-                            ? f.kind === "newsletter" ||
-                              f.slug === "newsletter-signup"
-                            : f.kind !== "application",
-                        )
+                        .filter((f) => formEligible(f, widget.type))
                         .map((f) => (
                           <option key={f.id} value={f.slug}>
                             {f.name}
@@ -334,7 +337,9 @@ function SidebarEditor({
                         ))}
                       {Boolean(widget.settings.formSlug) &&
                         !forms.some(
-                          (f) => f.slug === widget.settings.formSlug,
+                          (f) =>
+                            f.slug === widget.settings.formSlug &&
+                            formEligible(f, widget.type),
                         ) && (
                           <option value={String(widget.settings.formSlug)}>
                             Saved form: {String(widget.settings.formSlug)}

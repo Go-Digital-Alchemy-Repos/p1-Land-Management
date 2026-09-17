@@ -77,6 +77,7 @@ router.post(
       return res.status(400).json({ message: "Add at least one image before publishing" });
     }
     const slug = normalizeSlug(data.slug);
+    if (!/[a-z0-9]/.test(slug)) return res.status(400).json({ message: "Slug must contain letters or numbers" });
     const existing = await storage.cmsGalleries.getBySlug(slug);
     if (existing) {
       return res.status(409).json({ message: "A gallery with this slug already exists" });
@@ -133,6 +134,7 @@ router.put(
       return res.status(400).json({ message: "Add at least one image before publishing" });
     }
     const slug = normalizeSlug(data.slug);
+    if (!/[a-z0-9]/.test(slug)) return res.status(400).json({ message: "Slug must contain letters or numbers" });
     const existingSlug = await storage.cmsGalleries.getBySlug(slug);
     if (existingSlug && existingSlug.id !== existingGallery.id) {
       return res.status(409).json({ message: "A gallery with this slug already exists" });

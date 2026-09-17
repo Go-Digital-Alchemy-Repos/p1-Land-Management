@@ -107,6 +107,7 @@ import type {
   ListManagedUserHistory200,
   ListManagedUsers200,
   ListMarketingBlogCommentsParams,
+  ListMarketingGalleriesParams,
   ListServiceAgreementsParams,
   ManagedAccountUpdate,
   ManagedInvitationInput,
@@ -124,6 +125,8 @@ import type {
   MarketingBlogTaxonomyInput,
   MarketingBlogTaxonomyPatch,
   MarketingDeleteResult,
+  MarketingGallery,
+  MarketingGalleryInput,
   MarketingMedia,
   MarketingMediaMetadata,
   MarketingRealtime,
@@ -4721,6 +4724,208 @@ export const getReleaseMarketingSidebarReservationUrl = (id: string,) => {
 export const releaseMarketingSidebarReservation = async (id: string, options?: RequestInit): Promise<WebsiteEditorReservation> => {
 
   return customFetch<WebsiteEditorReservation>(getReleaseMarketingSidebarReservationUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+export const getListMarketingGalleriesUrl = (params?: ListMarketingGalleriesParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/marketing/cms/galleries?${stringifiedParams}` : `/api/v1/marketing/cms/galleries`
+}
+
+/**
+ * Requires marketing.content.galleries. Retained gallery storage, publication and validation apply.
+ */
+export const listMarketingGalleries = async (params?: ListMarketingGalleriesParams, options?: RequestInit): Promise<MarketingGallery[]> => {
+
+  return customFetch<MarketingGallery[]>(getListMarketingGalleriesUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateMarketingGalleryUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/galleries`
+}
+
+/**
+ * Requires marketing.content.galleries. Retained gallery storage, publication and validation apply.
+ */
+export const createMarketingGallery = async (marketingGalleryInput: MarketingGalleryInput, options?: RequestInit): Promise<MarketingGallery> => {
+
+  return customFetch<MarketingGallery>(getCreateMarketingGalleryUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingGalleryInput,)
+  }
+);}
+
+
+
+export const getGetMarketingGalleryUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/galleries/${id}`
+}
+
+/**
+ * Requires marketing.content.galleries. Retained gallery storage, publication and validation apply.
+ */
+export const getMarketingGallery = async (id: string, options?: RequestInit): Promise<MarketingGallery> => {
+
+  return customFetch<MarketingGallery>(getGetMarketingGalleryUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getUpdateMarketingGalleryUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/galleries/${id}`
+}
+
+/**
+ * Requires marketing.content.galleries. Retained gallery storage, publication and validation apply.
+ */
+export const updateMarketingGallery = async (id: string,
+    marketingGalleryInput: MarketingGalleryInput, options?: RequestInit): Promise<MarketingGallery> => {
+
+  return customFetch<MarketingGallery>(getUpdateMarketingGalleryUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingGalleryInput,)
+  }
+);}
+
+
+
+export const getDeleteMarketingGalleryUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/galleries/${id}`
+}
+
+/**
+ * Requires marketing.content.galleries. Retained gallery storage, publication and validation apply.
+ */
+export const deleteMarketingGallery = async (id: string, options?: RequestInit): Promise<MarketingDeleteResult> => {
+
+  return customFetch<MarketingDeleteResult>(getDeleteMarketingGalleryUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+export const getDuplicateMarketingGalleryUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/galleries/${id}/duplicate`
+}
+
+/**
+ * Requires marketing.content.galleries. Retained gallery storage, publication and validation apply.
+ */
+export const duplicateMarketingGallery = async (id: string, options?: RequestInit): Promise<MarketingGallery> => {
+
+  return customFetch<MarketingGallery>(getDuplicateMarketingGalleryUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+export const getPublishMarketingGalleryUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/galleries/${id}/publish`
+}
+
+/**
+ * Requires marketing.content.galleries. Retained gallery storage, publication and validation apply.
+ */
+export const publishMarketingGallery = async (id: string, options?: RequestInit): Promise<MarketingGallery> => {
+
+  return customFetch<MarketingGallery>(getPublishMarketingGalleryUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+export const getUnpublishMarketingGalleryUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/galleries/${id}/unpublish`
+}
+
+/**
+ * Requires marketing.content.galleries. Retained gallery storage, publication and validation apply.
+ */
+export const unpublishMarketingGallery = async (id: string, options?: RequestInit): Promise<MarketingGallery> => {
+
+  return customFetch<MarketingGallery>(getUnpublishMarketingGalleryUrl(id),
   {
     ...options,
     method: 'POST'

@@ -8430,6 +8430,356 @@
           }
         ]
       }
+    },
+    "/marketing/cms/galleries": {
+      "get": {
+        "operationId": "listMarketingGalleries",
+        "description": "Requires marketing.content.galleries. Retained gallery storage, publication and validation apply.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MarketingGallery"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid gallery or empty publication"
+          },
+          "403": {
+            "description": "Gallery capability required"
+          },
+          "404": {
+            "description": "Gallery not found"
+          },
+          "409": {
+            "description": "Slug conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "draft",
+                "published",
+                "archived"
+              ]
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "created",
+                "updated",
+                "title"
+              ]
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "createMarketingGallery",
+        "description": "Requires marketing.content.galleries. Retained gallery storage, publication and validation apply.",
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingGallery"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid gallery or empty publication"
+          },
+          "403": {
+            "description": "Gallery capability required"
+          },
+          "404": {
+            "description": "Gallery not found"
+          },
+          "409": {
+            "description": "Slug conflict"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketingGalleryInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/marketing/cms/galleries/{id}": {
+      "get": {
+        "operationId": "getMarketingGallery",
+        "description": "Requires marketing.content.galleries. Retained gallery storage, publication and validation apply.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingGallery"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid gallery or empty publication"
+          },
+          "403": {
+            "description": "Gallery capability required"
+          },
+          "404": {
+            "description": "Gallery not found"
+          },
+          "409": {
+            "description": "Slug conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "put": {
+        "operationId": "updateMarketingGallery",
+        "description": "Requires marketing.content.galleries. Retained gallery storage, publication and validation apply.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingGallery"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid gallery or empty publication"
+          },
+          "403": {
+            "description": "Gallery capability required"
+          },
+          "404": {
+            "description": "Gallery not found"
+          },
+          "409": {
+            "description": "Slug conflict"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketingGalleryInput"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "deleteMarketingGallery",
+        "description": "Requires marketing.content.galleries. Retained gallery storage, publication and validation apply.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingDeleteResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid gallery or empty publication"
+          },
+          "403": {
+            "description": "Gallery capability required"
+          },
+          "404": {
+            "description": "Gallery not found"
+          },
+          "409": {
+            "description": "Slug conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/galleries/{id}/duplicate": {
+      "post": {
+        "operationId": "duplicateMarketingGallery",
+        "description": "Requires marketing.content.galleries. Retained gallery storage, publication and validation apply.",
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingGallery"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid gallery or empty publication"
+          },
+          "403": {
+            "description": "Gallery capability required"
+          },
+          "404": {
+            "description": "Gallery not found"
+          },
+          "409": {
+            "description": "Slug conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/galleries/{id}/publish": {
+      "post": {
+        "operationId": "publishMarketingGallery",
+        "description": "Requires marketing.content.galleries. Retained gallery storage, publication and validation apply.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingGallery"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid gallery or empty publication"
+          },
+          "403": {
+            "description": "Gallery capability required"
+          },
+          "404": {
+            "description": "Gallery not found"
+          },
+          "409": {
+            "description": "Slug conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/galleries/{id}/unpublish": {
+      "post": {
+        "operationId": "unpublishMarketingGallery",
+        "description": "Requires marketing.content.galleries. Retained gallery storage, publication and validation apply.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingGallery"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid gallery or empty publication"
+          },
+          "403": {
+            "description": "Gallery capability required"
+          },
+          "404": {
+            "description": "Gallery not found"
+          },
+          "409": {
+            "description": "Slug conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -17294,6 +17644,271 @@
             }
           }
         }
+      },
+      "MarketingGallerySettings": {
+        "type": "object",
+        "properties": {
+          "columnsDesktop": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 6
+          },
+          "columnsTablet": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 4
+          },
+          "columnsMobile": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 2
+          },
+          "maxImages": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 200
+          },
+          "spacing": {
+            "type": "string",
+            "enum": [
+              "none",
+              "sm",
+              "md",
+              "lg"
+            ]
+          },
+          "imageRatio": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "1/1",
+              "4/3",
+              "3/2",
+              "16/9"
+            ]
+          },
+          "cropMode": {
+            "type": "string",
+            "enum": [
+              "cover",
+              "contain"
+            ]
+          },
+          "borderRadius": {
+            "type": "string",
+            "enum": [
+              "none",
+              "sm",
+              "md",
+              "lg"
+            ]
+          },
+          "transitionEffect": {
+            "type": "string",
+            "enum": [
+              "none",
+              "fade",
+              "slide",
+              "zoom"
+            ]
+          },
+          "captionPosition": {
+            "type": "string",
+            "enum": [
+              "below",
+              "overlay"
+            ]
+          },
+          "hoverEffect": {
+            "type": "string",
+            "enum": [
+              "none",
+              "zoom",
+              "fade"
+            ]
+          },
+          "showTitle": {
+            "type": "boolean"
+          },
+          "showCaptions": {
+            "type": "boolean"
+          },
+          "lightbox": {
+            "type": "boolean"
+          },
+          "arrowIconColor": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "arrowBackgroundColor": {
+            "type": "string",
+            "maxLength": 32
+          },
+          "customClassName": {
+            "type": "string",
+            "maxLength": 120
+          }
+        }
+      },
+      "MarketingGalleryItem": {
+        "type": "object",
+        "required": [
+          "imageUrl"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "imageUrl": {
+            "type": "string"
+          },
+          "mediaId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "alt": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "title": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "caption": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "linkUrl": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "ctaText": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "tags": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "sortOrder": {
+            "type": "integer"
+          }
+        }
+      },
+      "MarketingGalleryInput": {
+        "type": "object",
+        "required": [
+          "title",
+          "slug",
+          "status",
+          "layout",
+          "settings",
+          "items"
+        ],
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "published",
+              "archived"
+            ]
+          },
+          "layout": {
+            "type": "string",
+            "enum": [
+              "grid",
+              "masonry",
+              "carousel",
+              "slider",
+              "featured"
+            ]
+          },
+          "settings": {
+            "$ref": "#/components/schemas/MarketingGallerySettings"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MarketingGalleryItem"
+            }
+          }
+        }
+      },
+      "MarketingGallery": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MarketingGalleryInput"
+          },
+          {
+            "type": "object",
+            "required": [
+              "id",
+              "imageCount"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "imageCount": {
+                "type": "integer"
+              },
+              "authorName": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "createdAt": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "updatedAt": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "publishedAt": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            }
+          }
+        ]
       }
     }
   }
