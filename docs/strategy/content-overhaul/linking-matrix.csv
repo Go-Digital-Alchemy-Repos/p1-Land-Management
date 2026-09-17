@@ -1,0 +1,214 @@
+source,destination,anchor,validation
+/service-areas/greer-sc,/services/commercial-landscaping,"commercial landscaping in Greer, SC",rendered link check passed
+/service-areas/greer-sc,/services/land-clearing,land clearing in Greer,rendered link check passed
+/service-areas/greer-sc,/services/grading-site-preparation,fine grading & site preparation,rendered link check passed
+/service-areas/greer-sc,/services/drainage,drainage solutions,rendered link check passed
+/service-areas/greer-sc,/commercial,commercial site management,rendered link check passed
+/service-areas/greer-sc,/service-areas/greenville-sc,"Greenville, SC",rendered link check passed
+/service-areas/greer-sc,/service-areas/spartanburg-sc,"Spartanburg, SC",rendered link check passed
+/service-areas/greer-sc,/service-areas/duncan-sc,"nearby Duncan, SC",rendered link check passed
+/service-areas,/service-areas/greer-sc,"Greer, SC",rendered link check passed
+/service-areas/simpsonville-sc,/services/commercial-landscaping,"commercial landscaping in Simpsonville, SC",rendered link check passed
+/service-areas/simpsonville-sc,/services/grading-site-preparation,fine grading & site preparation,rendered link check passed
+/service-areas/simpsonville-sc,/services/drainage,drainage solutions,rendered link check passed
+/service-areas/simpsonville-sc,/services/tree-services,tree services,rendered link check passed
+/service-areas/simpsonville-sc,/commercial,commercial site management,rendered link check passed
+/service-areas/simpsonville-sc,/service-areas/greenville-sc,"Greenville, SC",rendered link check passed
+/service-areas/simpsonville-sc,/service-areas/greer-sc,"nearby Greer, SC",rendered link check passed
+/service-areas,/service-areas/simpsonville-sc,"Simpsonville, SC",rendered link check passed
+/service-areas/easley-sc,/services/commercial-landscaping,"commercial landscaping in Easley, SC",rendered link check passed
+/service-areas/easley-sc,/services/land-clearing,land clearing in Easley,rendered link check passed
+/service-areas/easley-sc,/services/grading-site-preparation,fine grading & site preparation,rendered link check passed
+/service-areas/easley-sc,/services/drainage,drainage solutions,rendered link check passed
+/service-areas/easley-sc,/commercial,commercial site management,rendered link check passed
+/service-areas/easley-sc,/service-areas/greenville-sc,"Greenville, SC",rendered link check passed
+/service-areas/easley-sc,/service-areas/anderson-sc,"Anderson, SC",rendered link check passed
+/service-areas,/service-areas/easley-sc,"Easley, SC",rendered link check passed
+/service-areas/gaffney-sc,/services/commercial-landscaping,"commercial landscaping in Gaffney, SC",rendered link check passed
+/service-areas/gaffney-sc,/services/land-clearing,land clearing in Gaffney,rendered link check passed
+/service-areas/gaffney-sc,/services/grading-site-preparation,fine grading & site preparation,rendered link check passed
+/service-areas/gaffney-sc,/services/industrial-agricultural,industrial & agricultural land services,rendered link check passed
+/service-areas/gaffney-sc,/services/pond-waterway-management,pond & waterway management,rendered link check passed
+/service-areas/gaffney-sc,/commercial,commercial site management,rendered link check passed
+/service-areas/gaffney-sc,/service-areas/spartanburg-sc,"Spartanburg, SC",rendered link check passed
+/service-areas,/service-areas/gaffney-sc,"Gaffney, SC",rendered link check passed
+/service-areas/duncan-sc,/services/commercial-landscaping,"commercial landscaping in Duncan, SC",rendered link check passed
+/service-areas/duncan-sc,/services/land-clearing,land clearing in Duncan,rendered link check passed
+/service-areas/duncan-sc,/services/grading-site-preparation,fine grading & site preparation,rendered link check passed
+/service-areas/duncan-sc,/services/drainage,drainage solutions,rendered link check passed
+/service-areas/duncan-sc,/commercial,commercial site management,rendered link check passed
+/service-areas/duncan-sc,/service-areas/greer-sc,"neighboring Greer, SC",rendered link check passed
+/service-areas/duncan-sc,/service-areas/spartanburg-sc,"Spartanburg, SC",rendered link check passed
+/service-areas,/service-areas/duncan-sc,"Duncan, SC",rendered link check passed
+/service-areas/inman-sc,/services/commercial-landscaping,"commercial landscaping in Inman, SC",rendered link check passed
+/service-areas/inman-sc,/services/industrial-agricultural,agricultural property management,rendered link check passed
+/service-areas/inman-sc,/services/pond-waterway-management,pond & waterway management,rendered link check passed
+/service-areas/inman-sc,/services/land-clearing,land clearing in Inman,rendered link check passed
+/service-areas/inman-sc,/service-areas/spartanburg-sc,"Spartanburg, SC",rendered link check passed
+/service-areas/inman-sc,/service-areas/boiling-springs-sc,"nearby Boiling Springs, SC",rendered link check passed
+/service-areas,/service-areas/inman-sc,"Inman, SC",rendered link check passed
+/service-areas/boiling-springs-sc,/services/commercial-landscaping,"commercial landscaping in Boiling Springs, SC",rendered link check passed
+/service-areas/boiling-springs-sc,/services/grading-site-preparation,fine grading & site preparation,rendered link check passed
+/service-areas/boiling-springs-sc,/services/drainage,drainage solutions,rendered link check passed
+/service-areas/boiling-springs-sc,/services/tree-services,tree services,rendered link check passed
+/service-areas/boiling-springs-sc,/commercial,commercial site management,rendered link check passed
+/service-areas/boiling-springs-sc,/service-areas/spartanburg-sc,"Spartanburg, SC",rendered link check passed
+/service-areas/boiling-springs-sc,/service-areas/inman-sc,"nearby Inman, SC",rendered link check passed
+/service-areas,/service-areas/boiling-springs-sc,"Boiling Springs, SC",rendered link check passed
+/service-areas/huntersville-nc,/services/commercial-landscaping,"commercial landscaping in Huntersville, NC",rendered link check passed
+/service-areas/huntersville-nc,/services/land-clearing,land clearing in Huntersville,rendered link check passed
+/service-areas/huntersville-nc,/services/grading-site-preparation,fine grading & site preparation,rendered link check passed
+/service-areas/huntersville-nc,/services/pond-waterway-management,pond & waterway management,rendered link check passed
+/service-areas/huntersville-nc,/commercial,commercial site management,rendered link check passed
+/service-areas/huntersville-nc,/service-areas/mooresville-lake-norman-nc,Mooresville & Lake Norman,rendered link check passed
+/service-areas/huntersville-nc,/service-areas/charlotte-north-carolina,"Charlotte, NC",rendered link check passed
+/service-areas/huntersville-nc,/service-areas/cornelius-nc,"nearby Cornelius, NC",rendered link check passed
+/service-areas,/service-areas/huntersville-nc,"Huntersville, NC",rendered link check passed
+/service-areas/matthews-nc,/services/commercial-landscaping,"commercial landscaping in Matthews, NC",rendered link check passed
+/service-areas/matthews-nc,/services/grading-site-preparation,fine grading & site preparation,rendered link check passed
+/service-areas/matthews-nc,/services/drainage,drainage solutions,rendered link check passed
+/service-areas/matthews-nc,/services/tree-services,tree services,rendered link check passed
+/service-areas/matthews-nc,/commercial,commercial site management,rendered link check passed
+/service-areas/matthews-nc,/service-areas/charlotte-north-carolina,"Charlotte, NC",rendered link check passed
+/service-areas/matthews-nc,/service-areas/union-county-nc,"Union County, NC",rendered link check passed
+/service-areas/matthews-nc,/service-areas/waxhaw-nc,"Waxhaw, NC",rendered link check passed
+/service-areas,/service-areas/matthews-nc,"Matthews, NC",rendered link check passed
+/service-areas/kannapolis-nc,/services/commercial-landscaping,"commercial landscaping in Kannapolis, NC",rendered link check passed
+/service-areas/kannapolis-nc,/services/land-clearing,land clearing in Kannapolis,rendered link check passed
+/service-areas/kannapolis-nc,/services/grading-site-preparation,fine grading & site preparation,rendered link check passed
+/service-areas/kannapolis-nc,/services/drainage,drainage solutions,rendered link check passed
+/service-areas/kannapolis-nc,/commercial,commercial site management,rendered link check passed
+/service-areas/kannapolis-nc,/service-areas/concord-nc,"Concord, NC",rendered link check passed
+/service-areas/kannapolis-nc,/service-areas/charlotte-north-carolina,"Charlotte, NC",rendered link check passed
+/service-areas,/service-areas/kannapolis-nc,"Kannapolis, NC",rendered link check passed
+/service-areas/waxhaw-nc,/services/commercial-landscaping,"commercial landscaping in Waxhaw, NC",rendered link check passed
+/service-areas/waxhaw-nc,/services/industrial-agricultural,industrial & agricultural land services,rendered link check passed
+/service-areas/waxhaw-nc,/services/grading-site-preparation,fine grading & site preparation,rendered link check passed
+/service-areas/waxhaw-nc,/services/tree-services,tree services,rendered link check passed
+/service-areas/waxhaw-nc,/commercial,commercial site management,rendered link check passed
+/service-areas/waxhaw-nc,/service-areas/union-county-nc,"Union County, NC",rendered link check passed
+/service-areas/waxhaw-nc,/service-areas/matthews-nc,"Matthews, NC",rendered link check passed
+/service-areas,/service-areas/waxhaw-nc,"Waxhaw, NC",rendered link check passed
+/service-areas/fort-mill-sc,/services/commercial-landscaping,"commercial landscaping in Fort Mill, SC",rendered link check passed
+/service-areas/fort-mill-sc,/services/grading-site-preparation,fine grading & site preparation,rendered link check passed
+/service-areas/fort-mill-sc,/services/drainage,drainage solutions,rendered link check passed
+/service-areas/fort-mill-sc,/services/land-clearing,land clearing in Fort Mill,rendered link check passed
+/service-areas/fort-mill-sc,/commercial,commercial site management,rendered link check passed
+/service-areas/fort-mill-sc,/service-areas/york-county-sc,"York County, SC",rendered link check passed
+/service-areas/fort-mill-sc,/service-areas/rock-hill-sc,"Rock Hill, SC",rendered link check passed
+/service-areas,/service-areas/fort-mill-sc,"Fort Mill, SC",rendered link check passed
+/service-areas/rock-hill-sc,/services/commercial-landscaping,"commercial landscaping in Rock Hill, SC",rendered link check passed
+/service-areas/rock-hill-sc,/services/land-clearing,land clearing in Rock Hill,rendered link check passed
+/service-areas/rock-hill-sc,/services/grading-site-preparation,fine grading & site preparation,rendered link check passed
+/service-areas/rock-hill-sc,/services/drainage,drainage solutions,rendered link check passed
+/service-areas/rock-hill-sc,/commercial,commercial site management,rendered link check passed
+/service-areas/rock-hill-sc,/service-areas/york-county-sc,"York County, SC",rendered link check passed
+/service-areas/rock-hill-sc,/service-areas/fort-mill-sc,"Fort Mill, SC",rendered link check passed
+/service-areas,/service-areas/rock-hill-sc,"Rock Hill, SC",rendered link check passed
+/service-areas/indian-land-sc,/services/commercial-landscaping,"commercial landscaping in Indian Land, SC",rendered link check passed
+/service-areas/indian-land-sc,/services/grading-site-preparation,fine grading & site preparation,rendered link check passed
+/service-areas/indian-land-sc,/services/drainage,drainage solutions,rendered link check passed
+/service-areas/indian-land-sc,/services/land-clearing,land clearing in Indian Land,rendered link check passed
+/service-areas/indian-land-sc,/commercial,commercial site management,rendered link check passed
+/service-areas/indian-land-sc,/service-areas/lancaster-county-sc,"Lancaster County, SC",rendered link check passed
+/service-areas/indian-land-sc,/service-areas/charlotte-north-carolina,"Charlotte, NC",rendered link check passed
+/service-areas,/service-areas/indian-land-sc,"Indian Land, SC",rendered link check passed
+/service-areas/indian-trail-nc,/services/commercial-landscaping,"commercial landscaping in Indian Trail, NC",rendered link check passed
+/service-areas/indian-trail-nc,/services/land-clearing,land clearing in Indian Trail,rendered link check passed
+/service-areas/indian-trail-nc,/services/grading-site-preparation,fine grading & site preparation,rendered link check passed
+/service-areas/indian-trail-nc,/services/drainage,drainage solutions,rendered link check passed
+/service-areas/indian-trail-nc,/commercial,commercial site management,rendered link check passed
+/service-areas/indian-trail-nc,/service-areas/union-county-nc,"Union County, NC",rendered link check passed
+/service-areas/indian-trail-nc,/service-areas/monroe-nc,"Monroe, NC",rendered link check passed
+/service-areas/indian-trail-nc,/service-areas/matthews-nc,"Matthews, NC",rendered link check passed
+/service-areas,/service-areas/indian-trail-nc,"Indian Trail, NC",rendered link check passed
+/service-areas/monroe-nc,/services/commercial-landscaping,"commercial landscaping in Monroe, NC",rendered link check passed
+/service-areas/monroe-nc,/services/industrial-agricultural,industrial & agricultural land services,rendered link check passed
+/service-areas/monroe-nc,/services/land-clearing,land clearing in Monroe,rendered link check passed
+/service-areas/monroe-nc,/services/grading-site-preparation,fine grading & site preparation,rendered link check passed
+/service-areas/monroe-nc,/commercial,commercial site management,rendered link check passed
+/service-areas/monroe-nc,/service-areas/union-county-nc,"Union County, NC",rendered link check passed
+/service-areas/monroe-nc,/service-areas/indian-trail-nc,"Indian Trail, NC",rendered link check passed
+/service-areas,/service-areas/monroe-nc,"Monroe, NC",rendered link check passed
+/service-areas/belmont-nc,/services/commercial-landscaping,"commercial landscaping in Belmont, NC",rendered link check passed
+/service-areas/belmont-nc,/services/grading-site-preparation,fine grading & site preparation,rendered link check passed
+/service-areas/belmont-nc,/services/pond-waterway-management,pond & waterway management,rendered link check passed
+/service-areas/belmont-nc,/services/drainage,drainage solutions,rendered link check passed
+/service-areas/belmont-nc,/commercial,commercial site management,rendered link check passed
+/service-areas/belmont-nc,/service-areas/gastonia-nc,"Gastonia, NC",rendered link check passed
+/service-areas/belmont-nc,/service-areas/mount-holly-nc,"Mount Holly, NC",rendered link check passed
+/service-areas,/service-areas/belmont-nc,"Belmont, NC",rendered link check passed
+/service-areas/mount-holly-nc,/services/commercial-landscaping,"commercial landscaping in Mount Holly, NC",rendered link check passed
+/service-areas/mount-holly-nc,/services/land-clearing,land clearing in Mount Holly,rendered link check passed
+/service-areas/mount-holly-nc,/services/grading-site-preparation,fine grading & site preparation,rendered link check passed
+/service-areas/mount-holly-nc,/services/drainage,drainage solutions,rendered link check passed
+/service-areas/mount-holly-nc,/commercial,commercial site management,rendered link check passed
+/service-areas/mount-holly-nc,/service-areas/gastonia-nc,"Gastonia, NC",rendered link check passed
+/service-areas/mount-holly-nc,/service-areas/belmont-nc,"Belmont, NC",rendered link check passed
+/service-areas,/service-areas/mount-holly-nc,"Mount Holly, NC",rendered link check passed
+/service-areas/cornelius-nc,/services/commercial-landscaping,"commercial landscaping in Cornelius, NC",rendered link check passed
+/service-areas/cornelius-nc,/services/pond-waterway-management,pond & waterway management,rendered link check passed
+/service-areas/cornelius-nc,/services/drainage,drainage solutions,rendered link check passed
+/service-areas/cornelius-nc,/services/grading-site-preparation,fine grading & site preparation,rendered link check passed
+/service-areas/cornelius-nc,/commercial,commercial site management,rendered link check passed
+/service-areas/cornelius-nc,/service-areas/huntersville-nc,"Huntersville, NC",rendered link check passed
+/service-areas/cornelius-nc,/service-areas/mooresville-lake-norman-nc,Mooresville & Lake Norman,rendered link check passed
+/service-areas,/service-areas/cornelius-nc,"Cornelius, NC",rendered link check passed
+/service-areas/greenville-sc,/service-areas/greer-sc,"Greer, SC",rendered link check passed
+/service-areas/greenville-sc,/service-areas/simpsonville-sc,"Simpsonville, SC",rendered link check passed
+/service-areas/greenville-sc,/service-areas/easley-sc,"Easley, SC",rendered link check passed
+/service-areas/spartanburg-sc,/service-areas/greer-sc,"Greer, SC",rendered link check passed
+/service-areas/spartanburg-sc,/service-areas/duncan-sc,"Duncan, SC",rendered link check passed
+/service-areas/spartanburg-sc,/service-areas/inman-sc,"Inman, SC",rendered link check passed
+/service-areas/spartanburg-sc,/service-areas/boiling-springs-sc,"Boiling Springs, SC",rendered link check passed
+/service-areas/spartanburg-sc,/service-areas/gaffney-sc,"Gaffney, SC",rendered link check passed
+/service-areas/anderson-sc,/service-areas/easley-sc,"Easley, SC",rendered link check passed
+/service-areas/charlotte-north-carolina,/service-areas/huntersville-nc,"Huntersville, NC",rendered link check passed
+/service-areas/charlotte-north-carolina,/service-areas/matthews-nc,"Matthews, NC",rendered link check passed
+/service-areas/charlotte-north-carolina,/service-areas/indian-land-sc,"Indian Land, SC",rendered link check passed
+/service-areas/charlotte-north-carolina,/service-areas/indian-trail-nc,"Indian Trail, NC",rendered link check passed
+/service-areas/concord-nc,/service-areas/kannapolis-nc,"Kannapolis, NC",rendered link check passed
+/service-areas/mooresville-lake-norman-nc,/service-areas/huntersville-nc,"Huntersville, NC",rendered link check passed
+/service-areas/mooresville-lake-norman-nc,/service-areas/cornelius-nc,"Cornelius, NC",rendered link check passed
+/service-areas/union-county-nc,/service-areas/waxhaw-nc,"Waxhaw, NC",rendered link check passed
+/service-areas/union-county-nc,/service-areas/matthews-nc,"Matthews, NC",rendered link check passed
+/service-areas/union-county-nc,/service-areas/indian-trail-nc,"Indian Trail, NC",rendered link check passed
+/service-areas/union-county-nc,/service-areas/monroe-nc,"Monroe, NC",rendered link check passed
+/service-areas/york-county-sc,/service-areas/fort-mill-sc,commercial landscaping in Fort Mill,rendered link check passed
+/service-areas/york-county-sc,/service-areas/rock-hill-sc,"Rock Hill, SC",rendered link check passed
+/service-areas/lancaster-county-sc,/service-areas/indian-land-sc,"Indian Land, SC",rendered link check passed
+/service-areas/gastonia-nc,/service-areas/belmont-nc,"Belmont, NC",rendered link check passed
+/service-areas/gastonia-nc,/service-areas/mount-holly-nc,"Mount Holly, NC",rendered link check passed
+/service-areas/matthews-nc,/service-areas/indian-trail-nc,"Indian Trail, NC",rendered link check passed
+/services/commercial-landscaping,/service-areas/greer-sc,commercial landscaping in Greer,rendered link check passed
+/services/commercial-landscaping,/service-areas/simpsonville-sc,commercial landscaping in Simpsonville,rendered link check passed
+/services/commercial-landscaping,/service-areas/huntersville-nc,commercial landscaping in Huntersville,rendered link check passed
+/services/commercial-landscaping,/service-areas/fort-mill-sc,commercial landscaping in Fort Mill,rendered link check passed
+/services/commercial-landscaping,/service-areas/rock-hill-sc,commercial landscaping in Rock Hill,rendered link check passed
+/services/commercial-landscaping,/service-areas/indian-land-sc,commercial landscaping in Indian Land,rendered link check passed
+/services/land-clearing,/service-areas/gaffney-sc,land clearing in Gaffney,rendered link check passed
+/services/land-clearing,/service-areas/greer-sc,land clearing in Greer,rendered link check passed
+/services/land-clearing,/service-areas/kannapolis-nc,land clearing in Kannapolis,rendered link check passed
+/services/land-clearing,/service-areas/indian-trail-nc,land clearing in Indian Trail,rendered link check passed
+/services/land-clearing,/service-areas/monroe-nc,land clearing in Monroe,rendered link check passed
+/services/land-clearing,/service-areas/rock-hill-sc,land clearing in Rock Hill,rendered link check passed
+/services/grading-site-preparation,/service-areas/greer-sc,site prep in Greer,rendered link check passed
+/services/grading-site-preparation,/service-areas/easley-sc,site prep in Easley,rendered link check passed
+/services/grading-site-preparation,/service-areas/huntersville-nc,site prep in Huntersville,rendered link check passed
+/services/grading-site-preparation,/service-areas/fort-mill-sc,site prep in Fort Mill,rendered link check passed
+/services/grading-site-preparation,/service-areas/indian-land-sc,site prep in Indian Land,rendered link check passed
+/services/grading-site-preparation,/service-areas/indian-trail-nc,site prep in Indian Trail,rendered link check passed
+/services/industrial-agricultural,/service-areas/gaffney-sc,"Gaffney, SC",rendered link check passed
+/services/industrial-agricultural,/service-areas/inman-sc,"Inman, SC",rendered link check passed
+/services/industrial-agricultural,/service-areas/waxhaw-nc,"Waxhaw, NC",rendered link check passed
+/services/industrial-agricultural,/service-areas/monroe-nc,"Monroe, NC",rendered link check passed
+/services/drainage,/service-areas/duncan-sc,"Duncan, SC",rendered link check passed
+/services/drainage,/service-areas/boiling-springs-sc,"Boiling Springs, SC",rendered link check passed
+/services/drainage,/service-areas/matthews-nc,"Matthews, NC",rendered link check passed
+/services/drainage,/service-areas/rock-hill-sc,"Rock Hill, SC",rendered link check passed
+/services/drainage,/service-areas/belmont-nc,"Belmont, NC",rendered link check passed
+/services/drainage,/service-areas/mount-holly-nc,"Mount Holly, NC",rendered link check passed
+/services/pond-waterway-management,/service-areas/inman-sc,"Inman, SC",rendered link check passed
+/services/pond-waterway-management,/service-areas/huntersville-nc,"Huntersville, NC",rendered link check passed
+/services/pond-waterway-management,/service-areas/cornelius-nc,"Cornelius, NC",rendered link check passed
+/services/pond-waterway-management,/service-areas/belmont-nc,"Belmont, NC",rendered link check passed

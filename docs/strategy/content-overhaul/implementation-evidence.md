@@ -40,3 +40,12 @@ Production public baseline discovered via Railway: deployment `4ae0b9fc-9d48-461
 Local build/prerender: 54 routes. Public QA: all 54 routes passed SSR, metadata, CMS overrides, internal links, proof, FAQ parity and React-warning checks; maximum initial JS was 143.7 KiB gzip before latest integration. All 78 managed images passed responsive image budgets. Initial server suite: 27 passing tests; a specific Snow & Ice redirect regression has since been added. Commercial inquiry transport: 5 passing tests. Typecheck, FAQ, navigation, media, and shared-frame checks passed. The shared-frame source check was adapted to inspect the shared LocationPage used by thin entrypoints.
 
 The overhaul-specific check covers nineteen routes, required inbound/outbound anchors, all 54 CTA surfaces, schema parity, sitemap membership, and footer boundaries. Desktop and 390px mobile Greer layout were visually checked; the mobile sticky CTA was corrected following that review. Final integrated validation and deployment evidence will be added before completion.
+
+
+## Integrated validation
+
+The overhaul was cherry-picked onto production main, preserving the approved analytics changes and later dashboard documentation updates without merging unrelated dashboard implementation. The integrated build prerendered 54 routes and generated 55 editable CMS components. Public QA and the dedicated overhaul check pass. Maximum initial JavaScript is 145.1 KiB gzip against the 150 KiB budget. All 28 server tests, five inquiry transport tests, two analytics tests, type checking, navigation, media, shared-frame and image-budget checks pass. Existing nonfatal UI-library sourcemap warnings remain in Vite build output.
+
+Visual verification covered desktop Greer and 390px mobile Fort Mill, the county breadcrumb, the mobile sticky action, and the mobile navigation button leading to Contact. No real production inquiry was submitted or customer notification triggered by these checks.
+
+Both source documents remain unchanged as references. The structured page data and `linking-matrix.csv` record the implemented contextual link graph. The built website/Core manifests are identical. No database migration, dependency upgrade, authentication change, or provider activation is part of this release. Existing forms retain acquisition landing-path context.
