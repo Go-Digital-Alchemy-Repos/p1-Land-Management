@@ -77,6 +77,7 @@ const auth = createAuthClient({ plugins: [twoFactorClient()] });
 const MarketingReports = lazy(() => import("./marketing/MarketingReports").then(module => ({default: module.MarketingReports})));
 const SidebarManager = lazy(() => import("./marketing/SidebarManager"));
 const GalleryManager = lazy(() => import("./marketing/GalleryManager"));
+const SectionManager = lazy(() => import("./marketing/SectionManager"));
 const SeoManager = lazy(() => import("./marketing/SeoManager"));
 const BlogManager = lazy(() => import("./marketing/BlogManager"));
 const TeamManager = lazy(() => import("./marketing/TeamManager"));
@@ -113,6 +114,7 @@ const icons: Record<DashboardPageRoute["view"] | "Settings:security" | "Settings
   Analytics: BarChart3,
   "Website Sidebars": Menu,
   "Website Galleries": Menu,
+  "Website Sections": Menu,
   "Website SEO": Menu,
   "Website Blog": Menu,
   "Website Team": Menu,
@@ -1406,6 +1408,7 @@ function App() {
           {view === "Media Library" && <Suspense fallback={<p role="status">Loading media…</p>}><MediaLibrary key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Website Sidebars" && <Suspense fallback={<p role="status">Loading sidebars…</p>}><SidebarManager key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Website Galleries" && <Suspense fallback={<p role="status">Loading galleries…</p>}><GalleryManager canUseMedia={(person.capabilities || []).includes("marketing.content.media")} key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
+          {view === "Website Sections" && <Suspense fallback={<p role="status">Loading sections…</p>}><SectionManager canUseMedia={(person.capabilities || []).includes("marketing.content.media")} key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Website SEO" && <Suspense fallback={<p role="status">Loading SEO…</p>}><SeoManager canUseMedia={(person.capabilities || []).includes("marketing.content.media")} key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Website Blog" && <Suspense fallback={<p role="status">Loading blog…</p>}><BlogManager canUseMedia={(person.capabilities || []).includes("marketing.content.media")} key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Website Team" && <Suspense fallback={<p role="status">Loading team…</p>}><TeamManager canUseMedia={(person.capabilities || []).includes("marketing.content.media")} key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}

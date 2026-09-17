@@ -18,6 +18,7 @@ export type DashboardView =
   | "Analytics"
   | "Website Sidebars"
   | "Website Galleries"
+  | "Website Sections"
   | "Website SEO"
   | "Website Blog"
   | "Website Team"
@@ -98,6 +99,7 @@ export const DASHBOARD_PAGES: readonly DashboardPageRoute[] = [
   { view: "Media Library", label: "Media", path: "/marketing/content/media", group: "Marketing", section: "Content" },
   { view: "Website Sidebars", label: "Sidebars", path: "/marketing/content/sidebars", group: "Marketing", section: "Content" },
   { view: "Website Galleries", label: "Galleries", path: "/marketing/content/galleries", group: "Marketing", section: "Content" },
+  { view: "Website Sections", label: "Sections", path: "/marketing/content/sections", group: "Marketing", section: "Content" },
   { view: "Website SEO", label: "SEO", path: "/marketing/content/seo", group: "Marketing", section: "Content" },
   { view: "Website Blog", label: "Blog", path: "/marketing/content/blog", group: "Marketing", section: "Content" },
   { view: "Website Team", label: "Team", path: "/marketing/content/team", group: "Marketing", section: "Content" },
@@ -204,6 +206,7 @@ const viewCapability: Partial<Record<DashboardView, Capability>> = {
   Analytics: "marketing.analytics.view",
   "Website Sidebars": "marketing.content.sidebars",
   "Website Galleries": "marketing.content.galleries",
+  "Website Sections": "marketing.content.sections",
   "Website SEO": "marketing.content.seo",
   "Website Blog": "marketing.content.blog",
   "Website Team": "marketing.content.team",

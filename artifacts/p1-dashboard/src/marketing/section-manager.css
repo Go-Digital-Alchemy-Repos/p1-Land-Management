@@ -1,0 +1,44 @@
+.section-manager,
+.section-manager fieldset,
+.block-fields {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+.section-manager label {
+  display: grid;
+  gap: 6px;
+}
+.section-manager fieldset,
+.section-block {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 18px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.section-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.section-manager .section-check {
+  display: flex;
+  align-items: center;
+}
+.section-manager input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+}
+.section-manager button {
+  justify-self: start;
+}
+.section-manager dialog {
+  width: min(1000px, 95vw);
+  max-height: 90vh;
+  overflow: auto;
+}
+.block-fields {
+  margin-top: 16px;
+}
