@@ -1952,6 +1952,6 @@ td { padding: 16px var(--atlas-surface-inset); }
   .note-list article { padding: 16px; }
   .note-list time { width: 100%; margin-left: 0; }
   .service-agreements .agreement-workspace,.service-agreements .agreement-queue { padding: 16px; }
-  .project-phases .panel-heading,.project-phases > .phase-form { display: grid; grid-template-columns: 1fr; }
+  .project-phases .panel-heading,.project-phases .phase-form { display: grid; grid-template-columns: 1fr; }
   .project-phases .panel-heading .secondary { justify-self: start; }
 }
