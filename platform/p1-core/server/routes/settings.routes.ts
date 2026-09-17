@@ -1,3 +1,4 @@
+import { isWebsiteColorKey } from "@shared/website-colors";
 import { isWebsiteOwner, requireWebsiteOwner, websiteSettingScope } from "../middleware/website-owner";
 import { getBaseUrl } from "../utils/route-helpers";
 import { CRM_PIPELINE_SETTING_KEY } from "@shared/crm-pipeline-settings";
@@ -65,6 +66,7 @@ function requireAdminOrDesignEditor(req: Request, res: Response, next: NextFunct
 }
 
 function requireSettingWritePermission(req: Request, res: Response, next: NextFunction) {
+  if (isWebsiteColorKey(req.body?.key)) return res.status(409).json({message:"Edit website colors in Marketing > Design > Color palette"});
   if (websiteSettingScope(req.body?.key, req.body?.category)) return requireWebsiteOwner(req,res,next);
   if (req.user?.role === "admin") {
     next();
@@ -210,6 +212,7 @@ router.delete(
     );
     if (isRetiredPrivateProofSetting(paramString(req.params.key), existing?.category))
       return res.status(403).json({ message: "This retired private proof setting is protected" });
+    if (isWebsiteColorKey(paramString(req.params.key))) return res.status(409).json({message:"Clear website colors in Marketing > Design > Color palette"});
     const scope = websiteSettingScope(paramString(req.params.key), existing?.category);
     if (scope) {
       if (!isWebsiteOwner(req)) return res.status(403).json({message:"Owner access required"});

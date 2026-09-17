@@ -1093,3 +1093,29 @@ it("website module flags normalize retained values and save one Owner-only versi
  for(const bad of [{features:{...features,eventsEnabled:"true"},expectedVersion:'b'.repeat(64)},{features:{cmsEnabled:true},expectedVersion:'b'.repeat(64)},{features:{...features,unknown:true},expectedVersion:'b'.repeat(64)},{features,expectedVersion:'b'.repeat(64),category:'branding'}]) expect((await request("/website-system/features","PUT",{},"/service",bad)).status).toBe(400);
  state.headSave.mockRejectedValueOnce(Object.assign(new Error("Changed"),{statusCode:409}));expect((await request("/website-system/features","PUT",{},"/service",{features,expectedVersion:'b'.repeat(64)})).status).toBe(409);
 });
+
+it("website colors require the precise fresh Design grant, preserve raw values and atomically save only changed fields",async()=>{
+ const body={colors:{brand_primary_color:"#123AbC",text_body_color:""},expectedVersion:"d".repeat(64)};
+ for(const role of ["member","crew","client","owner"]){
+  identity={active:true,role,ownerAttested:false,capabilities:role==="member"?["marketing.design.branding"]:["marketing.design.colors"]};
+  expect((await request("/design/colors")).status).toBe(403);
+  expect((await request("/design/colors","PUT",{},"/service",body)).status).toBe(403);
+ }
+ identity={active:true,role:"member",ownerAttested:false,capabilities:["marketing.design.colors"]};
+ state.enabled.mockResolvedValue(false);
+ state.headSnapshot.mockResolvedValue({values:{brand_primary_color:"legacy custom value",company_name:"not projected",text_muted_color:"#111111"},version:"d".repeat(64)});
+ const read=await request("/design/colors");expect(read.status).toBe(200);
+ const result=await read.json();expect(result.colors.brand_primary_color).toBe("legacy custom value");expect(result.colors.text_body_color).toBe("");expect(Object.keys(result.colors)).toHaveLength(18);expect(result.colors.company_name).toBeUndefined();expect(result.colors.text_muted_color).toBeUndefined();
+ expect(state.headSnapshot).toHaveBeenCalledWith("branding",true);
+ expect((await request("/design/colors","PUT",{},"/service",body)).status).toBe(200);
+ expect(state.headSave).toHaveBeenCalledWith([
+  {key:"brand_primary_color",value:"#123AbC",category:"branding",isSecret:false},
+  {key:"text_body_color",value:"",category:"branding",isSecret:false},
+ ],{category:"branding",version:body.expectedVersion,publicOnly:true},{userId:"linked",action:"website_colors_updated",details:JSON.stringify(["brand_primary_color","text_body_color"])});
+ for(const colors of [{},{company_name:"wrong"},{brand_primary_color:"red"},{brand_primary_color:"#123"},{brand_primary_color:null},{brand_primary_color:"url(https://example.test)"}])expect((await request("/design/colors","PUT",{},"/service",{...body,colors})).status).toBe(400);
+ expect((await request("/design/colors?extra=1")).status).toBe(400);
+ expect((await request("/design/colors","PUT",{},"/service",{...body,category:"other"})).status).toBe(400);
+ state.headSave.mockRejectedValueOnce(Object.assign(new Error("Changed"),{statusCode:409}));expect((await request("/design/colors","PUT",{},"/service",body)).status).toBe(409);
+ identity.active=false;expect((await request("/design/colors")).status).toBe(403);
+ identity={active:true,role:"owner",ownerAttested:true,capabilities:["marketing.design.colors"]};expect((await request("/design/colors")).status).toBe(200);
+});

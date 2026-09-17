@@ -1,3 +1,4 @@
+import websiteColors from "./business-center-colors.routes";
 import websiteSystem from "./business-center-website-system.routes";
 import careers from "./admin/careers.routes";
 import { requireBusinessCapability } from "../middleware/auth";
@@ -77,6 +78,7 @@ router.get("/notification-forms", async (req, res, next) => {
   }
 });
 router.use("/website-system", websiteSystem);
+router.use("/design/colors", websiteColors);
 router.use("/editor-locks", editorLocks);
 router.use("/blog", requireBlogEnabled, blog);
 router.use(eventAttendees);

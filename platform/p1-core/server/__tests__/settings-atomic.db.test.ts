@@ -290,4 +290,21 @@ suite("atomic settings real database", () => {
     expect((await pool.query("SELECT count(*)::int n FROM activity_logs WHERE action='website_features_updated'")).rows[0].n).toBe(1);
   });
 
+  it("partial website color changes preserve legacy branding and cannot overwrite a newer category",async()=>{
+    await pool.query("CREATE TABLE IF NOT EXISTS activity_logs (id varchar PRIMARY KEY DEFAULT gen_random_uuid(),user_id varchar NOT NULL,action text NOT NULL,details text,created_at timestamp DEFAULT now())");
+    await settings.upsertSettings([entry("brand_primary_color","legacy custom","branding"),entry("company_name","Synthetic company","branding"),entry("text_muted_color","#111111","branding")]);
+    const snapshot=await settings.getCategorySnapshot("branding",true);
+    const changes=[entry("text_body_color","#123456","branding"),entry("text_link_color","","branding")];
+    const audit={userId:"editor",action:"website_colors_updated",details:JSON.stringify(["text_body_color","text_link_color"])};
+    await pool.query("ALTER TABLE activity_logs ADD CONSTRAINT fixture_color_audit_failure CHECK(action<>'website_colors_updated')");
+    try{await expect(settings.upsertSettings(changes,{category:"branding",version:snapshot.version,publicOnly:true},audit)).rejects.toThrow();expect(await settings.getSetting("text_body_color")).toBe(null);}finally{await pool.query("ALTER TABLE activity_logs DROP CONSTRAINT fixture_color_audit_failure");}
+    await settings.upsertSettings(changes,{category:"branding",version:snapshot.version,publicOnly:true},audit);
+    expect(await settings.getDecryptedCategory("branding")).toEqual({brand_primary_color:"legacy custom",company_name:"Synthetic company",text_muted_color:"#111111",text_body_color:"#123456",text_link_color:""});
+    const current=await settings.getCategorySnapshot("branding",true);
+    await settings.upsertSetting("company_name","Newer name","branding",false);
+    await expect(settings.upsertSettings([entry("text_body_color","#abcdef","branding")],{category:"branding",version:current.version,publicOnly:true},audit)).rejects.toMatchObject({statusCode:409});
+    expect(await settings.getSetting("text_body_color")).toBe("#123456");
+    expect((await pool.query("SELECT count(*)::int n FROM activity_logs WHERE action='website_colors_updated'")).rows[0].n).toBe(1);
+  });
+
 });

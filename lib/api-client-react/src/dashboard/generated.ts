@@ -283,6 +283,7 @@ import type {
   SalesLead,
   SalesLeadConversion,
   SalesLeadConversionReceipt,
+  SaveWebsiteColors200,
   SaveWebsiteFeatures200,
   SaveWebsiteHeadTags200,
   SchedulePage,
@@ -317,6 +318,8 @@ import type {
   UpdateProjectPhase,
   UploadFieldPhotoHeaders,
   UploadMarketingMediaBody,
+  WebsiteColorsInput,
+  WebsiteColorsState,
   WebsiteContent,
   WebsiteContentEntry,
   WebsiteContentRevision,
@@ -337,6 +340,49 @@ import type {
 } from './models';
 
 import { customFetch } from '../custom-fetch';
+
+export const getGetWebsiteColorsUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/design/colors`
+}
+
+export const getWebsiteColors = async ( options?: RequestInit): Promise<WebsiteColorsState> => {
+
+  return customFetch<WebsiteColorsState>(getGetWebsiteColorsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getSaveWebsiteColorsUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/design/colors`
+}
+
+export const saveWebsiteColors = async (websiteColorsInput: WebsiteColorsInput, options?: RequestInit): Promise<SaveWebsiteColors200> => {
+
+  return customFetch<SaveWebsiteColors200>(getSaveWebsiteColorsUrl(),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      websiteColorsInput,)
+  }
+);}
+
+
 
 export const getGetLeadDetailsUrl = (id: string,) => {
 

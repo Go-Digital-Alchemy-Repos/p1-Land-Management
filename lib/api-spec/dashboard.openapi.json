@@ -11,6 +11,56 @@
     }
   ],
   "paths": {
+    "/marketing/cms/design/colors": {
+      "get": {
+        "operationId": "getWebsiteColors",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteColorsState"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "saveWebsiteColors",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "saved"
+                  ],
+                  "properties": {
+                    "saved": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebsiteColorsInput"
+              }
+            }
+          }
+        }
+      }
+    },
     "/leads/{id}/details": {
       "get": {
         "operationId": "getLeadDetails",
@@ -14375,6 +14425,197 @@
   },
   "components": {
     "schemas": {
+      "WebsiteColors": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "brand_primary_color",
+          "brand_secondary_color",
+          "brand_tertiary_color",
+          "brand_quaternary_color",
+          "text_h1_color",
+          "text_h2_color",
+          "text_h3_h6_color",
+          "text_body_color",
+          "text_heading_subtext_color",
+          "text_supporting_copy_color",
+          "text_helper_text_color",
+          "text_meta_color",
+          "text_link_color",
+          "text_link_hover_color",
+          "text_inverse_color",
+          "text_primary_foreground_color",
+          "text_secondary_foreground_color",
+          "text_tertiary_foreground_color"
+        ],
+        "properties": {
+          "brand_primary_color": {
+            "type": "string"
+          },
+          "brand_secondary_color": {
+            "type": "string"
+          },
+          "brand_tertiary_color": {
+            "type": "string"
+          },
+          "brand_quaternary_color": {
+            "type": "string"
+          },
+          "text_h1_color": {
+            "type": "string"
+          },
+          "text_h2_color": {
+            "type": "string"
+          },
+          "text_h3_h6_color": {
+            "type": "string"
+          },
+          "text_body_color": {
+            "type": "string"
+          },
+          "text_heading_subtext_color": {
+            "type": "string"
+          },
+          "text_supporting_copy_color": {
+            "type": "string"
+          },
+          "text_helper_text_color": {
+            "type": "string"
+          },
+          "text_meta_color": {
+            "type": "string"
+          },
+          "text_link_color": {
+            "type": "string"
+          },
+          "text_link_hover_color": {
+            "type": "string"
+          },
+          "text_inverse_color": {
+            "type": "string"
+          },
+          "text_primary_foreground_color": {
+            "type": "string"
+          },
+          "text_secondary_foreground_color": {
+            "type": "string"
+          },
+          "text_tertiary_foreground_color": {
+            "type": "string"
+          }
+        }
+      },
+      "WebsiteColorChanges": {
+        "type": "object",
+        "additionalProperties": false,
+        "minProperties": 1,
+        "properties": {
+          "brand_primary_color": {
+            "type": "string",
+            "pattern": "^(?:#[0-9a-fA-F]{6})?$"
+          },
+          "brand_secondary_color": {
+            "type": "string",
+            "pattern": "^(?:#[0-9a-fA-F]{6})?$"
+          },
+          "brand_tertiary_color": {
+            "type": "string",
+            "pattern": "^(?:#[0-9a-fA-F]{6})?$"
+          },
+          "brand_quaternary_color": {
+            "type": "string",
+            "pattern": "^(?:#[0-9a-fA-F]{6})?$"
+          },
+          "text_h1_color": {
+            "type": "string",
+            "pattern": "^(?:#[0-9a-fA-F]{6})?$"
+          },
+          "text_h2_color": {
+            "type": "string",
+            "pattern": "^(?:#[0-9a-fA-F]{6})?$"
+          },
+          "text_h3_h6_color": {
+            "type": "string",
+            "pattern": "^(?:#[0-9a-fA-F]{6})?$"
+          },
+          "text_body_color": {
+            "type": "string",
+            "pattern": "^(?:#[0-9a-fA-F]{6})?$"
+          },
+          "text_heading_subtext_color": {
+            "type": "string",
+            "pattern": "^(?:#[0-9a-fA-F]{6})?$"
+          },
+          "text_supporting_copy_color": {
+            "type": "string",
+            "pattern": "^(?:#[0-9a-fA-F]{6})?$"
+          },
+          "text_helper_text_color": {
+            "type": "string",
+            "pattern": "^(?:#[0-9a-fA-F]{6})?$"
+          },
+          "text_meta_color": {
+            "type": "string",
+            "pattern": "^(?:#[0-9a-fA-F]{6})?$"
+          },
+          "text_link_color": {
+            "type": "string",
+            "pattern": "^(?:#[0-9a-fA-F]{6})?$"
+          },
+          "text_link_hover_color": {
+            "type": "string",
+            "pattern": "^(?:#[0-9a-fA-F]{6})?$"
+          },
+          "text_inverse_color": {
+            "type": "string",
+            "pattern": "^(?:#[0-9a-fA-F]{6})?$"
+          },
+          "text_primary_foreground_color": {
+            "type": "string",
+            "pattern": "^(?:#[0-9a-fA-F]{6})?$"
+          },
+          "text_secondary_foreground_color": {
+            "type": "string",
+            "pattern": "^(?:#[0-9a-fA-F]{6})?$"
+          },
+          "text_tertiary_foreground_color": {
+            "type": "string",
+            "pattern": "^(?:#[0-9a-fA-F]{6})?$"
+          }
+        }
+      },
+      "WebsiteColorsState": {
+        "type": "object",
+        "required": [
+          "colors",
+          "version"
+        ],
+        "properties": {
+          "colors": {
+            "$ref": "#/components/schemas/WebsiteColors"
+          },
+          "version": {
+            "type": "string"
+          }
+        }
+      },
+      "WebsiteColorsInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "colors",
+          "expectedVersion"
+        ],
+        "properties": {
+          "colors": {
+            "$ref": "#/components/schemas/WebsiteColorChanges"
+          },
+          "expectedVersion": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      },
       "LeadDetailFields": {
         "type": "object",
         "properties": {

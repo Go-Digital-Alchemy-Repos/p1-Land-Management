@@ -117,3 +117,14 @@ it("legacy website feature keys and categories require canonical ownership and r
  const feature={key:"enable_events",category:"system_configuration",value:"true",isSecret:false};expect((await put(feature)).status).toBe(200);expect(state.save).toHaveBeenCalledWith([feature],undefined,{userId:"linked",action:"website_features_updated",details:"enable_events (legacy settings route)"});
  expect((await fetch(base+"/settings/enable_events",{method:"DELETE"})).status).toBe(400);expect(state.remove).not.toHaveBeenCalled();
 });
+
+it("legacy generic color mutations direct all callers to the versioned Design editor",async()=>{
+ for(const identity of [null,{active:true,role:"member",capabilities:["marketing.design.branding"]},{active:true,role:"owner",ownerAttested:true,capabilities:["marketing.design.colors"]}]){
+  state.identity=identity;
+  for(const category of ["branding","unrelated"]){
+   for(const key of ["brand_primary_color","text_muted_color"]) expect((await put({key,category,value:"#123456",isSecret:false})).status).toBe(409);
+  }
+  expect((await fetch(base+"/settings/brand_primary_color",{method:"DELETE"})).status).toBe(409);
+ }
+ expect(state.save).not.toHaveBeenCalled();expect(state.legacySave).not.toHaveBeenCalled();expect(state.remove).not.toHaveBeenCalled();
+});
