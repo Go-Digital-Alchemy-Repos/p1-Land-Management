@@ -32,6 +32,9 @@ const assert = require("node:assert/strict");
               title: "Old title",
               form: "missing-form",
               unknownProperty: 42,
+              primaryAction: "url",
+              primaryLink: "/contact",
+              primaryFormSlug: "contact",
               items: [{ label: "First", extra: "keep" }],
             },
           },
@@ -72,7 +75,14 @@ const assert = require("node:assert/strict");
       if (path.endsWith("/section-builder"))
         body = {
           aliases: {},
-          pages: [],
+          pages: [
+            {
+              id: "page",
+              title: "Contact page",
+              slug: "contact",
+              status: "published",
+            },
+          ],
           forms: [
             {
               id: "contact",
@@ -91,6 +101,22 @@ const assert = require("node:assert/strict");
               category: "hero",
               defaultProps: { title: "New" },
               propDefs: [
+                {
+                  key: "primaryAction",
+                  label: "Primary action",
+                  type: "select",
+                  options: [
+                    { label: "Internal page", value: "internal-link" },
+                    { label: "Custom link", value: "custom-link" },
+                    { label: "Form modal", value: "form-modal" },
+                  ],
+                },
+                { key: "primaryLink", label: "Primary Link", type: "url" },
+                {
+                  key: "primaryFormSlug",
+                  label: "Primary form",
+                  type: "form-select",
+                },
                 { key: "title", label: "Heading", type: "text" },
                 { key: "form", label: "Assigned form", type: "form-select" },
                 {
@@ -116,6 +142,27 @@ const assert = require("node:assert/strict");
       await page.getByLabel("Assigned form", { exact: true }).inputValue(),
       "missing-form",
     );
+    assert.equal(
+      await page.getByLabel("Primary action", { exact: true }).inputValue(),
+      "internal-link",
+    );
+    assert.equal(
+      await page
+        .getByLabel("Primary Internal Page", { exact: true })
+        .inputValue(),
+      "/contact",
+    );
+    await page
+      .getByLabel("Primary action", { exact: true })
+      .selectOption("form-modal");
+    assert.equal(
+      await page.getByLabel("Primary Internal Page", { exact: true }).count(),
+      0,
+    );
+    assert.equal(
+      await page.getByLabel("Primary form", { exact: true }).inputValue(),
+      "contact",
+    );
     await page.getByLabel("Heading", { exact: true }).fill("Updated title");
     await page
       .getByLabel("Feature label", { exact: true })
@@ -138,6 +185,8 @@ const assert = require("node:assert/strict");
     await page.getByText("Section saved.", { exact: true }).waitFor();
     assert.equal(saved.blocks[0].props.title, "Updated title");
     assert.equal(saved.blocks[0].props.unknownProperty, 42);
+    assert.equal(saved.blocks[0].props.primaryLink, "/contact");
+    assert.equal(saved.blocks[0].props.primaryAction, "form-modal");
     assert.equal(saved.blocks[0].extra, "keep");
     assert.equal(saved.blocks[0].props.items[0].extra, "keep");
     assert.equal(saved.blocks[0].props.form, "missing-form");
