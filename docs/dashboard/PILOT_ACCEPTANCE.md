@@ -16,7 +16,11 @@ This runbook is for the controlled pilot after deployment. Record the date, test
 3. Confirm server-enforced boundaries: a crew member sees only assigned work, a client sees only granted properties and published content, and finance actions remain unavailable to non-finance roles. Include direct URL and private-file access attempts.
 4. Revoke one pilot session, then confirm that the browser and native client lose access and cannot re-establish an offline session without successful authentication.
 
-## Provider acceptance
+## Deferred provider activation
+
+QuickBooks Online/Payments and Twilio/SMS are deferred by the designated owner as of September 16, 2026. They are excluded from the current non-provider operational pilot and do not block acceptance of the independently releasable web, workflow, field-device, and local billing-draft scope. Do not connect a provider, post an invoice, expose a payment link, register a sender, send an SMS, or turn on provider jobs during that pilot.
+
+The following is the preserved activation checklist. Complete it in a later provider-specific release before enabling the corresponding capability.
 
 ### QuickBooks Online
 
@@ -47,9 +51,9 @@ Run the same crew account on a physical iPhone and Android phone. The existing i
 1. Create or select a permitted client/property, complete an assessment, accept one estimate revision, and create a service schedule with a prerequisite.
 2. Confirm an unmet prerequisite blocks dispatch; record a management override only when appropriate. Reschedule and skip occurrences, checking that the recurrence remains intact and billing follows the agreement mode.
 3. Complete work from the crew device. A manager reviews it, then explicitly publishes only approved notes/photos/report material. Confirm unpublished material is absent from the client portal.
-4. The invited client views the published schedule/report, requests a change, approves the accepted estimate, and views the reconciled invoice/payment status.
+4. The invited client views the published schedule/report, requests a change, approves the accepted estimate, and views only the permitted operational and local billing-draft status. No provider invoice, payment link, or payment status is shown or created while QuickBooks is deferred.
 5. Run a worker recurrence/preparation cycle. Confirm it creates reviewed operational drafts only and does not send an invoice, charge a card, post accounting activity or publish crew content without an explicit staff action.
 
 ## Exit decision
 
-Accept a wider release only when every test has evidence, provider discrepancies are resolved, backup/object-recovery and alert ownership are rehearsed, and the owner approves the pilot outcome. Keep an unresolved result in the office action queue or project tracker; do not bypass an authorization, prerequisite, financial reconciliation or publication boundary to finish the pilot.
+Accept the non-provider operational release only when every applicable test has evidence, backup/object-recovery and alert ownership are rehearsed, and the owner approves the pilot outcome. Provider activation has its own later acceptance decision and checklist above. Keep an unresolved result in the office action queue or project tracker; do not bypass an authorization, prerequisite, financial reconciliation or publication boundary to finish the pilot.

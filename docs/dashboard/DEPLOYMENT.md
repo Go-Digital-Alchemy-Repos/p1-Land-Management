@@ -1,6 +1,6 @@
 # Deployment and support
 
-Status on 2026-09-08: the reviewed dashboard web and worker are deployed to production. Full launch acceptance remains pending provider, device and pilot gates.
+Status on 2026-09-16: the reviewed dashboard web and worker are deployed to production. The current non-provider release remains pending owner, device, recovery, and pilot acceptance. QuickBooks Online/Payments and Twilio/SMS are owner-deferred provider activation tracks; retain their guards and disabled/not-configured state until a later provider release.
 
 Project-phase implementation `0020` is deployed as an additive production migration. It passed the disposable-PostgreSQL migration replay and the role/lifecycle/idempotency suite before release. See [PROJECT_PHASES_PROPOSAL.md](PROJECT_PHASES_PROPOSAL.md).
 
@@ -54,7 +54,7 @@ Use [PILOT_ACCEPTANCE.md](PILOT_ACCEPTANCE.md) for the required owner, integrati
 
 The source-disconnected production worker was promoted only after the web deployment succeeded. An allowlisted package was created from an isolated worktree at the exact source revision, omitting environment files, website source/assets, and Core. Worker deployment `b6131965-ec85-4458-8bd9-ee3837c0c032` reached SUCCESS with image `sha256:ade0114957b0034df1710e58d5389bae5596d029ed766e029a532626989b31de`; the active service reported SUCCESS/not stopped and startup emitted `event="worker.started"`. This release adds no provider credentials, invoice action, payment action, customer communication, database migration, or acceptance claim.
 
-The public website deployment `a92be6fe-eecf-44aa-8bcd-e6833e220515` also reached SUCCESS from the same source. Live `/`, `/commercial`, `/services`, `/sitemap.xml`, `/robots.txt`, and the public Core readiness gateway returned `200`; retired `/testimonials` returned `301` to `/contact` with HSTS. The worker and website evidence confirms deployed code and basic response boundaries only. QuickBooks, Twilio, owner recovery/MFA, physical-device offline behavior, backup/object recovery, and a one-crew/invited-client billing pilot remain acceptance gates.
+The public website deployment `a92be6fe-eecf-44aa-8bcd-e6833e220515` also reached SUCCESS from the same source. Live `/`, `/commercial`, `/services`, `/sitemap.xml`, `/robots.txt`, and the public Core readiness gateway returned `200`; retired `/testimonials` returned `301` to `/contact` with HSTS. The worker and website evidence confirms deployed code and basic response boundaries only. Owner recovery/MFA, physical-device offline behavior, backup/object recovery, and a one-crew/invited-client non-provider pilot remain current acceptance gates. QuickBooks and Twilio are deferred provider activation gates and must remain disabled until their later acceptance release.
 
 ## Project phases and draft billing intents (cd76d2c)
 
