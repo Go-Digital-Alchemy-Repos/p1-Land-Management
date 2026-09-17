@@ -6,6 +6,7 @@ const pageIllustrations: Record<Exclude<DashboardView, "Settings">, string> = {
   Analytics: "none",
   "Website Sidebars": "none",
   "Website Galleries": "none",
+  "Website Forms": "none",
   "CMS Pages": "none",
   "Website Sections": "none",
   "Website SEO": "none",

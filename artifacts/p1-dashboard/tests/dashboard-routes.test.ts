@@ -93,3 +93,14 @@ test("workspace deep links cannot bypass the grant for their source section", ()
   assert.equal(canAccessRoute(routeFromPath(property + "/schedule"), "crew"), true);
   assert.equal(canAccessRoute(routeFromPath(property + "/agreements"), "crew"), false);
 });
+
+test("website Forms uses its own Marketing capability", () => {
+  const route = routeFromPath("/marketing/content/forms");
+  assert.equal(route.kind, "page");
+  assert.equal(canAccessRoute(route, "owner"), true);
+  assert.equal(canAccessRoute(route, "member", ["marketing.content.forms"]), true);
+  for (const role of ["member", "crew", "client"]) {
+    assert.equal(canAccessRoute(route, role, ["marketing.content.pages"]), false);
+  }
+  assert.equal(canAccessRoute(route, "crew", ["marketing.content.forms"]), false);
+});
