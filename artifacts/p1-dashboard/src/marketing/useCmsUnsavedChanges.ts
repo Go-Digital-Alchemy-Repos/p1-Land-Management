@@ -1,5 +1,8 @@
 import { useEffect } from "react";
-export function useCmsUnsavedChanges(dirty: boolean) {
+export function useCmsUnsavedChanges(
+  dirty: boolean,
+  prompt = "Discard your unsaved website changes?",
+) {
   useEffect(() => {
     if (!dirty) return;
     const savedPath = location.pathname + location.search;
@@ -8,7 +11,7 @@ export function useCmsUnsavedChanges(dirty: boolean) {
       event.returnValue = "";
     };
     const navigate = (event: Event) => {
-      if (!window.confirm("Discard your unsaved website changes?")) {
+      if (!window.confirm(prompt)) {
         event.preventDefault();
         history.replaceState(null, "", savedPath);
       }
@@ -19,5 +22,5 @@ export function useCmsUnsavedChanges(dirty: boolean) {
       window.removeEventListener("beforeunload", unload);
       window.removeEventListener("p1:before-navigation", navigate);
     };
-  }, [dirty]);
+  }, [dirty, prompt]);
 }

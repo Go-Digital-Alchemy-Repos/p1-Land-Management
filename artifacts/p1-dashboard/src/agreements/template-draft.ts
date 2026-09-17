@@ -41,11 +41,7 @@ export function draft(row: AgreementTemplate | null): Draft {
       row?.kind === "scope"
         ? structuredClone(row.payload as AgreementScopePayload)
         : { items: [], exclusions: "" },
-    costs: cost.items.map((item) => ({
-      ...item,
-      quantity: String(item.quantity),
-      amount: (item.unitPriceCents / 100).toFixed(2),
-    })),
+    costs: costDraft(cost),
     package:
       row?.kind === "package"
         ? structuredClone(row.payload as AgreementPackagePayload)
@@ -56,8 +52,18 @@ export function payload(kind: AgreementTemplateKind, value: Draft) {
   if (kind === "msa") return {};
   if (kind === "scope") return value.scope;
   if (kind === "package") return value.package;
+  return costPayload(value.costs);
+}
+export function costDraft(cost: AgreementCostPayload): Draft["costs"] {
+  return cost.items.map(({ quantity, unitPriceCents, ...item }) => ({
+    ...item,
+    quantity: String(quantity),
+    amount: (unitPriceCents / 100).toFixed(2),
+  }));
+}
+export function costPayload(costs: Draft["costs"]): AgreementCostPayload {
   return {
-    items: value.costs.map(({ quantity, amount, ...row }) => {
+    items: costs.map(({ quantity, amount, ...row }) => {
       if (!/^\d+(\.\d{1,2})?$/.test(quantity) || Number(quantity) <= 0)
         throw new Error(
           "Quantity must be positive with at most two decimal places.",

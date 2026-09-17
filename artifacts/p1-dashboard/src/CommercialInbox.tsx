@@ -294,6 +294,7 @@ export function CommercialInbox({
             aria-label="Selected commercial inquiry"
           >
             <h3>{selected.reported_company_name || selected.name}</h3>
+            <a href={`/agreements/drafts?new=1&leadId=${encodeURIComponent(selected.id)}`}>Create agreement draft for this inquiry</a>
             <p>
               {selected.name}
               {selected.contact_title ? " · " + selected.contact_title : ""}

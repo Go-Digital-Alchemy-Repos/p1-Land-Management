@@ -123,3 +123,20 @@ test("agreement template management has its own route and does not inherit agree
   for(const role of ["member","crew","client"])assert.equal(canAccessRoute(route,role,["revenue.agreements","revenue.sales"]),false);
   assert(canAccessRoute(route,"owner",[]));
 });
+
+
+test("agreement drafts have separate Sales write and Agreements read navigation, never template-only or portal access", () => {
+  for (const path of ["/agreements/drafts", "/agreements/drafts/44444444-4444-4444-8444-444444444444"]) {
+    const route = routeFromPath(path);
+    assert.equal(route.kind, "page");
+    if (route.kind !== "page") continue;
+    assert.equal(route.page.view, "Agreement Drafts");
+    assert.equal(pathForRoute(route), path);
+    assert.equal(canAccessRoute(route, "owner"), true);
+    for (const capability of ["revenue.sales", "revenue.agreements"]) assert.equal(canAccessRoute(route, "member", [capability]), true);
+    for (const capability of ["revenue.agreement-templates.manage", "revenue.billing"]) assert.equal(canAccessRoute(route, "member", [capability]), false);
+    assert.equal(canAccessRoute(route, "client", ["revenue.sales"]), false);
+    assert.equal(canAccessRoute(route, "crew", ["revenue.sales"]), false);
+  }
+  assert.equal(routeFromPath("/agreements/drafts/nope").kind, "not-found");
+});

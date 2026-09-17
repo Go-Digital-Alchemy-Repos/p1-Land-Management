@@ -7,6 +7,7 @@ export type DashboardView =
   | "My Day"
   | "Sales"
   | "Agreements"
+  | "Agreement Drafts"
   | "Agreement Templates"
   | "Billing"
   | "Requests"
@@ -50,6 +51,7 @@ export type RecordRoute =
   | { kind: "client"; id: string; tab: ClientWorkspaceTab }
   | { kind: "property"; id: string; tab: PropertyWorkspaceTab }
   | { kind: "work-order"; id: string }
+  | { kind: "agreement-draft"; id: string }
   | { kind: "agreement"; id: string };
 
 export type ClientWorkspaceTab =
@@ -97,6 +99,7 @@ export const DASHBOARD_PAGES: readonly DashboardPageRoute[] = [
   { view: "Inspections", label: "Inspections", path: "/inspections", group: "Operations" },
   { view: "Sales", label: "Sales", path: "/sales", group: "Revenue" },
   { view: "Agreements", label: "Agreements", path: "/agreements", group: "Revenue" },
+  { view: "Agreement Drafts", label: "Agreement drafts", path: "/agreements/drafts", group: "Revenue" },
   { view: "Agreement Templates", label: "Agreement templates", path: "/agreements/templates", group: "Revenue" },
   { view: "Billing", label: "Billing", path: "/billing", group: "Revenue" },
   { view: "Expenses", label: "Expenses", path: "/expenses", group: "Revenue" },
@@ -189,6 +192,8 @@ export function routeFromPath(pathname: string): DashboardRoute {
   if (dayWorkId) {
     return { kind: "page", page: pageFor("My Day")!, record: { kind: "work-order", id: dayWorkId } };
   }
+  const draftId = recordId(path, "/agreements/drafts/");
+  if (draftId) return { kind: "page", page: pageFor("Agreement Drafts")!, record: {kind: "agreement-draft", id: draftId} };
   const agreementId = recordId(path, "/agreements/");
   if (agreementId) {
     return { kind: "page", page: pageFor("Agreements")!, record: { kind: "agreement", id: agreementId } };
@@ -205,6 +210,8 @@ export function pathForRoute(route: Extract<DashboardRoute, { kind: "page" }>) {
       return `/properties/${encodeURIComponent(route.record.id)}${route.record.tab === "overview" ? "" : `/${route.record.tab}`}`;
     case "work-order":
       return `${route.page.view === "My Day" ? "/my-day" : "/schedule"}/work-orders/${encodeURIComponent(route.record.id)}`;
+    case "agreement-draft":
+      return `/agreements/drafts/${encodeURIComponent(route.record.id)}`;
     case "agreement":
       return `/agreements/${encodeURIComponent(route.record.id)}`;
   }
@@ -260,6 +267,7 @@ export function canAccessRoute(route: DashboardRoute, role: string | null | unde
   const subject = { role, capabilities };
   if (settingsSection === "preferences") return hasCapability(subject, "settings.preferences");
   if (settingsSection === "term-libraries") return hasCapability(subject, "settings.term-libraries");
+  if (view === "Agreement Drafts") return hasCapability(subject, "revenue.sales") || hasCapability(subject, "revenue.agreements");
   if (view === "Agreements" && hasCapability(subject, "revenue.billing")) return true;
   const permission = viewCapability[view];
   return permission ? hasCapability(subject, permission) : false;

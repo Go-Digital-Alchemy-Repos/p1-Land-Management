@@ -11,8 +11,8 @@ export function TemplateRows({
   patch,
 }: {
   kind: AgreementTemplateKind;
-  value: Draft;
-  patch: (value: Partial<Draft>) => void;
+  value: Pick<Draft, "scope" | "costs">;
+  patch: (value: Partial<Pick<Draft, "scope" | "costs">>) => void;
 }) {
   return (
     <>

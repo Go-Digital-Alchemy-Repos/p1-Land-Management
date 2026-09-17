@@ -77,6 +77,7 @@ const auth = createAuthClient({ plugins: [twoFactorClient()] });
 const MarketingReports = lazy(() => import("./marketing/MarketingReports").then(module => ({default: module.MarketingReports})));
 const SidebarManager = lazy(() => import("./marketing/SidebarManager"));
 const GalleryManager = lazy(() => import("./marketing/GalleryManager"));
+const AgreementDraftWorkspace = lazy(() => import("./agreements/AgreementDraftWorkspace"));
 const TemplateLibrary = lazy(() => import("./agreements/TemplateLibrary"));
 const EventManager = lazy(() => import("./marketing/EventManager"));
 const FormManager = lazy(() => import("./marketing/FormManager"));
@@ -137,6 +138,7 @@ const icons: Record<DashboardPageRoute["view"] | "Settings:security" | "Settings
   Sales: FileText,
   Agreements: FileText,
   "Agreement Templates": FileText,
+  "Agreement Drafts": FileText,
   Billing: Wallet,
   Requests: MessageSquare,
   Recurring: RefreshCw,
@@ -1291,7 +1293,7 @@ function App() {
                     ? "Your assignments and field notes, wherever work takes you."
                     : view === "Settings"
                       ? "Control access, account security, connections and workspace defaults."
-                      : view === "Agreement Templates" ? "Manage reusable terms, scope, cost breakdowns, and published agreement packages." : view === "CMS Pages" ? "Manage CMS page content, publication, and revision history." : "Keep the details connected to the work."}
+                      : view === "Agreement Drafts" ? "Prepare client-specific terms, scope and costs from your agreement templates." : view === "Agreement Templates" ? "Manage reusable terms, scope, cost breakdowns, and published agreement packages." : view === "CMS Pages" ? "Manage CMS page content, publication, and revision history." : "Keep the details connected to the work."}
               </p>
             </div>
             {!routeUnavailable && <div className="heading-actions">
@@ -1424,7 +1426,9 @@ function App() {
           {view === "Website Blog" && <Suspense fallback={<p role="status">Loading blog…</p>}><BlogManager canUseMedia={(person.capabilities || []).includes("marketing.content.media")} key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Website Team" && <Suspense fallback={<p role="status">Loading team…</p>}><TeamManager canUseMedia={(person.capabilities || []).includes("marketing.content.media")} key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Website Menus" && <Suspense fallback={<p role="status">Loading website menus…</p>}><CmsMenus key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
+          {view === "Agreement Drafts" && <Suspense fallback={<p role="status">Loading agreement drafts…</p>}><AgreementDraftWorkspace key={`${recordRoute?.id || "list"}:${person.id}:${(person.capabilities || []).join(",")}`} id={recordRoute?.kind === "agreement-draft" ? recordRoute.id : undefined} canEdit={hasCapability(person,"revenue.sales")} canManageTemplates={hasCapability(person,"revenue.agreement-templates.manage")} canViewAgreements={hasCapability(person,"revenue.agreements")||hasCapability(person,"revenue.billing")} opened={id => applyRoute({kind:"page", page:nav.find(item => item.view === "Agreement Drafts")!, record:{kind:"agreement-draft", id}}, "replace")}/></Suspense>}
           {view === "Agreement Templates" && <Suspense fallback={<p role="status">Loading templates…</p>}><TemplateLibrary key={`${person.id}:${(person.capabilities || []).join(",")}`} canUseClauses={hasCapability(person,"settings.term-libraries")} canViewAgreements={hasCapability(person,"revenue.agreements")||hasCapability(person,"revenue.billing")}/></Suspense>}
+          {view === "Agreements" && (hasCapability(person,"revenue.sales") || hasCapability(person,"revenue.agreements")) && <a href="/agreements/drafts">Agreement drafts</a>}
           {view === "Agreements" && hasCapability(person,"revenue.agreement-templates.manage") && <nav aria-label="Agreement workspace"><span aria-current="page">Agreements</span> <a href="/agreements/templates">Templates</a></nav>}
           {view === "Agreements" && (
             <ServiceAgreements
@@ -1876,6 +1880,7 @@ function App() {
           )}
           {view === "Sales" && (
             <>
+              {hasCapability(person, "revenue.sales") && <a href="/agreements/drafts">Agreement drafts</a>}
               {hasCapability(person, "revenue.sales") && <CommercialInbox staff={data.staff || []} />}
               <section className="panel">
                 <div className="panel-heading">

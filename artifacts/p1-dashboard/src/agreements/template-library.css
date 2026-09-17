@@ -43,3 +43,22 @@
   padding: 20px;
   overflow-wrap: anywhere;
 }
+
+.agreement-preview {
+  border: 1px solid var(--line);
+  padding: 24px;
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+}
+.agreement-preview dl {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.agreement-preview dd {
+  margin: 4px 0;
+}
+.agreement-text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
