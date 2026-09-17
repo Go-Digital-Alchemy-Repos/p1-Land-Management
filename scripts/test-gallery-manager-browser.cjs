@@ -15,7 +15,9 @@ const assert = require("node:assert/strict");
     page.setDefaultTimeout(15000);
     let records = [],
       saved,
-      accept = true;
+      accept = true,
+      mediaAllowed = false,
+      uploadCount = 0;
     const errors = [];
     page.on("pageerror", (e) => errors.push(e.message));
     page.on("dialog", (d) => (accept ? d.accept() : d.dismiss()));
@@ -41,7 +43,10 @@ const assert = require("node:assert/strict");
           id: "synthetic",
           name: "Gallery editor",
           role: "member",
-          capabilities: ["marketing.content.galleries"],
+          capabilities: [
+            "marketing.content.galleries",
+            ...(mediaAllowed ? ["marketing.content.media"] : []),
+          ],
           mfaRequired: false,
         };
       if (path.endsWith("/galleries")) {
@@ -87,6 +92,20 @@ const assert = require("node:assert/strict");
           body = { success: true };
         } else body = saved;
       }
+      if (path.endsWith("/cms/upload")) {
+        uploadCount++;
+        if (uploadCount === 2)
+          return route.fulfill({
+            status: 422,
+            json: { error: "Synthetic upload failure" },
+          });
+        body = {
+          id: "uploaded",
+          url: "/uploads/uploaded.png",
+          alt: "Uploaded image",
+          mimeType: "image/png",
+        };
+      }
       await route.fulfill({ json: body });
     });
     await page.goto("http://127.0.0.1:4347/marketing/content/galleries");
@@ -129,6 +148,36 @@ const assert = require("node:assert/strict");
         .count(),
       0,
     );
+    await page
+      .getByLabel("Gallery layout", { exact: true })
+      .selectOption("slider");
+    await page.getByText("Gallery preview", { exact: true }).click();
+    const preview = page.getByRole("region", {
+      name: "Gallery draft preview",
+      exact: true,
+    });
+    await preview
+      .getByRole("button", { name: "Next preview image", exact: true })
+      .click();
+    await preview
+      .getByRole("button", { name: "Open image 2", exact: true })
+      .click();
+    const lightbox = page.getByRole("dialog", {
+      name: "Gallery lightbox",
+      exact: true,
+    });
+    await lightbox.waitFor();
+    await page.keyboard.press("ArrowLeft");
+    assert.equal(
+      await lightbox.locator("img").getAttribute("src"),
+      "https://www.p1landmanagement.com/uploads/two.png",
+    );
+    await page.keyboard.press("Escape");
+    await lightbox.waitFor({ state: "hidden" });
+    await page
+      .getByLabel("Gallery layout", { exact: true })
+      .selectOption("masonry");
+    await preview.screenshot({path:"/tmp/p1-gallery-preview.png"});
     accept = false;
     await page
       .getByRole("button", { name: "Back to galleries", exact: true })
@@ -196,6 +245,26 @@ const assert = require("node:assert/strict");
       .getByRole("button", { name: "New gallery", exact: true })
       .waitFor();
     assert.ok(!records.some((r) => r.id === "copy"));
+    mediaAllowed = true;
+    await page.reload();
+    await page
+      .getByRole("button", { name: "New gallery", exact: true })
+      .click();
+    await page
+      .getByLabel("Upload gallery images", { exact: true })
+      .setInputFiles([
+        { name: "one.png", mimeType: "image/png", buffer: png },
+        { name: "two.png", mimeType: "image/png", buffer: png },
+      ]);
+    await page
+      .getByRole("alert")
+      .filter({ hasText: "Earlier successful uploads" })
+      .waitFor();
+    assert.equal(uploadCount, 2);
+    assert.equal(
+      await page.getByLabel("Image URL", { exact: true }).inputValue(),
+      "/uploads/uploaded.png",
+    );
     assert.deepEqual(errors, []);
     console.log(
       "Gallery browser checks passed: settings, ordering, metadata, dirty guard, independent Media denial, publish/unpublish, duplicate, delete and mobile.",

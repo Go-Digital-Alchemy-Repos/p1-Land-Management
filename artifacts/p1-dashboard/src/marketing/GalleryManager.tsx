@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import {
+  uploadMarketingMedia,
   listMarketingGalleries,
   getMarketingGallery,
   createMarketingGallery,
@@ -19,6 +20,7 @@ import type {
 import { MediaLibrary } from "./MediaLibrary";
 import { useCmsUnsavedChanges } from "./useCmsUnsavedChanges";
 import "./gallery-manager.css";
+import { GalleryPreview } from "./GalleryPreview";
 const defaults: MarketingGallerySettings = {
   columnsDesktop: 3,
   columnsTablet: 2,
@@ -118,6 +120,12 @@ function Editor({
     [busy, setBusy] = useState(false),
     [picker, setPicker] = useState(false);
   const dialog = useRef<HTMLDialogElement>(null);
+  const uploads = useRef(new AbortController());
+  useEffect(() => {
+    const controller = new AbortController();
+    uploads.current = controller;
+    return () => controller.abort();
+  }, []);
   const dirty = JSON.stringify(draft) !== JSON.stringify(saved);
   useCmsUnsavedChanges(dirty);
   useEffect(() => {
@@ -341,7 +349,74 @@ function Editor({
               ))}
             </div>
           </details>
+          <details>
+            <summary>Gallery preview</summary>
+            <GalleryPreview gallery={draft} />
+          </details>
           <h3>Images</h3>
+          {canUseMedia && (
+            <label>
+              Upload gallery images
+              <input
+                type="file"
+                multiple
+                accept="image/png,image/jpeg,image/webp,image/gif"
+                onChange={async (e) => {
+                  const files = Array.from(e.target.files || []);
+                  e.target.value = "";
+                  setBusy(true);
+                  setError("");
+                  try {
+                    for (const file of files) {
+                      if (
+                        ![
+                          "image/png",
+                          "image/jpeg",
+                          "image/webp",
+                          "image/gif",
+                        ].includes(file.type)
+                      )
+                        throw Error(
+                          `${file.name}: choose PNG, JPEG, WebP or GIF.`,
+                        );
+                      if (file.size > 10 * 1024 * 1024)
+                        throw Error(`${file.name} exceeds 10 MB.`);
+                      const asset = await uploadMarketingMedia(
+                        { file },
+                        { signal: uploads.current.signal },
+                      );
+                      if (uploads.current.signal.aborted) break;
+                      setDraft((current) =>
+                        current
+                          ? {
+                              ...current,
+                              items: [
+                                ...current.items,
+                                {
+                                  id: crypto.randomUUID(),
+                                  mediaId: asset.id,
+                                  imageUrl: asset.url,
+                                  alt: asset.alt,
+                                  title: asset.title,
+                                  caption: asset.caption,
+                                },
+                              ],
+                            }
+                          : current,
+                      );
+                    }
+                  } catch (e) {
+                    setError(
+                      `${message(e)} Earlier successful uploads remain in Media and this draft.`,
+                    );
+                  } finally {
+                    setBusy(false);
+                  }
+                }}
+              />
+            </label>
+          )}
+
           <div className="gallery-items">
             {draft.items.map((row, index) => (
               <article key={row.id || index}>
