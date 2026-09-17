@@ -659,6 +659,39 @@
       }
     ]
   },
+  "features/farm-industrial-maintenance.png": {
+    "sourceBytes": 3242417,
+    "sourceHash": "2a00e4333fdb05f20015280229fe54183b7f737774bbeadc7dfc3a669652d449",
+    "width": 1672,
+    "height": 941,
+    "default": "optimized/features/farm-industrial-maintenance-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/features/farm-industrial-maintenance-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 270,
+        "bytes": 38680,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/farm-industrial-maintenance-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 432,
+        "bytes": 94720,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/farm-industrial-maintenance-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 720,
+        "bytes": 246170,
+        "quality": 78
+      }
+    ]
+  },
   "features/grading-construction.png": {
     "sourceBytes": 1859754,
     "sourceHash": "59ab88de1e8b8ce31af097c1c2fd8fd727a732f2c6758adc66faaf22ccc4093a",

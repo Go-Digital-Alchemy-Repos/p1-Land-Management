@@ -7,7 +7,7 @@ import { FeatureRow } from "@/components/layout/FeatureRow";
 import { CheckCircle2 } from "lucide-react";
 import { Link } from "wouter";
 import heroImg from "@/assets/equestrian-estate-hero.png";
-import maintenanceImg from "@/assets/features/equestrian-farm-pastures.png";
+import maintenanceImg from "@/assets/features/farm-industrial-maintenance.png";
 
 import { FaqAccordion } from "@/components/content/FaqAccordion";
 
@@ -73,7 +73,7 @@ export default function IndustrialAgricultural() {
       <section className="py-24 bg-background">
         <div className="site-shell space-y-16">
           
-          <FeatureRow heading="Land That Works Needs Maintenance That Matches" image={maintenanceImg} imageAlt="Horses grazing in broad fenced pastures beside a rural barn and farm access lane">
+          <FeatureRow heading="Land That Works Needs Maintenance That Matches" image={maintenanceImg} imageAlt="Land-clearing equipment working beside a farm pond, drainage ditch, and fenced pasture">
             <p>
               Industrial facilities, working farms, and rural landholdings have maintenance needs that go far beyond what a standard landscaping company can handle. Overgrown fence lines, failing drainage ditches, eroded slopes, silted ponds, and encroaching vegetation don't just look bad — they cost money, create liability, and reduce the productive capacity of your land.
             </p>
