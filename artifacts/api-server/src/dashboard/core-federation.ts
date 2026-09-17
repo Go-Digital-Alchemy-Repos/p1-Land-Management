@@ -1,3 +1,4 @@
+import { CAPABILITIES, isCapability } from "@workspace/api-zod/business-access";
 import {
   createHash,
   randomBytes,
@@ -295,6 +296,7 @@ const introspectBody = z
     grant_id: z.string().uuid(),
     purpose: z.literal(purpose),
     require_owner_attestation: z.boolean().optional().default(false),
+    include_capabilities: z.boolean().optional().default(false),
   })
   .strict();
 
@@ -524,8 +526,14 @@ coreFederationIngress.post("/federation/introspect", async (req, res) => {
     (!row.owner_attested || row.role !== "owner")
   )
     throw new HttpError(403, "Owner attestation is required");
+  const capabilities = body.include_capabilities
+    ? row.role === "owner" ? [...CAPABILITIES]
+      : ["client", "crew"].includes(row.role) ? []
+      : ((await pool.query("SELECT capabilities FROM business_account_access WHERE user_id=$1", [row.canonical_user_id])).rows[0]?.capabilities ?? []).filter(isCapability)
+    : undefined;
   res.json({
     active: true,
+    ...(body.include_capabilities ? { capabilities } : {}),
     grantId: body.grant_id,
     subject: row.canonical_user_id,
     email: row.email,

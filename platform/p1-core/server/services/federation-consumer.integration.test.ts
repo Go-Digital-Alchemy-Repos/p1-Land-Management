@@ -77,9 +77,7 @@ beforeAll(async () => {
   if (!url) return;
   pool = new pg.Pool({ connectionString: url });
   await migrate(drizzle(pool), {
-    migrationsFolder: fileURLToPath(
-      new URL("../../p1-migrations/", import.meta.url),
-    ),
+    migrationsFolder: fileURLToPath(new URL("../../p1-migrations/", import.meta.url)),
   });
   const provider = express();
   provider.use(express.json());
@@ -115,7 +113,11 @@ beforeAll(async () => {
     const grant = grants.get(req.body.grant_id);
     if (!grant) return res.sendStatus(401);
     if (req.body.require_owner_attestation && !grant.ownerAttested) return res.sendStatus(403);
-    return res.json({ ...grant, active: true, role: grant.ownerAttested ? "owner" : "client" });
+    return res.json({
+      ...grant,
+      active: true,
+      role: grant.role || (grant.ownerAttested ? "owner" : "client"),
+    });
   });
   providerServer = await listen(provider);
   issuer = `http://127.0.0.1:${providerServer.address().port}`;
@@ -140,6 +142,18 @@ beforeAll(async () => {
   app.get("/private", auth.authenticateToken, auth.requireAdminPermission("content"), (_req, res) =>
     res.json({ ok: true }),
   );
+  app.get(
+    "/report/analytics",
+    auth.authenticateToken,
+    auth.requireBusinessCapability("marketing.analytics.view"),
+    (_req, res) => res.json({ ok: true }),
+  );
+  app.get(
+    "/report/search",
+    auth.authenticateToken,
+    auth.requireBusinessCapability("marketing.search-console.view"),
+    (_req, res) => res.json({ ok: true }),
+  );
   app.use("/api/cms", (await import("../routes/cms-public.routes")).default);
   const authRoutes = await import("../routes/auth.routes");
   app.use("/api/auth", authRoutes.default);
@@ -149,10 +163,8 @@ beforeAll(async () => {
 }, 30000);
 afterAll(async () => {
   if (!url) return;
-  if (coreServer)
-    await new Promise<void>((r) => coreServer.close(() => r()));
-  if (providerServer)
-    await new Promise<void>((r) => providerServer.close(() => r()));
+  if (coreServer) await new Promise<void>((r) => coreServer.close(() => r()));
+  if (providerServer) await new Promise<void>((r) => providerServer.close(() => r()));
   await (await import("../db")).pool.end();
   await pool.end();
   for (const k of envNames) {
@@ -262,6 +274,23 @@ it.skipIf(!url)(
     );
     expect(confirmed.status).toBe(200);
     const linkedCookie = cookies(confirmed);
+    const linkedGrant = [...grants.values()].find((grant) => grant.subject === "legacy-canonical");
+    expect((await request("/report/analytics", undefined, linkedCookie)).status).toBe(403);
+    linkedGrant.role = "member";
+    linkedGrant.capabilities = ["marketing.analytics.view"];
+    const consumer = (await import("./federation-runtime")).federationConsumer();
+    const serviceIdentity = await consumer.authenticateServiceGrant(linkedGrant.grantId);
+    expect(serviceIdentity.userId).toBe(local.id);
+    expect(serviceIdentity.grant.capabilities).toEqual(["marketing.analytics.view"]);
+
+    expect((await request("/report/analytics", undefined, linkedCookie)).status).toBe(200);
+    expect((await request("/report/search", undefined, linkedCookie)).status).toBe(403);
+    linkedGrant.capabilities = ["marketing.search-console.view"];
+    expect((await request("/report/analytics", undefined, linkedCookie)).status).toBe(403);
+    expect((await request("/report/search", undefined, linkedCookie)).status).toBe(200);
+    linkedGrant.capabilities = [];
+    expect((await request("/report/search", undefined, linkedCookie)).status).toBe(403);
+
     expect((await request("/private", undefined, linkedCookie)).status).toBe(200);
     expect(
       (await request("/api/auth/federation/confirm", { confirm: true }, confirmCookie)).status,
@@ -273,6 +302,9 @@ it.skipIf(!url)(
       local.id,
     ]);
     expect((await request("/private", undefined, linkedCookie)).status).toBe(403);
+    await expect(consumer.authenticateServiceGrant(linkedGrant.grantId)).rejects.toMatchObject({
+      status: 403,
+    });
     process.env.CORE_FEDERATION_ENABLED = "false";
     const { updateUnlinkedPassword } = await import("./federation-runtime");
     await expect(
@@ -285,9 +317,7 @@ it.skipIf(!url)(
       Number((await pool.query("SELECT count(*) FROM p1_federation_audit")).rows[0].count),
     ).toBeGreaterThan(5);
     await migrate(drizzle(pool), {
-      migrationsFolder: fileURLToPath(
-        new URL("../../p1-migrations/", import.meta.url),
-      ),
+      migrationsFolder: fileURLToPath(new URL("../../p1-migrations/", import.meta.url)),
     });
     expect(Number((await pool.query("SELECT count(*) FROM p1_identity_link")).rows[0].count)).toBe(
       2,

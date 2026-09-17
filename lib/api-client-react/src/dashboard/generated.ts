@@ -87,6 +87,8 @@ import type {
   FieldSyncResponse,
   GenerateAssessmentAvailability,
   GeneratedAssessmentAvailability,
+  GetMarketingAnalyticsParams,
+  GetMarketingSearchConsoleParams,
   GetScheduleParams,
   GetSetupStatus200,
   InspectionReport,
@@ -102,6 +104,9 @@ import type {
   ListServiceAgreementsParams,
   ManagedAccountUpdate,
   ManagedInvitationInput,
+  MarketingAnalytics,
+  MarketingRealtime,
+  MarketingSearchConsole,
   OperationReceipt,
   PhotoUploadReceipt,
   Project,
@@ -3139,6 +3144,92 @@ export const getGetWorkspaceReferencesUrl = () => {
 export const getWorkspaceReferences = async ( options?: RequestInit): Promise<WorkspaceReferences> => {
 
   return customFetch<WorkspaceReferences>(getGetWorkspaceReferencesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getGetMarketingAnalyticsUrl = (params?: GetMarketingAnalyticsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/marketing/reporting/analytics?${stringifiedParams}` : `/api/v1/marketing/reporting/analytics`
+}
+
+/**
+ * User-scoped Core report read; explicit source capability required. Private/no-store. Credentials stay on Core; exports must cover only loaded rows.
+ */
+export const getMarketingAnalytics = async (params?: GetMarketingAnalyticsParams, options?: RequestInit): Promise<MarketingAnalytics> => {
+
+  return customFetch<MarketingAnalytics>(getGetMarketingAnalyticsUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getGetMarketingRealtimeUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/reporting/realtime`
+}
+
+/**
+ * User-scoped Core report read; explicit source capability required. Private/no-store. Credentials stay on Core; exports must cover only loaded rows.
+ */
+export const getMarketingRealtime = async ( options?: RequestInit): Promise<MarketingRealtime> => {
+
+  return customFetch<MarketingRealtime>(getGetMarketingRealtimeUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getGetMarketingSearchConsoleUrl = (params?: GetMarketingSearchConsoleParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/marketing/reporting/search-console?${stringifiedParams}` : `/api/v1/marketing/reporting/search-console`
+}
+
+/**
+ * User-scoped Core report read; explicit source capability required. Private/no-store. Credentials stay on Core; exports must cover only loaded rows.
+ */
+export const getMarketingSearchConsole = async (params?: GetMarketingSearchConsoleParams, options?: RequestInit): Promise<MarketingSearchConsole> => {
+
+  return customFetch<MarketingSearchConsole>(getGetMarketingSearchConsoleUrl(params),
   {
     ...options,
     method: 'GET'

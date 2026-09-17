@@ -28,6 +28,7 @@ describe("federation client trust boundary", () => {
         grant_id: "11111111-1111-4111-8111-111111111111",
         purpose: "p1-core-cms-v1",
         require_owner_attestation: false,
+        include_capabilities: true,
       });
       return new Response("x".repeat(8193));
     };

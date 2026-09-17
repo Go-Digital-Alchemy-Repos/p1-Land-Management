@@ -10,10 +10,10 @@ const calls = vi.hoisted(() => ({
 vi.mock("../middleware/auth", () => ({
   authenticateToken: (req: any, res: any, next: any) =>
     req.headers.authorization ? next() : res.status(401).end(),
-  requireAdminPermission: (permission: string) => {
+  requireBusinessCapability: (permission: string) => {
     calls.permission(permission);
     return (req: any, res: any, next: any) =>
-      req.headers.authorization === "owner" ? next() : res.status(403).end();
+      ["owner", permission].includes(req.headers.authorization) ? next() : res.status(403).end();
   },
 }));
 vi.mock("../services/p1-google-analytics.service", async () => {
@@ -38,7 +38,7 @@ async function start() {
   await new Promise<void>((resolve) => server.once("listening", resolve));
   return `http://127.0.0.1:${(server.address() as any).port}/api/p1/google-analytics`;
 }
-it("protects all reporting endpoints before provider calls with crm permission", async () => {
+it("protects all reporting endpoints before provider calls with independent canonical permissions", async () => {
   const base = await start();
   for (const path of ["", "/realtime", "/search-console"]) {
     expect((await fetch(base + path)).status).toBe(401);
@@ -47,7 +47,8 @@ it("protects all reporting endpoints before provider calls with crm permission",
   expect(calls.reports).not.toHaveBeenCalled();
   expect(calls.realtime).not.toHaveBeenCalled();
   expect(calls.search).not.toHaveBeenCalled();
-  expect(calls.permission).toHaveBeenCalledWith("crm");
+  expect(calls.permission).toHaveBeenCalledWith("marketing.analytics.view");
+  expect(calls.permission).toHaveBeenCalledWith("marketing.search-console.view");
 });
 it("returns reports privately and hides unknown provider exceptions", async () => {
   const base = await start();
@@ -77,4 +78,35 @@ it("returns Search Console reports privately and sanitizes failures", async () =
   const failed = await fetch(base + "/search-console", { headers: { authorization: "owner" } });
   expect(failed.status).toBe(503);
   expect(await failed.text()).not.toContain("secret-token");
+});
+
+it("does not confer the other reporting source or CRM access", async () => {
+  const base = await start();
+  calls.reports.mockResolvedValue({ status: "empty" });
+  calls.realtime.mockResolvedValue({ status: "empty" });
+  calls.search.mockResolvedValue({ status: "empty" });
+  for (const path of ["", "/realtime"]) {
+    expect(
+      (await fetch(base + path, { headers: { authorization: "marketing.analytics.view" } })).status,
+    ).toBe(200);
+    expect(
+      (await fetch(base + path, { headers: { authorization: "marketing.search-console.view" } }))
+        .status,
+    ).toBe(403);
+    expect((await fetch(base + path, { headers: { authorization: "crm" } })).status).toBe(403);
+  }
+  expect(
+    (
+      await fetch(base + "/search-console", {
+        headers: { authorization: "marketing.search-console.view" },
+      })
+    ).status,
+  ).toBe(200);
+  expect(
+    (
+      await fetch(base + "/search-console", {
+        headers: { authorization: "marketing.analytics.view" },
+      })
+    ).status,
+  ).toBe(403);
 });

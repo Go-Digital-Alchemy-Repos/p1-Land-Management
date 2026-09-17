@@ -1,9 +1,9 @@
-import { Router } from "express";
-import { authenticateToken, requireAdminPermission } from "../middleware/auth";
+import { Router, type RequestHandler } from "express";
+import { authenticateToken, requireBusinessCapability } from "../middleware/auth";
 import { GAError, p1GoogleAnalytics } from "../services/p1-google-analytics.service";
 import { p1SearchConsole } from "../services/p1-search-console.service";
 const router = Router();
-router.use(authenticateToken, requireAdminPermission("crm"));
+router.use(authenticateToken);
 router.use((_req, res, next) => {
   res.setHeader("Cache-Control", "no-store");
   next();
@@ -14,37 +14,42 @@ const failure = (res: import("express").Response, error: unknown) => {
     .status(safe.code === "invalid_date_range" ? 400 : 503)
     .json({ status: "unavailable", code: safe.code, message: safe.message });
 };
-router.get("/", async (req, res) => {
+export const analyticsReport: RequestHandler = async (req, res) => {
   try {
     return res.json(await p1GoogleAnalytics.reports(req.query.startDate, req.query.endDate));
   } catch (error) {
     return failure(res, error);
   }
-});
-router.get("/realtime", async (_req, res) => {
+};
+export const realtimeReport: RequestHandler = async (_req, res) => {
   try {
     return res.json(await p1GoogleAnalytics.realtime());
   } catch (error) {
     return failure(res, error);
   }
-});
-router.get("/search-console", async (req, res) => {
+};
+export const searchConsoleReport: RequestHandler = async (req, res) => {
   try {
     return res.json(await p1SearchConsole.reports(req.query.startDate, req.query.endDate));
   } catch (error) {
     const code = error instanceof GAError ? error.code : "provider_unavailable";
-    return res
-      .status(code === "invalid_date_range" ? 400 : 503)
-      .json({
-        status: "unavailable",
-        code,
-        message:
-          code === "invalid_date_range"
-            ? "Use a valid date range of at most 93 days."
-            : code === "not_configured"
-              ? "Search Console reporting is not connected yet."
-              : "Search Console reports are temporarily unavailable. Check the property access and API configuration.",
-      });
+    return res.status(code === "invalid_date_range" ? 400 : 503).json({
+      status: "unavailable",
+      code,
+      message:
+        code === "invalid_date_range"
+          ? "Use a valid date range of at most 93 days."
+          : code === "not_configured"
+            ? "Search Console reporting is not connected yet."
+            : "Search Console reports are temporarily unavailable. Check the property access and API configuration.",
+    });
   }
-});
+};
+router.get("/", requireBusinessCapability("marketing.analytics.view"), analyticsReport);
+router.get("/realtime", requireBusinessCapability("marketing.analytics.view"), realtimeReport);
+router.get(
+  "/search-console",
+  requireBusinessCapability("marketing.search-console.view"),
+  searchConsoleReport,
+);
 export default router;

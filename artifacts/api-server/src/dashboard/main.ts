@@ -1,3 +1,4 @@
+import { marketingReportingApi } from "./marketing-reporting";
 import { workspaceReferencesApi } from "./workspace-references";
 import { userManagementApi } from "./user-management.routes";
 import { serviceAgreementApi } from "./service-agreement.routes";
@@ -101,6 +102,7 @@ app.use(
   prospectContextApi,
   commercialAssessmentApi,
   commercialStaffApi,
+  marketingReportingApi,
   contactsApi,
   clientWorkspaceApi,
   propertyTypesApi,

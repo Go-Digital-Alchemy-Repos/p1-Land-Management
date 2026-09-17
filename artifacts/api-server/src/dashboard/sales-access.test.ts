@@ -106,10 +106,12 @@ test(
       201,
     );
     for (const who of [legacy, reporting]) {
-      for (const path of ["/clients", "/properties", "/staff", "/work-orders", "/schedule", "/recurring-services", "/projects", "/inspections", "/expenses", "/billing", "/requests", "/service-agreements", "/quickbooks/invoices", "/workspace/references"]) {
+      for (const path of ["/clients", "/properties", "/staff", "/work-orders", "/schedule", "/recurring-services", "/projects", "/inspections", "/expenses", "/billing", "/requests", "/service-agreements", "/quickbooks/invoices", "/workspace/references", "/marketing/reporting/search-console"]) {
         assert.equal((await call(who, path)).status, 403, `${path} rejects ${who.id}`);
       }
     }
+    assert.equal((await call(legacy, "/marketing/reporting/analytics")).status, 403);
+    assert.equal((await call(legacy, "/marketing/reporting/realtime")).status, 403);
     const references = await call(sales, "/workspace/references");
     assert.equal(references.status, 200);
     const refs = await references.json() as { clients: Record<string, unknown>[]; properties: Record<string, unknown>[]; staff: Record<string, unknown>[] };

@@ -111,6 +111,21 @@ export function createFederationConsumer(
       return token;
     });
   }
+  async function authenticateContext(token: unknown) {
+    if (!validOpaque(token)) deny(401, "federation_session_inactive");
+    const s = (
+      await pool.query(
+        "SELECT s.*,l.core_user_id,l.canonical_user_id,l.revoked_at FROM p1_federation_session s JOIN p1_identity_link l ON l.id=s.link_id WHERE token_hash=$1 AND expires_at>now()",
+        [digest(token)],
+      )
+    ).rows[0];
+    if (!s) deny(401, "federation_session_inactive");
+    if (s.revoked_at) deny(403, "federation_local_access_denied");
+    await local(pool, s.core_user_id);
+    const grant = await provider.introspect(s.grant_id);
+    if (grant.subject !== s.canonical_user_id) deny(401, "federation_subject_mismatch");
+    return { userId: s.core_user_id as string, grant };
+  }
   return {
     history,
     cleanup,
@@ -264,20 +279,21 @@ export function createFederationConsumer(
         return session(c, link, grant);
       });
     },
-    async authenticate(token: unknown) {
-      if (!validOpaque(token)) deny(401, "federation_session_inactive");
-      const s = (
+    authenticateContext,
+    async authenticateServiceGrant(grantId: string) {
+      const grant = await provider.introspect(grantId);
+      const link = (
         await pool.query(
-          "SELECT s.*,l.core_user_id,l.canonical_user_id,l.revoked_at FROM p1_federation_session s JOIN p1_identity_link l ON l.id=s.link_id WHERE token_hash=$1 AND expires_at>now()",
-          [digest(token)],
+          "SELECT core_user_id FROM p1_identity_link WHERE canonical_user_id=$1 AND revoked_at IS NULL",
+          [grant.subject],
         )
       ).rows[0];
-      if (!s) deny(401, "federation_session_inactive");
-      if (s.revoked_at) deny(403, "federation_local_access_denied");
-      await local(pool, s.core_user_id);
-      const grant = await provider.introspect(s.grant_id);
-      if (grant.subject !== s.canonical_user_id) deny(401, "federation_subject_mismatch");
-      return s.core_user_id as string;
+      if (!link) deny(403, "federation_link_required");
+      await local(pool, link.core_user_id);
+      return { userId: link.core_user_id as string, grant };
+    },
+    async authenticate(token: unknown) {
+      return (await authenticateContext(token)).userId;
     },
     async logout(token: unknown) {
       if (validOpaque(token))

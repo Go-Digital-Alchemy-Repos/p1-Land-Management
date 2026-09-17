@@ -1,6 +1,8 @@
 import { beforeEach, describe, it, expect, vi } from "vitest";
 import {
   authenticateToken,
+  hasBusinessCapability,
+  requireBusinessCapability,
   comparePassword,
   generateToken,
   hashPassword,
@@ -15,7 +17,9 @@ const { mockGetUser } = vi.hoisted(() => ({
 }));
 
 vi.mock("../services/federation-runtime", () => ({
-  FEDERATION_COOKIE: "p1_federation_session", hasFederationHistory: vi.fn(async () => false), federationConsumer: vi.fn(),
+  FEDERATION_COOKIE: "p1_federation_session",
+  hasFederationHistory: vi.fn(async () => false),
+  federationConsumer: vi.fn(),
 }));
 vi.mock("../storage/index", () => ({
   storage: {
@@ -169,5 +173,54 @@ describe("requireRole", () => {
     requireRole("admin", "therapist")(req, res, next);
     expect(next).toHaveBeenCalled();
     expect(res.status).not.toHaveBeenCalled();
+  });
+});
+
+describe("Business Center reporting authority", () => {
+  const identity = {
+    active: true as const,
+    grantId: "11111111-1111-4111-8111-111111111111",
+    subject: "canonical-user",
+    email: "synthetic@example.test",
+    name: "Synthetic",
+    expiresAt: "2099-01-01T00:00:00Z",
+    ownerAttested: false,
+    role: "member" as const,
+    capabilities: ["marketing.analytics.view"],
+  };
+  it("does not substitute local admin, CRM, client or crew roles for explicit grants", () => {
+    expect(hasBusinessCapability(undefined, "marketing.analytics.view")).toBe(false);
+    expect(hasBusinessCapability(identity, "marketing.analytics.view")).toBe(true);
+    expect(hasBusinessCapability(identity, "marketing.search-console.view")).toBe(false);
+    for (const role of ["client", "crew"] as const)
+      expect(hasBusinessCapability({ ...identity, role }, "marketing.analytics.view")).toBe(false);
+    expect(
+      hasBusinessCapability({ ...identity, capabilities: ["crm"] }, "marketing.analytics.view"),
+    ).toBe(false);
+    expect(hasBusinessCapability({ ...identity, role: "owner" }, "marketing.analytics.view")).toBe(
+      false,
+    );
+    expect(
+      hasBusinessCapability(
+        {
+          ...identity,
+          role: "owner",
+          ownerAttested: true,
+          capabilities: ["marketing.analytics.view", "marketing.search-console.view"],
+        },
+        "marketing.search-console.view",
+      ),
+    ).toBe(true);
+  });
+  it("rejects a local admin without dashboard authority before continuing", () => {
+    const req = { user: makeUser({ role: "admin" }) } as Request;
+    const res = { status: vi.fn().mockReturnThis(), json: vi.fn() } as unknown as Response;
+    const next = vi.fn();
+    requireBusinessCapability("marketing.analytics.view")(req, res, next);
+    expect(res.status).toHaveBeenCalledWith(403);
+    expect(next).not.toHaveBeenCalled();
+    req.dashboardIdentity = identity;
+    requireBusinessCapability("marketing.analytics.view")(req, res, next);
+    expect(next).toHaveBeenCalledOnce();
   });
 });

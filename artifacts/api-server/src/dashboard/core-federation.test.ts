@@ -213,7 +213,7 @@ test(
       assert.match(grant.grantId, /^[0-9a-f-]{36}$/);
       assert.equal((await exchange()).status, 401);
 
-      const introspect = () =>
+      const introspect = (extra = {}) =>
         fetch(base + "/api/integrations/core/v1/federation/introspect", {
           method: "POST",
           headers: {
@@ -224,9 +224,23 @@ test(
             grant_id: grant.grantId,
             purpose: "p1-core-cms-v1",
             require_owner_attestation: true,
+            ...extra,
           }),
         });
-      assert.equal((await introspect()).status, 200);
+      const legacyIntrospection = await (await introspect()).json() as Record<string, unknown>;
+      assert.equal(legacyIntrospection.active, true);
+      assert.equal("capabilities" in legacyIntrospection, false, "old clients retain the strict original DTO");
+      const withGrants = {include_capabilities: true, require_owner_attestation: false};
+      await pool.query("UPDATE staff_profile SET role='member' WHERE user_id=$1", [userId]);
+      await pool.query("INSERT INTO business_account_access(user_id,capabilities) VALUES($1,$2)", [userId, ["marketing.analytics.view"]]);
+      let canonical = await (await introspect(withGrants)).json() as {role: string; capabilities: string[]};
+      assert.equal(canonical.role, "member");
+      assert.deepEqual(canonical.capabilities, ["marketing.analytics.view"]);
+      await pool.query("UPDATE business_account_access SET capabilities='{}' WHERE user_id=$1", [userId]);
+      canonical = await (await introspect(withGrants)).json() as typeof canonical;
+      assert.deepEqual(canonical.capabilities, [], "existing grants observe permission revocation without a cache");
+      await pool.query("UPDATE staff_profile SET role='owner' WHERE user_id=$1", [userId]);
+
       await pool.query(
         "UPDATE staff_profile SET mfa_required=true WHERE user_id=$1",
         [userId],
@@ -351,6 +365,7 @@ test(
       );
       await pool.query("DELETE FROM audit_event WHERE user_id=$1", [userId]);
       await pool.query("DELETE FROM staff_profile WHERE user_id=$1", [userId]);
+      await pool.query("DELETE FROM business_account_access WHERE user_id=$1", [userId]);
       await pool.query('DELETE FROM "user" WHERE id=$1', [userId]);
     }
   },

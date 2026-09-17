@@ -21,9 +21,11 @@ export const activeGrantSchema = z
   .object({
     ...baseGrant,
     active: z.literal(true),
-    role: z.enum(["owner", "manager", "dispatch", "sales", "finance", "crew", "client"]),
+    capabilities: z.array(z.string().min(1).max(128)).max(128).optional().default([]),
+    role: z.enum(["owner", "member", "manager", "dispatch", "sales", "finance", "crew", "client"]),
   })
   .strict();
+export type ActiveGrant = z.infer<typeof activeGrantSchema>;
 export type Grant = z.infer<typeof tokenGrantSchema>;
 export type FederationConfig = { issuer: string; origin: string; clientId: string; secret: string };
 export function federationEnabled(env = process.env) {
@@ -107,7 +109,7 @@ export function createFederationClient(config: FederationConfig, transport: type
       throw new FederationError(503, "federation_response_invalid");
     }
   }
-  function parse<T extends Grant>(schema: z.ZodType<T>, value: unknown): T {
+  function parse<T extends z.ZodTypeAny>(schema: T, value: unknown): z.output<T> {
     const result = schema.safeParse(value);
     if (!result.success || Date.parse(result.data.expiresAt) <= Date.now())
       throw new FederationError(503, "federation_response_invalid");
@@ -123,7 +125,12 @@ export function createFederationClient(config: FederationConfig, transport: type
     async introspect(grantId: string, owner = false) {
       const grant = parse(
         activeGrantSchema,
-        await post("introspect", { grant_id: grantId, purpose, require_owner_attestation: owner }),
+        await post("introspect", {
+          grant_id: grantId,
+          purpose,
+          require_owner_attestation: owner,
+          include_capabilities: true,
+        }),
       );
       if (grant.grantId !== grantId || (owner && (!grant.ownerAttested || grant.role !== "owner")))
         throw new FederationError(403, "federation_identity_ineligible");

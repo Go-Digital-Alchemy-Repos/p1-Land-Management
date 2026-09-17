@@ -5896,6 +5896,188 @@
           }
         }
       }
+    },
+    "/marketing/reporting/analytics": {
+      "get": {
+        "operationId": "getMarketingAnalytics",
+        "description": "User-scoped Core report read; explicit source capability required. Private/no-store. Credentials stay on Core; exports must cover only loaded rows.",
+        "parameters": [
+          {
+            "name": "startDate",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Report snapshot, including source totals and limitations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingAnalytics"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid date range",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingReportUnavailable"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Source permission or linked account unavailable"
+          },
+          "429": {
+            "description": "Request rate exceeded"
+          },
+          "503": {
+            "description": "Reporting source unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingReportUnavailable"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/marketing/reporting/realtime": {
+      "get": {
+        "operationId": "getMarketingRealtime",
+        "description": "User-scoped Core report read; explicit source capability required. Private/no-store. Credentials stay on Core; exports must cover only loaded rows.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Report snapshot, including source totals and limitations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingRealtime"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid date range",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingReportUnavailable"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Source permission or linked account unavailable"
+          },
+          "429": {
+            "description": "Request rate exceeded"
+          },
+          "503": {
+            "description": "Reporting source unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingReportUnavailable"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/marketing/reporting/search-console": {
+      "get": {
+        "operationId": "getMarketingSearchConsole",
+        "description": "User-scoped Core report read; explicit source capability required. Private/no-store. Credentials stay on Core; exports must cover only loaded rows.",
+        "parameters": [
+          {
+            "name": "startDate",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Report snapshot, including source totals and limitations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingSearchConsole"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid date range",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingReportUnavailable"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Source permission or linked account unavailable"
+          },
+          "429": {
+            "description": "Request rate exceeded"
+          },
+          "503": {
+            "description": "Reporting source unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingReportUnavailable"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -12790,6 +12972,359 @@
                 }
               }
             }
+          }
+        }
+      },
+      "MarketingDateRange": {
+        "type": "object",
+        "required": [
+          "startDate",
+          "endDate"
+        ],
+        "properties": {
+          "startDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
+      "MarketingReport": {
+        "type": "object",
+        "required": [
+          "dimensions",
+          "metrics",
+          "rows",
+          "rowCount",
+          "truncated",
+          "metadata"
+        ],
+        "properties": {
+          "dimensions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "metrics": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "dimensions",
+                "metrics"
+              ],
+              "properties": {
+                "dimensions": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "metrics": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          },
+          "rowCount": {
+            "type": "integer"
+          },
+          "truncated": {
+            "type": "boolean"
+          },
+          "metadata": {
+            "type": "object",
+            "required": [],
+            "properties": {
+              "dataLossFromOtherRow": {
+                "type": "boolean"
+              },
+              "subjectToThresholding": {
+                "type": "boolean"
+              },
+              "emptyReason": {
+                "type": "string"
+              },
+              "timeZone": {
+                "type": "string"
+              },
+              "currencyCode": {
+                "type": "string"
+              },
+              "samplingMetadatas": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "samplesReadCount",
+                    "samplingSpaceSize"
+                  ],
+                  "properties": {
+                    "samplesReadCount": {
+                      "type": "string"
+                    },
+                    "samplingSpaceSize": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "MarketingAnalytics": {
+        "type": "object",
+        "required": [
+          "status",
+          "fetchedAt",
+          "propertyId",
+          "dateRange",
+          "previousDateRange",
+          "reports"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "empty"
+            ]
+          },
+          "fetchedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "propertyId": {
+            "type": "string"
+          },
+          "dateRange": {
+            "$ref": "#/components/schemas/MarketingDateRange"
+          },
+          "previousDateRange": {
+            "$ref": "#/components/schemas/MarketingDateRange"
+          },
+          "reports": {
+            "type": "object",
+            "required": [
+              "totals",
+              "previousTotals",
+              "daily",
+              "channels",
+              "sourceMedium",
+              "campaigns",
+              "pages",
+              "landingPages",
+              "countries",
+              "regions",
+              "cities",
+              "devices",
+              "browsers",
+              "events"
+            ],
+            "properties": {
+              "totals": {
+                "$ref": "#/components/schemas/MarketingReport"
+              },
+              "previousTotals": {
+                "$ref": "#/components/schemas/MarketingReport"
+              },
+              "daily": {
+                "$ref": "#/components/schemas/MarketingReport"
+              },
+              "channels": {
+                "$ref": "#/components/schemas/MarketingReport"
+              },
+              "sourceMedium": {
+                "$ref": "#/components/schemas/MarketingReport"
+              },
+              "campaigns": {
+                "$ref": "#/components/schemas/MarketingReport"
+              },
+              "pages": {
+                "$ref": "#/components/schemas/MarketingReport"
+              },
+              "landingPages": {
+                "$ref": "#/components/schemas/MarketingReport"
+              },
+              "countries": {
+                "$ref": "#/components/schemas/MarketingReport"
+              },
+              "regions": {
+                "$ref": "#/components/schemas/MarketingReport"
+              },
+              "cities": {
+                "$ref": "#/components/schemas/MarketingReport"
+              },
+              "devices": {
+                "$ref": "#/components/schemas/MarketingReport"
+              },
+              "browsers": {
+                "$ref": "#/components/schemas/MarketingReport"
+              },
+              "events": {
+                "$ref": "#/components/schemas/MarketingReport"
+              }
+            }
+          }
+        }
+      },
+      "MarketingSearchConsole": {
+        "type": "object",
+        "required": [
+          "status",
+          "fetchedAt",
+          "siteUrl",
+          "dateRange",
+          "previousDateRange",
+          "reports"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "empty"
+            ]
+          },
+          "fetchedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "siteUrl": {
+            "type": "string"
+          },
+          "dateRange": {
+            "$ref": "#/components/schemas/MarketingDateRange"
+          },
+          "previousDateRange": {
+            "$ref": "#/components/schemas/MarketingDateRange"
+          },
+          "reports": {
+            "type": "object",
+            "required": [
+              "totals",
+              "previousTotals",
+              "daily",
+              "queries",
+              "pages",
+              "countries",
+              "devices"
+            ],
+            "properties": {
+              "totals": {
+                "$ref": "#/components/schemas/MarketingReport"
+              },
+              "previousTotals": {
+                "$ref": "#/components/schemas/MarketingReport"
+              },
+              "daily": {
+                "$ref": "#/components/schemas/MarketingReport"
+              },
+              "queries": {
+                "$ref": "#/components/schemas/MarketingReport"
+              },
+              "pages": {
+                "$ref": "#/components/schemas/MarketingReport"
+              },
+              "countries": {
+                "$ref": "#/components/schemas/MarketingReport"
+              },
+              "devices": {
+                "$ref": "#/components/schemas/MarketingReport"
+              }
+            }
+          }
+        }
+      },
+      "MarketingRealtime": {
+        "type": "object",
+        "required": [
+          "status",
+          "fetchedAt",
+          "propertyId",
+          "windowMinutes",
+          "reports"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "empty"
+            ]
+          },
+          "fetchedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "propertyId": {
+            "type": "string"
+          },
+          "windowMinutes": {
+            "type": "integer",
+            "enum": [
+              30
+            ]
+          },
+          "reports": {
+            "type": "object",
+            "required": [
+              "totals",
+              "countries",
+              "devices"
+            ],
+            "properties": {
+              "totals": {
+                "$ref": "#/components/schemas/MarketingReport"
+              },
+              "countries": {
+                "$ref": "#/components/schemas/MarketingReport"
+              },
+              "devices": {
+                "$ref": "#/components/schemas/MarketingReport"
+              }
+            }
+          }
+        }
+      },
+      "MarketingReportUnavailable": {
+        "type": "object",
+        "required": [
+          "status",
+          "code",
+          "message"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "unavailable"
+            ]
+          },
+          "code": {
+            "type": "string",
+            "enum": [
+              "invalid_date_range",
+              "not_configured",
+              "provider_unavailable"
+            ]
+          },
+          "message": {
+            "type": "string"
           }
         }
       }
