@@ -120,6 +120,7 @@ try {
       "src/dashboard/policy.test.ts",
       "src/dashboard/business-access.test.ts",
       "src/dashboard/sales-access.test.ts",
+      "src/dashboard/lead-follow-up.test.ts",
       "src/dashboard/marketing-reporting.test.ts",
       "src/dashboard/marketing-cms.test.ts",
       "src/dashboard/user-management.test.ts",

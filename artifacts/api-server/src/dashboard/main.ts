@@ -1,3 +1,4 @@
+import { leadFollowUpApi } from "./lead-follow-up";
 import { marketingPreviewFrameSources } from "./marketing-cms.transport";
 import { marketingReportingApi } from "./marketing-reporting";
 import { marketingCmsApi } from "./marketing-cms";
@@ -122,6 +123,7 @@ app.use(
   notificationsApi,
   salesApi,
   leadNotesApi,
+  leadFollowUpApi,
   crmTasksApi,
 );
 app.use("/api", (_req, res) => {

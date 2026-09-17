@@ -1,3 +1,4 @@
+import { LeadFollowUp } from "./LeadFollowUp";
 import { CrmTasks } from "./CrmTasks";
 import { LeadNotes } from "./LeadNotes";
 import ComposedEstimateActions from "./agreements/ComposedEstimateActions";
@@ -1986,6 +1987,17 @@ function App() {
                             Convert inquiry
                           </button>
                         )}
+                      <LeadFollowUp
+                        leadId={lead.id}
+                        onSaved={(snapshot) => setData((old: any) => ({
+                          ...old,
+                          leads: (old.leads || []).map((row: any) =>
+                            row.id === snapshot.id && (row.version || 0) <= snapshot.version
+                              ? { ...row, ...snapshot }
+                              : row,
+                          ),
+                        }))}
+                      />
                       <LeadNotes leadId={lead.id} />
                       <CrmTasks kind="lead" parentId={lead.id} />
                     </div>

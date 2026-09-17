@@ -19,11 +19,12 @@ if (testUrl) {
 after(() => pool.end());
 
 test("mounted image upload limits and immutable retry metadata with real database and mock storage", { skip: !testUrl }, async (t) => {
-  const manager = randomUUID(), other = randomUUID(), crew = randomUUID();
-  for (const [id, role] of [[manager, "manager"], [other, "manager"], [crew, "crew"]]) {
+  const manager = randomUUID(), other = randomUUID(), crew = randomUUID(), legacy = randomUUID();
+  for (const [id, role] of [[manager, "manager"], [other, "manager"], [crew, "crew"], [legacy, "manager"]]) {
     await pool.query('INSERT INTO "user"(id,name,email,"emailVerified") VALUES($1,$2,$3,true)', [id, role, id + "@example.test"]);
     await pool.query("INSERT INTO staff_profile(user_id,role) VALUES($1,$2)", [id, role]);
   }
+  for (const id of [manager,other]) await pool.query("INSERT INTO business_account_access(user_id,capabilities) VALUES($1,$2)", [id,["operations.schedule","customers.requests"]]);
   const client = randomUUID(), property = randomUUID(), property2 = randomUUID();
   await pool.query("INSERT INTO client(id,name) VALUES($1,'Synthetic')", [client]);
   for (const id of [property, property2])
@@ -91,6 +92,7 @@ test("mounted image upload limits and immutable retry metadata with real databas
       let response = await upload(randomUUID(), {}, big);
       assert.equal(response.status, 413);
       assert.deepEqual(await response.json(), { error: "Image exceeds the 15 MiB upload limit" });
+      assert.equal((await upload(randomUUID(), { "x-test-user": legacy }, big)).status,403);
       response = await upload(randomUUID(), { "x-test-user": "" }, big);
       assert.equal(response.status, 401);
       assert.equal(writes, 0);

@@ -1,3 +1,4 @@
+import { updateLeadFollowUp } from "./lead-follow-up.service";
 import { listCommercialInquiries } from "./commercial-queue.service";
 import { Router, raw, type ErrorRequestHandler } from "express";
 import { randomUUID } from "node:crypto";
@@ -78,60 +79,7 @@ commercialStaffApi.patch(
     const a = await actor(req);
     requireCapability(a, "revenue.sales");
     const id = z.string().uuid().parse(req.params.id);
-    const body = z
-      .object({
-        expectedVersion: z.number().int().positive(),
-        ownerId: z.string().min(1).max(200).nullable(),
-        nextAction: z.string().trim().min(1).max(2000),
-        nextActionDueAt: z.string().datetime().nullable(),
-        status: z.enum([
-          "new",
-          "contacted",
-          "qualified",
-          "proposal",
-          "won",
-          "lost",
-        ]),
-      })
-      .strict()
-      .parse(req.body);
-    const result = await transaction(async (c) => {
-      if (
-        body.ownerId &&
-        !(
-          await c.query(
-            "SELECT 1 FROM staff_profile p LEFT JOIN business_account_access a ON a.user_id=p.user_id WHERE p.user_id=$1 AND p.active=true AND (p.role='owner' OR (p.role NOT IN ('crew','client') AND 'revenue.sales'=ANY(a.capabilities)))",
-            [body.ownerId],
-          )
-        ).rowCount
-      )
-        throw new HttpError(400, "Active sales owner required");
-      const row = (
-        await c.query(
-          "UPDATE lead SET owner_id=$2,next_action=$3,next_action_due_at=$4,status=$5,last_activity_at=now(),version=version+1 WHERE id=$1 AND version=$6 AND inquiry_type='commercial_site_assessment' RETURNING *",
-          [
-            id,
-            body.ownerId,
-            body.nextAction,
-            body.nextActionDueAt,
-            body.status,
-            body.expectedVersion,
-          ],
-        )
-      ).rows[0];
-      if (!row)
-        throw new HttpError(409, "Inquiry changed; refresh before saving");
-      await c.query(
-        "INSERT INTO audit_event(id,user_id,action,entity_id,details) VALUES($1,$2,'commercial.followup_updated',$3,$4)",
-        [
-          randomUUID(),
-          a.id,
-          id,
-          { version: row.version, status: row.status, ownerId: body.ownerId },
-        ],
-      );
-      return row;
-    });
+    const result = await updateLeadFollowUp(id, a.id, req.body, true);
     res.json(result);
   },
 );

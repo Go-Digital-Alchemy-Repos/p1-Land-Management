@@ -11,6 +11,74 @@
     }
   ],
   "paths": {
+    "/leads/{id}/follow-up": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "get": {
+        "operationId": "getLeadFollowUp",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeadFollowUpView"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Sales access required"
+          },
+          "404": {
+            "description": "Inquiry not found"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateLeadFollowUp",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommercialFollowUp"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeadFollowUp"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid follow-up or inactive owner"
+          },
+          "403": {
+            "description": "Sales access required"
+          },
+          "409": {
+            "description": "Inquiry version changed or no longer exists"
+          }
+        }
+      }
+    },
     "/leads/{id}/tasks": {
       "parameters": [
         {
@@ -13743,6 +13811,109 @@
   },
   "components": {
     "schemas": {
+      "LeadFollowUp": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "owner_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "next_action": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "next_action_due_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "last_activity_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "version": {
+            "type": "integer"
+          },
+          "converted_client_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "converted_property_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "status",
+          "owner_id",
+          "next_action",
+          "next_action_due_at",
+          "last_activity_at",
+          "version",
+          "converted_client_id",
+          "converted_property_id"
+        ]
+      },
+      "LeadFollowUpView": {
+        "type": "object",
+        "properties": {
+          "lead": {
+            "$ref": "#/components/schemas/LeadFollowUp"
+          },
+          "owners": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LeadFollowUpOwner"
+            }
+          }
+        },
+        "required": [
+          "lead",
+          "owners"
+        ]
+      },
+      "LeadFollowUpOwner": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
       "ClientNotePage": {
         "type": "object",
         "required": [

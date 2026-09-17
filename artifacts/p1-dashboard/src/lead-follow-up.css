@@ -1,0 +1,37 @@
+.schedule-row:has(> .lead-follow-up) {
+  flex-wrap: wrap;
+}
+.schedule-row > .lead-follow-up {
+  flex: 1 0 100%;
+  min-width: 0;
+}
+.lead-follow-up {
+  min-width: 0;
+  margin-block: 1rem;
+}
+.lead-follow-up section {
+  margin-top: 1rem;
+}
+.lead-follow-up form {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.lead-follow-up fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+  display: grid;
+  gap: 1rem;
+}
+.lead-follow-up input,
+.lead-follow-up select,
+.lead-follow-up textarea {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.lead-follow-up form button {
+  justify-self: start;
+}

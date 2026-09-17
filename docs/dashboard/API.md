@@ -326,3 +326,13 @@ New notes use the authenticated actor. Unknown request fields—including author
 Apply `0041_customer_note_provenance.sql` before the updated API. It extends `client_note` with source instance/note/author IDs, enforces source-note uniqueness and permits null local authors only with complete source provenance. Existing native rows remain valid without rewriting their contents. No second CRM customer-note store is introduced. The importer must still reconcile source content, lengths and timestamps without truncation or invented authors. No import runs as part of this migration.
 
 Rollback should retain the new columns, indexes, constraints and history. Do not restore `author_id NOT NULL` after imported null-author records exist. An older server's inner-join previews would hide those records; retain the updated read path if rolling back the frontend, or explicitly account for that visibility limitation in release recovery. Do not delete historical records to make an older application appear compatible.
+
+### General inquiry follow-up
+
+`GET /api/v1/leads/:id/follow-up` requires `revenue.sales` and returns `{lead,owners}`. The lead projection includes only its name, follow-up/status/version fields and existing conversion IDs; owner choices expose only IDs/names for active Owners and staff with Sales access. Responses are private/no-store. Missing inquiries return 404.
+
+`PATCH` uses the existing `CommercialFollowUp` request: `{expectedVersion,ownerId,nextAction,nextActionDueAt,status}`. Owner and due date may be null, next action is required (trimmed, 1–2,000 characters), and supported stages are new/contacted/qualified/proposal/won/lost. Owner eligibility is checked under profile/access-row locks. A matching lead version is updated once together with its audit event; stale or missing leads return 409, invalid owners/requests return 400. Unsupported fields cannot alter conversion IDs or intake content. On an uncertain response, reload the saved state before another edit.
+
+General and commercial endpoints now use one service and the same lead version. The older `/commercial-inquiries/:id/follow-up` remains commercial-only and retains its response shape and `commercial.followup_updated` audit action. General inquiry updates record `lead.followup_updated`; commercial rows retain the commercial audit action even through the general endpoint. No schema migration is needed.
+
+Changing stage to Won only records the pursuit outcome. It does not create/link clients, properties, portal access or billing. The explicit Won onboarding workflow is still pending; the existing separate conversion action is not replaced by this checkpoint.

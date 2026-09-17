@@ -337,7 +337,7 @@ test(
 );
 
 test(
-  "mounted legacy and commercial routes enforce roles and conversion advances conflict version",
+  "mounted legacy and commercial routes enforce grants and conversion advances conflict version",
   { skip: !testUrl },
   async () => {
     const express = (await import("express")).default;
@@ -365,7 +365,8 @@ test(
         [id, role],
       );
     }
-    // Identity-only test double: mounted real routes still resolve role from the actual database.
+    await pool.query("INSERT INTO business_account_access(user_id,capabilities) VALUES($1,$2)", [actors.sales,["revenue.sales"]]);
+    // Identity-only test double: mounted routes still resolve role and grants from the database.
     const original = auth.api.getSession;
     (auth.api as any).getSession = async ({ headers }: any) => ({
       user: {
@@ -399,17 +400,14 @@ test(
       });
     try {
       for (const role of ["dispatch", "finance"]) {
-        const response = await call(role, "/leads");
-        assert.equal(response.status, 200);
-        const rows = (await response.json()) as any[];
-        assert.ok(rows.some((r: any) => r.name === "Legacy"));
-        assert.ok(
-          rows.every(
-            (r: any) => r.inquiry_type !== "commercial_site_assessment",
-          ),
-        );
-        assert.equal((await call(role, "/commercial-inquiries")).status, 403);
+        assert.equal((await call(role, "/leads")).status,403);
+        assert.equal((await call(role, "/commercial-inquiries")).status,403);
       }
+      const permitted=await call("sales", "/leads");
+      assert.equal(permitted.status,200);
+      const permittedRows=await permitted.json() as any[];
+      assert.ok(permittedRows.some(row=>row.name==="Legacy"));
+      assert.equal((await call("sales", "/commercial-inquiries")).status,200);
       for (const role of ["crew", "client"])
         assert.equal((await call(role, "/leads")).status, 403);
       const row = (

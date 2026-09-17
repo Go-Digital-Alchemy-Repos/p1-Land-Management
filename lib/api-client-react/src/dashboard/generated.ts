@@ -136,6 +136,8 @@ import type {
   GetSetupStatus200,
   InspectionReport,
   IntegrationHealth,
+  LeadFollowUp,
+  LeadFollowUpView,
   LeadNotePage,
   LeadNoteReceipt,
   ListAgreementChargeQueueParams,
@@ -314,6 +316,50 @@ import type {
 } from './models';
 
 import { customFetch } from '../custom-fetch';
+
+export const getGetLeadFollowUpUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/leads/${id}/follow-up`
+}
+
+export const getLeadFollowUp = async (id: string, options?: RequestInit): Promise<LeadFollowUpView> => {
+
+  return customFetch<LeadFollowUpView>(getGetLeadFollowUpUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getUpdateLeadFollowUpUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/leads/${id}/follow-up`
+}
+
+export const updateLeadFollowUp = async (id: string,
+    commercialFollowUp: CommercialFollowUp, options?: RequestInit): Promise<LeadFollowUp> => {
+
+  return customFetch<LeadFollowUp>(getUpdateLeadFollowUpUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      commercialFollowUp,)
+  }
+);}
+
+
 
 export const getListLeadTasksUrl = (id: string,
     params?: ListLeadTasksParams,) => {
