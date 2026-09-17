@@ -6,7 +6,7 @@ import { serviceSchema, breadcrumbSchema, faqSchema } from "@/lib/structured-dat
 import { FeatureRow } from "@/components/layout/FeatureRow";
 import { CheckCircle2 } from "lucide-react";
 import { Link } from "wouter";
-import heroImg from "@/assets/service-tree.png";
+import { treeHero as heroImg } from "@/lib/service-images";
 import treeImg from "@/assets/features/tree-management.png";
 
 import { FaqAccordion } from "@/components/content/FaqAccordion";
@@ -15,22 +15,22 @@ const FAQS = [
   {
     question: "What tree services does P1 provide?",
     answer:
-      "P1 discusses tree trimming, canopy management, dead-wood and tree removal, stump work, selective clearing, windbreak and tree-line management, and storm cleanup for commercial, industrial, agricultural, municipal, and institutional properties. Confirm scope, access and any specialist requirements before work begins.",
+      "We trim and remove trees, manage canopies and tree lines, grind stumps, and clear storm debris on large properties. We'll check the trees, access, and any specialist needs before planning the work.",
   },
   {
     question: "Does P1 handle storm damage cleanup?",
     answer:
-      "After a storm, contact P1 to discuss debris clearing, downed-tree work and site access. Availability, response timing, site safety and the agreed scope must be confirmed; this service is not emergency dispatch.",
+      "Contact us about downed trees, debris, or blocked access after a storm. We'll confirm crew availability, timing, and whether conditions allow the work. We are not an emergency-dispatch service.",
   },
   {
     question: "Can P1 remove some trees while preserving others?",
     answer:
-      "Selective clearing can retain identified trees while removing agreed vegetation. Review the marked limits, tree condition, access and disposal approach with P1 and any required specialist before work begins.",
+      "Yes. We'll identify the trees to keep, mark the clearing limits, and plan equipment access around them. We'll also explain any tree-condition assessment or specialist work needed.",
   },
   {
     question: "What types of properties does P1 serve?",
     answer:
-      "For larger-acreage tree and vegetation scopes, P1 reviews the proposed equipment, staffing, access and safety plan with the property team. Confirm the work plan and responsibilities before scheduling.",
+      "Yes. We plan equipment and crews around the acreage, trees, and access. We'll review the work and any specialist or safety needs with you before scheduling.",
   },
 ];
 
@@ -39,7 +39,7 @@ export default function TreeServices() {
     <Layout>
       <SEO 
         title="Tree Services for Large Properties in SC & NC | P1"
-        description="Tree trimming, removal, stump grinding, and selective clearing for qualifying commercial and working properties. Call (704) 221-8928."
+        description="Tree trimming, removal, stump grinding, and selective clearing for commercial and working properties. Call (704) 221-8928."
         jsonLd={[
           serviceSchema({ name: "Tree Services", description: "Professional tree trimming, removal, stump grinding, and tree management for commercial, industrial, agricultural, municipal, and institutional properties. Serving Upstate SC and Charlotte NC. Call (704) 221-8928.", path: "/services/tree-services" }),
           breadcrumbSchema([
@@ -64,7 +64,7 @@ export default function TreeServices() {
             & Institutional Properties
           </>
         }
-        subtitle="Large properties carry large trees — and large liability when those trees aren't properly managed. P1 provides professional tree services for organizations that need commercial-scale crews and equipment."
+        subtitle="We care for trees across commercial grounds, farms, and other large properties. From trimming and selective clearing to storm cleanup, we&#x27;ll help you plan the work your trees need."
         image={heroImg}
         imageAlt="Heavy machinery tree limb removal"
       />
@@ -89,7 +89,7 @@ export default function TreeServices() {
             <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[
                 "Tree trimming and canopy management — raise clearance, reduce crown weight, improve shape",
-                "Dead wood removal — eliminate storm hazard and disease spread",
+                "Dead wood removal to reduce hazards around the property",
                 "Tree removal — safe takedown of hazardous, dead, or unwanted trees",
                 "Stump grinding — complete removal of stumps below grade",
                 "Selective clearing — remove unwanted species while preserving valuable trees",

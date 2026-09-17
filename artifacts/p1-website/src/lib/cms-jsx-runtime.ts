@@ -1,13 +1,31 @@
-import React from 'react';
+import React, { createContext, useContext } from 'react';
+import { toTitleCase } from './title-case';
+const HeadingCase = createContext(false);
 import * as runtime from 'react/jsx-runtime';
 import { cmsValue, useCms } from './cms';
 import { responsiveImageProps } from './responsive-images';
 export { Fragment } from 'react/jsx-runtime';
 function Editable({ elementType, original, global, staticChildren, ...injectedProps }: { elementType: React.ElementType; original: Record<string, any>; global: boolean; staticChildren: boolean; [key: string]: any }) {
   const context = useCms();
+  const parentHeading = useContext(HeadingCase);
+  const isHeading = /^h[1-6]$/.test(String(elementType));
+  const titleText = isHeading || (parentHeading && ['span', 'strong', 'em', 'a', 'br'].includes(String(elementType)));
   const props = { ...original, ...injectedProps };
   const mapText = (child: any): any => typeof child === 'string' && child.trim() ? cmsValue(context, child, child.length > 120 ? 'textarea' : 'text', global) : Array.isArray(child) ? child.map(mapText) : child;
   if (props.children !== undefined && !['script','style','textarea','option'].includes(String(elementType))) props.children = mapText(props.children);
+  if (titleText) {
+    const format = (child: any): any => {
+      if (typeof child === 'string') return toTitleCase(child);
+      if (Array.isArray(child)) return child.map(format);
+      // Hero titles can contain fragments with text alongside an emphasized line.
+      if (React.isValidElement<{ children?: React.ReactNode }>(child) && child.type === React.Fragment) {
+        return React.cloneElement(child, {}, format(child.props.children));
+      }
+      return child;
+    };
+    props.children = format(props.children);
+    if (isHeading && typeof props.className === 'string') props.className = props.className.replace(/\buppercase\b/g, '');
+  }
   if (typeof props.href === 'string' && !props.href.startsWith('#')) props.href = cmsValue(context, props.href, 'ctaTarget', global);
   if (elementType === 'img' && typeof props.src === 'string') {
     props.src = cmsValue(context, props.src, 'image', global);
@@ -16,7 +34,8 @@ function Editable({ elementType, original, global, staticChildren, ...injectedPr
     const hero = /hero|banner/i.test(original.src) || original.fetchPriority === 'high';
     Object.assign(props, { ...responsive, ...props, loading: props.loading || (hero ? 'eager' : 'lazy'), fetchPriority: props.fetchPriority || (hero ? 'high' : 'auto') });
   }
-  return (staticChildren ? runtime.jsxs : runtime.jsx)(elementType, props);
+  const element = (staticChildren ? runtime.jsxs : runtime.jsx)(elementType, props);
+  return runtime.jsx(HeadingCase.Provider, { value: titleText, children: element });
 }
 export function makeJsx(global: boolean, staticChildren = false) {
   return (type: any, props: any, key?: any) => {

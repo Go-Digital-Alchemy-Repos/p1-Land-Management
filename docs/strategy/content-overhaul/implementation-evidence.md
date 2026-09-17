@@ -49,3 +49,13 @@ The overhaul was cherry-picked onto production main, preserving the approved ana
 Visual verification covered desktop Greer and 390px mobile Fort Mill, the county breadcrumb, the mobile sticky action, and the mobile navigation button leading to Contact. No real production inquiry was submitted or customer notification triggered by these checks.
 
 Both source documents remain unchanged as references. The structured page data and `linking-matrix.csv` record the implemented contextual link graph. The built website/Core manifests are identical. No database migration, dependency upgrade, authentication change, or provider activation is part of this release. Existing forms retain acquisition landing-path context.
+
+## Production release and acceptance
+
+Application source: `0c740bdfe92f26003be00c28b94b420a0145ce0f`, pushed to `main`. Railway website deployment `45f4c05d-f92a-42c3-82c9-916c1963f180` and Core deployment `791df008-5def-43c7-8584-a0119451616a` both reached SUCCESS. Both services were configured with that source revision before the source-triggered deployment. Previous deployments remain the rollback reference; no CMS data was migrated or removed.
+
+Live verification passed for all 54 public routes: HTTP 200, requested assessment CTA, retired button label and old Snow links absent. All nineteen new pages expose their canonical, FAQ and breadcrumb markup; prescribed inbound/outbound links and sitemap membership are present. All 60 responsive WebP assets referenced by the new pages (57 unique location variants plus three shared CTA variants) returned image responses. The existing GA measurement ID is present in the deployed client bundle. Health and readiness endpoints return 200. The old Snow URL returns 301 to its service route while retaining query parameters.
+
+A live mobile Fort Mill page and the service-area hub were inspected in the browser. The requested button label fits the mobile contact bar. Automated local inquiry transport coverage passes; no real lead was submitted to production, so receipt of a real outbound notification was not tested.
+
+Accepted scope: nineteen new pages and distinct images, existing-page overhaul, linking, CMS manifest alignment, SEO/routing work, and the sitewide CTA change. Optional Mint Hill, Harrisburg and Stallings remain backlog. The sitemap is published; authenticated Search Console access was not available for manual resubmission. Indexing and rankings are not claimed. This evidence-only follow-up is separate from the deployed application revision above.

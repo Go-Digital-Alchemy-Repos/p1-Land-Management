@@ -1,3 +1,4 @@
+import { toTitleCase } from "@/lib/title-case";
 import { Link } from "wouter";
 import type { LucideIcon } from "lucide-react";
 import {
@@ -12,16 +13,16 @@ import {
   Waves,
   Wrench,
 } from "lucide-react";
-import serviceCommercial from "@/assets/service-commercial.png";
-import serviceCommercialSnowIce from "@/assets/hero-commercial-snow-ice.png";
-import serviceIndustrial from "@/assets/service-industrial.png";
-import serviceClearing from "@/assets/service-clearing.png";
-import serviceGrading from "@/assets/service-grading.png";
-import serviceDrainage from "@/assets/service-drainage.png";
-import serviceTurf from "@/assets/service-turf.png";
-import serviceTree from "@/assets/service-tree.png";
-import servicePond from "@/assets/service-pond.png";
-import serviceReconstruction from "@/assets/service-reconstruction-smaller-scale.png";
+import { commercialHero as serviceCommercial } from "@/lib/service-images";
+import { snowHero as serviceCommercialSnowIce } from "@/lib/service-images";
+import { industrialHero as serviceIndustrial } from "@/lib/service-images";
+import { clearingHero as serviceClearing } from "@/lib/service-images";
+import { gradingHero as serviceGrading } from "@/lib/service-images";
+import { drainageHero as serviceDrainage } from "@/lib/service-images";
+import { turfHero as serviceTurf } from "@/lib/service-images";
+import { treeHero as serviceTree } from "@/lib/service-images";
+import { pondHero as servicePond } from "@/lib/service-images";
+import { reconstructionHero as serviceReconstruction } from "@/lib/service-images";
 import { cmsValue, useCms } from "@/lib/cms";
 import { responsiveImageProps } from "@/lib/responsive-images";
 
@@ -35,16 +36,16 @@ type Service = {
 };
 
 const services: readonly Service[] = [
-  { title: "Commercial Landscaping", description: "Scheduled exterior grounds maintenance that keeps large sites pristine year-round.", image: serviceCommercial, icon: Building2, slug: "commercial-landscaping" },
+  { title: "Commercial Landscaping", description: "Regular mowing and seasonal care for large commercial grounds.", image: serviceCommercial, icon: Building2, slug: "commercial-landscaping" },
   { title: "Commercial Snow & Ice", description: "Seasonal plowing, anti-icing, and documented storm response for large commercial sites.", image: serviceCommercialSnowIce, icon: Snowflake, slug: "commercial-snow-ice-management", href: "/services/commercial-snow-ice-management" },
-  { title: "Industrial & Agricultural Land", description: "Heavy-duty care for farms, industrial sites and working rural acreage.", image: serviceIndustrial, icon: Tractor, slug: "industrial-agricultural" },
+  { title: "Industrial & Agricultural Land", description: "Pasture, fence-line, and grounds care for farms and industrial sites.", image: serviceIndustrial, icon: Tractor, slug: "industrial-agricultural" },
   { title: "Land Clearing & Mulching", description: "Selective clearing and forestry mulching that opens up acreage responsibly.", image: serviceClearing, icon: Trees, slug: "land-clearing" },
-  { title: "Fine Grading & Site Prep", description: "Precision cut-and-fill that gives every project a true, build-ready foundation.", image: serviceGrading, icon: Mountain, slug: "grading-site-preparation" },
-  { title: "Drainage Solutions", description: "French drains, swales and retention work planned around the property's water-management needs.", image: serviceDrainage, icon: Droplets, slug: "drainage" },
-  { title: "Turf Installation & Seeding", description: "Sod and seed installation built for large-scale acreage and lasting cover.", image: serviceTurf, icon: Sprout, slug: "turf-installation-seeding" },
-  { title: "Tree & Brush Management", description: "Removal, trimming and stump grinding handled with the right heavy iron.", image: serviceTree, icon: Trees, slug: "tree-services" },
+  { title: "Fine Grading & Site Prep", description: "Shape the ground for construction, access, and drainage.", image: serviceGrading, icon: Mountain, slug: "grading-site-preparation" },
+  { title: "Drainage Solutions", description: "French drains, swales, and pond work to manage water on your property.", image: serviceDrainage, icon: Droplets, slug: "drainage" },
+  { title: "Turf Installation & Seeding", description: "Sod and seeding for commercial grounds, pastures, and other large sites.", image: serviceTurf, icon: Sprout, slug: "turf-installation-seeding" },
+  { title: "Tree & Brush Management", description: "Tree trimming, removal, selective clearing, and stump grinding.", image: serviceTree, icon: Trees, slug: "tree-services" },
   { title: "Pond & Waterway Management", description: "Design, excavation and long-term care of ponds and working waterways.", image: servicePond, icon: Waves, slug: "pond-waterway-management" },
-  { title: "Property Reconstruction", description: "Full-scale rebuilds from drainage overhaul to complete site regrading.", image: serviceReconstruction, icon: Wrench, slug: "property-reconstruction" },
+  { title: "Property Reconstruction", description: "Restore damaged ground with clearing, grading, drainage, and new turf.", image: serviceReconstruction, icon: Wrench, slug: "property-reconstruction" },
 ];
 
 /**
@@ -88,7 +89,7 @@ export function ServicesGrid() {
               <Icon className="absolute bottom-4 right-4 h-6 w-6 text-white/90" aria-hidden="true" />
             </div>
             <div className="p-6">
-              <h3 className="font-serif text-xl font-bold tracking-tight text-secondary">{title}</h3>
+              <h3 className="font-serif text-xl font-bold tracking-tight text-secondary">{toTitleCase(title)}</h3>
               <p className="mt-2 text-[14px] leading-relaxed" style={{ color: "hsl(215 18% 38%)" }}>{description}</p>
               <div className="mt-4 inline-flex items-center gap-1.5 font-sans text-[12px] font-bold uppercase text-clay-ink opacity-0 transition-opacity duration-300 group-hover:opacity-100 motion-reduce:transition-none" style={{ letterSpacing: "0.12em" }}>
                 Learn more <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />

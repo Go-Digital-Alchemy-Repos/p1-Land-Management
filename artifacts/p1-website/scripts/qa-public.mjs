@@ -42,6 +42,7 @@ try {
   for (const path of paths) {
     const result = render(path);
     assert(result.head?.title && result.head.description, `${path}: metadata`);
+    if (path === '/about') assert(result.html.includes('Land and Grounds Care With'), 'Fragment-based hero title uses title case');
     assert(result.head.title.length <= 60, `${path}: title must be 60 characters or fewer (${result.head.title.length})`);
     assert(result.head.description.length <= 160, `${path}: description must be 160 characters or fewer (${result.head.description.length})`);
     assert.equal((result.html.match(/<h1(?:\s|>)/g) || []).length, 1, `${path}: one heading`);
@@ -120,7 +121,7 @@ try {
     }
   }
   const edited = render('/contact', { route: '/contact', content: { seoTitle: 'QA SEO title', seoDescription: 'QA description', seoImage: '/qa.webp' }, global: {} });
-  assert.equal(edited.head.title, 'QA SEO title');
+  assert.equal(edited.head.title, 'QA SEO Title');
   assert.equal(edited.head.description, 'QA description');
   assert.equal(edited.head.image, '/qa.webp');
   assert.equal(warnings.length, 0, `React render warnings: ${warnings.slice(0, 3).join('\n')}`);
@@ -149,3 +150,6 @@ for (const key of Object.keys(manifest).filter(key => /^src\/pages\/.*\.tsx$/.te
 }
 console.log(`PASS ${paths.length} routes: SSR, metadata, CMS text/image/link overrides, internal links, proof, FAQ accordion/JSON-LD and no React warnings.`);
 console.log(`PASS initial JS <=150 KiB gzip; largest ${worst.route}: ${(worst.bytes / 1024).toFixed(1)} KiB.`);
+
+// A service hero replacement must also reach its discovery cards and gallery.
+await import('./check-service-images.mjs');

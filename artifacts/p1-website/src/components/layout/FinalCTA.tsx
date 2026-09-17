@@ -26,10 +26,10 @@ export function FinalCTA() {
           Start the Conversation
         </span>
         <h2 className="max-w-3xl font-display text-[clamp(2.2rem,4.6vw,3.8rem)] font-light leading-[1.02] tracking-[-0.02em] text-white">
-          Have acreage that needs shaping? Let's walk it together.
+          Let's Take a Look at Your Property
         </h2>
         <p className="max-w-xl text-lg" style={{ color: "hsl(40 20% 92% / 0.78)" }}>
-          Free, no-pressure quotes across Upstate SC and the Charlotte metro.
+          Tell us what needs attention. We'll help you plan the work, starting with a free site assessment.
         </p>
         <div className="flex flex-wrap items-center justify-center gap-4">
           <Button asChild size="lg" className="group h-12 rounded-[3px] border-0 bg-white px-8 font-sans text-[15px] font-bold text-secondary hover:bg-white/90" style={{ boxShadow: "0 18px 40px -16px hsl(0 0% 0% / 0.5)" }}>

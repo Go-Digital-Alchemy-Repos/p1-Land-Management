@@ -30,7 +30,7 @@ const FAQS = [
   {
     question: "Does P1 work on Lake Wylie waterfront properties?",
     answer:
-      "Yes. P1 handles shoreline maintenance, pond and waterway care, drainage on sloped lakeside terrain, and turf establishment for qualifying commercial, municipal, institutional, and agricultural waterfront properties around Lake Wylie and Tega Cay.",
+      "Yes. P1 handles shoreline maintenance, pond and waterway care, drainage on sloped lakeside terrain, and turf establishment for commercial, municipal, institutional, and agricultural waterfront properties around Lake Wylie and Tega Cay.",
   },
   {
     question: "What size properties does P1 work on?",
@@ -44,13 +44,13 @@ export default function YorkCountySC() {
     <Layout>
       <SEO
         title="Land Management in York County, SC | P1"
-        description="Commercial landscaping, grounds maintenance, land clearing, grading & drainage for qualifying York County, SC sites. Call (704) 221-8928."
+        description="Commercial landscaping, grounds maintenance, land clearing, grading & drainage for York County, SC sites. Call (704) 221-8928."
         jsonLd={[
           serviceAreaSchema({
             areaName: "York County, South Carolina",
             areaType: "AdministrativeArea",
             description:
-              "Commercial landscaping, grounds maintenance, agricultural land care, land clearing, grading, drainage, turf, and pond services for qualifying properties across York County, SC.",
+              "Commercial landscaping, grounds maintenance, agricultural land care, land clearing, grading, drainage, turf, and pond services for properties across York County, SC.",
             path: "/service-areas/york-county-sc",
           }),
           breadcrumbSchema([
@@ -72,7 +72,7 @@ export default function YorkCountySC() {
             </em>
           </>
         }
-        subtitle="P1 Land & Property Management provides commercial landscaping and grounds maintenance for commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger throughout York County, from Rock Hill, Fort Mill, and Tega Cay to Lake Wylie, Clover, and York. Connected services extend through agricultural land care, clearing, grading, drainage, and complete reconstruction."
+        subtitle="Commercial landscaping and grounds maintenance across York County, from Rock Hill and Fort Mill to Lake Wylie, Clover, and York. We also handle farm care, clearing, grading, drainage, and property restoration."
         image={heroImg}
         imageAlt="Land Clearing & Property Management in York County, SC"
       />
@@ -82,10 +82,10 @@ export default function YorkCountySC() {
 
           <FeatureRow heading="Your York County Property Partner" image={featureImg} imageAlt="Commercial lakeside property maintenance near Lake Wylie in York County, SC">
             <p>
-              York County is one of South Carolina's fastest-growing counties and the seventh-most populous in the state. Its eastern side along the I-77 corridor — Fort Mill, Tega Cay, Rock Hill, and Lake Wylie — has become one of the region's most active commercial and industrial markets, drawing corporate relocations and major public investment across the state line from Charlotte. Meanwhile, the western half around York, Clover, Sharon, Hickory Grove, and McConnells retains its agricultural character, with working farmland, pasture, and timber stretching between the Catawba and Broad Rivers.
+              York County includes commercial and industrial grounds along I-77, waterfront properties around Lake Wylie, and farmland near York, Clover, and Sharon. Those different settings call for different plans for drainage, access, and ongoing care.
             </p>
             <p>
-              That combination is exactly what P1 Land & Property Management is built for. Whether you manage a commercial site in Rock Hill, a developing tract near Fort Mill, a waterfront commercial property on Lake Wylie, or working agricultural acreage outside York, P1 delivers the equipment, expertise, and reliability that large York County properties demand.
+              We help care for commercial sites, development tracts, waterfront grounds, and working farms. We'll walk your property and talk through the work that would make the biggest difference.
             </p>
           </FeatureRow>
 
@@ -98,7 +98,7 @@ export default function YorkCountySC() {
                   "Agricultural property maintenance — pastures, fields, fence lines, and access roads",
                   "Land clearing and forestry mulching — lot clearing, right-of-way, and rural acreage",
                   "Fine grading and site preparation for commercial, industrial, municipal, and institutional development",
-                  "Drainage planning and scoped French-drain, retention and erosion work",
+                  "Drainage work — French drains, ponds, ditches, and erosion repairs",
                   "Turf installation — sod and large-acreage seeding for Piedmont soils",
                   "Tree services — trimming, removal, and selective clearing",
                   "Pond and waterway management — construction, restoration, and water quality",
@@ -145,7 +145,7 @@ export default function YorkCountySC() {
                 Western York County — around York, Sharon, Hickory Grove, McConnells, and Smyrna — includes extensive fenced pasture and working cattle, poultry, and hay operations across its rolling Piedmont hills. These properties need commercial-scale care, including pasture management and reseeding, drainage across large tracts, access-road grading, selective clearing along fence lines, and pond maintenance for livestock and irrigation.
               </p>
               <p>
-                From row crops and hay ground to cattle and poultry operations, P1 works with York County farm and ranch owners on pasture renovation, land clearing, access-road grading, drainage correction, and pond construction — the earthwork and ongoing maintenance that keep working land productive. Our combined expertise in earthmoving and land maintenance makes us a natural fit for the county's agricultural landowners.
+                We help farm owners restore pasture, clear fence lines, maintain ponds, and keep access roads usable. We'll plan the work around your animals, equipment, and seasonal needs.
               </p>
             </div>
           </div>
@@ -154,10 +154,10 @@ export default function YorkCountySC() {
             <h2 className="text-2xl font-serif font-bold text-secondary">Commercial & Development Site Work in York County</h2>
             <div className="prose prose-lg prose-p:text-secondary/80 max-w-none space-y-4">
               <p>
-                The growth spreading south across the state line from Charlotte has made eastern York County one of the most active development markets in the region, with Fort Mill, Tega Cay, and Rock Hill managing significant new commercial campuses, industrial sites, municipal facilities, and institutional construction along I-77. P1 supports that growth with land clearing, forestry mulching, fine grading, site preparation, stormwater and drainage installation, and turf establishment — handling large, complex sites that require the scale of equipment and crew most contractors can't bring.
+                For new sites around Fort Mill, Tega Cay, and Rock Hill, we handle clearing, grading, drainage, and turf establishment. We'll work with your project team to prepare the land in the right order.
               </p>
               <p>
-                For commercial property managers, developers, industrial facilities, municipalities, and institutions, P1 also offers ongoing grounds maintenance programs that keep sites presentable and compliant year-round, long after the initial site work is complete.
+                After the site is established, we can keep the grounds maintained on a regular schedule.
               </p>
             </div>
           </div>
@@ -166,7 +166,7 @@ export default function YorkCountySC() {
             <h2 className="text-2xl font-serif font-bold text-secondary">Lake Wylie & Waterfront Properties</h2>
             <div className="prose prose-lg prose-p:text-secondary/80 max-w-none space-y-4">
               <p>
-                Lake Wylie and the Catawba River corridor along York County's eastern edge include commercial waterfront sites, municipal properties, institutional grounds, and working agricultural land that require specialized management: shoreline maintenance, pond and waterway care, drainage on sloped lakeside terrain, and turf establishment on challenging sites. P1's pond and waterway management program, combined with our drainage and grading expertise, makes us a natural fit for these demanding non-residential waterfront properties.
+                Along Lake Wylie and the Catawba River, drainage and shoreline care often go together. We help commercial, municipal, institutional, and agricultural properties with pond maintenance, erosion, sloped ground, and turf establishment.
               </p>
             </div>
           </div>
@@ -175,10 +175,10 @@ export default function YorkCountySC() {
             <h2 className="text-2xl font-serif font-bold text-secondary">Why York County Property Teams Choose P1</h2>
             <div className="prose prose-lg prose-p:text-secondary/80 max-w-none space-y-4">
               <p>
-                We're not a regional franchise or a national chain applying a one-size-fits-all approach to your property. P1 is built for the Carolinas — we understand the red clay soils of the York County Piedmont, the drainage challenges of the area's rolling terrain and the creek- and river-fed bottomland along the Catawba, the grass and pasture species that thrive here, and the seasonal patterns that drive maintenance needs throughout the year.
+                York County's clay soils, hills, and low ground near the Catawba all affect how water moves. We look at those conditions when planning grading, drainage, and seasonal maintenance.
               </p>
               <p>
-                From commercial landscaping and grounds maintenance contracts to land clearing, grading, drainage, and full reconstruction, P1 gives York County property teams one contractor for the full life of their land.
+                From clearing and drainage repairs to regular grounds care, you'll have one team to call about your York County property.
               </p>
             </div>
           </div>

@@ -1,3 +1,4 @@
+import { toTitleCase } from "@/lib/title-case";
 import { cmsValue, safeValue, useCms } from "@/lib/cms";
 import { cmsFieldKey } from "@/lib/cms-field-identity";
 import { useEffect } from "react";
@@ -24,7 +25,7 @@ function upsertMeta(attr: "name" | "property", key: string, content: string) {
 
 export function SEO(props: SEOProps) {
   const context = useCms();
-  const title = cmsValue(context, props.title, "text", false, "seoTitle");
+  const title = toTitleCase(cmsValue(context, props.title, "text", false, "seoTitle"));
   const description = cmsValue(context, props.description, "textarea", false, "seoDescription");
   const image = cmsValue(context, props.image || "/opengraph.jpg", "image", false, "seoImage");
   const noindex = props.noindex;

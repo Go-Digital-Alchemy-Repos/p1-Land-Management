@@ -21,3 +21,7 @@ attached_assets/content-extracted
 attached_assets/*.docx
 attached_assets/*.eps
 attached_assets/Screenshot*
+
+# Shared data-only CMS/branding modules are imported by both web frontends.
+!platform/p1-core/shared/
+!platform/p1-core/shared/**

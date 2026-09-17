@@ -1,6 +1,6 @@
 # P1 website content overhaul — consolidated implementation plan
 
-Status: implementation in progress under an active goal; production release authorized. See content-overhaul implementation evidence for validation and release status.
+Status: implemented, deployed, and live-verified on September 16, 2026 (Eastern time). See content-overhaul implementation evidence for exact release and validation details. Optional Wave 4 remains excluded; Search Console resubmission requires authenticated access.
 
 ## Authority and inputs
 

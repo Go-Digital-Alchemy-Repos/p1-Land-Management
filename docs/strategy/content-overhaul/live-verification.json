@@ -1,0 +1,18 @@
+{
+  "routes": 54,
+  "new_pages": 19,
+  "image_variants": 60,
+  "status": "PASS",
+  "checks": [
+    "HTTP 200",
+    "sitewide CTA",
+    "retired labels/links absent",
+    "GA ID in client bundle",
+    "canonical",
+    "FAQ/breadcrumb schema",
+    "prescribed links",
+    "sitemap",
+    "health/readiness",
+    "Snow 301 with query"
+  ]
+}

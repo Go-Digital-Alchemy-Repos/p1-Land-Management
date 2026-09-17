@@ -1,3 +1,4 @@
+import { toTitleCase } from "@/lib/title-case";
 import { Link } from "wouter";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
@@ -8,7 +9,7 @@ import { breadcrumbSchema, faqSchema, localBusinessSchema, serviceAreaSchema } f
 
 type LocationContent = {
   city: string; state: string; path: string; title: string; description: string;
-  heading: string; market: string; intro: string; parent: string | null;
+  heading: string; imageAlt: string; imagePosition?: string; market: string; intro: string; parent: string | null;
   sections: { heading: string; body: string }[];
   faqs: { question: string; answer: string }[];
   links: { label: string; href: string }[];
@@ -18,7 +19,7 @@ const services = [
   "Commercial landscaping and exterior grounds maintenance contracts",
   "Land clearing and forestry mulching — lot clearing, right-of-way, and rural acreage",
   "Fine grading and site preparation for commercial, industrial, municipal, and institutional development",
-  "Drainage planning and scoped French-drain, retention, and erosion work",
+  "Drainage work — French drains, ponds, ditches, and erosion repairs",
   "Turf installation — sod and large-acreage seeding for Piedmont soils",
   "Tree services — trimming, removal, and selective clearing",
   "Pond and waterway management — construction, restoration, and water quality",
@@ -44,22 +45,22 @@ export function LocationPage({ page, image }: { page: LocationContent; image: st
       breadcrumbSchema(crumbs), faqSchema(page.faqs),
     ]} />
     <PageHero eyebrow={`Service Area · ${page.state}`} title={page.heading} subtitle={page.intro}
-      image={image} imageAlt={`Illustrative ${page.city} service-area landscape showing ${page.city === "Inman" || page.city === "Waxhaw" ? "managed agricultural acreage" : "large-property grounds and site care"}`} />
+      image={image} imageAlt={page.imageAlt} imagePosition={page.imagePosition} />
     <div className="site-shell py-8">
       <nav aria-label="Breadcrumb"><ol className="public-meta flex flex-wrap gap-2 text-sm text-muted-foreground">{crumbs.map((crumb, index) => <li key={crumb.path}>
         {index > 0 && <span aria-hidden="true" className="mr-2">›</span>}
         {index === crumbs.length - 1 ? <span aria-current="page">{crumb.name}</span> : <Link className="public-link underline hover:text-primary" href={crumb.path}>{crumb.name}</Link>}
       </li>)}</ol></nav>
-      <p className="public-supporting-copy mt-8 max-w-4xl text-lg leading-relaxed">P1 Land &amp; Property Management is a commercial grounds management and land contractor serving commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger in {page.city}, {page.state}.</p>
+      <p className="public-supporting-copy mt-8 max-w-4xl text-lg leading-relaxed">We serve commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger in {page.city}, {page.state}.</p>
     </div>
     <div className="site-shell space-y-14 pb-16">
       {page.sections.map((section, index) => <section key={section.heading} className="max-w-4xl">
-        <h2 className="font-display text-3xl text-secondary">{section.heading}</h2>
+        <h2 className="font-display text-3xl text-secondary">{toTitleCase(section.heading)}</h2>
         <p className="mt-5 text-lg leading-relaxed text-secondary/80">{section.body}</p>
         {index === 0 && <section className="mt-12 rounded-lg bg-muted p-6 sm:p-8">
           <h2 className="font-display text-2xl">Land &amp; Property Management Services in {page.city}</h2>
           <ul className="mt-6 list-disc space-y-3 pl-5">{services.map(service => <li key={service}>{service}</li>)}</ul>
-          <p className="mt-6 leading-relaxed">Our exterior facility maintenance covers the grounds, vegetation, water movement, and access areas around your operation.</p>
+          <p className="mt-6 leading-relaxed">We'll plan regular upkeep and larger repairs around the way you use your property.</p>
         </section>}
       </section>)}
       <section className="max-w-4xl">
@@ -67,7 +68,7 @@ export function LocationPage({ page, image }: { page: LocationContent; image: st
         <FaqAccordion items={page.faqs} />
       </section>
       <section>
-        <h2 className="font-display text-2xl">Services and nearby communities</h2>
+        <h2 className="font-display text-2xl">Services and Nearby Communities</h2>
         <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{page.links.map(link => <li key={link.href}><Link className="public-link font-semibold text-primary underline" href={link.href}>{link.label}</Link></li>)}</ul>
         <p className="mt-10 text-lg">Call <a className="public-link text-primary underline" href="tel:+17042218928">(704) 221-8928</a> or <Link className="public-link text-primary underline" href="/contact">request a free site assessment online</Link> to discuss your property.</p>
       </section>

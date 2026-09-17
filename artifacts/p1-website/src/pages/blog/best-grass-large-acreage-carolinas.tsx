@@ -41,7 +41,7 @@ export default function BlogPost() {
         <section className="py-16 bg-background">
           <div className="site-shell prose prose-lg prose-h2:font-serif prose-h2:text-3xl prose-h2:text-secondary prose-h3:font-serif prose-h3:text-2xl prose-h3:text-secondary prose-p:text-secondary/80 prose-li:text-secondary/80 prose-a:text-primary hover:prose-a:text-primary/80">
             <p>
-              Choosing the wrong grass species for a large-acreage property in South Carolina or North Carolina is an expensive mistake. Reseed or re-sod even a modest number of acres and you're talking about thousands of dollars — not counting the cost of the establishment period when the wrong grass fails to thrive and leaves bare ground that invites erosion and weed pressure.
+              Grass choice matters when you're planting several acres. A variety that struggles with your soil, shade, or traffic can leave you with bare ground and another seeding bill. Start with how the land will be used.
             </p>
             <p>
               The Carolinas straddle the warm-cool season transition zone, which makes grass selection more complex here than in most of the country. The right species depends on your specific location, soil type, sun exposure, intended use, and maintenance commitment. Use this guide to frame the discussion, then check cultivar suitability for your site.
@@ -99,7 +99,7 @@ export default function BlogPost() {
 
             <h2>Pasture and Agricultural Grasses</h2>
             <p>
-              For farm pastures, hay fields, and food plots, the calculus is different — productivity and forage quality matter more than aesthetics. Common choices in the region include:
+              For pastures, hay fields, and food plots, forage quality and productivity matter more than appearance. Common choices in the region include:
             </p>
             <ul>
               <li><strong>Bermuda Grass</strong> — The primary hay and pasture grass for the Carolinas. High yield, good quality forage, drought-tolerant.</li>
@@ -110,7 +110,7 @@ export default function BlogPost() {
 
             <h2>The Bottom Line</h2>
             <p>
-              For large acreage in the Carolinas, there's no single right answer on grass species — there's only the right answer for your property, your use, and your maintenance commitment. The most common and expensive mistake is selecting a species based on appearance or familiarity rather than matching it to the site's sun, soil, drainage, and intended use.
+              The right grass depends on your soil, sunlight, drainage, and how you use the property. Think about the mowing, watering, and other care you can provide before choosing a variety.
             </p>
             <p>
               P1 evaluates your site before recommending a species — and we handle everything from soil testing and amendment through seeding or sodding and post-establishment care.

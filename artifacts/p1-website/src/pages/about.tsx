@@ -22,13 +22,13 @@ export default function About() {
         eyebrow="About P1"
         title={
           <>
-            Built for the property owner who needs{" "}
+            Land and grounds care with{" "}
             <em className="font-semibold not-italic text-tan" style={{ fontStyle: "italic" }}>
-              more than a lawn crew
+              Nearly 30 Years of Experience
             </em>
           </>
         }
-        subtitle="P1 Land & Property Management was built from the ground up to serve one kind of client: the owner or manager of a large, working property who can't afford downtime, half measures, or contractors who disappear after the first job."
+        subtitle="We help owners and managers look after large, working properties. From the first clearing job to regular grounds care, you have one team to call when something needs attention."
         image={heroImg}
         imageAlt="Commercial property"
       />
@@ -38,16 +38,16 @@ export default function About() {
         <div className="site-shell">
           <FeatureRow heading="Who We Are" image={whoImg} imageAlt="Experienced P1 land management crew with heavy equipment">
             <p>
-              P1 Land & Property Management was founded on a simple idea: that commercial, industrial, agricultural, municipal, and institutional property operators in the Carolinas deserve a single, capable contractor who can manage the full life of their property — from rough clearing to fine turf, from drainage repair to complete reconstruction.
+              P1 Land &amp; Property Management brings land preparation and ongoing care together. We clear and grade land, repair drainage, establish turf, and maintain the grounds as your property changes.
             </p>
             <p>
-              We operate across two of the region's fastest-growing markets: the Greenville-Spartanburg corridor in Upstate South Carolina, and the greater Charlotte, North Carolina area. Our services span land preparation and ongoing property maintenance, backed by nearly 30 years of experience.
+              Our name is new, but our experience spans nearly 30 years. We work across Upstate South Carolina and the greater Charlotte area, on everything from busy commercial grounds to open farmland.
             </p>
             <p>
-              Our services are intended for commercial property developers and managers, farm operators, industrial site managers, municipalities, and institutions that need their land working for them, not against them.
+              We work with property managers, farm operators, industrial facilities, municipalities, and institutions. We take time to understand how you use the land before recommending the work.
             </p>
             <p className="font-bold text-secondary text-xl border-l-4 border-primary pl-6 py-2 mt-8">
-              We do not provide residential services. Our minimum is 1 acre, and our specialty is the kind of commercial-scale work that takes real equipment, real experience, and a real commitment to getting it done right.
+              We serve properties 1 acre and larger and do not provide residential services. Our equipment and crews are set up for large-acreage work.
             </p>
           </FeatureRow>
         </div>
@@ -58,10 +58,10 @@ export default function About() {
         <div className="site-shell">
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
             <h2 className="text-3xl md:text-4xl font-serif font-bold text-secondary">
-              Full-Service. Full Commitment.
+              Help With What Comes Next
             </h2>
             <p className="text-lg text-secondary/80">
-              P1 works across land and property needs, so you can begin a relationship at any stage of your property's life and coordinate the agreed scope with one accountable team.
+              Whether you're clearing land, fixing drainage, or keeping the grounds in shape, we can help. Start with the work you need now, and we'll help you plan what comes next.
             </p>
           </div>
           
@@ -70,7 +70,7 @@ export default function About() {
               "Weekly and seasonal property maintenance contracts",
               "Land clearing and forestry mulching",
               "Fine grading and site preparation",
-              "Drainage planning and scoped installation work",
+              "Drainage planning, installation, and repairs",
               "Sod and seed installation for large acreage",
               "Tree management, trimming, and removal",
               "Pond and waterway care and management",
@@ -102,11 +102,11 @@ export default function About() {
             </h2>
             <ul className="space-y-4">
               {[
-                "Project requirements and documentation defined before work begins",
+                "A written plan and clear pricing before work begins",
                 "Commercial and agricultural property experience",
                 "Equipped for large-scale earthwork and fine maintenance",
                 "Serving both Upstate SC and Charlotte NC markets",
-                "Property-assessment availability confirmed during review"
+                "A site visit scheduled around your needs and our availability"
               ].map((item, i) => (
                 <li key={i} className="flex items-center gap-3 text-lg text-secondary/80 font-medium">
                   <div className="w-2 h-2 rounded-full bg-primary" />

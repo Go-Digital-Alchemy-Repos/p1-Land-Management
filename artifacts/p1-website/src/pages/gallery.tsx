@@ -7,15 +7,15 @@ import { cn } from "@/lib/utils";
 import { breadcrumbSchema } from "@/lib/structured-data";
 import heroImg from "@/assets/services-hero.png";
 
-import imgClearing from "@/assets/service-clearing.png";
-import imgGrading from "@/assets/fine-grading.png";
-import imgDrainage from "@/assets/service-drainage.png";
-import imgTurf from "@/assets/service-turf.png";
-import imgPond from "@/assets/pond-management.png";
-import imgReconstruction from "@/assets/service-reconstruction-smaller-scale.png";
-import imgCommercial from "@/assets/commercial-property.png";
-import imgIndustrial from "@/assets/service-industrial.png";
-import imgTree from "@/assets/service-tree.png";
+import { clearingHero as imgClearing } from "@/lib/service-images";
+import { gradingHero as imgGrading } from "@/lib/service-images";
+import { drainageHero as imgDrainage } from "@/lib/service-images";
+import { turfHero as imgTurf } from "@/lib/service-images";
+import { pondHero as imgPond } from "@/lib/service-images";
+import { reconstructionHero as imgReconstruction } from "@/lib/service-images";
+import { commercialHero as imgCommercial } from "@/lib/service-images";
+import { industrialHero as imgIndustrial } from "@/lib/service-images";
+import { treeHero as imgTree } from "@/lib/service-images";
 
 interface ServiceIllustration {
   title: string;
@@ -31,7 +31,7 @@ const projects: ServiceIllustration[] = [
   { title: "Pond Restoration & Shoreline Repair", service: "Pond & Waterway", image: imgPond },
   { title: "Full Property Reconstruction", service: "Property Reconstruction", image: imgReconstruction },
   { title: "Commercial Campus Grounds Management", service: "Commercial Landscaping", image: imgCommercial },
-  { title: "Agricultural Land Preparation", service: "Industrial & Agricultural", image: imgIndustrial },
+  { title: "Agricultural Property Care", service: "Industrial & Agricultural", image: imgIndustrial },
   { title: "Tree Removal & Stump Grinding", service: "Tree Services", image: imgTree },
 ];
 
@@ -61,7 +61,7 @@ export default function Gallery() {
     <Layout>
       <SEO
         title="Land Management Service Gallery | P1"
-        description="See the land clearing, grading, drainage, turf, pond, tree, grounds, and reconstruction capabilities P1 offers for qualifying Carolina properties."
+        description="Explore clearing, grading, drainage, grounds care, and property restoration for large Carolina properties. Find the service you need with P1."
         jsonLd={breadcrumbSchema([
           { name: "Home", path: "/" },
           { name: "Service Gallery", path: "/gallery" },
@@ -88,8 +88,8 @@ export default function Gallery() {
       <section className="py-20 bg-background">
         <div className="site-shell space-y-10">
           <div className="mx-auto max-w-3xl text-center">
-            <h2 className="font-display text-3xl font-semibold text-secondary md:text-4xl">Find the capability your property needs</h2>
-            <p className="mt-4 text-lg leading-relaxed text-secondary/75">Use the filters to compare P1's service categories, then open the relevant service page for scope details, common applications, and next steps. Owner-approved project photography and case studies will be added separately when available.</p>
+            <h2 className="font-display text-3xl font-semibold text-secondary md:text-4xl">Find the Service Your Property Needs</h2>
+            <p className="mt-4 text-lg leading-relaxed text-secondary/75">Choose a category to see the kinds of work we handle, then visit the service page for more details.</p>
           </div>
           {/* Service filters */}
           <div className="flex flex-wrap justify-center gap-3">

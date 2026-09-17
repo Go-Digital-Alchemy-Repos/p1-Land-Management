@@ -14,6 +14,7 @@ interface PageHeroBaseProps {
   subtitle?: ReactNode;
   /** Optional extra content (badges, CTAs) rendered below the subtitle. */
   children?: ReactNode;
+  imagePosition?: string;
   /** Show the "Index of Work" side panel (desktop only). */
   indexOfWork?: boolean;
   /** Reduce mobile spacing for unusually long service-page headlines. */
@@ -30,12 +31,12 @@ type PageHeroProps = PageHeroBaseProps & (
  * Mirrors the home hero: low-opacity image, diagonal navy wash, contour-line
  * texture, kicker eyebrow and a left-aligned Fraunces display headline.
  */
-export function PageHero({ eyebrow, title, subtitle, image, imageAlt, children, indexOfWork, compactMobile }: PageHeroProps) {
+export function PageHero({ eyebrow, title, subtitle, image, imageAlt, imagePosition, children, indexOfWork, compactMobile }: PageHeroProps) {
   return (
     <section className="relative overflow-hidden bg-navy-deep">
       {image && (
         <div className="absolute inset-0">
-          <img src={image} alt={imageAlt} fetchPriority="high" decoding="async" {...responsiveImageProps(image, "100vw")} className="h-full w-full object-cover" style={{ opacity: 0.5 }} />
+          <img src={image} alt={imageAlt} fetchPriority="high" decoding="async" {...responsiveImageProps(image, "100vw")} className="h-full w-full object-cover" style={{ opacity: 0.5, objectPosition: imagePosition }} />
         </div>
       )}
       <div

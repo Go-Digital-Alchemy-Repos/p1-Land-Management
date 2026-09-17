@@ -1,0 +1,298 @@
+{
+  "routesReviewed": 54,
+  "routesChanged": 54,
+  "counts": {
+    "scope_family": {
+      "before": 127,
+      "after": 0
+    },
+    "coordination_family": {
+      "before": 85,
+      "after": 4
+    },
+    "qualification": {
+      "before": 9,
+      "after": 0
+    },
+    "mobilization": {
+      "before": 11,
+      "after": 0
+    },
+    "agreed_scope": {
+      "before": 8,
+      "after": 0
+    }
+  },
+  "cmsPublishedRevisions": [
+    {
+      "path": "/service-areas/greer-sc",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/service-areas/simpsonville-sc",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/service-areas/easley-sc",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/service-areas/gaffney-sc",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/service-areas/duncan-sc",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/service-areas/inman-sc",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/service-areas/boiling-springs-sc",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/service-areas/huntersville-nc",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/service-areas/matthews-nc",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/service-areas/kannapolis-nc",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/service-areas/waxhaw-nc",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/service-areas/fort-mill-sc",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/service-areas/rock-hill-sc",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/service-areas/indian-land-sc",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/service-areas/indian-trail-nc",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/service-areas/monroe-nc",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/service-areas/belmont-nc",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/service-areas/mount-holly-nc",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/service-areas/cornelius-nc",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/about",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/commercial",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/services/commercial-snow-ice-management",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/commercial/data-centers-secure-facilities",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/contact",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/gallery",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/services",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/services/commercial-landscaping",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/services/industrial-agricultural",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/services/land-clearing",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/services/grading-site-preparation",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/services/drainage",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/services/turf-installation-seeding",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/services/tree-services",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/services/pond-waterway-management",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/services/property-reconstruction",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/service-areas",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/service-areas/upstate-south-carolina",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/service-areas/charlotte-north-carolina",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/service-areas/greenville-sc",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/service-areas/spartanburg-sc",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/service-areas/anderson-sc",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/service-areas/concord-nc",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/service-areas/mooresville-lake-norman-nc",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/service-areas/gastonia-nc",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/service-areas/union-county-nc",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/service-areas/lancaster-county-sc",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/service-areas/york-county-sc",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/blog",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/blog/land-clearing-cost-per-acre-south-carolina",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/blog/how-to-manage-retention-pond-south-carolina",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/blog/best-grass-large-acreage-carolinas",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/blog/signs-property-drainage-problem",
+      "revision": 0,
+      "globalRevision": 0
+    },
+    {
+      "path": "/blog/preparing-land-agricultural-use-carolinas",
+      "revision": 0,
+      "globalRevision": 0
+    }
+  ]
+}

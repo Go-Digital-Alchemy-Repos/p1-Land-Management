@@ -28,7 +28,7 @@ const FAQS = [
   {
     question: "What size properties does P1 work on in Greenville?",
     answer:
-      "P1 focuses on commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger, bringing the equipment and expertise that small-scale landscaping companies can't provide. P1 does not provide residential services.",
+      "We serve commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger. We do not provide residential services.",
   },
 ];
 
@@ -37,9 +37,9 @@ export default function GreenvilleSC() {
     <Layout>
       <SEO 
         title="Land Management in Greenville, SC | P1"
-        description="Commercial landscaping, grounds maintenance, land clearing, grading & drainage for qualifying 1-acre-plus Greenville, SC sites. Call (704) 221-8928."
+        description="Commercial landscaping, grounds maintenance, land clearing, grading & drainage for 1-acre-plus Greenville, SC sites. Call (704) 221-8928."
         jsonLd={[
-          serviceAreaSchema({ areaName: "Greenville, South Carolina", areaType: "City", description: "Commercial landscaping, grounds maintenance, land clearing, grading, drainage, and turf services for qualifying Greenville, SC properties 1 acre and larger.", path: "/service-areas/greenville-sc" }),
+          serviceAreaSchema({ areaName: "Greenville, South Carolina", areaType: "City", description: "Commercial landscaping, grounds maintenance, land clearing, grading, drainage, and turf services for Greenville, SC properties 1 acre and larger.", path: "/service-areas/greenville-sc" }),
           breadcrumbSchema([
             { name: "Home", path: "/" },
             { name: "Service Areas", path: "/service-areas" },
@@ -59,7 +59,7 @@ export default function GreenvilleSC() {
             </em>
           </>
         }
-        subtitle="P1 Land & Property Management provides full-service care for commercial, industrial, agricultural, municipal, and institutional properties throughout Greenville and Greenville County. From ongoing commercial landscaping and grounds maintenance to land clearing, grading, and complete property reconstruction, P1 has the equipment and experience to manage qualifying sites at scale."
+        subtitle="Commercial landscaping, grounds maintenance, and land care throughout Greenville County. We handle regular upkeep as well as clearing, grading, drainage, and larger property repairs."
         image={heroImg}
         imageAlt="Land Clearing & Property Management in Greenville, SC"
       />
@@ -91,7 +91,7 @@ export default function GreenvilleSC() {
             <div className="space-y-6 flex flex-col justify-center">
               <div className="prose prose-lg prose-p:text-secondary/80 max-w-none">
                 <p>
-                  Greenville's growth has created strong demand for professional land management contractors who can handle large-acreage commercial, industrial, agricultural, municipal, and institutional properties. P1 serves developers, property managers, farm operators, municipalities, and institutions throughout the Greenville area.
+                  We work with Greenville property managers, developers, farm operators, municipalities, and institutions. Start with the work you need now, and we'll help you plan ongoing care.
                 </p>
                 <p className="font-bold text-secondary mt-6 border-l-4 border-primary pl-4">
                   Call <a href="tel:7042218928" className="text-primary hover:underline">+1 (704) 221-8928</a> or <Link href="/contact" className="text-primary hover:underline">request a free estimate online</Link> to discuss your property.
@@ -103,14 +103,14 @@ export default function GreenvilleSC() {
           <div className="grid gap-10 border-y border-border py-12 md:grid-cols-2">
             <div className="space-y-4">
               <h2 className="text-2xl font-serif font-bold text-secondary">A connected plan for Greenville-area sites</h2>
-              <p className="leading-relaxed text-secondary/80">Greenville-area properties range from active commercial and industrial campuses to institutional grounds and working acreage beyond the urban core. Clearing, grades, drainage paths, access, turf, and ongoing maintenance interact differently in each setting, so the sequence matters as much as the individual service.</p>
-              <p className="leading-relaxed text-secondary/80">P1 reviews the property’s current condition and next use before defining work. That review can connect initial land preparation with stabilization and recurring care, while keeping approved responsibilities and exclusions explicit.</p>
+              <p className="leading-relaxed text-secondary/80">An office campus, industrial yard, and working farm have different maintenance needs. We look at access, drainage, slopes, and the way people use your property before suggesting a plan.</p>
+              <p className="leading-relaxed text-secondary/80">We'll talk through the land's current condition and what comes next. Clearing and grading may need to happen before erosion control, seeding, or regular mowing can begin.</p>
             </div>
             <div className="space-y-4">
               <h2 className="text-2xl font-serif font-bold text-secondary">Plan around operations and water movement</h2>
-              <p className="leading-relaxed text-secondary/80">On occupied sites, access routes, business hours, tenants, public use, and protected areas influence mobilization. On sloped or clay-heavy ground, drainage history and erosion signs should be reviewed before grading or turf work begins.</p>
-              <p className="leading-relaxed text-secondary/80">Provide available plans, known utility information, problem locations, access constraints, and schedule needs when requesting an estimate. If the proposed outcome requires engineering, permits, surveys, or specialist work, those responsibilities can be identified during qualification rather than left ambiguous.</p>
-              <p className="leading-relaxed text-secondary/80">The assessment can then separate immediate concerns—such as unstable access, active erosion, blocked drainage, or unmanaged vegetation—from later finish work and recurring care. On an occupied Greenville property, those phases can be coordinated around vehicles, employees, tenants, and public areas. The written estimate defines the property-specific work, timing assumptions, and exclusions, giving the owner or facility team a practical document for budgeting and internal coordination.</p>
+              <p className="leading-relaxed text-secondary/80">On occupied sites, we plan around business hours, vehicles, tenants, and public access. On sloped ground, we check where water moves before disturbing soil or planting turf.</p>
+              <p className="leading-relaxed text-secondary/80">Share plans, known utilities, problem areas, and your preferred timing. We'll explain any engineering, permits, surveys, or specialist work needed before the job starts.</p>
+              <p className="leading-relaxed text-secondary/80">We'll help you separate immediate repairs from work that can wait. Clearing a blocked drain or restoring access may come first, with finish grading and planting afterward. The written estimate gives you a clear basis for budgeting and scheduling.</p>
               <p className="leading-relaxed text-secondary/80">Marking priority areas on a plan and sharing photos from wet-weather or peak-use conditions can make the assessment more efficient and reveal patterns that are not visible on a dry visit.</p>
             </div>
           </div>
@@ -123,7 +123,7 @@ export default function GreenvilleSC() {
       </section>
 
       <aside className="site-shell pb-12 text-lg">
-        <p><Link href="/services" className="text-primary underline">Compare land management services</Link> or <Link href="/contact" className="text-primary underline">tell us about your property</Link> to discuss scope and availability.</p>
+        <p><Link href="/services" className="text-primary underline">Compare land management services</Link> or <Link href="/contact" className="text-primary underline">tell us about your property</Link> to talk through the work and available dates.</p>
       </aside>
       <FinalCTA />
     </Layout>

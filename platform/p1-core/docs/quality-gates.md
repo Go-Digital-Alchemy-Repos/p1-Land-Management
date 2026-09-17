@@ -82,9 +82,9 @@ When a budget fails, do not simply raise the number. First check whether a modul
 
 Current guardrails expect app-level routes such as CRM and ecommerce to stay lazy loaded instead of inflating the initial public bundle.
 
-## CI Workflow
+## Local Verification Workflow
 
-The tracked GitHub Actions quality workflow runs automatically on every push and pull request. It executes:
+GitHub Actions is disabled for this project. Run quality gates locally or through an approved non-GitHub-Actions process before release. The full verification sequence includes:
 
 1. `npm ci` — clean install of dependencies
 2. Apply migrations twice to the workflow's isolated PostgreSQL 16 service
@@ -98,7 +98,7 @@ The tracked GitHub Actions quality workflow runs automatically on every push and
 10. Start the compiled production bundle in isolated Linux with verified TLS PostgreSQL, verify readiness and Node PID 1, then require graceful SIGTERM exit
 11. Install Chromium and run `playwright.app.config.ts` against the actual Express/Vite application and disposable PostgreSQL
 
-All steps must pass for the CI run to be green. The workflow uses Node.js 20 and npm's lockfile cache; it does not use production credentials or contact client services.
+All applicable steps must pass before release. Use disposable local PostgreSQL databases and synthetic credentials; never use production credentials or contact client services during validation.
 
 ## Conventions
 

@@ -111,7 +111,7 @@ export default function Contact() {
             </em>
           </>
         }
-        subtitle="Tell us about your property and what you need. We'll schedule a time to walk the land and give you a straight, no-obligation estimate. Scheduling depends on your project and availability."
+        subtitle="Tell us what you&#x27;re working on. We&#x27;ll talk through the job and find a time to take a look, based on your needs and our availability. Your site assessment and written estimate are free, with no obligation."
       />
 
       <section className="py-10 md:py-16 bg-background">
@@ -260,7 +260,7 @@ export default function Contact() {
               </div>
               <div className="pt-6 border-t border-white/20">
                 <p className="font-bold italic text-white/90">
-                  "Tell us about your property and we’ll discuss scope, availability, and next steps."
+                  "Tell us what needs attention. We'll talk through the job and help you plan the next step."
                 </p>
               </div>
             </div>
@@ -271,7 +271,7 @@ export default function Contact() {
                 {[
                   "One of our team members reviews your request and contacts you",
                   "We schedule a free on-site visit at a time that works for you",
-                  "We walk your property, assess the scope, and give you a clear, written estimate",
+                  "We walk the property, talk through the work, and give you a clear, written estimate",
                   "No pressure, no obligation — just a straight answer on what your property needs and what it will cost"
                 ].map((item, i) => (
                   <li key={i} className="flex gap-3 text-secondary/80">

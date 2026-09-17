@@ -6,7 +6,7 @@ import { serviceSchema, breadcrumbSchema, faqSchema } from "@/lib/structured-dat
 import { FeatureRow } from "@/components/layout/FeatureRow";
 import { CheckCircle2 } from "lucide-react";
 import { Link } from "wouter";
-import heroImg from "@/assets/service-drainage.png";
+import { drainageHero as heroImg } from "@/lib/service-images";
 import drainageFixImg from "@/assets/features/drainage-fix.png";
 
 import { FaqAccordion } from "@/components/content/FaqAccordion";
@@ -15,22 +15,22 @@ const FAQS = [
   {
     question: "Why does my property have standing water after rain?",
     answer:
-      "In the Carolinas, standing water can result from clay soils, compacted ground, flat topography or improper grading. A site review should identify where water enters, where it collects and which work belongs in the agreed scope; engineering or specialist analysis may also be needed.",
+      "Water can collect because of clay soils, compacted ground, blocked drains, or the way the land slopes. We start by looking at where it enters, where it pools, and where it can go. Some sites also need an engineer's assessment.",
   },
   {
     question: "What drainage systems does P1 install?",
     answer:
-      "Discuss French drains, surface swales, catch basins, underground pipe, pond work, agricultural drainage, erosion work and regrading with P1. The proposed work, approvals and any engineering or specialist responsibilities are confirmed for each property.",
+      "We install and maintain French drains, swales, catch basins, drainage pipe, and farm drainage systems. We also handle grading and pond-related work. We'll explain any permits, engineering, or specialist help needed for your property.",
   },
   {
     question: "Can P1 fix drainage on farm fields and pastures?",
     answer:
-      "Saturated fields can be difficult to work and vulnerable to runoff. P1 can discuss field drainage, perimeter ditching and related grading work; confirm the site conditions, approvals and expected outcomes before work begins.",
+      "Yes. We handle field drainage, perimeter ditches, and grading to help move water off working ground. We'll review the land, available outlets, and any approvals needed before recommending the work.",
   },
   {
     question: "Does P1 handle stormwater compliance for commercial properties?",
     answer:
-      "P1 can discuss maintenance and exterior work around retention and detention ponds, ditches and drainage features. Regulatory compliance, inspections, documentation and any specialist responsibilities must be confirmed with the owner and appropriate professionals.",
+      "We maintain and repair ponds, ditches, and other drainage features. Your property team and the appropriate professionals remain responsible for regulatory compliance and required inspections. We'll confirm the records and specialist work needed before starting.",
   },
 ];
 
@@ -39,7 +39,7 @@ export default function Drainage() {
     <Layout>
       <SEO 
         title="Large-Property Drainage Solutions in SC & NC | P1"
-        description="Drainage assessment and scoped work for qualifying Carolina properties, including swales, French drains, grading, and retention systems. Call (704) 221-8928."
+        description="Drainage assessments, French drains, swales, grading, and pond work for large properties in Upstate SC and Charlotte. Call (704) 221-8928."
         jsonLd={[
           serviceSchema({ name: "Drainage Solutions", description: "Custom drainage solutions for commercial, industrial, agricultural, municipal, and institutional properties. French drains, retention systems, swales, and more. Serving Upstate SC and Charlotte NC. Call (704) 221-8928.", path: "/services/drainage" }),
           breadcrumbSchema([
@@ -64,7 +64,7 @@ export default function Drainage() {
             — Greenville, Spartanburg & Charlotte
           </>
         }
-        subtitle="Standing water, soggy fields, erosion, and drainage failures cost landowners time, money, and turf. P1 reviews site conditions and discusses a drainage scope that addresses the source of the problem."
+        subtitle="Standing water, soggy fields, and washouts make property care harder. We look for the cause and plan drainage work around the way your land is used."
         image={heroImg}
         imageAlt="Drainage swale in grassy field"
       />
@@ -73,12 +73,12 @@ export default function Drainage() {
       <section className="py-24 bg-background">
         <div className="site-shell space-y-16">
           
-          <FeatureRow heading="Drainage Problems Get Worse. Fix Them Right the First Time." image={drainageFixImg} imageAlt="Drainage system being installed to move water off a property">
+          <FeatureRow heading="Start With Where the Water Goes" image={drainageFixImg} imageAlt="Drainage system being installed to move water off a property">
             <p>
               Poor drainage is one of the most common — and most costly — problems facing large property owners in the Carolinas. Heavy clay soils, compacted ground, improper grading, and flat topography create conditions where water sits, roots suffocate, structures erode, and maintenance costs multiply.
             </p>
             <p>
-              P1 starts drainage work by reviewing the visible site conditions, where water enters and where it needs to go. The agreed scope identifies the work P1 will perform and any civil, engineering, permitting or specialist responsibilities that require separate confirmation.
+              We'll trace where water enters, where it collects, and where it needs to drain. Then we'll explain the work we recommend and any engineering, permits, or specialist help needed before installation.
             </p>
           </FeatureRow>
 
@@ -90,14 +90,14 @@ export default function Drainage() {
               {[
                 "French drain installation — perforated pipe and gravel systems to intercept and redirect subsurface water",
                 "Surface drainage swales — graded channels to carry surface runoff away from structures and fields",
-                "Retention and detention pond planning and construction scope",
+                "Retention and detention pond planning and construction",
                 "Catch basin and inlet installation",
                 "Underground drainage pipe installation",
                 "Agricultural drainage — tile drainage for fields and pastures",
                 "Ditch clearing, shaping, and lining",
                 "Regrading for drainage correction",
                 "Erosion control and slope stabilization in drainage zones",
-                "Stormwater-related maintenance and documentation coordination"
+                "Stormwater maintenance and service records"
               ].map((item, i) => (
                 <li key={i} className="flex items-start gap-3 bg-muted p-4 rounded-lg">
                   <CheckCircle2 className="w-6 h-6 text-primary shrink-0 mt-0.5" />
@@ -149,7 +149,7 @@ export default function Drainage() {
         </div>
       </section>
 
-      <section className="site-shell py-12"><h2 className="text-2xl font-bold">Drainage is one part of the campus exterior.</h2><p className="mt-4 text-muted-foreground">Coordinate swales, ponds, erosion, perimeter vegetation, and exterior access through a site plan built for large operational facilities.</p><Link href="/commercial/data-centers-secure-facilities" className="mt-5 inline-block font-bold text-primary underline">Explore secure facility exterior management</Link></section>
+      <section className="site-shell py-12"><h2 className="text-2xl font-bold">Drainage is one part of the campus exterior.</h2><p className="mt-4 text-muted-foreground">Plan drainage repairs alongside pond care, vegetation, and access around your facility.</p><Link href="/commercial/data-centers-secure-facilities" className="mt-5 inline-block font-bold text-primary underline">Explore secure facility exterior management</Link></section>
       <FinalCTA />
     </Layout>
   );

@@ -45,14 +45,14 @@ export default function BlogPost() {
               If you own land in Upstate South Carolina and you're getting ready to clear it — for a building project, to open up farm acreage, or to reclaim overgrown property — one of the first questions you'll ask is: how much is this going to cost?
             </p>
             <p>
-              The honest answer is that land clearing costs in South Carolina vary significantly depending on several factors. But understanding what drives that variation will help you budget accurately and avoid surprises when you start getting estimates.
+              There isn't one per-acre price that fits every job. Trees, brush, access, debris handling, and what you plan to do next all affect the estimate. Knowing those details makes it easier to compare quotes.
             </p>
             <p>
               This post breaks down the cost considerations for land clearing in Upstate SC, what factors move the number up or down, and how to evaluate competing bids when you start talking to contractors.
             </p>
 
             <h2>Why a Per-Acre Price Needs a Site Assessment</h2>
-            <p>There is no verified P1 price schedule published here. Brush density, tree size, site access, ground conditions, stump removal, and debris handling change the scope. Request a written estimate for your parcel before setting a budget.</p>
+            <p>Every clearing estimate depends on the property. Brush density, tree size, access, ground conditions, stump removal, and debris handling all affect the price. A written estimate makes clear what you're paying for.</p>
 
             <h2>What Factors Affect Land Clearing Cost?</h2>
             
@@ -63,7 +63,7 @@ export default function BlogPost() {
 
             <h3>2. Acreage and Site Access</h3>
             <p>
-              Larger parcels generally have lower per-acre costs because mobilization and setup are fixed expenses that spread across more acres. A 50-acre clearing job will typically cost less per acre than a 2-acre job. Similarly, if heavy equipment can access your site easily, mobilization costs go down.
+              Moving equipment to a site is part of the cost. On a larger job, that cost is spread over more acres. Easy access can also reduce setup time.
             </p>
 
             <h3>3. Clearing Method</h3>
@@ -82,7 +82,7 @@ export default function BlogPost() {
 
             <h3>5. Post-Clearing Needs</h3>
             <p>
-              If your clearing project is followed immediately by grading, drainage work, or turf establishment, bundling these services with one contractor can reduce total project cost. A contractor who handles clearing, grading, and seeding can discuss the sequence and mobilization costs across the proposed work.
+              If grading, drainage, or seeding will follow clearing, plan those stages together. Ask how the schedule and equipment moves affect the total price.
             </p>
 
             <h2>Getting an Accurate Estimate</h2>

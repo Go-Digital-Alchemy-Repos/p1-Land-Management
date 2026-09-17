@@ -6,8 +6,8 @@ import { serviceSchema, breadcrumbSchema, faqSchema } from "@/lib/structured-dat
 import { FeatureRow } from "@/components/layout/FeatureRow";
 import { CheckCircle2 } from "lucide-react";
 import { Link } from "wouter";
-import heroImg from "@/assets/service-industrial.png";
-import maintenanceImg from "@/assets/features/industrial-maintenance.png";
+import { industrialHero as heroImg } from "@/lib/service-images";
+import maintenanceImg from "@/assets/features/farm-industrial-maintenance.png";
 
 import { FaqAccordion } from "@/components/content/FaqAccordion";
 
@@ -15,22 +15,22 @@ const FAQS = [
   {
     question: "What agricultural property services does P1 provide?",
     answer:
-      "P1 discusses pasture and field mowing, fence-line clearing, pond and ditch work, erosion-related site work, land clearing, access-road grading and tree management for farms and rural landholdings. Confirm the agreed scope, timing and any specialist requirements before work begins.",
+      "We mow pastures and fields, clear fence lines, maintain ponds and ditches, repair farm roads, and manage trees and overgrowth. We'll walk the land with you and plan the work around your farm.",
   },
   {
     question: "Does P1 maintain industrial sites?",
     answer:
-      "P1 can discuss perimeter vegetation, drainage and pond maintenance, clearing, grading corrections and erosion-related site work for industrial facilities. Confirm scope, availability, compliance responsibilities and emergency-response terms during qualification.",
+      "Yes. We maintain industrial grounds, clear overgrowth, and look after drainage and ponds. We plan the work around site access and operating hours. We'll confirm any specialist work and response arrangements before scheduling.",
   },
   {
     question: "Can P1 clear land to add pasture or crop acreage?",
     answer:
-      "P1 can discuss selective clearing, brush and stump work to open additional acreage. Forestry mulching, grading, drainage, soil preparation and seeding are scoped by property, access, approvals and the project team.",
+      "Yes. We use selective clearing and brush and stump removal to open more usable land. We'll review the ground, access, approvals, and the grading or seeding needed for its next use.",
   },
   {
     question: "What equipment does P1 operate?",
     answer:
-      "P1 matches the proposed equipment, operator availability, and access plan to the industrial or agricultural property during qualification.",
+      "We use Kubota equipment and match the machines to the job. We'll check access, ground conditions, and the work you need before arranging equipment and operators.",
   },
 ];
 
@@ -39,6 +39,7 @@ export default function IndustrialAgricultural() {
     <Layout>
       <SEO 
         title="Industrial & Agricultural Land Maintenance | P1"
+        image={heroImg}
         description="Land maintenance for industrial sites, farms, and working acreage in Upstate SC and Charlotte, including clearing, grading, drainage, and turf."
         jsonLd={[
           serviceSchema({ name: "Industrial & Agricultural Land Management", description: "Heavy-duty land maintenance for industrial sites, farms, and rural acreage in Upstate SC and Charlotte NC. Land clearing, grading, drainage, turf, and more. Call (704) 221-8928.", path: "/services/industrial-agricultural" }),
@@ -63,21 +64,21 @@ export default function IndustrialAgricultural() {
             </em>
           </>
         }
-        subtitle="P1 Land & Property Management maintains industrial facilities, farms, rural acreage, and working land at the scale and standard these properties demand. If your land is making money — or supposed to be — we keep it in condition."
+        subtitle="From open pasture and equestrian estates to busy industrial grounds, we help keep large properties maintained and ready for use."
         image={heroImg}
-        imageAlt="Tractor on agricultural farm land"
+        imageAlt="Expansive rural equestrian estate with fenced pastures, a pond, and a winding gravel lane"
       />
 
       {/* CONTENT SECTIONS */}
       <section className="py-24 bg-background">
         <div className="site-shell space-y-16">
           
-          <FeatureRow heading="Land That Works Needs Maintenance That Matches" image={maintenanceImg} imageAlt="Heavy equipment maintaining an industrial and agricultural property">
+          <FeatureRow heading="Land That Works Needs Maintenance That Matches" image={maintenanceImg} imageAlt="Land-clearing equipment working beside a farm pond, drainage ditch, and fenced pasture">
             <p>
-              Industrial facilities, working farms, and rural landholdings have maintenance needs that go far beyond what a standard landscaping company can handle. Overgrown fence lines, failing drainage ditches, eroded slopes, silted ponds, and encroaching vegetation don't just look bad — they cost money, create liability, and reduce the productive capacity of your land.
+              Pastures, fence lines, ponds, and access roads all need attention. We help with regular mowing, overgrown edges, washed-out roads, and drainage that isn't doing its job.
             </p>
             <p>
-              P1 brings heavy equipment, experienced operators, and the full range of land services needed to keep industrial and agricultural properties in working order — from routine inspections and cleanup to major earthwork and reconstruction.
+              We'll walk the property with you, talk through what needs doing, and plan routine care alongside any larger repairs or earthwork.
             </p>
           </FeatureRow>
 
@@ -112,7 +113,7 @@ export default function IndustrialAgricultural() {
             <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[
                 "Perimeter vegetation control and mowing",
-                "Drainage-system maintenance and stormwater-scope coordination",
+                "Drainage-system and stormwater maintenance",
                 "Land clearing for facility expansion or site development",
                 "Grading and regrading for site access and drainage correction",
                 "Erosion control installation and monitoring",
@@ -129,10 +130,10 @@ export default function IndustrialAgricultural() {
 
           <div className="space-y-6 bg-card border border-border p-8 rounded-xl shadow-sm animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-400">
             <h2 className="text-2xl font-serif font-bold text-secondary">
-              Large-Acreage Capability
+              Planning Work Across Your Acreage
             </h2>
             <p className="text-lg text-secondary/80 leading-relaxed">
-              P1 reviews the equipment, staffing, access and delivery needs for larger industrial and agricultural properties during qualification. Confirm the proposed work plan, availability and any specialist responsibilities before scheduling.
+              We plan equipment, crew size, and access around your acreage and the job at hand. Before scheduling, we'll explain the work, available dates, and any specialist help needed.
             </p>
           </div>
 

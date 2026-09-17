@@ -6,7 +6,7 @@ import { SEO } from "@/components/seo";
 import { serviceSchema, breadcrumbSchema, faqSchema } from "@/lib/structured-data";
 import { CheckCircle2 } from "lucide-react";
 import { Link } from "wouter";
-import heroImg from "@/assets/service-grading.png";
+import { gradingHero as heroImg } from "@/lib/service-images";
 import levelImg from "@/assets/features/grading-level.png";
 import drainageImg from "@/assets/features/grading-drainage.png";
 import turfImg from "@/assets/features/grading-turf.png";
@@ -18,22 +18,22 @@ const FAQS = [
   {
     question: "What's the difference between rough grading and fine grading?",
     answer:
-      "Rough grading is the initial shaping and leveling of a site after clearing. Fine grading is the finish work that prepares the site for its approved drainage, turf or construction plan. Discuss the required tolerances, equipment and delivery scope with P1 before work begins.",
+      "Rough grading shapes the land after clearing. Fine grading prepares the finished surface for drainage, turf, or construction. We'll work to the approved plans and confirm the required grades before starting.",
   },
   {
     question: "Can regrading fix drainage problems on my property?",
     answer:
-      "Improper grade can contribute to drainage problems. P1 can review slopes, swales and transitions with you and discuss regrading or a coordinated drainage scope, subject to the property conditions, approved plans and any specialist review.",
+      "Yes, when the slope is part of the problem. We'll look at the ground, drains, and outlets to see whether regrading will help. Some properties also need drainage installation or an engineer's review.",
   },
   {
     question: "Does P1 grade sites for new construction?",
     answer:
-      "P1 discusses building pads, roads, and site preparation for commercial, industrial, municipal, institutional, and agricultural developments across Upstate SC and Charlotte NC. Confirm approved plans, tolerances, equipment and any licensed specialist involvement before work begins.",
+      "We prepare building pads, roads, and sites for development across Upstate SC and greater Charlotte. Before starting, we'll review the approved plans, required grades, access, and any specialist work with your project team.",
   },
   {
     question: "Why does grading matter before installing turf?",
     answer:
-      "Turf performance depends on grade, drainage, soil preparation, species selection and establishment practices. Confirm the approved preparation, responsibilities and expected outcomes for grading and turf work before scheduling.",
+      "Water needs a way off the ground before new grass goes in. We check grade and drainage alongside soil preparation, grass choice, and the care needed while turf takes root.",
   },
 ];
 
@@ -42,7 +42,7 @@ export default function GradingSitePreparation() {
     <Layout>
       <SEO 
         title="Fine Grading & Site Preparation in SC & NC | P1"
-        description="Fine grading and site preparation for qualifying commercial, industrial, agricultural, municipal, and institutional properties. Call (704) 221-8928."
+        description="Fine grading and site preparation for commercial, industrial, agricultural, municipal, and institutional properties. Call (704) 221-8928."
         jsonLd={[
           serviceSchema({ name: "Fine Grading & Site Preparation", description: "Precision grading and site preparation for commercial, industrial, agricultural, municipal, and institutional properties. Serving Greenville, Spartanburg, and Charlotte NC. Call (704) 221-8928.", path: "/services/grading-site-preparation" }),
           breadcrumbSchema([
@@ -60,14 +60,13 @@ export default function GradingSitePreparation() {
         eyebrow="Grading & Site Preparation"
         title={
           <>
-            Fine Grading & Site Preparation for{" "}
+            Fine Grading & Site Preparation{" "}
             <em className="font-semibold not-italic text-tan" style={{ fontStyle: "italic" }}>
-              Large Properties
-            </em>{" "}
-            in the Carolinas
+              In the Carolinas
+            </em>
           </>
         }
-        subtitle="Grading affects drainage, foundations, turf and long-term land performance. P1 reviews the requested scope, approved plans and site conditions for commercial, agricultural and large-acreage properties in Upstate SC and Charlotte NC."
+        subtitle="Prepare your ground for construction, improve access, or correct an uneven grade. We handle grading and site preparation for large properties across Upstate SC and greater Charlotte."
         image={heroImg}
         imageAlt="Bulldozer grading a dirt site"
       />
@@ -78,7 +77,7 @@ export default function GradingSitePreparation() {
           
           <FeatureRow heading="Get Your Land Level — and Keep It That Way" image={levelImg} imageAlt="Illustrative image of a compact track loader grading soil at a commercial construction site">
             <p>
-              Poorly graded land can contribute to standing water, erosion, foundation pressure, turf problems and drainage issues. Whether you are preparing a construction site, reviewing drainage concerns or establishing grade for turf, discuss the approved plans, site conditions, equipment and delivery scope with P1 before work begins.
+              An uneven grade can leave water standing, wash soil away, or make turf harder to establish. We'll look at the problem with you and review the plans before shaping the ground.
             </p>
           </FeatureRow>
 
@@ -106,19 +105,19 @@ export default function GradingSitePreparation() {
 
           <FeatureRow heading="Grading for Drainage" image={drainageImg} imageAlt="Graded swale channeling water across a property" reverse>
             <p>
-              More than 80% of land drainage problems have their root in improper grade. Water follows the slope of the land — when that slope is wrong, water pools where it shouldn't, runs where it causes damage, and saturates soil that should stay dry. P1 grades with drainage as the primary outcome: every slope, every swale, every transition is designed to move water where it belongs.
+              Water follows the slope of the land. When that slope sends runoff toward a building or low spot, regrading may be part of the repair. We consider water movement when shaping slopes, swales, and transitions.
             </p>
           </FeatureRow>
 
           <FeatureRow heading="Grading for Turf Establishment" image={turfImg} imageAlt="Freshly graded soil transitioning into new sod">
             <p>
-              Turf installation on improperly graded ground can struggle. Before grading and turf work begin, confirm the approved grade, drainage approach, establishment practices and delivery responsibilities for the property. A coordinated scope helps keep those decisions with the same project team.
+              Good turf starts with well-prepared ground. We check the grade, drainage, and soil before planting, then explain the watering and care needed while the grass takes root.
             </p>
           </FeatureRow>
 
           <FeatureRow heading="Grading for New Construction" image={constructionImg} imageAlt="Large commercial construction site on freshly graded land" reverse>
             <p>
-              Every building starts with the ground beneath it. Before foundations are poured, roads are paved, or utilities go in, grading must be coordinated with the approved plans and project team. P1 discusses building pads, slopes, drainage and sub-grade preparation for commercial, industrial, municipal, institutional, and agricultural developments across Upstate South Carolina and the Charlotte, NC region.
+              Before foundations, pavement, or utilities go in, the ground needs to match the approved plans. We prepare pads, slopes, drainage routes, and sub-grade with your project team.
             </p>
           </FeatureRow>
 
@@ -127,7 +126,7 @@ export default function GradingSitePreparation() {
               Equipment & Precision
             </h2>
             <p className="text-lg text-secondary/80 leading-relaxed">
-              P1 defines the equipment, operators, accuracy targets, rough shaping, finish work, and access requirements for the proposed grading scope during qualification.
+              We'll confirm equipment access, crew timing, and the required finish before starting the grading work.
             </p>
           </div>
 

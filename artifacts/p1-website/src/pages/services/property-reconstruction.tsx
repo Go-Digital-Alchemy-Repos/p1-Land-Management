@@ -6,7 +6,7 @@ import { serviceSchema, breadcrumbSchema, faqSchema } from "@/lib/structured-dat
 import { FeatureRow } from "@/components/layout/FeatureRow";
 import { CheckCircle2 } from "lucide-react";
 import { Link } from "wouter";
-import heroImg from "@/assets/service-reconstruction-smaller-scale.png";
+import { reconstructionHero as heroImg } from "@/lib/service-images";
 import reconstructionImg from "@/assets/features/reconstruction-smaller-scale.png";
 
 import { FaqAccordion } from "@/components/content/FaqAccordion";
@@ -15,7 +15,7 @@ const FAQS = [
   {
     question: "What is full property reconstruction?",
     answer:
-      "Property reconstruction is a complete reset for land that has gone too long without the right care — a full-scope project combining land clearing, rough and fine grading, drainage installation, erosion control, pond restoration, soil amendment, and turf establishment, all under one contractor.",
+      "Property reconstruction brings several repairs into one plan. It may include clearing, grading, drainage, erosion control, pond repairs, soil preparation, and new turf, depending on what the land needs.",
   },
   {
     question: "How do I know if my property needs reconstruction instead of maintenance?",
@@ -25,7 +25,7 @@ const FAQS = [
   {
     question: "Do I need separate contractors for clearing, grading, drainage, and turf?",
     answer:
-      "Not with P1. We handle the full project from first cut to final turf — one contract, one schedule, one point of contact, and one team accountable for the finished result. That eliminates the scope gaps and schedule slips that come with juggling multiple contractors.",
+      "We can plan and handle clearing, grading, drainage, and turf as one project. You'll have one point of contact, and we'll explain any work that needs a separate specialist before starting.",
   },
   {
     question: "Who typically needs property reconstruction?",
@@ -39,9 +39,9 @@ export default function PropertyReconstruction() {
     <Layout>
       <SEO 
         title="Property Reconstruction & Land Restoration | P1"
-        description="Coordinate clearing, regrading, drainage, and turf establishment for qualifying property reconstruction work in Upstate SC and Charlotte. Call (704) 221-8928."
+        description="Clearing, grading, drainage repairs, and new turf to restore large properties in Upstate SC and Charlotte. Call (704) 221-8928."
         jsonLd={[
-          serviceSchema({ name: "Property Reconstruction", description: "Full-scope property reconstruction including land clearing, regrading, drainage overhaul, and turf establishment. Serving commercial and agricultural landowners in Upstate SC and Charlotte NC. Call (704) 221-8928.", path: "/services/property-reconstruction" }),
+          serviceSchema({ name: "Property Reconstruction", description: "Property restoration including land clearing, regrading, drainage overhaul, and turf establishment. Serving commercial and agricultural landowners in Upstate SC and Charlotte NC. Call (704) 221-8928.", path: "/services/property-reconstruction" }),
           breadcrumbSchema([
             { name: "Home", path: "/" },
             { name: "Services", path: "/services" },
@@ -63,7 +63,7 @@ export default function PropertyReconstruction() {
             </em>
           </>
         }
-        subtitle="When a property needs more than maintenance — when it needs to be fundamentally reworked — P1 is the contractor to call. We handle the full scope of land reconstruction, from initial clearing to finished turf, under one roof."
+        subtitle="When routine maintenance isn&#x27;t enough, we help restore the land. Clearing, regrading, drainage repairs, and new turf can be planned together around what your property needs."
         image={heroImg}
         imageAlt="Compact equipment restoring drainage and grade on a smaller rural property"
       />
@@ -74,10 +74,10 @@ export default function PropertyReconstruction() {
           
           <FeatureRow heading="When Maintenance Isn't Enough" image={reconstructionImg} imageAlt="Compact excavator restoring a smaller property edge with drainage rock and fresh grading">
             <p>
-              Some properties have gone too long without the right care. Drainage has failed. Erosion has carved up slopes and fields. Invasive vegetation has taken over. Ponds have silted in. Grade has shifted. What was once a functional, productive piece of land is now costing its owner more than it's worth.
+              Overgrowth, washed-out slopes, blocked drainage, and silted ponds can build up over time. If several parts of the property need attention, it helps to look at the underlying problems together.
             </p>
             <p>
-              Property reconstruction is P1's answer for clients who need a complete reset — a full-scope project that addresses the root causes of a property's problems and rebuilds it to perform.
+              We'll walk the site with you and recommend a sequence for repairs, from restoring access and drainage to preparing soil and planting turf.
             </p>
           </FeatureRow>
 
@@ -86,7 +86,7 @@ export default function PropertyReconstruction() {
               What Full Property Reconstruction Includes
             </h2>
             <p className="text-lg text-secondary/80 leading-relaxed mb-6">
-              Every reconstruction project is scoped to the specific property and its specific problems. A typical full reconstruction project may include:
+              The work depends on your property. A reconstruction project may include:
             </p>
             <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[
@@ -119,7 +119,7 @@ export default function PropertyReconstruction() {
                 "Agricultural operators reclaiming land that hasn't been actively managed",
                 "Commercial developers preparing a site that requires significant earthwork beyond basic clearing",
                 "Property owners recovering from major storm, flood, or erosion damage",
-                "Landowners who have had multiple contractors fail to solve persistent drainage or erosion problems"
+                "Owners dealing with persistent drainage or erosion problems"
               ].map((item, i) => (
                 <li key={i} className="flex items-center gap-3 text-lg text-secondary/80 font-medium">
                   <div className="w-2 h-2 rounded-full bg-primary" />
@@ -134,10 +134,10 @@ export default function PropertyReconstruction() {
               One Contractor for the Whole Project
             </h2>
             <p className="text-lg text-secondary/80 leading-relaxed mb-6">
-              Property reconstruction is complex. When multiple contractors are involved — a clearing crew here, a grading company there, a separate drainage contractor, then a seeding company — scope gaps appear, schedules slip, and nobody owns the overall outcome.
+              Clearing, grading, drainage, and planting need to happen in the right order. We plan those stages together so the crew preparing the ground understands what needs to follow.
             </p>
             <p className="text-lg text-secondary/80 leading-relaxed mb-6">
-              P1 handles the full project from first cut to final turf. That means one contract, one schedule, one point of contact, and one team that is accountable for the finished result.
+              You'll have one point of contact and a written plan for the work. We'll explain what's included, when each stage can happen, and where specialist help is needed.
             </p>
             <h3 className="text-xl font-serif font-bold text-secondary mt-8 mb-4">
               Service Area

@@ -28,7 +28,7 @@ const FAQS = [
   {
     question: "What size properties does P1 work on in Anderson?",
     answer:
-      "P1 focuses on commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger, bringing the equipment and expertise that small-scale landscaping companies can't provide. P1 does not provide residential services.",
+      "We serve commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger. We do not provide residential services.",
   },
 ];
 
@@ -37,9 +37,9 @@ export default function AndersonSC() {
     <Layout>
       <SEO 
         title="Land Management in Anderson, SC | P1"
-        description="Commercial landscaping, grounds maintenance, land clearing, grading & drainage for qualifying 1-acre-plus Anderson, SC sites. Call (704) 221-8928."
+        description="Commercial landscaping, grounds maintenance, land clearing, grading & drainage for 1-acre-plus Anderson, SC sites. Call (704) 221-8928."
         jsonLd={[
-          serviceAreaSchema({ areaName: "Anderson, South Carolina", areaType: "City", description: "Commercial landscaping, grounds maintenance, agricultural land care, land clearing, grading, drainage, and pond services for qualifying Anderson, SC properties.", path: "/service-areas/anderson-sc" }),
+          serviceAreaSchema({ areaName: "Anderson, South Carolina", areaType: "City", description: "Commercial landscaping, grounds maintenance, agricultural land care, land clearing, grading, drainage, and pond services for Anderson, SC properties.", path: "/service-areas/anderson-sc" }),
           breadcrumbSchema([
             { name: "Home", path: "/" },
             { name: "Service Areas", path: "/service-areas" },
@@ -59,7 +59,7 @@ export default function AndersonSC() {
             </em>
           </>
         }
-        subtitle="P1 Land & Property Management provides commercial landscaping and grounds maintenance, plus complete land and property services for commercial, industrial, agricultural, municipal, and institutional sites throughout Anderson and Anderson County. Our full-service model extends from ongoing grounds care to land clearing, grading, drainage, and pond management."
+        subtitle="Commercial landscaping, grounds maintenance, and land care throughout Anderson County. We help you look after established grounds, prepare new sites, and keep farm roads, drainage, and ponds in working order."
         image={heroImg}
         imageAlt="Land Clearing & Property Management in Anderson, SC"
       />
@@ -100,14 +100,14 @@ export default function AndersonSC() {
           <div className="grid gap-10 border-y border-border py-12 md:grid-cols-2">
             <div className="space-y-4">
               <h2 className="text-2xl font-serif font-bold text-secondary">Planning work around Anderson County terrain</h2>
-              <p className="leading-relaxed text-secondary/80">A property near the I-85 corridor can have very different operating constraints from agricultural acreage toward Belton, Pendleton, or Lake Hartwell. Commercial access, active operations, slopes, water movement, existing utilities, and the intended next use all affect how clearing, grading, or maintenance should be sequenced.</p>
-              <p className="leading-relaxed text-secondary/80">P1 starts by reviewing the visible site conditions and the requested outcome. The resulting estimate identifies the proposed work, access assumptions, exclusions, and any engineering, permitting, utility-location, or specialist responsibilities that must be handled separately.</p>
+              <p className="leading-relaxed text-secondary/80">A busy property near I-85 needs a different plan from a farm near Belton, Pendleton, or Lake Hartwell. We'll look at truck access, slopes, utilities, and where water goes before planning the work.</p>
+              <p className="leading-relaxed text-secondary/80">We'll walk the site and talk through what you want to change. Your estimate will explain the work, access needs, and anything that needs separate engineering, permits, or specialist help.</p>
             </div>
             <div className="space-y-4">
               <h2 className="text-2xl font-serif font-bold text-secondary">From working land to managed sites</h2>
-              <p className="leading-relaxed text-secondary/80">Agricultural properties may need pasture access, brush control, pond edges, drainage routes, or reseeding coordinated around animals and ongoing operations. Commercial, municipal, and institutional sites often place more emphasis on traffic flow, public access, appearance, and documented maintenance intervals.</p>
-              <p className="leading-relaxed text-secondary/80">For either setting, defining the problem before equipment arrives reduces rework. Share current plans, known drainage history, access limitations, and the property’s next use when requesting an assessment.</p>
-              <p className="leading-relaxed text-secondary/80">A practical first visit also separates immediate corrective work from longer-term maintenance. Standing water, unstable access, overgrowth, eroding banks, or failed turf may be related, but they do not always belong in one phase. P1 can organize the proposed work into a sequence that reflects site priorities and current availability, giving the owner or facility team a clearer basis for budgeting and scheduling. The written estimate—not a generic city-page promise—controls the services, timing, and responsibilities for a specific Anderson County property.</p>
+              <p className="leading-relaxed text-secondary/80">On farms, we plan around animals, field work, and equipment routes. On commercial and public grounds, we consider visitors, deliveries, mowing times, and the way you want the property to look.</p>
+              <p className="leading-relaxed text-secondary/80">Photos, site plans, and notes about drainage or access problems help us prepare for the visit. Tell us how you use the property and what you'd like to do next.</p>
+              <p className="leading-relaxed text-secondary/80">We'll help you decide what to tackle first. A washed-out access road or blocked ditch may need attention before seeding or regular mowing begins. Breaking the work into sensible stages gives you a clearer picture of costs and timing.</p>
               <p className="leading-relaxed text-secondary/80">Photos of problem areas and notes about when water, access, or vegetation issues appear can make the first conversation more useful and help the site visit focus on the right locations.</p>
             </div>
           </div>
@@ -120,7 +120,7 @@ export default function AndersonSC() {
       </section>
 
       <aside className="site-shell pb-12 text-lg">
-        <p><Link href="/services" className="text-primary underline">Compare land management services</Link> or <Link href="/contact" className="text-primary underline">tell us about your property</Link> to discuss scope and availability.</p>
+        <p><Link href="/services" className="text-primary underline">Compare land management services</Link> or <Link href="/contact" className="text-primary underline">tell us about your property</Link> to talk through the work and available dates.</p>
       </aside>
       <FinalCTA />
     </Layout>

@@ -230,6 +230,39 @@
       }
     ]
   },
+  "equestrian-estate-hero.png": {
+    "sourceBytes": 3326306,
+    "sourceHash": "2d77a76b0d935e36fbc5e15ff7189b039443431b8bc32422d4be7e786b617701",
+    "width": 1536,
+    "height": 1024,
+    "default": "optimized/equestrian-estate-hero-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/equestrian-estate-hero-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 35336,
+        "quality": 78
+      },
+      {
+        "path": "optimized/equestrian-estate-hero-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 512,
+        "bytes": 87276,
+        "quality": 78
+      },
+      {
+        "path": "optimized/equestrian-estate-hero-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 853,
+        "bytes": 223362,
+        "quality": 78
+      }
+    ]
+  },
   "features/about-who.png": {
     "sourceBytes": 2064870,
     "sourceHash": "a785a80db6fea0b44ed8f07db2047f86fcbf56b3fe41de939bedbf4e1700878a",
@@ -396,10 +429,10 @@
     ]
   },
   "features/commercial-schedule.png": {
-    "sourceBytes": 1708868,
-    "sourceHash": "60c52dba2f153efc93991c12ee229d435f02adc37532036907e068e9f20656b7",
-    "width": 1280,
-    "height": 896,
+    "sourceBytes": 2147320,
+    "sourceHash": "ed8323f29504cb1e8e2fc1074a84c7c90a6f02a32ead3e79c15bd1ef85bcecd4",
+    "width": 1500,
+    "height": 1049,
     "default": "optimized/features/commercial-schedule-1280.webp",
     "variants": [
       {
@@ -407,23 +440,23 @@
         "format": "webp",
         "width": 480,
         "height": 336,
-        "bytes": 24982,
+        "bytes": 25704,
         "quality": 78
       },
       {
         "path": "optimized/features/commercial-schedule-768.webp",
         "format": "webp",
         "width": 768,
-        "height": 538,
-        "bytes": 50964,
+        "height": 537,
+        "bytes": 52440,
         "quality": 78
       },
       {
         "path": "optimized/features/commercial-schedule-1280.webp",
         "format": "webp",
         "width": 1280,
-        "height": 896,
-        "bytes": 110082,
+        "height": 895,
+        "bytes": 106690,
         "quality": 78
       }
     ]
@@ -589,6 +622,72 @@
         "width": 1280,
         "height": 896,
         "bytes": 238328,
+        "quality": 78
+      }
+    ]
+  },
+  "features/equestrian-farm-pastures.png": {
+    "sourceBytes": 3389100,
+    "sourceHash": "8deeb2e45b13979dee1749c05afeb126009e64f7b22ef1773099c29025da12f5",
+    "width": 1536,
+    "height": 1024,
+    "default": "optimized/features/equestrian-farm-pastures-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/features/equestrian-farm-pastures-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 35514,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/equestrian-farm-pastures-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 512,
+        "bytes": 90214,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/equestrian-farm-pastures-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 853,
+        "bytes": 231916,
+        "quality": 78
+      }
+    ]
+  },
+  "features/farm-industrial-maintenance.png": {
+    "sourceBytes": 3242417,
+    "sourceHash": "2a00e4333fdb05f20015280229fe54183b7f737774bbeadc7dfc3a669652d449",
+    "width": 1672,
+    "height": 941,
+    "default": "optimized/features/farm-industrial-maintenance-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/features/farm-industrial-maintenance-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 270,
+        "bytes": 38680,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/farm-industrial-maintenance-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 432,
+        "bytes": 94720,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/farm-industrial-maintenance-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 720,
+        "bytes": 246170,
         "quality": 78
       }
     ]
@@ -957,34 +1056,34 @@
     ]
   },
   "features/turf-prep.png": {
-    "sourceBytes": 2193018,
-    "sourceHash": "0cde92c28ffbe05b8c9bdf1b9edb41edaab195208242fa506553e7e74be4b8d9",
-    "width": 1280,
-    "height": 896,
+    "sourceBytes": 3322663,
+    "sourceHash": "d354c412399eef5d6d6c09b99666aa281579872966e422f5d134ec39d6ce4922",
+    "width": 1536,
+    "height": 1024,
     "default": "optimized/features/turf-prep-1280.webp",
     "variants": [
       {
         "path": "optimized/features/turf-prep-480.webp",
         "format": "webp",
         "width": 480,
-        "height": 336,
-        "bytes": 38940,
+        "height": 320,
+        "bytes": 40496,
         "quality": 78
       },
       {
         "path": "optimized/features/turf-prep-768.webp",
         "format": "webp",
         "width": 768,
-        "height": 538,
-        "bytes": 94046,
+        "height": 512,
+        "bytes": 97972,
         "quality": 78
       },
       {
         "path": "optimized/features/turf-prep-1280.webp",
         "format": "webp",
         "width": 1280,
-        "height": 896,
-        "bytes": 230526,
+        "height": 853,
+        "bytes": 217850,
         "quality": 78
       }
     ]
@@ -1023,10 +1122,10 @@
     ]
   },
   "features/union-county-agriculture.png": {
-    "sourceBytes": 2301646,
-    "sourceHash": "a6aacd0fdd268b2bb5167ab8a298d2384901b255ba3b49917c0e509ad6dad9bc",
-    "width": 1280,
-    "height": 896,
+    "sourceBytes": 2797440,
+    "sourceHash": "3bb0a5413a8679cacfb5e3947b54f1a943c314421d480f31e3e09d94f7702744",
+    "width": 1499,
+    "height": 1049,
     "default": "optimized/features/union-county-agriculture-1280.webp",
     "variants": [
       {
@@ -1034,24 +1133,24 @@
         "format": "webp",
         "width": 480,
         "height": 336,
-        "bytes": 38494,
+        "bytes": 35652,
         "quality": 78
       },
       {
         "path": "optimized/features/union-county-agriculture-768.webp",
         "format": "webp",
         "width": 768,
-        "height": 538,
-        "bytes": 88666,
-        "quality": 73
+        "height": 537,
+        "bytes": 89420,
+        "quality": 78
       },
       {
         "path": "optimized/features/union-county-agriculture-1280.webp",
         "format": "webp",
         "width": 1280,
         "height": 896,
-        "bytes": 242252,
-        "quality": 73
+        "bytes": 215724,
+        "quality": 78
       }
     ]
   },
@@ -1089,10 +1188,10 @@
     ]
   },
   "features/york-county-lakewylie.png": {
-    "sourceBytes": 2518804,
-    "sourceHash": "cd84f14b615ee580248ad3e16012bf7f6124122b701b5fecc68bc6281a66ed05",
-    "width": 1280,
-    "height": 896,
+    "sourceBytes": 3099432,
+    "sourceHash": "8521c169f7d7cbb64d7ffa8236c3ba81d376acf1e73b34793ea585ce03ac2159",
+    "width": 1499,
+    "height": 1049,
     "default": "optimized/features/york-county-lakewylie-1280.webp",
     "variants": [
       {
@@ -1100,24 +1199,24 @@
         "format": "webp",
         "width": 480,
         "height": 336,
-        "bytes": 46332,
+        "bytes": 43324,
         "quality": 78
       },
       {
         "path": "optimized/features/york-county-lakewylie-768.webp",
         "format": "webp",
         "width": 768,
-        "height": 538,
-        "bytes": 97394,
-        "quality": 68
+        "height": 537,
+        "bytes": 92176,
+        "quality": 73
       },
       {
         "path": "optimized/features/york-county-lakewylie-1280.webp",
         "format": "webp",
         "width": 1280,
         "height": 896,
-        "bytes": 245186,
-        "quality": 63
+        "bytes": 217202,
+        "quality": 73
       }
     ]
   },
@@ -1155,10 +1254,10 @@
     ]
   },
   "hero-bg.png": {
-    "sourceBytes": 1869494,
-    "sourceHash": "c4693ecc42a537ea791f7b2f42951f9a6a2850ce6660cfd079d5d7eeb1eb102e",
-    "width": 1408,
-    "height": 768,
+    "sourceBytes": 2499037,
+    "sourceHash": "ee9b80d4ca5d51031d7a132d8fe36e68f3f9cf75a0592db3e037a27f33732a1b",
+    "width": 1698,
+    "height": 926,
     "default": "optimized/hero-bg-1280.webp",
     "variants": [
       {
@@ -1166,7 +1265,7 @@
         "format": "webp",
         "width": 480,
         "height": 262,
-        "bytes": 23598,
+        "bytes": 22704,
         "quality": 78
       },
       {
@@ -1174,7 +1273,7 @@
         "format": "webp",
         "width": 768,
         "height": 419,
-        "bytes": 58744,
+        "bytes": 54688,
         "quality": 78
       },
       {
@@ -1182,7 +1281,7 @@
         "format": "webp",
         "width": 1280,
         "height": 698,
-        "bytes": 156420,
+        "bytes": 141194,
         "quality": 78
       }
     ]
@@ -1617,8 +1716,8 @@
     ]
   },
   "locations/cornelius-nc.png": {
-    "sourceBytes": 3166696,
-    "sourceHash": "74b14ba072c357fac94e1e4458356fdc4f546724b8673c6195fbb7083ed8f404",
+    "sourceBytes": 3597734,
+    "sourceHash": "d9b8fa88b161d21bbd8b2968bbb8cd29a3524de1dc9d4bc589b90c44e8e8efcd",
     "width": 1536,
     "height": 1024,
     "default": "optimized/locations/cornelius-nc-1280.webp",
@@ -1628,7 +1727,7 @@
         "format": "webp",
         "width": 480,
         "height": 320,
-        "bytes": 34736,
+        "bytes": 40458,
         "quality": 78
       },
       {
@@ -1636,16 +1735,16 @@
         "format": "webp",
         "width": 768,
         "height": 512,
-        "bytes": 86434,
-        "quality": 78
+        "bytes": 89628,
+        "quality": 73
       },
       {
         "path": "optimized/locations/cornelius-nc-1280.webp",
         "format": "webp",
         "width": 1280,
         "height": 853,
-        "bytes": 218366,
-        "quality": 78
+        "bytes": 225756,
+        "quality": 73
       }
     ]
   },
@@ -1914,8 +2013,8 @@
     ]
   },
   "locations/inman-sc.png": {
-    "sourceBytes": 3126663,
-    "sourceHash": "c8f04eef705bdb835c87a7b258d4f87acd25dda503f5b24935309d7a6e18220b",
+    "sourceBytes": 2975413,
+    "sourceHash": "85c974bfd4134539fedca6e1c3403eb9b58d1756d6dc3ae3d7ce607d60e6fec4",
     "width": 1536,
     "height": 1024,
     "default": "optimized/locations/inman-sc-1280.webp",
@@ -1925,7 +2024,7 @@
         "format": "webp",
         "width": 480,
         "height": 320,
-        "bytes": 32548,
+        "bytes": 29838,
         "quality": 78
       },
       {
@@ -1933,7 +2032,7 @@
         "format": "webp",
         "width": 768,
         "height": 512,
-        "bytes": 79892,
+        "bytes": 71658,
         "quality": 78
       },
       {
@@ -1941,7 +2040,7 @@
         "format": "webp",
         "width": 1280,
         "height": 853,
-        "bytes": 201850,
+        "bytes": 174234,
         "quality": 78
       }
     ]
@@ -2046,8 +2145,8 @@
     ]
   },
   "locations/mount-holly-nc.png": {
-    "sourceBytes": 3361703,
-    "sourceHash": "5cc6751cdc1e040ab4306a45895f3d3471e51202d60592352ebc50267b854bb1",
+    "sourceBytes": 3277381,
+    "sourceHash": "0fee64084dfde11e127903c569cde688d5ac21f1fb1be577ff7ffac1a5fa64db",
     "width": 1536,
     "height": 1024,
     "default": "optimized/locations/mount-holly-nc-1280.webp",
@@ -2057,7 +2156,7 @@
         "format": "webp",
         "width": 480,
         "height": 320,
-        "bytes": 41770,
+        "bytes": 41962,
         "quality": 78
       },
       {
@@ -2065,7 +2164,7 @@
         "format": "webp",
         "width": 768,
         "height": 512,
-        "bytes": 87538,
+        "bytes": 87610,
         "quality": 73
       },
       {
@@ -2073,7 +2172,7 @@
         "format": "webp",
         "width": 1280,
         "height": 853,
-        "bytes": 243468,
+        "bytes": 224302,
         "quality": 78
       }
     ]
@@ -2145,8 +2244,8 @@
     ]
   },
   "locations/waxhaw-nc.png": {
-    "sourceBytes": 3124662,
-    "sourceHash": "36eff6e46408f910be545bc26fd506d050adbb4dbfe250aff1f411f7fa00e271",
+    "sourceBytes": 2920782,
+    "sourceHash": "c321d4dab5e07db38dc08e9f1e47d74fed9225a81429d31c2561430c8b25e292",
     "width": 1536,
     "height": 1024,
     "default": "optimized/locations/waxhaw-nc-1280.webp",
@@ -2156,7 +2255,7 @@
         "format": "webp",
         "width": 480,
         "height": 320,
-        "bytes": 37232,
+        "bytes": 34366,
         "quality": 78
       },
       {
@@ -2164,7 +2263,7 @@
         "format": "webp",
         "width": 768,
         "height": 512,
-        "bytes": 90326,
+        "bytes": 80452,
         "quality": 78
       },
       {
@@ -2172,7 +2271,7 @@
         "format": "webp",
         "width": 1280,
         "height": 853,
-        "bytes": 222300,
+        "bytes": 180858,
         "quality": 78
       }
     ]
