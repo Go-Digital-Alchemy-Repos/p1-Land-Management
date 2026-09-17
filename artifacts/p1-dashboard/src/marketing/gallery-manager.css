@@ -1,0 +1,59 @@
+.gallery-manager,
+.gallery-manager fieldset,
+.gallery-items,
+.gallery-items article {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+.gallery-manager label {
+  display: grid;
+  gap: 6px;
+}
+.gallery-manager fieldset,
+.gallery-items article {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 18px;
+  overflow-wrap: anywhere;
+}
+.gallery-settings {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+.gallery-manager .gallery-check {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.gallery-manager input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+}
+.gallery-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.gallery-manager button {
+  justify-self: start;
+}
+.gallery-items img {
+  max-width: 100%;
+  width: 240px;
+  height: 160px;
+  object-fit: contain;
+}
+.gallery-manager dialog {
+  width: min(1000px, 95vw);
+  max-height: 90vh;
+  overflow: auto;
+}
+@media (max-width: 650px) {
+  .gallery-settings {
+    grid-template-columns: 1fr;
+  }
+}
