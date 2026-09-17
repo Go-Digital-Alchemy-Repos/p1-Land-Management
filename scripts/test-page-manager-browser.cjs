@@ -216,6 +216,12 @@ const assert = require("node:assert/strict");
       .getByRole("button", { name: "Discard changes", exact: true })
       .click();
     assert.equal(await page.locator(".section-block").count(), 1);
+    assert.equal(
+      await page
+        .getByRole("button", { name: /Save block .* as reusable section/ })
+        .count(),
+      0,
+    );
     await page
       .getByRole("button", { name: "Preview page", exact: true })
       .click();

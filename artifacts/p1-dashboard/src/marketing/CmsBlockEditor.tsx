@@ -1,3 +1,5 @@
+import { SaveReusableSection } from "./SaveReusableSection";
+import { cloneSavedSectionBlocks } from "../../../../platform/p1-core/shared/cms-builder/section-library";
 import { useState } from "react";
 import { createFallbackBlockDef } from "../../../../platform/p1-core/shared/cms-builder/fallback-block";
 import type {
@@ -23,6 +25,9 @@ export function CmsBlockEditor({
   disabled: boolean;
   onNotice: (message: string) => void;
 }) {
+  const [savingCopy, setSavingCopy] = useState<
+    MarketingSection["blocks"] | null
+  >(null);
   const [type, setType] = useState("");
   const [showLibrary, setShowLibrary] = useState(false);
   const [insertPosition, setInsertPosition] = useState("end");
@@ -43,6 +48,20 @@ export function CmsBlockEditor({
   return (
     <fieldset className="cms-block-editor" disabled={disabled}>
       <h3>Content blocks</h3>
+      {canUseSections && savingCopy && (
+        <SaveReusableSection
+          blocks={savingCopy}
+          disabled={disabled}
+          onClose={() => setSavingCopy(null)}
+          onSaved={(name) => {
+            setSavingCopy(null);
+            setShowLibrary(false);
+            onNotice(
+              `Saved ${name} as a reusable section. Current editor changes remain unsaved.`,
+            );
+          }}
+        />
+      )}
       {blocks.map((block, index) => {
         const kind = String(block.type || ""),
           definition = catalog.blocks.find(
@@ -62,6 +81,18 @@ export function CmsBlockEditor({
               {index + 1}. {editorDefinition.label}
             </h4>
             <div className="section-actions">
+              {canUseSections && (
+                <button
+                  type="button"
+                  disabled={savingCopy !== null}
+                  aria-label={`Save block ${index + 1} as reusable section`}
+                  onClick={() =>
+                    setSavingCopy(cloneSavedSectionBlocks([block]))
+                  }
+                >
+                  Save as reusable section
+                </button>
+              )}
               <button
                 type="button"
                 disabled={index === 0}

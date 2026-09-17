@@ -42,6 +42,8 @@ const assert = require("node:assert/strict");
       },
       saved,
       accept = true;
+    let createdCopy,
+      failCopy = true;
     const savedSource = {
       id: "source",
       name: "Saved feature",
@@ -92,6 +94,17 @@ const assert = require("node:assert/strict");
             blocks: [{ id: "dynamic", type: "blog-post-feed", props: {} }],
           },
         ];
+      if (path.endsWith("/sections") && req.method() === "POST") {
+        if (failCopy) {
+          await route.fulfill({
+            status: 503,
+            json: { error: "Synthetic section save failure" },
+          });
+          return;
+        }
+        createdCopy = req.postDataJSON();
+        body = { ...createdCopy, id: "new-copy" };
+      }
       if (path.endsWith("/sections/section")) {
         if (req.method() === "PUT") {
           saved = { ...record, ...req.postDataJSON() };
@@ -187,6 +200,58 @@ const assert = require("node:assert/strict");
     await page
       .getByRole("button", { name: "Edit Reusable section", exact: true })
       .click();
+    await page
+      .getByRole("button", {
+        name: "Save block 1 as reusable section",
+        exact: true,
+      })
+      .click();
+    assert.equal(
+      await page
+        .getByRole("button", { name: "Create reusable section", exact: true })
+        .isDisabled(),
+      true,
+    );
+    await page
+      .getByLabel("Reusable section name", { exact: true })
+      .fill("Saved compatibility block");
+    await page
+      .getByLabel("Reusable section description", { exact: true })
+      .fill("Reusable test description");
+    await page
+      .getByLabel("Reusable section name", { exact: true })
+      .press("Enter");
+    assert.equal(saved, undefined);
+    assert.equal(createdCopy, undefined);
+    await page
+      .getByRole("button", { name: "Create reusable section", exact: true })
+      .click();
+    await page
+      .getByRole("alert")
+      .filter({ hasText: "Synthetic section save failure" })
+      .waitFor();
+    assert.equal(
+      await page
+        .getByLabel("Reusable section name", { exact: true })
+        .inputValue(),
+      "Saved compatibility block",
+    );
+    failCopy = false;
+    await page
+      .getByRole("button", { name: "Create reusable section", exact: true })
+      .click();
+    await page
+      .getByText(
+        "Saved Saved compatibility block as a reusable section. Current editor changes remain unsaved.",
+        { exact: true },
+      )
+      .waitFor();
+    assert.equal(saved, undefined);
+    assert.equal(createdCopy.name, "Saved compatibility block");
+    assert.equal(createdCopy.blocks.length, 1);
+    assert.notEqual(createdCopy.blocks[0].id, record.blocks[0].id);
+    assert.deepEqual(createdCopy.blocks[0].props, record.blocks[0].props);
+    assert.deepEqual(createdCopy.blocks[0].props.nested, { safe: true });
     await page
       .getByRole("button", { name: "Preview section", exact: true })
       .click();
