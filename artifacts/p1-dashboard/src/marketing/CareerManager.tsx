@@ -1,3 +1,4 @@
+import CareerApplications from "./CareerApplications";
 import { useEffect, useRef, useState } from "react";
 import {
   listMarketingCareerJobs,
@@ -13,6 +14,7 @@ export default function CareerManager() {
     [loading, setLoading] = useState(false),
     [search, setSearch] = useState(""),
     [revision, setRevision] = useState(0);
+  const [applications, setApplications] = useState(false);
   const alive = useRef(true);
   async function load() {
     setLoading(true);
@@ -36,6 +38,8 @@ export default function CareerManager() {
       alive.current = false;
     };
   }, []);
+  if (applications)
+    return <CareerApplications close={() => setApplications(false)} />;
   if (selected)
     return (
       <CareerJobEditor
@@ -54,6 +58,7 @@ export default function CareerManager() {
   return (
     <section className="template-library" aria-label="Careers">
       <h2>Job postings</h2>
+      <button onClick={() => setApplications(true)}>Applications</button>
       <p>
         Manage website recruiting posts. Availability follows the website’s
         Careers feature setting.

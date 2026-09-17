@@ -26678,7 +26678,12 @@
             ]
           },
           "note": {
-            "type": "string"
+            "type": "string",
+            "maxLength": 50000
+          },
+          "expectedUpdatedAt": {
+            "type": "string",
+            "format": "date-time"
           }
         },
         "additionalProperties": false

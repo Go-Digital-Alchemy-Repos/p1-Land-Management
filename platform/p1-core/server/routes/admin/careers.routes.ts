@@ -201,33 +201,24 @@ router.get(
 
 const updateApplicationSchema = z.object({
   status: z.enum(CAREER_APPLICATION_STATUSES).optional(),
-  note: z.string().optional().default(""),
+  note: z.string().max(50_000).optional().default(""),
+  expectedUpdatedAt: z.string().datetime().optional(),
 });
 
 router.put(
   "/applications/:id",
   asyncHandler(async (req, res) => {
     const id = paramString(req.params.id);
-    const current = await storage.careers.getApplication(id);
-    if (!current) return res.status(404).json({ message: "Application not found" });
     const parsed = updateApplicationSchema.safeParse(req.body);
     if (!parsed.success) {
       return res
         .status(400)
         .json({ message: "Invalid application update", errors: parsed.error.flatten() });
     }
-    const updated = parsed.data.status
-      ? await storage.careers.updateApplication(id, { status: parsed.data.status })
-      : current;
-    if (parsed.data.note || (parsed.data.status && parsed.data.status !== current.status)) {
-      await storage.careers.createApplicationNote({
-        applicationId: id,
-        note: parsed.data.note || `Status changed to ${parsed.data.status}`,
-        statusFrom: current.status,
-        statusTo: parsed.data.status ?? current.status,
-        createdBy: req.user?.id ?? null,
-      });
-    }
+    const result=await storage.careers.reviewApplication(id,parsed.data,req.user?.id ?? null);
+    if(result.kind==="missing")return res.status(404).json({message:"Application not found"});
+    if(result.kind==="conflict")return res.status(409).json({message:"This application changed. Reload to review the latest status and notes."});
+    const updated=result.application;
     await dispatchCareerWebhook("career.application.updated", updated);
     res.json(updated);
   }),

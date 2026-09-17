@@ -9,5 +9,7 @@ import type { MarketingCareerApplicationUpdateStatus } from './marketingCareerAp
 
 export interface MarketingCareerApplicationUpdate {
   status?: MarketingCareerApplicationUpdateStatus;
+  /** @maxLength 50000 */
   note?: string;
+  expectedUpdatedAt?: string;
 }

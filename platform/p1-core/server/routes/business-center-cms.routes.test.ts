@@ -2,7 +2,7 @@ import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import express from "express";
 import type { Server } from "node:http";
 const state = vi.hoisted(() => ({
-  careerJobs:vi.fn(),careerSettings:vi.fn(),careerCreate:vi.fn(),careerGet:vi.fn(),careerUpdate:vi.fn(),careerSlug:vi.fn(),
+  careerReview:vi.fn(),careerJobs:vi.fn(),careerSettings:vi.fn(),careerCreate:vi.fn(),careerGet:vi.fn(),careerUpdate:vi.fn(),careerSlug:vi.fn(),
   authenticate: vi.fn(),
   user: vi.fn(),
   enabled: vi.fn(),
@@ -105,7 +105,7 @@ vi.mock("../storage", () => ({
       deleteComment: state.commentDelete,
       countByStatus: async () => ({ pending: 0, approved: 0, spam: 0, rejected: 0 }),
     },
-    careers:{getJobs:state.careerJobs,createJob:state.careerCreate,getJob:state.careerGet,updateJob:state.careerUpdate,getJobSlugOwner:state.careerSlug},
+    careers:{reviewApplication:state.careerReview,getJobs:state.careerJobs,createJob:state.careerCreate,getJob:state.careerGet,updateJob:state.careerUpdate,getJobSlugOwner:state.careerSlug},
     events: {updateCanceledEvent:state.eventCancel,updateEvent:state.eventUpdate,getAllEvents:state.events,getEvent:state.eventGet,createEvent:state.eventCreate,getEventSlugOwner:state.eventSlug},
     eventVenues:{getAllVenues:state.venues},
     eventOrganizers:{getAllOrganizers:state.organizers},
@@ -944,4 +944,13 @@ it("Careers returns a conflict when the saved job version is stale",async()=>{
  expect(state.careerUpdate).toHaveBeenCalledWith('career',expect.objectContaining({summary:'Local edit'}),'2030-01-01T00:00:00.000Z');
  const invalid=await request('/careers/jobs/career','PUT',{},'/service',{summary:'Local edit',expectedUpdatedAt:'not-a-date'});
  expect(invalid.status).toBe(400);
+});
+
+it("Careers application review retains its version and trusted actor, returning conflicts and missing records",async()=>{
+ identity.capabilities=['marketing.content.careers'];
+ state.careerReview.mockResolvedValue({kind:'saved',application:{id:'application',status:'reviewing'}});
+ const result=await request('/careers/applications/application','PUT',{},'/service',{status:'reviewing',note:'Review note',expectedUpdatedAt:'2030-01-01T00:00:00.000Z',createdBy:'forged'});
+ expect(result.status).toBe(200);expect(state.careerReview).toHaveBeenCalledWith('application',{status:'reviewing',note:'Review note',expectedUpdatedAt:'2030-01-01T00:00:00.000Z'},'linked');
+ state.careerReview.mockResolvedValue({kind:'conflict'});expect((await request('/careers/applications/application','PUT',{},'/service',{note:'Retained note'})).status).toBe(409);
+ state.careerReview.mockResolvedValue({kind:'missing'});expect((await request('/careers/applications/application','PUT',{},'/service',{note:'Retained note'})).status).toBe(404);
 });

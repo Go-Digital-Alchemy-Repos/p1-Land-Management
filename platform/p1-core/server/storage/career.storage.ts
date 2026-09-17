@@ -123,7 +123,7 @@ export class CareerStorage {
   async updateJob(id: string, data: Partial<InsertCareerJob>, expectedUpdatedAt?: string): Promise<CareerJob | undefined> {
     const [job] = await db
       .update(careerJobs)
-      .set({ ...data, updatedAt: sql`GREATEST(date_trunc('milliseconds', now() AT TIME ZONE 'UTC'), date_trunc('milliseconds', ${careerJobs.updatedAt}) + interval '1 millisecond')` })
+      .set({ ...(data as Partial<CareerJobInsert>), updatedAt: sql`GREATEST(date_trunc('milliseconds', now() AT TIME ZONE 'UTC'), date_trunc('milliseconds', ${careerJobs.updatedAt}) + interval '1 millisecond')` })
       .where(and(eq(careerJobs.id, id), expectedUpdatedAt ? sql`date_trunc('milliseconds', ${careerJobs.updatedAt}) = (${expectedUpdatedAt}::timestamptz AT TIME ZONE 'UTC')` : undefined))
       .returning();
     return job;
@@ -175,10 +175,23 @@ export class CareerStorage {
   ): Promise<CareerApplication | undefined> {
     const [application] = await db
       .update(careerApplications)
-      .set({ ...data, updatedAt: new Date() } as Partial<CareerApplicationInsert>)
+      .set({ ...(data as Partial<CareerApplicationInsert>), updatedAt: sql`GREATEST(date_trunc('milliseconds', now() AT TIME ZONE 'UTC'), date_trunc('milliseconds', ${careerApplications.updatedAt}) + interval '1 millisecond')` })
       .where(eq(careerApplications.id, id))
       .returning();
     return application;
+  }
+
+  async reviewApplication(id: string, input: {status?: CareerApplication["status"];note: string;expectedUpdatedAt?: string}, actorId: string | null) {
+    return db.transaction(async tx => {
+      const [current]=await tx.select().from(careerApplications).where(eq(careerApplications.id,id)).for("update");
+      if(!current)return {kind:"missing" as const};
+      if(input.expectedUpdatedAt && current.updatedAt.toISOString()!==new Date(input.expectedUpdatedAt).toISOString())return {kind:"conflict" as const};
+      const status=input.status ?? current.status;
+      if(!input.note && status===current.status)return {kind:"saved" as const,application:current};
+      const [application]=await tx.update(careerApplications).set({status,updatedAt:sql`GREATEST(date_trunc('milliseconds', now() AT TIME ZONE 'UTC'), date_trunc('milliseconds', ${careerApplications.updatedAt}) + interval '1 millisecond')`}).where(eq(careerApplications.id,id)).returning();
+      await tx.insert(careerApplicationNotes).values({applicationId:id,note:input.note || `Status changed to ${status}`,statusFrom:current.status,statusTo:status,createdBy:actorId});
+      return {kind:"saved" as const,application};
+    });
   }
 
   async getApplicationNotes(applicationId: string): Promise<CareerApplicationNote[]> {

@@ -4,7 +4,7 @@ import { randomUUID } from "node:crypto";
 import { readFile } from "node:fs/promises";
 // Explicit opt-in: creates and removes only its own disposable Docker database.
 it.skipIf(process.env.P1_CAREER_CONCURRENCY_TEST !== "true")(
-  "CareerStorage serializes stale saves at JSON timestamp precision",
+  "Careers saves and reviews serialize conflicts and preserve atomic history",
   async () => {
     const name = "p1-career-cas-" + randomUUID().slice(0, 8),
       password = randomUUID();
@@ -84,6 +84,96 @@ it.skipIf(process.env.P1_CAREER_CONCURRENCY_TEST !== "true")(
         await storage.updateJob(original.id, { summary: "Old native form" }, beforeLegacy),
       ).toBeUndefined();
       expect((await storage.getJob(original.id))!.summary).toBe("Legacy caller");
+      await pool.query("INSERT INTO users(id) VALUES('reviewer')");
+      const applicant = await storage.createApplication({
+        jobId: original.id,
+        firstName: "Synthetic",
+        lastName: "Applicant",
+        email: "synthetic@example.test",
+        resumeFileName: "resume.pdf",
+        resumeMimeType: "application/pdf",
+        resumeFileSize: 12,
+        resumeStorageKey: "synthetic-key",
+      });
+      const reviews = await Promise.all([
+        storage.reviewApplication(
+          applicant.id,
+          {
+            status: "reviewing",
+            note: "First review",
+            expectedUpdatedAt: applicant.updatedAt.toISOString(),
+          },
+          "reviewer",
+        ),
+        storage.reviewApplication(
+          applicant.id,
+          {
+            status: "shortlisted",
+            note: "Competing review",
+            expectedUpdatedAt: applicant.updatedAt.toISOString(),
+          },
+          "reviewer",
+        ),
+      ]);
+      expect(reviews.map((row) => row.kind).sort()).toEqual(["conflict", "saved"]);
+      const notes = await storage.getApplicationNotes(applicant.id);
+      expect(notes).toHaveLength(1);
+      expect(notes[0].statusFrom).toBe("new");
+      expect(notes[0].createdBy).toBe("reviewer");
+      const reviewed = (await storage.getApplication(applicant.id))!;
+      expect(notes[0].statusTo).toBe(reviewed.status);
+      await pool.query(
+        `CREATE FUNCTION fail_review_note() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'Synthetic note failure'; END $$; CREATE TRIGGER fail_review_note BEFORE INSERT ON career_application_notes FOR EACH ROW EXECUTE FUNCTION fail_review_note()`,
+      );
+      await expect(
+        storage.reviewApplication(
+          applicant.id,
+          {
+            status: "hired",
+            note: "Must roll back",
+            expectedUpdatedAt: reviewed.updatedAt.toISOString(),
+          },
+          "reviewer",
+        ),
+      ).rejects.toThrow();
+      const rolledBack = (await storage.getApplication(applicant.id))!;
+      expect(rolledBack.status).toBe(reviewed.status);
+      expect(rolledBack.updatedAt).toEqual(reviewed.updatedAt);
+      expect(await storage.getApplicationNotes(applicant.id)).toHaveLength(1);
+      await pool.query(
+        "DROP TRIGGER fail_review_note ON career_application_notes; DROP FUNCTION fail_review_note()",
+      );
+      const noteOnly = await storage.reviewApplication(
+        applicant.id,
+        { note: "Additional note", expectedUpdatedAt: reviewed.updatedAt.toISOString() },
+        "reviewer",
+      );
+      expect(noteOnly.kind).toBe("saved");
+      expect(await storage.getApplicationNotes(applicant.id)).toHaveLength(2);
+      expect(
+        (
+          await storage.reviewApplication(
+            applicant.id,
+            { note: "Additional note", expectedUpdatedAt: reviewed.updatedAt.toISOString() },
+            "reviewer",
+          )
+        ).kind,
+      ).toBe("conflict");
+      const beforeExternal = (await storage.getApplication(applicant.id))!;
+      await storage.updateApplication(applicant.id, { status: "withdrawn" });
+      expect(
+        (
+          await storage.reviewApplication(
+            applicant.id,
+            {
+              status: "hired",
+              note: "Stale review",
+              expectedUpdatedAt: beforeExternal.updatedAt.toISOString(),
+            },
+            "reviewer",
+          )
+        ).kind,
+      ).toBe("conflict");
     } finally {
       if (pool) await pool.end();
       vi.unstubAllEnvs();
