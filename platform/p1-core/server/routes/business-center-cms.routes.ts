@@ -1,3 +1,4 @@
+import websiteSystem from "./business-center-website-system.routes";
 import careers from "./admin/careers.routes";
 import { requireBusinessCapability } from "../middleware/auth";
 import eventAttendees from "./business-center-event-attendees.routes";
@@ -75,6 +76,7 @@ router.get("/notification-forms", async (req, res, next) => {
     next(error);
   }
 });
+router.use("/website-system", websiteSystem);
 router.use("/editor-locks", editorLocks);
 router.use("/blog", requireBlogEnabled, blog);
 router.use(eventAttendees);

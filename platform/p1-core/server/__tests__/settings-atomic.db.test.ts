@@ -253,4 +253,25 @@ suite("atomic settings real database", () => {
       "newer",
     );
   });
+  it("public settings reject category/secret collisions and roll back when their audit cannot commit",async()=>{
+    await pool.query("CREATE TABLE IF NOT EXISTS activity_logs (id varchar PRIMARY KEY DEFAULT gen_random_uuid(),user_id varchar NOT NULL,action text NOT NULL,details text,created_at timestamp DEFAULT now())");
+    const category="head_tag_additions",key="public_head_html";
+    await settings.upsertSetting(key,"private","other",true);
+    const empty=await settings.getCategorySnapshot(category,true);
+    await expect(settings.upsertSettings([entry(key,"replacement",category)],{category,version:empty.version,publicOnly:true})).rejects.toThrow(/boundary/);
+    expect(await settings.getSetting(key)).toBe("private");
+    await pool.query("TRUNCATE system_settings");settings.invalidateAll();
+    await settings.upsertSetting(key,"private",category,true);
+    await expect(settings.getCategorySnapshot(category,true)).rejects.toThrow(/private data/);
+    await pool.query("TRUNCATE system_settings");settings.invalidateAll();
+    const first=await settings.getCategorySnapshot(category,true);
+    const audit={userId:"owner",action:"website_head_tags_updated",details:key};
+    await pool.query("ALTER TABLE activity_logs ADD CONSTRAINT fixture_audit_failure CHECK(action<>'website_head_tags_updated')");
+    try {await expect(settings.upsertSettings([entry(key,"raw",category)],{category,version:first.version,publicOnly:true},audit)).rejects.toThrow();expect(await settings.getSetting(key)).toBe(null);}finally{await pool.query("ALTER TABLE activity_logs DROP CONSTRAINT fixture_audit_failure");}
+    await settings.upsertSettings([entry(key,"<script>literal()</script>",category)],{category,version:first.version,publicOnly:true},audit);
+    expect(await settings.getSetting(key)).toBe("<script>literal()</script>");
+    expect((await pool.query("SELECT action,details FROM activity_logs WHERE action=$1",[audit.action])).rows).toEqual([{action:audit.action,details:key}]);
+    await expect(settings.upsertSettings([entry(key,"stale",category)],{category,version:first.version,publicOnly:true},audit)).rejects.toMatchObject({statusCode:409});
+  });
+
 });

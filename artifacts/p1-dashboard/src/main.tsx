@@ -79,6 +79,7 @@ import {
   type SettingsSection,
 } from "./dashboard-routes";
 const auth = createAuthClient({ plugins: [twoFactorClient()] });
+const HeadTagSettings = lazy(() => import("./marketing/HeadTagSettings"));
 const MarketingReports = lazy(() => import("./marketing/MarketingReports").then(module => ({default: module.MarketingReports})));
 const SidebarManager = lazy(() => import("./marketing/SidebarManager"));
 const GalleryManager = lazy(() => import("./marketing/GalleryManager"));
@@ -129,6 +130,7 @@ const icons: Record<DashboardPageRoute["view"] | "Settings:security" | "Settings
   "Website Events": Menu,
   "Website Forms": Menu,
   "CMS Pages": Menu,
+  "Website Head Tags": SlidersHorizontal,
   "Website Sections": Menu,
   "Website SEO": Menu,
   "Website Blog": Menu,
@@ -1422,6 +1424,7 @@ function App() {
               onRefresh={session}
             />
           )}
+          {view === "Website Head Tags" && person.role === "owner" && <Suspense fallback={<p role="status">Loading website settings…</p>}><HeadTagSettings key={person.id}/></Suspense>}
           {(view === "Analytics" || view === "Search Console") && <Suspense fallback={<p role="status">Loading reporting tools…</p>}><MarketingReports key={`${person.id}:${view}:${(person.capabilities || []).join(",")}`} source={view === "Analytics" ? "analytics" : "search-console"}/></Suspense>}
           {view === "Website Editor" && <Suspense fallback={<p role="status">Loading website editor…</p>}><WebsiteEditor canUseMedia={(person.capabilities || []).includes("marketing.content.media")} key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Media Library" && <Suspense fallback={<p role="status">Loading media…</p>}><MediaLibrary key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}

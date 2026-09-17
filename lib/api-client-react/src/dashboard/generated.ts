@@ -283,6 +283,7 @@ import type {
   SalesLead,
   SalesLeadConversion,
   SalesLeadConversionReceipt,
+  SaveWebsiteHeadTags200,
   SchedulePage,
   ServiceAgreement,
   ServiceAgreementFinancial,
@@ -321,6 +322,8 @@ import type {
   WebsiteDraftInput,
   WebsiteEditorReservation,
   WebsiteExpectedRevision,
+  WebsiteHeadTags,
+  WebsiteHeadTagsInput,
   WebsiteMenu,
   WebsiteMenuInput,
   WebsiteMenuReferences,
@@ -8056,6 +8059,55 @@ export const onboardLeadCustomer = async (id: string,
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
       leadOnboardingInput,)
+  }
+);}
+
+
+
+export const getGetWebsiteHeadTagsUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/website-system/head-tags`
+}
+
+/**
+ * Owner-only website head markup. Does not affect business dashboard settings.
+ */
+export const getWebsiteHeadTags = async ( options?: RequestInit): Promise<WebsiteHeadTags> => {
+
+  return customFetch<WebsiteHeadTags>(getGetWebsiteHeadTagsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getSaveWebsiteHeadTagsUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/website-system/head-tags`
+}
+
+/**
+ * Owner-only website head markup. Does not affect business dashboard settings.
+ */
+export const saveWebsiteHeadTags = async (websiteHeadTagsInput: WebsiteHeadTagsInput, options?: RequestInit): Promise<SaveWebsiteHeadTags200> => {
+
+  return customFetch<SaveWebsiteHeadTags200>(getSaveWebsiteHeadTagsUrl(),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      websiteHeadTagsInput,)
   }
 );}
 

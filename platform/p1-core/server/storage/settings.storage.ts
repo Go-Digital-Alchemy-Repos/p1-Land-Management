@@ -1,6 +1,6 @@
 import { eq, sql } from "drizzle-orm";
 import { db } from "../db";
-import { systemSettings, type SystemSetting } from "@shared/schema";
+import { systemSettings, activityLogs, type SystemSetting } from "@shared/schema";
 import crypto from "crypto";
 import { logger } from "../utils/logger";
 
@@ -140,8 +140,10 @@ export class SettingsStorage {
   /** Fresh values and their revision come from the same database read, bypassing caches. */
   async getCategorySnapshot(
     category: string,
+    publicOnly = false,
   ): Promise<{ values: Record<string, string>; version: string }> {
     const rows = await this.getSettingsByCategory(category);
+    if (publicOnly && rows.some(row => row.isSecret)) throw new Error("Public setting category contains private data");
     return {
       values: Object.fromEntries(
         rows.map((row) => [row.key, row.isSecret ? decrypt(row.value, row.key) : row.value]),
@@ -167,7 +169,8 @@ export class SettingsStorage {
   /** One committed setting set; preparation failures cannot leave partial credentials. */
   async upsertSettings(
     entries: { key: string; value: string; category: string; isSecret: boolean }[],
-    expected?: { category: string; version: string },
+    expected?: { category: string; version: string; publicOnly?: boolean },
+    audit?: { userId: string; action: string; details: string },
   ): Promise<SystemSetting[]> {
     if (!entries.length) return [];
     if (expected && entries.some((entry) => entry.category !== expected.category))
@@ -192,9 +195,18 @@ export class SettingsStorage {
           .select()
           .from(systemSettings)
           .where(eq(systemSettings.category, expected.category));
+        if (expected.publicOnly) {
+          if (current.some(row => row.isSecret) || entries.some(entry => entry.isSecret))
+            throw new Error("Public setting boundary violation");
+          for (const entry of entries) {
+            const [prior] = await tx.select().from(systemSettings).where(eq(systemSettings.key,entry.key));
+            if (prior && (prior.isSecret || prior.category !== expected.category))
+              throw new Error("Public setting boundary violation");
+          }
+        }
         if (categoryVersion(current) !== expected.version) throw new SettingsConflictError();
       }
-      return tx
+      const saved = await tx
         .insert(systemSettings)
         .values(values)
         .onConflictDoUpdate({
@@ -207,6 +219,8 @@ export class SettingsStorage {
           },
         })
         .returning();
+      if (audit) await tx.insert(activityLogs).values(audit);
+      return saved;
     });
     // Only committed writes invalidate; generation fencing rejects older in-flight fills.
     this.invalidateAll();

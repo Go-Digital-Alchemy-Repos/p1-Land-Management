@@ -14,6 +14,7 @@ export interface CmsOperation {
 }
 /** Explicit method/path pairs. Adding a Core route never exposes it automatically. */
 export const cmsOperations: CmsOperation[] = [];
+for (const method of ["GET", "PUT"] as const) cmsOperations.push({method,path:"/website-system/head-tags",capabilities:[],ownerOnly:true});
 function add(
   tool: string,
   method: Method,

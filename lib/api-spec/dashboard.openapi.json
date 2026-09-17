@@ -14266,6 +14266,58 @@
           }
         }
       }
+    },
+    "/marketing/cms/website-system/head-tags": {
+      "get": {
+        "operationId": "getWebsiteHeadTags",
+        "description": "Owner-only website head markup. Does not affect business dashboard settings.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteHeadTags"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "saveWebsiteHeadTags",
+        "description": "Owner-only website head markup. Does not affect business dashboard settings.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "saved"
+                  ],
+                  "properties": {
+                    "saved": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebsiteHeadTagsInput"
+              }
+            }
+          }
+        }
+      }
     }
 
   },
@@ -29092,6 +29144,37 @@
           },
           "replayed": {
             "type": "boolean"
+          }
+        }
+      },
+      "WebsiteHeadTags": {
+        "type": "object",
+        "required": [
+          "html",
+          "version"
+        ],
+        "properties": {
+          "html": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          }
+        }
+      },
+      "WebsiteHeadTagsInput": {
+        "type": "object",
+        "required": [
+          "html",
+          "expectedVersion"
+        ],
+        "properties": {
+          "html": {
+            "type": "string",
+            "maxLength": 100000
+          },
+          "expectedVersion": {
+            "type": "string"
           }
         }
       }

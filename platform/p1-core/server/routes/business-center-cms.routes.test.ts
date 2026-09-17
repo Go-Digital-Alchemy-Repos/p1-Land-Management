@@ -3,6 +3,7 @@ import express from "express";
 import type { Server } from "node:http";
 const state = vi.hoisted(() => ({
   careerWebhook:vi.fn(),careerDelete:vi.fn(),careerSave:vi.fn(),careerApplication:vi.fn(),careerResume:vi.fn(),careerReview:vi.fn(),careerJobs:vi.fn(),careerSettings:vi.fn(),careerCreate:vi.fn(),careerGet:vi.fn(),careerUpdate:vi.fn(),careerSlug:vi.fn(),
+  headSnapshot: vi.fn(),headSave: vi.fn(),
   authenticate: vi.fn(),
   user: vi.fn(),
   enabled: vi.fn(),
@@ -64,6 +65,7 @@ vi.mock("../services/federation-runtime", () => ({
 }));
 vi.mock("../storage", () => ({
   storage: {
+    settings: {getCategorySnapshot:state.headSnapshot,upsertSettings:state.headSave},
     users: { getUser: state.user },
     cmsMedia: { getMedia: state.mediaGet },
     clientSiteContent: { get: state.websiteGet, saveDraft: state.websiteSave },
@@ -1049,4 +1051,24 @@ it("Career deletion rejects missing/stale versions and applications before delet
  identity.capabilities=[];
  expect((await request("/careers/jobs/job","DELETE",{},"/service",payload)).status).toBe(403);
  expect(state.careerDelete).toHaveBeenCalledTimes(4);
+});
+
+it("website head settings require an attested Owner and stay available when CMS is disabled", async()=>{
+ state.enabled.mockResolvedValue(false);
+ for(const bad of [{active:true,role:"member",ownerAttested:false},{active:true,role:"owner",ownerAttested:false},{active:false,role:"owner",ownerAttested:true}]){
+  identity={...bad,capabilities:["marketing.content.pages"]};
+  expect((await request("/website-system/head-tags")).status).toBe(403);
+  expect((await request("/website-system/head-tags","PUT",{},"/service",{})).status).toBe(403);
+ }
+ expect(state.headSnapshot).not.toHaveBeenCalled();expect(state.headSave).not.toHaveBeenCalled();
+ identity={active:true,role:"owner",ownerAttested:true,capabilities:[]};
+ state.headSnapshot.mockResolvedValue({values:{public_head_html:'<script>literal()</script>',unrelated:'not projected'},version:'a'.repeat(64)});
+ const read=await request("/website-system/head-tags");expect(read.status).toBe(200);expect(await read.json()).toEqual({html:'<script>literal()</script>',version:'a'.repeat(64)});
+ expect(state.headSnapshot).toHaveBeenCalledWith("head_tag_additions",true);
+ const body={html:'<meta name="test" content="literal">',expectedVersion:'a'.repeat(64)};
+ expect((await request("/website-system/head-tags","PUT",{},"/service",body)).status).toBe(200);
+ expect(state.headSave).toHaveBeenCalledWith([{key:"public_head_html",category:"head_tag_additions",value:body.html,isSecret:false}],{category:"head_tag_additions",version:body.expectedVersion,publicOnly:true},{userId:"linked",action:"website_head_tags_updated",details:"public_head_html"});
+ for(const invalid of [{...body,key:"secret"},{html:body.html},{...body,html:'x'.repeat(100001)}])expect((await request("/website-system/head-tags","PUT",{},"/service",invalid)).status).toBe(400);
+ state.headSave.mockRejectedValueOnce(Object.assign(new Error("Changed"),{statusCode:409}));expect((await request("/website-system/head-tags","PUT",{},"/service",body)).status).toBe(409);
+ identity.active=false;expect((await request("/website-system/head-tags")).status).toBe(403);
 });
