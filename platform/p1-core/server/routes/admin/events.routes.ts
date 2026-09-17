@@ -599,30 +599,35 @@ router.put(
       payload.slug = await buildUniqueEventSlug(payload.title || oldEvent.title, requestedSlug, id);
     }
 
-    const event = await storage.events.updateEvent(id, payload as Partial<InsertEvent>);
+    const cancellation =
+      req.body.status === "canceled"
+        ? await storage.events.updateCanceledEvent(id, payload as Partial<InsertEvent>)
+        : undefined;
+    const event =
+      req.body.status === "canceled"
+        ? cancellation?.event
+        : await storage.events.updateEvent(id, payload as Partial<InsertEvent>);
     if (!event) {
       notFound(res, "Event");
       return;
     }
-
-    // Cancellation cascade
-    if (req.body.status === "canceled" && oldEvent.status !== "canceled") {
-      const canceledCount = await storage.eventRegistrations.cancelAllActiveRegistrations(id);
-      if (canceledCount > 0) {
-        const confirmedRegistrations =
-          await storage.eventRegistrations.getConfirmedRegistrations(id);
-        for (const reg of confirmedRegistrations) {
-          sendEventCanceledEmail(reg.email, reg.fullName.split(" ")[0], event.title).catch(
-            (err) => {
-              logger.email.warn("Failed to send event cancellation email", {
-                email: reg.email,
-                error: err instanceof Error ? err.message : String(err),
-              });
-            },
-          );
-        }
-        logger.app.info(`Event ${id} canceled, ${canceledCount} registrations updated.`);
-      }
+    // Use the transaction's changed rows, not a post-cancellation confirmed query.
+    for (const reg of cancellation?.canceled ?? []) {
+      void sendEventCanceledEmail(reg.email, reg.fullName.split(" ")[0], event.title)
+        .then((sent) => {
+          if (!sent)
+            logger.email.warn("Event cancellation notification not sent", {
+              eventId: id,
+              registrationId: reg.id,
+            });
+        })
+        .catch((err) => {
+          logger.email.warn("Event cancellation notification failed", {
+            eventId: id,
+            registrationId: reg.id,
+            error: err instanceof Error ? err.message : String(err),
+          });
+        });
     }
 
     res.json(await normalizeEventImage(event));

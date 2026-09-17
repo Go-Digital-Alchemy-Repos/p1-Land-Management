@@ -26,6 +26,7 @@ const assert = require("node:assert/strict");
       venueSaved,
       venueWrites = 0,
       deleted = 0;
+    let cancellationWrites = 0;
     let formsFail = true;
     let attendanceWrites = 0,
       attendeeLoadFails = true,
@@ -153,6 +154,13 @@ const assert = require("node:assert/strict");
       if (path === "/api/v1/marketing/cms/events/event") {
         if (req.method() === "PUT") {
           saved = req.postDataJSON();
+          if (saved.status === "canceled") {
+            cancellationWrites++;
+            assert.deepEqual(saved, { status: "canceled" });
+            event = { ...event, ...saved };
+            return route.fulfill({ json: event });
+          }
+
           if (fail)
             return route.fulfill({
               status: 503,
@@ -563,6 +571,29 @@ const assert = require("node:assert/strict");
     await page
       .getByRole("button", { name: "Back to events", exact: true })
       .click();
+    page.once("dialog", (d) => d.dismiss());
+    await page
+      .getByRole("button", { name: "Cancel Updated workshop", exact: true })
+      .click();
+    assert.equal(cancellationWrites, 0);
+    page.once("dialog", (d) => {
+      assert(d.message().includes("does not issue refunds"));
+      return d.accept();
+    });
+    await page
+      .getByRole("button", { name: "Cancel Updated workshop", exact: true })
+      .click();
+    await page
+      .getByRole("status")
+      .filter({ hasText: "Event and active registrations canceled" })
+      .waitFor();
+    assert.equal(cancellationWrites, 1);
+    assert.equal(
+      await page
+        .getByRole("button", { name: "Cancel Updated workshop", exact: true })
+        .count(),
+      0,
+    );
     deny = true;
     await page.reload();
     await page.waitForTimeout(500);

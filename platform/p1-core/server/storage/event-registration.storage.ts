@@ -105,19 +105,6 @@ export class EventRegistrationStorage {
     return reg;
   }
 
-  async cancelAllActiveRegistrations(eventId: string): Promise<number> {
-    const result = await db
-      .update(eventRegistrations)
-      .set({ status: "canceled", canceledAt: new Date() })
-      .where(
-        and(
-          eq(eventRegistrations.eventId, eventId),
-          sql`${eventRegistrations.status} IN ('confirmed', 'waitlisted')`,
-        ),
-      );
-    return result.rowCount ?? 0;
-  }
-
   /** Event-scoped attendance only; never changes registration or payment state.
    * Repeating a successful check-in preserves its original timestamp.
    */

@@ -48,6 +48,7 @@ const state = vi.hoisted(() => ({
   formDeleteSubmission: vi.fn(),
   formJobs: vi.fn(),
   formRetry: vi.fn(),
+  eventCancel: vi.fn(),
   eventUpdate: vi.fn(),
   attendees: vi.fn(), attendance: vi.fn(),
   events: vi.fn(), eventGet: vi.fn(), eventCreate: vi.fn(), eventSlug: vi.fn(), eventMail: vi.fn(), venues:vi.fn(), organizers:vi.fn(), eventAnalytics:vi.fn(),
@@ -103,7 +104,7 @@ vi.mock("../storage", () => ({
       deleteComment: state.commentDelete,
       countByStatus: async () => ({ pending: 0, approved: 0, spam: 0, rejected: 0 }),
     },
-    events: {updateEvent:state.eventUpdate,getAllEvents:state.events,getEvent:state.eventGet,createEvent:state.eventCreate,getEventSlugOwner:state.eventSlug},
+    events: {updateCanceledEvent:state.eventCancel,updateEvent:state.eventUpdate,getAllEvents:state.events,getEvent:state.eventGet,createEvent:state.eventCreate,getEventSlugOwner:state.eventSlug},
     eventVenues:{getAllVenues:state.venues},
     eventOrganizers:{getAllOrganizers:state.organizers},
     eventRegistrations:{getEventAnalytics:state.eventAnalytics,getRegistrationsByEvent:state.attendees,setEventAttendance:state.attendance},
@@ -883,4 +884,24 @@ it("provides minimized public form references and validates event registration s
   expect(state.eventUpdate).toHaveBeenCalledTimes(writes);
   identity.capabilities=["marketing.content.forms"];
   expect((await request("/events/registration-forms")).status).toBe(403);
+});
+
+
+it("notifies the exact atomic cancellation result, including pending registrations", async () => {
+  identity.capabilities=["marketing.content.events"];
+  state.eventGet.mockResolvedValue({id:"event",title:"Workshop",status:"published"});
+  state.eventCancel.mockResolvedValue({event:{id:"event",title:"Workshop",status:"canceled"},canceled:[{id:"one",fullName:"First Guest",email:"first@example.test"},{id:"two",fullName:"Second Guest",email:"second@example.test"}]});
+  state.eventMail.mockResolvedValue(true);
+  const response=await request("/events/event","PUT",{},"/service",{status:"canceled"});
+  expect(response.status).toBe(200);expect(await response.json()).toMatchObject({status:"canceled"});
+  expect(state.eventCancel).toHaveBeenCalledExactlyOnceWith("event",{status:"canceled"});
+  expect(state.eventUpdate).not.toHaveBeenCalled();
+  expect(state.eventMail).toHaveBeenCalledTimes(2);
+  expect(state.eventMail).toHaveBeenCalledWith("first@example.test","First","Workshop");
+  state.eventCancel.mockResolvedValue({event:{id:"event",title:"Workshop",status:"canceled"},canceled:[]});
+  expect((await request("/events/event","PUT",{},"/service",{status:"canceled"})).status).toBe(200);
+  expect(state.eventMail).toHaveBeenCalledTimes(2);
+  state.eventCancel.mockRejectedValue(new Error("Synthetic transaction failure"));
+  expect((await request("/events/event","PUT",{},"/service",{status:"canceled"})).status).toBe(500);
+  expect(state.eventMail).toHaveBeenCalledTimes(2);
 });

@@ -503,6 +503,40 @@ export default function EventManager({
       if (alive.current) setDuplicating(false);
     }
   }
+  async function cancelEvent(event: MarketingEvent) {
+    if (
+      gate.current ||
+      !window.confirm(
+        `Cancel ${event.title}? Confirmed, waitlisted and pending registrations will be canceled, and cancellation emails will be attempted. Payment records remain unchanged; this does not issue refunds.`,
+      )
+    )
+      return;
+    gate.current = true;
+    setDuplicating(true);
+    setError("");
+    setNotice("");
+    try {
+      const updated = await updateMarketingEvent(event.id, {
+        status: "canceled",
+      });
+      if (alive.current) {
+        setRows((current) =>
+          current.map((row) => (row.id === updated.id ? updated : row)),
+        );
+        setNotice(
+          "Event and active registrations canceled. Cancellation email delivery is not guaranteed; review any outstanding payments separately.",
+        );
+      }
+    } catch (error) {
+      if (alive.current)
+        setError(
+          `${message(error)}. Refresh events to verify the saved status before retrying.`,
+        );
+    } finally {
+      gate.current = false;
+      if (alive.current) setDuplicating(false);
+    }
+  }
   if (attendees)
     return (
       <EventAttendees
@@ -633,6 +667,14 @@ export default function EventManager({
                 >
                   Duplicate {event.title}
                 </button>
+                {event.status !== "canceled" && (
+                  <button
+                    disabled={duplicating}
+                    onClick={() => void cancelEvent(event)}
+                  >
+                    Cancel {event.title}
+                  </button>
+                )}
               </div>
             </article>
           ))}

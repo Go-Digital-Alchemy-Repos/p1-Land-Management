@@ -1,6 +1,6 @@
-import { eq, gte, lt, lte, asc, desc, and, or, sql } from "drizzle-orm";
+import { eq, gte, lt, lte, asc, desc, and, or, sql, inArray } from "drizzle-orm";
 import { db } from "../db";
-import { events, type Event, type InsertEvent } from "@shared/schema";
+import { events, eventRegistrations, type Event, type InsertEvent } from "@shared/schema";
 
 type EventInsert = typeof events.$inferInsert;
 
@@ -84,6 +84,32 @@ export class EventStorage {
       .where(eq(events.id, id))
       .returning();
     return event;
+  }
+
+  /** Update the event and cancel every active registration in one transaction.
+   * Returning the changed rows is the notification recipient snapshot; retries
+   * cannot reselect registrations already canceled by an earlier request.
+   */
+  async updateCanceledEvent(id: string, data: Partial<InsertEvent>) {
+    return db.transaction(async (tx) => {
+      const [event] = await tx
+        .update(events)
+        .set({ ...data, status: "canceled" } as Partial<EventInsert>)
+        .where(eq(events.id, id))
+        .returning();
+      if (!event) return undefined;
+      const canceled = await tx
+        .update(eventRegistrations)
+        .set({ status: "canceled", canceledAt: new Date() })
+        .where(
+          and(
+            eq(eventRegistrations.eventId, id),
+            inArray(eventRegistrations.status, ["confirmed", "waitlisted", "pending"]),
+          ),
+        )
+        .returning();
+      return { event, canceled };
+    });
   }
 
   async deleteEvent(id: string): Promise<boolean> {
