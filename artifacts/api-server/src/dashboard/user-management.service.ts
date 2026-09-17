@@ -8,6 +8,7 @@ import {
 import { pool, transaction } from "./database";
 import { HttpError } from "./policy";
 import {
+  ownerNotificationsInput,
   accountUpdateInput,
   invitationInput,
 } from "./user-management.contract";
@@ -278,5 +279,43 @@ export async function requestManagedPasswordRecovery(
     });
     await audit(c, ownerId, "account.password_recovery.requested", targetId);
     return { ok: true };
+  });
+}
+
+export async function updateOwnerNotifications(
+  ownerId: string,
+  targetId: string,
+  input: unknown,
+) {
+  const data = ownerNotificationsInput.parse(input);
+  return transaction(async (c) => {
+    await ownerLock(c, ownerId);
+    const target = (
+      await c.query(
+        "SELECT role FROM staff_profile WHERE user_id=$1 FOR UPDATE",
+        [targetId],
+      )
+    ).rows[0];
+    if (!target) throw new HttpError(404, "Account not found");
+    if (target.role !== "owner")
+      throw new HttpError(409, "Use the team account editor for this account");
+    await c.query(
+      "INSERT INTO business_account_access(user_id) VALUES($1) ON CONFLICT DO NOTHING",
+      [targetId],
+    );
+    const changed = await c.query(
+      "UPDATE business_account_access SET form_notification_ids=$2,version=version+1,updated_at=now() WHERE user_id=$1 AND version=$3 RETURNING version",
+      [targetId, data.formNotificationIds, data.version],
+    );
+    if (!changed.rowCount)
+      throw new HttpError(
+        409,
+        "Preferences changed. Reload saved preferences before saving again; your draft is retained.",
+      );
+    await audit(c, ownerId, "account.form_notifications.updated", targetId, {
+      formNotificationIds: data.formNotificationIds,
+      version: changed.rows[0].version,
+    });
+    return changed.rows[0] as { version: number };
   });
 }

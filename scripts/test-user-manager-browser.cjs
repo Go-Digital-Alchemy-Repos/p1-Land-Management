@@ -33,6 +33,16 @@ const assert = require("node:assert/strict");
       mfaRequired: false,
       twoFactorEnabled: false,
     };
+    let ownerAccount = {
+      ...account,
+      id: "owner",
+      role: "owner",
+      name: "Synthetic Owner",
+      email: "owner@example.test",
+      formNotificationIds: ["11111111-1111-4111-8111-111111111111"],
+    };
+    let ownerConflict = true;
+    const ownerWrites = [];
     let conflict = true,
       catalogFails = true;
     const writes = [];
@@ -46,7 +56,20 @@ const assert = require("node:assert/strict");
         path = new URL(request.url()).pathname;
       let result = {},
         status = 200;
-      if (path.endsWith("/notification-forms")) {
+      if (path.endsWith("/owner/owner-notifications")) {
+        const body = request.postDataJSON();
+        ownerWrites.push(body);
+        if (ownerConflict) {
+          ownerConflict = false;
+          ownerAccount = { ...ownerAccount, version: 2 };
+          status = 409;
+          result = { error: "Preferences changed" };
+        } else {
+          assert.equal(body.version, 2);
+          ownerAccount = { ...ownerAccount, ...body, version: 3 };
+          result = { version: 3 };
+        }
+      } else if (path.endsWith("/notification-forms")) {
         status = catalogFails ? 503 : 200;
         result = catalogFails
           ? { error: "Synthetic catalog unavailable" }
@@ -72,7 +95,7 @@ const assert = require("node:assert/strict");
         recoveryRequests++;
         result = { ok: true };
       } else if (path.endsWith("/users") && request.method() === "GET")
-        result = { items: [account] };
+        result = { items: [account, ownerAccount] };
       else if (path.endsWith("/invitations") && request.method() === "GET")
         result = { items: [] };
       else if (path.endsWith("/users/member") && request.method() === "PATCH") {
@@ -295,6 +318,75 @@ const assert = require("node:assert/strict");
       ["revenue.sales"],
       "cleanup stays in draft until saved",
     );
+    await page
+      .getByRole("button", { name: "Close user editor", exact: true })
+      .click();
+    await page
+      .getByRole("button", { name: "Notification preferences", exact: true })
+      .click();
+    const ownerDialog = page
+      .getByRole("dialog")
+      .filter({
+        has: page.getByRole("heading", {
+          name: "Owner notification preferences",
+          exact: true,
+        }),
+      });
+    assert.equal(
+      await ownerDialog.getByLabel("First name", { exact: true }).count(),
+      0,
+    );
+    await ownerDialog
+      .getByRole("button", { name: "Choose notification forms", exact: true })
+      .click();
+    await ownerDialog
+      .getByRole("checkbox", {
+        name: "Estimate request · estimate · System",
+        exact: true,
+      })
+      .uncheck();
+    await ownerDialog
+      .getByRole("button", { name: "Save owner notifications", exact: true })
+      .click();
+    await ownerDialog
+      .getByRole("alert")
+      .filter({ hasText: "Preferences changed" })
+      .waitFor();
+    assert.equal(
+      await ownerDialog
+        .getByRole("checkbox", {
+          name: "Estimate request · estimate · System",
+          exact: true,
+        })
+        .isChecked(),
+      false,
+    );
+    await ownerDialog
+      .getByRole("button", { name: "Reload saved preferences", exact: true })
+      .click();
+    await page.waitForFunction(() =>
+      [
+        ...document.querySelectorAll('dialog[open] input[type="checkbox"]'),
+      ].some((input) => input.checked),
+    );
+    await ownerDialog
+      .getByRole("checkbox", {
+        name: "Estimate request · estimate · System",
+        exact: true,
+      })
+      .uncheck();
+    await ownerDialog
+      .getByRole("button", { name: "Save owner notifications", exact: true })
+      .click();
+    await page
+      .getByRole("status")
+      .filter({ hasText: "Owner notification preferences saved" })
+      .waitFor();
+    assert.deepEqual(ownerWrites.at(-1), {
+      version: 2,
+      formNotificationIds: [],
+    });
+    assert.equal(ownerAccount.role, "owner");
     assert.deepEqual(errors, []);
     console.log(
       "PASS User Manager: stale draft preservation, fresh reload/version, isolated report grant, invitation and mobile dialog.",

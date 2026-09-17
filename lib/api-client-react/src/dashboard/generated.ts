@@ -208,6 +208,8 @@ import type {
   UpdateClientContact,
   UpdateDashboardClient,
   UpdateDashboardProperty,
+  UpdateManagedOwnerNotifications200,
+  UpdateManagedOwnerNotificationsBody,
   UpdateManagedUser200,
   UpdateProject,
   UpdateProjectPhase,
@@ -5696,6 +5698,32 @@ export const listManagedNotificationForms = async ( options?: RequestInit): Prom
     method: 'GET'
 
 
+  }
+);}
+
+
+
+export const getUpdateManagedOwnerNotificationsUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/user-management/users/${id}/owner-notifications`
+}
+
+/**
+ * Owner-only, version-checked notification preferences for an Owner account. Does not alter role, capabilities, status, credentials or MFA.
+ */
+export const updateManagedOwnerNotifications = async (id: string,
+    updateManagedOwnerNotificationsBody: UpdateManagedOwnerNotificationsBody, options?: RequestInit): Promise<UpdateManagedOwnerNotifications200> => {
+
+  return customFetch<UpdateManagedOwnerNotifications200>(getUpdateManagedOwnerNotificationsUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      updateManagedOwnerNotificationsBody,)
   }
 );}
 

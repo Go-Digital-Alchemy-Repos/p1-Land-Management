@@ -135,6 +135,92 @@ test(
         body: body === undefined ? undefined : JSON.stringify(body),
       });
     }
+    const ownerPreferencePath = `/user-management/users/${owner.id}/owner-notifications`;
+    const ownerForm = randomUUID();
+    await pool.query(
+      "UPDATE business_account_access SET form_notification_ids=$2 WHERE user_id=$1",
+      [owner.id, [ownerForm]],
+    );
+    const ownerBefore = (
+      await pool.query(
+        'SELECT u.name,p.role,p.active,p.mfa_required,a.capabilities FROM "user" u JOIN staff_profile p ON p.user_id=u.id JOIN business_account_access a ON a.user_id=u.id WHERE u.id=$1',
+        [owner.id],
+      )
+    ).rows[0];
+    assert.equal(
+      (
+        await call(
+          ownerPreferencePath,
+          { version: 1, formNotificationIds: [] },
+          "PATCH",
+          manager.cookie,
+        )
+      ).status,
+      403,
+    );
+    assert.equal(
+      (
+        await call(
+          ownerPreferencePath,
+          { version: 1, formNotificationIds: [], role: "member" },
+          "PATCH",
+        )
+      ).status,
+      400,
+    );
+    assert.equal(
+      (
+        await call(
+          `/user-management/users/${member.id}/owner-notifications`,
+          { version: 1, formNotificationIds: [] },
+          "PATCH",
+        )
+      ).status,
+      409,
+    );
+    assert.equal(
+      (
+        await call(
+          ownerPreferencePath,
+          { version: 1, formNotificationIds: [] },
+          "PATCH",
+        )
+      ).status,
+      200,
+    );
+    assert.equal(
+      (
+        await call(
+          ownerPreferencePath,
+          { version: 1, formNotificationIds: [] },
+          "PATCH",
+        )
+      ).status,
+      409,
+    );
+    assert.deepEqual(
+      (
+        await pool.query(
+          'SELECT u.name,p.role,p.active,p.mfa_required,a.capabilities FROM "user" u JOIN staff_profile p ON p.user_id=u.id JOIN business_account_access a ON a.user_id=u.id WHERE u.id=$1',
+          [owner.id],
+        )
+      ).rows[0],
+      ownerBefore,
+    );
+    assert.equal(
+      (await pool.query("SELECT 1 FROM session WHERE id=$1", [owner.session]))
+        .rowCount,
+      1,
+    );
+    assert.equal(
+      (
+        await pool.query(
+          "SELECT 1 FROM audit_event WHERE entity_id=$1 AND action='account.form_notifications.updated'",
+          [owner.id],
+        )
+      ).rowCount,
+      1,
+    );
     const crew = await fixture("crew");
     assert.equal(
       (

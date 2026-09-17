@@ -1,3 +1,4 @@
+import { OwnerNotificationEditor } from "./OwnerNotificationEditor";
 import { FormNotificationChoices } from "./FormNotificationChoices";
 import { isCapability } from "@workspace/api-zod/business-access";
 import {
@@ -74,6 +75,7 @@ export function UserManager({
 }) {
   const [accounts, setAccounts] = useState<Account[]>([]),
     [invitations, setInvitations] = useState<Invite[]>([]);
+  const [ownerTarget, setOwnerTarget] = useState<Account | null>(null);
   const [search, setSearch] = useState(""),
     [error, setError] = useState(""),
     [notice, setNotice] = useState("");
@@ -261,6 +263,18 @@ export function UserManager({
                     </td>
                     <td>
                       <div className="row-actions">
+                        {account.role === "owner" && (
+                          <button
+                            disabled={busy}
+                            onClick={() => {
+                              setNotice("");
+                              setError("");
+                              setOwnerTarget(account);
+                            }}
+                          >
+                            Notification preferences
+                          </button>
+                        )}
                         {account.role !== "owner" && (
                           <button disabled={busy} onClick={() => edit(account)}>
                             Manage
@@ -290,6 +304,28 @@ export function UserManager({
             </tbody>
           </table>
         </div>
+      )}
+      {ownerTarget && (
+        <OwnerNotificationEditor
+          key={ownerTarget.id}
+          account={ownerTarget}
+          onClose={() => setOwnerTarget(null)}
+          onSaved={() => {
+            setOwnerTarget(null);
+            setNotice("Owner notification preferences saved.");
+            void load().catch((error) => {
+              if (alive.current) setError(error.message);
+            });
+          }}
+          reload={async () => {
+            const fresh = (await load()).find(
+              (account) =>
+                account.id === ownerTarget.id && account.role === "owner",
+            );
+            if (!fresh) throw new Error("Owner account is no longer available");
+            return fresh;
+          }}
+        />
       )}
       <h3>Invitations</h3>
       <div className="table-wrap">

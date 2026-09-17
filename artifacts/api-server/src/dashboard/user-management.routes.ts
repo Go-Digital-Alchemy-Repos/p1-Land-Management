@@ -1,4 +1,5 @@
 import {
+  ownerNotificationsInput,
   accountUpdateInput,
   invitationInput,
 } from "./user-management.contract";
@@ -12,6 +13,7 @@ import { actor } from "./access";
 import { HttpError, requireRole } from "./policy";
 import { pool } from "./database";
 import {
+  updateOwnerNotifications,
   requestManagedPasswordRecovery,
   changeInvitation,
   inviteManagedAccount,
@@ -120,5 +122,29 @@ userManagementApi.post(
         z.string().min(1).parse(req.params.id),
       ),
     );
+  },
+);
+
+userManagementApi.patch(
+  "/user-management/users/:id/owner-notifications",
+  async (req, res) => {
+    const input = ownerNotificationsInput.parse(req.body);
+    const id = z.string().min(1).parse(req.params.id);
+    const current = (
+      await pool.query(
+        "SELECT p.role,a.form_notification_ids FROM staff_profile p LEFT JOIN business_account_access a ON a.user_id=p.user_id WHERE p.user_id=$1",
+        [id],
+      )
+    ).rows[0];
+    if (!current) throw new HttpError(404, "Account not found");
+    if (current.role !== "owner")
+      throw new HttpError(409, "Use the team account editor for this account");
+    await validateAddedFormSubscriptions(
+      current.form_notification_ids || [],
+      input.formNotificationIds,
+      ["marketing.content.forms"],
+      () => loadManagedNotificationForms(req),
+    );
+    res.json(await updateOwnerNotifications((await actor(req)).id, id, input));
   },
 );

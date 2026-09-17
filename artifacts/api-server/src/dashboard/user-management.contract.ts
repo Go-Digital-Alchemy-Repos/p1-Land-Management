@@ -89,3 +89,7 @@ export const accountUpdateInput = z
 
 export type AccountUpdate = z.infer<typeof accountUpdateInput>;
 export type InvitationInput = z.infer<typeof invitationInput>;
+
+export const ownerNotificationsInput = accountUpdateInput
+  .pick({ version: true, formNotificationIds: true })
+  .strict();
