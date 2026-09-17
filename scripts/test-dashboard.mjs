@@ -134,6 +134,7 @@ try {
       "src/dashboard/project-phase.test.ts",
       "src/dashboard/service-request.test.ts",
       "src/dashboard/jobs-lifecycle.test.ts",
+      "src/dashboard/estimate-pdf.test.ts",
       "src/dashboard/agreement-template.test.ts",
       "src/dashboard/agreement-composition.test.ts",
       "src/dashboard/commercial-assessment.test.ts",

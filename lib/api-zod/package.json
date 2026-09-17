@@ -6,7 +6,8 @@
   "exports": {
     ".": "./src/index.ts",
     "./dashboard": "./src/dashboard.ts",
-    "./business-access": "./src/business-access.ts"
+    "./business-access": "./src/business-access.ts",
+    "./estimate-document": "./src/estimate-document.ts"
   },
   "dependencies": {
     "zod": "catalog:"

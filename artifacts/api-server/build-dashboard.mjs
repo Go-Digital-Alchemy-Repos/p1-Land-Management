@@ -1,3 +1,4 @@
+import { cp } from "node:fs/promises";
 import { build } from "esbuild";
 await build({
   entryPoints: [
@@ -12,3 +13,9 @@ await build({
   packages: "external",
   sourcemap: true,
 });
+
+await cp(
+  new URL("./src/dashboard/pdf-assets", import.meta.url),
+  new URL("./dist/dashboard/pdf-assets", import.meta.url),
+  { recursive: true },
+);

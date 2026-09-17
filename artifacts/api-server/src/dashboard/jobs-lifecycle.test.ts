@@ -61,10 +61,23 @@ test(
     assert.equal((await publicRequest(`/estimates/${expired.token}`)).status, 404);
 
     const recurring = await create("recurring", "Recurring fixture");
+    const recurringDocument = await publicRequest(`/estimates/${recurring.token}`);
+    assert.equal(recurringDocument.body.agreement_template_snapshot, "Immutable fixture terms");
+    assert.equal(recurringDocument.body.terms, "Client terms");
+    const downloaded = await fetch(base + `/api/public/estimates/${recurring.token}/pdf`);
+    assert.equal(downloaded.status, 200);
+    assert.equal(downloaded.headers.get("content-type"), "application/pdf");
+    assert(Buffer.from(await downloaded.arrayBuffer()).toString("latin1").startsWith("%PDF-"));
     const recurringApproval = await publicRequest(`/estimates/${recurring.token}/decision`, { status: "approved" });
     assert.equal(recurringApproval.status, 200, JSON.stringify(recurringApproval.body));
     const program = (await pool.query("SELECT r.paused,a.status,a.template_snapshot FROM recurring_service r JOIN service_agreement a ON a.id=r.agreement_id WHERE r.estimate_id=$1", [recurring.estimateId])).rows[0];
     assert.deepEqual({ paused: program.paused, status: program.status, snapshot: program.template_snapshot }, { paused: true, status: "draft", snapshot: "Immutable fixture terms" });
     assert.equal((await publicRequest(`/estimates/${recurring.token}`)).status, 404);
+    const unsupported = await auth("/estimates", {propertyId,title:"Unsupported 🌳",scope:"Scope",lineItems:[{description:"Work",quantity:1,unitPriceCents:100}]});
+    assert.equal(unsupported.status,201);
+    assert.equal((await auth(`/estimates/${unsupported.body.id}/send`,{recipientContactIds:[contactId]})).status,422);
+    assert.equal((await pool.query("SELECT status FROM estimate WHERE id=$1",[unsupported.body.id])).rows[0].status,"draft");
+    assert.equal((await pool.query("SELECT count(*)::int AS n FROM estimate_recipient WHERE estimate_id=$1",[unsupported.body.id])).rows[0].n,0);
+    assert.equal((await pool.query("SELECT count(*)::int AS n FROM outbox WHERE dedup_key LIKE $1",[`estimate:${unsupported.body.id}:%`])).rows[0].n,0);
   },
 );
