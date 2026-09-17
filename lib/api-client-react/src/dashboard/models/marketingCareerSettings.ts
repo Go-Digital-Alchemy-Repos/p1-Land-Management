@@ -9,6 +9,11 @@ import type { MarketingCareerSettingsIntegrations } from './marketingCareerSetti
 import type { MarketingCareerSettingsSharing } from './marketingCareerSettingsSharing';
 
 export interface MarketingCareerSettings {
+  /**
+     * Opaque loaded settings version. Required on Business Center saves; send unchanged. Stale versions return 409.
+     * @pattern ^[a-f0-9]{64}$
+     */
+  version?: string;
   sharing?: MarketingCareerSettingsSharing;
   integrations?: MarketingCareerSettingsIntegrations;
 }

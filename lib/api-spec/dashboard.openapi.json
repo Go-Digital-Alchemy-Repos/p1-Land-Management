@@ -12943,6 +12943,9 @@
           "403": {
             "description": "Required access missing"
           },
+          "409": {
+            "description": "Settings changed since they were loaded"
+          },
           "404": {
             "description": "Not found or feature disabled"
           }
@@ -26691,6 +26694,11 @@
       "MarketingCareerSettings": {
         "type": "object",
         "properties": {
+          "version": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "description": "Opaque loaded settings version. Required on Business Center saves; send unchanged. Stale versions return 409."
+          },
           "sharing": {
             "type": "object",
             "properties": {

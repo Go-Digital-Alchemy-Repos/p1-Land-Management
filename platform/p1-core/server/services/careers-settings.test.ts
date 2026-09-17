@@ -1,8 +1,14 @@
 import { beforeEach, expect, it, vi } from "vitest";
-const state = vi.hoisted(() => ({ read: vi.fn(), write: vi.fn(), invalidate: vi.fn() }));
+const state = vi.hoisted(() => ({
+  snapshot: vi.fn(),
+  read: vi.fn(),
+  write: vi.fn(),
+  invalidate: vi.fn(),
+}));
 vi.mock("../storage", () => ({
   storage: {
     settings: {
+      getCategorySnapshot: state.snapshot,
       getDecryptedCategory: state.read,
       upsertSettings: state.write,
       invalidateCategory: state.invalidate,
@@ -20,6 +26,10 @@ beforeEach(() => {
     zip_recruiter_api_key: "private-zip",
     generic_webhook_secret: "private-webhook",
   });
+  state.snapshot.mockImplementation(async () => ({
+    values: await state.read(),
+    version: "a".repeat(64),
+  }));
   state.write.mockResolvedValue([]);
 });
 it("redacted round trips retain every stored credential and use one atomic settings batch", async () => {
@@ -49,5 +59,26 @@ it("explicit replacement writes only supplied credentials; failed writes do not 
   state.invalidate.mockClear();
   state.write.mockRejectedValue(new Error("Synthetic failure"));
   await expect(saveCareerSettings(value)).rejects.toThrow("Synthetic failure");
+  expect(state.invalidate).not.toHaveBeenCalled();
+});
+
+it("versioned administrative reads bypass caches and saves forward the loaded version", async () => {
+  state.snapshot.mockResolvedValue({
+    values: { share_enabled: "false", indeed_apply_secret: "private" },
+    version: "b".repeat(64),
+  });
+  const value = await getCareerSettings(false, true);
+  expect(value.version).toBe("b".repeat(64));
+  expect(value.sharing.enabled).toBe(false);
+  expect(value.integrations.indeedApplySecret).toBe("");
+  expect(state.read).not.toHaveBeenCalled();
+  await saveCareerSettings(value);
+  expect(state.write.mock.calls[0][1]).toEqual({
+    category: "career_center",
+    version: "b".repeat(64),
+  });
+  state.invalidate.mockClear();
+  state.write.mockRejectedValue(Object.assign(new Error("Settings changed"), { statusCode: 409 }));
+  await expect(saveCareerSettings(value)).rejects.toMatchObject({ statusCode: 409 });
   expect(state.invalidate).not.toHaveBeenCalled();
 });

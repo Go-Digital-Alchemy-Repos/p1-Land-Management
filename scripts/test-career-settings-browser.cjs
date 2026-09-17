@@ -20,6 +20,7 @@ const assert = require("node:assert/strict");
       reads = 0,
       writes = [];
     let settings = {
+      version: "a".repeat(64),
       sharing: {
         enabled: true,
         copyLink: true,
@@ -64,16 +65,33 @@ const assert = require("node:assert/strict");
       if (path === "/api/v1/marketing/cms/careers/settings") {
         if (request.method() === "PUT") {
           const body = request.postDataJSON();
+          assert.equal(body.version, settings.version);
           writes.push(body);
+          if (writes.length === 3) {
+            settings = {
+              ...settings,
+              version: "d".repeat(64),
+              integrations: {
+                ...settings.integrations,
+                linkedinPartnerId: "other-session",
+              },
+            };
+            return route.fulfill({
+              status: 409,
+              json: { message: "These settings changed" },
+            });
+          }
           if (writes.length === 1) {
             settings = {
               ...body,
+              version: "b".repeat(64),
               integrations: { ...body.integrations, indeedApplySecret: "" },
             };
             return route.abort("failed");
           }
           settings = {
             ...body,
+            version: "c".repeat(64),
             integrations: {
               ...body.integrations,
               googleServiceAccountJson: "",
@@ -171,6 +189,30 @@ const assert = require("node:assert/strict");
       "",
     );
     assert.equal(writes.length, 2);
+    await page
+      .getByLabel("LinkedIn partner ID", { exact: true })
+      .fill("local-session");
+    await page
+      .getByRole("button", { name: "Save Careers settings", exact: true })
+      .click();
+    await page
+      .getByRole("alert")
+      .filter({ hasText: "These settings changed" })
+      .waitFor();
+    assert.equal(
+      await page
+        .getByLabel("LinkedIn partner ID", { exact: true })
+        .inputValue(),
+      "local-session",
+    );
+    await page
+      .getByRole("button", { name: "Reload saved settings", exact: true })
+      .click();
+    await page.waitForFunction(() =>
+      Array.from(document.querySelectorAll("input")).some(
+        (input) => input.value === "other-session",
+      ),
+    );
     await page.setViewportSize({ width: 390, height: 844 });
     await page.waitForFunction(
       () =>
@@ -201,7 +243,7 @@ const assert = require("node:assert/strict");
     assert.equal(reads, previousReads);
     assert.deepEqual(errors, []);
     console.log(
-      "Career settings browser passed: Owner visibility, loaded settings parity, secret replacement, failed-save retention, reload recovery, cleared credential inputs, member exclusion and mobile layout.",
+      "Career settings browser passed: Owner visibility, loaded settings parity, secret replacement, failed-save retention, stale-version conflict/reload, cleared credential inputs, member exclusion and mobile layout.",
     );
   } finally {
     await browser.close();

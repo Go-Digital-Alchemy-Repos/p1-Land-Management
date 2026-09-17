@@ -242,7 +242,7 @@ router.get(
 router.get(
   "/settings",
   asyncHandler(async (_req, res) => {
-    res.json(await getCareerSettings(false));
+    res.json(await getCareerSettings(false, true));
   }),
 );
 
@@ -255,6 +255,8 @@ router.put(
         .status(400)
         .json({ message: "Invalid career settings", errors: parsed.error.flatten() });
     }
+    if (req.dashboardIdentity && !parsed.data.version)
+      return res.status(400).json({ message: "Reload Careers settings to obtain the current version before saving." });
     res.json(await saveCareerSettings(parsed.data));
   }),
 );

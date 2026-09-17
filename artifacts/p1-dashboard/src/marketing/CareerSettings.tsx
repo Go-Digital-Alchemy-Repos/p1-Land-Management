@@ -56,7 +56,7 @@ export default function CareerSettings({ close }: { close: () => void }) {
   useCmsUnsavedChanges(dirty || busy);
 
   async function run(save = false) {
-    if (pending.current) return;
+    if (pending.current || (save && !draft?.version)) return;
     if (
       !save &&
       dirty &&
@@ -143,6 +143,11 @@ export default function CareerSettings({ close }: { close: () => void }) {
       >
         Back to jobs
       </button>
+      {draft && !draft.version && (
+        <p role="alert">
+          Reload settings from an updated website service before saving.
+        </p>
+      )}
       {draft && (
         <form
           onSubmit={(event) => {
@@ -241,7 +246,9 @@ export default function CareerSettings({ close }: { close: () => void }) {
               </label>
             ))}
           </fieldset>
-          <button disabled={busy || !dirty}>Save Careers settings</button>
+          <button disabled={busy || !dirty || !draft.version}>
+            Save Careers settings
+          </button>
         </form>
       )}
     </section>

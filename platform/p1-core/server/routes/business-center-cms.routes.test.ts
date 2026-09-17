@@ -985,7 +985,7 @@ it("Career resumes require fresh access and are private binary attachments with 
 
 
 it("Career settings writes require an attested active Owner and preserve the dedicated feature gate", async () => {
-  const payload={sharing:{enabled:false},integrations:{indeedApplySecret:"synthetic-replacement"}};
+  const payload={version:"a".repeat(64),sharing:{enabled:false},integrations:{indeedApplySecret:"synthetic-replacement"}};
   identity.capabilities=["marketing.content.careers"];
   expect((await request("/careers/settings","PUT",{},"/service",payload)).status).toBe(403);
   expect(state.careerSave).not.toHaveBeenCalled();
@@ -1001,4 +1001,16 @@ it("Career settings writes require an attested active Owner and preserve the ded
   state.enabled.mockResolvedValue(false);
   expect((await request("/careers/settings","PUT",{},"/service",payload)).status).toBe(404);
   expect(state.careerSave).toHaveBeenCalledTimes(1);
+});
+
+
+it("Career settings forwards versions and reports stale or malformed updates",async()=>{
+ identity.role="owner";identity.ownerAttested=true;
+ state.careerSave.mockRejectedValue(Object.assign(new Error("These settings changed"),{statusCode:409}));
+ const response=await request("/careers/settings","PUT",{},"/service",{version:"a".repeat(64)});
+ expect(response.status).toBe(409);
+ expect(state.careerSave.mock.calls[0][0].version).toBe("a".repeat(64));
+ expect((await request("/careers/settings","PUT",{},"/service",{version:"invalid"})).status).toBe(400);
+ expect((await request("/careers/settings","PUT",{},"/service",{})).status).toBe(400);
+ expect(state.careerSave).toHaveBeenCalledTimes(1);
 });

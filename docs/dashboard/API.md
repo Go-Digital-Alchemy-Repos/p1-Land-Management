@@ -279,3 +279,9 @@ Careers settings treat blank credential fields as unchanged; nonblank values rep
 Careers job updates accept optional `expectedUpdatedAt` (ISO timestamp). Native dashboard edits always send the saved `updatedAt`; a changed job returns 409 and retains the existing record. Timestamp versions advance monotonically at millisecond precision for JSON round trips. Legacy callers remain compatible when the field is absent. The Careers editor requires a loaded version for existing jobs and preserves local edits after failed saves.
 
 Careers application updates accept optional `expectedUpdatedAt` and a note of at most 50,000 characters. Native review always sends the loaded timestamp. Status and its note are saved in a single locked transaction; a stale request returns 409, a missing application returns 404, and note-write failures roll back the status update. Note-only writes advance the version. Repeating an old version cannot duplicate its note. Refresh application detail after saving to retrieve the current chronological notes.
+
+### Careers settings concurrency
+
+`GET /api/v1/marketing/cms/careers/settings` returns a fresh, redacted snapshot with an opaque `version`. Business Center PUT requests must include that loaded version: missing/malformed versions return 400 and stale versions return 409 without writing settings. Reload and reconcile local changes before retrying. Blank credentials retain their existing stored values. The Owner and Careers feature gates still apply.
+
+Deploy the updated Core service before enabling this versioned dashboard editor. The editor disables saving when an older service omits the version. Non-federated legacy callers may omit it for compatibility; their writes still invalidate later versioned saves. No migration is required.

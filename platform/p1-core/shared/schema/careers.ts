@@ -219,6 +219,7 @@ export const careerIntegrationSettingsSchema = z.object({
 });
 
 export const careerSettingsSchema = z.object({
+  version: z.string().regex(/^[a-f0-9]{64}$/).optional(),
   sharing: careerShareSettingsSchema.default({}),
   integrations: careerIntegrationSettingsSchema.default({}),
 });

@@ -128,4 +128,93 @@ suite("atomic settings real database", () => {
       (await pool.query("SELECT count(*)::int AS count FROM system_settings")).rows[0].count,
     ).toBe(0);
   });
+  it("versioned first saves have one winner and snapshots bypass cached categories", async () => {
+    const original = await settings.getCategorySnapshot("career_center");
+    expect(original.values).toEqual({});
+    const results = await Promise.allSettled(
+      ["a", "b"].map((value) =>
+        settings.upsertSettings(
+          [
+            entry("share_enabled", value, "career_center"),
+            entry("indeed_apply_secret", value, "career_center", true),
+          ],
+          { category: "career_center", version: original.version },
+        ),
+      ),
+    );
+    expect(results.filter((result) => result.status === "fulfilled")).toHaveLength(1);
+    const failure = results.find((result) => result.status === "rejected") as PromiseRejectedResult;
+    expect(failure.reason.statusCode).toBe(409);
+    const current = await settings.getCategorySnapshot("career_center");
+    expect(new Set(Object.values(current.values)).size).toBe(1);
+    expect(current.version).not.toBe(original.version);
+    await settings.getDecryptedCategory("career_center");
+    await pool.query("UPDATE system_settings SET value='direct-change' WHERE key='share_enabled'");
+    const fresh = await settings.getCategorySnapshot("career_center");
+    expect(fresh.values.share_enabled).toBe("direct-change");
+    expect(fresh.version).not.toBe(current.version);
+    await expect(
+      settings.upsertSettings([entry("share_enabled", "stale", "career_center")], {
+        category: "career_center",
+        version: current.version,
+      }),
+    ).rejects.toMatchObject({ statusCode: 409 });
+  });
+
+  it("credential replacements and deletions invalidate versions; unrelated categories do not", async () => {
+    await settings.upsertSetting("indeed_apply_secret", "old", "career_center", true);
+    const original = await settings.getCategorySnapshot("career_center");
+    await settings.upsertSetting("unrelated", "value", "another_category", false);
+    expect((await settings.getCategorySnapshot("career_center")).version).toBe(original.version);
+    await settings.upsertSetting("indeed_apply_secret", "replacement", "career_center", true);
+    const next = await settings.getCategorySnapshot("career_center");
+    expect(next.version).not.toBe(original.version);
+    await expect(
+      settings.upsertSettings([entry("share_enabled", "true", "career_center")], {
+        category: "career_center",
+        version: original.version,
+      }),
+    ).rejects.toMatchObject({ statusCode: 409 });
+    await settings.deleteSetting("indeed_apply_secret");
+    await expect(
+      settings.upsertSettings([entry("share_enabled", "true", "career_center")], {
+        category: "career_center",
+        version: next.version,
+      }),
+    ).rejects.toMatchObject({ statusCode: 409 });
+  });
+
+  it("a legacy transaction completing during a versioned save forces a conflict", async () => {
+    await settings.upsertSetting("share_enabled", "before", "career_center", false);
+    const original = await settings.getCategorySnapshot("career_center");
+    const legacy = await pool.connect();
+    try {
+      await legacy.query("BEGIN");
+      await legacy.query("UPDATE system_settings SET value='legacy' WHERE key='share_enabled'");
+      const attempt = settings
+        .upsertSettings([entry("share_enabled", "native", "career_center")], {
+          category: "career_center",
+          version: original.version,
+        })
+        .then(
+          () => "saved",
+          (error) => error.statusCode,
+        );
+      let waiting = false;
+      for (let i = 0; i < 100; i++) {
+        const result = await pool.query("SELECT 1 FROM pg_stat_activity WHERE datname=current_database() AND wait_event_type='Lock' AND query LIKE 'LOCK TABLE system_settings%'");
+        if (result.rowCount) { waiting = true; break; }
+        await new Promise(resolve => setTimeout(resolve, 10));
+      }
+      expect(waiting).toBe(true);
+      await legacy.query("COMMIT");
+      expect(await attempt).toBe(409);
+      expect((await settings.getCategorySnapshot("career_center")).values.share_enabled).toBe(
+        "legacy",
+      );
+    } finally {
+      await legacy.query("ROLLBACK");
+      legacy.release();
+    }
+  });
 });

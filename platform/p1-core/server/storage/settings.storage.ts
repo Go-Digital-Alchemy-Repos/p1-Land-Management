@@ -36,6 +36,28 @@ function decrypt(text: string, settingKey?: string): string {
   }
 }
 
+export class SettingsConflictError extends Error {
+  readonly statusCode = 409;
+  constructor() {
+    super("These settings changed. Reload saved settings before applying your edits.");
+  }
+}
+
+function categoryVersion(rows: SystemSetting[]): string {
+  const canonical = [...rows]
+    .sort((a, b) => (a.key < b.key ? -1 : a.key > b.key ? 1 : 0))
+    .map((row) => [
+      row.id,
+      row.key,
+      row.category,
+      row.value,
+      row.isSecret,
+      row.updatedAt?.toISOString(),
+    ]);
+  // Bind the token to stored ciphertext without disclosing credential material.
+  return crypto.createHmac("sha256", getKey()).update(JSON.stringify(canonical)).digest("hex");
+}
+
 interface CacheEntry<T> {
   data: T;
   expiresAt: number;
@@ -115,6 +137,19 @@ export class SettingsStorage {
     return this.database.select().from(systemSettings).where(eq(systemSettings.category, category));
   }
 
+  /** Fresh values and their revision come from the same database read, bypassing caches. */
+  async getCategorySnapshot(
+    category: string,
+  ): Promise<{ values: Record<string, string>; version: string }> {
+    const rows = await this.getSettingsByCategory(category);
+    return {
+      values: Object.fromEntries(
+        rows.map((row) => [row.key, row.isSecret ? decrypt(row.value, row.key) : row.value]),
+      ),
+      version: categoryVersion(rows),
+    };
+  }
+
   async getAllSettings(): Promise<SystemSetting[]> {
     return this.database.select().from(systemSettings);
   }
@@ -132,8 +167,11 @@ export class SettingsStorage {
   /** One committed setting set; preparation failures cannot leave partial credentials. */
   async upsertSettings(
     entries: { key: string; value: string; category: string; isSecret: boolean }[],
+    expected?: { category: string; version: string },
   ): Promise<SystemSetting[]> {
     if (!entries.length) return [];
+    if (expected && entries.some((entry) => entry.category !== expected.category))
+      throw new Error("Versioned setting batch must belong to one category");
     const keys = entries.map((entry) => entry.key);
     if (new Set(keys).size !== keys.length) throw new Error("Duplicate setting key in batch");
     // Encryption may fail: finish it before starting any database work.
@@ -145,6 +183,17 @@ export class SettingsStorage {
       }))
       .sort((a, b) => (a.key < b.key ? -1 : a.key > b.key ? 1 : 0));
     const rows = await this.database.transaction(async (tx) => {
+      if (expected) {
+        // Short metadata-only lock also coordinates unversioned legacy and direct SQL writes,
+        // including first inserts/deletes; ordinary readers remain unblocked.
+        await tx.execute(sql`SET LOCAL lock_timeout = '5s'`);
+        await tx.execute(sql`LOCK TABLE system_settings IN SHARE ROW EXCLUSIVE MODE`);
+        const current = await tx
+          .select()
+          .from(systemSettings)
+          .where(eq(systemSettings.category, expected.category));
+        if (categoryVersion(current) !== expected.version) throw new SettingsConflictError();
+      }
       return tx
         .insert(systemSettings)
         .values(values)

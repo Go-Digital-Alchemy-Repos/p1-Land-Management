@@ -30,8 +30,16 @@ function bool(value: string | undefined, fallback: boolean): boolean {
   return fallback;
 }
 
-export async function getCareerSettings(includeSecrets = false): Promise<CareerSettings> {
-  const settings = await storage.settings.getDecryptedCategory(CAREER_SETTINGS_CATEGORY);
+export async function getCareerSettings(
+  includeSecrets = false,
+  withVersion = false,
+): Promise<CareerSettings> {
+  const snapshot = withVersion
+    ? await storage.settings.getCategorySnapshot(CAREER_SETTINGS_CATEGORY)
+    : null;
+  const settings = snapshot
+    ? snapshot.values
+    : await storage.settings.getDecryptedCategory(CAREER_SETTINGS_CATEGORY);
   const parsed = careerSettingsSchema.parse({
     sharing: {
       enabled: bool(settings.share_enabled, DEFAULT_CAREER_SETTINGS.sharing.enabled),
@@ -58,7 +66,7 @@ export async function getCareerSettings(includeSecrets = false): Promise<CareerS
       genericWebhookSecret: includeSecrets ? (settings.generic_webhook_secret ?? "") : "",
     },
   });
-  return parsed;
+  return snapshot ? { ...parsed, version: snapshot.version } : parsed;
 }
 
 export async function saveCareerSettings(settings: CareerSettings): Promise<CareerSettings> {
@@ -93,11 +101,20 @@ export async function saveCareerSettings(settings: CareerSettings): Promise<Care
   // Reads redact credentials. Empty secret fields mean retain the stored value,
   // so ordinary sharing/integration edits cannot erase existing credentials.
   await storage.settings.upsertSettings(
-    entries.filter(([,value,isSecret]) => !isSecret || value.trim() !== "")
-      .map(([key,value,isSecret]) => ({key,value,category:CAREER_SETTINGS_CATEGORY,isSecret})),
+    entries
+      .filter(([, value, isSecret]) => !isSecret || value.trim() !== "")
+      .map(([key, value, isSecret]) => ({
+        key,
+        value,
+        category: CAREER_SETTINGS_CATEGORY,
+        isSecret,
+      })),
+    normalized.version
+      ? { category: CAREER_SETTINGS_CATEGORY, version: normalized.version }
+      : undefined,
   );
   storage.settings.invalidateCategory(CAREER_SETTINGS_CATEGORY);
-  return getCareerSettings(false);
+  return getCareerSettings(false, true);
 }
 
 function ensureResumeDir() {
