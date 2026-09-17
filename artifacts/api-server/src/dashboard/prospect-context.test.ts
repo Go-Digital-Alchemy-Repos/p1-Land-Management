@@ -410,7 +410,7 @@ test(
         property: null,
       });
       await pool.query(
-        "UPDATE lead SET email='confirmed@example.test' WHERE id=$1",
+        "UPDATE lead SET email='confirmed@example.test',version=version+1 WHERE id=$1",
         [another],
       );
       await saveProspectContext(a, another, {

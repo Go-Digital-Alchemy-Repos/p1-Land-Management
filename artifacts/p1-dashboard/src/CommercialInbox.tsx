@@ -1,3 +1,4 @@
+import { LeadDetails } from "./LeadDetails";
 import { CrmTasks } from "./CrmTasks";
 import { LeadNotes } from "./LeadNotes";
 import { CommercialContextPanel } from "./CommercialContextPanel";
@@ -324,6 +325,7 @@ export function CommercialInbox({
               ))}
             </dl>
             <p className="commercial-message">{selected.description}</p>
+            <LeadDetails key={"details:"+selected.id} leadId={selected.id} />
             <LeadNotes key={selected.id} leadId={selected.id} />
             <CrmTasks key={"tasks:"+selected.id} kind="lead" parentId={selected.id} />
             <form

@@ -127,6 +127,7 @@ import type {
   GenerateAssessmentAvailability,
   GeneratedAssessmentAvailability,
   GetClientTaskHistoryParams,
+  GetLeadDetailHistoryParams,
   GetLeadTaskHistoryParams,
   GetMarketingAnalyticsParams,
   GetMarketingEventAnalytics200,
@@ -136,6 +137,8 @@ import type {
   GetSetupStatus200,
   InspectionReport,
   IntegrationHealth,
+  LeadDetailHistory,
+  LeadDetails,
   LeadFollowUp,
   LeadFollowUpView,
   LeadNotePage,
@@ -294,6 +297,7 @@ import type {
   UpdateCrmTask,
   UpdateDashboardClient,
   UpdateDashboardProperty,
+  UpdateLeadDetails,
   UpdateManagedOwnerNotifications200,
   UpdateManagedOwnerNotificationsBody,
   UpdateManagedUser200,
@@ -318,6 +322,80 @@ import type {
 } from './models';
 
 import { customFetch } from '../custom-fetch';
+
+export const getGetLeadDetailsUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/leads/${id}/details`
+}
+
+export const getLeadDetails = async (id: string, options?: RequestInit): Promise<LeadDetails> => {
+
+  return customFetch<LeadDetails>(getGetLeadDetailsUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getUpdateLeadDetailsUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/leads/${id}/details`
+}
+
+export const updateLeadDetails = async (id: string,
+    updateLeadDetails: UpdateLeadDetails, options?: RequestInit): Promise<LeadDetails> => {
+
+  return customFetch<LeadDetails>(getUpdateLeadDetailsUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      updateLeadDetails,)
+  }
+);}
+
+
+
+export const getGetLeadDetailHistoryUrl = (id: string,
+    params?: GetLeadDetailHistoryParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/leads/${id}/details/history?${stringifiedParams}` : `/api/v1/leads/${id}/details/history`
+}
+
+export const getLeadDetailHistory = async (id: string,
+    params?: GetLeadDetailHistoryParams, options?: RequestInit): Promise<LeadDetailHistory> => {
+
+  return customFetch<LeadDetailHistory>(getGetLeadDetailHistoryUrl(id,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
 
 export const getListSalesInquiriesUrl = (params?: ListSalesInquiriesParams,) => {
   const normalizedParams = new URLSearchParams();

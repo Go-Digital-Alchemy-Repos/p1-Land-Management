@@ -11,6 +11,114 @@
     }
   ],
   "paths": {
+    "/leads/{id}/details": {
+      "get": {
+        "operationId": "getLeadDetails",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeadDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateLeadDetails",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeadDetails"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateLeadDetails"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/leads/{id}/details/history": {
+      "get": {
+        "operationId": "getLeadDetailHistory",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "beforeVersion",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeadDetailHistory"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/sales/inquiries": {
       "get": {
         "operationId": "listSalesInquiries",
@@ -13904,6 +14012,141 @@
   },
   "components": {
     "schemas": {
+      "LeadDetailFields": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "phone": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "location": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "reported_company_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "name",
+          "email",
+          "phone",
+          "location",
+          "description",
+          "reported_company_name"
+        ]
+      },
+      "LeadDetails": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/LeadDetailFields"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "version": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "id",
+              "version"
+            ]
+          }
+        ]
+      },
+      "UpdateLeadDetails": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/LeadDetailFields"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "expectedVersion": {
+                "type": "integer",
+                "minimum": 1
+              }
+            },
+            "required": [
+              "expectedVersion"
+            ]
+          }
+        ]
+      },
+      "LeadDetailHistory": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "version": {
+                  "type": "integer"
+                },
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "baseline",
+                    "created",
+                    "edited"
+                  ]
+                },
+                "fields": {
+                  "$ref": "#/components/schemas/LeadDetailFields"
+                },
+                "actor_name": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "recorded_at": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "version",
+                "kind",
+                "fields",
+                "actor_name",
+                "recorded_at"
+              ]
+            }
+          },
+          "nextBeforeVersion": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "items",
+          "nextBeforeVersion"
+        ]
+      },
       "SalesInquiry": {
         "type": "object",
         "properties": {

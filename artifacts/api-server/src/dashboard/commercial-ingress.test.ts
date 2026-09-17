@@ -425,7 +425,7 @@ test(
         409,
       );
       await pool.query(
-        "UPDATE lead SET email='confirmed@synthetic.test' WHERE id=$1",
+        "UPDATE lead SET email='confirmed@synthetic.test',version=version+1 WHERE id=$1",
         [row.id],
       );
       assert.equal(

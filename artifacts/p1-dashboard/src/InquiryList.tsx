@@ -1,3 +1,4 @@
+import { LeadDetails } from "./LeadDetails";
 import { useEffect, useRef, useState } from "react";
 import { listSalesInquiries } from "@workspace/api-client-react/dashboard";
 import { LeadFollowUp } from "./LeadFollowUp";
@@ -283,6 +284,19 @@ export function InquiryList({
               </button>
             )}
             <LeadFollowUp leadId={lead.id} onSaved={acknowledge} />
+            <LeadDetails
+              leadId={lead.id}
+              onSaved={(snapshot) => {
+                if (lead.version < snapshot.version) setNeedsRefresh(true);
+                setItems((old) =>
+                  old.map((row) =>
+                    row.id === snapshot.id && row.version <= snapshot.version
+                      ? { ...row, ...snapshot }
+                      : row,
+                  ),
+                );
+              }}
+            />
             <LeadNotes leadId={lead.id} />
             <CrmTasks kind="lead" parentId={lead.id} />
           </div>

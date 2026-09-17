@@ -1997,3 +1997,12 @@ export const clientNote = pgTable("client_note", {
   check("client_note_body_check",sql`length(btrim(${t.body})) BETWEEN 1 AND 10000`),
   check("client_note_origin",sql`(${t.sourceInstanceId} IS NULL AND ${t.sourceNoteId} IS NULL AND ${t.sourceAuthorId} IS NULL AND ${t.authorId} IS NOT NULL) OR (${t.sourceInstanceId} IS NOT NULL AND length(btrim(${t.sourceInstanceId}))>0 AND ${t.sourceNoteId} IS NOT NULL AND length(btrim(${t.sourceNoteId}))>0)`),
 ]);
+
+export const leadDetailRevision = pgTable("lead_detail_revision", {
+ leadId: uuid("lead_id").notNull().references(()=>lead.id),
+ version: integer().notNull(),
+ kind: text().notNull(),
+ fields: jsonb().notNull(),
+ actorId: text("actor_id").references(()=>user.id),
+ recordedAt: timestamp("recorded_at",{withTimezone:true,mode:"string"}).defaultNow().notNull(),
+}, t=>[primaryKey({columns:[t.leadId,t.version]}),check("lead_detail_revision_version_check",sql`${t.version}>0`),check("lead_detail_revision_kind_check",sql`${t.kind} IN ('baseline','created','edited')`)]);
