@@ -8083,6 +8083,353 @@
           }
         ]
       }
+    },
+    "/marketing/cms/sidebars": {
+      "get": {
+        "operationId": "listMarketingSidebars",
+        "description": "Requires marketing.content.sidebars. Core retains storage and validation.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MarketingSidebar"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Sidebar capability required"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createMarketingSidebar",
+        "description": "Requires marketing.content.sidebars. Core retains storage and validation.",
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingSidebar"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Sidebar capability required"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketingSidebarInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/marketing/cms/sidebars/{id}": {
+      "get": {
+        "operationId": "getMarketingSidebar",
+        "description": "Requires marketing.content.sidebars. Core retains storage and validation.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingSidebar"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Sidebar capability required"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "put": {
+        "operationId": "updateMarketingSidebar",
+        "description": "Requires marketing.content.sidebars. Core retains storage and validation.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingSidebar"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Sidebar capability required"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketingSidebarInput"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "deleteMarketingSidebar",
+        "description": "Requires marketing.content.sidebars. Core retains storage and validation.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingDeleteResult"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Sidebar capability required"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/sidebar-references": {
+      "get": {
+        "operationId": "getMarketingSidebarReferences",
+        "description": "Requires marketing.content.sidebars. Core retains storage and validation.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingSidebarReferences"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Sidebar capability required"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/marketing/cms/editor-locks/cms_sidebar/{id}/acquire": {
+      "post": {
+        "operationId": "acquireMarketingSidebarReservation",
+        "description": "Requires marketing.content.sidebars; retained advisory reservation.",
+        "responses": {
+          "200": {
+            "description": "Website menu result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteEditorReservation"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid menu or identifier"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Menus access or linked Core identity required"
+          },
+          "404": {
+            "description": "Menu not found"
+          },
+          "409": {
+            "description": "Conflict"
+          },
+          "503": {
+            "description": "Website unavailable; refresh before retrying a change"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/editor-locks/cms_sidebar/{id}/heartbeat": {
+      "post": {
+        "operationId": "heartbeatMarketingSidebarReservation",
+        "description": "Requires marketing.content.sidebars; retained advisory reservation.",
+        "responses": {
+          "200": {
+            "description": "Website menu result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteEditorReservation"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid menu or identifier"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Menus access or linked Core identity required"
+          },
+          "404": {
+            "description": "Menu not found"
+          },
+          "409": {
+            "description": "Conflict"
+          },
+          "503": {
+            "description": "Website unavailable; refresh before retrying a change"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/editor-locks/cms_sidebar/{id}/release": {
+      "post": {
+        "operationId": "releaseMarketingSidebarReservation",
+        "description": "Requires marketing.content.sidebars; retained advisory reservation.",
+        "responses": {
+          "200": {
+            "description": "Website menu result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteEditorReservation"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid menu or identifier"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Menus access or linked Core identity required"
+          },
+          "404": {
+            "description": "Menu not found"
+          },
+          "409": {
+            "description": "Conflict"
+          },
+          "503": {
+            "description": "Website unavailable; refresh before retrying a change"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -16827,6 +17174,126 @@
         "required": [
           "success"
         ]
+      },
+      "MarketingSidebarWidget": {
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "title",
+          "settings"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "recent-posts",
+              "newsletter",
+              "form",
+              "callout",
+              "search",
+              "categories",
+              "tag-cloud",
+              "custom-html"
+            ]
+          },
+          "title": {
+            "type": "string"
+          },
+          "settings": {
+            "type": "object",
+            "additionalProperties": {}
+          }
+        }
+      },
+      "MarketingSidebarInput": {
+        "type": "object",
+        "required": [
+          "name",
+          "widgets",
+          "isDefault"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "isDefault": {
+            "type": "boolean"
+          },
+          "widgets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MarketingSidebarWidget"
+            }
+          }
+        }
+      },
+      "MarketingSidebar": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MarketingSidebarInput"
+          },
+          {
+            "type": "object",
+            "required": [
+              "id"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "updatedAt": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "MarketingSidebarReferences": {
+        "type": "object",
+        "required": [
+          "forms"
+        ],
+        "properties": {
+          "forms": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "name",
+                "slug",
+                "kind"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "slug": {
+                  "type": "string"
+                },
+                "kind": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
       }
     }
   }

@@ -134,6 +134,9 @@ import type {
   MarketingSearchConsole,
   MarketingSeoAudit,
   MarketingSeoSettings,
+  MarketingSidebar,
+  MarketingSidebarInput,
+  MarketingSidebarReferences,
   MarketingTeamInput,
   MarketingTeamMember,
   OperationReceipt,
@@ -4502,6 +4505,225 @@ export const deleteMarketingRedirect = async (id: string, options?: RequestInit)
   {
     ...options,
     method: 'DELETE'
+
+
+  }
+);}
+
+
+
+export const getListMarketingSidebarsUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/sidebars`
+}
+
+/**
+ * Requires marketing.content.sidebars. Core retains storage and validation.
+ */
+export const listMarketingSidebars = async ( options?: RequestInit): Promise<MarketingSidebar[]> => {
+
+  return customFetch<MarketingSidebar[]>(getListMarketingSidebarsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateMarketingSidebarUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/sidebars`
+}
+
+/**
+ * Requires marketing.content.sidebars. Core retains storage and validation.
+ */
+export const createMarketingSidebar = async (marketingSidebarInput: MarketingSidebarInput, options?: RequestInit): Promise<MarketingSidebar> => {
+
+  return customFetch<MarketingSidebar>(getCreateMarketingSidebarUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingSidebarInput,)
+  }
+);}
+
+
+
+export const getGetMarketingSidebarUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/sidebars/${id}`
+}
+
+/**
+ * Requires marketing.content.sidebars. Core retains storage and validation.
+ */
+export const getMarketingSidebar = async (id: string, options?: RequestInit): Promise<MarketingSidebar> => {
+
+  return customFetch<MarketingSidebar>(getGetMarketingSidebarUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getUpdateMarketingSidebarUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/sidebars/${id}`
+}
+
+/**
+ * Requires marketing.content.sidebars. Core retains storage and validation.
+ */
+export const updateMarketingSidebar = async (id: string,
+    marketingSidebarInput: MarketingSidebarInput, options?: RequestInit): Promise<MarketingSidebar> => {
+
+  return customFetch<MarketingSidebar>(getUpdateMarketingSidebarUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingSidebarInput,)
+  }
+);}
+
+
+
+export const getDeleteMarketingSidebarUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/sidebars/${id}`
+}
+
+/**
+ * Requires marketing.content.sidebars. Core retains storage and validation.
+ */
+export const deleteMarketingSidebar = async (id: string, options?: RequestInit): Promise<MarketingDeleteResult> => {
+
+  return customFetch<MarketingDeleteResult>(getDeleteMarketingSidebarUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+export const getGetMarketingSidebarReferencesUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/sidebar-references`
+}
+
+/**
+ * Requires marketing.content.sidebars. Core retains storage and validation.
+ */
+export const getMarketingSidebarReferences = async ( options?: RequestInit): Promise<MarketingSidebarReferences> => {
+
+  return customFetch<MarketingSidebarReferences>(getGetMarketingSidebarReferencesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getAcquireMarketingSidebarReservationUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/editor-locks/cms_sidebar/${id}/acquire`
+}
+
+/**
+ * Requires marketing.content.sidebars; retained advisory reservation.
+ */
+export const acquireMarketingSidebarReservation = async (id: string, options?: RequestInit): Promise<WebsiteEditorReservation> => {
+
+  return customFetch<WebsiteEditorReservation>(getAcquireMarketingSidebarReservationUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+export const getHeartbeatMarketingSidebarReservationUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/editor-locks/cms_sidebar/${id}/heartbeat`
+}
+
+/**
+ * Requires marketing.content.sidebars; retained advisory reservation.
+ */
+export const heartbeatMarketingSidebarReservation = async (id: string, options?: RequestInit): Promise<WebsiteEditorReservation> => {
+
+  return customFetch<WebsiteEditorReservation>(getHeartbeatMarketingSidebarReservationUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+export const getReleaseMarketingSidebarReservationUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/editor-locks/cms_sidebar/${id}/release`
+}
+
+/**
+ * Requires marketing.content.sidebars; retained advisory reservation.
+ */
+export const releaseMarketingSidebarReservation = async (id: string, options?: RequestInit): Promise<WebsiteEditorReservation> => {
+
+  return customFetch<WebsiteEditorReservation>(getReleaseMarketingSidebarReservationUrl(id),
+  {
+    ...options,
+    method: 'POST'
 
 
   }

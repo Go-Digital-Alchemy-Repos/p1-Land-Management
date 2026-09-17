@@ -666,3 +666,11 @@ it("preserves SEO robots reset semantics and minimizes the audit without content
  expect((await request("/pages")).status).toBe(403);
  identity.capabilities=[];expect((await write({customContent:null})).status).toBe(403);expect((await request("/seo-audit")).status).toBe(403);
 });
+
+it("minimizes Sidebar form selectors and independently gates them", async()=>{
+ identity.capabilities=["marketing.content.sidebars"];
+ state.list.mockResolvedValue([{id:"form",name:"Contact",slug:"contact",kind:"contact",fields:[{private:true}],notificationRecipients:["private@example.test"]}]);
+ const result=await request("/sidebar-references");expect(result.status).toBe(200);expect(await result.json()).toEqual({forms:[{id:"form",name:"Contact",slug:"contact",kind:"contact"}]});
+ identity.capabilities=["marketing.content.menus"];expect((await request("/sidebar-references")).status).toBe(403);
+ expect((await request("/sidebar-references","GET",{},"/legacy")).status).toBe(403);
+});

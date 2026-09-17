@@ -8,6 +8,13 @@ import { sidebarWidgetSchema } from "@shared/schema";
 
 const router = Router();
 
+router.get("/sidebar-references", p1Authorize("marketing.content.sidebars"), async (_req, res, next) => {
+  try {
+    const forms = await storage.forms.getAll();
+    res.json({forms: forms.map(({id,name,slug,kind})=>({id,name,slug,kind}))});
+  } catch (error) { next(error); }
+});
+
 const sidebarBodySchema = z.object({
   name: z.string().min(1, "Name is required"),
   description: z.string().optional().nullable(),
