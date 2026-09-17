@@ -66,6 +66,7 @@ add("menus", "GET", "/menu-references");
 add("sidebars", "GET", "/sidebar-references");
 add("sections", "GET", "/section-builder");
 add("pages", "GET", "/page-builder");
+add("forms", "GET", "/form-builder");
 add("website", "GET", "/website");
 add("website", "GET", "/website/:routeId/:componentKey");
 add("website", "PUT", "/website/:routeId/:componentKey/draft");

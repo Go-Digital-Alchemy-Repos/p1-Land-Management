@@ -1,7 +1,9 @@
+import { BuilderPreview } from "./BuilderPreview";
 import { buildSubmissionCsv } from "../../../../platform/p1-core/shared/form-submission-export";
 import { useEffect, useRef, useState } from "react";
 import {
   listMarketingForms,
+  getMarketingFormBuilder,
   createMarketingForm,
   updateMarketingForm,
   listMarketingFormSubmissions,
@@ -63,6 +65,53 @@ function draft(form: MarketingForm | "new"): MarketingFormInput {
     settings,
   });
 }
+function FormPreview({ value }: { value: MarketingFormInput }) {
+  const [url, setUrl] = useState<string | null>(null),
+    [loading, setLoading] = useState(true),
+    [error, setError] = useState(""),
+    [attempt, setAttempt] = useState(0);
+  useEffect(() => {
+    const controller = new AbortController();
+    setLoading(true);
+    setError("");
+    void getMarketingFormBuilder({ signal: controller.signal })
+      .then((result) => {
+        if (!controller.signal.aborted) setUrl(result.previewUrl);
+      })
+      .catch((error) => {
+        if (!controller.signal.aborted) setError(message(error));
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false);
+      });
+    return () => controller.abort();
+  }, [attempt]);
+  if (loading) return <p role="status">Loading form preview connection…</p>;
+  if (error)
+    return (
+      <p role="alert">
+        {error}{" "}
+        <button
+          type="button"
+          onClick={() => setAttempt((current) => current + 1)}
+        >
+          Retry preview connection
+        </button>
+      </p>
+    );
+  return (
+    <BuilderPreview
+      previewUrl={url}
+      blocks={[]}
+      form={{
+        ...value,
+        name: value.name || "Untitled form",
+        slug: value.slug || "draft-form",
+      }}
+      label="form"
+    />
+  );
+}
 function Editor({
   form,
   close,
@@ -74,6 +123,7 @@ function Editor({
   close: () => void;
   saved: () => void;
 }) {
+  const [showPreview, setShowPreview] = useState(false);
   const [value, setValue] = useState(() => draft(form)),
     [baseline, setBaseline] = useState(() => JSON.stringify(draft(form))),
     [error, setError] = useState(""),
@@ -134,6 +184,13 @@ function Editor({
         their saved answers.
       </p>
       {error && <p role="alert">{error}</p>}
+      <button
+        type="button"
+        onClick={() => setShowPreview((current) => !current)}
+      >
+        {showPreview ? "Hide form preview" : "Preview form"}
+      </button>
+      {showPreview && <FormPreview value={value} />}
       <form
         onSubmit={(event) => {
           event.preventDefault();

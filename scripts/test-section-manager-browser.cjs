@@ -192,7 +192,7 @@ const assert = require("node:assert/strict");
       window.received=[];
       const channel=new URLSearchParams(location.hash.slice(1)).get('channel');
       addEventListener('message', event=>{if(event.origin==='http://127.0.0.1:4347' && event.data.channel===channel){window.received.push(event.data);document.getElementById('status').textContent='Draft received';}});
-      parent.postMessage({type:'p1:builder-preview-ready',version:1,channel},'http://127.0.0.1:4347');
+      parent.postMessage({type:'p1:builder-preview-ready',version:2,channel},'http://127.0.0.1:4347');
       </script></body></html>`,
         }),
     );

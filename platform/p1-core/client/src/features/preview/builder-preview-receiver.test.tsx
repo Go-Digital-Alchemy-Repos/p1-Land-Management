@@ -40,7 +40,7 @@ it("renders sanitized drafts only for its parent session and ignores stale/repla
     ),
   );
   expect(parent.postMessage).toHaveBeenCalledWith(
-    { type: "p1:builder-preview-ready", version: 1, channel },
+    { type: "p1:builder-preview-ready", version: 2, channel },
     origin,
   );
   send(draft(0, "Untrusted"), {}, "https://evil.test");
@@ -63,4 +63,67 @@ it("renders sanitized drafts only for its parent session and ignores stale/repla
   expect(container.textContent).toContain("Waiting for editor preview");
   send({ ...draft(0, "New session"), channel: replacement });
   expect(container.textContent).toContain("New session");
+});
+
+it("previews sanitized unsaved forms without fetching a saved form and recovers from invalid drafts", async () => {
+  const { QueryClient, QueryClientProvider } = await import("@tanstack/react-query");
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  container = document.createElement("div");
+  document.body.appendChild(container);
+  root = createRoot(container);
+  const parent = { postMessage: vi.fn() } as unknown as Window;
+  const channel = "11111111-1111-4111-8111-111111111111",
+    origin = "https://dashboard.p1landmanagement.com";
+  const fetchSpy = vi.spyOn(globalThis, "fetch");
+  act(() =>
+    root!.render(
+      <QueryClientProvider client={client}>
+        <BuilderPreviewReceiver parentOrigin={origin} channel={channel} parentWindow={parent} />
+      </QueryClientProvider>,
+    ),
+  );
+  const send = (revision: number, form: unknown, blocks: unknown[] = []) =>
+    act(() =>
+      window.dispatchEvent(
+        new MessageEvent("message", {
+          origin,
+          source: parent,
+          data: { type: "p1:builder-preview", version: 2, channel, revision, blocks, form },
+        }),
+      ),
+    );
+  const form = {
+    name: "Unsaved form",
+    slug: "unsaved-form",
+    isActive: false,
+    fields: [
+      {
+        id: "one",
+        key: "instructions",
+        label: "Instructions",
+        type: "html",
+        config: {
+          htmlContent:
+            '<p>Draft instructions</p><img src="/x" onerror="alert(1)"><script>alert(1)</script>',
+        },
+      },
+      { id: "two", key: "email", label: "Your email", type: "email" },
+    ],
+    settings: { submitButtonText: "Send draft" },
+  };
+  send(0, form);
+  expect(container.textContent).toContain("Draft instructions");
+  expect(container.querySelector('input[type="email"]')).not.toBeNull();
+  expect(container.querySelector("[onerror],script")).toBeNull();
+  expect(container.querySelector("[data-builder-preview-content]")?.hasAttribute("inert")).toBe(
+    true,
+  );
+  expect(fetchSpy).not.toHaveBeenCalled();
+  send(1, { name: "Incomplete" });
+  expect(container.textContent).toContain("could not be previewed");
+  send(2, form);
+  expect(container.textContent).toContain("Draft instructions");
+  expect(container.querySelector('[role="alert"]')).toBeNull();
+  fetchSpy.mockRestore();
+  client.clear();
 });

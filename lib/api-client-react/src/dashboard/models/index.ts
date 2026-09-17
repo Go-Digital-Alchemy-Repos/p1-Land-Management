@@ -173,6 +173,7 @@ export * from './fieldSyncResponseResultsItemStatus';
 export * from './generateAssessmentAvailability';
 export * from './generatedAssessmentAvailability';
 export * from './getMarketingAnalyticsParams';
+export * from './getMarketingFormBuilder200';
 export * from './getMarketingSearchConsoleParams';
 export * from './getScheduleParams';
 export * from './getScheduleUnscheduled';

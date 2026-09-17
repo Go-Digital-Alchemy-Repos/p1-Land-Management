@@ -4,6 +4,12 @@ import { ALL_BLOCKS } from "../../shared/cms-builder/block-registry";
 import { LEGACY_BLOCK_TYPE_ALIASES } from "../../shared/cms-builder/block-registry.shared";
 import { CMS_BUILDER_PREVIEW_PATH } from "../../shared/cms-builder/preview";
 
+export function getCmsBuilderPreviewUrl() {
+  return process.env.CORE_BUILDER_PREVIEW_ENABLED === "true"
+    ? `${federationConfig().origin}${CMS_BUILDER_PREVIEW_PATH}`
+    : null;
+}
+
 /** Selectors expose references, not bodies, submissions, recipients or settings.
  * Callers authorize their own editor capability before loading these values. */
 export async function loadCmsBuilderReferences(includeSidebars = false) {
@@ -17,10 +23,7 @@ export async function loadCmsBuilderReferences(includeSidebars = false) {
   return {
     blocks: ALL_BLOCKS,
     aliases: LEGACY_BLOCK_TYPE_ALIASES,
-    previewUrl:
-      process.env.CORE_BUILDER_PREVIEW_ENABLED === "true"
-        ? `${federationConfig().origin}${CMS_BUILDER_PREVIEW_PATH}`
-        : null,
+    previewUrl: getCmsBuilderPreviewUrl(),
     pages: pages.map(({ id, title, slug, status }) => ({ id, title, slug, status })),
     forms: forms.map(({ id, name, slug, kind }) => ({ id, name, slug, kind })),
     galleries: galleries

@@ -7,6 +7,9 @@ import {
 } from "@shared/cms-builder/preview";
 import { sanitizeBuilderPreviewBlocks } from "@shared/cms-builder/sanitize-preview";
 import type { BlockInstance } from "@shared/cms-builder/block-registry.shared";
+import { PublicFormRenderer } from "@/components/forms/public-form-renderer";
+import { insertCmsFormSchema, type CmsForm } from "@shared/schema";
+import { sanitizePublicCmsContent } from "@shared/sanitize-rich-html";
 import { PublicPageRenderer } from "@/features/public/public-block-renderer";
 
 class PreviewRenderBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
@@ -36,7 +39,11 @@ export function BuilderPreviewReceiver({
   channel: string;
   parentWindow?: Window;
 }) {
-  const [draft, setDraft] = useState<{ revision: number; blocks: BlockInstance[] } | null>(null);
+  const [draft, setDraft] = useState<{
+    revision: number;
+    blocks: BlockInstance[];
+    form?: CmsForm;
+  } | null>(null);
   const [error, setError] = useState("");
   const content = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -62,7 +69,31 @@ export function BuilderPreviewReceiver({
       });
       if (!message) return;
       revision = message.revision;
-      setDraft({ revision, blocks: sanitizeBuilderPreviewBlocks(message.blocks) });
+      if (message.form) {
+        const form = insertCmsFormSchema.safeParse(sanitizePublicCmsContent(message.form));
+        if (!form.success) {
+          setDraft(null);
+          setError(
+            "This form draft could not be previewed. Check its field settings and try again.",
+          );
+          return;
+        }
+        setError("");
+        setDraft({
+          revision,
+          blocks: [],
+          form: {
+            ...form.data,
+            id: "preview-form",
+            description: form.data.description ?? null,
+            createdAt: null,
+            updatedAt: null,
+          },
+        });
+      } else {
+        setError("");
+        setDraft({ revision, blocks: sanitizeBuilderPreviewBlocks(message.blocks) });
+      }
     };
     window.addEventListener("message", receive);
     parentWindow.postMessage(
@@ -98,7 +129,11 @@ export function BuilderPreviewReceiver({
       >
         {draft && (
           <PreviewRenderBoundary key={`${channel}:${draft.revision}`}>
-            <PublicPageRenderer blocks={draft.blocks} />
+            {draft.form ? (
+              <PublicFormRenderer slug={draft.form.slug} formOverride={draft.form} />
+            ) : (
+              <PublicPageRenderer blocks={draft.blocks} />
+            )}
           </PreviewRenderBoundary>
         )}
       </div>

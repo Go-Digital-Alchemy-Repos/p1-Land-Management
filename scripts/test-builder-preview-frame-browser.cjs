@@ -102,7 +102,7 @@ async function listen(app) {
           document.querySelector("iframe").contentWindow.postMessage(
             {
               type: "p1:builder-preview",
-              version: 1,
+              version: 2,
               channel,
               revision,
               blocks: [
@@ -151,6 +151,13 @@ async function listen(app) {
       }),
       true,
     );
+    await page.evaluate(({origin,channel})=>{
+      document.querySelector("iframe").contentWindow.postMessage({type:"p1:builder-preview",version:2,channel,revision:2,blocks:[],form:{name:"Unsaved estimate",slug:"unsaved-estimate",fields:[{id:"instructions",key:"instructions",label:"Instructions",type:"html",config:{htmlContent:'<p>Unsaved form instructions<img src="/missing" onerror="window.executed=true"></p>'}},{id:"email",key:"email",label:"Your email",type:"email",required:true}],settings:{submitButtonText:"Send preview"}}},origin);
+    },{origin:child.origin,channel});
+    await frame.getByText("Unsaved form instructions",{exact:true}).waitFor();
+    assert.equal(await frame.locator('[onerror]').count(),0);
+    await frame.locator('input[type="email"]').evaluate(input=>{input.value="synthetic@example.test";input.form.requestSubmit();});
+    assert(!requests.some(request=>request.path.includes('/api/forms/')));
     assert(requests.some((request) => request.path === "/branding"));
     assert(
       requests.every((request) => request.method === "GET" && !request.cookie),

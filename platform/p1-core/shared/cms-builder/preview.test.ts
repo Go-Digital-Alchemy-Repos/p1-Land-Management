@@ -59,7 +59,7 @@ it("preserves draft blocks and requires exact origin, source, channel and increa
   ).toBeNull();
 });
 it("rejects excessive, cyclic, non-JSON and unsafe-key payloads before use", () => {
-  const base = { type: "p1:builder-preview", version: 1, channel, revision: 0, blocks };
+  const base = { type: "p1:builder-preview", version: 2, channel, revision: 0, blocks };
   expect(parseBuilderPreviewMessage({ ...base, blocks: [...blocks, ...blocks] })).toBeNull();
   expect(
     parseBuilderPreviewMessage({
@@ -105,4 +105,12 @@ it("rejects excessive, cyclic, non-JSON and unsafe-key payloads before use", () 
   expect(
     parseBuilderPreviewMessage({ ...base, blocks: [{ ...blocks[0], props: deep }] }),
   ).toBeNull();
+});
+
+it("bounds form drafts, rejects mixed documents and requires the current protocol", () => {
+ const message={type:"p1:builder-preview",version:2,channel,revision:0,blocks:[],form:{name:"Draft",slug:"draft",fields:[]}};
+ expect(parseBuilderPreviewMessage(message)?.form).toEqual(message.form);
+ expect(parseBuilderPreviewMessage({...message,version:1})).toBeNull();
+ expect(parseBuilderPreviewMessage({...message,blocks})).toBeNull();
+ expect(parseBuilderPreviewMessage({...message,form:{description:"x".repeat(CMS_BUILDER_PREVIEW_LIMITS.bytes)}})).toBeNull();
 });

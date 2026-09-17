@@ -98,6 +98,7 @@ import type {
   GenerateAssessmentAvailability,
   GeneratedAssessmentAvailability,
   GetMarketingAnalyticsParams,
+  GetMarketingFormBuilder200,
   GetMarketingSearchConsoleParams,
   GetScheduleParams,
   GetSetupStatus200,
@@ -5987,6 +5988,30 @@ export const backfillMarketingCommercialForms = async (backfillMarketingCommerci
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
       backfillMarketingCommercialFormsBody,)
+  }
+);}
+
+
+
+export const getGetMarketingFormBuilderUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/form-builder`
+}
+
+/**
+ * Requires marketing.content.forms. Returns the configured isolated form preview URL without loading other content catalogs.
+ */
+export const getMarketingFormBuilder = async ( options?: RequestInit): Promise<GetMarketingFormBuilder200> => {
+
+  return customFetch<GetMarketingFormBuilder200>(getGetMarketingFormBuilderUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
   }
 );}
 

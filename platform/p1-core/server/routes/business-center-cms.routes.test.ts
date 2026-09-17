@@ -795,3 +795,12 @@ it("gates Forms reads and preserves system form identity against mutation bypass
   expect((await request("/forms/system/submissions")).status).toBe(200);
   expect((await request("/form-delivery-jobs/commercial-backfill", "POST", {}, "/service", {})).status).toBe(403);
 });
+
+it("provides form preview configuration only with the Forms capability", async () => {
+  identity.capabilities=["marketing.content.forms"];
+  const response=await request("/form-builder");
+  expect(response.status).toBe(200);
+  expect(Object.keys(await response.json())).toEqual(["previewUrl"]);
+  identity.capabilities=["marketing.content.pages"];
+  expect((await request("/form-builder")).status).toBe(403);
+});

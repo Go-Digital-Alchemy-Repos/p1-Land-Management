@@ -16,10 +16,12 @@ export function BuilderPreview({
   previewUrl,
   blocks,
   label = "section",
+  form,
 }: {
   previewUrl?: string | null;
   blocks: unknown[];
-  label?: "section" | "page";
+  label?: "section" | "page" | "form";
+  form?: Record<string, unknown>;
 }) {
   const [device, setDevice] = useState<"Desktop" | "Tablet" | "Mobile">(
     "Desktop",
@@ -31,6 +33,8 @@ export function BuilderPreview({
   const revision = useRef(0);
   const latest = useRef(blocks);
   latest.current = blocks;
+  const latestForm = useRef(form);
+  latestForm.current = form;
   const target = useMemo(() => {
     try {
       const url = new URL(previewUrl || "");
@@ -59,6 +63,7 @@ export function BuilderPreview({
       channel: target.channel,
       revision: ++revision.current,
       blocks: latest.current,
+      ...(latestForm.current ? { form: latestForm.current } : {}),
     });
     if (!payload) {
       setStatus(
@@ -101,7 +106,7 @@ export function BuilderPreview({
       window.removeEventListener("message", receive);
     };
   }, [target, send]);
-  useEffect(send, [blocks, send]);
+  useEffect(send, [blocks, form, send]);
   if (!target)
     return (
       <p role="status">

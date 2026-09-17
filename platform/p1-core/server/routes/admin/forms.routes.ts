@@ -1,3 +1,4 @@
+import { getCmsBuilderPreviewUrl } from "../../services/cms-builder-references";
 import { requireBusinessCapability as authorize } from "../../middleware/auth";
 import { backfillCommercialInquiries } from "../../services/commercial-backfill.service";
 import { Router } from "express";
@@ -7,6 +8,9 @@ import { storage } from "../../storage";
 import { paramString } from "../../utils/params";
 
 const router = Router();
+router.get("/form-builder", authorize("marketing.content.forms"), (_req, res) =>
+  res.json({ previewUrl: getCmsBuilderPreviewUrl() }),
+);
 
 router.post(
   "/form-delivery-jobs/commercial-backfill",

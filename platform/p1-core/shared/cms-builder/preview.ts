@@ -1,7 +1,7 @@
 import { z } from "zod";
 import type { BlockInstance } from "./block-registry.shared";
 
-export const CMS_BUILDER_PREVIEW_VERSION = 1;
+export const CMS_BUILDER_PREVIEW_VERSION = 2;
 export const CMS_BUILDER_PREVIEW_PATH = "/cms-preview/builder";
 export const CMS_BUILDER_PREVIEW_LIMITS = {
   bytes: 1024 * 1024,
@@ -15,6 +15,7 @@ const envelope = z
     version: z.literal(CMS_BUILDER_PREVIEW_VERSION),
     channel: z.string().uuid(),
     revision: z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER),
+    form: z.record(z.unknown()).optional(),
     blocks: z
       .array(
         z
@@ -27,7 +28,11 @@ const envelope = z
       )
       .max(CMS_BUILDER_PREVIEW_LIMITS.blocks),
   })
-  .strict();
+  .strict()
+  .refine(
+    (value) => !value.form || value.blocks.length === 0,
+    "Preview one document type at a time",
+  );
 export type BuilderPreviewMessage = z.infer<typeof envelope>;
 
 /** Draft-only transport validation. It neither publishes nor authorizes a storage read.

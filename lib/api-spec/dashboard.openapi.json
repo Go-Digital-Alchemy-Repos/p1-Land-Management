@@ -10574,6 +10574,36 @@
           }
         }
       }
+    },
+    "/marketing/cms/form-builder": {
+      "get": {
+        "operationId": "getMarketingFormBuilder",
+        "description": "Requires marketing.content.forms. Returns the configured isolated form preview URL without loading other content catalogs.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "previewUrl": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  },
+                  "required": [
+                    "previewUrl"
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forms capability required"
+          }
+        }
+      }
     }
   },
   "components": {

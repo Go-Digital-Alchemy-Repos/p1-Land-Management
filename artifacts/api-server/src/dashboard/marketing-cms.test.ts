@@ -370,6 +370,7 @@ test("preview framing admits only a fully configured exact Core origin", () => {
 
 
 test("Forms delivery queries are bounded and backfill remains owner-only", () => {
+  assert.deepEqual(operation("GET", "/form-builder").capabilities, ["marketing.content.forms"]);
   assert.deepEqual(operation("GET", "/forms").capabilities, ["marketing.content.forms"]);
   assert.equal(operation("POST", "/form-delivery-jobs/commercial-backfill").ownerOnly, true);
   const jobs = operation("GET", "/form-delivery-jobs");
