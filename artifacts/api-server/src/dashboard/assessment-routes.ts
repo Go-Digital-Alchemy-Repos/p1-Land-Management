@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
 import { actor } from "./access";
-import { requireRole } from "./policy";
+import { requireCapability } from "./policy";
 import {
   readAvailability,
   saveAvailability,
@@ -12,7 +12,7 @@ import {
 export const assessmentApi = Router();
 assessmentApi.use("/assessment-availability", async (req, _res, next) => {
   const a = await actor(req);
-  requireRole(a.role, ["owner", "manager", "dispatch"]);
+  requireCapability(a, "operations.schedule");
   next();
 });
 assessmentApi.get("/assessment-availability", async (_req, res) =>

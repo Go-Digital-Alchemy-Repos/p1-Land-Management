@@ -105,6 +105,20 @@ test(
       ).status,
       201,
     );
+    for (const who of [legacy, reporting]) {
+      for (const path of ["/clients", "/properties", "/staff", "/work-orders", "/schedule", "/recurring-services", "/projects", "/inspections", "/expenses", "/billing", "/requests", "/service-agreements", "/quickbooks/invoices", "/workspace/references"]) {
+        assert.equal((await call(who, path)).status, 403, `${path} rejects ${who.id}`);
+      }
+    }
+    const references = await call(sales, "/workspace/references");
+    assert.equal(references.status, 200);
+    const refs = await references.json() as { clients: Record<string, unknown>[]; properties: Record<string, unknown>[]; staff: Record<string, unknown>[] };
+    for (const row of refs.clients) assert.deepEqual(Object.keys(row).sort(), ["id", "name"]);
+    for (const row of refs.properties) assert.deepEqual(Object.keys(row).sort(), ["address", "client_id", "id", "name"]);
+    for (const row of refs.staff) assert.deepEqual(Object.keys(row).sort(), ["canAssignWork", "canOwnSales", "id", "name", "role"]);
+    assert(refs.staff.some(row => row.id === sales.id && row.canOwnSales === true));
+    assert(!refs.staff.some(row => row.id === legacy.id));
+    assert.equal((await call(reporting, "/workspace/references")).status, 403);
     await pool.query(
       "UPDATE business_account_access SET capabilities='{}' WHERE user_id=$1",
       [sales.id],

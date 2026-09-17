@@ -189,9 +189,21 @@ export function defaultRouteForRole(role: string | null | undefined, capabilitie
   return { kind: "page", page } as const;
 }
 
+export function canAccessWorkspaceTab(kind: "client" | "property", tab: string, role: string | null | undefined, capabilities?: readonly string[]) {
+  if (!role) return false;
+  if (role === "crew") return kind === "property" && ["overview", "schedule"].includes(tab);
+  if (role === "client") return kind === "property";
+  if (tab === "overview") return true;
+  const subject = { role, capabilities };
+  if (tab === "agreements") return hasCapability(subject, "revenue.agreements") || hasCapability(subject, "revenue.billing");
+  const tools: Record<string, Capability> = { properties: "customers.properties", contacts: "customers.clients", notes: "customers.clients", "notes-files": "customers.properties", schedule: "operations.schedule", requests: "customers.requests", projects: "operations.projects", inspections: "operations.inspections" };
+  return Boolean(tools[tab] && hasCapability(subject, tools[tab]));
+}
+
 export function canAccessRoute(route: DashboardRoute, role: string | null | undefined, capabilities?: readonly string[]) {
   if (route.kind !== "page" || !role) return false;
   const { view, settingsSection } = route.page;
+  if ((route.record?.kind === "client" || route.record?.kind === "property") && !canAccessWorkspaceTab(route.record.kind, route.record.tab, role, capabilities)) return false;
   if (view === "Profile") return true;
   // Field and customer portals keep their existing record-scoped routes.
   if (role === "crew") return ["My Day", "Properties"].includes(view);

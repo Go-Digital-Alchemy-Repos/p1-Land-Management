@@ -1,3 +1,5 @@
+import { dataLoadPlan } from "./data-load-plan";
+import { hasCapability } from "@workspace/api-zod/business-access";
 import { UserManager } from "./UserManager";
 import { WorkReadiness } from "./WorkReadiness";
 import { OwnerMfaRecovery } from "./OwnerMfaRecovery";
@@ -47,6 +49,7 @@ import {
 } from "lucide-react";
 import {
   getMyWorkOrders,
+  getWorkspaceReferences,
   listAccountMfaPolicies,
   syncFieldEvents,
   updateAccountMfaPolicy,
@@ -323,8 +326,10 @@ function App() {
     window.addEventListener("popstate", onPopState);
     return () => window.removeEventListener("popstate", onPopState);
   }, []);
+  const refreshGeneration = useRef(0);
   async function refresh() {
-    if (!person?.role || person.mfaRequired) return;
+    const generation = ++refreshGeneration.current;
+    if (!person?.role || person.mfaRequired) { setData({}); return; }
     setError("");
     try {
       const savedDay = await offline.readDay(person.id);
@@ -336,53 +341,11 @@ function App() {
       );
       if (!navigator.onLine) {
         const day = await offline.readDay(person.id);
-        setData({ work: day?.data || [], savedAt: day?.savedAt });
+        if (generation === refreshGeneration.current) setData({ work: dataLoadPlan(person).paths.includes("work-orders") ? day?.data || [] : [], savedAt: day?.savedAt });
         return;
       }
-      const paths =
-        person.role === "crew"
-          ? ["work-orders", "properties"]
-          : person.role === "client"
-            ? [
-                "work-orders",
-                "properties",
-                "property-types",
-                "clients",
-                "estimates",
-                "billing",
-                "quickbooks/invoices",
-                "requests",
-                "assessment-slots",
-                "inspections",
-              ]
-            : [
-                "work-orders",
-                "properties",
-                "property-types",
-                "clients",
-                ...(person.role === "finance"
-                  ? ["billing", "estimates", "expenses", "quickbooks/invoices", "projects"]
-                  : []),
-                ...(["owner", "manager", "sales"].includes(person.role)
-                  ? ["estimates", "agreement-templates"]
-                  : []),
-                ...(["owner", "manager"].includes(person.role)
-                  ? [
-                      "billing",
-                      "integrations",
-                      "expenses",
-                      "quickbooks/invoices",
-                    ]
-                  : []),
-                "requests",
-                "staff",
-                ...(person.role === "owner" ? ["account-mfa-policies"] : []),
-                "leads",
-                "assessment-slots",
-                ...(["owner", "manager", "dispatch"].includes(person.role)
-                  ? ["recurring-services", "recurring-jobs", "projects", "inspections"]
-                  : []),
-              ];
+      const { paths, references } = dataLoadPlan(person);
+      const referenceData = references ? await getWorkspaceReferences() : {};
       const values = await Promise.all(
         [...new Set(paths)].map(async (p) => [
           p,
@@ -393,7 +356,7 @@ function App() {
               : await api("/" + p),
         ]),
       );
-      const d = Object.fromEntries(values);
+      const d = { ...referenceData, ...Object.fromEntries(values) };
       let work = d["work-orders"] || [];
       if (focusedWorkId.current) {
         try {
@@ -406,14 +369,18 @@ function App() {
           );
         }
       }
-      setData({ ...d, work });
+      if (generation === refreshGeneration.current) setData({ ...d, work });
     } catch (e) {
+      if (generation !== refreshGeneration.current) return;
+      setData({});
       setError((e as Error).message);
     }
   }
   useEffect(() => {
+    setData({});
     void refresh();
-  }, [person?.id, person?.role, isOnline]);
+    return () => { refreshGeneration.current++; };
+  }, [person?.id, person?.role, person?.capabilities, isOnline]);
   async function run(fn: () => Promise<void>) {
     setError("");
     setNotice("");
@@ -894,11 +861,9 @@ function App() {
     }
     setForm(null);
   };
-  const staff = Boolean(
-      person && person.role !== "client" && person.role !== "crew",
-    ),
-    manager = ["owner", "manager"].includes(person?.role || ""),
-    ops = ["owner", "manager", "dispatch"].includes(person?.role || "");
+  const can = (capability: string) => Boolean(person && person.role !== "crew" && hasCapability(person, capability));
+  const ops = can("operations.schedule");
+  const fieldWork = ops || can("workspace.my-day") || person?.role === "crew";
   const propertyTypes = data["property-types"] || [];
   const visibleProperties = (data.properties || [])
     .filter((property: any) => {
@@ -1295,12 +1260,12 @@ function App() {
               </p>
             </div>
             {!routeUnavailable && <div className="heading-actions">
-              {view === "Clients" && staff && (
+              {view === "Clients" && can("customers.clients") && (
                 <button className="primary" onClick={() => openForm("client")}>
                   <Plus size={17} /> Add client
                 </button>
               )}
-              {view === "Properties" && staff && (
+              {view === "Properties" && can("customers.properties") && (
                 <button
                   className="primary"
                   onClick={() => openForm("property")}
@@ -1313,15 +1278,15 @@ function App() {
                   <Plus size={17} /> Internal Job
                 </button>
               )}
-              {view === "Recurring" && ops && (
+              {view === "Recurring" && can("operations.recurring") && (
                 <span className="muted">Recurring Jobs begin with an approved recurring estimate.</span>
               )}
-              {view === "Projects" && manager && (
+              {view === "Projects" && can("operations.projects") && (
                 <button className="primary" onClick={() => openForm("project")}>
                   <Plus size={17} /> New project
                 </button>
               )}
-              {view === "Inspections" && ops && (
+              {view === "Inspections" && can("operations.inspections") && (
                 <button
                   className="primary"
                   onClick={() => openForm("inspection")}
@@ -1351,12 +1316,14 @@ function App() {
               {notice}
             </div>
           )}
-          {recordRoute?.kind === "client" ? (
+          {!routeUnavailable && recordRoute?.kind === "client" ? (
             <ClientWorkspace
               id={recordRoute.id}
               tab={recordRoute.tab}
               request={api}
               role={person.role || ""}
+              capabilities={person.capabilities}
+              referenceProperties={data.properties || []}
               onTab={(tab) =>
                 navigateRecord(clientPage, { kind: "client", id: recordRoute.id, tab })
               }
@@ -1364,12 +1331,13 @@ function App() {
                 navigateRecord(propertyPage, { kind: "property", id, tab: "overview" })
               }
             />
-          ) : recordRoute?.kind === "property" ? (
+          ) : !routeUnavailable && recordRoute?.kind === "property" ? (
             <PropertyWorkspace
               id={recordRoute.id}
               tab={recordRoute.tab}
               request={api}
-              canOpenClient={staff}
+              canOpenClient={hasCapability(person, "customers.clients")}
+              capabilities={person.capabilities}
               role={person.role}
               onTab={(tab) =>
                 navigateRecord(propertyPage, { kind: "property", id: recordRoute.id, tab })
@@ -1411,6 +1379,8 @@ function App() {
           {view === "Agreements" && (
             <ServiceAgreements
               role={person.role}
+              capabilities={person.capabilities}
+              properties={data.properties || []}
               userId={person.id}
               selectedAgreementId={
                 recordRoute?.kind === "agreement" ? recordRoute.id : undefined
@@ -1572,7 +1542,7 @@ function App() {
                       <small><ContactDetails prefix={[client.primary_contact_name, client.primary_contact_position].filter(Boolean).join(" · ")} email={client.primary_contact_email} phone={client.primary_contact_phone} /></small>
                     )}
                   </div>
-                  {staff && (
+                  {can("customers.clients") && (
                     <div className="row-actions">
                       <button className="primary" onClick={() => openClientWorkspace(client)}>
                         Open account <ArrowUpRight size={15} />
@@ -1654,7 +1624,7 @@ function App() {
                   request={api}
                   onChanged={refresh}
                   work={data.work || []}
-                  staff={data.staff || []}
+                  staff={(data.staff || []).filter((candidate: any) => candidate.canAssignWork)}
                   canManage={ops}
                   onSelect={(id) => {
                     void openWorkOrder(id, schedulePage);
@@ -1699,7 +1669,7 @@ function App() {
                           )}
                         </div>
                         <div className="work-actions">
-                          {(ops || person.role === "crew") && (
+                          {fieldWork && (
                             <>
                               {view === "My Day" &&
                                 w.status === "scheduled" && (
@@ -1752,7 +1722,7 @@ function App() {
                                 draft: "scheduled",
                                 scheduled: "in_progress",
                                 in_progress: "completed",
-                                completed: manager ? "reviewed" : null,
+                                completed: "reviewed",
                                 delayed: "scheduled",
                               } as any
                             )[w.status] && (
@@ -1792,7 +1762,7 @@ function App() {
                                 }
                               </button>
                             )}
-                          {manager &&
+                          {ops &&
                             w.status === "reviewed" &&
                             !w.published && (
                               <button
@@ -1856,11 +1826,11 @@ function App() {
           )}
           {view === "Sales" && (
             <>
-              {["owner", "manager", "sales"].includes(person.role || "") && <CommercialInbox staff={data.staff || []} />}
+              {hasCapability(person, "revenue.sales") && <CommercialInbox staff={data.staff || []} />}
               <section className="panel">
                 <div className="panel-heading">
                   <h2>Estimates</h2>
-                  {staff && (
+                  {can("revenue.sales") && (
                     <button onClick={() => openForm("estimate")}>
                       <Plus size={16} /> New estimate
                     </button>
@@ -1879,7 +1849,7 @@ function App() {
                     <span className="badge">
                       {e.is_current ? e.status : "superseded"}
                     </span>
-                    {staff && e.is_current && (
+                    {can("revenue.sales") && e.is_current && (
                       <button
                         onClick={() =>
                           openForm(
@@ -1891,7 +1861,7 @@ function App() {
                         {e.status === "approved" ? "Change order" : "Revise"}
                       </button>
                     )}
-                    {e.status === "draft" && e.is_current && staff && (
+                    {e.status === "draft" && e.is_current && can("revenue.sales") && (
                       <button onClick={() => void openForm("send-estimate", e)}>Send to client</button>
                     )}
                     {e.status === "sent" &&
@@ -1919,7 +1889,7 @@ function App() {
                   <p className="empty">Your estimates will appear here.</p>
                 )}
               </section>
-              {staff && (
+              {can("revenue.sales") && (
                 <section className="panel">
                   <div className="panel-heading">
                     <h2>Inquiries</h2>
@@ -1937,9 +1907,7 @@ function App() {
                       </div>
                       <span className="badge">{lead.status}</span>
                       {!lead.converted_property_id &&
-                        ["owner", "manager", "sales"].includes(
-                          person.role || "",
-                        ) && (
+                        can("revenue.sales") && (
                           <button onClick={() => openForm("convert", lead)}>
                             Convert inquiry
                           </button>
@@ -1956,8 +1924,8 @@ function App() {
           {view === "Billing" && (
             <section className="panel">
               <div className="panel-heading">
-                <h2>{staff ? "Billing drafts & invoices" : "Your invoices"}</h2>
-                {staff && (
+                <h2>{can("revenue.billing") ? "Billing drafts & invoices" : "Your invoices"}</h2>
+                {can("revenue.billing") && (
                   <button
                     onClick={() => (
                       setBillingOperationId(crypto.randomUUID()),
@@ -1968,7 +1936,7 @@ function App() {
                   </button>
                 )}
               </div>
-              {staff && (
+              {can("revenue.billing") && (
                 <p className="integration-note">
                   QuickBooks connection is required before invoices can be
                   posted. Drafts do not send or charge customers.
@@ -1984,13 +1952,13 @@ function App() {
                   </div>
                   <strong>{money(b.amount_cents)}</strong>
                   <span className="badge">{b.status}</span>
-                  {staff && b.status === "posted" && !b.ownership_verified && (
+                  {can("revenue.billing") && b.status === "posted" && !b.ownership_verified && (
                     <small role="status">
                       Accounting customer needs reconciliation · hidden from
                       client
                     </small>
                   )}
-                  {staff && b.status !== "posted" && (
+                  {can("revenue.billing") && b.status !== "posted" && (
                     <button
                       onClick={() =>
                         void run(async () => {
@@ -2016,7 +1984,7 @@ function App() {
                       Invoice {invoice.document_number || invoice.id}
                     </strong>
                     <small>{invoice.client_name}</small>
-                    {staff && !invoice.ownership_verified && (
+                    {can("revenue.billing") && !invoice.ownership_verified && (
                       <small>
                         Customer mapping needs review · hidden from client
                       </small>
@@ -2062,12 +2030,12 @@ function App() {
             </section>
           )}
           {view === "Projects" && (
-            <ProjectPhases projects={data.projects || []} estimates={data.estimates || []} role={person?.role} api={api} refresh={refresh} onError={setError} />
+            <ProjectPhases projects={data.projects || []} estimates={data.estimates || []} role={person?.role} capabilities={person?.capabilities} api={api} refresh={refresh} onError={setError} />
           )}
           {view === "Inspections" && (
             <InspectionReports
               inspections={data.inspections || []}
-              canPublish={manager}
+              canPublish={can("operations.inspections")}
               onPublish={(id) =>
                 void run(async () => {
                   await api("/inspections/" + id + "/publish", {});
@@ -2098,6 +2066,7 @@ function App() {
             <ServiceRequestTriage
               records={data.requests || []}
               role={person?.role}
+              capabilities={person?.capabilities}
               api={api}
               onRefresh={refresh}
               onGenerateEstimate={(request) => openForm("estimate-request", request)}
@@ -2366,7 +2335,7 @@ function App() {
               <>
                 <PropertyFiles
                   propertyId={selected.property.id}
-                  canPublish={manager}
+                  canPublish={ops}
                   request={api}
                 />
                 {selected.timeline.length ? (
@@ -2690,7 +2659,7 @@ function App() {
                       Assigned person
                       <select name="assignedTo">
                         <option value="">Unassigned</option>
-                        {(data.staff || []).map((s: any) => (
+                        {(data.staff || []).filter((candidate: any) => candidate.canAssignWork).map((s: any) => (
                           <option key={s.id} value={s.id}>
                             {s.name}
                           </option>
@@ -2738,7 +2707,7 @@ function App() {
                   </>
                 )}
                 {form === "send-estimate" && <><p>Send <strong>{selected.title}</strong> to one or more client contacts.</p><label>Recipients<select name="recipientContactIds" multiple required size={Math.min(6, Math.max(2, (data.estimateRecipients || []).length))}>{(data.estimateRecipients || []).map((contact: any) => <option key={contact.id} value={contact.id} disabled={!contact.email || !contact.email_enabled}>{contact.name} · {contact.email || "no email"}</option>)}</select></label></>}
-                {form === "activate-recurring" && <><p>Set the first visit and default team member.</p><label>Default assignee<select name="assignedTo" required><option value="">Choose a team member</option>{(data.staff || []).map((staffMember: any) => <option key={staffMember.id} value={staffMember.id}>{staffMember.name}</option>)}</select></label>{field("nextDate", "First visit", "date")}{field("localTime", "Default time", "time")}</>}
+                {form === "activate-recurring" && <><p>Set the first visit and default team member.</p><label>Default assignee<select name="assignedTo" required><option value="">Choose a team member</option>{(data.staff || []).filter((candidate: any) => candidate.canAssignWork).map((staffMember: any) => <option key={staffMember.id} value={staffMember.id}>{staffMember.name}</option>)}</select></label>{field("nextDate", "First visit", "date")}{field("localTime", "Default time", "time")}</>}
                 {form === "billing" && (
                   <>
                     {propertySelect()}

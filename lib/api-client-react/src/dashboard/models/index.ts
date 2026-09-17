@@ -286,4 +286,8 @@ export * from './workOrder';
 export * from './workOrderChecklistItem';
 export * from './workOrderItem';
 export * from './workOrderStatusUpdate';
+export * from './workspaceReferences';
+export * from './workspaceReferencesClientsItem';
+export * from './workspaceReferencesPropertiesItem';
+export * from './workspaceReferencesStaffItem';
 export * from './workVersion';

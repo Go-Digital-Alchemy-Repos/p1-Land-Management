@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
 import { actor } from "./access";
-import { requireRole } from "./policy";
+import { requireCapability } from "./policy";
 import { listContacts, saveContact } from "./contacts";
 export const contactsApi = Router();
 const id = z.string().uuid();
@@ -14,7 +14,7 @@ const input = z.object({
 });
 contactsApi.use("/clients/:clientId/contacts", async (req, _res, next) => {
   const a = await actor(req);
-  requireRole(a.role, ["owner", "manager", "dispatch", "sales", "finance"]);
+  requireCapability(a, "customers.clients");
   next();
 });
 contactsApi.get("/clients/:clientId/contacts", async (req, res) =>

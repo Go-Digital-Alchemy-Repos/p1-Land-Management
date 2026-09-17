@@ -4,7 +4,7 @@ import { z } from "zod";
 import { randomUUID } from "node:crypto";
 import { pool, transaction } from "./database";
 import { actor, propertyAccess } from "./access";
-import { requireRole, HttpError } from "./policy";
+import { requireCapability, HttpError } from "./policy";
 import { contactsApi } from "./contact-routes";
 import { assessmentApi } from "./assessment-routes";
 import { scheduleApi } from "./schedule-routes";
@@ -20,7 +20,7 @@ const id = z.string().uuid(),
   text = z.string().trim().min(1).max(10000);
 operationsApi.get("/recurring-services", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, ["owner", "manager", "dispatch"]);
+  requireCapability(a, "operations.recurring");
   res.json(
     (
       await pool.query(
@@ -31,7 +31,7 @@ operationsApi.get("/recurring-services", async (req, res) => {
 });
 operationsApi.post("/recurring-services", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, ["owner", "manager", "dispatch"]);
+  requireCapability(a, "operations.recurring");
   const b = z
     .object({
       propertyId: id,
@@ -68,7 +68,7 @@ operationsApi.post("/recurring-services", async (req, res) => {
 });
 operationsApi.post("/recurring-services/:id/pause", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, ["owner", "manager", "dispatch"]);
+  requireCapability(a, "operations.recurring");
   const b = z.object({ paused: z.boolean() }).parse(req.body);
   await operationalChildQuery("recurring_service",id.parse(req.params.id),"UPDATE recurring_service SET paused=$2 WHERE id=$1", [
     id.parse(req.params.id),
@@ -78,6 +78,7 @@ operationsApi.post("/recurring-services/:id/pause", async (req, res) => {
 });
 operationsApi.get("/properties/:id/areas", async (req, res) => {
   const a = await actor(req);
+  if (!["client", "crew"].includes(a.role)) requireCapability(a, "customers.properties");
   const key = id.parse(req.params.id);
   await propertyAccess(a, key);
   res.json(
@@ -91,7 +92,7 @@ operationsApi.get("/properties/:id/areas", async (req, res) => {
 });
 operationsApi.post("/properties/:id/areas", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, ["owner", "manager", "dispatch"]);
+  requireCapability(a, "customers.properties");
   const key = id.parse(req.params.id);
   const b = z
     .object({
@@ -109,7 +110,7 @@ operationsApi.post("/properties/:id/areas", async (req, res) => {
 });
 operationsApi.get("/projects", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, ["owner", "manager", "dispatch", "finance"]);
+  requireCapability(a, "operations.projects");
   res.json(
     (
       await pool.query(
@@ -127,7 +128,7 @@ operationsApi.get("/projects", async (req, res) => {
 });
 operationsApi.post("/projects", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, ["owner", "manager"]);
+  requireCapability(a, "operations.projects");
   const b = z
     .object({
       propertyId: id.optional(),
@@ -157,7 +158,7 @@ operationsApi.post("/projects", async (req, res) => {
 });
 operationsApi.post("/projects/:id", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, ["owner", "manager"]);
+  requireCapability(a, "operations.projects");
   const projectId = id.parse(req.params.id);
   const b = z
     .object({
@@ -189,7 +190,7 @@ operationsApi.post("/projects/:id", async (req, res) => {
 });
 operationsApi.get("/expenses", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, ["owner", "manager", "finance"]);
+  requireCapability(a, "revenue.expenses");
   res.json(
     (
       await pool.query(
@@ -200,7 +201,7 @@ operationsApi.get("/expenses", async (req, res) => {
 });
 operationsApi.post("/expenses", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, ["owner", "manager", "finance"]);
+  requireCapability(a, "revenue.expenses");
   const b = z
     .object({
       propertyId: id,
@@ -227,7 +228,7 @@ operationsApi.post("/expenses", async (req, res) => {
 });
 operationsApi.get("/inspections", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, ["owner", "manager", "dispatch", "client"]);
+  if (a.role !== "client") requireCapability(a, "operations.inspections");
   const clientView = a.role === "client";
   res.json(
     (
@@ -242,7 +243,7 @@ operationsApi.get("/inspections", async (req, res) => {
 });
 operationsApi.post("/inspections", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, ["owner", "manager", "dispatch", "crew"]);
+  if (a.role !== "crew") requireCapability(a, "operations.inspections");
   const b = z
     .object({
       propertyId: id,
@@ -274,7 +275,7 @@ operationsApi.post("/inspections", async (req, res) => {
 });
 operationsApi.post("/inspections/:id/publish", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, ["owner", "manager"]);
+  requireCapability(a, "operations.inspections");
   const key = id.parse(req.params.id);
   await transaction(async (c) => {
     const inspection = (

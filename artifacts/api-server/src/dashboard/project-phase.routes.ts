@@ -1,3 +1,4 @@
+import { hasCapability } from "@workspace/api-zod/business-access";
 import { Router } from "express";
 import { createHash, randomUUID } from "node:crypto";
 import { z } from "zod";
@@ -5,14 +6,13 @@ import { projectPhaseBillingIntentSchema, projectPhaseDetailsSchema, projectPhas
 import { actor, propertyAccess, type Actor } from "./access";
 import { pool, transaction } from "./database";
 import { requireOperationalProperty } from "./operational-property";
-import { HttpError, requireRole } from "./policy";
+import { HttpError, requireCapability } from "./policy";
 
 export const projectPhaseApi = Router();
 
 const id = z.string().uuid();
 const text = z.string().trim().min(1).max(10000);
 const phaseDetails = projectPhaseDetailsSchema;
-const office = ["owner", "manager", "dispatch", "finance"] as const;
 const transitions: Record<string, readonly string[]> = {
   planned: ["ready", "blocked", "cancelled", "archived"],
   ready: ["in_progress", "blocked", "cancelled"],
@@ -73,7 +73,7 @@ async function lockedPhase(c: { query: Function }, phaseId: string) {
 }
 
 function requirePhaseOffice(a: Actor) {
-  requireRole(a.role, [...office]);
+  requireCapability(a, "operations.projects");
 }
 
 projectPhaseApi.get("/projects/:projectId/phases", async (req, res) => {
@@ -129,7 +129,7 @@ projectPhaseApi.get("/project-phases/:id", async (req, res) => {
 
 projectPhaseApi.post("/projects/:projectId/phases", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, ["owner", "manager"]);
+  requireCapability(a, "operations.projects");
   const projectId = id.parse(req.params.projectId);
   const b = phaseDetails.extend({ position: z.number().int().min(0).max(10000).optional() }).parse(req.body);
   checkDates(b.plannedStart, b.plannedEnd);
@@ -150,7 +150,7 @@ projectPhaseApi.post("/projects/:projectId/phases", async (req, res) => {
 
 projectPhaseApi.patch("/project-phases/:id", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, ["owner", "manager"]);
+  requireCapability(a, "operations.projects");
   const phaseId = id.parse(req.params.id);
   const b = phaseDetails.extend({ expectedVersion: z.number().int().positive(), reason: text }).parse(req.body);
   checkDates(b.plannedStart, b.plannedEnd);
@@ -170,7 +170,7 @@ projectPhaseApi.patch("/project-phases/:id", async (req, res) => {
 
 projectPhaseApi.post("/project-phases/:id/transitions", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, ["owner", "manager"]);
+  requireCapability(a, "operations.projects");
   const phaseId = id.parse(req.params.id);
   const b = projectPhaseTransitionSchema.parse(req.body);
   const result = await transaction(async (c) => {
@@ -197,7 +197,7 @@ projectPhaseApi.post("/project-phases/:id/transitions", async (req, res) => {
 
 projectPhaseApi.post("/project-phases/:id/publish", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, ["owner", "manager"]);
+  requireCapability(a, "operations.projects");
   const phaseId = id.parse(req.params.id);
   const b = projectPhasePublicationSchema.parse(req.body);
   const result = await transaction(async (c) => {
@@ -220,13 +220,13 @@ projectPhaseApi.get("/project-phases/:id/history", async (req, res) => {
   const phaseId = id.parse(req.params.id);
   const phase = await pool.query("SELECT 1 FROM project_phase ph JOIN project j ON j.id=ph.project_id JOIN property p ON p.id=j.property_id AND p.lifecycle='operational' AND p.client_id IS NOT NULL WHERE ph.id=$1", [phaseId]);
   if (!phase.rowCount) throw new HttpError(404, "Project phase not found");
-  const r = await pool.query("SELECT e.* FROM project_phase_event e JOIN project_phase ph ON ph.id=e.phase_id JOIN project j ON j.id=ph.project_id JOIN property p ON p.id=j.property_id AND p.lifecycle='operational' AND p.client_id IS NOT NULL WHERE e.phase_id=$1 ORDER BY e.created_at DESC", [phaseId]);
+  const r = await pool.query("SELECT e.* FROM project_phase_event e JOIN project_phase ph ON ph.id=e.phase_id JOIN project j ON j.id=ph.project_id JOIN property p ON p.id=j.property_id AND p.lifecycle='operational' AND p.client_id IS NOT NULL WHERE e.phase_id=$1 AND ($2::boolean OR e.event_type<>'billing_intent_created') ORDER BY e.created_at DESC", [phaseId, hasCapability(a, "revenue.billing")]);
   res.json(r.rows);
 });
 
 projectPhaseApi.get("/project-phases/:id/billing-intents", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, ["owner", "manager", "finance"]);
+  requireCapability(a, "revenue.billing");
   const phaseId = id.parse(req.params.id);
   const phase = await pool.query("SELECT 1 FROM project_phase ph JOIN project j ON j.id=ph.project_id JOIN property p ON p.id=j.property_id AND p.lifecycle='operational' AND p.client_id IS NOT NULL WHERE ph.id=$1", [phaseId]);
   if (!phase.rowCount) throw new HttpError(404, "Project phase not found");
@@ -236,7 +236,7 @@ projectPhaseApi.get("/project-phases/:id/billing-intents", async (req, res) => {
 
 projectPhaseApi.post("/project-phases/:id/billing-intents", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, ["owner", "manager", "finance"]);
+  requireCapability(a, "revenue.billing");
   const phaseId = id.parse(req.params.id);
   const b = projectPhaseBillingIntentSchema.parse(req.body);
   const fingerprint = createHash("sha256").update(JSON.stringify({ phaseId, ...b })).digest("hex");

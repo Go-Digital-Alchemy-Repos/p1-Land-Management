@@ -1,3 +1,4 @@
+import type { Capability } from "@workspace/api-zod/business-access";
 import { randomUUID } from "node:crypto";
 
 /** Queue operational updates without putting contact addresses in audit events. */
@@ -7,12 +8,15 @@ export async function notifyStaff(
   title: string,
   body: string,
   dedupKey: string,
+  capability: Capability,
 ) {
   if (!userId) return;
   const recipient = (await c.query(
     `SELECT u.email FROM "user" u JOIN staff_profile s ON s.user_id=u.id
-     WHERE u.id=$1 AND s.active=true`,
-    [userId],
+     WHERE u.id=$1 AND s.active=true AND (s.role='owner' OR
+       (s.role='crew' AND $2='workspace.my-day') OR
+       (s.role NOT IN ('client','crew') AND EXISTS(SELECT 1 FROM business_account_access a WHERE a.user_id=s.user_id AND $2=ANY(a.capabilities))))`,
+    [userId, capability],
   )).rows[0];
   if (!recipient?.email) return;
   const queued = await c.query(
@@ -47,17 +51,17 @@ export async function notifyClientContacts(
     );
 }
 
-export async function notifyRoles(
+export async function notifyCapability(
   c: any,
-  roles: string[],
+  capability: Capability,
   title: string,
   body: string,
   dedupPrefix: string,
 ) {
   const recipients = (await c.query(
-    "SELECT user_id FROM staff_profile WHERE active=true AND role=ANY($1::text[])",
-    [roles],
+    "SELECT p.user_id FROM staff_profile p LEFT JOIN business_account_access a ON a.user_id=p.user_id WHERE p.active=true AND (p.role='owner' OR (p.role NOT IN ('crew','client') AND $1=ANY(a.capabilities)))",
+    [capability],
   )).rows;
   for (const recipient of recipients)
-    await notifyStaff(c, recipient.user_id, title, body, `${dedupPrefix}:${recipient.user_id}`);
+    await notifyStaff(c, recipient.user_id, title, body, `${dedupPrefix}:${recipient.user_id}`, capability);
 }

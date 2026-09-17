@@ -22,6 +22,7 @@ test("project phases preserve legacy projects, enforce lifecycle and create retr
     const uid = randomUUID(), sid = randomUUID(), token = randomUUID();
     await pool.query('INSERT INTO "user"(id,name,email,"emailVerified") VALUES($1,$2,$3,true)', [uid, role, `${uid}@example.test`]);
     await pool.query("INSERT INTO staff_profile(user_id,role) VALUES($1,$2)", [uid, role]);
+    if (role === "manager" || role === "finance") await pool.query("INSERT INTO business_account_access(user_id,capabilities) VALUES($1,$2)", [uid, role === "manager" ? ["operations.projects", "revenue.billing"] : ["revenue.billing"]]);
     await pool.query('INSERT INTO session(id,"expiresAt",token,"userId") VALUES($1,now()+interval \'1 hour\',$2,$3)', [sid, token, uid]);
     users[role] = { id: uid, cookie: "p1-dashboard.session_token=" + encodeURIComponent(token + "." + createHmac("sha256", process.env.BETTER_AUTH_SECRET!).update(token).digest("base64")) };
   }
@@ -44,7 +45,7 @@ test("project phases preserve legacy projects, enforce lifecycle and create retr
   assert.equal(created.status, 201);
   const phaseId = created.body.id;
   assert.equal(created.body.version, 1);
-  assert.equal((await request("finance", "/api/v1/projects")).status, 200);
+  assert.equal((await request("finance", "/api/v1/projects")).status, 403);
   assert.equal((await request("manager", `/api/v1/projects/${projectId}/phases`, { title: "Duplicate position", scope: "", position: 0, prerequisites: [] })).status, 409);
   assert.deepEqual((await pool.query("SELECT phases FROM project WHERE id=$1", [projectId])).rows[0].phases, [{ name: "Legacy JSON phase", complete: false }]);
   assert.equal((await request("client", `/api/v1/project-phases/${phaseId}`)).status, 404);
@@ -77,6 +78,7 @@ test("project phases preserve legacy projects, enforce lifecycle and create retr
   assert.equal(clientView.status, 200);
   assert.equal(clientView.body.published_summary, "Entrance work is reviewed and complete.");
   assert.equal("scope" in clientView.body, false);
+  await pool.query("UPDATE business_account_access SET capabilities=$2 WHERE user_id=$1", [users.finance.id, ["revenue.billing", "operations.projects"]]);
   const history = await request("finance", `/api/v1/project-phases/${phaseId}/history`);
   assert.equal(history.status, 200);
   assert.ok(history.body.some((event: any) => event.event_type === "billing_intent_created"));

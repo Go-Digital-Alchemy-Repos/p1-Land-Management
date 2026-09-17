@@ -3,11 +3,10 @@ import { Router } from "express";
 import { z } from "zod";
 import { actor } from "./access";
 import { pool, transaction } from "./database";
-import { HttpError, requireRole, type Role } from "./policy";
+import { HttpError, requireCapability } from "./policy";
 
 export const propertyTypesApi = Router();
 
-const managers: Role[] = ["owner", "manager"];
 const identifier = z.string().uuid();
 const name = z.string().trim().min(1).max(100);
 
@@ -24,7 +23,7 @@ function duplicateName(error: unknown) {
 
 propertyTypesApi.get("/property-types", async (req, res) => {
   const user = await actor(req);
-  requireRole(user.role, managers);
+  requireCapability(user, "customers.properties");
   const result = await pool.query(
     "SELECT id,name,position,created_at FROM property_type ORDER BY position,name",
   );
@@ -33,7 +32,7 @@ propertyTypesApi.get("/property-types", async (req, res) => {
 
 propertyTypesApi.post("/property-types", async (req, res) => {
   const user = await actor(req);
-  requireRole(user.role, managers);
+  requireCapability(user, "customers.properties");
   const input = z.object({ name }).parse(req.body);
   const id = randomUUID();
   try {
@@ -57,7 +56,7 @@ propertyTypesApi.post("/property-types", async (req, res) => {
 
 propertyTypesApi.post("/property-types/:id", async (req, res) => {
   const user = await actor(req);
-  requireRole(user.role, managers);
+  requireCapability(user, "customers.properties");
   const id = identifier.parse(req.params.id);
   const input = z.object({ name }).parse(req.body);
   try {
@@ -79,7 +78,7 @@ propertyTypesApi.post("/property-types/:id", async (req, res) => {
 
 propertyTypesApi.delete("/property-types/:id", async (req, res) => {
   const user = await actor(req);
-  requireRole(user.role, managers);
+  requireCapability(user, "customers.properties");
   const id = identifier.parse(req.params.id);
   const removed = await transaction(async (connection) => {
     const inUse = await connection.query(

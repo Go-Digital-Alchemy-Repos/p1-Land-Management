@@ -16,7 +16,7 @@ test("setup grant is expiring, exact, and fails closed", () => {
 test("dispatch checks prerequisites and explicit override", () => {
   assert.throws(
     () =>
-      transition("draft", "scheduled", "dispatch", [
+      transition("draft", "scheduled", { role: "member", capabilities: ["operations.schedule"] }, [
         { label: "Deposit", done: false },
       ]),
     /prerequisites/,
@@ -25,7 +25,7 @@ test("dispatch checks prerequisites and explicit override", () => {
     transition(
       "draft",
       "scheduled",
-      "owner",
+      { role: "owner" },
       [{ label: "Deposit", done: false }],
       "Owner authorized",
     ),
@@ -33,11 +33,11 @@ test("dispatch checks prerequisites and explicit override", () => {
 });
 test("crew cannot publish and terminal records cannot reopen silently", () => {
   assert.throws(
-    () => transition("completed", "reviewed", "crew", []),
+    () => transition("completed", "reviewed", { role: "crew" }, []),
     /denied/,
   );
   assert.throws(
-    () => transition("cancelled", "scheduled", "owner", []),
+    () => transition("cancelled", "scheduled", { role: "owner" }, []),
     /not allowed/,
   );
   assert.throws(() => requireRole("client", ["owner", "finance"]), /denied/);
@@ -46,4 +46,9 @@ test("money rejects fractional cents, negatives and unsafe values", () => {
   for (const v of [-1, 0, 1.5, Infinity, Number.MAX_SAFE_INTEGER])
     assert.throws(() => boundedMoney(v));
   assert.equal(boundedMoney(12500), 12500);
+});
+
+test("completion review does not inherit legacy manager access", () => {
+  assert.throws(() => transition("completed", "reviewed", {role: "manager"}, []), /denied/);
+  assert.doesNotThrow(() => transition("completed", "reviewed", {role: "member", capabilities: ["operations.schedule"]}, []));
 });

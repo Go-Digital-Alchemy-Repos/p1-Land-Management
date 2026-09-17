@@ -42,7 +42,7 @@ notificationsApi.post("/notification-preferences", async (req, res) => {
 });
 notificationsApi.post("/notifications/send", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, ["owner", "manager", "dispatch"]);
+  requireRole(a.role, ["owner"]);
   const b = z
     .object({
       id: z.string().uuid(),
@@ -100,7 +100,7 @@ notificationsApi.post("/notifications/send", async (req, res) => {
 });
 notificationsApi.post("/delivery-jobs/:id/retry", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, ["owner", "manager"]);
+  requireRole(a.role, ["owner"]);
   const key = z.string().uuid().parse(req.params.id);
   await transaction(async (c) => {
     const r = await c.query(

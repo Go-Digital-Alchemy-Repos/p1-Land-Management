@@ -2,7 +2,7 @@ import { createHash, randomUUID } from "node:crypto";
 import { z } from "zod";
 import type { Actor } from "./access";
 import { pool, transaction } from "./database";
-import { HttpError, requireRole } from "./policy";
+import { HttpError, requireCapability } from "./policy";
 import { prepareAgreementChargeInTransaction } from "./service-agreement.billing";
 
 const kind = "agreement.prepare_charge";
@@ -227,8 +227,7 @@ const retryInput = z.object({
   operationId: z.string().uuid(), expectedRevision: z.number().int().positive(),
   eligibilityFingerprint: z.string().regex(/^[0-9a-f]{64}$/), reason: z.string().trim().min(1).max(2000),
 }).strict();
-const office = ["owner", "manager", "finance"] as const;
-function authorize(actor: Actor) { requireRole(actor.role, [...office]); }
+function authorize(actor: Actor) { requireCapability(actor, "revenue.billing"); }
 function encodeCursor(value: unknown) { return Buffer.from(JSON.stringify(value)).toString("base64url"); }
 function parseCursor(value: string | undefined, agreementId: string | undefined, status: string | undefined) {
   if (!value) return null;

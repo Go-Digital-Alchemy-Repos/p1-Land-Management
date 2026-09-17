@@ -57,7 +57,7 @@ export function canDispatch(
 export function transition(
   current: string,
   next: string,
-  role: Role,
+  subject: CapabilitySubject,
   prerequisites: { label: string; done: boolean }[],
   override?: string | null,
 ) {
@@ -73,7 +73,9 @@ export function transition(
   };
   if (!allowed[current]?.includes(next))
     throw new HttpError(409, "This status change is not allowed");
-  if (next === "reviewed") requireRole(role, ["owner", "manager"]);
+  if (next === "reviewed") {
+    requireCapability(subject, "operations.schedule");
+  }
   if (next === "scheduled" && !canDispatch(prerequisites, override))
     throw new HttpError(409, "Complete job prerequisites before scheduling");
 }

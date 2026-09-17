@@ -68,6 +68,8 @@ test(
       );
     }
 
+    await pool.query("INSERT INTO business_account_access(user_id,capabilities) VALUES($1,$2)", [ids.manager,
+      ["customers.clients", "customers.properties", "customers.requests", "operations.schedule", "operations.projects", "operations.inspections", "revenue.agreements"]]);
     await pool.query("INSERT INTO client(id,name) VALUES($1,$2),($3,$4)", [
       ids.client,
       "Workspace client",
@@ -345,5 +347,18 @@ test(
       scope: "Reviewed operational scope",
       version: 2,
     });
+    await pool.query("UPDATE business_account_access SET capabilities=$2 WHERE user_id=$1", [ids.manager, ["customers.clients"]]);
+    const restrictedClient = await fetch(`${base}/api/v1/clients/${ids.client}/workspace`, { headers: managerHeaders });
+    assert.equal(restrictedClient.status, 200);
+    const clientOnly = await restrictedClient.json() as Record<string, any>;
+    for (const section of ["properties", "agreements", "schedule", "requests", "projects", "activity"]) assert.deepEqual(clientOnly[section], [], section);
+    assert(clientOnly.contacts.length > 0);
+    assert.equal((await fetch(`${base}/api/v1/properties/${ids.property}/workspace`, { headers: managerHeaders })).status, 403);
+    await pool.query("UPDATE business_account_access SET capabilities=$2 WHERE user_id=$1", [ids.manager, ["customers.properties"]]);
+    const restrictedProperty = await fetch(`${base}/api/v1/properties/${ids.property}/workspace`, { headers: managerHeaders });
+    assert.equal(restrictedProperty.status, 200);
+    const propertyOnly = await restrictedProperty.json() as Record<string, any>;
+    for (const section of ["agreements", "schedule", "requests", "projects", "inspections", "contacts", "notes"]) assert.deepEqual(propertyOnly[section], [], section);
+    assert.equal((await fetch(`${base}/api/v1/clients/${ids.client}/workspace`, { headers: managerHeaders })).status, 403);
   },
 );

@@ -90,6 +90,7 @@ test(
         "INSERT INTO staff_profile(user_id,role) VALUES($1,$2)",
         [identity, role],
       );
+      if (role === "finance") await pool.query("INSERT INTO business_account_access(user_id,capabilities) VALUES($1,$2)", [identity, ["customers.clients"]]);
       await pool.query(
         'INSERT INTO session(id,token,"userId","expiresAt") VALUES($1,$2,$3,now()+interval \'1 hour\')',
         [randomUUID(), token, identity],

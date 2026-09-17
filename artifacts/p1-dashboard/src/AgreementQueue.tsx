@@ -21,7 +21,7 @@ export function AgreementQueue({
   onOpen,
   revision,
 }: {
-  properties: DashboardProperty[];
+  properties: Pick<DashboardProperty, "id" | "name">[];
   onOpen: (id: string) => void;
   revision: number;
 }) {

@@ -1,3 +1,4 @@
+import { hasCapability } from "@workspace/api-zod/business-access";
 import { useEffect, useMemo, useState } from "react";
 import { serviceRequestTransitionTargets, serviceRequestUiPolicy } from "./service-request-triage.policy";
 import "./service-request-triage.css";
@@ -33,17 +34,19 @@ const stamp = (value?: string) =>
 export function ServiceRequestTriage({
   records,
   role,
+  capabilities,
   api,
   onRefresh,
   onGenerateEstimate,
 }: {
   records: RequestRow[];
   role: string | null | undefined;
+  capabilities?: readonly string[];
   api: Api;
   onRefresh: () => Promise<void>;
   onGenerateEstimate?: (request: RequestRow) => void;
 }) {
-  const policy = serviceRequestUiPolicy(role);
+  const policy = serviceRequestUiPolicy(role, capabilities);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [detail, setDetail] = useState<RequestRow | null>(null);
   const [reason, setReason] = useState("");
@@ -67,10 +70,10 @@ export function ServiceRequestTriage({
   // planning-draft control remains in the component only for compatibility,
   // but is not exposed by the Jobs lifecycle.
   const canConvert = false;
-  const canGenerateEstimate = ["owner", "manager", "sales"].includes(role || "") && Boolean(current) && !["closed", "cancelled", "converted"].includes(current!.status);
+  const canGenerateEstimate = hasCapability({role: role || null, capabilities}, "revenue.sales") && Boolean(current) && !["closed", "cancelled", "converted"].includes(current!.status);
 
   useEffect(() => {
-    if (policy !== "read" && policy !== "manage") return;
+    if (policy !== "manage") return;
     if (!selectedId && records[0]) setSelectedId(records[0].id);
     if (selectedId && !records.some((record) => record.id === selectedId)) {
       setSelectedId(records[0]?.id || null);
@@ -79,7 +82,7 @@ export function ServiceRequestTriage({
   }, [policy, records, selectedId]);
 
   useEffect(() => {
-    if (!selectedId || (policy !== "read" && policy !== "manage")) return;
+    if (!selectedId || (policy !== "manage")) return;
     let active = true;
     setError("");
     void api(`/service-requests/${selectedId}`)
@@ -232,13 +235,6 @@ export function ServiceRequestTriage({
                 </div>
                 <span className="badge">{readable(current.status)}</span>
               </div>
-
-              {policy === "read" && (
-                <p className="muted">
-                  This role can review request details but cannot change triage,
-                  create work, or schedule service.
-                </p>
-              )}
 
               {canGenerateEstimate && (
                 <button type="button" className="primary" onClick={() => onGenerateEstimate?.(current!)}>

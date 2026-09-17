@@ -14,7 +14,7 @@ import {
 } from "node:crypto";
 import { pool, transaction } from "./database";
 import { actor } from "./access";
-import { requireRole, HttpError } from "./policy";
+import { requireRole, requireCapability, HttpError } from "./policy";
 const tokenSchema = z.object({
   access_token: z.string(),
   refresh_token: z.string(),
@@ -217,7 +217,7 @@ async function queryAll(entity: "Customer" | "Invoice", filter = "") {
 }
 qboApi.post("/quickbooks/import-preview", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, ["owner", "manager", "finance"]);
+  requireCapability(a, "revenue.billing");
   const [customers, invoices] = await Promise.all([
     queryAll("Customer"),
     queryAll("Invoice", "where Balance > '0'"),
@@ -250,7 +250,7 @@ qboApi.post("/quickbooks/import-preview", async (req, res) => {
 });
 qboApi.post("/quickbooks/import", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, ["owner", "manager", "finance"]);
+  requireCapability(a, "revenue.billing");
   const b = z
     .object({
       previewId: z.string().uuid(),
@@ -326,7 +326,7 @@ qboApi.post("/quickbooks/import", async (req, res) => {
 });
 qboApi.get("/quickbooks/invoices", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, ["owner", "manager", "finance", "client"]);
+  if (a.role !== "client") requireCapability(a, "revenue.billing");
   res.json(
     (
       await pool.query(
@@ -342,7 +342,7 @@ export async function postBillingDraft(
   item: string,
   postInvoice: typeof qbo = qbo,
 ) {
-  requireRole(a.role, ["owner", "manager", "finance"]);
+  requireCapability(a, "revenue.billing");
   const draft = await transaction(async (c) => {
     await guardAgreementPosting(c, key);
     await requireOperationalChild(c, "billing_draft", key);

@@ -156,7 +156,8 @@ import type {
   UploadFieldPhotoHeaders,
   WorkOrder,
   WorkOrderStatusUpdate,
-  WorkVersion
+  WorkVersion,
+  WorkspaceReferences
 } from './models';
 
 import { customFetch } from '../custom-fetch';
@@ -3117,6 +3118,30 @@ export const revokeManagedInvitation = async (id: string, options?: RequestInit)
   {
     ...options,
     method: 'POST'
+
+
+  }
+);}
+
+
+
+export const getGetWorkspaceReferencesUrl = () => {
+
+
+
+
+  return `/api/v1/workspace/references`
+}
+
+/**
+ * Minimal selection references for explicitly granted customer, operations or revenue workflows. Owner also allowed. Client, crew, reporting-only and template-only accounts denied. No contact, financial, security or access instruction fields.
+ */
+export const getWorkspaceReferences = async ( options?: RequestInit): Promise<WorkspaceReferences> => {
+
+  return customFetch<WorkspaceReferences>(getGetWorkspaceReferencesUrl(),
+  {
+    ...options,
+    method: 'GET'
 
 
   }

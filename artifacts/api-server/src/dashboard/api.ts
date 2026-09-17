@@ -1,5 +1,6 @@
+import { requireWorkRead, requireFieldWork, assignedWorkOnly } from "./work-access";
 import { requireCapability, requireAnyCapability } from "./policy";
-import { CAPABILITIES } from "@workspace/api-zod/business-access";
+import { CAPABILITIES, hasCapability } from "@workspace/api-zod/business-access";
 import {
   requireOperationalProperty,
   requireOperationalChild,
@@ -17,7 +18,6 @@ import {
   verifyCode,
   transition,
   canDispatch,
-  type Role,
 } from "./policy";
 import {
   availableSlots,
@@ -27,11 +27,8 @@ import {
 import { onboardClient, updateClient } from "./client-onboarding";
 import { agreementPreparationHealth } from "./agreement-preparation";
 import { geocodePropertyAddress } from "./property-geocoding";
-import { notifyRoles } from "./job-notifications";
+import { notifyCapability } from "./job-notifications";
 export const api = Router();
-const office: Role[] = ["owner", "manager", "dispatch", "sales", "finance"];
-const operations: Role[] = ["owner", "manager", "dispatch"];
-const managers: Role[] = ["owner", "manager"];
 const id = z.string().uuid();
 const text = z.string().trim().min(1).max(10000);
 const addressLine = z.string().trim().min(1).max(200);
@@ -197,7 +194,7 @@ api.get("/me", async (req, res) => {
 });
 api.get("/staff", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, office);
+  requireRole(a.role, ["owner"]);
   res.json(
     (
       await pool.query(
@@ -320,7 +317,7 @@ api.post("/invitations/accept", async (req, res) => {
 });
 api.get("/clients", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, [...office, "client"]);
+  if (a.role !== "client") requireCapability(a, "customers.clients");
   res.json(
     (
       await pool.query(
@@ -334,7 +331,7 @@ api.get("/clients", async (req, res) => {
 });
 api.post("/clients", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, office);
+  requireCapability(a, "customers.clients");
   const b = z
     .object({
       name: text,
@@ -372,7 +369,7 @@ api.post("/clients", async (req, res) => {
 });
 api.post("/clients/:id", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, office);
+  requireCapability(a, "customers.clients");
   const b = z
     .object({
       name: text,
@@ -387,6 +384,7 @@ api.post("/clients/:id", async (req, res) => {
 });
 api.get("/properties", async (req, res) => {
   const a = await actor(req);
+  if (!["client", "crew"].includes(a.role)) requireCapability(a, "customers.properties");
   let sql =
     "SELECT p.id,p.client_id,p.name,p.address,p.address_line1,p.address_line2,p.city,p.state,p.postal_code,p.acreage,p.latitude,p.longitude,p.property_type_id,pt.name AS property_type_name,p.access_instructions,p.notes,p.archived,p.created_at FROM property p LEFT JOIN property_type pt ON pt.id=p.property_type_id WHERE p.archived=false AND p.lifecycle='operational'";
   const args: string[] = [];
@@ -426,7 +424,7 @@ api.get("/properties", async (req, res) => {
 });
 api.post("/properties", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, office);
+  requireCapability(a, "customers.properties");
   const b = z.intersection(
     z.object({
       clientId: id,
@@ -471,7 +469,7 @@ api.post("/properties", async (req, res) => {
 });
 api.post("/properties/:id", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, office);
+  requireCapability(a, "customers.properties");
   const propertyId = id.parse(req.params.id);
   const b = z.intersection(
     z.object({
@@ -543,7 +541,7 @@ api.post("/properties/:id", async (req, res) => {
 });
 api.post("/properties/:id/property-type", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, managers);
+  requireCapability(a, "customers.properties");
   const propertyId = id.parse(req.params.id);
   const b = z
     .object({
@@ -577,10 +575,11 @@ api.post("/properties/:id/property-type", async (req, res) => {
 });
 api.get("/work-orders", async (req, res) => {
   const a = await actor(req);
+  requireWorkRead(a);
   let sql =
     "SELECT w.*,p.name AS property_name,p.address,p.access_instructions FROM work_order w JOIN property p ON p.id=w.property_id AND p.lifecycle='operational'";
   const args: string[] = [];
-  if (a.role === "crew") {
+  if (assignedWorkOnly(a)) {
     sql +=
       " WHERE w.assigned_to=$1 AND w.status NOT IN ('cancelled','skipped','reviewed')";
     args.push(a.id);
@@ -613,7 +612,7 @@ api.get("/work-orders", async (req, res) => {
 });
 api.post("/work-orders", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, operations);
+  requireCapability(a, "operations.schedule");
   const b = z
     .object({
       propertyId: id,
@@ -654,7 +653,7 @@ api.post("/work-orders", async (req, res) => {
 });
 api.post("/work-orders/:id/status", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, operations);
+  requireCapability(a, "operations.schedule");
   const key = id.parse(req.params.id);
   const b = z
     .object({
@@ -663,7 +662,7 @@ api.post("/work-orders/:id/status", async (req, res) => {
       overrideReason: z.string().max(1000).optional(),
     })
     .parse(req.body);
-  if (b.overrideReason) requireRole(a.role, managers);
+  if (b.overrideReason) requireCapability(a, "operations.schedule");
   await transaction(async (c) => {
     await requireOperationalChild(c, "work_order", key);
     const w = (
@@ -675,7 +674,7 @@ api.post("/work-orders/:id/status", async (req, res) => {
     transition(
       w.status,
       b.status,
-      a.role,
+      a,
       w.prerequisites,
       b.overrideReason || w.override_reason,
     );
@@ -689,7 +688,7 @@ api.post("/work-orders/:id/status", async (req, res) => {
 });
 api.post("/work-orders/:id/publish", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, managers);
+  requireCapability(a, "operations.schedule");
   const key = id.parse(req.params.id);
   await transaction(async (c) => {
     await requireOperationalChild(c, "work_order", key);
@@ -711,7 +710,7 @@ api.post("/work-orders/:id/publish", async (req, res) => {
 });
 api.post("/field/sync", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, [...operations, "crew"]);
+  requireFieldWork(a);
   const events = z.array(fieldEventSchema).max(100).parse(req.body.events);
   const results = [];
   for (const e of events) {
@@ -723,7 +722,7 @@ api.post("/field/sync", async (req, res) => {
         ])
       ).rows[0];
       if (!w) throw new HttpError(404, "Work order not found");
-      if (a.role === "crew" && w.assigned_to !== a.id)
+      if (assignedWorkOnly(a) && w.assigned_to !== a.id)
         throw new HttpError(
           403,
           "Assignment changed; retain this submission for office review",
@@ -821,14 +820,15 @@ api.post("/field/sync", async (req, res) => {
 });
 api.get("/properties/:id/timeline", async (req, res) => {
   const a = await actor(req);
+  if (!["client", "crew"].includes(a.role)) requireCapability(a, "customers.properties");
   const key = id.parse(req.params.id);
   await propertyAccess(a, key);
-  const fieldRows = await pool.query(
+  const fieldRows = (!["client", "crew"].includes(a.role) && !hasCapability(a, "operations.schedule")) ? { rows: [] } : await pool.query(
     `SELECT f.id,f.kind,f.payload,f.conflict,f.published,f.captured_at,w.title FROM field_event f JOIN work_order w ON w.id=f.work_order_id WHERE w.property_id=$1 ${a.role === "client" ? "AND f.published=true AND w.published=true" : a.role === "crew" ? "AND w.assigned_to=$2" : ""} ORDER BY f.captured_at DESC LIMIT 200`,
     a.role === "crew" ? [key, a.id] : [key],
   );
   const inspectionRows =
-    a.role === "crew"
+    (a.role === "crew" || (a.role !== "client" && !hasCapability(a, "operations.inspections")))
       ? []
       : (
           await pool.query(
@@ -956,7 +956,7 @@ api.post("/estimates/:id/decision", async (req, res) => {
 });
 api.get("/billing", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, ["owner", "manager", "finance", "client"]);
+  if (a.role !== "client") requireCapability(a, "revenue.billing");
   res.json(
     (
       await pool.query(
@@ -968,7 +968,7 @@ api.get("/billing", async (req, res) => {
 });
 api.post("/billing", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, ["owner", "manager", "finance"]);
+  requireCapability(a, "revenue.billing");
   const b = z
     .object({
       operationId: id,
@@ -1028,7 +1028,7 @@ api.post("/billing", async (req, res) => {
 });
 api.get("/requests", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, [...office, "client"]);
+  if (a.role !== "client") requireCapability(a, "customers.requests");
   const fields =
     a.role === "client"
       ? "r.id,r.property_id,r.description,CASE r.status WHEN 'new' THEN 'received' WHEN 'triaged' THEN 'under_review' WHEN 'scheduled' THEN 'service_planning' WHEN 'converted' THEN 'work_planning' WHEN 'closed' THEN 'closed' WHEN 'cancelled' THEN 'cancelled' ELSE 'under_review' END AS status,r.created_at,r.updated_at,p.name AS property_name"
@@ -1044,7 +1044,7 @@ api.get("/requests", async (req, res) => {
 });
 api.post("/requests", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, [...office, "client"]);
+  if (a.role !== "client") requireCapability(a, "customers.requests");
   const b = z.object({ propertyId: id, description: text, requesterContactId: id.optional(), source: z.enum(["portal", "manual"]).optional() }).parse(req.body);
   const source = a.role === "client" ? "portal" : (b.source || "manual");
   await propertyAccess(a, b.propertyId);
@@ -1064,18 +1064,18 @@ api.post("/requests", async (req, res) => {
       [randomUUID(), key, a.id, JSON.stringify({ source: "requests" })],
     );
     await audit(c, a.id, "service_request.created", key);
-    await notifyRoles(c, ["owner", "manager", "sales"], "New service request", `A new ${source} request was received for service review.`, `service-request:${key}`);
+    await notifyCapability(c, "customers.requests", "New service request", `A new ${source} request was received for service review.`, `service-request:${key}`);
   });
   res.status(201).json({ id: key });
 });
 api.get("/assessment-slots", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, [...office, "client"]);
+  if (a.role !== "client") requireCapability(a, "operations.schedule");
   res.json(await availableSlots());
 });
 api.post("/assessment-slots", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, operations);
+  requireCapability(a, "operations.schedule");
   const b = z
     .object({ startsAt: z.string().datetime(), endsAt: z.string().datetime() })
     .parse(req.body);
@@ -1085,7 +1085,7 @@ api.post("/assessment-slots", async (req, res) => {
 });
 api.post("/assessment-slots/:id/book", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, [...operations, "client"]);
+  if (a.role !== "client") requireCapability(a, "operations.schedule");
   const key = id.parse(req.params.id);
   const b = z.object({ propertyId: id }).parse(req.body);
   await propertyAccess(a, b.propertyId);
@@ -1094,7 +1094,7 @@ api.post("/assessment-slots/:id/book", async (req, res) => {
 });
 api.get("/integrations", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, managers);
+  requireRole(a.role, ["owner"]);
   const r = await pool.query(
     "SELECT id,kind,status,attempts,last_error,created_at FROM outbox WHERE status<>'sent' ORDER BY created_at DESC LIMIT 50",
   );

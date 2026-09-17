@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
 import { actor } from "./access";
-import { requireRole } from "./policy";
+import { requireCapability } from "./policy";
 import { readSchedule, rescheduleWork, readScheduledWork } from "./schedule";
 export const scheduleApi = Router();
 scheduleApi.get("/schedule", async (req, res) => {
@@ -9,7 +9,7 @@ scheduleApi.get("/schedule", async (req, res) => {
 });
 scheduleApi.post("/work-orders/:id/reschedule", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, ["owner", "manager", "dispatch"]);
+  requireCapability(a, "operations.schedule");
   res.json(
     await rescheduleWork(
       a.id,

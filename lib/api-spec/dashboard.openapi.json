@@ -5872,6 +5872,30 @@
           }
         ]
       }
+    },
+    "/workspace/references": {
+      "get": {
+        "operationId": "getWorkspaceReferences",
+        "description": "Minimal selection references for explicitly granted customer, operations or revenue workflows. Owner also allowed. Client, crew, reporting-only and template-only accounts denied. No contact, financial, security or access instruction fields.",
+        "responses": {
+          "200": {
+            "description": "Authorized workflow selection references",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkspaceReferences"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Workflow permission required"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -12678,6 +12702,94 @@
           "createdAt": {
             "type": "string",
             "format": "date-time"
+          }
+        }
+      },
+      "WorkspaceReferences": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "clients",
+          "properties",
+          "staff"
+        ],
+        "properties": {
+          "clients": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "name"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "properties": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "client_id",
+                "name",
+                "address"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "client_id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "address": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "staff": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "name",
+                "role",
+                "canOwnSales",
+                "canAssignWork"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "role": {
+                  "type": "string"
+                },
+                "canOwnSales": {
+                  "type": "boolean"
+                },
+                "canAssignWork": {
+                  "type": "boolean"
+                }
+              }
+            }
           }
         }
       }

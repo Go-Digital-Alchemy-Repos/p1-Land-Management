@@ -1,3 +1,4 @@
+import { workspaceReferencesApi } from "./workspace-references";
 import { userManagementApi } from "./user-management.routes";
 import { serviceAgreementApi } from "./service-agreement.routes";
 import { workReadinessApi } from "./work-readiness.routes";
@@ -95,6 +96,7 @@ app.use(
     next();
   },
   userManagementApi,
+  workspaceReferencesApi,
   coreFederationApi,
   prospectContextApi,
   commercialAssessmentApi,

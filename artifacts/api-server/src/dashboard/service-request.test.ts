@@ -44,6 +44,7 @@ test(
         "INSERT INTO staff_profile(user_id,role) VALUES($1,$2)",
         [uid, role === "otherClient" ? "client" : role],
       );
+      if (role === "manager") await pool.query("INSERT INTO business_account_access(user_id,capabilities) VALUES($1,$2)", [uid, ["customers.requests", "operations.schedule"]]);
       await pool.query(
         'INSERT INTO session(id,"expiresAt",token,"userId") VALUES($1,now()+interval \'1 hour\',$2,$3)',
         [sid, token, uid],
@@ -280,6 +281,7 @@ test(
       ).rows[0].n,
       1,
     );
+    await pool.query("INSERT INTO business_account_access(user_id,capabilities) VALUES($1,$2)", [users.finance.id, ["customers.requests"]]);
     const history = await request(
       "finance",
       `/api/v1/service-requests/${requestId}/history`,

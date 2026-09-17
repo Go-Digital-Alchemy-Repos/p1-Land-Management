@@ -83,3 +83,13 @@ test("team navigation follows explicit tool grants and ungranted accounts land o
     assert.equal(defaultRouteForRole(role, ["revenue.sales"]).page.path, "/sales");
   }
 });
+
+test("workspace deep links cannot bypass the grant for their source section", () => {
+  const client = "/clients/22222222-2222-4222-8222-222222222222";
+  assert.equal(canAccessRoute(routeFromPath(client), "member", ["customers.clients"]), true);
+  assert.equal(canAccessRoute(routeFromPath(client + "/agreements"), "member", ["customers.clients"]), false);
+  assert.equal(canAccessRoute(routeFromPath(client + "/agreements"), "member", ["customers.clients", "revenue.agreements"]), true);
+  const property = "/properties/11111111-1111-4111-8111-111111111111";
+  assert.equal(canAccessRoute(routeFromPath(property + "/schedule"), "crew"), true);
+  assert.equal(canAccessRoute(routeFromPath(property + "/agreements"), "crew"), false);
+});

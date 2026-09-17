@@ -18,7 +18,7 @@ const statuses = [
   "won",
   "lost",
 ] as const;
-type Staff = { id: string; name: string; role: string };
+type Staff = { id: string; name: string; role: string; canOwnSales?: boolean };
 type Inquiry = Awaited<ReturnType<typeof getCommercialInquiry>>;
 type InquiryRow = Awaited<
   ReturnType<typeof listCommercialInquiries>
@@ -70,7 +70,7 @@ export function CommercialInbox({
   const generation = useRef(0),
     detailGeneration = useRef(0);
   const owners = staff.filter((person) =>
-    ["owner", "manager", "sales"].includes(person.role),
+    person.canOwnSales === true,
   );
   function query(next?: string): Filters {
     return {

@@ -66,7 +66,6 @@ const legacyEstimateInput = z.object({
   agreementTemplateId: undefined,
 }));
 const estimateInput = z.union([lifecycleEstimateInput, legacyEstimateInput]);
-const dispatch = ["owner", "manager", "dispatch"] as const;
 const sha = (value: string) => createHash("sha256").update(value).digest("hex");
 const total = (items: z.infer<typeof lineItem>[]) => {
   const value = items.reduce((sum, item) => sum + Math.round(item.quantity * item.unitPriceCents), 0);
@@ -188,11 +187,11 @@ async function decideEstimate(estimateId: string, status: "approved" | "declined
       if (estimate.status !== "sent") throw new HttpError(409, "Estimate is no longer awaiting a decision");
       await c.query("UPDATE estimate SET status='declined' WHERE id=$1", [estimateId]);
       await audit(c, actorId, "estimate.declined", estimateId, { contactId });
-      await notifyStaff(c, estimate.created_by, "Estimate declined", `${estimate.title} was declined by the client.`, `estimate-declined:${estimateId}`);
+      await notifyStaff(c, estimate.created_by, "Estimate declined", `${estimate.title} was declined by the client.`, `estimate-declined:${estimateId}`, "revenue.sales");
       return { ok: true, declined: true };
     }
     const result = await convertApprovedEstimate(c, estimate, actorId, contactId);
-    await notifyStaff(c, estimate.created_by, "Estimate approved", `${estimate.title} is approved and ready for dispatch.`, `estimate-approved:${estimateId}`);
+    await notifyStaff(c, estimate.created_by, "Estimate approved", `${estimate.title} is approved and ready for dispatch.`, `estimate-approved:${estimateId}`, "revenue.sales");
     await notifyClientContacts(c, estimate.property_id, "Estimate approved", `${estimate.title} has been approved. P1 will schedule your Job.`, `estimate-approved-client:${estimateId}`);
     return { ok: true, ...result };
   });
@@ -264,11 +263,11 @@ jobsLifecycleApi.post("/estimates/:id/decision", async (req, res) => {
   res.json(await decideEstimate(key, b.status, a.id, null));
 });
 jobsLifecycleApi.post("/jobs/internal", async (req, res) => {
-  const a = await actor(req); requireRole(a.role, [...dispatch]); const b = z.object({ propertyId: id, title: text, scope: z.string().max(10_000).default(""), reason: z.string().trim().min(1).max(1_000), assignedTo: z.string().optional(), scheduledAt: z.string().datetime().optional() }).parse(req.body); await propertyAccess(a,b.propertyId); const key=randomUUID(); await transaction(async c=>{ await requireOperationalProperty(c,b.propertyId); await c.query("INSERT INTO work_order(id,property_id,title,scope,assigned_to,scheduled_at,job_kind,internal_reason) VALUES($1,$2,$3,$4,$5,$6,'internal',$7)",[key,b.propertyId,b.title,b.scope,b.assignedTo||null,b.scheduledAt||null,b.reason]); await audit(c,a.id,"job.internal_created",key,{reason:b.reason}); }); res.status(201).json({id:key});
+  const a = await actor(req); requireCapability(a, "operations.schedule"); const b = z.object({ propertyId: id, title: text, scope: z.string().max(10_000).default(""), reason: z.string().trim().min(1).max(1_000), assignedTo: z.string().optional(), scheduledAt: z.string().datetime().optional() }).parse(req.body); await propertyAccess(a,b.propertyId); const key=randomUUID(); await transaction(async c=>{ await requireOperationalProperty(c,b.propertyId); await c.query("INSERT INTO work_order(id,property_id,title,scope,assigned_to,scheduled_at,job_kind,internal_reason) VALUES($1,$2,$3,$4,$5,$6,'internal',$7)",[key,b.propertyId,b.title,b.scope,b.assignedTo||null,b.scheduledAt||null,b.reason]); await audit(c,a.id,"job.internal_created",key,{reason:b.reason}); }); res.status(201).json({id:key});
 });
-jobsLifecycleApi.get("/recurring-jobs", async (req,res) => { const a=await actor(req); requireRole(a.role,[...dispatch]); res.json((await pool.query(`SELECT r.*,p.name AS property_name,c.name AS client_name,a.status AS agreement_status,COUNT(w.id)::int AS visit_count,MIN(w.scheduled_at) FILTER (WHERE w.scheduled_at>=now()) AS next_visit FROM recurring_service r JOIN property p ON p.id=r.property_id JOIN client c ON c.id=p.client_id LEFT JOIN service_agreement a ON a.id=r.agreement_id LEFT JOIN work_order w ON w.recurring_service_id=r.id WHERE p.lifecycle='operational' GROUP BY r.id,p.name,c.name,a.status ORDER BY r.next_date`)).rows); });
+jobsLifecycleApi.get("/recurring-jobs", async (req,res) => { const a=await actor(req); requireCapability(a, "operations.recurring"); res.json((await pool.query(`SELECT r.*,p.name AS property_name,c.name AS client_name,a.status AS agreement_status,COUNT(w.id)::int AS visit_count,MIN(w.scheduled_at) FILTER (WHERE w.scheduled_at>=now()) AS next_visit FROM recurring_service r JOIN property p ON p.id=r.property_id JOIN client c ON c.id=p.client_id LEFT JOIN service_agreement a ON a.id=r.agreement_id LEFT JOIN work_order w ON w.recurring_service_id=r.id WHERE p.lifecycle='operational' GROUP BY r.id,p.name,c.name,a.status ORDER BY r.next_date`)).rows); });
 jobsLifecycleApi.post("/recurring-jobs/:id/activate", async (req, res) => {
-  const a = await actor(req); requireRole(a.role, [...dispatch]);
+  const a = await actor(req); requireCapability(a, "operations.recurring");
   const key = id.parse(req.params.id);
   const b = z.object({ assignedTo: z.string().min(1), nextDate: z.string().date(), localTime: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/) }).parse(req.body);
   await transaction(async (c) => {

@@ -1,3 +1,4 @@
+import { hasCapability } from "@workspace/api-zod/business-access";
 import type {
   ServiceAgreement,
   ServiceAgreementFinancial,
@@ -9,7 +10,6 @@ import { useEffect, useRef, useState } from "react";
 import {
   listServiceAgreements,
   getServiceAgreement,
-  listDashboardProperties,
   listAgreementRecurrences,
   listAgreementEstimates,
 } from "@workspace/api-client-react/dashboard";
@@ -20,19 +20,25 @@ import { AgreementPreparationQueue } from "./AgreementPreparationQueue";
 import "./service-agreements.css";
 export function ServiceAgreements({
   role,
+  capabilities,
+  properties,
   userId,
   selectedAgreementId,
   onSelect,
 }: {
   role: string;
+  capabilities?: readonly string[];
+  properties: Pick<DashboardProperty, "id" | "name">[];
   userId?: string;
   selectedAgreementId?: string;
   onSelect?: (id: string) => void;
 }) {
   return (
     <AgreementWorkspace
-      key={`${userId || "session"}:${role}`}
+      key={`${userId || "session"}:${role}:${(capabilities || []).join(",")}`}
       role={role}
+      capabilities={capabilities}
+      properties={properties}
       selectedAgreementId={selectedAgreementId}
       onSelect={onSelect}
     />
@@ -40,10 +46,14 @@ export function ServiceAgreements({
 }
 function AgreementWorkspace({
   role,
+  capabilities,
+  properties,
   selectedAgreementId,
   onSelect,
 }: {
   role: string;
+  capabilities?: readonly string[];
+  properties: Pick<DashboardProperty, "id" | "name">[];
   selectedAgreementId?: string;
   onSelect?: (id: string) => void;
 }) {
@@ -54,12 +64,12 @@ function AgreementWorkspace({
       mounted.current = false;
     };
   }, []);
-  const manage = ["owner", "manager"].includes(role),
-    financial = manage || role === "finance",
-    allowed = financial || role === "dispatch";
+  const subject = { role, capabilities };
+  const manage = hasCapability(subject, "revenue.agreements"),
+    financial = hasCapability(subject, "revenue.billing"),
+    allowed = manage || financial;
   const [rows, setRows] = useState<ServiceAgreement[]>([]),
     [cursor, setCursor] = useState<string | null>(null),
-    [properties, setProperties] = useState<DashboardProperty[]>([]),
     [recurrences, setRecurrences] = useState<AgreementRecurrenceOption[]>([]),
     [estimates, setEstimates] = useState<AgreementEstimateOption[]>([]);
   const [selected, setSelected] = useState<ServiceAgreement | null>(null),
@@ -111,13 +121,11 @@ function AgreementWorkspace({
       );
       setCursor(page.nextCursor);
       if (!more) {
-        const [p, r, e] = await Promise.all([
-          listDashboardProperties(),
+        const [r, e] = await Promise.all([
           manage ? listAgreementRecurrences() : Promise.resolve([]),
           manage ? listAgreementEstimates() : Promise.resolve([]),
         ]);
         if (n === generation.current) {
-          setProperties(p);
           setRecurrences(r);
           setEstimates(e);
         }

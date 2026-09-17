@@ -32,6 +32,7 @@ test(
         [uid, role],
       );
     }
+    await pool.query("INSERT INTO business_account_access(user_id,capabilities) VALUES($1,$2)", [manager, ["operations.schedule"]]);
     await pool.query("INSERT INTO client(id,name) VALUES($1,$2),($3,$4)", [
       client,
       "Calendar client",
@@ -69,6 +70,7 @@ test(
       id,
       name: role,
       role,
+      capabilities: role === "manager" ? ["operations.schedule" as const] : [],
     });
     const query = { from: "2035-03-11", through: "2035-03-11" };
     let cursor: string | undefined;
@@ -103,6 +105,13 @@ test(
         /not found/,
       );
     }
+    // An ordinary team member with My Day sees only assigned work, just as crew do.
+    const fieldMember = { id: crew, name: "Field member", role: "member" as const, capabilities: ["workspace.my-day" as const] };
+    const memberPage = await readSchedule(fieldMember, query);
+    assert(memberPage.items.length > 0);
+    assert(memberPage.items.every(item => allowedIds.has(item.id)));
+    await assert.rejects(() => readScheduledWork(fieldMember, privateId), /not found/);
+    await assert.rejects(() => readSchedule({ ...fieldMember, capabilities: [] }, query), /permission|access|forbidden/i);
     const beyond500 = [...allowedIds].sort().at(-1)!;
     const detail = await readScheduledWork(who(crew, "crew"), beyond500);
     assert.equal(detail.id, beyond500);

@@ -1,3 +1,4 @@
+import { hasCapability } from "@workspace/api-zod/business-access";
 import React, { useEffect, useMemo, useState } from "react";
 
 type Api = (path: string, body?: unknown, method?: "POST" | "PATCH") => Promise<any>;
@@ -5,10 +6,10 @@ type Phase = { id: string; title: string; scope: string; status: string; positio
 const next: Record<string, string> = { planned: "ready", ready: "in_progress", in_progress: "manager_review", manager_review: "accepted", accepted: "archived", blocked: "ready", cancelled: "archived" };
 const label = (status: string) => status.replaceAll("_", " ");
 
-export function ProjectPhases({ projects, estimates, role, api, refresh, onError }: { projects: any[]; estimates: any[]; role: string | null | undefined; api: Api; refresh: () => Promise<void>; onError: (message: string) => void }) {
+export function ProjectPhases({ projects, estimates, role, capabilities, api, refresh, onError }: { projects: any[]; estimates: any[]; role: string | null | undefined; capabilities?: readonly string[]; api: Api; refresh: () => Promise<void>; onError: (message: string) => void }) {
   const [projectId, setProjectId] = useState(""); const [phases, setPhases] = useState<Phase[]>([]); const [busy, setBusy] = useState(false); const [showCreate, setShowCreate] = useState(false); const [title, setTitle] = useState(""); const [scope, setScope] = useState(""); const [billingPhase, setBillingPhase] = useState<string | null>(null); const [estimateId, setEstimateId] = useState(""); const [amount, setAmount] = useState(""); const [billingTitle, setBillingTitle] = useState(""); const [overrides, setOverrides] = useState<Record<string, string>>({});
   const selected = useMemo(() => projects.find((project) => project.id === projectId), [projects, projectId]);
-  const canManage = role === "owner" || role === "manager"; const canBill = canManage || role === "finance";
+  const subject = { role: role || null, capabilities }; const canManage = hasCapability(subject, "operations.projects"); const canBill = hasCapability(subject, "revenue.billing");
   const load = async (value = projectId) => { if (!value) { setPhases([]); return; } try { setPhases(await api(`/projects/${value}/phases`)); } catch (error) { onError((error as Error).message); } };
   useEffect(() => { if (!projectId && projects[0]) setProjectId(projects[0].id); }, [projectId, projects]);
   useEffect(() => { void load(); }, [projectId]);

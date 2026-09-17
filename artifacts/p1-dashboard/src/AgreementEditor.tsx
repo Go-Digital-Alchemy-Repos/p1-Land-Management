@@ -27,7 +27,7 @@ export function AgreementEditor({
 }: {
   existing?: ServiceAgreementFinancial;
   predecessor?: ServiceAgreementFinancial;
-  properties: DashboardProperty[];
+  properties: Pick<DashboardProperty, "id" | "name">[];
   recurrences: AgreementRecurrenceOption[];
   estimates: AgreementEstimateOption[];
   onSaved: (a: ServiceAgreementFinancial) => void;

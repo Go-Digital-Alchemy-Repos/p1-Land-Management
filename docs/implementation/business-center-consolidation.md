@@ -23,7 +23,7 @@ The reporting implementation from `codex/admin-google-analytics` was integrated 
 
 - `pnpm run typecheck:libs`: passed.
 - API and dashboard typechecks passed after actor typing and generated-client integration fixes.
-- `node scripts/test-dashboard.mjs`: 43/43 passed, plus migration replay, using disposable PostgreSQL and synthetic records.
+- `node scripts/test-dashboard.mjs`: 47/47 passed, plus migration replay, using disposable PostgreSQL and synthetic records.
 - `node scripts/test-service-agreements.mjs`: lifecycle/charge/schema/review tests, worker preparation test and real HTTP test passed; no live providers.
 - Dashboard production build: passed; existing large MapLibre chunk warning remains.
 - Dashboard navigation tests: 3/3 passed after explicit-grant navigation change.
@@ -47,4 +47,14 @@ Canonical scope: `docs/proposals/p1-business-center-consolidation.md`. The activ
 
 Core reporting still has a blanket `crm` route gate and must be split. Core middleware currently gives local `admin` users blanket access, and its federation-client role enum lacks `member`. Complete the user-scoped dashboard-to-Core authority contract before changing those gates; do not merely add local reporting permissions and treat local administrators as Owners. Core's reporting services and chart code remain available to reuse.
 
-The current web app still preloads data using legacy role conditions; this is the next critical dependency for a usable least-privilege member workspace. Permission-aware reference lookups must return only the minimal client/property/staff selection fields required by the granted workflow. Do not substitute broad Customers access for every Sales or Operations user.
+The web app now loads datasets from leaf grants and uses a typed `/workspace/references` endpoint for minimized selection fields. Grants are checked independently for record workspace tabs and source sections. The main client, property, schedule, recurring, project, inspection, sales and billing action controls use capabilities; agreement selectors no longer fetch full Properties records. Failed or obsolete refreshes cannot repopulate business datasets after an identity/grant change.
+
+## Customer and operations enforcement checkpoint
+
+- Customer/contact/property/type reads and writes require the corresponding Customers grant. Nested client/property sections query only permitted source areas; general workspace activity is Owner-only. Request attachments are excluded from generic property file listings and remain available through their own authorized tool.
+- Schedule, recurring programs, project phases, inspections, expenses, billing and QuickBooks financial actions use explicit capabilities. Integration credential configuration remains Owner-only. Requests-to-work conversion requires both Requests and Schedule. Project phase billing intents require Billing.
+- My Day-only ordinary members receive assignment-scoped work reads and field submission access. Office completion review requires Schedule, including inside the transition policy itself. Existing client publication and crew assignment boundaries remain.
+- Workflow notification recipients are selected by tool grants; global manual delivery administration is Owner-only. Historical notification access and delivery-time revocation for already queued messages still need follow-through.
+- Disposable database suite passed 47 tests plus migration replay. Added direct unauthorized HTTP checks across Customers, Operations, Revenue and minimal references, minimized record-section assertions, and My Day member assignment checks. After removing the final string-role completion-review fallback, its targeted policy suite passed 5 tests. API/dashboard typechecks and agreement lifecycle/preparation/HTTP tests passed. No live providers used.
+
+Remaining access follow-through includes server-side assignee eligibility on every write path, notification history/delivery revocation, agreement-only editing versus billing projections, isolated-tool browser scenarios and the Core federation authority contract. Do not treat these checkpoints as complete system authorization coverage.

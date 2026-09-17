@@ -3,7 +3,7 @@ import { z } from "zod";
 import type { Actor } from "./access";
 import { transaction } from "./database";
 import { requireOperationalChild } from "./operational-property";
-import { HttpError, requireRole } from "./policy";
+import { HttpError, requireCapability } from "./policy";
 export const readinessInput = z
   .object({
     version: z.number().int().positive(),
@@ -25,7 +25,7 @@ export async function updateWorkReadiness(
   id: string,
   input: unknown,
 ) {
-  requireRole(a.role, ["owner", "manager", "dispatch"]);
+  requireCapability(a, "operations.schedule");
   const b = readinessInput.parse(input);
   return transaction(async (c) => {
     await requireOperationalChild(c, "work_order", id);

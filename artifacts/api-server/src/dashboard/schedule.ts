@@ -1,3 +1,4 @@
+import { requireWorkRead, assignedWorkOnly } from "./work-access";
 import { requireOperationalChild } from "./operational-property";
 import { randomUUID } from "node:crypto";
 import { z } from "zod";
@@ -16,6 +17,7 @@ const cursorSchema = z.object({
   at: z.string().datetime().nullable(),
 });
 export async function readSchedule(a: Actor, input: unknown) {
+  requireWorkRead(a);
   const b = scheduleQuery.parse(input);
   const span = (Date.parse(b.through) - Date.parse(b.from)) / 86400000;
   if (span < 0 || span > 31)
@@ -43,7 +45,7 @@ export async function readSchedule(a: Actor, input: unknown) {
   ];
   // Keep date parameters typed even in the unscheduled branch.
   if (unscheduled) conditions.push("$1::date <= $2::date");
-  if (a.role === "crew") {
+  if (assignedWorkOnly(a)) {
     values.push(a.id);
     conditions.push(
       `w.assigned_to=$${values.length} AND w.status NOT IN ('cancelled','skipped','reviewed')`,
@@ -140,7 +142,7 @@ export async function rescheduleWork(
       "UPDATE work_order SET scheduled_at=$2,assigned_to=$3,version=version+1 WHERE id=$1 RETURNING id,version",
       [id, b.scheduledAt, assigned],
     );
-    await notifyStaff(c, assigned, "Job schedule updated", `${w.title} is scheduled for ${b.scheduledAt}.`, `job-schedule-staff:${id}:${r.rows[0].version}`);
+    await notifyStaff(c, assigned, "Job schedule updated", `${w.title} is scheduled for ${b.scheduledAt}.`, `job-schedule-staff:${id}:${r.rows[0].version}`, "workspace.my-day");
     await notifyClientContacts(c, w.property_id, "Job schedule updated", `${w.title} is scheduled for ${b.scheduledAt}.`, `job-schedule-client:${id}:${r.rows[0].version}`);
     await c.query(
       "INSERT INTO audit_event(id,user_id,action,entity_id,details) VALUES($1,$2,$3,$4,$5)",
@@ -161,9 +163,10 @@ export async function rescheduleWork(
 }
 
 export async function readScheduledWork(a: Actor, id: string) {
+  requireWorkRead(a);
   const params: unknown[] = [id];
   let restriction = "";
-  if (a.role === "crew") {
+  if (assignedWorkOnly(a)) {
     params.push(a.id);
     restriction =
       " AND w.assigned_to=$2 AND w.status NOT IN ('cancelled','skipped','reviewed')";

@@ -30,6 +30,7 @@ test(
       "INSERT INTO staff_profile(user_id,role) VALUES($1,'manager')",
       [manager],
     );
+    await pool.query("INSERT INTO business_account_access(user_id,capabilities) VALUES($1,$2)", [manager, ["customers.properties"]]);
     await pool.query(
       'INSERT INTO "user"(id,name,email,"emailVerified") VALUES($1,$2,$3,true)',
       [clientUser, "Map client", `${clientUser}@example.test`],

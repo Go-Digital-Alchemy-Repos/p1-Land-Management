@@ -1,3 +1,5 @@
+import { hasCapability } from "@workspace/api-zod/business-access";
+import { requireFieldWork, assignedWorkOnly } from "./work-access";
 import { requireOperationalChild, requireOperationalProperty, operationalChildQuery } from "./operational-property";
 import { Router, raw, type Request, type Response, type NextFunction } from "express";
 import sharp from "sharp";
@@ -9,7 +11,7 @@ import {
 import { z } from "zod";
 import { pool, transaction } from "./database";
 import { actor, propertyAccess } from "./access";
-import { HttpError, requireRole } from "./policy";
+import { HttpError, requireCapability, requireAnyCapability } from "./policy";
 import { createHash, randomUUID } from "node:crypto";
 export const filesApi = Router();
 let activeUploads = 0;
@@ -24,7 +26,6 @@ const attachmentMimeTypes = new Set([
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 ]);
-const requestRoles = ["owner", "manager", "dispatch", "sales", "finance", "client"] as const;
 
 async function requestAttachmentAccess(a: Awaited<ReturnType<typeof actor>>, requestId: string) {
   const request = (await pool.query(
@@ -77,12 +78,12 @@ filesApi.post(
   "/files/:id",
   async (req: Request, res: Response, next: NextFunction) => {
     const a = await actor(req);
-    requireRole(a.role, ["owner", "manager", "dispatch", "crew"]);
+    requireFieldWork(a);
     const propertyId = z.string().uuid().parse(req.headers["x-p1-property"]);
     const workId = z.string().uuid().parse(req.headers["x-p1-work"]);
     await propertyAccess(a, propertyId);
     const work = (await pool.query("SELECT property_id,assigned_to,status FROM work_order WHERE id=$1", [workId])).rows[0];
-    if (!work || work.property_id !== propertyId || (a.role === "crew" && (work.assigned_to !== a.id || ["cancelled","skipped","reviewed"].includes(work.status)))) throw new HttpError(403, "Work assignment is not accessible");
+    if (!work || work.property_id !== propertyId || (assignedWorkOnly(a) && (work.assigned_to !== a.id || ["cancelled","skipped","reviewed"].includes(work.status)))) throw new HttpError(403, "Work assignment is not accessible");
     return next();
   },
   async (req: Request, res: Response) => {
@@ -110,7 +111,7 @@ filesApi.post(
 );
 async function processUpload(req: Request, res: Response) {
     const a = await actor(req);
-    requireRole(a.role, ["owner", "manager", "dispatch", "crew"]);
+    requireFieldWork(a);
     const key = z.string().uuid().parse(req.params.id);
     const propertyId = z.string().uuid().parse(req.headers["x-p1-property"]);
     const workId = z.string().uuid().parse(req.headers["x-p1-work"]);
@@ -127,7 +128,7 @@ async function processUpload(req: Request, res: Response) {
     if (
       !work ||
       work.property_id !== propertyId ||
-      (a.role === "crew" && (work.assigned_to !== a.id || ["cancelled","skipped","reviewed"].includes(work.status)))
+      (assignedWorkOnly(a) && (work.assigned_to !== a.id || ["cancelled","skipped","reviewed"].includes(work.status)))
     )
       throw new HttpError(403, "Work assignment is not accessible");
     const original = req.body as Buffer,
@@ -212,12 +213,13 @@ async function processUpload(req: Request, res: Response) {
 }
 filesApi.get("/properties/:id/files", async (req, res) => {
   const a = await actor(req);
+  if (!["client", "crew"].includes(a.role)) requireCapability(a, "customers.properties");
   const key = z.string().uuid().parse(req.params.id);
   await propertyAccess(a, key);
   res.json(
     (
       await pool.query(
-        `SELECT f.id,f.name,f.mime,f.classification,f.published,f.created_at FROM file_record f LEFT JOIN work_order w ON w.id=f.work_order_id WHERE f.property_id=$1 AND f.status='ready' ${a.role === "client" ? "AND f.published=true" : a.role === "crew" ? "AND w.assigned_to=$2" : ""} ORDER BY f.created_at DESC`,
+        `SELECT f.id,f.name,f.mime,f.classification,f.published,f.created_at FROM file_record f LEFT JOIN work_order w ON w.id=f.work_order_id WHERE f.property_id=$1 AND f.status='ready' AND NOT EXISTS(SELECT 1 FROM service_request_attachment ra WHERE ra.file_id=f.id) ${a.role === "client" ? "AND f.published=true" : a.role === "crew" ? "AND w.assigned_to=$2" : ""} ORDER BY f.created_at DESC`,
         a.role === "crew" ? [key, a.id] : [key],
       )
     ).rows,
@@ -225,7 +227,7 @@ filesApi.get("/properties/:id/files", async (req, res) => {
 });
 filesApi.get("/requests/:id/attachments", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, [...requestRoles]);
+  if (a.role !== "client") requireCapability(a, "customers.requests");
   const requestId = z.string().uuid().parse(req.params.id);
   await requestAttachmentAccess(a, requestId);
   res.json((await pool.query(
@@ -237,7 +239,7 @@ filesApi.post(
   "/requests/:requestId/attachments/:id",
   async (req: Request, res: Response, next: NextFunction) => {
     const a = await actor(req);
-    requireRole(a.role, [...requestRoles]);
+    if (a.role !== "client") requireCapability(a, "customers.requests");
     const requestId = z.string().uuid().parse(req.params.requestId);
     await requestAttachmentAccess(a, requestId);
     next();
@@ -280,6 +282,7 @@ filesApi.post(
 );
 filesApi.get("/files/:id/content", async (req, res) => {
   const a = await actor(req);
+  if (!["client", "crew"].includes(a.role)) requireAnyCapability(a, ["customers.requests", "customers.properties", "operations.schedule", "workspace.my-day"]);
   const key = z.string().uuid().parse(req.params.id);
   const f = (
     await pool.query(
@@ -289,12 +292,15 @@ filesApi.get("/files/:id/content", async (req, res) => {
   ).rows[0];
   if (!f) throw new HttpError(404, "File not found");
   if (f.request_id) {
-    requireRole(a.role, [...requestRoles]);
+    if (a.role !== "client") requireCapability(a, "customers.requests");
     await requestAttachmentAccess(a, f.request_id);
-  } else await propertyAccess(a, f.property_id);
+  } else {
+    if (!["client", "crew"].includes(a.role)) requireAnyCapability(a, ["customers.properties", "operations.schedule", "workspace.my-day"]);
+    await propertyAccess(a, f.property_id);
+  }
   if (!f.request_id && a.role === "client" && !f.published)
     throw new HttpError(404, "File not found");
-  if (!f.request_id && a.role === "crew") {
+  if (!f.request_id && (a.role === "crew" || (assignedWorkOnly(a) && !hasCapability(a, "customers.properties")))) {
     const w = await pool.query(
       "SELECT 1 FROM work_order WHERE id=$1 AND assigned_to=$2",
       [f.work_order_id, a.id],
@@ -313,7 +319,7 @@ filesApi.get("/files/:id/content", async (req, res) => {
 });
 filesApi.post("/files/:id/publish", async (req, res) => {
   const a = await actor(req);
-  requireRole(a.role, ["owner", "manager"]);
+  requireCapability(a, "operations.schedule");
   const key = z.string().uuid().parse(req.params.id);
   await transaction(async (c) => {
     await requireOperationalChild(c,"file_record",key);

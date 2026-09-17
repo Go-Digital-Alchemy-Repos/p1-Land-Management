@@ -317,7 +317,7 @@ test(
       );
       assert.equal(
         (
-          await req("manager", "/delivery-jobs/" + preparationJob + "/retry", {})
+          await req("optional_owner", "/delivery-jobs/" + preparationJob + "/retry", {})
         ).status,
         409,
       );

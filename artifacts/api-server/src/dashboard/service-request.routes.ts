@@ -7,13 +7,11 @@ import {
 import { z } from "zod";
 import { actor, propertyAccess, type Actor } from "./access";
 import { pool, transaction } from "./database";
-import { HttpError, requireRole } from "./policy";
+import { HttpError, requireCapability } from "./policy";
 
 export const serviceRequestApi = Router();
 
 const id = z.string().uuid();
-const office = ["owner", "manager", "dispatch", "sales", "finance"] as const;
-const mutators = ["owner", "manager", "dispatch"] as const;
 const clientStatus: Record<string, string> = {
   new: "received",
   triaged: "under_review",
@@ -32,11 +30,11 @@ const transitions: Record<string, readonly string[]> = {
 };
 
 function requireOfficeRead(a: Actor) {
-  requireRole(a.role, [...office]);
+  requireCapability(a, "customers.requests");
 }
 
 function requireMutator(a: Actor) {
-  requireRole(a.role, [...mutators]);
+  requireCapability(a, "customers.requests");
 }
 
 async function requestRow(requestId: string) {
@@ -205,6 +203,7 @@ serviceRequestApi.post(
   async (req, res) => {
     const a = await actor(req);
     requireMutator(a);
+    requireCapability(a, "operations.schedule");
     const requestId = id.parse(req.params.id);
     const b = serviceRequestConversionSchema
       .omit({ operationId: true, expectedRequestVersion: true })
@@ -237,6 +236,7 @@ serviceRequestApi.post(
   async (req, res) => {
     const a = await actor(req);
     requireMutator(a);
+    requireCapability(a, "operations.schedule");
     const requestId = id.parse(req.params.id);
     const b = serviceRequestConversionSchema.parse(req.body);
     const fingerprint = createHash("sha256")
