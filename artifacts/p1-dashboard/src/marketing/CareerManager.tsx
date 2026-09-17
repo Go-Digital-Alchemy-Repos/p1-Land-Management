@@ -1,3 +1,4 @@
+import CareerSettings from "./CareerSettings";
 import CareerApplications from "./CareerApplications";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -7,7 +8,12 @@ import {
 import type { MarketingCareerJob } from "../../../../lib/api-client-react/src/dashboard/models";
 import CareerJobEditor, { careerError } from "./CareerJobEditor";
 import "../agreements/template-library.css";
-export default function CareerManager() {
+export default function CareerManager({
+  isOwner = false,
+}: {
+  isOwner?: boolean;
+}) {
+  const [settings, setSettings] = useState(false);
   const [jobs, setJobs] = useState<MarketingCareerJob[]>([]),
     [selected, setSelected] = useState<MarketingCareerJob | "new" | null>(null),
     [error, setError] = useState(""),
@@ -38,6 +44,8 @@ export default function CareerManager() {
       alive.current = false;
     };
   }, []);
+  if (settings && isOwner)
+    return <CareerSettings close={() => setSettings(false)} />;
   if (applications)
     return <CareerApplications close={() => setApplications(false)} />;
   if (selected)
@@ -59,6 +67,9 @@ export default function CareerManager() {
     <section className="template-library" aria-label="Careers">
       <h2>Job postings</h2>
       <button onClick={() => setApplications(true)}>Applications</button>
+      {isOwner && (
+        <button onClick={() => setSettings(true)}>Careers settings</button>
+      )}
       <p>
         Manage website recruiting posts. Availability follows the website’s
         Careers feature setting.

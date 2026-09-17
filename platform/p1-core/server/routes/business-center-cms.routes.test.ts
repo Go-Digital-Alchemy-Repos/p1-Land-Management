@@ -2,7 +2,7 @@ import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import express from "express";
 import type { Server } from "node:http";
 const state = vi.hoisted(() => ({
-  careerApplication:vi.fn(),careerResume:vi.fn(),careerReview:vi.fn(),careerJobs:vi.fn(),careerSettings:vi.fn(),careerCreate:vi.fn(),careerGet:vi.fn(),careerUpdate:vi.fn(),careerSlug:vi.fn(),
+  careerSave:vi.fn(),careerApplication:vi.fn(),careerResume:vi.fn(),careerReview:vi.fn(),careerJobs:vi.fn(),careerSettings:vi.fn(),careerCreate:vi.fn(),careerGet:vi.fn(),careerUpdate:vi.fn(),careerSlug:vi.fn(),
   authenticate: vi.fn(),
   user: vi.fn(),
   enabled: vi.fn(),
@@ -117,7 +117,7 @@ vi.mock("../storage", () => ({
 vi.mock("../services/email.service", () => ({sendEventCanceledEmail:state.eventMail,sendEventReminderEmail:state.eventMail,sendRecordingAvailableEmail:state.eventMail}));
 vi.mock("../services/commercial-backfill.service", () => ({ backfillCommercialInquiries: vi.fn() }));
 vi.mock("../storage/index", async () => await import("../storage"));
-vi.mock("../services/careers.service",()=>({getCareerSettings:state.careerSettings,saveCareerSettings:vi.fn(),dispatchCareerWebhook:vi.fn(),loadCareerResume:state.careerResume}));
+vi.mock("../services/careers.service",()=>({getCareerSettings:state.careerSettings,saveCareerSettings:state.careerSave,dispatchCareerWebhook:vi.fn(),loadCareerResume:state.careerResume}));
 vi.mock("../services/site-features.service", () => ({ isSiteFeatureEnabled: state.enabled }));
 vi.mock("../services/system-cms-sections.service", () => ({ ensureSystemCmsSections: vi.fn() }));
 vi.mock("../services/cms-media-upload.service", async (original) => ({
@@ -981,4 +981,24 @@ it("Career resumes require fresh access and are private binary attachments with 
   expect(state.careerResume).not.toHaveBeenCalled();
   identity.capabilities=[];
   expect((await request(path)).status).toBe(403);
+});
+
+
+it("Career settings writes require an attested active Owner and preserve the dedicated feature gate", async () => {
+  const payload={sharing:{enabled:false},integrations:{indeedApplySecret:"synthetic-replacement"}};
+  identity.capabilities=["marketing.content.careers"];
+  expect((await request("/careers/settings","PUT",{},"/service",payload)).status).toBe(403);
+  expect(state.careerSave).not.toHaveBeenCalled();
+  identity.role="owner";identity.ownerAttested=false;
+  expect((await request("/careers/settings","PUT",{},"/service",payload)).status).toBe(403);
+  identity.ownerAttested=true;
+  state.careerSave.mockResolvedValue({sharing:{enabled:false},integrations:{indeedApplySecret:""}});
+  const response=await request("/careers/settings","PUT",{},"/service",payload);
+  expect(response.status).toBe(200);
+  expect(state.careerSave).toHaveBeenCalledTimes(1);
+  expect(state.careerSave.mock.calls[0][0]).toMatchObject(payload);
+  expect(JSON.stringify(await response.json())).not.toContain("synthetic-replacement");
+  state.enabled.mockResolvedValue(false);
+  expect((await request("/careers/settings","PUT",{},"/service",payload)).status).toBe(404);
+  expect(state.careerSave).toHaveBeenCalledTimes(1);
 });
