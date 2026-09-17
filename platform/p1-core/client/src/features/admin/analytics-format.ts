@@ -1,5 +1,5 @@
 export function metricFormat(value: number, metric: string) {
-  if (/Rate$/.test(metric))
+  if (/Rate$/.test(metric) || metric === "ctr")
     return new Intl.NumberFormat("en-US", { style: "percent", maximumFractionDigits: 1 }).format(
       value,
     );

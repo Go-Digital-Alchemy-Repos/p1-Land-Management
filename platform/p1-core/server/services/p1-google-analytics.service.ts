@@ -1,4 +1,4 @@
-import { createSign } from "node:crypto";
+import { googleReportingToken } from "./google-reporting-auth";
 import type {
   GADateRange,
   GAReport,
@@ -8,17 +8,8 @@ import type {
   GAErrorResponse,
 } from "../../shared/p1-google-analytics";
 
-export class GAError extends Error {
-  constructor(public code: GAErrorResponse["code"]) {
-    super(
-      code === "invalid_date_range"
-        ? "Use a valid date range of at most 93 days."
-        : code === "not_configured"
-          ? "Google Analytics reporting is not configured."
-          : "Google Analytics reporting is temporarily unavailable.",
-    );
-  }
-}
+import { GAError } from "./google-reporting-error";
+export { GAError } from "./google-reporting-error";
 const DAY = 86400000;
 export function dateRanges(start: unknown, end: unknown, now = Date.now()) {
   const parse = (v: unknown) => {
@@ -142,8 +133,6 @@ export function createGAService(
   now = Date.now,
 ) {
   const propertyId = env.P1_GA_PROPERTY_ID || "554712298";
-  let token: { value: string; expires: number } | undefined;
-  let tokenFlight: Promise<string> | undefined;
   const cache = new Map<string, { expires: number; value: any }>(),
     flights = new Map<string, Promise<any>>();
   let running = 0;
@@ -152,65 +141,12 @@ export function createGAService(
     if (!response.ok) throw new GAError("provider_unavailable");
     return response.json();
   }
-  async function accessToken(): Promise<string> {
-    if (token && token.expires > now()) return token.value;
-    if (tokenFlight) return tokenFlight;
-    tokenFlight = (async () => {
-      let body: URLSearchParams;
-      if (env.P1_GA_SERVICE_ACCOUNT_JSON) {
-        let credentials: any;
-        try {
-          credentials = JSON.parse(env.P1_GA_SERVICE_ACCOUNT_JSON);
-        } catch {
-          throw new GAError("not_configured");
-        }
-        if (
-          typeof credentials.client_email !== "string" ||
-          typeof credentials.private_key !== "string"
-        )
-          throw new GAError("not_configured");
-        const encode = (v: unknown) => Buffer.from(JSON.stringify(v)).toString("base64url");
-        const issued = Math.floor(now() / 1000);
-        const unsigned =
-          encode({ alg: "RS256", typ: "JWT" }) +
-          "." +
-          encode({
-            iss: credentials.client_email,
-            scope: "https://www.googleapis.com/auth/analytics.readonly",
-            aud: "https://oauth2.googleapis.com/token",
-            iat: issued,
-            exp: issued + 3600,
-          });
-        const signature = createSign("RSA-SHA256")
-          .update(unsigned)
-          .sign(credentials.private_key, "base64url");
-        body = new URLSearchParams({
-          grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
-          assertion: unsigned + "." + signature,
-        });
-      } else if (env.P1_GA_CLIENT_ID && env.P1_GA_CLIENT_SECRET && env.P1_GA_REFRESH_TOKEN) {
-        body = new URLSearchParams({
-          grant_type: "refresh_token",
-          client_id: env.P1_GA_CLIENT_ID,
-          client_secret: env.P1_GA_CLIENT_SECRET,
-          refresh_token: env.P1_GA_REFRESH_TOKEN,
-        });
-      } else throw new GAError("not_configured");
-      const result = await json("https://oauth2.googleapis.com/token", { method: "POST", body });
-      if (typeof result.access_token !== "string" || !Number.isFinite(Number(result.expires_in)))
-        throw new GAError("provider_unavailable");
-      token = {
-        value: result.access_token,
-        expires: now() + Math.max(0, Number(result.expires_in) - 60) * 1000,
-      };
-      return token.value;
-    })();
-    try {
-      return await tokenFlight;
-    } finally {
-      tokenFlight = undefined;
-    }
-  }
+  const accessToken = googleReportingToken(
+    env,
+    "https://www.googleapis.com/auth/analytics.readonly",
+    json,
+    now,
+  );
   async function provider(method: string, body: unknown) {
     if (!/^\d+$/.test(propertyId)) throw new GAError("not_configured");
     const bearer = await accessToken();
