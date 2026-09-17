@@ -1138,3 +1138,7 @@ The [identity runbook](website-identity-editor.md) records the read/write/upload
 Added a requirement-level acceptance tracker grounded in the current routes, services, tools and recorded tests. Corrected the stale proposal checkpoint that said composed preparation/conversion were still internal or unimplemented: the mounted native flow, immutable documents, approval conversion and synthetic mixed-billing rehearsal already exist. Marked the initial implementation backlog as historical so completed pagination/recovery/proposal work is not incorrectly reported as missing. The tracker distinguishes implemented code from provider, migration, crew/browser and release acceptance.
 
 This was a documentation/source audit; no application behavior or production state changed. Markdown relative links and `git diff --check` were verified. The full goal remains active and no completion percentage is asserted.
+
+### Owner-requested incomplete-work review
+
+Compared the original scope with the current legacy sidebar/router/settings, consolidated routes/allowlist, identity reconciliation contract and agreement implementation evidence. Confirmed missing consolidated destinations for Website Integrations, Email Templates, Developer Resources, System Backups and Client Stack Onboarding. Added those specifics to the acceptance tracker, together with the identity reconciliation limits and public identity/CSP delivery gap. No implementation or production changes were made. Documentation checks passed; the full goal remains active.
