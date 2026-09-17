@@ -136,6 +136,7 @@ function addContentUsage<T extends { id: string }>(
   content: unknown,
   isLive: boolean,
   statusLabel: string,
+  field = "content",
 ) {
   for (const asset of assets) {
     if (!valueReferencesAsset(content, asset)) continue;
@@ -143,7 +144,7 @@ function addContentUsage<T extends { id: string }>(
       entityType,
       entityId: entity.id,
       entityName,
-      field: "content",
+      field,
       path,
       isLive,
       statusLabel,
@@ -202,6 +203,7 @@ export async function buildCmsMediaLibraryAssets(
     settings,
     galleries,
     teamMembers,
+    websiteContent,
   ] = await Promise.all([
     storage.cmsPages.getAllPages(),
     storage.blog.getAllPosts(),
@@ -216,11 +218,17 @@ export async function buildCmsMediaLibraryAssets(
       }
     ).cmsGalleries?.getAll?.() ?? Promise.resolve([]),
     storage.team?.list?.() ?? Promise.resolve([]),
+    storage.clientSiteContent.listMediaUsage(),
   ]);
 
   const usageMap = new Map<string, CmsMediaUsageReference[]>();
   const dedupe = new Set<string>();
 
+  for (const record of websiteContent) {
+    const name = `${record.routeId} / ${record.componentKey}`;
+    addContentUsage(assets, usageMap, dedupe, record, "website_content", name, undefined, record.draftContent, false, "Website draft", "draftContent");
+    addContentUsage(assets, usageMap, dedupe, record, "website_content", name, undefined, record.publishedContent, true, "Published website", "publishedContent");
+  }
   for (const page of pages) {
     const isLive = page.status === "published";
     const path = page.slug ? `/${page.slug}` : undefined;

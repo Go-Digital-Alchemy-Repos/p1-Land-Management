@@ -75,6 +75,7 @@ import {
 } from "./dashboard-routes";
 const auth = createAuthClient({ plugins: [twoFactorClient()] });
 const MarketingReports = lazy(() => import("./marketing/MarketingReports").then(module => ({default: module.MarketingReports})));
+const MediaLibrary = lazy(() => import("./marketing/MediaLibrary"));
 const WebsiteEditor = lazy(() => import("./marketing/WebsiteEditor"));
 const CmsMenus = lazy(() => import("./marketing/CmsMenus"));
 const PropertyMap = lazy(() =>
@@ -105,6 +106,7 @@ type NavItem = DashboardPageRoute & {
 };
 const icons: Record<DashboardPageRoute["view"] | "Settings:security" | "Settings:integrations" | "Settings:preferences" | "Settings:term-libraries", typeof LayoutDashboard> = {
   Analytics: BarChart3,
+  "Media Library": Menu,
   "Website Editor": Menu,
   "Website Menus": Menu,
   "Search Console": Search,
@@ -1390,7 +1392,8 @@ function App() {
             />
           )}
           {(view === "Analytics" || view === "Search Console") && <Suspense fallback={<p role="status">Loading reporting tools…</p>}><MarketingReports key={`${person.id}:${view}:${(person.capabilities || []).join(",")}`} source={view === "Analytics" ? "analytics" : "search-console"}/></Suspense>}
-          {view === "Website Editor" && <Suspense fallback={<p role="status">Loading website editor…</p>}><WebsiteEditor key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
+          {view === "Website Editor" && <Suspense fallback={<p role="status">Loading website editor…</p>}><WebsiteEditor canUseMedia={(person.capabilities || []).includes("marketing.content.media")} key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
+          {view === "Media Library" && <Suspense fallback={<p role="status">Loading media…</p>}><MediaLibrary key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Website Menus" && <Suspense fallback={<p role="status">Loading website menus…</p>}><CmsMenus key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Agreements" && (
             <ServiceAgreements

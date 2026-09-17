@@ -13,6 +13,7 @@ const assert = require("node:assert/strict");
       viewport: { width: 1400, height: 1000 },
     });
     page.setDefaultTimeout(10000);
+    let mediaAllowed = true;
     let deny = false,
       conflict = false,
       saves = [],
@@ -26,6 +27,12 @@ const assert = require("node:assert/strict");
       component: {
         key: "home-page",
         fields: [
+          {
+            path: "image",
+            label: "Hero image",
+            type: "image",
+            allowedImageOrigins: ["https://www.p1landmanagement.com"],
+          },
           {
             path: "title",
             label: "Page title",
@@ -59,9 +66,35 @@ const assert = require("node:assert/strict");
           id: "synthetic",
           name: "Website Editor",
           role: "member",
-          capabilities: deny ? [] : ["marketing.content.website"],
+          capabilities: deny
+            ? []
+            : [
+                "marketing.content.website",
+                ...(mediaAllowed ? ["marketing.content.media"] : []),
+              ],
           mfaRequired: false,
         };
+      if (path === "/api/v1/marketing/cms/media")
+        body = [
+          {
+            id: "safe",
+            filename: "photo.png",
+            originalName: "photo.png",
+            title: "Allowed image",
+            mimeType: "image/png",
+            url: "/uploads/cms/photo.png",
+            fileSize: 100,
+          },
+          {
+            id: "foreign",
+            filename: "foreign.png",
+            originalName: "foreign.png",
+            title: "Foreign image",
+            mimeType: "image/png",
+            url: "https://foreign.example/image.png",
+            fileSize: 100,
+          },
+        ];
       if (path === "/api/v1/marketing/cms/website")
         body = [
           {
@@ -134,6 +167,19 @@ const assert = require("node:assert/strict");
       await page.getByLabel("Page title", { exact: true }).inputValue(),
       "New title",
     );
+    await page
+      .getByRole("button", { name: "Choose image for Hero image", exact: true })
+      .click();
+    const picker = page.getByRole("dialog", { name: "Choose website image" });
+    await picker.getByRole("button", { name: /Allowed image/ }).waitFor();
+    assert(
+      await picker.getByRole("button", { name: /Foreign image/ }).isDisabled(),
+    );
+    await picker.getByRole("button", { name: /Allowed image/ }).click();
+    assert.equal(
+      await page.getByLabel("Hero image", { exact: true }).inputValue(),
+      "/uploads/cms/photo.png",
+    );
     conflict = true;
     await page.getByRole("button", { name: "Save draft", exact: true }).click();
     await page
@@ -187,6 +233,18 @@ const assert = require("node:assert/strict");
       path: "/tmp/p1-website-editor-mobile.png",
       fullPage: true,
     });
+    mediaAllowed = false;
+    await page.reload();
+    await page.getByLabel("Page title", { exact: true }).waitFor();
+    assert.equal(
+      await page
+        .getByRole("button", {
+          name: "Choose image for Hero image",
+          exact: true,
+        })
+        .count(),
+      0,
+    );
     deny = true;
     await page.reload();
     await page.waitForURL("**/profile");

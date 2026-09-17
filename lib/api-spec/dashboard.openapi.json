@@ -6834,6 +6834,221 @@
           }
         }
       }
+    },
+    "/marketing/cms/media": {
+      "get": {
+        "operationId": "listMarketingMedia",
+        "tags": [
+          "Marketing"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MarketingMedia"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/marketing/cms/media/{id}": {
+      "patch": {
+        "operationId": "updateMarketingMedia",
+        "tags": [
+          "Marketing"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingMedia"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketingMediaMetadata"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteMarketingMedia",
+        "tags": [
+          "Marketing"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/upload": {
+      "post": {
+        "operationId": "uploadMarketingMedia",
+        "tags": [
+          "Marketing"
+        ],
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingMedia"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "file"
+                ],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/marketing/cms/media/{id}/replace": {
+      "post": {
+        "operationId": "replaceMarketingMedia",
+        "tags": [
+          "Marketing"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingMedia"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "file"
+                ],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/marketing/cms/media/{id}/source": {
+      "get": {
+        "operationId": "getMarketingMediaSource",
+        "tags": [
+          "Marketing"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -14519,6 +14734,167 @@
           "expectedRevision",
           "content"
         ]
+      },
+      "MarketingMedia": {
+        "type": "object",
+        "required": [
+          "id",
+          "filename",
+          "originalName",
+          "url",
+          "mimeType",
+          "fileSize"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "filename": {
+            "type": "string"
+          },
+          "originalName": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "mimeType": {
+            "type": "string"
+          },
+          "fileSize": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "alt": {
+            "type": "string",
+            "nullable": true
+          },
+          "caption": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "seoTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "seoDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "ogTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "ogDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "nullable": true
+          },
+          "assetKind": {
+            "type": "string",
+            "enum": [
+              "image",
+              "document"
+            ]
+          },
+          "usageCount": {
+            "type": "integer"
+          },
+          "liveUsageCount": {
+            "type": "integer"
+          },
+          "isInUse": {
+            "type": "boolean"
+          },
+          "usageRefs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "entityType",
+                "entityId",
+                "entityName",
+                "field",
+                "statusLabel",
+                "isLive"
+              ],
+              "properties": {
+                "entityType": {
+                  "type": "string"
+                },
+                "entityId": {
+                  "type": "string"
+                },
+                "entityName": {
+                  "type": "string"
+                },
+                "field": {
+                  "type": "string"
+                },
+                "statusLabel": {
+                  "type": "string"
+                },
+                "path": {
+                  "type": "string"
+                },
+                "isLive": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      },
+      "MarketingMediaMetadata": {
+        "type": "object",
+        "properties": {
+          "originalName": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "alt": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "caption": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "seoTitle": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "seoDescription": {
+            "type": "string",
+            "maxLength": 320
+          },
+          "ogTitle": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "ogDescription": {
+            "type": "string",
+            "maxLength": 320
+          }
+        }
       }
     }
   }

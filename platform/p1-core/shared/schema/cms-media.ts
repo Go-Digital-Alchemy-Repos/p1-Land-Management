@@ -39,6 +39,7 @@ export type InsertCmsMedia = z.infer<typeof insertCmsMediaSchema>;
 export type CmsMediaAsset = typeof cmsMedia.$inferSelect;
 
 export type CmsMediaUsageEntityType =
+  | "website_content"
   | "page"
   | "blog_post"
   | "event"

@@ -14,6 +14,7 @@ import type {
 } from "../../../../lib/api-client-react/src/dashboard/models";
 import { useCmsUnsavedChanges } from "./useCmsUnsavedChanges";
 import "./website-editor.css";
+import { MediaLibrary } from "./MediaLibrary";
 
 function message(error: unknown) {
   const payload = (error as { data?: { message?: string; error?: string } })
@@ -129,7 +130,19 @@ function Preview({
   );
 }
 
-function ContentEditor({ entry }: { entry: WebsiteContentEntry }) {
+function ContentEditor({
+  entry,
+  canUseMedia,
+}: {
+  entry: WebsiteContentEntry;
+  canUseMedia: boolean;
+}) {
+  const [imageField, setImageField] = useState<string | null>(null);
+  const picker = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    if (imageField) picker.current?.showModal();
+    else picker.current?.close();
+  }, [imageField]);
   const [data, setData] = useState<WebsiteContent | null>(null),
     [content, setContent] = useState<Record<string, unknown>>({}),
     [revisions, setRevisions] = useState<WebsiteContentRevision[]>([]);
@@ -208,6 +221,48 @@ function ContentEditor({ entry }: { entry: WebsiteContentEntry }) {
       className="website-content-editor"
       aria-label="Website content editor"
     >
+      <dialog
+        ref={picker}
+        className="media-picker"
+        onCancel={() => setImageField(null)}
+        aria-label="Choose website image"
+      >
+        <button type="button" onClick={() => setImageField(null)}>
+          Close image picker
+        </button>
+        {imageField && canUseMedia && (
+          <MediaLibrary
+            acceptAsset={(asset) => {
+              if (
+                !asset.mimeType.startsWith("image/") ||
+                /[\\\s\u0000-\u001f\u007f]/.test(asset.url)
+              )
+                return false;
+              if (/^\/(?!\/)/.test(asset.url)) return true;
+              try {
+                const url = new URL(asset.url);
+                const field = data?.component.fields.find(
+                  (f) => f.path === imageField,
+                );
+                return (
+                  url.protocol === "https:" &&
+                  !url.username &&
+                  !url.password &&
+                  url.origin === "https://www.p1landmanagement.com" &&
+                  (field?.allowedImageOrigins === undefined ||
+                    field.allowedImageOrigins.includes(url.origin))
+                );
+              } catch {
+                return false;
+              }
+            }}
+            onSelect={(asset) => {
+              setContent(setValue(content, imageField, asset.url));
+              setImageField(null);
+            }}
+          />
+        )}
+      </dialog>
       {error && <p role="alert">{error} Your unsaved content is retained.</p>}
       {notice && <p role="status">{notice}</p>}
       <button
@@ -295,6 +350,14 @@ function ContentEditor({ entry }: { entry: WebsiteContentEntry }) {
                             <textarea {...common} rows={4} />
                           ) : (
                             <input {...common} />
+                          )}
+                          {field.type === "image" && canUseMedia && (
+                            <button
+                              type="button"
+                              onClick={() => setImageField(field.path)}
+                            >
+                              Choose image for {field.label}
+                            </button>
                           )}
                           {field.maxLength && (
                             <small>
@@ -395,7 +458,11 @@ function ContentEditor({ entry }: { entry: WebsiteContentEntry }) {
     </section>
   );
 }
-export default function WebsiteEditor() {
+export default function WebsiteEditor({
+  canUseMedia = false,
+}: {
+  canUseMedia?: boolean;
+}) {
   const [entries, setEntries] = useState<WebsiteContentEntry[]>([]),
     [selected, setSelected] = useState<WebsiteContentEntry | null>(null),
     [error, setError] = useState(""),
@@ -457,6 +524,7 @@ export default function WebsiteEditor() {
           <ContentEditor
             key={`${selected.routeId}:${selected.componentKey}`}
             entry={selected}
+            canUseMedia={canUseMedia}
           />
         </>
       ) : (

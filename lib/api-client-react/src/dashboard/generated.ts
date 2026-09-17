@@ -78,6 +78,7 @@ import type {
   DashboardMe,
   DashboardProperty,
   DashboardPropertyEditReceipt,
+  DeleteMarketingMedia200,
   DeleteWebsiteMenu200,
   EditServiceAgreement,
   EstimateChangeOrder,
@@ -106,6 +107,8 @@ import type {
   ManagedAccountUpdate,
   ManagedInvitationInput,
   MarketingAnalytics,
+  MarketingMedia,
+  MarketingMediaMetadata,
   MarketingRealtime,
   MarketingSearchConsole,
   OperationReceipt,
@@ -131,6 +134,7 @@ import type {
   ReadinessUpdate,
   RecurringJob,
   RecurringServicePause,
+  ReplaceMarketingMediaBody,
   RescheduleWork,
   ResendManagedInvitation200,
   RevokeManagedInvitation200,
@@ -160,6 +164,7 @@ import type {
   UpdateProject,
   UpdateProjectPhase,
   UploadFieldPhotoHeaders,
+  UploadMarketingMediaBody,
   WebsiteContent,
   WebsiteContentEntry,
   WebsiteContentRevision,
@@ -3626,6 +3631,141 @@ export const restoreWebsiteContentRevision = async (routeId: string,
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
       websiteExpectedRevision,)
+  }
+);}
+
+
+
+export const getListMarketingMediaUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/media`
+}
+
+export const listMarketingMedia = async ( options?: RequestInit): Promise<MarketingMedia[]> => {
+
+  return customFetch<MarketingMedia[]>(getListMarketingMediaUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getUpdateMarketingMediaUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/media/${id}`
+}
+
+export const updateMarketingMedia = async (id: string,
+    marketingMediaMetadata: MarketingMediaMetadata, options?: RequestInit): Promise<MarketingMedia> => {
+
+  return customFetch<MarketingMedia>(getUpdateMarketingMediaUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingMediaMetadata,)
+  }
+);}
+
+
+
+export const getDeleteMarketingMediaUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/media/${id}`
+}
+
+export const deleteMarketingMedia = async (id: string, options?: RequestInit): Promise<DeleteMarketingMedia200> => {
+
+  return customFetch<DeleteMarketingMedia200>(getDeleteMarketingMediaUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+export const getUploadMarketingMediaUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/upload`
+}
+
+export const uploadMarketingMedia = async (uploadMarketingMediaBody: UploadMarketingMediaBody, options?: RequestInit): Promise<MarketingMedia> => {
+    const formData = new FormData();
+formData.append(`file`, uploadMarketingMediaBody.file);
+
+  return customFetch<MarketingMedia>(getUploadMarketingMediaUrl(),
+  {
+    ...options,
+    method: 'POST'
+    ,
+    body:
+      formData,
+  }
+);}
+
+
+
+export const getReplaceMarketingMediaUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/media/${id}/replace`
+}
+
+export const replaceMarketingMedia = async (id: string,
+    replaceMarketingMediaBody: ReplaceMarketingMediaBody, options?: RequestInit): Promise<MarketingMedia> => {
+    const formData = new FormData();
+formData.append(`file`, replaceMarketingMediaBody.file);
+
+  return customFetch<MarketingMedia>(getReplaceMarketingMediaUrl(id),
+  {
+    ...options,
+    method: 'POST'
+    ,
+    body:
+      formData,
+  }
+);}
+
+
+
+export const getGetMarketingMediaSourceUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/media/${id}/source`
+}
+
+export const getMarketingMediaSource = async (id: string, options?: RequestInit): Promise<Blob> => {
+
+  return customFetch<Blob>(getGetMarketingMediaSourceUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
   }
 );}
 

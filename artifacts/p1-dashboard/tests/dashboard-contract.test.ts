@@ -794,3 +794,16 @@ test("generated binary upload preserves exact bytes, typed target headers and na
     globalThis.fetch = original;
   }
 });
+
+test("generated Marketing Media client preserves multipart files, metadata and binary sources", async()=>{
+  const {uploadMarketingMedia,replaceMarketingMedia,updateMarketingMedia,getMarketingMediaSource}=await import("@workspace/api-client-react/dashboard");
+  const original=globalThis.fetch,bytes=new Uint8Array([0,1,255]);let calls=0;
+  globalThis.fetch=async(input,init)=>{
+    calls++;const path=String(input);assert(path.startsWith("/api/v1/marketing/cms/"));assert(!path.includes("/api/v1/api/v1"));
+    if(path.endsWith("/source"))return new Response(bytes,{headers:{"content-type":"image/png"}});
+    if(init?.method==="PATCH")assert.deepEqual(JSON.parse(String(init.body)),{alt:"Field"});
+    else{assert(init?.body instanceof FormData);const file=init.body.get("file") as File;assert.deepEqual(new Uint8Array(await file.arrayBuffer()),bytes);assert.equal(file.name,"photo.png");assert.equal(new Headers(init.headers).get("content-type"),null);}
+    return Response.json({id:"media",alt:"Field"});
+  };
+  try{const file=new File([bytes],"photo.png",{type:"image/png"});await uploadMarketingMedia({file});await replaceMarketingMedia("media",{file});await updateMarketingMedia("media",{alt:"Field"});const source=await getMarketingMediaSource("media");assert(source instanceof Blob);assert.deepEqual(new Uint8Array(await source.arrayBuffer()),bytes);assert.equal(calls,4);}finally{globalThis.fetch=original;}
+});

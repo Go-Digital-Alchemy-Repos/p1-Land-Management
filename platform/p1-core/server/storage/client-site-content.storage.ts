@@ -21,6 +21,10 @@ export interface ClientSiteContentIdentity {
 }
 
 export class ClientSiteContentStorage {
+  listMediaUsage() {
+    return db.select({id:clientSiteContent.id,routeId:clientSiteContent.routeId,componentKey:clientSiteContent.componentKey,draftContent:clientSiteContent.draftContent,publishedContent:clientSiteContent.publishedContent}).from(clientSiteContent);
+  }
+
   get(identity: ClientSiteContentIdentity): Promise<ClientSiteContent | undefined> {
     return db.query.clientSiteContent.findFirst({
       where: and(

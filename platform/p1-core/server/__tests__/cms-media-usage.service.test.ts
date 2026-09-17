@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { CmsMediaAsset } from "@shared/schema";
 
 const mockStorage = vi.hoisted(() => ({
+  clientSiteContent: {listMediaUsage:vi.fn()},
   cmsPages: { getAllPages: vi.fn() },
   team: { list: vi.fn() },
   blog: { getAllPosts: vi.fn() },
@@ -51,6 +52,7 @@ describe("cms media usage service", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockStorage.team.list.mockResolvedValue([]);
+    mockStorage.clientSiteContent.listMediaUsage.mockResolvedValue([]);
     mockStorage.cmsPages.getAllPages.mockResolvedValue([]);
     mockStorage.blog.getAllPosts.mockResolvedValue([]);
     mockStorage.events.getAllEvents.mockResolvedValue([]);
@@ -63,6 +65,12 @@ describe("cms media usage service", () => {
     mockStorage.ecommerce.getCategories.mockResolvedValue([]);
     mockStorage.ecommerce.getProductMedia.mockResolvedValue([]);
   });
+
+
+it("counts draft and published Website snapshots independently", async()=>{
+ const media=asset();mockStorage.clientSiteContent.listMediaUsage.mockResolvedValue([{id:"website",routeId:"home",componentKey:"home-page",draftContent:{image:media.url},publishedContent:{image:media.url}}]);
+ const [result]=await buildCmsMediaLibraryAssets([media]);expect(result.usageRefs.filter(ref=>ref.entityType==="website_content")).toHaveLength(2);expect(result.liveUsageCount).toBe(1);expect(result.isInUse).toBe(true);
+});
 
   it("tracks published and draft Team portraits", async () => {
     const media = asset();
