@@ -1223,6 +1223,8 @@ textarea {
     font-size: 29px;
   }
   .sidebar {
+    top: 68px;
+    height: calc(100dvh - 68px);
     transform: translateX(-100%);
     z-index: 9;
     transition: transform 0.2s;
