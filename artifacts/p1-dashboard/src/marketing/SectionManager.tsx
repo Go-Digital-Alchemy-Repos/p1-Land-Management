@@ -1,3 +1,4 @@
+import { createFallbackBlockDef } from "../../../../platform/p1-core/shared/cms-builder/fallback-block";
 import { useEffect, useState } from "react";
 import {
   listMarketingSections,
@@ -206,14 +207,15 @@ function Editor({
                 !Array.isArray(block.props)
                   ? (block.props as Record<string, unknown>)
                   : {};
+            const editorDefinition =
+              definition || createFallbackBlockDef(kind || "unknown", props);
             return (
               <article
                 className="section-block"
                 key={String(block.id || index)}
               >
                 <h4>
-                  {index + 1}.{" "}
-                  {definition?.label || `Saved block: ${kind || "unknown"}`}
+                  {index + 1}. {editorDefinition.label}
                 </h4>
                 <div className="section-actions">
                   <button
@@ -263,11 +265,17 @@ function Editor({
                     Remove block
                   </button>
                 </div>
-                {definition ? (
+                {!definition && (
+                  <p>
+                    Compatibility editor: unrecognized nested values remain
+                    unchanged.
+                  </p>
+                )}
+                {
                   <details>
-                    <summary>Edit {definition.label}</summary>
+                    <summary>Edit {editorDefinition.label}</summary>
                     <BlockFields
-                      fields={definition.propDefs}
+                      fields={editorDefinition.propDefs}
                       values={props}
                       catalog={catalog}
                       canUseMedia={canUseMedia}
@@ -282,12 +290,7 @@ function Editor({
                       }
                     />
                   </details>
-                ) : (
-                  <p>
-                    This block is retained unchanged. Its editor definition is
-                    unavailable.
-                  </p>
-                )}
+                }
               </article>
             );
           })}

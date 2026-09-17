@@ -22,7 +22,7 @@ const assert = require("node:assert/strict");
           {
             id: "legacy",
             type: "future-block",
-            props: { preserve: "unchanged" },
+            props: { preserve: "unchanged", nested: { safe: true } },
           },
           {
             id: "hero",
@@ -138,6 +138,12 @@ const assert = require("node:assert/strict");
       .getByRole("button", { name: "Edit Reusable section", exact: true })
       .click();
     await page.getByText("Edit Hero", { exact: true }).click();
+    await page
+      .getByText("Edit Future Block (Compatibility Mode)", { exact: true })
+      .click();
+    await page
+      .getByLabel("Preserve", { exact: true })
+      .fill("Edited legacy text");
     assert.equal(
       await page.getByLabel("Assigned form", { exact: true }).inputValue(),
       "missing-form",
@@ -193,7 +199,7 @@ const assert = require("node:assert/strict");
     assert.deepEqual(saved.blocks[1], {
       id: "legacy",
       type: "future-block",
-      props: { preserve: "unchanged" },
+      props: { preserve: "Edited legacy text", nested: { safe: true } },
     });
     await page
       .getByRole("button", { name: "Duplicate block", exact: true })
