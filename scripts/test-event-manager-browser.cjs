@@ -21,6 +21,35 @@ const assert = require("node:assert/strict");
       saved,
       created,
       duplicates = 0;
+    let directoryFail = true,
+      referenceFail = false,
+      venueSaved,
+      venueWrites = 0,
+      deleted = 0;
+    let venues = [
+      {
+        id: "venue",
+        name: "Field venue",
+        slug: "field-venue",
+        address: "100 Example Lane",
+        city: "Greenville",
+        region: "SC",
+        parkingInfo: "North entrance",
+        latitude: "34.85",
+        longitude: "-82.39",
+        isVirtual: false,
+      },
+    ];
+    let organizers = [
+      {
+        id: "organizer",
+        name: "Host team",
+        slug: "host-team",
+        description: "Saved host bio",
+        email: "host@example.test",
+        imageUrl: "/uploads/host.png",
+      },
+    ];
     let event = {
       id: "event",
       title: "Field workshop",
@@ -31,6 +60,9 @@ const assert = require("node:assert/strict");
       status: "published",
       visibility: "members_only",
       description: "<p>Saved description</p>",
+      venueId: "venue",
+      locationName: "Custom event location",
+      speakerName: "Custom event speaker",
       registrationEnabled: true,
       registrationFee: 12500,
       registrationType: "paid",
@@ -89,10 +121,128 @@ const assert = require("node:assert/strict");
           title: "Copy of Field workshop",
           status: "draft",
         };
+      if (path === "/api/v1/marketing/cms/events/venues") {
+        if (referenceFail)
+          return route.fulfill({
+            status: 503,
+            json: { message: "Reference failure" },
+          });
+        if (req.method() === "POST") {
+          const row = {
+            ...req.postDataJSON(),
+            id: "new-venue",
+            slug: "new-venue",
+          };
+          venues.push(row);
+          body = row;
+        } else body = venues;
+      }
+      if (
+        path === "/api/v1/marketing/cms/events/venues/venue" &&
+        req.method() === "PUT"
+      ) {
+        venueWrites++;
+        venueSaved = req.postDataJSON();
+        if (directoryFail)
+          return route.fulfill({
+            status: 503,
+            json: { message: "Venue save failed" },
+          });
+        venues[0] = { ...venues[0], ...venueSaved };
+        body = venues[0];
+      }
+      if (
+        path === "/api/v1/marketing/cms/events/venues/new-venue" &&
+        req.method() === "DELETE"
+      ) {
+        deleted++;
+        venues = venues.filter((row) => row.id !== "new-venue");
+        body = { message: "Venue deleted" };
+      }
+      if (path === "/api/v1/marketing/cms/events/organizers") body = organizers;
+      if (
+        path === "/api/v1/marketing/cms/events/organizers/organizer" &&
+        req.method() === "PUT"
+      ) {
+        organizers[0] = { ...organizers[0], ...req.postDataJSON() };
+        body = organizers[0];
+      }
       await route.fulfill({ json: body });
     });
     await page.goto("http://127.0.0.1:4347/marketing/content/events");
-    await page.getByText("10/1/2026, 9:00:00 AM · America/New_York",{exact:true}).waitFor();
+    await page
+      .getByRole("button", { name: "Manage venues", exact: true })
+      .click();
+    await page
+      .getByRole("button", { name: "Edit Field venue", exact: true })
+      .click();
+    await page.getByLabel("Name", { exact: true }).fill("Updated venue");
+    await page.getByRole("button", { name: "Save venue", exact: true }).click();
+    await page
+      .getByRole("alert")
+      .filter({ hasText: "Venue save failed" })
+      .waitFor();
+    assert.equal(
+      await page.getByLabel("Name", { exact: true }).inputValue(),
+      "Updated venue",
+    );
+    directoryFail = false;
+    await page.getByRole("button", { name: "Save venue", exact: true }).click();
+    await page.getByText("Venue saved.", { exact: true }).waitFor();
+    assert.equal(venueSaved.parkingInfo, "North entrance");
+    await page
+      .getByRole("button", { name: "Create venue", exact: true })
+      .click();
+    await page.getByLabel("Name", { exact: true }).fill("New venue");
+    await page.getByRole("button", { name: "Save venue", exact: true }).click();
+    await page
+      .getByRole("button", { name: "Delete New venue", exact: true })
+      .waitFor();
+    page.once("dialog", (d) => d.dismiss());
+    await page
+      .getByRole("button", { name: "Delete New venue", exact: true })
+      .click();
+    assert.equal(deleted, 0);
+    page.once("dialog", (d) => {
+      assert(d.message().includes("their link"));
+      return d.accept();
+    });
+    await page
+      .getByRole("button", { name: "Delete New venue", exact: true })
+      .click();
+    await page.getByText("Venue deleted.", { exact: true }).waitFor();
+    assert.equal(deleted, 1);
+    await page
+      .getByRole("button", { name: "Back to events", exact: true })
+      .click();
+    await page
+      .getByRole("button", { name: "Manage organizers", exact: true })
+      .click();
+    await page
+      .getByRole("button", { name: "Edit Host team", exact: true })
+      .click();
+    assert.equal(
+      await page
+        .getByRole("button", { name: "Choose organizer image", exact: true })
+        .count(),
+      0,
+    );
+    await page
+      .getByLabel("Email", { exact: true })
+      .fill("updated@example.test");
+    await page
+      .getByRole("button", { name: "Save organizer", exact: true })
+      .click();
+    await page.getByText("Organizer saved.", { exact: true }).waitFor();
+    assert.equal(organizers[0].imageUrl, "/uploads/host.png");
+    await page
+      .getByRole("button", { name: "Back to events", exact: true })
+      .click();
+    referenceFail = true;
+
+    await page
+      .getByText("10/1/2026, 9:00:00 AM · America/New_York", { exact: true })
+      .waitFor();
     await page
       .getByRole("button", { name: "Edit Field workshop", exact: true })
       .click();
@@ -104,6 +254,57 @@ const assert = require("node:assert/strict");
       await page.getByLabel("Visibility", { exact: true }).inputValue(),
       "members_only",
     );
+    await page
+      .getByRole("alert")
+      .filter({ hasText: "choices could not be loaded" })
+      .waitFor();
+    assert.equal(
+      await page.getByLabel("Shared venue", { exact: true }).inputValue(),
+      "venue",
+    );
+    referenceFail = false;
+    await page
+      .getByRole("button", { name: "Retry shared records", exact: true })
+      .click();
+    await page
+      .getByRole("button", { name: "Use venue details", exact: true })
+      .waitFor();
+    assert.equal(
+      await page.getByLabel("Location name", { exact: true }).inputValue(),
+      "Custom event location",
+    );
+    page.once("dialog", (d) => d.dismiss());
+    await page
+      .getByRole("button", { name: "Use venue details", exact: true })
+      .click();
+    assert.equal(
+      await page.getByLabel("Location name", { exact: true }).inputValue(),
+      "Custom event location",
+    );
+    page.once("dialog", (d) => d.accept());
+    await page
+      .getByRole("button", { name: "Use venue details", exact: true })
+      .click();
+    assert.equal(
+      await page.getByLabel("Location name", { exact: true }).inputValue(),
+      "Updated venue",
+    );
+    await page
+      .getByLabel("Shared organizer", { exact: true })
+      .selectOption("organizer");
+    assert.equal(
+      await page.getByLabel("Speaker name", { exact: true }).inputValue(),
+      "Custom event speaker",
+    );
+    page.once("dialog", (d) => d.accept());
+    await page
+      .getByRole("button", { name: "Use organizer details", exact: true })
+      .click();
+    assert.equal(
+      await page.getByLabel("Speaker name", { exact: true }).inputValue(),
+      "Host team",
+    );
+    assert.equal(venueWrites, 2);
     await page.getByLabel("Title", { exact: true }).fill("Updated workshop");
     page.once("dialog", (d) => d.dismiss());
     await page.getByRole("button", { name: "Save event", exact: true }).click();

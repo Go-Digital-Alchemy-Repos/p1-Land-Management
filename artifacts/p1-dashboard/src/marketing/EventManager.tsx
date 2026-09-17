@@ -1,3 +1,5 @@
+import { EventDirectoryManager } from "./EventDirectoryManager";
+import { EventReferences } from "./EventReferences";
 import { useEffect, useRef, useState } from "react";
 import {
   listMarketingEvents,
@@ -281,6 +283,7 @@ function Editor({
         </fieldset>
         <fieldset disabled={busy}>
           <legend>Classification and location</legend>
+          <EventReferences value={value} patch={patch} />
           {selects.map(([key, label, options]) => (
             <label key={key}>
               {label}
@@ -426,6 +429,9 @@ export default function EventManager({
 }: {
   canUseMedia?: boolean;
 }) {
+  const [directory, setDirectory] = useState<"venue" | "organizer" | null>(
+    null,
+  );
   const [rows, setRows] = useState<MarketingEvent[]>([]),
     [selected, setSelected] = useState<string | null>(null),
     [busy, setBusy] = useState(true),
@@ -489,6 +495,15 @@ export default function EventManager({
       if (alive.current) setDuplicating(false);
     }
   }
+  if (directory)
+    return (
+      <EventDirectoryManager
+        key={directory}
+        kind={directory}
+        close={() => setDirectory(null)}
+        canUseMedia={canUseMedia}
+      />
+    );
   if (selected === "new")
     return (
       <Editor
@@ -518,6 +533,17 @@ export default function EventManager({
   return (
     <section className="event-manager" aria-label="Website events">
       <p>Manage website event details and publication.</p>
+      <div className="event-actions">
+        <button disabled={duplicating} onClick={() => setDirectory("venue")}>
+          Manage venues
+        </button>
+        <button
+          disabled={duplicating}
+          onClick={() => setDirectory("organizer")}
+        >
+          Manage organizers
+        </button>
+      </div>
       {notice && <p role="status">{notice}</p>}
       <div className="event-actions">
         <button
@@ -566,9 +592,7 @@ export default function EventManager({
           {visible.map((event) => (
             <article key={event.id}>
               <h2>{event.title}</h2>
-              <p>
-                {eventSchedule(event)}
-              </p>
+              <p>{eventSchedule(event)}</p>
               <p>
                 {event.status || "Not set"} ·{" "}
                 {event.visibility || "Visibility not set"}
