@@ -168,6 +168,17 @@ test(
       });
       return { status: response.status, body: (await response.json()) as any };
     }
+    // New preparation and related-draft routes must enforce Sales at the server,
+    // including users who can read agreements or manage reusable templates.
+    for (const path of [
+      `/agreement-drafts/${randomUUID()}/prepare`,
+      `/estimates/${randomUUID()}/agreement-revision`,
+      `/estimates/${randomUUID()}/agreement-change-order`,
+    ]) {
+      for (const denied of [reader, manager, portal]) {
+        assert.equal((await call(denied, path, {})).status, 403);
+      }
+    }
     async function template(kind: string, body: string, payload: unknown) {
       const id = randomUUID();
       await pool.query(

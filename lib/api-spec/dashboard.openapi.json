@@ -12325,6 +12325,186 @@
           }
         }
       }
+    },
+    "/agreement-drafts/{draftId}/prepare": {
+      "post": {
+        "operationId": "prepareAgreementDraft",
+        "parameters": [
+          {
+            "name": "draftId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgreementPreparationInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Recovered prior result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgreementPreparationResult"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgreementPreparationResult"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Sales capability required"
+          },
+          "409": {
+            "description": "Stale version or changed authorization"
+          },
+          "422": {
+            "description": "Review required"
+          }
+        }
+      }
+    },
+    "/estimates/{estimateId}/agreement-revision": {
+      "post": {
+        "operationId": "createAgreementRevision",
+        "parameters": [
+          {
+            "name": "estimateId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgreementRevisionInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Recovered prior result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgreementRelatedDraftResult"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgreementRelatedDraftResult"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Sales capability required"
+          },
+          "409": {
+            "description": "Stale version or changed authorization"
+          },
+          "422": {
+            "description": "Review required"
+          }
+        }
+      }
+    },
+    "/estimates/{estimateId}/agreement-change-order": {
+      "post": {
+        "operationId": "createAgreementChangeOrder",
+        "parameters": [
+          {
+            "name": "estimateId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgreementChangeOrderInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Recovered prior result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgreementRelatedDraftResult"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgreementRelatedDraftResult"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Sales capability required"
+          },
+          "409": {
+            "description": "Stale version or changed authorization"
+          },
+          "422": {
+            "description": "Review required"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -24595,6 +24775,27 @@
               }
             ],
             "nullable": true
+          },
+          "revises_estimate_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "change_order_estimate_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "revises_estimate_revision": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1
           }
         },
         "required": [
@@ -25341,6 +25542,154 @@
                 }
               }
             }
+          }
+        }
+      },
+      "AgreementPreparationInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expectedVersion",
+          "schedules"
+        ],
+        "properties": {
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "validForDays": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 90,
+            "default": 30
+          },
+          "projectId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "schedules": {
+            "type": "array",
+            "maxItems": 2,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "basis",
+                "cadence",
+                "intervalCount",
+                "localTime",
+                "firstVisitOn"
+              ],
+              "properties": {
+                "basis": {
+                  "type": "string",
+                  "enum": [
+                    "fixed_monthly",
+                    "per_visit"
+                  ]
+                },
+                "cadence": {
+                  "type": "string",
+                  "enum": [
+                    "weekly",
+                    "monthly"
+                  ]
+                },
+                "intervalCount": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 52
+                },
+                "localTime": {
+                  "type": "string",
+                  "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$"
+                },
+                "firstVisitOn": {
+                  "type": "string",
+                  "format": "date"
+                }
+              }
+            }
+          }
+        }
+      },
+      "AgreementPreparationResult": {
+        "type": "object",
+        "required": [
+          "draft",
+          "created",
+          "estimateId"
+        ],
+        "properties": {
+          "draft": {
+            "$ref": "#/components/schemas/AgreementDraft"
+          },
+          "created": {
+            "type": "boolean"
+          },
+          "estimateId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "AgreementRelatedDraftResult": {
+        "type": "object",
+        "required": [
+          "draft",
+          "created"
+        ],
+        "properties": {
+          "draft": {
+            "$ref": "#/components/schemas/AgreementDraft"
+          },
+          "created": {
+            "type": "boolean"
+          }
+        }
+      },
+      "AgreementRevisionInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "operationId",
+          "expectedRevision"
+        ],
+        "properties": {
+          "operationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "AgreementChangeOrderInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "operationId",
+          "expectedRevision",
+          "title"
+        ],
+        "properties": {
+          "operationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
           }
         }
       }

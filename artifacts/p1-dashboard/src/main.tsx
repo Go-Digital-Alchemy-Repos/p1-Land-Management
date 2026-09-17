@@ -1,3 +1,4 @@
+import ComposedEstimateActions from "./agreements/ComposedEstimateActions";
 import { ComposedProposal } from "./ComposedProposal";
 import BillingEstimatePicker from "./BillingAllocationPicker";
 import { formatEstimateExpiry } from "@workspace/api-zod/estimate-document";
@@ -1895,7 +1896,11 @@ function App() {
                   )}
                 </div>
                 {(data.estimates || []).map((e: any) => (
-                  <div className="schedule-row" key={e.id}>
+                  <div
+                    className="schedule-row"
+                    key={e.id}
+                    id={`estimate-${e.id}`}
+                  >
                     <div>
                       <strong>{e.title}</strong>
                       <small>
@@ -1907,7 +1912,13 @@ function App() {
                     <span className="badge">
                       {e.is_current ? e.status : "superseded"}
                     </span>
-                    {can("revenue.sales") && e.is_current && (
+                    {can("revenue.sales") && e.is_current && e.kind === "composed" && (
+                      <ComposedEstimateActions
+                        key={`${e.id}:${e.revision}:${e.status}`}
+                        estimate={e}
+                      />
+                    )}
+                    {can("revenue.sales") && e.is_current && e.kind !== "composed" && (
                       <button
                         onClick={() =>
                           openForm(

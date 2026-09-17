@@ -10,6 +10,7 @@ import type {
   AccountMfaPolicyUpdate,
   ActivateRecurringJob,
   AgreementActivationPreview,
+  AgreementChangeOrderInput,
   AgreementChargeHistory,
   AgreementChargePreview,
   AgreementChargeQueue,
@@ -25,13 +26,17 @@ import type {
   AgreementDraftPricingReview,
   AgreementDraftTemplateReview,
   AgreementEstimateOption,
+  AgreementPreparationInput,
   AgreementPreparationJob,
   AgreementPreparationJobPage,
+  AgreementPreparationResult,
   AgreementPreparationRetryInput,
   AgreementPreparationRetryPreview,
   AgreementPreparationRetryPreviewInput,
   AgreementPreparationRetryReceipt,
   AgreementRecurrenceOption,
+  AgreementRelatedDraftResult,
+  AgreementRevisionInput,
   AgreementTemplate,
   AgreementTemplateExport,
   AgreementTemplateVersionRequest,
@@ -6941,6 +6946,75 @@ export const getEstimateBillingAllocations = async (id: string, options?: Reques
     method: 'GET'
 
 
+  }
+);}
+
+
+
+export const getPrepareAgreementDraftUrl = (draftId: string,) => {
+
+
+
+
+  return `/api/v1/agreement-drafts/${draftId}/prepare`
+}
+
+export const prepareAgreementDraft = async (draftId: string,
+    agreementPreparationInput: AgreementPreparationInput, options?: RequestInit): Promise<AgreementPreparationResult> => {
+
+  return customFetch<AgreementPreparationResult>(getPrepareAgreementDraftUrl(draftId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      agreementPreparationInput,)
+  }
+);}
+
+
+
+export const getCreateAgreementRevisionUrl = (estimateId: string,) => {
+
+
+
+
+  return `/api/v1/estimates/${estimateId}/agreement-revision`
+}
+
+export const createAgreementRevision = async (estimateId: string,
+    agreementRevisionInput: AgreementRevisionInput, options?: RequestInit): Promise<AgreementRelatedDraftResult> => {
+
+  return customFetch<AgreementRelatedDraftResult>(getCreateAgreementRevisionUrl(estimateId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      agreementRevisionInput,)
+  }
+);}
+
+
+
+export const getCreateAgreementChangeOrderUrl = (estimateId: string,) => {
+
+
+
+
+  return `/api/v1/estimates/${estimateId}/agreement-change-order`
+}
+
+export const createAgreementChangeOrder = async (estimateId: string,
+    agreementChangeOrderInput: AgreementChangeOrderInput, options?: RequestInit): Promise<AgreementRelatedDraftResult> => {
+
+  return customFetch<AgreementRelatedDraftResult>(getCreateAgreementChangeOrderUrl(estimateId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      agreementChangeOrderInput,)
   }
 );}
 

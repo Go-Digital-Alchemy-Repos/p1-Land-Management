@@ -1,3 +1,6 @@
+import { prepareComposedEstimate } from "./composed-estimate-preparation.service";
+import { createComposedRevision } from "./composed-estimate-revision";
+import { createComposedChangeOrder } from "./composed-estimate-change-order";
 import { Router } from "express";
 import { z } from "zod";
 import { actor } from "./access";
@@ -174,5 +177,39 @@ agreementCompositionApi.post(
         req.body,
       ),
     );
+  },
+);
+
+agreementCompositionApi.post(
+  "/agreement-drafts/:id/prepare",
+  async (req, res) => {
+    const result = await prepareComposedEstimate(
+      await actor(req),
+      z.string().uuid().parse(req.params.id),
+      req.body,
+    );
+    res.status(result.created ? 201 : 200).json(result);
+  },
+);
+agreementCompositionApi.post(
+  "/estimates/:id/agreement-revision",
+  async (req, res) => {
+    const result = await createComposedRevision(
+      await actor(req),
+      z.string().uuid().parse(req.params.id),
+      req.body,
+    );
+    res.status(result.created ? 201 : 200).json(result);
+  },
+);
+agreementCompositionApi.post(
+  "/estimates/:id/agreement-change-order",
+  async (req, res) => {
+    const result = await createComposedChangeOrder(
+      await actor(req),
+      z.string().uuid().parse(req.params.id),
+      req.body,
+    );
+    res.status(result.created ? 201 : 200).json(result);
   },
 );

@@ -33,4 +33,13 @@ export interface AgreementDraft {
   created_by: string;
   preview: AgreementDraftPreview;
   pricing_plan?: AgreementDraftPricingPlan | null;
+  /** @nullable */
+  revises_estimate_id?: string | null;
+  /** @nullable */
+  change_order_estimate_id?: string | null;
+  /**
+     * @minimum 1
+     * @nullable
+     */
+  revises_estimate_revision?: number | null;
 }

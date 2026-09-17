@@ -1,3 +1,4 @@
+import AgreementPreparation from "./AgreementPreparation";
 import { useEffect, useRef, useState } from "react";
 import {
   updateAgreementDraft,
@@ -38,6 +39,7 @@ export default function AgreementDraftEditor({
   const [baseline] = useState(() => JSON.stringify(value));
   const [exporting, setExporting] = useState(false);
   const [pricing, setPricing] = useState(false);
+  const [preparing, setPreparing] = useState(false);
   const [switching, setSwitching] = useState(false);
   const [context, setContext] = useState<AgreementDraftContext | null>(null),
     [contextReady, setContextReady] = useState(false);
@@ -72,6 +74,14 @@ export default function AgreementDraftEditor({
       if (alive.current) setBusy(false);
     }
   }
+  if (preparing)
+    return (
+      <AgreementPreparation
+        row={row}
+        changed={changed}
+        close={() => setPreparing(false)}
+      />
+    );
   if (pricing)
     return (
       <AgreementPricingReview
@@ -308,6 +318,32 @@ export default function AgreementDraftEditor({
         >
           Review pricing allocations
         </button>
+      )}
+      {editable && (
+        <button
+          disabled={
+            busy ||
+            dirty ||
+            Boolean(context) ||
+            switching ||
+            !row.pricing_plan ||
+            row.pricing_plan.sourceVersion !== row.version ||
+            !row.pricing_plan.review.pricingValid ||
+            !row.client_id ||
+            !row.property_id
+          }
+          onClick={() => setPreparing(true)}
+        >
+          Prepare proposal
+        </button>
+      )}
+      {row.status === "prepared" && row.estimate_id && (
+        <p>
+          Proposal prepared.{" "}
+          <a href={`/sales#estimate-${row.estimate_id}`}>
+            Open proposal in Sales
+          </a>
+        </p>
       )}
       <AgreementDraftPreview row={row} dirty={dirty} />
     </section>
