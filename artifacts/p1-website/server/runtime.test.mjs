@@ -91,6 +91,15 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
     assert.equal(setup.headers.location, '/admin/setup?utm_source=owner-invite');
     assert.equal(setup.headers['x-robots-tag'], 'noindex, nofollow');
   });
+  await t.test('snow service redirects permanently and preserves inquiry context', async () => {
+    const old = await request(port, '/commercial-snow-ice-management?utm_source=winter');
+    assert.equal(old.status, 301);
+    assert.equal(old.headers.location, '/services/commercial-snow-ice-management?utm_source=winter');
+    const current = await request(port, '/services/commercial-snow-ice-management');
+    assert.equal(current.status, 200);
+    assert(current.body.includes('Get a Free Site Assessment'));
+  });
+
   await t.test('retired testimonials page permanently redirects to Contact', async () => {
     const response = await request(port, '/testimonials?utm_source=qa');
     assert.equal(response.status, 301);

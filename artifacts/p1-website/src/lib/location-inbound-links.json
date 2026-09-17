@@ -1,0 +1,326 @@
+{
+  "/service-areas/greenville-sc": [
+    {
+      "href": "/service-areas/greer-sc",
+      "label": "Greer, SC",
+      "description": "Explore grounds care and land services for Greer properties."
+    },
+    {
+      "href": "/service-areas/simpsonville-sc",
+      "label": "Simpsonville, SC",
+      "description": "Explore grounds care and land services for Simpsonville properties."
+    },
+    {
+      "href": "/service-areas/easley-sc",
+      "label": "Easley, SC",
+      "description": "Explore grounds care and land services for Easley properties."
+    }
+  ],
+  "/service-areas/spartanburg-sc": [
+    {
+      "href": "/service-areas/greer-sc",
+      "label": "Greer, SC",
+      "description": "Explore grounds care and land services for Greer properties."
+    },
+    {
+      "href": "/service-areas/duncan-sc",
+      "label": "Duncan, SC",
+      "description": "Explore grounds care and land services for Duncan properties."
+    },
+    {
+      "href": "/service-areas/inman-sc",
+      "label": "Inman, SC",
+      "description": "Explore grounds care and land services for Inman properties."
+    },
+    {
+      "href": "/service-areas/boiling-springs-sc",
+      "label": "Boiling Springs, SC",
+      "description": "Explore grounds care and land services for Boiling Springs properties."
+    },
+    {
+      "href": "/service-areas/gaffney-sc",
+      "label": "Gaffney, SC",
+      "description": "Explore grounds care and land services for Gaffney properties."
+    }
+  ],
+  "/service-areas/anderson-sc": [
+    {
+      "href": "/service-areas/easley-sc",
+      "label": "Easley, SC",
+      "description": "Explore grounds care and land services for Easley properties."
+    }
+  ],
+  "/service-areas/charlotte-north-carolina": [
+    {
+      "href": "/service-areas/huntersville-nc",
+      "label": "Huntersville, NC",
+      "description": "Explore grounds care and land services for Huntersville properties."
+    },
+    {
+      "href": "/service-areas/matthews-nc",
+      "label": "Matthews, NC",
+      "description": "Explore grounds care and land services for Matthews properties."
+    },
+    {
+      "href": "/service-areas/indian-land-sc",
+      "label": "Indian Land, SC",
+      "description": "Explore grounds care and land services for Indian Land properties."
+    },
+    {
+      "href": "/service-areas/indian-trail-nc",
+      "label": "Indian Trail, NC",
+      "description": "Explore grounds care and land services for Indian Trail properties."
+    }
+  ],
+  "/service-areas/concord-nc": [
+    {
+      "href": "/service-areas/kannapolis-nc",
+      "label": "Kannapolis, NC",
+      "description": "Explore grounds care and land services for Kannapolis properties."
+    }
+  ],
+  "/service-areas/mooresville-lake-norman-nc": [
+    {
+      "href": "/service-areas/huntersville-nc",
+      "label": "Huntersville, NC",
+      "description": "Explore grounds care and land services for Huntersville properties."
+    },
+    {
+      "href": "/service-areas/cornelius-nc",
+      "label": "Cornelius, NC",
+      "description": "Explore grounds care and land services for Cornelius properties."
+    }
+  ],
+  "/service-areas/union-county-nc": [
+    {
+      "href": "/service-areas/waxhaw-nc",
+      "label": "Waxhaw, NC",
+      "description": "Explore grounds care and land services for Waxhaw properties."
+    },
+    {
+      "href": "/service-areas/matthews-nc",
+      "label": "Matthews, NC",
+      "description": "Explore grounds care and land services for Matthews properties."
+    },
+    {
+      "href": "/service-areas/indian-trail-nc",
+      "label": "Indian Trail, NC",
+      "description": "Explore grounds care and land services for Indian Trail properties."
+    },
+    {
+      "href": "/service-areas/monroe-nc",
+      "label": "Monroe, NC",
+      "description": "Explore grounds care and land services for Monroe properties."
+    }
+  ],
+  "/service-areas/york-county-sc": [
+    {
+      "href": "/service-areas/fort-mill-sc",
+      "label": "commercial landscaping in Fort Mill",
+      "description": "Explore grounds care and land services for Fort Mill properties."
+    },
+    {
+      "href": "/service-areas/rock-hill-sc",
+      "label": "Rock Hill, SC",
+      "description": "Explore grounds care and land services for Rock Hill properties."
+    }
+  ],
+  "/service-areas/lancaster-county-sc": [
+    {
+      "href": "/service-areas/indian-land-sc",
+      "label": "Indian Land, SC",
+      "description": "Explore grounds care and land services for Indian Land properties."
+    }
+  ],
+  "/service-areas/gastonia-nc": [
+    {
+      "href": "/service-areas/belmont-nc",
+      "label": "Belmont, NC",
+      "description": "Explore grounds care and land services for Belmont properties."
+    },
+    {
+      "href": "/service-areas/mount-holly-nc",
+      "label": "Mount Holly, NC",
+      "description": "Explore grounds care and land services for Mount Holly properties."
+    }
+  ],
+  "/service-areas/matthews-nc": [
+    {
+      "href": "/service-areas/indian-trail-nc",
+      "label": "Indian Trail, NC",
+      "description": "Explore grounds care and land services for Indian Trail properties."
+    }
+  ],
+  "/services/commercial-landscaping": [
+    {
+      "href": "/service-areas/greer-sc",
+      "label": "commercial landscaping in Greer",
+      "description": "Explore grounds care and land services for Greer properties."
+    },
+    {
+      "href": "/service-areas/simpsonville-sc",
+      "label": "commercial landscaping in Simpsonville",
+      "description": "Explore grounds care and land services for Simpsonville properties."
+    },
+    {
+      "href": "/service-areas/huntersville-nc",
+      "label": "commercial landscaping in Huntersville",
+      "description": "Explore grounds care and land services for Huntersville properties."
+    },
+    {
+      "href": "/service-areas/fort-mill-sc",
+      "label": "commercial landscaping in Fort Mill",
+      "description": "Explore grounds care and land services for Fort Mill properties."
+    },
+    {
+      "href": "/service-areas/rock-hill-sc",
+      "label": "commercial landscaping in Rock Hill",
+      "description": "Explore grounds care and land services for Rock Hill properties."
+    },
+    {
+      "href": "/service-areas/indian-land-sc",
+      "label": "commercial landscaping in Indian Land",
+      "description": "Explore grounds care and land services for Indian Land properties."
+    }
+  ],
+  "/services/land-clearing": [
+    {
+      "href": "/service-areas/gaffney-sc",
+      "label": "land clearing in Gaffney",
+      "description": "Explore grounds care and land services for Gaffney properties."
+    },
+    {
+      "href": "/service-areas/greer-sc",
+      "label": "land clearing in Greer",
+      "description": "Explore grounds care and land services for Greer properties."
+    },
+    {
+      "href": "/service-areas/kannapolis-nc",
+      "label": "land clearing in Kannapolis",
+      "description": "Explore grounds care and land services for Kannapolis properties."
+    },
+    {
+      "href": "/service-areas/indian-trail-nc",
+      "label": "land clearing in Indian Trail",
+      "description": "Explore grounds care and land services for Indian Trail properties."
+    },
+    {
+      "href": "/service-areas/monroe-nc",
+      "label": "land clearing in Monroe",
+      "description": "Explore grounds care and land services for Monroe properties."
+    },
+    {
+      "href": "/service-areas/rock-hill-sc",
+      "label": "land clearing in Rock Hill",
+      "description": "Explore grounds care and land services for Rock Hill properties."
+    }
+  ],
+  "/services/grading-site-preparation": [
+    {
+      "href": "/service-areas/greer-sc",
+      "label": "site prep in Greer",
+      "description": "Explore grounds care and land services for Greer properties."
+    },
+    {
+      "href": "/service-areas/easley-sc",
+      "label": "site prep in Easley",
+      "description": "Explore grounds care and land services for Easley properties."
+    },
+    {
+      "href": "/service-areas/huntersville-nc",
+      "label": "site prep in Huntersville",
+      "description": "Explore grounds care and land services for Huntersville properties."
+    },
+    {
+      "href": "/service-areas/fort-mill-sc",
+      "label": "site prep in Fort Mill",
+      "description": "Explore grounds care and land services for Fort Mill properties."
+    },
+    {
+      "href": "/service-areas/indian-land-sc",
+      "label": "site prep in Indian Land",
+      "description": "Explore grounds care and land services for Indian Land properties."
+    },
+    {
+      "href": "/service-areas/indian-trail-nc",
+      "label": "site prep in Indian Trail",
+      "description": "Explore grounds care and land services for Indian Trail properties."
+    }
+  ],
+  "/services/industrial-agricultural": [
+    {
+      "href": "/service-areas/gaffney-sc",
+      "label": "Gaffney, SC",
+      "description": "Explore grounds care and land services for Gaffney properties."
+    },
+    {
+      "href": "/service-areas/inman-sc",
+      "label": "Inman, SC",
+      "description": "Explore grounds care and land services for Inman properties."
+    },
+    {
+      "href": "/service-areas/waxhaw-nc",
+      "label": "Waxhaw, NC",
+      "description": "Explore grounds care and land services for Waxhaw properties."
+    },
+    {
+      "href": "/service-areas/monroe-nc",
+      "label": "Monroe, NC",
+      "description": "Explore grounds care and land services for Monroe properties."
+    }
+  ],
+  "/services/drainage": [
+    {
+      "href": "/service-areas/duncan-sc",
+      "label": "Duncan, SC",
+      "description": "Explore grounds care and land services for Duncan properties."
+    },
+    {
+      "href": "/service-areas/boiling-springs-sc",
+      "label": "Boiling Springs, SC",
+      "description": "Explore grounds care and land services for Boiling Springs properties."
+    },
+    {
+      "href": "/service-areas/matthews-nc",
+      "label": "Matthews, NC",
+      "description": "Explore grounds care and land services for Matthews properties."
+    },
+    {
+      "href": "/service-areas/rock-hill-sc",
+      "label": "Rock Hill, SC",
+      "description": "Explore grounds care and land services for Rock Hill properties."
+    },
+    {
+      "href": "/service-areas/belmont-nc",
+      "label": "Belmont, NC",
+      "description": "Explore grounds care and land services for Belmont properties."
+    },
+    {
+      "href": "/service-areas/mount-holly-nc",
+      "label": "Mount Holly, NC",
+      "description": "Explore grounds care and land services for Mount Holly properties."
+    }
+  ],
+  "/services/pond-waterway-management": [
+    {
+      "href": "/service-areas/inman-sc",
+      "label": "Inman, SC",
+      "description": "Explore grounds care and land services for Inman properties."
+    },
+    {
+      "href": "/service-areas/huntersville-nc",
+      "label": "Huntersville, NC",
+      "description": "Explore grounds care and land services for Huntersville properties."
+    },
+    {
+      "href": "/service-areas/cornelius-nc",
+      "label": "Cornelius, NC",
+      "description": "Explore grounds care and land services for Cornelius properties."
+    },
+    {
+      "href": "/service-areas/belmont-nc",
+      "label": "Belmont, NC",
+      "description": "Explore grounds care and land services for Belmont properties."
+    }
+  ]
+}

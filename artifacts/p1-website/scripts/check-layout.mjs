@@ -28,7 +28,10 @@ for (const page of pages(pageRoot)) {
     assert.match(source, /site-shell/, "Homepage must define the shared 1,240px baseline");
     continue;
   }
-  assert.match(source, /site-shell/, `${relative} must use the shared public-page frame`);
+  const frameSource = source.includes('import { LocationPage } from "@/components/content/LocationPage"')
+    ? readFileSync(join(root, "src/components/content/LocationPage.tsx"), "utf8")
+    : source;
+  assert.match(frameSource, /site-shell/, `${relative} must use the shared public-page frame directly or through LocationPage`);
 }
 
 const hero = readFileSync(join(root, "src/components/layout/PageHero.tsx"), "utf8");

@@ -1,3 +1,4 @@
+import locationLinks from "@/lib/location-inbound-links.json";
 import { ArrowRight } from "lucide-react";
 import { Link, useLocation } from "wouter";
 
@@ -23,7 +24,7 @@ const SERVICES = {
   trees: { href: "/services/tree-services", label: "Tree services", description: "Manage trees, overgrowth, and selective clearing across large properties." },
   ponds: { href: "/services/pond-waterway-management", label: "Pond and waterway management", description: "Maintain pond edges, waterways, shoreline areas, and visible water flow." },
   reconstruction: { href: "/services/property-reconstruction", label: "Property reconstruction", description: "Coordinate corrective earthwork, drainage, access, and finish restoration." },
-  snow: { href: "/commercial-snow-ice-management", label: "Commercial snow and ice management", description: "Seasonal planning and response for qualifying commercial properties." },
+  snow: { href: "/services/commercial-snow-ice-management", label: "Commercial snow and ice management", description: "Seasonal planning and response for qualifying commercial properties." },
   secureFacilities: { href: "/commercial/data-centers-secure-facilities", label: "Data center and secure facility grounds", description: "Controlled exterior maintenance for large, access-sensitive campuses." },
 } satisfies Record<string, RelatedLink>;
 
@@ -64,8 +65,8 @@ const relatedByPath: Record<string, RelatedLinksConfig> = {
   "/blog/signs-property-drainage-problem": related("Continue planning drainage corrections", "Review the services that commonly connect runoff, grades, ponds, and finish restoration.", [SERVICES.drainage, SERVICES.grading, SERVICES.ponds, AREAS.all]),
   "/blog/preparing-land-agricultural-use-carolinas": related("Continue planning working land", "Connect the preparation sequence to the services and markets that fit your acreage.", [SERVICES.industrial, SERVICES.clearing, SERVICES.grading, AREAS.union]),
 
-  "/commercial": related("Commercial property resources", "Explore the specialty services and regional coverage available for active commercial sites.", [SERVICES.commercial, SERVICES.snow, SERVICES.secureFacilities, AREAS.charlotte]),
-  "/commercial-snow-ice-management": related("Build a year-round exterior plan", "Connect winter response planning with recurring grounds care and large-campus services.", [SERVICES.commercial, SERVICES.secureFacilities, AREAS.charlotte, AREAS.york]),
+  "/commercial": related("Commercial property resources", "Explore the specialty services and regional coverage available for active commercial sites.", [{ ...SERVICES.commercial, label: "recurring grounds care" }, SERVICES.snow, SERVICES.secureFacilities, AREAS.charlotte]),
+  "/services/commercial-snow-ice-management": related("Build a year-round exterior plan", "Connect winter response planning with recurring grounds care and large-campus services.", [SERVICES.commercial, SERVICES.secureFacilities, AREAS.charlotte, AREAS.york]),
   "/commercial/data-centers-secure-facilities": related("Connected secure-facility services", "Review the exterior capabilities and markets that support access-sensitive campuses.", [SERVICES.commercial, SERVICES.drainage, SERVICES.snow, AREAS.charlotte]),
 
   "/services": related("Find service coverage", "P1 delivers these connected capabilities across two primary Carolinas markets.", [AREAS.upstate, AREAS.charlotte, AREAS.all]),
@@ -95,7 +96,10 @@ const relatedByPath: Record<string, RelatedLinksConfig> = {
 
 export function ContextualLinks() {
   const [path] = useLocation();
-  const config = relatedByPath[path.replace(/\/$/, "") || "/"];
+  const route = path.replace(/\/$/, "") || "/";
+  const extra = (locationLinks as Record<string, RelatedLink[]>)[route] || [];
+  const base = relatedByPath[route];
+  const config = base ? { ...base, links: [...base.links, ...extra] } : extra.length ? related("Nearby property services", "Explore connected local coverage.", extra) : undefined;
 
   if (!config) return null;
 

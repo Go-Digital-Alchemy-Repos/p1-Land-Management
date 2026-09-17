@@ -41,7 +41,7 @@ export default function About() {
               P1 Land & Property Management was founded on a simple idea: that commercial, industrial, agricultural, municipal, and institutional property operators in the Carolinas deserve a single, capable contractor who can manage the full life of their property — from rough clearing to fine turf, from drainage repair to complete reconstruction.
             </p>
             <p>
-              We operate across two of the region's fastest-growing markets: the Greenville-Spartanburg corridor in Upstate South Carolina, and the greater Charlotte, North Carolina area. Our services span land preparation and ongoing property maintenance.
+              We operate across two of the region's fastest-growing markets: the Greenville-Spartanburg corridor in Upstate South Carolina, and the greater Charlotte, North Carolina area. Our services span land preparation and ongoing property maintenance, backed by nearly 30 years of experience.
             </p>
             <p>
               Our services are intended for commercial property developers and managers, farm operators, industrial site managers, municipalities, and institutions that need their land working for them, not against them.
@@ -93,7 +93,7 @@ export default function About() {
               Where We Work
             </h2>
             <p className="text-lg text-secondary/80 leading-relaxed">
-              P1 serves commercial, industrial, agricultural, municipal, and institutional properties throughout Upstate South Carolina — including Greenville, Spartanburg, Anderson, Gaffney, Greer, Simpsonville, and surrounding counties — and the greater Charlotte, North Carolina region, including Concord, Mooresville, Lake Norman, Gastonia, Huntersville, and the Mecklenburg County area.
+              P1 serves commercial, industrial, agricultural, municipal, and institutional properties throughout Upstate South Carolina — including Greenville, Spartanburg, Anderson, Gaffney, Greer, Simpsonville, and surrounding counties — and the greater Charlotte, North Carolina region, including Concord, Mooresville, Lake Norman, Gastonia, Huntersville, Matthews, Waxhaw, Kannapolis, Indian Trail, Monroe, Belmont, Mount Holly, Cornelius, and the Mecklenburg County area. Our South Carolina border coverage includes Fort Mill, Rock Hill, and Indian Land, with large-acreage service throughout York County, Lancaster County, and Union County.
             </p>
           </div>
           <div className="space-y-6">

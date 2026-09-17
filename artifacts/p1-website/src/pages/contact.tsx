@@ -89,8 +89,8 @@ export default function Contact() {
   return (
     <Layout>
       <SEO 
-        title="Get a Free Estimate | P1 Land & Property Management"
-        description="Request a free estimate for clearing, grading, drainage, turf, pond, or property maintenance work in Upstate SC and Charlotte. Call (704) 221-8928."
+        title="Get a Free Site Assessment | P1 Land & Property Management"
+        description="Request a free site assessment for clearing, grading, drainage, turf, pond, or property maintenance work in Upstate SC and Charlotte. Call (704) 221-8928."
         jsonLd={[
           localBusinessSchema(), faqSchema(FAQS),
           breadcrumbSchema([
@@ -119,7 +119,7 @@ export default function Contact() {
           
           {/* FORM COLUMN */}
           <div className="lg:col-span-7 bg-card border border-border p-8 md:p-12 rounded-xl shadow-lg">
-            <h2 className="text-3xl font-serif font-bold text-secondary mb-8">Request Your Free Estimate</h2>
+            <h2 className="text-3xl font-serif font-bold text-secondary mb-8">Get a Free Site Assessment</h2>
             
             {submitted ? (
               <div className="py-16 text-center space-y-6 animate-in fade-in zoom-in duration-500">
@@ -223,7 +223,7 @@ export default function Contact() {
                 <p className="text-sm text-secondary/80">We use these details to respond to your project inquiry. Please avoid including sensitive information.</p>
                 {error && <p role="alert" className="text-destructive font-medium">{error}</p>}
                 <Button disabled={pending} type="submit" size="lg" className="w-full text-lg h-14 font-bold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg">
-                  {pending ? "Sending request…" : "Request My Free Estimate"}
+                  {pending ? "Sending request…" : "Get a Free Site Assessment"}
                 </Button>
               </form>
             )}

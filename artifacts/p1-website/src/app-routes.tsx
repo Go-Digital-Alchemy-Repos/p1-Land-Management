@@ -72,14 +72,53 @@ export function createSiteRoutes(page: ResolvePage): ComponentType {
     BlogPreparingLand = page(
       "./pages/blog/preparing-land-agricultural-use-carolinas.tsx",
     );
+  const Location0 = page("./pages/service-areas/greer-sc.tsx");
+  const Location1 = page("./pages/service-areas/simpsonville-sc.tsx");
+  const Location2 = page("./pages/service-areas/easley-sc.tsx");
+  const Location3 = page("./pages/service-areas/gaffney-sc.tsx");
+  const Location4 = page("./pages/service-areas/duncan-sc.tsx");
+  const Location5 = page("./pages/service-areas/inman-sc.tsx");
+  const Location6 = page("./pages/service-areas/boiling-springs-sc.tsx");
+  const Location7 = page("./pages/service-areas/huntersville-nc.tsx");
+  const Location8 = page("./pages/service-areas/matthews-nc.tsx");
+  const Location9 = page("./pages/service-areas/kannapolis-nc.tsx");
+  const Location10 = page("./pages/service-areas/waxhaw-nc.tsx");
+  const Location11 = page("./pages/service-areas/fort-mill-sc.tsx");
+  const Location12 = page("./pages/service-areas/rock-hill-sc.tsx");
+  const Location13 = page("./pages/service-areas/indian-land-sc.tsx");
+  const Location14 = page("./pages/service-areas/indian-trail-nc.tsx");
+  const Location15 = page("./pages/service-areas/monroe-nc.tsx");
+  const Location16 = page("./pages/service-areas/belmont-nc.tsx");
+  const Location17 = page("./pages/service-areas/mount-holly-nc.tsx");
+  const Location18 = page("./pages/service-areas/cornelius-nc.tsx");
   return function SiteRoutes() {
     return (
       <Switch>
+        <Route path="/service-areas/greer-sc" component={Location0} />
+        <Route path="/service-areas/simpsonville-sc" component={Location1} />
+        <Route path="/service-areas/easley-sc" component={Location2} />
+        <Route path="/service-areas/gaffney-sc" component={Location3} />
+        <Route path="/service-areas/duncan-sc" component={Location4} />
+        <Route path="/service-areas/inman-sc" component={Location5} />
+        <Route path="/service-areas/boiling-springs-sc" component={Location6} />
+        <Route path="/service-areas/huntersville-nc" component={Location7} />
+        <Route path="/service-areas/matthews-nc" component={Location8} />
+        <Route path="/service-areas/kannapolis-nc" component={Location9} />
+        <Route path="/service-areas/waxhaw-nc" component={Location10} />
+        <Route path="/service-areas/fort-mill-sc" component={Location11} />
+        <Route path="/service-areas/rock-hill-sc" component={Location12} />
+        <Route path="/service-areas/indian-land-sc" component={Location13} />
+        <Route path="/service-areas/indian-trail-nc" component={Location14} />
+        <Route path="/service-areas/monroe-nc" component={Location15} />
+        <Route path="/service-areas/belmont-nc" component={Location16} />
+        <Route path="/service-areas/mount-holly-nc" component={Location17} />
+        <Route path="/service-areas/cornelius-nc" component={Location18} />
+
         <Route path="/" component={Home} />
         <Route path="/about" component={About} />
         <Route path="/commercial" component={Commercial} />
         <Route
-          path="/commercial-snow-ice-management"
+          path="/services/commercial-snow-ice-management"
           component={CommercialSnowIceManagement}
         />
         <Route

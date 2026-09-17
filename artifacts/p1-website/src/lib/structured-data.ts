@@ -53,6 +53,21 @@ export function localBusinessSchema(): JsonLd {
     },
     areaServed: areaServed(),
     openingHoursSpecification: openingHoursSpecification(),
+    hasOfferCatalog: {
+      "@type": "OfferCatalog", name: "Land and property services",
+      itemListElement: [
+        ["Commercial landscaping and grounds management", "commercial-landscaping"],
+        ["Land clearing and forestry mulching", "land-clearing"],
+        ["Fine grading and site preparation", "grading-site-preparation"],
+        ["Drainage solutions", "drainage"],
+        ["Turf installation and seeding", "turf-installation-seeding"],
+        ["Tree services", "tree-services"],
+        ["Pond and waterway management", "pond-waterway-management"],
+        ["Industrial and agricultural land services", "industrial-agricultural"],
+        ["Property reconstruction", "property-reconstruction"],
+        ["Commercial snow and ice management", "commercial-snow-ice-management"],
+      ].map(([name, slug]) => ({ "@type": "Offer", itemOffered: { "@type": "Service", name, url: `${SITE_URL}/services/${slug}` } })),
+    },
   };
 }
 

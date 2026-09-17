@@ -1,6 +1,101 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://www.p1landmanagement.com/service-areas/greer-sc</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.p1landmanagement.com/service-areas/simpsonville-sc</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.p1landmanagement.com/service-areas/easley-sc</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.p1landmanagement.com/service-areas/gaffney-sc</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.p1landmanagement.com/service-areas/duncan-sc</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.p1landmanagement.com/service-areas/inman-sc</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.p1landmanagement.com/service-areas/boiling-springs-sc</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.p1landmanagement.com/service-areas/huntersville-nc</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.p1landmanagement.com/service-areas/matthews-nc</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.p1landmanagement.com/service-areas/kannapolis-nc</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.p1landmanagement.com/service-areas/waxhaw-nc</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.p1landmanagement.com/service-areas/fort-mill-sc</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.p1landmanagement.com/service-areas/rock-hill-sc</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.p1landmanagement.com/service-areas/indian-land-sc</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.p1landmanagement.com/service-areas/indian-trail-nc</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.p1landmanagement.com/service-areas/monroe-nc</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.p1landmanagement.com/service-areas/belmont-nc</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.p1landmanagement.com/service-areas/mount-holly-nc</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.p1landmanagement.com/service-areas/cornelius-nc</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://www.p1landmanagement.com/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
@@ -16,7 +111,7 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.p1landmanagement.com/commercial-snow-ice-management</loc>
+    <loc>https://www.p1landmanagement.com/services/commercial-snow-ice-management</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

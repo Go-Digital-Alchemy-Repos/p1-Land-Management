@@ -34,7 +34,7 @@ export function FinalCTA() {
         <div className="flex flex-wrap items-center justify-center gap-4">
           <Button asChild size="lg" className="group h-12 rounded-[3px] border-0 bg-white px-8 font-sans text-[15px] font-bold text-secondary hover:bg-white/90" style={{ boxShadow: "0 18px 40px -16px hsl(0 0% 0% / 0.5)" }}>
             <Link href="/contact">
-              Get a Free Quote
+              Get a Free Site Assessment
               <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </Link>
           </Button>

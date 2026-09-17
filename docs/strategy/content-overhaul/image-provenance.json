@@ -1,0 +1,118 @@
+{
+  "promptTemplate": "Generate one distinct wide landscape website hero, photorealistic natural editorial style, 1536x1024. Intended service-area page: {slug}. Illustrative generic Carolinas landscape: {scene}. Realistic Piedmont vegetation, professional commercial grounds management, warm natural daylight, coherent engineering and realistic scale. Elevated three-quarter composition, subject toward right and quiet left for dark overlay, visibly different composition appropriate to subject. No houses, logos, text, watermarks or identifiable real properties. Do not imply this is an actual P1 project.",
+  "images": [
+    {
+      "slug": "greer-sc",
+      "scene": "Carolinas logistics campus with modern warehouse, broad mown turf and maintained drainage swale",
+      "mode": "built-in image_gen"
+    },
+    {
+      "slug": "simpsonville-sc",
+      "scene": "a landscaped retail and medical-office campus with broad turf, ornamental beds and a commercial access road",
+      "generatedPath": "/Users/mikedickerman/.codex/generated_images/01a0ad2a-827e-7811-a9b0-34f63720eb72/exec-4ebae0d4-148e-4fce-9139-1e61a7d2c1d0.png",
+      "mode": "built-in image_gen"
+    },
+    {
+      "slug": "easley-sc",
+      "scene": "a manufacturing campus on rolling ground with finished grading, grassed slopes and stormwater channels",
+      "generatedPath": "/Users/mikedickerman/.codex/generated_images/01a0ad2a-827e-7811-a9b0-34f63720eb72/exec-3ae90ff6-b95e-4c2e-8c42-e3cc8ffcbe66.png",
+      "mode": "built-in image_gen"
+    },
+    {
+      "slug": "gaffney-sc",
+      "scene": "a large distribution building beyond working pasture and a managed tree line",
+      "generatedPath": "/Users/mikedickerman/.codex/generated_images/01a0ad2a-827e-7811-a9b0-34f63720eb72/exec-ef94f6da-3303-4ca5-a88e-908ffabccc68.png",
+      "mode": "built-in image_gen"
+    },
+    {
+      "slug": "duncan-sc",
+      "scene": "a distribution campus with a broad grassed drainage swale and maintained truck-access verges",
+      "generatedPath": "/Users/mikedickerman/.codex/generated_images/01a0ad2a-827e-7811-a9b0-34f63720eb72/exec-91031e63-43ff-4ebf-9029-9de10ef53606.png",
+      "mode": "built-in image_gen"
+    },
+    {
+      "slug": "inman-sc",
+      "scene": "working agricultural pasture with maintained fence lines, an access track and a farm pond",
+      "generatedPath": "/Users/mikedickerman/.codex/generated_images/01a0ad2a-827e-7811-a9b0-34f63720eb72/exec-42ca4655-f1db-4a79-b47f-4491042c7738.png",
+      "mode": "built-in image_gen"
+    },
+    {
+      "slug": "boiling-springs-sc",
+      "scene": "a school campus with wide maintained lawns, mature trees and pedestrian paths",
+      "generatedPath": "/Users/mikedickerman/.codex/generated_images/01a0ad2a-827e-7811-a9b0-34f63720eb72/exec-f604f67f-9c23-46c3-b48e-cfbcf4a7fa1c.png",
+      "mode": "built-in image_gen"
+    },
+    {
+      "slug": "huntersville-nc",
+      "scene": "a commercial lakeside property with stabilized grassy slopes, a pond and a modern office building",
+      "generatedPath": "/Users/mikedickerman/.codex/generated_images/01a0ad2a-827e-7811-a9b0-34f63720eb72/exec-39076ccf-1484-4dfd-a5c9-553db0426df9.png",
+      "mode": "built-in image_gen"
+    },
+    {
+      "slug": "matthews-nc",
+      "scene": "a medical office campus with meticulous grounds, shade trees, accessible walkways and drainage beds",
+      "generatedPath": "/Users/mikedickerman/.codex/generated_images/01a0ad2a-827e-7811-a9b0-34f63720eb72/exec-29578a5e-6a73-40eb-a0fb-af840c96d5fe.png",
+      "mode": "built-in image_gen"
+    },
+    {
+      "slug": "kannapolis-nc",
+      "scene": "a research and laboratory campus with modern brick buildings and broad institutional lawns",
+      "generatedPath": "/Users/mikedickerman/.codex/generated_images/01a0ad2a-827e-7811-a9b0-34f63720eb72/exec-0e0f6f8d-856b-4c6d-88d3-8a52b4905168.png",
+      "mode": "built-in image_gen"
+    },
+    {
+      "slug": "waxhaw-nc",
+      "scene": "an equestrian agricultural property with broad pastures, maintained paddock fences and a graded service track",
+      "generatedPath": "/Users/mikedickerman/.codex/generated_images/01a0ad2a-827e-7811-a9b0-34f63720eb72/exec-e15c66c5-e03d-4f90-94b3-ed1cb9fd4f6c.png",
+      "mode": "built-in image_gen"
+    },
+    {
+      "slug": "fort-mill-sc",
+      "scene": "a corporate office campus with terraced lawns and curved planted commercial entry",
+      "generatedPath": "/Users/mikedickerman/.codex/generated_images/01a0ad2a-827e-7811-a9b0-34f63720eb72/exec-ef7d5ac5-23bd-4277-a0f5-76f7ca8c32b2.png",
+      "mode": "built-in image_gen"
+    },
+    {
+      "slug": "rock-hill-sc",
+      "scene": "a municipal and institutional campus with broad turf, brick buildings and mature tree-lined walks",
+      "generatedPath": "/Users/mikedickerman/.codex/generated_images/01a0ad2a-827e-7811-a9b0-34f63720eb72/exec-0c34e422-1cee-4e5d-a904-4abb85be7de3.png",
+      "mode": "built-in image_gen"
+    },
+    {
+      "slug": "indian-land-sc",
+      "scene": "an office and medical campus on rolling Piedmont terrain with a maintained stormwater basin",
+      "generatedPath": "/Users/mikedickerman/.codex/generated_images/01a0ad2a-827e-7811-a9b0-34f63720eb72/exec-1ec07ed6-99be-4a3b-96fd-4aec5a33b5ca.png",
+      "mode": "built-in image_gen"
+    },
+    {
+      "slug": "indian-trail-nc",
+      "scene": "a light industrial business park with wide maintained verges and planted drainage channels",
+      "generatedPath": "/Users/mikedickerman/.codex/generated_images/01a0ad2a-827e-7811-a9b0-34f63720eb72/exec-2d91e647-0369-47e1-b079-4c646418cf44.png",
+      "mode": "built-in image_gen"
+    },
+    {
+      "slug": "monroe-nc",
+      "scene": "an aviation-adjacent industrial property with hangars in the distance and broad maintained grounds outside airside fencing",
+      "generatedPath": "/Users/mikedickerman/.codex/generated_images/01a0ad2a-827e-7811-a9b0-34f63720eb72/exec-75ed74a9-64e1-416a-b00a-cac893e1c149.png",
+      "mode": "built-in image_gen"
+    },
+    {
+      "slug": "belmont-nc",
+      "scene": "an institutional riverfront property with a distant brick campus and stabilized planted riverbank",
+      "generatedPath": "/Users/mikedickerman/.codex/generated_images/01a0ad2a-827e-7811-a9b0-34f63720eb72/exec-10d48615-2821-4ea6-a664-b5e5f25a5274.png",
+      "mode": "built-in image_gen"
+    },
+    {
+      "slug": "mount-holly-nc",
+      "scene": "a renovated brick textile mill commercial property with managed greenway lawns and a drainage corridor",
+      "generatedPath": "/Users/mikedickerman/.codex/generated_images/01a0ad2a-827e-7811-a9b0-34f63720eb72/exec-c8f89ce3-d38b-4d4a-beae-58e02947d088.png",
+      "mode": "built-in image_gen"
+    },
+    {
+      "slug": "cornelius-nc",
+      "scene": "a commercial marina setting with maintained shoreside turf, small office building and wooded lakeshore",
+      "generatedPath": "/Users/mikedickerman/.codex/generated_images/01a0ad2a-827e-7811-a9b0-34f63720eb72/exec-52d48910-b7f8-4eb4-9a5f-009b36660247.png",
+      "mode": "built-in image_gen"
+    }
+  ]
+}

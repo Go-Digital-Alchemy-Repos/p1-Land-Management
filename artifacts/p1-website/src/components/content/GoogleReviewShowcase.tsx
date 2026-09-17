@@ -58,7 +58,7 @@ export function GoogleReviewShowcase() {
     track.current?.scrollBy({ left: direction * 340, behavior: "smooth" });
   };
 
-  if (failed || (data && data.reviews.length === 0)) return null;
+  if (failed || !data || !Array.isArray(data.reviews) || data.reviews.length === 0 || !Number.isFinite(data.averageRating) || !data.totalReviewCount) return null;
 
   return (
     <section className="border-y border-border bg-white py-16" aria-labelledby="customer-reviews-heading">
