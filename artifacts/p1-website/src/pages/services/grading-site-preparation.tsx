@@ -76,7 +76,7 @@ export default function GradingSitePreparation() {
       <section className="py-24 bg-background">
         <div className="site-shell space-y-16">
           
-          <FeatureRow heading="Get Your Land Level — and Keep It That Way" image={levelImg} imageAlt="Motor grader leveling a large dirt site">
+          <FeatureRow heading="Get Your Land Level — and Keep It That Way" image={levelImg} imageAlt="Illustrative image of a compact track loader grading soil at a commercial construction site">
             <p>
               Poorly graded land can contribute to standing water, erosion, foundation pressure, turf problems and drainage issues. Whether you are preparing a construction site, reviewing drainage concerns or establishing grade for turf, discuss the approved plans, site conditions, equipment and delivery scope with P1 before work begins.
             </p>
