@@ -230,6 +230,39 @@
       }
     ]
   },
+  "equestrian-estate-hero.png": {
+    "sourceBytes": 3326306,
+    "sourceHash": "2d77a76b0d935e36fbc5e15ff7189b039443431b8bc32422d4be7e786b617701",
+    "width": 1536,
+    "height": 1024,
+    "default": "optimized/equestrian-estate-hero-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/equestrian-estate-hero-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 35336,
+        "quality": 78
+      },
+      {
+        "path": "optimized/equestrian-estate-hero-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 512,
+        "bytes": 87276,
+        "quality": 78
+      },
+      {
+        "path": "optimized/equestrian-estate-hero-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 853,
+        "bytes": 223362,
+        "quality": 78
+      }
+    ]
+  },
   "features/about-who.png": {
     "sourceBytes": 2064870,
     "sourceHash": "a785a80db6fea0b44ed8f07db2047f86fcbf56b3fe41de939bedbf4e1700878a",
@@ -589,6 +622,39 @@
         "width": 1280,
         "height": 896,
         "bytes": 238328,
+        "quality": 78
+      }
+    ]
+  },
+  "features/equestrian-farm-pastures.png": {
+    "sourceBytes": 3389100,
+    "sourceHash": "8deeb2e45b13979dee1749c05afeb126009e64f7b22ef1773099c29025da12f5",
+    "width": 1536,
+    "height": 1024,
+    "default": "optimized/features/equestrian-farm-pastures-1280.webp",
+    "variants": [
+      {
+        "path": "optimized/features/equestrian-farm-pastures-480.webp",
+        "format": "webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 35514,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/equestrian-farm-pastures-768.webp",
+        "format": "webp",
+        "width": 768,
+        "height": 512,
+        "bytes": 90214,
+        "quality": 78
+      },
+      {
+        "path": "optimized/features/equestrian-farm-pastures-1280.webp",
+        "format": "webp",
+        "width": 1280,
+        "height": 853,
+        "bytes": 231916,
         "quality": 78
       }
     ]

@@ -6,8 +6,8 @@ import { serviceSchema, breadcrumbSchema, faqSchema } from "@/lib/structured-dat
 import { FeatureRow } from "@/components/layout/FeatureRow";
 import { CheckCircle2 } from "lucide-react";
 import { Link } from "wouter";
-import heroImg from "@/assets/service-industrial.png";
-import maintenanceImg from "@/assets/features/industrial-maintenance.png";
+import heroImg from "@/assets/equestrian-estate-hero.png";
+import maintenanceImg from "@/assets/features/equestrian-farm-pastures.png";
 
 import { FaqAccordion } from "@/components/content/FaqAccordion";
 
@@ -39,6 +39,7 @@ export default function IndustrialAgricultural() {
     <Layout>
       <SEO 
         title="Industrial & Agricultural Land Maintenance | P1"
+        image={heroImg}
         description="Land maintenance for industrial sites, farms, and working acreage in Upstate SC and Charlotte, including clearing, grading, drainage, and turf."
         jsonLd={[
           serviceSchema({ name: "Industrial & Agricultural Land Management", description: "Heavy-duty land maintenance for industrial sites, farms, and rural acreage in Upstate SC and Charlotte NC. Land clearing, grading, drainage, turf, and more. Call (704) 221-8928.", path: "/services/industrial-agricultural" }),
@@ -65,14 +66,14 @@ export default function IndustrialAgricultural() {
         }
         subtitle="P1 Land & Property Management maintains industrial facilities, farms, rural acreage, and working land at the scale and standard these properties demand. If your land is making money — or supposed to be — we keep it in condition."
         image={heroImg}
-        imageAlt="Tractor on agricultural farm land"
+        imageAlt="Expansive rural equestrian estate with fenced pastures, a pond, and a winding gravel lane"
       />
 
       {/* CONTENT SECTIONS */}
       <section className="py-24 bg-background">
         <div className="site-shell space-y-16">
           
-          <FeatureRow heading="Land That Works Needs Maintenance That Matches" image={maintenanceImg} imageAlt="Heavy equipment maintaining an industrial and agricultural property">
+          <FeatureRow heading="Land That Works Needs Maintenance That Matches" image={maintenanceImg} imageAlt="Horses grazing in broad fenced pastures beside a rural barn and farm access lane">
             <p>
               Industrial facilities, working farms, and rural landholdings have maintenance needs that go far beyond what a standard landscaping company can handle. Overgrown fence lines, failing drainage ditches, eroded slopes, silted ponds, and encroaching vegetation don't just look bad — they cost money, create liability, and reduce the productive capacity of your land.
             </p>

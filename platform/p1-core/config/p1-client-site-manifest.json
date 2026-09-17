@@ -6,7 +6,7 @@
     "displayName": "P1 Land & Property Management",
     "source": {
       "repository": "https://github.com/Go-Digital-Alchemy-Repos/p1-Land-Management.git",
-      "revision": "2a42492b7b4e90f1bf96166a837e75b14a9693da"
+      "revision": "96990684621722028809c97dd0578f9971b531d8"
     },
     "owners": [
       {
@@ -12774,21 +12774,21 @@
           },
           {
             "path": "seoImage",
-            "label": "Image: /opengraph.jpg",
+            "label": "Image: /assets/equestrian-estate-hero-1280-DQjfgIRy.webp",
             "type": "image",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "f1ff7yus",
-            "label": "Image: /assets/service-industrial-1280-DHwKA5iR.webp",
+            "path": "f1fcz82p",
+            "label": "Image: /assets/equestrian-estate-hero-1280-DQjfgIRy.webp",
             "type": "image",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "f1nd5fws",
-            "label": "Image description: Tractor on agricultural farm land",
+            "path": "fshbvhv",
+            "label": "Image description: Expansive rural equestrian estate with fenced pastures, a pond, and a winding gravel lane",
             "type": "imageAlt",
             "required": false,
             "maxLength": 2000
@@ -12941,15 +12941,15 @@
             "maxLength": 12000
           },
           {
-            "path": "fydujvh",
-            "label": "Image: /assets/industrial-maintenance-1280-Dj77cY2F.webp",
+            "path": "f15k5dtt",
+            "label": "Image: /assets/equestrian-farm-pastures-1280-D48niW4Q.webp",
             "type": "image",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "f1sekio9",
-            "label": "Image description: Heavy equipment maintaining an industrial and agricultural property",
+            "path": "f130pbpo",
+            "label": "Image description: Horses grazing in broad fenced pastures beside a rural barn and farm access lane",
             "type": "imageAlt",
             "required": false,
             "maxLength": 2000
@@ -13267,9 +13267,9 @@
           "fum15fc": "Skip to main content",
           "seoTitle": "Industrial & Agricultural Land Maintenance | P1",
           "seoDescription": "Land maintenance for industrial sites, farms, and working acreage in Upstate SC and Charlotte, including clearing, grading, drainage, and turf.",
-          "seoImage": "/opengraph.jpg",
-          "f1ff7yus": "/assets/service-industrial-1280-DHwKA5iR.webp",
-          "f1nd5fws": "Tractor on agricultural farm land",
+          "seoImage": "/assets/equestrian-estate-hero-1280-DQjfgIRy.webp",
+          "f1fcz82p": "/assets/equestrian-estate-hero-1280-DQjfgIRy.webp",
+          "fshbvhv": "Expansive rural equestrian estate with fenced pastures, a pond, and a winding gravel lane",
           "fly9gd8": "Industrial & Agricultural",
           "f8b1zbd": "Built for Working Properties",
           "fo8xurj": "P1 Land & Property Management maintains industrial facilities, farms, rural acreage, and working land at the scale and standard these properties demand. If your land is making money — or supposed to be — we keep it in condition.",
@@ -13291,8 +13291,8 @@
           "f1q4rsnu": "Land That Works Needs Maintenance That Matches",
           "fdram20": "Industrial facilities, working farms, and rural landholdings have maintenance needs that go far beyond what a standard landscaping company can handle. Overgrown fence lines, failing drainage ditches, eroded slopes, silted ponds, and encroaching vegetation don't just look bad — they cost money, create liability, and reduce the productive capacity of your land.",
           "f1pwgst1": "P1 brings heavy equipment, experienced operators, and the full range of land services needed to keep industrial and agricultural properties in working order — from routine inspections and cleanup to major earthwork and reconstruction.",
-          "fydujvh": "/assets/industrial-maintenance-1280-Dj77cY2F.webp",
-          "f1sekio9": "Heavy equipment maintaining an industrial and agricultural property",
+          "f15k5dtt": "/assets/equestrian-farm-pastures-1280-D48niW4Q.webp",
+          "f130pbpo": "Horses grazing in broad fenced pastures beside a rural barn and farm access lane",
           "f1t51hb0": "Agricultural Property Services",
           "f1rc9khm": "Pasture and field mowing for large acreage",
           "fvm4krh": "Fence line clearing and brush removal",
