@@ -15,6 +15,7 @@ import AgreementTemplateExport from "./AgreementTemplateExport";
 import AgreementTemplateSwitch from "./AgreementTemplateSwitch";
 import AgreementContextFields from "./AgreementContextFields";
 import AgreementDraftPreview from "./AgreementDraftPreview";
+import AgreementPricingReview from "./AgreementPricingReview";
 export default function AgreementDraftEditor({
   row,
   canEdit,
@@ -36,6 +37,7 @@ export default function AgreementDraftEditor({
   }));
   const [baseline] = useState(() => JSON.stringify(value));
   const [exporting, setExporting] = useState(false);
+  const [pricing, setPricing] = useState(false);
   const [switching, setSwitching] = useState(false);
   const [context, setContext] = useState<AgreementDraftContext | null>(null),
     [contextReady, setContextReady] = useState(false);
@@ -51,7 +53,7 @@ export default function AgreementDraftEditor({
   }, []);
   const dirty = JSON.stringify(value) !== baseline;
   useCmsUnsavedChanges(
-    dirty || Boolean(context) || switching,
+    dirty || Boolean(context) || switching || pricing,
     "Discard your unsaved agreement changes?",
   );
   const editable = canEdit && row.status === "draft";
@@ -70,6 +72,8 @@ export default function AgreementDraftEditor({
       if (alive.current) setBusy(false);
     }
   }
+  if (pricing)
+    return <AgreementPricingReview row={row} close={() => setPricing(false)} />;
   if (exporting)
     return (
       <AgreementTemplateExport row={row} close={() => setExporting(false)} />
@@ -291,6 +295,14 @@ export default function AgreementDraftEditor({
           )}
         </fieldset>
       </form>
+      {editable && (
+        <button
+          disabled={busy || dirty || Boolean(context) || switching}
+          onClick={() => setPricing(true)}
+        >
+          Review pricing allocations
+        </button>
+      )}
       <AgreementDraftPreview row={row} dirty={dirty} />
     </section>
   );

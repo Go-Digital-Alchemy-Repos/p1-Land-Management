@@ -22,6 +22,7 @@ import type {
   AgreementChargeReviewRecordInput,
   AgreementChargeSource,
   AgreementDraft,
+  AgreementDraftPricingReview,
   AgreementDraftTemplateReview,
   AgreementEstimateOption,
   AgreementPreparationJob,
@@ -224,6 +225,7 @@ import type {
   RescheduleWork,
   ResendManagedInvitation200,
   RetryMarketingFormDeliveryJob200,
+  ReviewAgreementDraftPricing,
   ReviewAgreementDraftTemplates,
   ReviseAgreementTemplateBody,
   RevokeManagedInvitation200,
@@ -6859,6 +6861,33 @@ export const prepareAgreementTemplateExport = async (id: string,
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
       prepareAgreementTemplateExport,)
+  }
+);}
+
+
+
+export const getReviewAgreementDraftPricingUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/agreement-drafts/${id}/pricing/review`
+}
+
+/**
+ * Sales only. Read-only financial calculation. Does not prepare, approve, schedule or send an estimate. Validate current context and operational allocations separately before preparation.
+ * @summary Review finite pricing allocations for a saved agreement draft
+ */
+export const reviewAgreementDraftPricing = async (id: string,
+    reviewAgreementDraftPricing: ReviewAgreementDraftPricing, options?: RequestInit): Promise<AgreementDraftPricingReview> => {
+
+  return customFetch<AgreementDraftPricingReview>(getReviewAgreementDraftPricingUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      reviewAgreementDraftPricing,)
   }
 );}
 

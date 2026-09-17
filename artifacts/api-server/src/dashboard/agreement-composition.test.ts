@@ -264,6 +264,62 @@ test(
       ).status,
       409,
     );
+    const pricingInput = {
+      expectedVersion: first.version,
+      allocations: [
+        { basis: "one_time", scopeRowIds: [first.content.scope.items[0].id] },
+      ],
+    };
+    const pricingReview = await call(
+      sales,
+      `/agreement-drafts/${first.id}/pricing/review`,
+      pricingInput,
+    );
+    assert.equal(pricingReview.status, 200);
+    assert.equal(pricingReview.body.pricingValid, false);
+    assert.equal(pricingReview.body.authorizedAmountCents, null);
+    assert.equal(
+      pricingReview.body.allocations[0].authorizedAmountCents,
+      12501,
+    );
+    assert(
+      pricingReview.body.blockers.some(
+        (b: any) => b.code === "unresolved_placeholders",
+      ),
+    );
+    assert.equal(
+      (
+        await call(sales, `/agreement-drafts/${first.id}/pricing/review`, {
+          ...pricingInput,
+          expectedVersion: 999,
+        })
+      ).status,
+      409,
+    );
+    for (const who of [reader, manager, portal])
+      assert.equal(
+        (
+          await call(
+            who,
+            `/agreement-drafts/${first.id}/pricing/review`,
+            pricingInput,
+          )
+        ).status,
+        403,
+      );
+    assert.equal(
+      (await call(sales, `/agreement-drafts/${first.id}`)).body.version,
+      first.version,
+    );
+    assert.equal(
+      (
+        await pool.query(
+          "SELECT count(*)::int AS n FROM estimate WHERE id=(SELECT estimate_id FROM agreement_composition_draft WHERE id=$1)",
+          [first.id],
+        )
+      ).rows[0].n,
+      0,
+    );
     const secondResult = await call(sales, "/agreement-drafts", {
       ...request,
       operationId: randomUUID(),

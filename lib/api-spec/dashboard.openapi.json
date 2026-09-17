@@ -12179,6 +12179,58 @@
         },
         "summary": "Prepare a reusable template for review"
       }
+    },
+    "/agreement-drafts/{id}/pricing/review": {
+      "post": {
+        "operationId": "reviewAgreementDraftPricing",
+        "responses": {
+          "200": {
+            "description": "Pricing review and actionable blockers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgreementDraftPricingReview"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "403": {
+            "description": "Sales capability required"
+          },
+          "404": {
+            "description": "Draft or context not found"
+          },
+          "409": {
+            "description": "Stale version, incompatible context or reused creation key"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewAgreementDraftPricing"
+              }
+            }
+          }
+        },
+        "summary": "Review finite pricing allocations for a saved agreement draft",
+        "description": "Sales only. Read-only financial calculation. Does not prepare, approve, schedule or send an estimate. Validate current context and operational allocations separately before preparation."
+      }
     }
   },
   "components": {
@@ -24687,6 +24739,272 @@
             "type": "integer"
           }
         }
+      },
+      "AgreementPricingPeriod": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "startsOn": {
+            "type": "string",
+            "format": "date"
+          },
+          "endsOn": {
+            "type": "string",
+            "format": "date"
+          },
+          "amountCents": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000000000
+          },
+          "reviewReason": {
+            "type": "string",
+            "maxLength": 1000,
+            "default": ""
+          }
+        },
+        "required": [
+          "startsOn",
+          "endsOn",
+          "amountCents"
+        ]
+      },
+      "ReviewAgreementDraftPricing": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "allocations": {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "basis": {
+                      "type": "string",
+                      "enum": [
+                        "one_time"
+                      ]
+                    },
+                    "scopeRowIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "minItems": 1,
+                      "maxItems": 200,
+                      "uniqueItems": true
+                    }
+                  },
+                  "required": [
+                    "basis",
+                    "scopeRowIds"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "basis": {
+                      "type": "string",
+                      "enum": [
+                        "fixed_monthly"
+                      ]
+                    },
+                    "scopeRowIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "minItems": 1,
+                      "maxItems": 200,
+                      "uniqueItems": true
+                    },
+                    "periods": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/AgreementPricingPeriod"
+                      },
+                      "maxItems": 120
+                    }
+                  },
+                  "required": [
+                    "basis",
+                    "scopeRowIds",
+                    "periods"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "basis": {
+                      "type": "string",
+                      "enum": [
+                        "per_visit"
+                      ]
+                    },
+                    "scopeRowIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "minItems": 1,
+                      "maxItems": 200,
+                      "uniqueItems": true
+                    },
+                    "maximumVisits": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 10000
+                    }
+                  },
+                  "required": [
+                    "basis",
+                    "scopeRowIds",
+                    "maximumVisits"
+                  ]
+                }
+              ]
+            },
+            "maxItems": 3
+          }
+        },
+        "required": [
+          "expectedVersion",
+          "allocations"
+        ]
+      },
+      "AgreementDraftPricingReview": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "sourceVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "pricingValid": {
+            "type": "boolean"
+          },
+          "authorizedAmountCents": {
+            "type": "integer",
+            "nullable": true,
+            "minimum": 0,
+            "maximum": 10000000000
+          },
+          "allocations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "basis": {
+                  "type": "string",
+                  "enum": [
+                    "one_time",
+                    "fixed_monthly",
+                    "per_visit"
+                  ]
+                },
+                "scopeRowIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "minItems": 1,
+                  "maxItems": 200,
+                  "uniqueItems": true
+                },
+                "costRowIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                },
+                "rateCents": {
+                  "type": "integer"
+                },
+                "maximumVisits": {
+                  "type": "integer",
+                  "nullable": true
+                },
+                "periods": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AgreementPricingPeriod"
+                  }
+                },
+                "authorizedAmountCents": {
+                  "type": "integer",
+                  "nullable": true
+                }
+              },
+              "required": [
+                "basis",
+                "scopeRowIds",
+                "costRowIds",
+                "rateCents",
+                "maximumVisits",
+                "periods",
+                "authorizedAmountCents"
+              ]
+            }
+          },
+          "blockers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "code": {
+                  "type": "string"
+                },
+                "basis": {
+                  "type": "string",
+                  "enum": [
+                    "one_time",
+                    "fixed_monthly",
+                    "per_visit"
+                  ],
+                  "nullable": true
+                },
+                "message": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "code",
+                "basis",
+                "message"
+              ]
+            }
+          },
+          "unallocatedScopeRowIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        },
+        "required": [
+          "sourceVersion",
+          "pricingValid",
+          "authorizedAmountCents",
+          "allocations",
+          "blockers",
+          "unallocatedScopeRowIds"
+        ]
       }
     }
   }
