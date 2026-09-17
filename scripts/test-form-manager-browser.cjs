@@ -251,6 +251,29 @@ const assert = require("node:assert/strict");
       .getByText("<script>window.bad=true</script>", { exact: true })
       .waitFor();
     assert.equal(await page.evaluate(() => window.bad), undefined);
+    const downloadCsv = page.waitForEvent("download");
+    await page.getByRole("button", { name: "Export CSV", exact: true }).click();
+    const csvFile = await downloadCsv;
+    assert.equal(csvFile.suggestedFilename(), "p1-estimate-submissions.csv");
+    const fs = require("node:fs/promises");
+    const csvText = await fs.readFile(await csvFile.path(), "utf8");
+    assert(
+      csvText.includes(
+        '"Submission ID","Submitted At","Source","email","unsafe","nested"',
+      ),
+    );
+    assert(csvText.includes("synthetic@example.test"));
+    const downloadJson = page.waitForEvent("download");
+    await page
+      .getByRole("button", { name: "Export JSON", exact: true })
+      .click();
+    const jsonFile = await downloadJson;
+    const exported = JSON.parse(
+      await fs.readFile(await jsonFile.path(), "utf8"),
+    );
+    assert.deepEqual(exported[0].data.nested, { scope: ["one", "two"] });
+    assert.equal(exported[0].data.unsafe, "<script>window.bad=true</script>");
+
     await page.setViewportSize({ width: 390, height: 844 });
     assert(
       await page.evaluate(

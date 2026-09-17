@@ -1,3 +1,4 @@
+import { buildSubmissionCsv } from "@shared/form-submission-export";
 import { useEffect, useMemo, useRef, useState, type ElementType } from "react";
 import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import {
@@ -524,27 +525,6 @@ function formatSubmissionDate(value: string | Date | null | undefined) {
   }).format(new Date(value));
 }
 
-function buildSubmissionCsv(submissions: CmsFormSubmission[]) {
-  const fieldKeys = Array.from(
-    new Set(
-      submissions.flatMap((submission) =>
-        Object.keys((submission.data ?? {}) as Record<string, unknown>),
-      ),
-    ),
-  );
-  const headers = ["Submission ID", "Submitted At", "Source", ...fieldKeys];
-  const escapeCsv = (value: string) => `"${value.replace(/"/g, '""')}"`;
-  const rows = submissions.map((submission) => {
-    const values = [
-      submission.id,
-      submission.createdAt ? new Date(submission.createdAt).toISOString() : "",
-      submission.source ?? "",
-      ...fieldKeys.map((key) => stringifySubmissionValue((submission.data ?? {})[key])),
-    ];
-    return values.map((value) => escapeCsv(String(value))).join(",");
-  });
-  return [headers.map(escapeCsv).join(","), ...rows].join("\n");
-}
 
 function findSubmissionValue(
   data: Record<string, unknown>,

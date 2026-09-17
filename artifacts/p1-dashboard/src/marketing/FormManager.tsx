@@ -1,3 +1,4 @@
+import { buildSubmissionCsv } from "../../../../platform/p1-core/shared/form-submission-export";
 import { useEffect, useRef, useState } from "react";
 import {
   listMarketingForms,
@@ -306,6 +307,42 @@ function Submissions({
   return (
     <section className="form-manager" aria-label="Form submissions">
       <h2>{form.name} submissions</h2>
+      <div className="form-actions">
+        {(["csv", "json"] as const).map((format) => (
+          <button
+            key={format}
+            disabled={busy || !!error || !rows.length}
+            onClick={() => {
+              const data =
+                format === "csv"
+                  ? "\uFEFF" + buildSubmissionCsv(rows)
+                  : JSON.stringify(rows, null, 2);
+              const url = URL.createObjectURL(
+                new Blob([data], {
+                  type:
+                    format === "csv"
+                      ? "text/csv;charset=utf-8"
+                      : "application/json;charset=utf-8",
+                }),
+              );
+              const anchor = document.createElement("a");
+              anchor.href = url;
+              anchor.download = `${form.slug.replace(/[^a-zA-Z0-9_-]/g, "_") || "form"}-submissions.${format}`;
+              document.body.append(anchor);
+              anchor.click();
+              anchor.remove();
+              setTimeout(() => URL.revokeObjectURL(url), 1000);
+            }}
+          >
+            Export {format.toUpperCase()}
+          </button>
+        ))}
+      </div>
+      <p>
+        CSV includes every saved answer key and treats formula-like values as
+        text. JSON preserves the exact saved values.
+      </p>
+
       <button onClick={close}>Back to forms</button>
       {busy && <p role="status">Loading submissions…</p>}
       {error && (
