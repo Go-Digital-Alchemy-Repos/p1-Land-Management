@@ -104,3 +104,12 @@ test("website Forms uses its own Marketing capability", () => {
   }
   assert.equal(canAccessRoute(route, "crew", ["marketing.content.forms"]), false);
 });
+
+test("website Events is separate from Forms and other content grants", () => {
+  const route=routeFromPath("/marketing/content/events");
+  assert.equal(route.kind,"page");
+  assert.equal(canAccessRoute(route,"owner"),true);
+  assert.equal(canAccessRoute(route,"member",["marketing.content.events"]),true);
+  assert.equal(canAccessRoute(route,"member",["marketing.content.forms"]),false);
+  assert.equal(canAccessRoute(route,"crew",["marketing.content.events"]),false);
+});

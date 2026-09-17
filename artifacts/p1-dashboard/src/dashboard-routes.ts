@@ -18,6 +18,7 @@ export type DashboardView =
   | "Analytics"
   | "Website Sidebars"
   | "Website Galleries"
+  | "Website Events"
   | "Website Forms"
   | "CMS Pages"
   | "Website Sections"
@@ -97,6 +98,7 @@ export const DASHBOARD_PAGES: readonly DashboardPageRoute[] = [
   { view: "Agreements", label: "Agreements", path: "/agreements", group: "Revenue" },
   { view: "Billing", label: "Billing", path: "/billing", group: "Revenue" },
   { view: "Expenses", label: "Expenses", path: "/expenses", group: "Revenue" },
+  { view: "Website Events", label: "Events", path: "/marketing/content/events", group: "Marketing", section: "Content" },
   { view: "Website Forms", label: "Forms", path: "/marketing/content/forms", group: "Marketing", section: "Content" },
   { view: "CMS Pages", label: "CMS Pages", path: "/marketing/content/pages", group: "Marketing", section: "Content" },
   { view: "Website Editor", label: "Website", path: "/marketing/content/website", group: "Marketing", section: "Content" },
@@ -210,6 +212,7 @@ const viewCapability: Partial<Record<DashboardView, Capability>> = {
   Analytics: "marketing.analytics.view",
   "Website Sidebars": "marketing.content.sidebars",
   "Website Galleries": "marketing.content.galleries",
+  "Website Events": "marketing.content.events",
   "Website Forms": "marketing.content.forms",
   "CMS Pages": "marketing.content.pages",
   "Website Sections": "marketing.content.sections",
