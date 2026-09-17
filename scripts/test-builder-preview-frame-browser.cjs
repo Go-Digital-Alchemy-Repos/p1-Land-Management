@@ -151,13 +151,83 @@ async function listen(app) {
       }),
       true,
     );
-    await page.evaluate(({origin,channel})=>{
-      document.querySelector("iframe").contentWindow.postMessage({type:"p1:builder-preview",version:2,channel,revision:2,blocks:[],form:{name:"Unsaved estimate",slug:"unsaved-estimate",fields:[{id:"instructions",key:"instructions",label:"Instructions",type:"html",config:{htmlContent:'<p>Unsaved form instructions<img src="/missing" onerror="window.executed=true"></p>'}},{id:"email",key:"email",label:"Your email",type:"email",required:true}],settings:{submitButtonText:"Send preview"}}},origin);
-    },{origin:child.origin,channel});
-    await frame.getByText("Unsaved form instructions",{exact:true}).waitFor();
-    assert.equal(await frame.locator('[onerror]').count(),0);
-    await frame.locator('input[type="email"]').evaluate(input=>{input.value="synthetic@example.test";input.form.requestSubmit();});
-    assert(!requests.some(request=>request.path.includes('/api/forms/')));
+    await page.evaluate(
+      ({ origin, channel }) => {
+        document.querySelector("iframe").contentWindow.postMessage(
+          {
+            type: "p1:builder-preview",
+            version: 2,
+            channel,
+            revision: 2,
+            blocks: [],
+            form: {
+              name: "Unsaved estimate",
+              slug: "unsaved-estimate",
+              fields: [
+                {
+                  id: "instructions",
+                  key: "instructions",
+                  label: "Instructions",
+                  type: "html",
+                  config: {
+                    htmlContent:
+                      '<p>Unsaved form instructions<img src="/missing" onerror="window.executed=true"></p>',
+                  },
+                },
+                {
+                  id: "email",
+                  key: "email",
+                  label: "Your email",
+                  type: "email",
+                  required: true,
+                },
+                {
+                  id: "step",
+                  key: "step",
+                  label: "Scope",
+                  type: "page",
+                  config: { pageTitle: "Scope details" },
+                },
+                {
+                  id: "scope",
+                  key: "scope",
+                  label: "Work description",
+                  type: "textarea",
+                },
+              ],
+              settings: { submitButtonText: "Send preview" },
+            },
+          },
+          origin,
+        );
+      },
+      { origin: child.origin, channel },
+    );
+    await frame
+      .getByText("Unsaved form instructions", { exact: true })
+      .waitFor();
+    assert.equal(await frame.locator("[onerror]").count(), 0);
+    await frame.locator('input[type="email"]').evaluate((input) => {
+      input.value = "synthetic@example.test";
+      input.form.requestSubmit();
+    });
+    await frame
+      .getByLabel("Preview form step", { exact: true })
+      .selectOption("1");
+    await frame.getByText("Step 2 of 2", { exact: true }).waitFor();
+    assert.equal(await frame.locator('input[type="email"]').count(), 0);
+    assert.equal(await frame.locator("textarea").count(), 1);
+    assert.equal(
+      await frame
+        .locator("[data-builder-preview-content]")
+        .getAttribute("inert"),
+      "",
+    );
+    await frame
+      .getByLabel("Preview form step", { exact: true })
+      .selectOption("0");
+    await frame.getByText("Step 1 of 2", { exact: true }).waitFor();
+    assert(!requests.some((request) => request.path.includes("/api/forms/")));
     assert(requests.some((request) => request.path === "/branding"));
     assert(
       requests.every((request) => request.method === "GET" && !request.cookie),

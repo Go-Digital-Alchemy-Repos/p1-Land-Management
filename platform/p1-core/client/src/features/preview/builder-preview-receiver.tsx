@@ -1,3 +1,4 @@
+import { splitFormPages } from "@shared/form-pages";
 import { Component, useEffect, useRef, useState, type ReactNode } from "react";
 import {
   acceptBuilderPreviewMessage,
@@ -45,10 +46,12 @@ export function BuilderPreviewReceiver({
     form?: CmsForm;
   } | null>(null);
   const [error, setError] = useState("");
+  const [formStep, setFormStep] = useState(0);
   const content = useRef<HTMLDivElement>(null);
   useEffect(() => {
     setDraft(null);
     setError("");
+    setFormStep(0);
     if (!isBuilderPreviewOrigin(parentOrigin) || parentWindow === window) {
       setError("Open this preview from the Business Center editor.");
       return;
@@ -111,8 +114,27 @@ export function BuilderPreviewReceiver({
     // activation of embedded forms. The outer frame remains scrollable.
     content.current?.setAttribute("inert", "");
   }, []);
+  const formPages = draft?.form ? splitFormPages(draft.form.fields) : [];
+  const visibleStep = Math.max(0, Math.min(formStep, formPages.length - 1));
   return (
     <>
+      {formPages.length > 1 && (
+        <label style={{ display: "block", padding: "12px" }}>
+          Preview form step{" "}
+          <select
+            aria-label="Preview form step"
+            value={visibleStep}
+            onChange={(event) => setFormStep(Number(event.target.value))}
+          >
+            {formPages.map((page, index) => (
+              <option value={index} key={index}>
+                Step {index + 1}
+                {page.meta?.config.pageTitle ? ` · ${page.meta.config.pageTitle}` : ""}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
       {error && <p role="alert">{error}</p>}
       {!error && !draft && <p role="status">Waiting for editor preview…</p>}
       <div
@@ -130,7 +152,11 @@ export function BuilderPreviewReceiver({
         {draft && (
           <PreviewRenderBoundary key={`${channel}:${draft.revision}`}>
             {draft.form ? (
-              <PublicFormRenderer slug={draft.form.slug} formOverride={draft.form} />
+              <PublicFormRenderer
+                slug={draft.form.slug}
+                formOverride={draft.form}
+                previewPageIndex={visibleStep}
+              />
             ) : (
               <PublicPageRenderer blocks={draft.blocks} />
             )}

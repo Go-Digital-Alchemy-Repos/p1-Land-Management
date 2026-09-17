@@ -108,6 +108,14 @@ it("previews sanitized unsaved forms without fetching a saved form and recovers 
         },
       },
       { id: "two", key: "email", label: "Your email", type: "email" },
+      {
+        id: "step",
+        key: "step",
+        label: "Scope",
+        type: "page",
+        config: { pageTitle: "Scope details" },
+      },
+      { id: "scope", key: "scope", label: "Description", type: "textarea" },
     ],
     settings: { submitButtonText: "Send draft" },
   };
@@ -118,12 +126,62 @@ it("previews sanitized unsaved forms without fetching a saved form and recovers 
   expect(container.querySelector("[data-builder-preview-content]")?.hasAttribute("inert")).toBe(
     true,
   );
+  const select = container.querySelector(
+    'select[aria-label="Preview form step"]',
+  ) as HTMLSelectElement;
+  act(() => {
+    select.value = "1";
+    select.dispatchEvent(new Event("change", { bubbles: true }));
+  });
+  expect(container.textContent).toContain("Step 2 of 2");
+  expect(container.querySelector('input[type="email"]')).toBeNull();
+  expect(container.querySelector("textarea")).not.toBeNull();
   expect(fetchSpy).not.toHaveBeenCalled();
   send(1, { name: "Incomplete" });
   expect(container.textContent).toContain("could not be previewed");
   send(2, form);
-  expect(container.textContent).toContain("Draft instructions");
+  expect(container.textContent).toContain("Scope details");
   expect(container.querySelector('[role="alert"]')).toBeNull();
   fetchSpy.mockRestore();
+  client.clear();
+});
+
+it("keeps ordinary public form next/previous navigation stateful without a preview index", async () => {
+  const { QueryClient, QueryClientProvider } = await import("@tanstack/react-query");
+  const { PublicFormRenderer } = await import("@/components/forms/public-form-renderer");
+  const { insertCmsFormSchema } = await import("@shared/schema");
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  const form = {
+    ...insertCmsFormSchema.parse({
+      name: "Normal form",
+      slug: "normal",
+      fields: [
+        { id: "first", key: "first", label: "First", type: "text" },
+        { id: "step", key: "step", label: "Next step", type: "page" },
+        { id: "last", key: "last", label: "Last", type: "text" },
+      ],
+    }),
+    id: "normal",
+    description: null,
+    createdAt: null,
+    updatedAt: null,
+  };
+  container = document.createElement("div");
+  document.body.appendChild(container);
+  root = createRoot(container);
+  act(() =>
+    root!.render(
+      <QueryClientProvider client={client}>
+        <PublicFormRenderer slug="normal" formOverride={form} />
+      </QueryClientProvider>,
+    ),
+  );
+  expect(container.textContent).toContain("Step 1 of 2");
+  const button = (text: string) =>
+    [...container.querySelectorAll("button")].find((item) => item.textContent === text)!;
+  act(() => button("Next").click());
+  expect(container.textContent).toContain("Step 2 of 2");
+  act(() => button("Previous").click());
+  expect(container.textContent).toContain("Step 1 of 2");
   client.clear();
 });

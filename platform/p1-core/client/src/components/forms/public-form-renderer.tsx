@@ -1,3 +1,4 @@
+import { splitFormPages } from "@shared/form-pages";
 import { STALE_TIMES } from "@/lib/queryClient";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -22,6 +23,8 @@ import { stripHtml } from "@/lib/html";
 interface PublicFormRendererProps {
   slug: string;
   formOverride?: CmsForm;
+  /** Used only with an explicit draft override inside the isolated preview. */
+  previewPageIndex?: number;
   submitUrl?: string;
   buildSubmitBody?: (values: FormValues) => unknown;
   className?: string;
@@ -103,28 +106,6 @@ function fieldSpanClass(field: CmsFormField, compact: boolean) {
     return "md:col-span-2";
   }
   return "md:col-span-1";
-}
-
-function splitPages(fields: CmsFormField[]) {
-  const pages: Array<{ meta: CmsFormField | null; fields: CmsFormField[] }> = [];
-  let current = { meta: null as CmsFormField | null, fields: [] as CmsFormField[] };
-
-  for (const field of fields) {
-    if (field.type === "page") {
-      if (current.meta || current.fields.length) {
-        pages.push(current);
-      }
-      current = { meta: field, fields: [] };
-      continue;
-    }
-    current.fields.push(field);
-  }
-
-  if (current.meta || current.fields.length) {
-    pages.push(current);
-  }
-
-  return pages.length > 0 ? pages : [{ meta: null, fields }];
 }
 
 function currentPageFields(page: { meta: CmsFormField | null; fields: CmsFormField[] }) {
@@ -571,6 +552,7 @@ function renderFieldInput(
 export function PublicFormRenderer({
   slug,
   formOverride,
+  previewPageIndex,
   submitUrl,
   buildSubmitBody,
   className,
@@ -582,7 +564,7 @@ export function PublicFormRenderer({
 }: PublicFormRendererProps) {
   const { toast } = useToast();
   const [values, setValues] = useState<FormValues>({});
-  const [currentPageIndex, setCurrentPageIndex] = useState(0);
+  const [pageIndex, setCurrentPageIndex] = useState(0);
   const submissionKeyRef = useRef<string | null>(null);
 
   const { data: form, isLoading } = useQuery<CmsForm>({
@@ -603,7 +585,11 @@ export function PublicFormRenderer({
     () => (Array.isArray(effectiveForm?.fields) ? effectiveForm.fields : []),
     [effectiveForm?.fields],
   );
-  const pages = useMemo(() => splitPages(fields), [fields]);
+  const pages = useMemo(() => splitFormPages(fields), [fields]);
+  const currentPageIndex =
+    formOverride && Number.isInteger(previewPageIndex)
+      ? Math.max(0, Math.min(pages.length - 1, previewPageIndex!))
+      : pageIndex;
   const activePage = pages[currentPageIndex] ?? pages[0] ?? { meta: null, fields: fields };
   const visibleFields = currentPageFields(activePage);
 
