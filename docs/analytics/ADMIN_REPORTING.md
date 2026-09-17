@@ -8,7 +8,7 @@ Google project: `p1-land-management`. GA4 property: `554712298`. Public measurem
 
 Enable Google Analytics Data API. Give `p1-analytics-reports@p1-land-management.iam.gserviceaccount.com` **Viewer** access on this Analytics property only. No Google Cloud project IAM role is required. Store its JSON credential as `P1_GA_SERVICE_ACCOUNT_JSON` on the P1 Core Railway backend only, and set `P1_GA_PROPERTY_ID=554712298`. Never put this credential in client variables, the repository, logs, or this document. Alternatively the backend accepts `P1_GA_CLIENT_ID`, `P1_GA_CLIENT_SECRET`, and `P1_GA_REFRESH_TOKEN` for a read-only OAuth grant. Service-account configuration takes precedence.
 
-Connection provisioning and production verification are still pending. The implementation must not be described as live until a real authenticated report succeeds.
+Google organization policy `iam.managed.disableServiceAccountKeyCreation` blocked key creation; no key was issued and the policy was not changed. The active connection path is an internal OAuth app named P1 Website Reports, using the owner’s read-only grant. App setup is paused at acceptance of the Google API Services User Data Policy. The service-account instructions above remain an alternative only where existing policy permits. Connection provisioning and production verification are still pending. The implementation must not be described as live until a real authenticated report succeeds.
 
 ## API and behavior
 
@@ -37,6 +37,6 @@ Set `P1_GSC_SITE_URL` on Core to the exact authorized property. The signed-in ow
 
 Enable Search Console API in the P1 Google project and grant the dedicated reporting service account Restricted property access for reporting, subject to API verification. The token requests only `webmasters.readonly`. It shares the existing server-side credential but uses a separate scoped token. OAuth alternatives require consent including this scope; an existing Analytics-only refresh token does not automatically gain access. No Google property ownership or indexing mutations are requested.
 
-The integration is implemented but not connected or deployed yet. Credential/access authorization remains pending. Do not label local fixture metrics as live results. Each breakdown is limited to 10,000 top rows and exposes truncation. Google may omit anonymized queries and other rows; exports are not an exhaustive search log. Totals are never computed by summing breakdowns, and missing dates are not fabricated as zero. The API does not provide the full Search Console indexing-coverage or Core Web Vitals reports through this endpoint.
+The integration is implemented but not connected or deployed yet. The owner authorized connecting live reports; OAuth policy acceptance and credential provisioning remain pending. Do not label local fixture metrics as live results. Each breakdown is limited to 10,000 top rows and exposes truncation. Google may omit anonymized queries and other rows; exports are not an exhaustive search log. Totals are never computed by summing breakdowns, and missing dates are not fabricated as zero. The API does not provide the full Search Console indexing-coverage or Core Web Vitals reports through this endpoint.
 
 Reference: https://developers.google.com/webmaster-tools/v1/searchanalytics/query
