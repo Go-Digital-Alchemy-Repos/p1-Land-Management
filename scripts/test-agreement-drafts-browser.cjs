@@ -73,6 +73,10 @@ const { randomUUID } = require("node:crypto");
       catalogFail = true;
     const creates = [],
       writes = [];
+    const olderLeadId = randomUUID(),
+      inquiryQueries = [];
+    let failInquirySearch = false,
+      legacyInquiryReads = 0;
     const preview = () => ({
       content: {
         ...structuredClone(row.content),
@@ -112,33 +116,37 @@ const { randomUUID } = require("node:crypto");
           mfaRequired: false,
         };
       if (path === "/api/v1/workspace/references") body = refs;
-      if (path === "/api/v1/leads")
-        body = [
-          {
-            id: leadId,
-            name: "Synthetic inquiry",
-            location: "Inquiry location",
-            email: "",
-            description: "",
-            status: "new",
-            created_at: new Date().toISOString(),
-          },
-        ];
-      if (path === "/api/v1/sales/inquiries")
-        body = {
-          items: [
-            {
-              id: leadId,
-              name: "Synthetic inquiry",
-              location: "Inquiry location",
-              email: "",
-              description: "",
-              status: "new",
-              created_at: new Date().toISOString(),
-            },
-          ],
-          nextCursor: null,
+      if (path === "/api/v1/leads") {
+        legacyInquiryReads++;
+        body = [];
+      }
+      if (path === "/api/v1/sales/inquiries") {
+        inquiryQueries.push(Object.fromEntries(url.searchParams));
+        if (failInquirySearch) {
+          failInquirySearch = false;
+          return route.fulfill({
+            status: 503,
+            json: { message: "Synthetic search failure" },
+          });
+        }
+        const inquiry = {
+          id: leadId,
+          name: "Synthetic inquiry",
+          location: "Inquiry location",
+          email: "test@example.test",
+          description: "",
+          status: "new",
+          created_at: new Date().toISOString(),
         };
+        body = url.searchParams.has("q")
+          ? { items: [], nextCursor: null }
+          : url.searchParams.has("cursor")
+            ? {
+                items: [{ ...inquiry, id: olderLeadId, name: "Older inquiry" }],
+                nextCursor: null,
+              }
+            : { items: [inquiry], nextCursor: "older-inquiry" };
+      }
       if (path === "/api/v1/agreement-templates") {
         if (catalogFail)
           return route.fulfill({
@@ -351,6 +359,68 @@ const { randomUUID } = require("node:crypto");
     await page
       .getByLabel("Agreement inquiry", { exact: true })
       .selectOption(leadId);
+    await page
+      .getByRole("button", { name: "Load older inquiry choices", exact: true })
+      .click();
+    await page
+      .getByLabel("Agreement inquiry", { exact: true })
+      .selectOption(olderLeadId);
+    assert.equal(inquiryQueries.at(-1).cursor, "older-inquiry");
+    await page
+      .getByLabel("Search agreement inquiries", { exact: true })
+      .fill("No match");
+    failInquirySearch = true;
+    await page
+      .getByRole("button", { name: "Search inquiries", exact: true })
+      .click();
+    await page
+      .getByText(
+        "Could not load inquiry choices. Your selection is retained; try again.",
+      )
+      .waitFor();
+    assert.equal(
+      await page.getByLabel("Agreement inquiry", { exact: true }).inputValue(),
+      olderLeadId,
+    );
+    await page
+      .getByLabel("Search agreement inquiries", { exact: true })
+      .press("Enter");
+    await page
+      .getByText(
+        "No inquiries match this search. Any selected inquiry remains attached.",
+      )
+      .waitFor();
+    assert.equal(
+      await page.getByLabel("Agreement inquiry", { exact: true }).inputValue(),
+      olderLeadId,
+    );
+    assert.match(
+      await page
+        .getByLabel("Agreement inquiry", { exact: true })
+        .locator("option:checked")
+        .innerText(),
+      /Older inquiry/,
+    );
+    assert.equal(creates.length, 0); // Enter searches without submitting the surrounding agreement form.
+    assert.deepEqual(inquiryQueries.at(-1), { q: "No match" });
+    await page
+      .getByRole("button", { name: "Clear inquiry search", exact: true })
+      .click();
+    await page
+      .getByLabel("Agreement inquiry", { exact: true })
+      .selectOption(leadId);
+    assert.equal(legacyInquiryReads, 0);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.waitForFunction(() => {
+      const el = document.querySelector(".sidebar");
+      return !el || el.getBoundingClientRect().right <= 0;
+    });
+    const picker = page.locator(".agreement-inquiry-picker");
+    assert(await picker.evaluate((el) => el.scrollWidth <= el.clientWidth));
+    await picker.screenshot({
+      path: "/tmp/p1-agreement-inquiry-picker-mobile.png",
+    });
+    await page.setViewportSize({ width: 1400, height: 1000 });
     await page
       .getByLabel("Agreement package", { exact: true })
       .selectOption(template.id);

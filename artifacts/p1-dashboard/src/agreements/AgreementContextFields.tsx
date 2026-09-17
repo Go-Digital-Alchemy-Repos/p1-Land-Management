@@ -1,13 +1,10 @@
 import { useEffect, useState } from "react";
-import {
-  getWorkspaceReferences,
-  listSalesLeads,
-} from "@workspace/api-client-react/dashboard";
+import { getWorkspaceReferences } from "@workspace/api-client-react/dashboard";
 import type {
   AgreementDraftContext,
-  SalesLead,
   WorkspaceReferences,
 } from "../../../../lib/api-client-react/src/dashboard/models";
+import AgreementInquiryPicker from "./AgreementInquiryPicker";
 import { message } from "./template-draft";
 export default function AgreementContextFields({
   value,
@@ -19,29 +16,31 @@ export default function AgreementContextFields({
   ready: (value: boolean) => void;
 }) {
   const [refs, setRefs] = useState<WorkspaceReferences | null>(null),
-    [leads, setLeads] = useState<SalesLead[]>([]),
+    [inquiryReady, setInquiryReady] = useState(false),
+    [referencesReady, setReferencesReady] = useState(false),
     [error, setError] = useState(""),
     [attempt, setAttempt] = useState(0);
   useEffect(() => {
     const controller = new AbortController();
-    ready(false);
+    setReferencesReady(false);
     setError("");
-    void Promise.all([
-      getWorkspaceReferences({ signal: controller.signal }),
-      listSalesLeads({ signal: controller.signal }),
-    ])
-      .then(([references, inquiries]) => {
+    void getWorkspaceReferences({
+      signal: AbortSignal.any([controller.signal, AbortSignal.timeout(30000)]),
+    })
+      .then((references) => {
         if (!controller.signal.aborted) {
           setRefs(references);
-          setLeads(inquiries);
-          ready(true);
+          setReferencesReady(true);
         }
       })
       .catch((error) => {
         if (!controller.signal.aborted) setError(message(error));
       });
     return () => controller.abort();
-  }, [attempt, ready]);
+  }, [attempt]);
+  useEffect(() => {
+    ready(referencesReady && inquiryReady);
+  }, [referencesReady, inquiryReady, ready]);
   const properties =
     refs?.properties.filter((row) => row.client_id === value.clientId) || [];
   return (
@@ -104,25 +103,12 @@ export default function AgreementContextFields({
           ))}
         </select>
       </label>
-      <label>
-        Inquiry
-        <select
-          aria-label="Agreement inquiry"
-          value={value.leadId || ""}
-          onChange={(e) => change({ ...value, leadId: e.target.value || null })}
-        >
-          <option value="">No inquiry attached</option>
-          {value.leadId && !leads.some((row) => row.id === value.leadId) && (
-            <option value={value.leadId}>Selected inquiry</option>
-          )}
-          {leads.map((row) => (
-            <option key={row.id} value={row.id}>
-              {row.name} · {row.location}
-            </option>
-          ))}
-        </select>
-      </label>
-      <p>For older inquiries, start a draft from the Sales inbox.</p>
+      <AgreementInquiryPicker
+        value={value.leadId}
+        change={(leadId) => change({ ...value, leadId })}
+        ready={setInquiryReady}
+        refreshToken={attempt}
+      />
       <p>
         Attach a client or an inquiry. Inquiry-only drafts do not create client
         or property records. Saving checks that all attached records belong
