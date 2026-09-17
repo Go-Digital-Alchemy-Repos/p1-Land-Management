@@ -187,6 +187,10 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
     const head = await request(port, asset[1], {}, 'HEAD'); assert.equal(head.status, 200); assert.equal(head.body, '');
   });
   await t.test('production only serves indexable public documents on the canonical host', async () => {
+    const health = await request(port, '/healthz', { Host: 'healthcheck.railway.app' });
+    assert.equal(health.status, 200);
+    assert.equal(health.headers.location, undefined);
+    assert.deepEqual(JSON.parse(health.body), { status: 'ok' });
     const home = await request(port, '/', { Host: 'www.p1landmanagement.com' });
     assert.equal(home.status, 200);
     assert.equal(home.headers['x-robots-tag'], undefined);

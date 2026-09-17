@@ -98,6 +98,8 @@ const server=http.createServer(async(req,res)=>{
     res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Referrer-Policy','strict-origin-when-cross-origin');res.setHeader('X-Frame-Options','SAMEORIGIN');
     res.setHeader('Permissions-Policy','camera=(), microphone=(), geolocation=()');
     if(process.env.NODE_ENV==='production')res.setHeader('Strict-Transport-Security','max-age=31536000');
+    // Railway probes use an internal Host; readiness must not redirect to the public site.
+    if(pathname==='/healthz')return send(req,res,200,'{"status":"ok"}','application/json','no-store');
     const host=(req.headers.host || '').split(':')[0].toLowerCase();
     const backendPath = ['/admin','/api','/uploads','/r2'].some(prefix => pathname === prefix || pathname.startsWith(prefix + '/'));
     if (backendPath) res.setHeader('X-Robots-Tag','noindex, nofollow');
@@ -140,7 +142,6 @@ const server=http.createServer(async(req,res)=>{
         return send(req,res,unavailable?503:502,JSON.stringify({ error: 'Reviews are temporarily unavailable.' }),'application/json','no-store');
       }
     }
-    if(pathname==='/healthz')return send(req,res,200,'{"status":"ok"}','application/json','no-store');
     if(backendPath)return proxy(req,res);
     if(!['GET','HEAD'].includes(req.method))return send(req,res,405,'Method not allowed');
     res.setHeader('Content-Security-Policy',"default-src 'self'; script-src 'self' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com; frame-ancestors 'self'; base-uri 'self'; object-src 'none'; form-action 'self'");
