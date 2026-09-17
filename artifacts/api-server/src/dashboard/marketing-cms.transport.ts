@@ -67,6 +67,17 @@ add("sidebars", "GET", "/sidebar-references");
 add("sections", "GET", "/section-builder");
 add("pages", "GET", "/page-builder");
 add("forms", "GET", "/form-builder");
+for (const path of ["/events", "/events/venues", "/events/organizers"]) {
+  add("events", "GET", path); add("events", "POST", path);
+}
+for (const path of ["/events/:id", "/events/venues/:venueId", "/events/organizers/:organizerId"]) {
+  add("events", "PUT", path); add("events", "DELETE", path);
+}
+add("events", "GET", "/events/:id");
+add("events", "GET", "/events/:id/analytics");
+add("events", "POST", "/events/:id/duplicate");
+add("events", "POST", "/events/:id/notify");
+
 add("website", "GET", "/website");
 add("website", "GET", "/website/:routeId/:componentKey");
 add("website", "PUT", "/website/:routeId/:componentKey/draft");

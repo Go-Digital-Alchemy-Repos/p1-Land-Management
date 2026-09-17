@@ -10621,6 +10621,652 @@
           }
         }
       }
+    },
+    "/marketing/cms/events": {
+      "get": {
+        "operationId": "listMarketingEvents",
+        "description": "Requires marketing.content.events. Retains the website Events service behavior.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MarketingEvent"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid event request"
+          },
+          "403": {
+            "description": "Events capability required"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createMarketingEvent",
+        "description": "Requires marketing.content.events. Retains the website Events service behavior.",
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingEvent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid event request"
+          },
+          "403": {
+            "description": "Events capability required"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketingEventInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/marketing/cms/events/{id}": {
+      "put": {
+        "operationId": "updateMarketingEvent",
+        "description": "Requires marketing.content.events. Retains the website Events service behavior.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingEvent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid event request"
+          },
+          "403": {
+            "description": "Events capability required"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketingEventUpdate"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteMarketingEvent",
+        "description": "Requires marketing.content.events. Retains the website Events service behavior.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid event request"
+          },
+          "403": {
+            "description": "Events capability required"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "get": {
+        "operationId": "getMarketingEvent",
+        "description": "Requires marketing.content.events. Retains the website Events service behavior.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingEvent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid event request"
+          },
+          "403": {
+            "description": "Events capability required"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/events/venues": {
+      "get": {
+        "operationId": "listMarketingEventVenues",
+        "description": "Requires marketing.content.events. Retains the website Events service behavior.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MarketingEventVenue"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid event request"
+          },
+          "403": {
+            "description": "Events capability required"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createMarketingEventVenue",
+        "description": "Requires marketing.content.events. Retains the website Events service behavior.",
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingEventVenue"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid event request"
+          },
+          "403": {
+            "description": "Events capability required"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketingEventVenueInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/marketing/cms/events/venues/{venueId}": {
+      "put": {
+        "operationId": "updateMarketingEventVenue",
+        "description": "Requires marketing.content.events. Retains the website Events service behavior.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingEventVenue"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid event request"
+          },
+          "403": {
+            "description": "Events capability required"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "parameters": [
+          {
+            "name": "venueId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketingEventVenueUpdate"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteMarketingEventVenue",
+        "description": "Requires marketing.content.events. Retains the website Events service behavior.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid event request"
+          },
+          "403": {
+            "description": "Events capability required"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "parameters": [
+          {
+            "name": "venueId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/events/organizers": {
+      "get": {
+        "operationId": "listMarketingEventOrganizers",
+        "description": "Requires marketing.content.events. Retains the website Events service behavior.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MarketingEventOrganizer"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid event request"
+          },
+          "403": {
+            "description": "Events capability required"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createMarketingEventOrganizer",
+        "description": "Requires marketing.content.events. Retains the website Events service behavior.",
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingEventOrganizer"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid event request"
+          },
+          "403": {
+            "description": "Events capability required"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketingEventOrganizerInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/marketing/cms/events/organizers/{organizerId}": {
+      "put": {
+        "operationId": "updateMarketingEventOrganizer",
+        "description": "Requires marketing.content.events. Retains the website Events service behavior.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingEventOrganizer"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid event request"
+          },
+          "403": {
+            "description": "Events capability required"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "parameters": [
+          {
+            "name": "organizerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketingEventOrganizerUpdate"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteMarketingEventOrganizer",
+        "description": "Requires marketing.content.events. Retains the website Events service behavior.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid event request"
+          },
+          "403": {
+            "description": "Events capability required"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "parameters": [
+          {
+            "name": "organizerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/events/{id}/duplicate": {
+      "post": {
+        "operationId": "duplicateMarketingEvent",
+        "description": "Requires marketing.content.events. Retains the website Events service behavior.",
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingEvent"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid event request"
+          },
+          "403": {
+            "description": "Events capability required"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/events/{id}/analytics": {
+      "get": {
+        "operationId": "getMarketingEventAnalytics",
+        "description": "Requires marketing.content.events. Retains the website Events service behavior.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid event request"
+          },
+          "403": {
+            "description": "Events capability required"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/events/{id}/notify": {
+      "post": {
+        "operationId": "notifyMarketingEvent",
+        "description": "Requires marketing.content.events. Retains the website Events service behavior.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "sent": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "sent",
+                    "message"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid event request"
+          },
+          "403": {
+            "description": "Events capability required"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "reminder",
+                      "recording"
+                    ]
+                  }
+                },
+                "required": [
+                  "type"
+                ]
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -20733,6 +21379,1206 @@
             "nullable": true
           }
         }
+      },
+      "MarketingEventInput": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "location": {
+            "type": "string",
+            "nullable": true
+          },
+          "zoomLink": {
+            "type": "string",
+            "nullable": true
+          },
+          "imageUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "virtualJoinUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "virtualDialInInfo": {
+            "type": "string",
+            "nullable": true
+          },
+          "recordingUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "recordingAccess": {
+            "type": "string",
+            "nullable": true
+          },
+          "registrationType": {
+            "type": "string",
+            "nullable": true
+          },
+          "registrationCurrency": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "draft",
+              "published",
+              "canceled",
+              "completed",
+              "archived"
+            ]
+          },
+          "visibility": {
+            "type": "string",
+            "nullable": true
+          },
+          "eventType": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "training",
+              "workshop",
+              "webinar",
+              "class",
+              "consultation",
+              "appointment",
+              "community_event"
+            ]
+          },
+          "category": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "education",
+              "professional_development",
+              "wellness",
+              "community",
+              "consulting",
+              "support",
+              "operations"
+            ]
+          },
+          "audience": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "public",
+              "members",
+              "professionals",
+              "clients",
+              "staff",
+              "invited"
+            ]
+          },
+          "format": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "single_session",
+              "multi_session",
+              "series",
+              "office_hours",
+              "one_on_one",
+              "drop_in"
+            ]
+          },
+          "deliveryMode": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "in_person",
+              "virtual",
+              "hybrid"
+            ]
+          },
+          "registrationFormId": {
+            "type": "string",
+            "nullable": true
+          },
+          "registrationApprovalMode": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "automatic",
+              "manual"
+            ]
+          },
+          "timezone": {
+            "type": "string",
+            "nullable": true
+          },
+          "venueId": {
+            "type": "string",
+            "nullable": true
+          },
+          "organizerId": {
+            "type": "string",
+            "nullable": true
+          },
+          "locationName": {
+            "type": "string",
+            "nullable": true
+          },
+          "locationAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "latitude": {
+            "type": "string",
+            "nullable": true
+          },
+          "longitude": {
+            "type": "string",
+            "nullable": true
+          },
+          "speakerName": {
+            "type": "string",
+            "nullable": true
+          },
+          "speakerBio": {
+            "type": "string",
+            "nullable": true
+          },
+          "speakerImageUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "recurrencePattern": {
+            "type": "string",
+            "nullable": true
+          },
+          "recurrenceDaysOfWeek": {
+            "type": "string",
+            "nullable": true
+          },
+          "parentEventId": {
+            "type": "string",
+            "nullable": true
+          },
+          "isVirtual": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "memberOnly": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "showInArchives": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "registrationEnabled": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "waitlistEnabled": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "isRecurring": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "imagePositionX": {
+            "type": "integer",
+            "nullable": true
+          },
+          "imagePositionY": {
+            "type": "integer",
+            "nullable": true
+          },
+          "recordingPrice": {
+            "type": "integer",
+            "nullable": true
+          },
+          "registrationFee": {
+            "type": "integer",
+            "nullable": true
+          },
+          "capacity": {
+            "type": "integer",
+            "nullable": true
+          },
+          "recurrenceInterval": {
+            "type": "integer",
+            "nullable": true
+          },
+          "recurrenceCount": {
+            "type": "integer",
+            "nullable": true
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endDate": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "registrationOpensAt": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "registrationClosesAt": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "recurrenceEndDate": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "required": [
+          "title",
+          "date"
+        ]
+      },
+      "MarketingEventUpdate": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "location": {
+            "type": "string",
+            "nullable": true
+          },
+          "zoomLink": {
+            "type": "string",
+            "nullable": true
+          },
+          "imageUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "virtualJoinUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "virtualDialInInfo": {
+            "type": "string",
+            "nullable": true
+          },
+          "recordingUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "recordingAccess": {
+            "type": "string",
+            "nullable": true
+          },
+          "registrationType": {
+            "type": "string",
+            "nullable": true
+          },
+          "registrationCurrency": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "draft",
+              "published",
+              "canceled",
+              "completed",
+              "archived"
+            ]
+          },
+          "visibility": {
+            "type": "string",
+            "nullable": true
+          },
+          "eventType": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "training",
+              "workshop",
+              "webinar",
+              "class",
+              "consultation",
+              "appointment",
+              "community_event"
+            ]
+          },
+          "category": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "education",
+              "professional_development",
+              "wellness",
+              "community",
+              "consulting",
+              "support",
+              "operations"
+            ]
+          },
+          "audience": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "public",
+              "members",
+              "professionals",
+              "clients",
+              "staff",
+              "invited"
+            ]
+          },
+          "format": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "single_session",
+              "multi_session",
+              "series",
+              "office_hours",
+              "one_on_one",
+              "drop_in"
+            ]
+          },
+          "deliveryMode": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "in_person",
+              "virtual",
+              "hybrid"
+            ]
+          },
+          "registrationFormId": {
+            "type": "string",
+            "nullable": true
+          },
+          "registrationApprovalMode": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "automatic",
+              "manual"
+            ]
+          },
+          "timezone": {
+            "type": "string",
+            "nullable": true
+          },
+          "venueId": {
+            "type": "string",
+            "nullable": true
+          },
+          "organizerId": {
+            "type": "string",
+            "nullable": true
+          },
+          "locationName": {
+            "type": "string",
+            "nullable": true
+          },
+          "locationAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "latitude": {
+            "type": "string",
+            "nullable": true
+          },
+          "longitude": {
+            "type": "string",
+            "nullable": true
+          },
+          "speakerName": {
+            "type": "string",
+            "nullable": true
+          },
+          "speakerBio": {
+            "type": "string",
+            "nullable": true
+          },
+          "speakerImageUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "recurrencePattern": {
+            "type": "string",
+            "nullable": true
+          },
+          "recurrenceDaysOfWeek": {
+            "type": "string",
+            "nullable": true
+          },
+          "parentEventId": {
+            "type": "string",
+            "nullable": true
+          },
+          "isVirtual": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "memberOnly": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "showInArchives": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "registrationEnabled": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "waitlistEnabled": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "isRecurring": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "imagePositionX": {
+            "type": "integer",
+            "nullable": true
+          },
+          "imagePositionY": {
+            "type": "integer",
+            "nullable": true
+          },
+          "recordingPrice": {
+            "type": "integer",
+            "nullable": true
+          },
+          "registrationFee": {
+            "type": "integer",
+            "nullable": true
+          },
+          "capacity": {
+            "type": "integer",
+            "nullable": true
+          },
+          "recurrenceInterval": {
+            "type": "integer",
+            "nullable": true
+          },
+          "recurrenceCount": {
+            "type": "integer",
+            "nullable": true
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endDate": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "registrationOpensAt": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "registrationClosesAt": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "recurrenceEndDate": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        }
+      },
+      "MarketingEvent": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "location": {
+            "type": "string",
+            "nullable": true
+          },
+          "zoomLink": {
+            "type": "string",
+            "nullable": true
+          },
+          "imageUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "virtualJoinUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "virtualDialInInfo": {
+            "type": "string",
+            "nullable": true
+          },
+          "recordingUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "recordingAccess": {
+            "type": "string",
+            "nullable": true
+          },
+          "registrationType": {
+            "type": "string",
+            "nullable": true
+          },
+          "registrationCurrency": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "draft",
+              "published",
+              "canceled",
+              "completed",
+              "archived"
+            ]
+          },
+          "visibility": {
+            "type": "string",
+            "nullable": true
+          },
+          "eventType": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "training",
+              "workshop",
+              "webinar",
+              "class",
+              "consultation",
+              "appointment",
+              "community_event"
+            ]
+          },
+          "category": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "education",
+              "professional_development",
+              "wellness",
+              "community",
+              "consulting",
+              "support",
+              "operations"
+            ]
+          },
+          "audience": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "public",
+              "members",
+              "professionals",
+              "clients",
+              "staff",
+              "invited"
+            ]
+          },
+          "format": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "single_session",
+              "multi_session",
+              "series",
+              "office_hours",
+              "one_on_one",
+              "drop_in"
+            ]
+          },
+          "deliveryMode": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "in_person",
+              "virtual",
+              "hybrid"
+            ]
+          },
+          "registrationFormId": {
+            "type": "string",
+            "nullable": true
+          },
+          "registrationApprovalMode": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "automatic",
+              "manual"
+            ]
+          },
+          "timezone": {
+            "type": "string",
+            "nullable": true
+          },
+          "venueId": {
+            "type": "string",
+            "nullable": true
+          },
+          "organizerId": {
+            "type": "string",
+            "nullable": true
+          },
+          "locationName": {
+            "type": "string",
+            "nullable": true
+          },
+          "locationAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "latitude": {
+            "type": "string",
+            "nullable": true
+          },
+          "longitude": {
+            "type": "string",
+            "nullable": true
+          },
+          "speakerName": {
+            "type": "string",
+            "nullable": true
+          },
+          "speakerBio": {
+            "type": "string",
+            "nullable": true
+          },
+          "speakerImageUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "recurrencePattern": {
+            "type": "string",
+            "nullable": true
+          },
+          "recurrenceDaysOfWeek": {
+            "type": "string",
+            "nullable": true
+          },
+          "parentEventId": {
+            "type": "string",
+            "nullable": true
+          },
+          "isVirtual": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "memberOnly": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "showInArchives": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "registrationEnabled": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "waitlistEnabled": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "isRecurring": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "imagePositionX": {
+            "type": "integer",
+            "nullable": true
+          },
+          "imagePositionY": {
+            "type": "integer",
+            "nullable": true
+          },
+          "recordingPrice": {
+            "type": "integer",
+            "nullable": true
+          },
+          "registrationFee": {
+            "type": "integer",
+            "nullable": true
+          },
+          "capacity": {
+            "type": "integer",
+            "nullable": true
+          },
+          "recurrenceInterval": {
+            "type": "integer",
+            "nullable": true
+          },
+          "recurrenceCount": {
+            "type": "integer",
+            "nullable": true
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endDate": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "registrationOpensAt": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "registrationClosesAt": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "recurrenceEndDate": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "id": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "slug",
+          "title",
+          "date"
+        ]
+      },
+      "MarketingEventVenueInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "city": {
+            "type": "string",
+            "nullable": true
+          },
+          "region": {
+            "type": "string",
+            "nullable": true
+          },
+          "postalCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "country": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "websiteUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "latitude": {
+            "type": "string",
+            "nullable": true
+          },
+          "longitude": {
+            "type": "string",
+            "nullable": true
+          },
+          "parkingInfo": {
+            "type": "string",
+            "nullable": true
+          },
+          "accessibilityInfo": {
+            "type": "string",
+            "nullable": true
+          },
+          "transitInfo": {
+            "type": "string",
+            "nullable": true
+          },
+          "arrivalNotes": {
+            "type": "string",
+            "nullable": true
+          },
+          "isVirtual": {
+            "type": "boolean",
+            "nullable": true
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "MarketingEventVenueUpdate": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "city": {
+            "type": "string",
+            "nullable": true
+          },
+          "region": {
+            "type": "string",
+            "nullable": true
+          },
+          "postalCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "country": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "websiteUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "latitude": {
+            "type": "string",
+            "nullable": true
+          },
+          "longitude": {
+            "type": "string",
+            "nullable": true
+          },
+          "parkingInfo": {
+            "type": "string",
+            "nullable": true
+          },
+          "accessibilityInfo": {
+            "type": "string",
+            "nullable": true
+          },
+          "transitInfo": {
+            "type": "string",
+            "nullable": true
+          },
+          "arrivalNotes": {
+            "type": "string",
+            "nullable": true
+          },
+          "isVirtual": {
+            "type": "boolean",
+            "nullable": true
+          }
+        }
+      },
+      "MarketingEventVenue": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "city": {
+            "type": "string",
+            "nullable": true
+          },
+          "region": {
+            "type": "string",
+            "nullable": true
+          },
+          "postalCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "country": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "websiteUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "latitude": {
+            "type": "string",
+            "nullable": true
+          },
+          "longitude": {
+            "type": "string",
+            "nullable": true
+          },
+          "parkingInfo": {
+            "type": "string",
+            "nullable": true
+          },
+          "accessibilityInfo": {
+            "type": "string",
+            "nullable": true
+          },
+          "transitInfo": {
+            "type": "string",
+            "nullable": true
+          },
+          "arrivalNotes": {
+            "type": "string",
+            "nullable": true
+          },
+          "isVirtual": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "id": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "slug",
+          "name"
+        ]
+      },
+      "MarketingEventOrganizerInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "websiteUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "imageUrl": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "MarketingEventOrganizerUpdate": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "websiteUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "imageUrl": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "MarketingEventOrganizer": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "websiteUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "imageUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "id": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "slug",
+          "name"
+        ]
       }
     }
   }

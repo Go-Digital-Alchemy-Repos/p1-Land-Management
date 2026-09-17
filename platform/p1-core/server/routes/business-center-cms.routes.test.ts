@@ -48,6 +48,7 @@ const state = vi.hoisted(() => ({
   formDeleteSubmission: vi.fn(),
   formJobs: vi.fn(),
   formRetry: vi.fn(),
+  events: vi.fn(), eventGet: vi.fn(), eventCreate: vi.fn(), eventSlug: vi.fn(), eventMail: vi.fn(), venues:vi.fn(), organizers:vi.fn(), eventAnalytics:vi.fn(),
 }));
 vi.mock("../services/federation-runtime", () => ({
   federationConsumer: () => ({
@@ -100,11 +101,15 @@ vi.mock("../storage", () => ({
       deleteComment: state.commentDelete,
       countByStatus: async () => ({ pending: 0, approved: 0, spam: 0, rejected: 0 }),
     },
-    events: { getAllEvents: state.list },
+    events: {getAllEvents:state.events,getEvent:state.eventGet,createEvent:state.eventCreate,getEventSlugOwner:state.eventSlug},
+    eventVenues:{getAllVenues:state.venues},
+    eventOrganizers:{getAllOrganizers:state.organizers},
+    eventRegistrations:{getEventAnalytics:state.eventAnalytics},
     forms: { getAll: state.list, getById: state.form, getBySlug: state.formSlug, create: state.formCreate, update: state.formUpdate, updateIfUnchanged: state.formUpdate, delete: state.formDelete, getSubmissionsByFormId: state.formSubmissions, deleteSubmission: state.formDeleteSubmission, listDeliveryJobs: state.formJobs, requeueFailedEffectJob: state.formRetry },
     editorLocks: { listActiveByResourceType: state.list },
   },
 }));
+vi.mock("../services/email.service", () => ({sendEventCanceledEmail:state.eventMail,sendEventReminderEmail:state.eventMail,sendRecordingAvailableEmail:state.eventMail}));
 vi.mock("../services/commercial-backfill.service", () => ({ backfillCommercialInquiries: vi.fn() }));
 vi.mock("../storage/index", async () => await import("../storage"));
 vi.mock("../services/site-features.service", () => ({ isSiteFeatureEnabled: state.enabled }));
@@ -153,6 +158,7 @@ beforeEach(async () => {
   state.user.mockResolvedValue({ id: "linked", role: "admin", isSuspended: false });
   state.enabled.mockResolvedValue(true);
   state.list.mockResolvedValue([]);
+  state.events.mockResolvedValue([]);
   state.pages.mockResolvedValue([{ id: "page", title: "Synthetic page" }]);
   state.page.mockResolvedValue({ id: "page", title: "Synthetic page", slug: "synthetic" });
   state.publish.mockResolvedValue({ id: "page", status: "published" });
@@ -808,4 +814,25 @@ it("provides form preview configuration only with the Forms capability", async (
   expect(Object.keys(await response.json())).toEqual(["previewUrl"]);
   identity.capabilities=["marketing.content.pages"];
   expect((await request("/form-builder")).status).toBe(403);
+});
+
+
+it("bridges Events with its own feature and capability boundaries", async () => {
+  identity.capabilities=["marketing.content.events"];
+  state.enabled.mockImplementation(async feature=>feature==="eventsEnabled");
+  state.events.mockResolvedValue([{id:"event",title:"Workshop",imageUrl:null}]);
+  state.eventGet.mockResolvedValue({id:"event",title:"Workshop",imageUrl:null});
+  state.venues.mockResolvedValue([{id:"venue",name:"Field"}]);
+  state.organizers.mockResolvedValue([{id:"organizer",name:"P1",imageUrl:null}]);
+  state.eventAnalytics.mockResolvedValue({total:2});
+  state.eventSlug.mockResolvedValue(undefined);
+  state.eventCreate.mockImplementation(async data=>({id:"new",...data}));
+  for(const path of ["/events","/events/event","/events/venues","/events/organizers","/events/event/analytics"])expect((await request(path)).status).toBe(200);
+  expect((await request("/events","POST",{},"/service",{title:"Draft workshop",date:"2026-10-01T12:00:00Z",status:"draft"})).status).toBe(201);
+  expect(state.eventCreate.mock.calls[0][0].date).toBeInstanceOf(Date);
+  identity.capabilities=["marketing.content.pages"];
+  for(const [path,method] of [["/events","GET"],["/events","POST"],["/events/event","GET"],["/events/event","PUT"],["/events/event","DELETE"],["/events/event/notify","POST"],["/events/event/duplicate","POST"],["/events/venues","GET"],["/events/venues/venue","DELETE"],["/events/organizers","POST"]])expect((await request(path,method)).status).toBe(403);
+  expect(state.eventMail).not.toHaveBeenCalled();
+  identity.capabilities=["marketing.content.events"];state.enabled.mockResolvedValue(false);
+  expect((await request("/events")).status).toBe(404);
 });

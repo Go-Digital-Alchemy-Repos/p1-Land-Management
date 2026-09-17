@@ -1,3 +1,4 @@
+import { requireBusinessCapability } from "../../middleware/auth";
 import { Router } from "express";
 import { storage } from "../../storage/index";
 import { asyncHandler } from "../../middleware/error-handler";
@@ -24,6 +25,7 @@ import {
 } from "@shared/schema";
 
 const router = Router();
+router.use(requireBusinessCapability("marketing.content.events"));
 
 const VALID_STATUSES = EVENT_STATUSES;
 const VALID_VISIBILITIES = ["public", "members_only", "counselors_only", "admins_only"] as const;
@@ -509,6 +511,15 @@ router.delete(
       return notFound(res, "Organizer");
     }
     res.json({ message: "Organizer deleted" });
+  }),
+);
+
+router.get(
+  "/:id",
+  asyncHandler(async (req, res) => {
+    const event = await storage.events.getEvent(paramString(req.params.id));
+    if (!event) return notFound(res, "Event");
+    res.json(await normalizeEventImage(event));
   }),
 );
 

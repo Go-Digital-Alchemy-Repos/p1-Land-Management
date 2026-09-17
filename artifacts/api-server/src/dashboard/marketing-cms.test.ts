@@ -377,3 +377,8 @@ test("Forms delivery queries are bounded and backfill remains owner-only", () =>
   assert.equal(cmsDestination(jobs, {}, { limit: "20", status: "all", cursor: "abc_123" }), "/form-delivery-jobs?limit=20&status=all&cursor=abc_123");
   for (const query of [{ limit: "201" }, { limit: "0" }, { status: "unknown" }, { cursor: ["a", "b"] }, { cursor: "../" }, { extra: "x" }]) assert.throws(() => cmsDestination(jobs, {}, query), /Invalid form delivery filters/);
 });
+
+
+test("event management is explicitly scoped to Events", () => {
+  for (const [method,path] of [["GET","/events"],["POST","/events"],["GET","/events/:id"],["PUT","/events/:id"],["DELETE","/events/:id"],["POST","/events/:id/notify"],["POST","/events/:id/duplicate"],["GET","/events/:id/analytics"],["GET","/events/venues"],["PUT","/events/venues/:venueId"],["GET","/events/organizers"],["DELETE","/events/organizers/:organizerId"]] as const) assert.deepEqual(operation(method,path).capabilities,["marketing.content.events"]);
+});

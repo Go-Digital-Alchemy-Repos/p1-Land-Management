@@ -83,6 +83,9 @@ import type {
   DeleteMarketingBlog200,
   DeleteMarketingBlogComment200,
   DeleteMarketingBlogTaxonomy200,
+  DeleteMarketingEvent200,
+  DeleteMarketingEventOrganizer200,
+  DeleteMarketingEventVenue200,
   DeleteMarketingForm200,
   DeleteMarketingFormSubmission200,
   DeleteMarketingMedia200,
@@ -98,6 +101,7 @@ import type {
   GenerateAssessmentAvailability,
   GeneratedAssessmentAvailability,
   GetMarketingAnalyticsParams,
+  GetMarketingEventAnalytics200,
   GetMarketingFormBuilder200,
   GetMarketingSearchConsoleParams,
   GetScheduleParams,
@@ -134,6 +138,15 @@ import type {
   MarketingBlogTaxonomyInput,
   MarketingBlogTaxonomyPatch,
   MarketingDeleteResult,
+  MarketingEvent,
+  MarketingEventInput,
+  MarketingEventOrganizer,
+  MarketingEventOrganizerInput,
+  MarketingEventOrganizerUpdate,
+  MarketingEventUpdate,
+  MarketingEventVenue,
+  MarketingEventVenueInput,
+  MarketingEventVenueUpdate,
   MarketingForm,
   MarketingFormInput,
   MarketingFormSubmission,
@@ -167,6 +180,8 @@ import type {
   MarketingSidebarReferences,
   MarketingTeamInput,
   MarketingTeamMember,
+  NotifyMarketingEvent200,
+  NotifyMarketingEventBody,
   OperationReceipt,
   PhotoUploadReceipt,
   Project,
@@ -6013,6 +6028,401 @@ export const getMarketingFormBuilder = async ( options?: RequestInit): Promise<G
     method: 'GET'
 
 
+  }
+);}
+
+
+
+export const getListMarketingEventsUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/events`
+}
+
+/**
+ * Requires marketing.content.events. Retains the website Events service behavior.
+ */
+export const listMarketingEvents = async ( options?: RequestInit): Promise<MarketingEvent[]> => {
+
+  return customFetch<MarketingEvent[]>(getListMarketingEventsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateMarketingEventUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/events`
+}
+
+/**
+ * Requires marketing.content.events. Retains the website Events service behavior.
+ */
+export const createMarketingEvent = async (marketingEventInput: MarketingEventInput, options?: RequestInit): Promise<MarketingEvent> => {
+
+  return customFetch<MarketingEvent>(getCreateMarketingEventUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingEventInput,)
+  }
+);}
+
+
+
+export const getUpdateMarketingEventUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/events/${id}`
+}
+
+/**
+ * Requires marketing.content.events. Retains the website Events service behavior.
+ */
+export const updateMarketingEvent = async (id: string,
+    marketingEventUpdate: MarketingEventUpdate, options?: RequestInit): Promise<MarketingEvent> => {
+
+  return customFetch<MarketingEvent>(getUpdateMarketingEventUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingEventUpdate,)
+  }
+);}
+
+
+
+export const getDeleteMarketingEventUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/events/${id}`
+}
+
+/**
+ * Requires marketing.content.events. Retains the website Events service behavior.
+ */
+export const deleteMarketingEvent = async (id: string, options?: RequestInit): Promise<DeleteMarketingEvent200> => {
+
+  return customFetch<DeleteMarketingEvent200>(getDeleteMarketingEventUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+export const getGetMarketingEventUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/events/${id}`
+}
+
+/**
+ * Requires marketing.content.events. Retains the website Events service behavior.
+ */
+export const getMarketingEvent = async (id: string, options?: RequestInit): Promise<MarketingEvent> => {
+
+  return customFetch<MarketingEvent>(getGetMarketingEventUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getListMarketingEventVenuesUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/events/venues`
+}
+
+/**
+ * Requires marketing.content.events. Retains the website Events service behavior.
+ */
+export const listMarketingEventVenues = async ( options?: RequestInit): Promise<MarketingEventVenue[]> => {
+
+  return customFetch<MarketingEventVenue[]>(getListMarketingEventVenuesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateMarketingEventVenueUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/events/venues`
+}
+
+/**
+ * Requires marketing.content.events. Retains the website Events service behavior.
+ */
+export const createMarketingEventVenue = async (marketingEventVenueInput: MarketingEventVenueInput, options?: RequestInit): Promise<MarketingEventVenue> => {
+
+  return customFetch<MarketingEventVenue>(getCreateMarketingEventVenueUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingEventVenueInput,)
+  }
+);}
+
+
+
+export const getUpdateMarketingEventVenueUrl = (venueId: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/events/venues/${venueId}`
+}
+
+/**
+ * Requires marketing.content.events. Retains the website Events service behavior.
+ */
+export const updateMarketingEventVenue = async (venueId: string,
+    marketingEventVenueUpdate: MarketingEventVenueUpdate, options?: RequestInit): Promise<MarketingEventVenue> => {
+
+  return customFetch<MarketingEventVenue>(getUpdateMarketingEventVenueUrl(venueId),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingEventVenueUpdate,)
+  }
+);}
+
+
+
+export const getDeleteMarketingEventVenueUrl = (venueId: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/events/venues/${venueId}`
+}
+
+/**
+ * Requires marketing.content.events. Retains the website Events service behavior.
+ */
+export const deleteMarketingEventVenue = async (venueId: string, options?: RequestInit): Promise<DeleteMarketingEventVenue200> => {
+
+  return customFetch<DeleteMarketingEventVenue200>(getDeleteMarketingEventVenueUrl(venueId),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+export const getListMarketingEventOrganizersUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/events/organizers`
+}
+
+/**
+ * Requires marketing.content.events. Retains the website Events service behavior.
+ */
+export const listMarketingEventOrganizers = async ( options?: RequestInit): Promise<MarketingEventOrganizer[]> => {
+
+  return customFetch<MarketingEventOrganizer[]>(getListMarketingEventOrganizersUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateMarketingEventOrganizerUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/events/organizers`
+}
+
+/**
+ * Requires marketing.content.events. Retains the website Events service behavior.
+ */
+export const createMarketingEventOrganizer = async (marketingEventOrganizerInput: MarketingEventOrganizerInput, options?: RequestInit): Promise<MarketingEventOrganizer> => {
+
+  return customFetch<MarketingEventOrganizer>(getCreateMarketingEventOrganizerUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingEventOrganizerInput,)
+  }
+);}
+
+
+
+export const getUpdateMarketingEventOrganizerUrl = (organizerId: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/events/organizers/${organizerId}`
+}
+
+/**
+ * Requires marketing.content.events. Retains the website Events service behavior.
+ */
+export const updateMarketingEventOrganizer = async (organizerId: string,
+    marketingEventOrganizerUpdate: MarketingEventOrganizerUpdate, options?: RequestInit): Promise<MarketingEventOrganizer> => {
+
+  return customFetch<MarketingEventOrganizer>(getUpdateMarketingEventOrganizerUrl(organizerId),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingEventOrganizerUpdate,)
+  }
+);}
+
+
+
+export const getDeleteMarketingEventOrganizerUrl = (organizerId: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/events/organizers/${organizerId}`
+}
+
+/**
+ * Requires marketing.content.events. Retains the website Events service behavior.
+ */
+export const deleteMarketingEventOrganizer = async (organizerId: string, options?: RequestInit): Promise<DeleteMarketingEventOrganizer200> => {
+
+  return customFetch<DeleteMarketingEventOrganizer200>(getDeleteMarketingEventOrganizerUrl(organizerId),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+export const getDuplicateMarketingEventUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/events/${id}/duplicate`
+}
+
+/**
+ * Requires marketing.content.events. Retains the website Events service behavior.
+ */
+export const duplicateMarketingEvent = async (id: string, options?: RequestInit): Promise<MarketingEvent> => {
+
+  return customFetch<MarketingEvent>(getDuplicateMarketingEventUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+export const getGetMarketingEventAnalyticsUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/events/${id}/analytics`
+}
+
+/**
+ * Requires marketing.content.events. Retains the website Events service behavior.
+ */
+export const getMarketingEventAnalytics = async (id: string, options?: RequestInit): Promise<GetMarketingEventAnalytics200> => {
+
+  return customFetch<GetMarketingEventAnalytics200>(getGetMarketingEventAnalyticsUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getNotifyMarketingEventUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/events/${id}/notify`
+}
+
+/**
+ * Requires marketing.content.events. Retains the website Events service behavior.
+ */
+export const notifyMarketingEvent = async (id: string,
+    notifyMarketingEventBody: NotifyMarketingEventBody, options?: RequestInit): Promise<NotifyMarketingEvent200> => {
+
+  return customFetch<NotifyMarketingEvent200>(getNotifyMarketingEventUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      notifyMarketingEventBody,)
   }
 );}
 

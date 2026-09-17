@@ -1,3 +1,4 @@
+import events from "./admin/events.routes";
 import { Router } from "express";
 import { z } from "zod";
 import { storage } from "../storage";
@@ -5,7 +6,11 @@ import {
   authenticateMarketingService,
   resolveMarketingActor,
 } from "../middleware/marketing-service";
-import { requireCmsEnabled, requireBlogEnabled } from "../middleware/site-features";
+import {
+  requireCmsEnabled,
+  requireBlogEnabled,
+  requireEventsEnabled,
+} from "../middleware/site-features";
 import { FederationError } from "../services/federation-client";
 import forms from "./admin/forms.routes";
 import pages from "./admin/cms.routes";
@@ -68,6 +73,7 @@ router.get("/notification-forms", async (req, res, next) => {
 });
 router.use("/editor-locks", editorLocks);
 router.use("/blog", requireBlogEnabled, blog);
+router.use("/events", requireEventsEnabled, events);
 router.use(requireCmsEnabled);
 router.use("/website", website);
 router.use(forms, pages, sections, galleries, menus, sidebars, seo, redirects, audit, team, media);
