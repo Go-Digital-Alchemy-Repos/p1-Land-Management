@@ -1,3 +1,4 @@
+import p1GoogleAnalyticsRoutes from "./p1-google-analytics.routes";
 import p1AnalyticsRoutes from "./p1-analytics.routes";
 import type { Express, Request, Response, NextFunction } from "express";
 import { logger } from "../utils/logger";
@@ -40,6 +41,7 @@ export function registerApiRoutes(app: Express) {
       res.status(404).json({ message: "Not found" });
     },
   );
+  app.use("/api/p1/google-analytics", p1GoogleAnalyticsRoutes);
   app.use("/api/p1", p1AnalyticsRoutes);
   app.use("/r2", r2PublicRoutes);
   app.use("/api/auth/federation", federationRoutes);
