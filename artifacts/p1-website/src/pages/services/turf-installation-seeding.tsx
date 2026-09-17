@@ -74,7 +74,7 @@ export default function TurfInstallationSeeding() {
       <section className="py-24 bg-background">
         <div className="site-shell space-y-16">
           
-          <FeatureRow heading="Turf Done Right Starts Before the First Seed" image={turfPrepImg} imageAlt="Site being prepared and graded before turf installation">
+          <FeatureRow heading="Turf Done Right Starts Before the First Seed" image={turfPrepImg} imageAlt="Orange compact track loader with a power rake preparing soil for turf installation">
             <p>
               Good turf starts with the ground underneath it. Grade, drainage, soil, grass choice, and watering all affect how well it takes.
             </p>

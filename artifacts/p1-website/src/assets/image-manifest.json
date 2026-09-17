@@ -1056,34 +1056,34 @@
     ]
   },
   "features/turf-prep.png": {
-    "sourceBytes": 2193018,
-    "sourceHash": "0cde92c28ffbe05b8c9bdf1b9edb41edaab195208242fa506553e7e74be4b8d9",
-    "width": 1280,
-    "height": 896,
+    "sourceBytes": 3322663,
+    "sourceHash": "d354c412399eef5d6d6c09b99666aa281579872966e422f5d134ec39d6ce4922",
+    "width": 1536,
+    "height": 1024,
     "default": "optimized/features/turf-prep-1280.webp",
     "variants": [
       {
         "path": "optimized/features/turf-prep-480.webp",
         "format": "webp",
         "width": 480,
-        "height": 336,
-        "bytes": 38940,
+        "height": 320,
+        "bytes": 40496,
         "quality": 78
       },
       {
         "path": "optimized/features/turf-prep-768.webp",
         "format": "webp",
         "width": 768,
-        "height": 538,
-        "bytes": 94046,
+        "height": 512,
+        "bytes": 97972,
         "quality": 78
       },
       {
         "path": "optimized/features/turf-prep-1280.webp",
         "format": "webp",
         "width": 1280,
-        "height": 896,
-        "bytes": 230526,
+        "height": 853,
+        "bytes": 217850,
         "quality": 78
       }
     ]

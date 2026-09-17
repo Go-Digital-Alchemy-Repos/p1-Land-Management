@@ -6,7 +6,7 @@
     "displayName": "P1 Land & Property Management",
     "source": {
       "repository": "https://github.com/Go-Digital-Alchemy-Repos/p1-Land-Management.git",
-      "revision": "498be9fbce902ef6a3265f6b5f713236c7477fa4"
+      "revision": "b5c6678b2e5934a690d23ff4ca5dfd25de2ce2ba"
     },
     "owners": [
       {
@@ -15460,15 +15460,15 @@
             "maxLength": 12000
           },
           {
-            "path": "f1orr5hf",
-            "label": "Image: /assets/turf-prep-1280-BiwahnV7.webp",
+            "path": "f1kg8kfx",
+            "label": "Image: /assets/turf-prep-1280-CiVNGsL4.webp",
             "type": "image",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "f1jk511b",
-            "label": "Image description: Site being prepared and graded before turf installation",
+            "path": "f8k42sn",
+            "label": "Image description: Orange compact track loader with a power rake preparing soil for turf installation",
             "type": "imageAlt",
             "required": false,
             "maxLength": 2000
@@ -15874,8 +15874,8 @@
           "fnhf3ir": "Turf Done Right Starts Before the First Seed",
           "f1kmjt77": "Good turf starts with the ground underneath it. Grade, drainage, soil, grass choice, and watering all affect how well it takes.",
           "f1npo202": "We'll review soil testing, grading, and any amendments needed before planting. You'll know what's included and who will handle watering and establishment care afterward.",
-          "f1orr5hf": "/assets/turf-prep-1280-BiwahnV7.webp",
-          "f1jk511b": "Site being prepared and graded before turf installation",
+          "f1kg8kfx": "/assets/turf-prep-1280-CiVNGsL4.webp",
+          "f8k42sn": "Orange compact track loader with a power rake preparing soil for turf installation",
           "f1gig32i": "Sod Installation",
           "f1jx72ua": "Large-acreage sod installation for commercial, municipal, and institutional properties",
           "f1kuen8g": "Bermuda, Zoysia, Centipede, and Fescue sod options",
