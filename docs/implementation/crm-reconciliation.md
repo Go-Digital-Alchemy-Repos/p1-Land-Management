@@ -108,3 +108,7 @@ This preflight does not compare or copy payload content, timestamps, due dates, 
 - Verify field-level payload reconciliation, idempotent replay, audit history, version conflicts, counts and checksums, restoration/rollback, scoped UI/API access and frozen-source cutover before retiring Core CRM.
 
 The full consolidation remains in progress; this tool resolves the record-identity preflight requirement only.
+
+## Payload preparation checkpoint
+
+[CRM payload preservation](crm-payload-preservation.md) now defines and implements a strict full-row preservation manifest for all six Core CRM tables. It derives this relationship preflight from the same payload rows, records deterministic per-record/content hashes, retains fields without native counterparts and flags incompatible note/task payloads. This advances payload reconciliation preparation; applying payloads to the dashboard remains unimplemented and requires the importer acceptance checks in that document.
