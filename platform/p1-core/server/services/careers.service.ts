@@ -1,6 +1,7 @@
 import { getBaseUrl } from "../utils/route-helpers";
 import { assertUploadMutationsAllowed } from "./upload-mutation-policy";
 import fs from "fs";
+import { readLocalCareerResume } from "./career-resume-files";
 import path from "path";
 import crypto from "crypto";
 import type { Request } from "express";
@@ -153,10 +154,8 @@ export async function loadCareerResume(storageKey: string): Promise<{
   if (storageKey.startsWith("local:")) {
     const file = storageKey.slice(6);
     for (const directory of [LOCAL_RESUME_DIR, LEGACY_LOCAL_RESUME_DIR]) {
-      const safePath = path.resolve(directory, file);
-      if (safePath.startsWith(directory) && fs.existsSync(safePath)) {
-        return { buffer: fs.readFileSync(safePath), contentType: null };
-      }
+      const buffer = await readLocalCareerResume(directory, file);
+      if (buffer) return { buffer, contentType: null };
     }
     return null;
   }
