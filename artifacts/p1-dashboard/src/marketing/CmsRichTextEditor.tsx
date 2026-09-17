@@ -96,6 +96,59 @@ const CmsImage = TiptapImage.extend({
   },
 });
 
+const EMOJI_LIST = [
+  "😀",
+  "😂",
+  "😊",
+  "😍",
+  "🥰",
+  "🤔",
+  "😢",
+  "😎",
+  "😤",
+  "🙏",
+  "👍",
+  "👋",
+  "👏",
+  "🤝",
+  "💪",
+  "✌️",
+  "🖐️",
+  "👌",
+  "🤞",
+  "❤️",
+  "🎉",
+  "✨",
+  "🔥",
+  "⭐",
+  "💡",
+  "📝",
+  "🗓️",
+  "⏰",
+  "🌟",
+  "💎",
+  "✅",
+  "❌",
+  "⚠️",
+  "ℹ️",
+  "📌",
+  "🔗",
+  "📊",
+  "📈",
+  "💬",
+  "🌍",
+  "🧠",
+  "💼",
+  "🏆",
+  "🎯",
+  "🚀",
+  "🌱",
+  "☀️",
+  "🌈",
+  "🎶",
+  "📚",
+];
+
 /** Same CMS editor engine and HTML contract as the retained admin. */
 export function CmsRichTextEditor({
   value,
@@ -103,12 +156,16 @@ export function CmsRichTextEditor({
   canUseMedia = false,
   disabled = false,
   label = "Full biography",
+  blogMode = false,
+  galleries = [],
 }: {
   value: string;
   onChange: (value: string) => void;
   canUseMedia?: boolean;
   disabled?: boolean;
   label?: string;
+  blogMode?: boolean;
+  galleries?: { id: string; title: string }[];
 }) {
   const [mode, setMode] = useState("visual"),
     [linkPanel, setLinkPanel] = useState(false),
@@ -128,7 +185,7 @@ export function CmsRichTextEditor({
       StarterKit.configure({
         link: false,
         underline: false,
-        heading: { levels: [2, 3] },
+        heading: { levels: blogMode ? [1, 2, 3] : [2, 3] },
       }),
       TEXT_ALIGN_EXTENSION,
       Underline,
@@ -235,7 +292,7 @@ export function CmsRichTextEditor({
         <textarea
           aria-label={`${label} HTML`}
           value={value}
-          maxLength={30000}
+          maxLength={blogMode ? undefined : 30000}
           rows={12}
           disabled={disabled}
           onChange={(e) => onChange(e.target.value)}
@@ -249,6 +306,88 @@ export function CmsRichTextEditor({
           >
             {editor && (
               <>
+                {blogMode && (
+                  <>
+                    {button(
+                      "Heading 1",
+                      () =>
+                        editor
+                          .chain()
+                          .focus()
+                          .toggleHeading({ level: 1 })
+                          .run(),
+                      editor.isActive("heading", { level: 1 }),
+                    )}
+                    {button(
+                      "Inline code",
+                      () => editor.chain().focus().toggleCode().run(),
+                      editor.isActive("code"),
+                    )}
+                    {button(
+                      "Code block",
+                      () => editor.chain().focus().toggleCodeBlock().run(),
+                      editor.isActive("codeBlock"),
+                    )}
+                    {button("Divider", () =>
+                      editor.chain().focus().setHorizontalRule().run(),
+                    )}
+                    <label>
+                      Emoji
+                      <select
+                        aria-label="Insert emoji"
+                        disabled={disabled}
+                        value=""
+                        onChange={(event) => {
+                          if (event.target.value)
+                            editor
+                              .chain()
+                              .focus()
+                              .insertContent(event.target.value)
+                              .run();
+                        }}
+                      >
+                        <option value="">Choose emoji</option>
+                        {EMOJI_LIST.map((emoji) => (
+                          <option key={emoji}>{emoji}</option>
+                        ))}
+                      </select>
+                    </label>
+                    <label>
+                      Gallery
+                      <select
+                        aria-label="Insert published gallery"
+                        disabled={disabled}
+                        value=""
+                        onChange={(event) => {
+                          const gallery = galleries.find(
+                            (item) => item.id === event.target.value,
+                          );
+                          if (gallery)
+                            editor
+                              .chain()
+                              .focus()
+                              .insertContent({
+                                type: "paragraph",
+                                content: [
+                                  {
+                                    type: "text",
+                                    text: `[gallery id="${gallery.id}"]`,
+                                  },
+                                ],
+                              })
+                              .run();
+                        }}
+                      >
+                        <option value="">Choose gallery</option>
+                        {galleries.map((gallery) => (
+                          <option key={gallery.id} value={gallery.id}>
+                            {gallery.title}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  </>
+                )}
                 {button(
                   "Paragraph",
                   () => editor.chain().focus().setParagraph().run(),

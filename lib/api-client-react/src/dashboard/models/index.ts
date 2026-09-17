@@ -212,6 +212,7 @@ export * from './marketingBlogInput';
 export * from './marketingBlogPatch';
 export * from './marketingBlogPost';
 export * from './marketingBlogReferences';
+export * from './marketingBlogReferencesGalleriesItem';
 export * from './marketingBlogReferencesSidebarsItem';
 export * from './marketingBlogTaxonomy';
 export * from './marketingBlogTaxonomyInput';

@@ -7620,6 +7620,144 @@
           }
         ]
       }
+    },
+    "/marketing/cms/editor-locks/blog_post/{id}/acquire": {
+      "post": {
+        "operationId": "acquireMarketingBlogReservation",
+        "description": "Requires marketing.content.blog. Retained advisory editor reservation.",
+        "responses": {
+          "200": {
+            "description": "Website menu result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteEditorReservation"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid menu or identifier"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Menus access or linked Core identity required"
+          },
+          "404": {
+            "description": "Menu not found"
+          },
+          "409": {
+            "description": "Conflict"
+          },
+          "503": {
+            "description": "Website unavailable; refresh before retrying a change"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/editor-locks/blog_post/{id}/heartbeat": {
+      "post": {
+        "operationId": "heartbeatMarketingBlogReservation",
+        "description": "Requires marketing.content.blog. Retained advisory editor reservation.",
+        "responses": {
+          "200": {
+            "description": "Website menu result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteEditorReservation"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid menu or identifier"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Menus access or linked Core identity required"
+          },
+          "404": {
+            "description": "Menu not found"
+          },
+          "409": {
+            "description": "Conflict"
+          },
+          "503": {
+            "description": "Website unavailable; refresh before retrying a change"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/editor-locks/blog_post/{id}/release": {
+      "post": {
+        "operationId": "releaseMarketingBlogReservation",
+        "description": "Requires marketing.content.blog. Retained advisory editor reservation.",
+        "responses": {
+          "200": {
+            "description": "Website menu result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteEditorReservation"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid menu or identifier"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Menus access or linked Core identity required"
+          },
+          "404": {
+            "description": "Menu not found"
+          },
+          "409": {
+            "description": "Conflict"
+          },
+          "503": {
+            "description": "Website unavailable; refresh before retrying a change"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -15882,7 +16020,8 @@
       "MarketingBlogReferences": {
         "type": "object",
         "required": [
-          "sidebars"
+          "sidebars",
+          "galleries"
         ],
         "properties": {
           "sidebars": {
@@ -15898,6 +16037,24 @@
                   "type": "string"
                 },
                 "name": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "galleries": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "title"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "title": {
                   "type": "string"
                 }
               }

@@ -4209,3 +4209,75 @@ export const deleteMarketingBlogComment = async (id: string, options?: RequestIn
 
 
 
+export const getAcquireMarketingBlogReservationUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/editor-locks/blog_post/${id}/acquire`
+}
+
+/**
+ * Requires marketing.content.blog. Retained advisory editor reservation.
+ */
+export const acquireMarketingBlogReservation = async (id: string, options?: RequestInit): Promise<WebsiteEditorReservation> => {
+
+  return customFetch<WebsiteEditorReservation>(getAcquireMarketingBlogReservationUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+export const getHeartbeatMarketingBlogReservationUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/editor-locks/blog_post/${id}/heartbeat`
+}
+
+/**
+ * Requires marketing.content.blog. Retained advisory editor reservation.
+ */
+export const heartbeatMarketingBlogReservation = async (id: string, options?: RequestInit): Promise<WebsiteEditorReservation> => {
+
+  return customFetch<WebsiteEditorReservation>(getHeartbeatMarketingBlogReservationUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+export const getReleaseMarketingBlogReservationUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/editor-locks/blog_post/${id}/release`
+}
+
+/**
+ * Requires marketing.content.blog. Retained advisory editor reservation.
+ */
+export const releaseMarketingBlogReservation = async (id: string, options?: RequestInit): Promise<WebsiteEditorReservation> => {
+
+  return customFetch<WebsiteEditorReservation>(getReleaseMarketingBlogReservationUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+

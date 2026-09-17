@@ -145,8 +145,8 @@ async function normalizePostImages(post: BlogPost): Promise<BlogPost> {
 }
 
 router.get("/references", asyncHandler(async (_req,res)=>{
-  const sidebars=await storage.cmsSidebars.getAll();
-  res.json({sidebars:sidebars.map(sidebar=>({id:sidebar.id,name:sidebar.name}))});
+  const [sidebars,galleries]=await Promise.all([storage.cmsSidebars.getAll(),storage.cmsGalleries.getAll()]);
+  res.json({sidebars:sidebars.map(sidebar=>({id:sidebar.id,name:sidebar.name})),galleries:galleries.filter(gallery=>gallery.status==="published").map(gallery=>({id:gallery.id,title:gallery.title}))});
 }));
 
 router.get(
@@ -305,6 +305,15 @@ router.put(
     if (data.parentId) {
       if (data.parentId === id) {
         return res.status(400).json({ message: "A taxonomy cannot be its own parent" });
+      }
+      const visited = new Set<string>([id]);
+      let ancestorId: string | null | undefined = data.parentId;
+      while (ancestorId) {
+        if (visited.has(ancestorId)) {
+          return res.status(400).json({ message: "Category parents cannot form a cycle" });
+        }
+        visited.add(ancestorId);
+        ancestorId = allTaxonomies.find((taxonomy) => taxonomy.id === ancestorId)?.parentId;
       }
       const parent = await storage.blogTaxonomies.getTaxonomy(data.parentId);
       if (!parent || parent.type !== "category") {

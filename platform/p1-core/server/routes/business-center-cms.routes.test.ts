@@ -588,8 +588,9 @@ it("retains Blog scheduling rules, feature isolation and minimized references", 
   state.list.mockResolvedValue([
     { id: "sidebar", name: "News", content: { private: "not returned" } },
   ]);
+  state.list.mockResolvedValueOnce([{id:"sidebar",name:"News",content:"private"}]).mockResolvedValueOnce([{id:"live",title:"Field work",status:"published",images:["private"]},{id:"draft",title:"Not published",status:"draft"}]);
   const refs = await request("/blog/references");
-  expect(await refs.json()).toEqual({ sidebars: [{ id: "sidebar", name: "News" }] });
+  expect(await refs.json()).toEqual({ sidebars: [{ id: "sidebar", name: "News" }], galleries: [{id:"live",title:"Field work"}] });
   expect((await request("/sidebars")).status).toBe(404);
   state.enabled.mockResolvedValue(false);
   expect((await request("/blog")).status).toBe(404);
@@ -639,4 +640,13 @@ it("allows explicitly clearing a Blog category parent while preserving omitted p
  const update=(body:unknown)=>fetch(base+"/service/blog/settings/taxonomies/child",{method:"PUT",headers:{authorization:`Bearer ${key}`,"x-p1-user-grant":grantId,"content-type":"application/json"},body:JSON.stringify(body)});
  expect((await update({sortOrder:3})).status).toBe(200);expect(state.taxonomyUpdate).toHaveBeenLastCalledWith("child",expect.objectContaining({parentId:"parent",sortOrder:3}));
  expect((await update({parentId:null})).status).toBe(200);expect(state.taxonomyUpdate).toHaveBeenLastCalledWith("child",expect.objectContaining({parentId:null}));
+});
+
+it("rejects descendant category parents before persisting a cycle", async () => {
+ identity.capabilities=["marketing.content.blog"];
+ const parent={id:"parent",name:"Parent",slug:"parent",type:"category",parentId:null,sortOrder:0};
+ state.taxonomyGet.mockResolvedValue(parent);
+ state.taxonomies.mockResolvedValue([parent,{...parent,id:"child",name:"Child",parentId:"parent"}]);
+ const response=await fetch(base+"/service/blog/settings/taxonomies/parent",{method:"PUT",headers:{authorization:`Bearer ${key}`,"x-p1-user-grant":grantId,"content-type":"application/json"},body:JSON.stringify({parentId:"child"})});
+ expect(response.status).toBe(400);expect(state.taxonomyUpdate).not.toHaveBeenCalled();
 });
