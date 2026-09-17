@@ -1157,6 +1157,7 @@ export const estimate = pgTable(
     agreementTemplateId: uuid("agreement_template_id"),
     agreementTemplateVersion: integer("agreement_template_version"),
     agreementTemplateSnapshot: text("agreement_template_snapshot"),
+    documentSnapshot: jsonb("document_snapshot"),
   },
   (table) => [
     uniqueIndex("estimate_series_id_idx")
@@ -1185,6 +1186,7 @@ export const estimate = pgTable(
     foreignKey({ columns: [table.requestId], foreignColumns: [serviceRequest.id], name: "estimate_request_id_fkey" }),
     foreignKey({ columns: [table.agreementTemplateId], foreignColumns: [agreementTemplate.id], name: "estimate_agreement_template_id_fkey" }),
     check("estimate_amount_cents_check", sql`amount_cents >= 0`),
+    check("estimate_document_snapshot_object", sql`document_snapshot IS NULL OR COALESCE((jsonb_typeof(document_snapshot)='object' AND document_snapshot->>'schemaVersion'='1' AND jsonb_typeof(document_snapshot->'document')='object'),false)`),
     check(
       "estimate_status_check",
       sql`status = ANY (ARRAY['draft'::text, 'sent'::text, 'approved'::text, 'declined'::text])`,

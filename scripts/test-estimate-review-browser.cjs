@@ -23,6 +23,8 @@ const assert = require("node:assert/strict");
       return route.fulfill({
         json: {
           title: "Synthetic agreement",
+          revision: 3,
+          address: "Synthetic property address",
           client_name: "José Álvarez",
           property_name: "Café grounds",
           scope: "First scope line\nSecond scope line",
@@ -48,6 +50,10 @@ const assert = require("node:assert/strict");
       .getByRole("heading", { name: "Agreement terms", exact: true })
       .waitFor();
     await page.getByText("Additional client terms", { exact: true }).waitFor();
+    await page.getByText("Estimate revision 3", { exact: true }).waitFor();
+    await page
+      .getByText("Synthetic property address", { exact: true })
+      .waitFor();
     await page
       .getByText("Valid through Jan 31, 2030, 12:00 AM UTC", { exact: true })
       .waitFor();

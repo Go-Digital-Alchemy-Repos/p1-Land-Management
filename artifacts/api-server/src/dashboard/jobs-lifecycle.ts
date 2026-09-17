@@ -1,3 +1,4 @@
+import { estimateDocument } from "./estimate-document";
 import { renderEstimatePdf, estimatePdfBlocks, validatePdfText } from "./estimate-pdf";
 import { agreementCompositionApi } from "./agreement-composition.routes";
 import { agreementTemplateApi } from "./agreement-template.routes";
@@ -136,13 +137,6 @@ async function createEstimate(a: Actor, raw: unknown, requestId?: string) {
   return { id: key };
 }
 
-async function estimateDocument(c: any, estimateId: string) {
-  const estimate = (await c.query(`SELECT e.*,p.name AS property_name,p.address,c.name AS client_name
-    FROM estimate e JOIN property p ON p.id=e.property_id JOIN client c ON c.id=p.client_id WHERE e.id=$1`, [estimateId])).rows[0];
-  if (!estimate) throw new HttpError(404, "Estimate not found");
-  const lines = (await c.query("SELECT description,unit,quantity,unit_price_cents,position FROM estimate_line_item WHERE estimate_id=$1 ORDER BY position", [estimateId])).rows;
-  return { ...estimate, line_items: lines };
-}
 
 async function convertApprovedEstimate(c: any, estimate: any, actorId: string | null, contactId: string | null) {
   if (estimate.status !== "sent") throw new HttpError(409, "Estimate is no longer awaiting a decision");
@@ -207,8 +201,8 @@ jobsLifecycleApi.post("/requests/:id/estimates", async (req, res) => res.status(
 jobsLifecycleApi.get("/estimates/:id/document", async (req, res) => {
   const a = await actor(req); if (a.role !== "client") requireAnyCapability(a, ["revenue.sales", "revenue.agreements", "revenue.billing"]); const key = id.parse(req.params.id); const doc = await estimateDocument(pool, key); await propertyAccess(a, doc.property_id); if (a.role === "client" && doc.status === "draft") throw new HttpError(404, "Estimate not found");
   if (a.role === "client") {
-    const { id: estimateId, property_id, property_name, client_name, title, revision, amount_cents, scope, status, approved_at, created_at, is_current, kind, terms, agreement_template_snapshot, expires_at, line_items } = doc;
-    res.json({ id: estimateId, property_id, property_name, client_name, title, revision, amount_cents, scope, status, approved_at, created_at, is_current, kind, terms, agreement_template_snapshot, expires_at, line_items });
+    const { id: estimateId, property_id, property_name, address, client_name, title, revision, amount_cents, scope, status, approved_at, created_at, is_current, kind, terms, agreement_template_snapshot, expires_at, line_items } = doc;
+    res.json({ id: estimateId, property_id, property_name, address, client_name, title, revision, amount_cents, scope, status, approved_at, created_at, is_current, kind, terms, agreement_template_snapshot, expires_at, line_items });
     return;
   }
   res.json(doc);
@@ -226,8 +220,8 @@ jobsLifecycleApi.post("/estimates/:id/send", async (req, res) => {
     const estimate = (await c.query("SELECT * FROM estimate WHERE id=$1 FOR UPDATE", [estimateId])).rows[0]; if (!estimate || estimate.status !== "draft" || !estimate.is_current) throw new HttpError(409, "Only the current draft estimate can be sent");
     const contacts = (await c.query("SELECT c.id,c.email,COALESCE(p.email_enabled,true) AS email_enabled FROM contact c LEFT JOIN contact_notification_preference p ON p.contact_id=c.id JOIN property pr ON pr.client_id=c.client_id WHERE c.id=ANY($1::uuid[]) AND pr.id=$2 AND c.archived=false", [b.recipientContactIds, estimate.property_id])).rows;
     if (contacts.length !== b.recipientContactIds.length || contacts.some(contact => !contact.email || !contact.email_enabled)) throw new HttpError(409, "Each recipient must be an active property contact with email notifications enabled");
-    validatePdfText(estimatePdfBlocks(await estimateDocument(c, estimateId)));
     await c.query("UPDATE estimate SET status='sent' WHERE id=$1", [estimateId]);
+    validatePdfText(estimatePdfBlocks(await estimateDocument(c, estimateId)));
     for (const contact of contacts) { const token = randomBytes(32).toString("base64url"); await c.query("INSERT INTO estimate_recipient(id,estimate_id,contact_id,email,token_hash,expires_at) VALUES($1,$2,$3,$4,$5,$6)", [randomUUID(), estimateId, contact.id, contact.email, sha(token), estimate.expires_at]); await c.query("INSERT INTO outbox(id,kind,payload,dedup_key) VALUES($1,'email',$2,$3)", [randomUUID(), { to: contact.email, subject: `Estimate ready: ${estimate.title}`, text: `Your P1 estimate is ready to review and approve: ${process.env.DASHBOARD_ORIGIN || ""}/estimate-approval/${token}` }, `estimate:${estimateId}:${contact.id}:v${estimate.revision}`]); }
     await audit(c, a.id, "estimate.sent", estimateId, { recipients: b.recipientContactIds });
   });
@@ -241,8 +235,8 @@ jobsLifecycleApi.post("/estimates/:id/decision", async (req, res) => {
     await transaction(async (c) => {
       const current = (await c.query("SELECT status,is_current,revision FROM estimate WHERE id=$1 FOR UPDATE", [key])).rows[0];
       if (!current || !current.is_current || current.revision !== b.revision || current.status !== "draft") throw new HttpError(409, "Estimate changed or decision already recorded");
-      validatePdfText(estimatePdfBlocks(await estimateDocument(c, key)));
       await c.query("UPDATE estimate SET status='sent' WHERE id=$1", [key]);
+      validatePdfText(estimatePdfBlocks(await estimateDocument(c, key)));
       await audit(c, a.id, "estimate.sent_legacy", key);
     });
     res.json({ ok: true });
@@ -282,6 +276,6 @@ function publicThrottle(token: string) { const key=sha(token), now=Date.now(), p
 
 export const estimatePublicApi = Router();
 async function publicRecipient(token: string) { const hash=publicThrottle(token); const row=(await pool.query("SELECT r.*,e.id AS estimate_id,e.status,e.is_current,e.expires_at FROM estimate_recipient r JOIN estimate e ON e.id=r.estimate_id WHERE r.token_hash=$1",[hash])).rows[0]; if(!row || row.status!=="sent" || row.decision || !row.is_current || new Date(row.expires_at).getTime()<=Date.now()) throw new HttpError(404,"Estimate link is no longer available"); return row; }
-estimatePublicApi.get("/estimates/:token", async(req,res)=>{ const recipient=await publicRecipient(req.params.token); await pool.query("UPDATE estimate_recipient SET viewed_at=COALESCE(viewed_at,now()) WHERE id=$1",[recipient.id]); const doc=await estimateDocument(pool,recipient.estimate_id); const { id: estimateId, property_id, property_name, client_name, title, revision, amount_cents, scope, status, approved_at, created_at, is_current, kind, terms, agreement_template_snapshot, expires_at, line_items }=doc; res.json({ id: estimateId, property_id, property_name, client_name, title, revision, amount_cents, scope, status, approved_at, created_at, is_current, kind, terms, agreement_template_snapshot, expires_at, line_items }); });
+estimatePublicApi.get("/estimates/:token", async(req,res)=>{ const recipient=await publicRecipient(req.params.token); await pool.query("UPDATE estimate_recipient SET viewed_at=COALESCE(viewed_at,now()) WHERE id=$1",[recipient.id]); const doc=await estimateDocument(pool,recipient.estimate_id); const { id: estimateId, property_id, property_name, address, client_name, title, revision, amount_cents, scope, status, approved_at, created_at, is_current, kind, terms, agreement_template_snapshot, expires_at, line_items }=doc; res.json({ id: estimateId, property_id, property_name, address, client_name, title, revision, amount_cents, scope, status, approved_at, created_at, is_current, kind, terms, agreement_template_snapshot, expires_at, line_items }); });
 estimatePublicApi.get("/estimates/:token/pdf", async(req,res)=>{ const recipient=await publicRecipient(req.params.token); const doc=await estimateDocument(pool,recipient.estimate_id); res.type("application/pdf").attachment("estimate.pdf").send(await renderEstimatePdf(doc)); });
 estimatePublicApi.post("/estimates/:token/decision", async(req,res)=>{ const recipient=await publicRecipient(req.params.token); const b=z.object({status:z.enum(["approved","declined"])}).parse(req.body); const result=await decideEstimate(recipient.estimate_id,b.status,null,recipient.contact_id); await pool.query("UPDATE estimate_recipient SET decision=$2,decided_at=now() WHERE id=$1",[recipient.id,b.status]); await pool.query("UPDATE estimate_recipient SET decision='revoked' WHERE estimate_id=$1 AND id<>$2 AND decision IS NULL",[recipient.estimate_id,recipient.id]); res.json(result); });
