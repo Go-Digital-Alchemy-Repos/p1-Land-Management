@@ -2,6 +2,10 @@
 
 Implementation status: **preview deployed at https://dashboard.p1landmanagement.com; not accepted for a crew/client pilot**. The marketing website and Core CMS remain separately deployed. This directory is the canonical dashboard documentation. The approved scope is the user's P1 Property Operations Dashboard plan; implementation does not reduce that scope.
 
+## Provider release scope — owner decision, September 16, 2026
+
+Mike Dickerman, the designated dashboard owner (`mike@p1landmanagement.com`), deferred QuickBooks Online/Payments and Twilio/SMS development and activation. These are deferred provider-specific activation gates, not blockers for unrelated approved web, operations, security, offline, or non-provider pilot work. Preserve the existing adapters, disabled/not-configured states, webhook validation, authorization boundaries, and local billing-draft behavior. Until the owner reopens either provider track, the dashboard must not connect to QuickBooks, post invoices, create payment links, charge payments, register or send SMS, or enable related provider jobs. The provider acceptance sequence remains documented for the later activation release.
+
 ## Implemented and locally exercised
 
 - Invitation-gated Better Auth accounts, verified email, session assurance, permanently consumed transactional bootstrap, client/crew authorization. The owner subsequently approved per-user MFA requirements controlled by the super admin; that policy is in the combined release candidate, while the last verified production checkpoint retains its earlier owner-MFA rule.
@@ -10,7 +14,7 @@ Implementation status: **preview deployed at https://dashboard.p1landmanagement.
 - Estimate decisions, lead conversion, estimate revisions/change orders, retry-safe billing drafts and cumulative estimate caps.
 - Recurring occurrence generation with month-end anchoring, pauses, independent billing-mode metadata, and New York daylight-saving conversion.
 - Responsive role-aware web UI, supplied P1 symbol, private image upload pipeline, IndexedDB day downloads and operation/photo queues.
-- QuickBooks OAuth/import/posting/reconciliation and Twilio adapters are implemented but **not verified against real providers**. Mailgun owner-setup delivery is verified; broader notification retry/delivery workflows still need acceptance.
+- QuickBooks OAuth/import/posting/reconciliation and Twilio adapters are implemented but **not verified against real providers**. Their activation is deferred by the owner; they remain disabled/not configured and are not part of the current non-provider release. Mailgun owner-setup delivery is verified; broader notification retry/delivery workflows still need acceptance.
 
 ## Navigation and deep links
 
@@ -26,7 +30,7 @@ The sidebar groups those destinations into Workspace, Customers, Operations, Rev
 - Broaden permission/integration coverage. The six original scoped security findings and two follow-ups have independent accepted rechecks; these are not an exhaustive security certification.
 - Full OpenAPI coverage and generation for office routes, component decomposition, accessibility/mobile acceptance, support action queues and operational alerts.
 - Complete public gateway/browser inquiry and owner acceptance. The durable Core-to-dashboard backend handoff is verified in staging and for one synthetic production submission with exactly one lead, receipt and audit; public intake must remain one system.
-- Owner onboarding acceptance under the approved per-user MFA policy (including assurance where required), Intuit sandbox proof and production approval, Twilio registration/consent/callback proof. Mailgun credentials, domain and initial owner-setup delivery are verified.
+- Owner onboarding acceptance under the approved per-user MFA policy (including assurance where required). Intuit sandbox/production approval and Twilio registration, consent, and callback proof are deferred provider-activation work; they must be completed before either provider is enabled. Mailgun credentials, domain and initial owner-setup delivery are verified.
 - Full restoration against deployed infrastructure, application rollback/cutover, object recovery and a complete one-crew/invited-client billing pilot. Populated agreement database restore and retry behavior now have a repeatable synthetic regression; see RECOVERY.md. Native acceptance remains its own post-web milestone.
 
 ## Validation
