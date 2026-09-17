@@ -24,7 +24,9 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
   const upstreamRequests = [];
   const upstream = http.createServer((req, res) => {
     upstreamRequests.push({ path: req.url, headers: req.headers });
-    if (req.url === '/api/p1/website-head-tags') {
+    if (req.url === '/api/p1/website-colors') {
+      res.setHeader('Content-Type','application/json');res.end(JSON.stringify({schemaVersion:1,stackId:'p1-land-management',colors:{brand_primary_color:'#FF0000',text_h1_color:'#123456'}}));
+    } else if (req.url === '/api/p1/website-head-tags') {
       res.setHeader('Content-Type','application/json');res.end(JSON.stringify({schemaVersion:1,stackId:'p1-land-management',html:'<meta name="p1-head-fixture" content="literal $&"><script>window.syntheticHeadRan=true</script>'}));
     } else if (req.url.startsWith('/api/client-site-content/')) {
       const [routeId, componentKey] = req.url.split('/').slice(-2);
@@ -69,6 +71,11 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
     const preview=await request(port,'/?cmsPreview=1');assert(!preview.body.includes('p1-head-fixture'));
     const admin=await request(port,'/admin/');assert(!admin.body.includes('p1-head-fixture'));
     const requests=upstreamRequests.filter(r=>r.path==='/api/p1/website-head-tags');assert.equal(requests.length,1);assert.equal(requests[0].headers.cookie,undefined);assert.equal(requests[0].headers.authorization,undefined);
+  });
+  await t.test('public palette reaches public and preview documents without visitor credentials or admin leakage',async()=>{
+    for(const route of ['/', '/?cmsPreview=1']){const response=await request(port,route);assert(response.body.includes('id="p1-website-colors"'));assert(response.body.includes('--primary:0 100% 50%'));assert(response.body.includes('h1{color:#123456}'));}
+    for(const route of ['/admin/','/not-a-page','/api/p1/page-content?path=%2F'])assert(!(await request(port,route)).body.includes('id="p1-website-colors"'));
+    const reads=upstreamRequests.filter(r=>r.path==='/api/p1/website-colors');assert.equal(reads.length,1);assert.equal(reads[0].headers.cookie,undefined);assert.equal(reads[0].headers.authorization,undefined);
   });
   await t.test('absolute and network-path targets reject without forwarding credentials', async () => {
     const before = upstreamRequests.length;
@@ -203,6 +210,7 @@ test('staging manifest blocks indexing across public and proxied responses regar
   await mkdir(resolve(temporary, 'server')); await mkdir(resolve(temporary, 'config'));
   await copyFile(resolve(root, 'server/index.mjs'), resolve(temporary, 'server/index.mjs'));
   await copyFile(resolve(root, 'server/head-tags.mjs'), resolve(temporary, 'server/head-tags.mjs'));
+  await copyFile(resolve(root, 'server/website-colors.mjs'), resolve(temporary, 'server/website-colors.mjs'));
   await copyFile(resolve(root, 'server/content.mjs'), resolve(temporary, 'server/content.mjs'));
   await copyFile(resolve(root, 'server/client-ip.mjs'), resolve(temporary, 'server/client-ip.mjs')); 
   await copyFile(resolve(root, 'server/google-reviews.mjs'), resolve(temporary, 'server/google-reviews.mjs'));

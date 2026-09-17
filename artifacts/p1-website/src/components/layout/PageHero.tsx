@@ -62,11 +62,11 @@ export function PageHero({ eyebrow, title, subtitle, image, imageAlt, children, 
             <span className="inline-block h-px w-7 bg-clay" />
             {eyebrow}
           </span>
-          <h1 className={`mt-6 max-w-4xl font-display font-light leading-[1.02] tracking-[-0.02em] text-white ${compactMobile ? "text-[2rem] sm:text-[clamp(2.3rem,5vw,4.2rem)]" : "text-[clamp(2.3rem,5vw,4.2rem)]"}`}>
+          <h1 style={{ color: "hsl(var(--public-text-h1, var(--public-text-inverse, 0 0% 100%)))" }} className={`mt-6 max-w-4xl font-display font-light leading-[1.02] tracking-[-0.02em] text-white ${compactMobile ? "text-[2rem] sm:text-[clamp(2.3rem,5vw,4.2rem)]" : "text-[clamp(2.3rem,5vw,4.2rem)]"}`}>
             {title}
           </h1>
           {subtitle && (
-            <p className={`mt-6 max-w-2xl leading-relaxed ${compactMobile ? "text-base sm:text-lg" : "text-lg"}`} style={{ color: "hsl(40 20% 92% / 0.82)" }}>
+            <p className={`mt-6 max-w-2xl leading-relaxed ${compactMobile ? "text-base sm:text-lg" : "text-lg"}`} style={{ color: "hsl(var(--public-text-heading-subtext, 40 20% 92%) / 0.82)" }}>
               {subtitle}
             </p>
           )}

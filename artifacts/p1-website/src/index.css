@@ -147,6 +147,9 @@
   h1, h2, h3, h4, h5, h6 {
     @apply font-serif font-bold tracking-tight text-secondary;
   }
+  h1 { color: hsl(var(--public-text-h1, var(--secondary))); }
+  h2 { color: hsl(var(--public-text-h2, var(--secondary))); }
+  h3, h4, h5, h6 { color: hsl(var(--public-text-h3, var(--secondary))); }
 }
 
 @layer components {

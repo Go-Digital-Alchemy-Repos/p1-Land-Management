@@ -1,3 +1,4 @@
+import { createWebsiteColorStore } from "./website-colors.mjs";
 import { createHeadTagStore, insertHeadTags } from "./head-tags.mjs";
 import http from 'node:http';
 import https from 'node:https';
@@ -19,6 +20,7 @@ const origin = process.env.P1_CORE_ORIGIN?.replace(/\/$/,'');
 const content = createContentStore({ manifest, origin, cacheDir: process.env.P1_CONTENT_CACHE_DIR });
 const googleReviews = createGoogleReviewsStore();
 const headTags = createHeadTagStore({ origin });
+const websiteColors = createWebsiteColorStore({ origin });
 const canonical = 'https://www.p1landmanagement.com';
 const legacyPublicRoutes = new Map([
   ['/commercial-snow-ice-management', '/services/commercial-snow-ice-management'],
@@ -150,7 +152,8 @@ const server=http.createServer(async(req,res)=>{
       const snapshot=await content.snapshot(pathname); const result=render(pathname,snapshot);
       const state=JSON.stringify(snapshot).replaceAll('<','\\u003c');
       const html=template.replace(/<!--seo-head-start-->[\s\S]*?<!--seo-head-end-->/,`<!--seo-head-start-->${headHtml(result.head,pathname)}<!--seo-head-end-->`).replace(/<div id="root">[\s\S]*<\/div>/,`<div id="root">${result.html}</div><script type="application/json" id="p1-published-content">${state}</script>`);
-      return send(req,res,200,url.searchParams.has('cmsPreview') ? html : insertHeadTags(html, await headTags.snapshot()),'text/html; charset=utf-8',url.searchParams.has('cmsPreview')?'private, no-store':'no-cache');
+      const [palette, markup] = await Promise.all([websiteColors.snapshot(), url.searchParams.has('cmsPreview') ? '' : headTags.snapshot()]);
+      return send(req,res,200,insertHeadTags(html, palette + markup),'text/html; charset=utf-8',url.searchParams.has('cmsPreview')?'private, no-store':'no-cache');
     }
     const file=path.resolve(publicDir,'.'+pathname);
     if(!file.startsWith(publicDir+path.sep)||pathname.split('/').some(p=>p.startsWith('.')) )return send(req,res,404,'Not found');

@@ -46,11 +46,11 @@ export function LocationPage({ page, image }: { page: LocationContent; image: st
     <PageHero eyebrow={`Service Area · ${page.state}`} title={page.heading} subtitle={page.intro}
       image={image} imageAlt={`Illustrative ${page.city} service-area landscape showing ${page.city === "Inman" || page.city === "Waxhaw" ? "managed agricultural acreage" : "large-property grounds and site care"}`} />
     <div className="site-shell py-8">
-      <nav aria-label="Breadcrumb"><ol className="flex flex-wrap gap-2 text-sm text-muted-foreground">{crumbs.map((crumb, index) => <li key={crumb.path}>
+      <nav aria-label="Breadcrumb"><ol className="public-meta flex flex-wrap gap-2 text-sm text-muted-foreground">{crumbs.map((crumb, index) => <li key={crumb.path}>
         {index > 0 && <span aria-hidden="true" className="mr-2">›</span>}
-        {index === crumbs.length - 1 ? <span aria-current="page">{crumb.name}</span> : <Link className="underline hover:text-primary" href={crumb.path}>{crumb.name}</Link>}
+        {index === crumbs.length - 1 ? <span aria-current="page">{crumb.name}</span> : <Link className="public-link underline hover:text-primary" href={crumb.path}>{crumb.name}</Link>}
       </li>)}</ol></nav>
-      <p className="mt-8 max-w-4xl text-lg leading-relaxed">P1 Land &amp; Property Management is a commercial grounds management and land contractor serving commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger in {page.city}, {page.state}.</p>
+      <p className="public-supporting-copy mt-8 max-w-4xl text-lg leading-relaxed">P1 Land &amp; Property Management is a commercial grounds management and land contractor serving commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger in {page.city}, {page.state}.</p>
     </div>
     <div className="site-shell space-y-14 pb-16">
       {page.sections.map((section, index) => <section key={section.heading} className="max-w-4xl">
@@ -68,8 +68,8 @@ export function LocationPage({ page, image }: { page: LocationContent; image: st
       </section>
       <section>
         <h2 className="font-display text-2xl">Services and nearby communities</h2>
-        <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{page.links.map(link => <li key={link.href}><Link className="font-semibold text-primary underline" href={link.href}>{link.label}</Link></li>)}</ul>
-        <p className="mt-10 text-lg">Call <a className="text-primary underline" href="tel:+17042218928">(704) 221-8928</a> or <Link className="text-primary underline" href="/contact">request a free site assessment online</Link> to discuss your property.</p>
+        <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{page.links.map(link => <li key={link.href}><Link className="public-link font-semibold text-primary underline" href={link.href}>{link.label}</Link></li>)}</ul>
+        <p className="mt-10 text-lg">Call <a className="public-link text-primary underline" href="tel:+17042218928">(704) 221-8928</a> or <Link className="public-link text-primary underline" href="/contact">request a free site assessment online</Link> to discuss your property.</p>
       </section>
     </div>
     <FinalCTA />

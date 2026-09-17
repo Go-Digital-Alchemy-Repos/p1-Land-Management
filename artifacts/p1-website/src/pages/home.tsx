@@ -108,13 +108,13 @@ export default function Home() {
             <div className="mb-7 flex items-center gap-4">
               <Kicker onDark>The Land Specialists</Kicker>
             </div>
-            <h1 className="max-w-3xl font-display text-[clamp(2.6rem,6.4vw,5.4rem)] font-light leading-[0.98] tracking-[-0.02em] text-white">
+            <h1 style={{ color: "hsl(var(--public-text-h1, var(--public-text-inverse, 0 0% 100%)))" }} className="max-w-3xl font-display text-[clamp(2.6rem,6.4vw,5.4rem)] font-light leading-[0.98] tracking-[-0.02em] text-white">
               Your first impression{" "}
               <em className="font-semibold not-italic text-tan" style={{ fontStyle: "italic" }}>
                 starts at the curb.
               </em>
             </h1>
-            <p className="mt-7 max-w-xl text-lg leading-relaxed" style={{ color: "hsl(40 20% 92% / 0.82)" }}>
+            <p className="mt-7 max-w-xl text-lg leading-relaxed" style={{ color: "hsl(var(--public-text-heading-subtext, 40 20% 92%) / 0.82)" }}>
               Commercial landscaping and commercial grounds management, plus grading, drainage, clearing and ponds for large properties across Upstate South Carolina and the Charlotte metro. Heavy-equipment professionals for commercial, industrial, agricultural, municipal, and institutional sites.
             </p>
             <div className="mt-9 flex flex-wrap items-center gap-4">

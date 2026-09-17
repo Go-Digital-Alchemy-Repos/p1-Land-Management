@@ -152,8 +152,9 @@ export default function WebsiteColors() {
         independent of the Business Center theme.
       </p>
       <p>
-        These colors are saved for website previews. Applying them to the public
-        website is not available yet.
+        Saved colors apply to new public-page loads and website previews within
+        about 30 seconds. Clear a field to restore its website fallback. Some
+        page-specific styling can override global colors.
       </p>
       <p>
         Use a six-digit hex color such as #1F2A44, or leave a field blank to use

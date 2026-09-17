@@ -13,7 +13,10 @@ const listen = async (server) => {
 (async () => {
   let child, browser;
   const upstream = http.createServer((req, res) => {
-    if (req.url === "/api/p1/website-head-tags") {
+    if (req.url === "/api/p1/website-colors") {
+      res.setHeader("Content-Type", "application/json");
+      res.end(JSON.stringify({schemaVersion:1,stackId:"p1-land-management",colors:{brand_primary_color:"#FF0000",text_h1_color:"#FF0000",text_h2_color:"#00FF00",text_link_color:"#0000FF",text_link_hover_color:"#FF0000"}}));
+    } else if (req.url === "/api/p1/website-head-tags") {
       res.setHeader("Content-Type", "application/json");
       res.end(
         JSON.stringify({
@@ -94,16 +97,27 @@ const listen = async (server) => {
       await page.evaluate(() => window.p1ForbiddenInline),
       undefined,
     );
+    await page.waitForFunction(()=>{const h=document.querySelector("h1");return h && getComputedStyle(h).color === "rgb(255, 0, 0)";});
+    assert.equal(await page.locator("html").evaluate(e=>getComputedStyle(e).getPropertyValue("--primary").trim()), "0 100% 50%");
+    await page.goto(`http://127.0.0.1:${port}/service-areas/inman-sc`, {waitUntil:"domcontentloaded"});
+    await page.waitForFunction(()=>{const h=document.querySelector("h1");return h && getComputedStyle(h).color === "rgb(255, 0, 0)";});
+    await page.waitForFunction(()=>{const h=document.querySelector("h2");return h && getComputedStyle(h).color === "rgb(0, 255, 0)";});
+    const link=page.locator(".public-link").first();
+    assert.equal(await link.evaluate(e=>getComputedStyle(e).color), "rgb(0, 0, 255)");
+    await link.hover();assert.equal(await link.evaluate(e=>getComputedStyle(e).color), "rgb(255, 0, 0)");
     await page.goto(`http://127.0.0.1:${port}/?cmsPreview=1`, {
       waitUntil: "domcontentloaded",
     });
     assert.equal(await page.locator('meta[name="p1-head-browser"]').count(), 0);
+    assert.equal(await page.locator("#p1-website-colors").count(), 1);
+    await page.waitForFunction(()=>{const h=document.querySelector("h1");return h && getComputedStyle(h).color === "rgb(255, 0, 0)";});
     await page.goto(`http://127.0.0.1:${port}/admin/`, {
       waitUntil: "domcontentloaded",
     });
     assert.equal(await page.locator('meta[name="p1-head-browser"]').count(), 0);
+    assert.equal(await page.locator("#p1-website-colors").count(), 0);
     console.log(
-      "Public head browser passed: metadata present, inline script blocked by actual CSP, preview/admin excluded; external networking blocked.",
+      "Public branding browser passed: palette computed on home/location/preview, link hover, admin exclusion, head metadata, inline CSP blocking and external networking blocked.",
     );
   } finally {
     if (browser) await browser.close();
