@@ -413,6 +413,7 @@ function Editor({
                   fallback={<p role="status">Loading page starters…</p>}
                 >
                   <PageTemplatePicker
+                    previewUrl={catalog.previewUrl}
                     disabled={disabled}
                     onSelect={(next, name) => {
                       if (

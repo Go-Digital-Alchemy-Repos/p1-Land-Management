@@ -350,6 +350,95 @@ const assert = require("node:assert/strict");
       3,
     );
     await page
+      .getByRole("button", { name: "Choose page starter", exact: true })
+      .click();
+    await page
+      .getByRole("button", { name: "Open landing page generator", exact: true })
+      .click();
+    assert.equal(
+      await page
+        .getByRole("button", { name: "Next generator step", exact: true })
+        .isDisabled(),
+      true,
+    );
+    await page
+      .getByLabel("Campaign headline", { exact: true })
+      .fill("Synthetic campaign");
+    await page
+      .getByLabel("Campaign introduction", { exact: true })
+      .fill("Synthetic introduction");
+    await page
+      .getByLabel("Call to action text", { exact: true })
+      .fill("Request details");
+    await page
+      .getByLabel("Call to action link", { exact: true })
+      .fill("/contact");
+    const writesBeforeGenerator = writes;
+    await page.getByLabel("Campaign headline", { exact: true }).press("Enter");
+    assert.equal(writes, writesBeforeGenerator);
+    await page
+      .getByRole("button", { name: "Next generator step", exact: true })
+      .click();
+    assert.equal(
+      await page
+        .getByRole("button", { name: "Next generator step", exact: true })
+        .isDisabled(),
+      true,
+    );
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.waitForFunction(
+      () =>
+        document.querySelector(".sidebar").getBoundingClientRect().right <= 0,
+    );
+    assert.equal(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+      true,
+    );
+    await page.screenshot({
+      path: "/tmp/p1-page-generator-mobile.png",
+      fullPage: true,
+    });
+    await page.setViewportSize({ width: 1400, height: 1000 });
+    await page.getByLabel("General Audience", { exact: true }).check();
+    await page
+      .getByRole("button", { name: "Next generator step", exact: true })
+      .click();
+    await page
+      .getByRole("button", { name: "Next generator step", exact: true })
+      .click();
+    await page
+      .getByText(
+        "Synthetic campaign · 4 blocks. Applying changes the unsaved draft only.",
+        { exact: true },
+      )
+      .waitFor();
+    accept = false;
+    await page
+      .getByRole("button", {
+        name: "Apply generated page to draft",
+        exact: true,
+      })
+      .click();
+    assert.equal(await page.locator(".section-block").count(), 3);
+    accept = true;
+    await page
+      .getByRole("button", {
+        name: "Apply generated page to draft",
+        exact: true,
+      })
+      .click();
+    assert.equal(writes, writesBeforeGenerator);
+    await page.getByRole("button", { name: "Save page", exact: true }).click();
+    await page.getByText("Page saved.", { exact: true }).waitFor();
+    assert.equal(rows.get("new-page").title, "New draft");
+    const generated = rows.get("new-page").content.blocks;
+    assert.equal(generated.length, 4);
+    assert.equal(generated[0].props.heading, "Synthetic campaign");
+    assert.equal(generated[0].props.ctaLink, "/contact");
+    assert.equal(generated[3].props.primaryText, "Request details");
+    await page
       .getByRole("button", { name: "Archive draft", exact: true })
       .click();
     await page.getByText("Page archived.", { exact: true }).waitFor();
