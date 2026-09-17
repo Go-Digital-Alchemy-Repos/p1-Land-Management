@@ -1,3 +1,4 @@
+import { selectedEstimateAllocation, allocatedBillingCapacity } from "./estimate-allocation";
 import { requireWorkRead, requireFieldWork, assignedWorkOnly } from "./work-access";
 import { requireCapability, requireAnyCapability } from "./policy";
 import { CAPABILITIES, hasCapability } from "@workspace/api-zod/business-access";
@@ -974,6 +975,7 @@ api.post("/billing", async (req, res) => {
       operationId: id,
       propertyId: id,
       estimateId: id,
+      estimateAllocationId: id.nullable().optional(),
       title: text,
       amountCents: z.number().int().positive().max(1e10),
       kind: z.enum(["service", "deposit", "progress", "final"]),
@@ -1005,17 +1007,12 @@ api.post("/billing", async (req, res) => {
       )
     ).rows[0];
     if (!e) throw new HttpError(409, "An approved estimate is required");
-    const sum = (
-      await c.query(
-        "SELECT COALESCE(sum(amount_cents),0) AS total FROM billing_draft WHERE estimate_id=$1",
-        [e.id],
-      )
-    ).rows[0].total;
-    if (Number(sum) + b.amountCents > Number(e.amount_cents))
-      throw new HttpError(409, "Billing exceeds the approved estimate");
+    const allocation = await selectedEstimateAllocation(c, e.id, b.estimateAllocationId);
+    const capacity = await allocatedBillingCapacity(c, e, allocation);
+    if (b.amountCents > capacity.remaining) throw new HttpError(409, "Billing exceeds the remaining approved authorization");
     await c.query(
-      "INSERT INTO billing_draft(id,property_id,estimate_id,title,amount_cents,kind) VALUES($1,$2,$3,$4,$5,$6)",
-      [key, b.propertyId, b.estimateId, b.title, b.amountCents, b.kind],
+      "INSERT INTO billing_draft(id,property_id,estimate_id,title,amount_cents,kind,estimate_allocation_id) VALUES($1,$2,$3,$4,$5,$6,$7)",
+      [key, b.propertyId, b.estimateId, b.title, b.amountCents, b.kind, allocation?.id || null],
     );
     await c.query(
       "INSERT INTO billing_operation(id,user_id,fingerprint,draft_id) VALUES($1,$2,$3,$4)",

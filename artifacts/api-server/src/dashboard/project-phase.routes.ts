@@ -1,3 +1,4 @@
+import { selectedEstimateAllocation, allocatedBillingCapacity } from "./estimate-allocation";
 import { hasCapability } from "@workspace/api-zod/business-access";
 import { Router } from "express";
 import { createHash, randomUUID } from "node:crypto";
@@ -253,10 +254,11 @@ projectPhaseApi.post("/project-phases/:id/billing-intents", async (req, res) => 
     if (Number(ph.version) !== b.expectedPhaseVersion) throw new HttpError(409, "Project phase changed");
     const estimate = (await c.query("SELECT * FROM estimate WHERE id=$1 AND property_id=$2 AND status='approved' FOR UPDATE", [b.estimateId, ph.property_id])).rows[0];
     if (!estimate) throw new HttpError(409, "An approved estimate is required");
-    const total = Number((await c.query("SELECT COALESCE(sum(amount_cents),0) AS total FROM billing_draft WHERE estimate_id=$1", [estimate.id])).rows[0].total);
-    if (total + b.amountCents > Number(estimate.amount_cents)) throw new HttpError(409, "Billing exceeds the approved estimate");
+    const allocation = await selectedEstimateAllocation(c, estimate.id, b.estimateAllocationId);
+    const capacity = await allocatedBillingCapacity(c, estimate, allocation);
+    if (b.amountCents > capacity.remaining) throw new HttpError(409, "Billing exceeds the remaining approved authorization");
     const draftId = randomUUID();
-    await c.query("INSERT INTO billing_draft(id,property_id,estimate_id,title,amount_cents,kind) VALUES($1,$2,$3,$4,$5,$6)", [draftId, ph.property_id, estimate.id, b.title, b.amountCents, b.kind]);
+    await c.query("INSERT INTO billing_draft(id,property_id,estimate_id,title,amount_cents,kind,estimate_allocation_id) VALUES($1,$2,$3,$4,$5,$6,$7)", [draftId, ph.property_id, estimate.id, b.title, b.amountCents, b.kind, allocation?.id || null]);
     await c.query("INSERT INTO project_phase_billing_intent(operation_id,phase_id,billing_draft_id,actor_id,expected_phase_version,fingerprint,kind) VALUES($1,$2,$3,$4,$5,$6,$7)", [b.operationId, phaseId, draftId, a.id, b.expectedPhaseVersion, fingerprint, b.kind]);
     await phaseEvent(c, { phaseId, actorId: a.id, eventType: "billing_intent_created", priorVersion: Number(ph.version), resultingVersion: Number(ph.version), fromStatus: ph.status, toStatus: ph.status, details: { operationId: b.operationId, billingDraftId: draftId, kind: b.kind, amountCents: b.amountCents } });
     await audit(c, a.id, "project_phase.billing_intent_created", phaseId, { operationId: b.operationId, billingDraftId: draftId, kind: b.kind, amountCents: b.amountCents });

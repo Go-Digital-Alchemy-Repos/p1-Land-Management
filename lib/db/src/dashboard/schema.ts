@@ -691,12 +691,15 @@ export const workOrder = pgTable(
     occurrenceDate: date("occurrence_date"),
     projectId: uuid("project_id"),
     projectPhaseId: uuid("project_phase_id"),
+    estimateAllocationId: uuid("estimate_allocation_id"),
     estimateId: uuid("estimate_id"),
     requestId: uuid("request_id"),
     jobKind: text("job_kind").default("one_time").notNull(),
     internalReason: text("internal_reason"),
   },
   (table) => [
+    foreignKey({ columns: [table.estimateAllocationId, table.estimateId], foreignColumns: [estimateAllocation.id, estimateAllocation.estimateId], name: "work_order_allocation_parent" }),
+    check("work_order_allocation_estimate", sql`${table.estimateAllocationId} IS NULL OR ${table.estimateId} IS NOT NULL`),
     index("work_order_assigned_to_scheduled_at_idx").using(
       "btree",
       table.assignedTo.asc().nullsLast().op("text_ops"),
@@ -795,6 +798,7 @@ export const billingDraft = pgTable(
   {
     id: uuid().primaryKey().notNull(),
     propertyId: uuid("property_id").notNull(),
+    estimateAllocationId: uuid("estimate_allocation_id"),
     estimateId: uuid("estimate_id"),
     title: text().notNull(),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
@@ -813,6 +817,9 @@ export const billingDraft = pgTable(
     ownershipVerified: boolean("ownership_verified").default(false).notNull(),
   },
   (table) => [
+    foreignKey({ columns: [table.estimateAllocationId, table.estimateId], foreignColumns: [estimateAllocation.id, estimateAllocation.estimateId], name: "billing_draft_allocation_parent" }),
+    check("billing_draft_allocation_estimate", sql`${table.estimateAllocationId} IS NULL OR ${table.estimateId} IS NOT NULL`),
+    index("billing_draft_allocation_total").on(table.estimateId, table.estimateAllocationId),
     foreignKey({
       columns: [table.propertyId],
       foreignColumns: [property.id],
@@ -1244,11 +1251,16 @@ export const recurringService = pgTable(
       .defaultNow()
       .notNull(),
     anchorDay: integer("anchor_day"),
+    estimateAllocationId: uuid("estimate_allocation_id"),
     estimateId: uuid("estimate_id"),
     agreementId: uuid("agreement_id"),
     projectId: uuid("project_id"),
   },
   (table) => [
+    foreignKey({ columns: [table.estimateAllocationId, table.estimateId], foreignColumns: [estimateAllocation.id, estimateAllocation.estimateId], name: "recurring_service_allocation_parent" }),
+    check("recurring_service_allocation_estimate", sql`${table.estimateAllocationId} IS NULL OR ${table.estimateId} IS NOT NULL`),
+    uniqueIndex("recurring_service_estimate_once").on(table.estimateId).where(sql`${table.estimateId} IS NOT NULL AND ${table.estimateAllocationId} IS NULL`),
+    uniqueIndex("recurring_service_allocation_once").on(table.estimateAllocationId).where(sql`${table.estimateAllocationId} IS NOT NULL`),
     foreignKey({
       columns: [table.propertyId],
       foreignColumns: [property.id],
@@ -1529,6 +1541,7 @@ export const serviceAgreement = pgTable(
     recurringServiceId: uuid("recurring_service_id")
       .notNull()
       .references(() => recurringService.id),
+    estimateAllocationId: uuid("estimate_allocation_id"),
     estimateId: uuid("estimate_id")
       .notNull()
       .references(() => estimate.id),
@@ -1569,6 +1582,7 @@ export const serviceAgreement = pgTable(
       .notNull(),
   },
   (t) => [
+    foreignKey({ columns: [t.estimateAllocationId, t.estimateId], foreignColumns: [estimateAllocation.id, estimateAllocation.estimateId], name: "service_agreement_allocation_parent" }),
     index("service_agreement_recurrence_term").on(
       t.recurringServiceId,
       t.startsOn,
@@ -1863,3 +1877,26 @@ export const agreementCompositionDraft = pgTable("agreement_composition_draft", 
   AND ${table.pricingPlan}->'review'->'sourceVersion'=to_jsonb(${table.version})
   AND ${table.pricingPlan}->'review'->'pricingValid'='true'::jsonb,
 false)`)]);
+
+
+export const estimateAllocation = pgTable("estimate_allocation", {
+  id: uuid().primaryKey().notNull(),
+  estimateId: uuid("estimate_id").notNull().references(() => estimate.id),
+  basis: text().notNull(),
+  title: text().notNull(),
+  scope: text().notNull(),
+  amountCents: bigint("amount_cents", { mode: "number" }).notNull(),
+  scopeRowIds: uuid("scope_row_ids").array().notNull(),
+  costRowIds: uuid("cost_row_ids").array().notNull(),
+  configuration: jsonb(),
+}, table => [
+  unique("estimate_allocation_estimate_id_basis_key").on(table.estimateId, table.basis),
+  unique("estimate_allocation_id_estimate_id_key").on(table.id, table.estimateId),
+  check("estimate_allocation_basis_check", sql`${table.basis} IN ('one_time','fixed_monthly','per_visit')`),
+  check("estimate_allocation_title_check", sql`length(btrim(${table.title})) BETWEEN 1 AND 500`),
+  check("estimate_allocation_scope_check", sql`length(btrim(${table.scope}))>0`),
+  check("estimate_allocation_amount_cents_check", sql`${table.amountCents}>0 AND ${table.amountCents}<=10000000000`),
+  check("estimate_allocation_scope_row_ids_check", sql`cardinality(${table.scopeRowIds})>0`),
+  check("estimate_allocation_cost_row_ids_check", sql`cardinality(${table.costRowIds})>0`),
+  check("estimate_allocation_check", sql`(${table.basis}='one_time' AND ${table.configuration} IS NULL) OR (${table.basis}<>'one_time' AND COALESCE(jsonb_typeof(${table.configuration})='object',false))`),
+]);

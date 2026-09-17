@@ -1,3 +1,4 @@
+import { estimateAllocations } from "./estimate-allocation";
 import type pg from "pg";
 import { randomUUID } from "node:crypto";
 import { requireOperationalProperty } from "./operational-property";
@@ -40,7 +41,26 @@ export async function contextLock(
   ).rows[0];
   if (!recurrence)
     throw new HttpError(404, "Recurring service not found for this property");
-  return { estimate, recurrence };
+  const allocations = await estimateAllocations(c, estimate.id);
+  const allocation =
+    allocations.find((row) => row.basis === recurrence.billing_mode) || null;
+  if (allocations.length && !allocation)
+    throw new HttpError(
+      409,
+      "This estimate has no allocation for the recurrence billing mode",
+    );
+  // A renewal can authorize the retained recurrence under a new estimate. Its
+  // own service agreement carries the new allocation; original provenance stays.
+  if (
+    allocation &&
+    recurrence.estimate_id === estimate.id &&
+    recurrence.estimate_allocation_id !== allocation.id
+  )
+    throw new HttpError(
+      409,
+      "Recurrence does not match this estimate allocation",
+    );
+  return { estimate, recurrence, allocation };
 }
 export async function lockedAgreement(c: pg.PoolClient, id: string) {
   await agreementLock(c, id);
@@ -63,6 +83,14 @@ export async function lockedAgreement(c: pg.PoolClient, id: string) {
       [id],
     )
   ).rows[0];
+  if (
+    (agreement.estimate_allocation_id || null) !==
+    (context.allocation?.id || null)
+  )
+    throw new HttpError(
+      409,
+      "Agreement does not match its approved allocation",
+    );
   return { ...context, agreement };
 }
 export async function activePeriods(c: pg.PoolClient, id: string) {
@@ -88,19 +116,6 @@ export async function storePeriods(
       "INSERT INTO fixed_charge_period(id,agreement_id,starts_on,ends_on,amount_cents) VALUES($1,$2,$3,$4,$5) ON CONFLICT(agreement_id,starts_on) DO UPDATE SET ends_on=excluded.ends_on,amount_cents=excluded.amount_cents,active=true",
       [randomUUID(), id, p.startsOn, p.endsOn, p.amountCents],
     );
-}
-export async function billedTotal(c: pg.PoolClient, estimateId: string) {
-  const value = Number(
-    (
-      await c.query(
-        "SELECT COALESCE(sum(amount_cents),0) AS total FROM billing_draft WHERE estimate_id=$1",
-        [estimateId],
-      )
-    ).rows[0].total,
-  );
-  if (!Number.isSafeInteger(value) || value < 0)
-    throw new HttpError(409, "Billing total requires review");
-  return value;
 }
 export async function localToday(c: pg.PoolClient) {
   return (

@@ -69,6 +69,7 @@ export const projectPhaseBillingIntentSchema = z.object({
   operationId: z.string().uuid(),
   expectedPhaseVersion: z.number().int().positive(),
   estimateId: z.string().uuid(),
+  estimateAllocationId: z.string().uuid().nullable().optional(),
   title: z.string().trim().min(1).max(10000),
   amountCents: z.number().int().positive().max(1e10),
   kind: z.enum(["deposit", "progress", "final"]),

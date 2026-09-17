@@ -1,3 +1,4 @@
+import { allocationTermsMismatch } from "./estimate-allocation";
 import { assessActivation } from "./service-agreement.activation";
 import { createHash } from "node:crypto";
 import type { Actor } from "./access";
@@ -46,7 +47,7 @@ export async function createServiceAgreement(a: Actor, input: unknown) {
       const { agreement } = await lockedAgreement(c, b.id);
       return agreementDto(agreement, await activePeriods(c, b.id), true);
     }
-    const { estimate } = await contextLock(
+    const { estimate, allocation } = await contextLock(
       c,
       b.propertyId,
       b.estimateId,
@@ -91,8 +92,13 @@ export async function createServiceAgreement(a: Actor, input: unknown) {
         throw new HttpError(409, "A successor agreement already exists");
     }
     const t = b.terms;
+    if (allocationTermsMismatch(allocation, t))
+      throw new HttpError(
+        409,
+        "Terms differ from the approved allocation; prepare a new estimate",
+      );
     await c.query(
-      `INSERT INTO service_agreement(id,property_id,recurring_service_id,estimate_id,predecessor_id,title,starts_on,ends_on,billing_mode,unit_amount_cents,scope_snapshot,estimate_revision,created_by,creation_fingerprint) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)`,
+      `INSERT INTO service_agreement(id,property_id,recurring_service_id,estimate_id,predecessor_id,title,starts_on,ends_on,billing_mode,unit_amount_cents,scope_snapshot,estimate_revision,created_by,creation_fingerprint,estimate_allocation_id) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)`,
       [
         b.id,
         b.propertyId,
@@ -104,16 +110,18 @@ export async function createServiceAgreement(a: Actor, input: unknown) {
         t.endsOn,
         t.billingMode,
         t.unitAmountCents,
-        estimate.scope,
+        allocation?.scope ?? estimate.scope,
         estimate.revision,
         a.id,
         fingerprint,
+        allocation?.id || null,
       ],
     );
     await storePeriods(c, b.id, t.periods);
     await agreementAudit(c, a.id, "agreement.created", b.id, {
       ...b,
-      scope: estimate.scope,
+      scope: allocation?.scope ?? estimate.scope,
+      estimateAllocationId: allocation?.id || null,
       estimateRevision: estimate.revision,
     });
     const { agreement } = await lockedAgreement(c, b.id);
@@ -128,7 +136,7 @@ export async function editServiceAgreement(
   management(a);
   const b = editAgreementInput.parse(input);
   return transaction(async (c) => {
-    const { agreement } = await lockedAgreement(c, id);
+    const { agreement, allocation } = await lockedAgreement(c, id);
     version(agreement, b.version);
     if (agreement.status !== "draft")
       throw new HttpError(
@@ -137,6 +145,11 @@ export async function editServiceAgreement(
       );
     const before = agreementDto(agreement, await activePeriods(c, id), true),
       t = b.terms;
+    if (allocationTermsMismatch(allocation, t))
+      throw new HttpError(
+        409,
+        "Terms differ from the approved allocation; prepare a new estimate",
+      );
     await c.query(
       "UPDATE service_agreement SET title=$2,starts_on=$3,ends_on=$4,billing_mode=$5,unit_amount_cents=$6,version=version+1,updated_at=now() WHERE id=$1",
       [id, t.title, t.startsOn, t.endsOn, t.billingMode, t.unitAmountCents],

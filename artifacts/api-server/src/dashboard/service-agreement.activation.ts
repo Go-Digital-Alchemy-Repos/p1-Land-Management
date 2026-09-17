@@ -1,3 +1,7 @@
+import {
+  allocatedBillingCapacity,
+  allocationTermsMismatch,
+} from "./estimate-allocation";
 import type pg from "pg";
 import { z } from "zod";
 import type { Actor } from "./access";
@@ -10,7 +14,6 @@ import {
 import {
   lockedAgreement,
   activePeriods,
-  billedTotal,
   localToday,
 } from "./service-agreement.persistence";
 export const activationPreview = z
@@ -37,7 +40,7 @@ export async function assessActivation(
   c: pg.PoolClient,
   context: Awaited<ReturnType<typeof lockedAgreement>>,
 ) {
-  const { agreement, estimate, recurrence } = context,
+  const { agreement, estimate, recurrence, allocation } = context,
     id = agreement.id;
   const today = await localToday(c),
     blockedReasons: string[] = [];
@@ -52,7 +55,7 @@ export async function assessActivation(
       "Recurring service billing mode must match the reviewed agreement",
     );
   if (
-    agreement.scope_snapshot !== estimate.scope ||
+    agreement.scope_snapshot !== (allocation?.scope ?? estimate.scope) ||
     agreement.estimate_revision !== estimate.revision
   )
     blockedReasons.push("Approved scope changed; create a new agreement");
@@ -85,12 +88,44 @@ export async function assessActivation(
   }
   const periods = await activePeriods(c, id),
     fixed = agreement.billing_mode === "fixed_monthly";
+  if (
+    allocationTermsMismatch(allocation, {
+      startsOn: agreement.starts_on,
+      endsOn: agreement.ends_on,
+      billingMode: agreement.billing_mode,
+      unitAmountCents:
+        agreement.unit_amount_cents === null
+          ? null
+          : Number(agreement.unit_amount_cents),
+      periods: periods.map((period) => ({
+        startsOn: period.starts_on,
+        endsOn: period.ends_on,
+        amountCents: Number(period.amount_cents),
+      })),
+    })
+  )
+    blockedReasons.push(
+      "Terms differ from the approved allocation; prepare a new estimate",
+    );
+  if (
+    allocation &&
+    (allocation.configuration?.cadence !== recurrence.cadence ||
+      allocation.configuration?.intervalCount !== recurrence.interval_count ||
+      allocation.configuration?.localTime !==
+        String(recurrence.local_time).slice(0, 5))
+  )
+    blockedReasons.push(
+      "Recurring schedule differs from the approved allocation",
+    );
   const minimum = fixed
     ? periods.reduce((n, p) => n + Number(p.amount_cents), 0)
     : Number(agreement.unit_amount_cents);
-  const billed = await billedTotal(c, estimate.id),
-    approved = Number(estimate.amount_cents);
-  if (!minimum || minimum + billed > approved)
+  const { approved, billed, remaining } = await allocatedBillingCapacity(
+    c,
+    estimate,
+    allocation,
+  );
+  if (!minimum || minimum > remaining)
     blockedReasons.push("Charge plan exceeds the remaining approved estimate");
   const preview = activationPreview.parse({
     agreementId: id,
@@ -100,7 +135,7 @@ export async function assessActivation(
     billingMode: agreement.billing_mode,
     approvedCents: approved,
     billedCents: billed,
-    remainingCents: Math.max(0, approved - billed),
+    remainingCents: remaining,
     plannedCents: fixed ? minimum : null,
     perVisitCents: fixed ? null : minimum,
     periods: periods.map((p) => ({

@@ -14793,6 +14793,12 @@
               "progress",
               "final"
             ]
+          },
+          "estimateAllocationId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "Required when this estimate has explicit allocations. Must belong to the selected estimate; charges respect both allocation and overall caps."
           }
         }
       },
@@ -16028,6 +16034,12 @@
               "progress",
               "final"
             ]
+          },
+          "estimateAllocationId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "Required when this estimate has explicit allocations. Must belong to the selected estimate; charges respect both allocation and overall caps."
           }
         }
       },

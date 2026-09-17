@@ -22,4 +22,6 @@ export interface CreateBillingDraft {
      */
   amountCents: number;
   kind: CreateBillingDraftKind;
+  /** Required when this estimate has explicit allocations. Must belong to the selected estimate; charges respect both allocation and overall caps. */
+  estimateAllocationId?: string | null;
 }

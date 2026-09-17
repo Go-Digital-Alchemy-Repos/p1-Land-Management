@@ -23,4 +23,6 @@ export interface ProjectPhaseBillingIntentInput {
      */
   amountCents: number;
   kind: ProjectPhaseBillingIntentInputKind;
+  /** Required when this estimate has explicit allocations. Must belong to the selected estimate; charges respect both allocation and overall caps. */
+  estimateAllocationId?: string | null;
 }
