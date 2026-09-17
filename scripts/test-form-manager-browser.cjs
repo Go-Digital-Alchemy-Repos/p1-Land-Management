@@ -15,6 +15,10 @@ const assert = require("node:assert/strict");
     page.setDefaultTimeout(10000);
     const errors = [];
     page.on("pageerror", (e) => errors.push(e.message));
+    let retryFailure = true,
+      queued = false,
+      retryCalls = 0;
+    const deliveryQueries = [];
     let deny = false,
       fail = true,
       saved,
@@ -82,9 +86,98 @@ const assert = require("node:assert/strict");
             },
           },
         ];
+      if (path === "/api/v1/marketing/cms/form-delivery-jobs") {
+        const params = new URL(req.url()).searchParams;
+        deliveryQueries.push(params.toString());
+        const completed = params.get("status") === "completed";
+        const more = params.has("cursor");
+        body = {
+          items: [
+            {
+              id: more ? "second" : "first",
+              submissionId: "receipt",
+              kind: "commercial_dashboard_intake",
+              status: completed
+                ? "completed"
+                : more
+                  ? "processing"
+                  : queued
+                    ? "queued"
+                    : "failed",
+              attemptCount: 3,
+              createdAt: "2026-09-17T00:00:00Z",
+            },
+          ],
+          nextCursor: more || completed ? null : "next_page",
+        };
+      }
+      if (path === "/api/v1/marketing/cms/form-delivery-jobs/first/retry") {
+        retryCalls++;
+        if (retryFailure)
+          return route.fulfill({
+            status: 503,
+            json: { message: "Synthetic retry failure" },
+          });
+        queued = true;
+        body = { id: "first" };
+      }
       await route.fulfill({ json: body });
     });
     await page.goto("http://127.0.0.1:4347/marketing/content/forms");
+    await page
+      .getByRole("button", { name: "Delivery monitoring", exact: true })
+      .click();
+    await page
+      .getByRole("button", { name: "Retry delivery", exact: true })
+      .waitFor();
+    await page
+      .getByRole("button", { name: "Load more deliveries", exact: true })
+      .click();
+    await page
+      .getByText("2 deliveries shown, newest first.", { exact: true })
+      .waitFor();
+    assert(deliveryQueries.some((query) => query.includes("cursor=next_page")));
+    page.once("dialog", (d) => d.dismiss());
+    await page
+      .getByRole("button", { name: "Retry delivery", exact: true })
+      .click();
+    assert.equal(retryCalls, 0);
+    page.once("dialog", (d) => d.accept());
+    await page
+      .getByRole("button", { name: "Retry delivery", exact: true })
+      .click();
+    await page
+      .getByRole("alert")
+      .filter({ hasText: "Synthetic retry failure" })
+      .waitFor();
+    retryFailure = false;
+    page.once("dialog", (d) => d.accept());
+    await page
+      .getByRole("button", { name: "Retry delivery", exact: true })
+      .click();
+    await page
+      .getByText(
+        "Delivery queued for retry. Queued does not mean delivered; refresh to check its status.",
+        { exact: true },
+      )
+      .waitFor();
+    assert.equal(retryCalls, 2);
+    await page
+      .getByLabel("Delivery status", { exact: true })
+      .selectOption("completed");
+    await page.getByText("completed", { exact: true }).waitFor();
+    assert.equal(
+      await page
+        .getByRole("button", { name: "Retry delivery", exact: true })
+        .count(),
+      0,
+    );
+    assert(deliveryQueries.at(-1).includes("status=completed"));
+    assert(!deliveryQueries.at(-1).includes("cursor"));
+    await page
+      .getByRole("button", { name: "Back to forms", exact: true })
+      .click();
+
     await page
       .getByRole("button", { name: "Edit Estimate request", exact: true })
       .click();

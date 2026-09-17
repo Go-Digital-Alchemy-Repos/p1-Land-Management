@@ -12,6 +12,7 @@ import type {
 } from "../../../../lib/api-client-react/src/dashboard/models";
 import { useCmsUnsavedChanges } from "./useCmsUnsavedChanges";
 import "./form-manager.css";
+import { FormDeliveryQueue } from "./FormDeliveryQueue";
 import { FormFieldsEditor, validateFormFields } from "./FormFieldsEditor";
 
 const message = (error: unknown) =>
@@ -345,6 +346,7 @@ function Submissions({
   );
 }
 export default function FormManager() {
+  const [deliveries, setDeliveries] = useState(false);
   const [rows, setRows] = useState<MarketingForm[]>([]),
     [selected, setSelected] = useState<MarketingForm | "new" | null>(null),
     [submissions, setSubmissions] = useState<MarketingForm | null>(null),
@@ -369,6 +371,8 @@ export default function FormManager() {
       });
     return () => controller.abort();
   }, [attempt]);
+  if (deliveries)
+    return <FormDeliveryQueue close={() => setDeliveries(false)} />;
   if (selected)
     return (
       <Editor
@@ -392,6 +396,7 @@ export default function FormManager() {
   return (
     <section className="form-manager" aria-label="Website forms">
       <p>Manage website forms and review their saved submissions.</p>
+      <button onClick={() => setDeliveries(true)}>Delivery monitoring</button>
       {notice && <p role="status">{notice}</p>}
       <div className="form-actions">
         <button
