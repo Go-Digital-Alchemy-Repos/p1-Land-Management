@@ -36,16 +36,16 @@ type Service = {
 };
 
 const services: readonly Service[] = [
-  { title: "Commercial Landscaping", description: "Scheduled exterior grounds maintenance that keeps large sites pristine year-round.", image: serviceCommercial, icon: Building2, slug: "commercial-landscaping" },
+  { title: "Commercial Landscaping", description: "Regular mowing and seasonal care for large commercial grounds.", image: serviceCommercial, icon: Building2, slug: "commercial-landscaping" },
   { title: "Commercial Snow & Ice", description: "Seasonal plowing, anti-icing, and documented storm response for large commercial sites.", image: serviceCommercialSnowIce, icon: Snowflake, slug: "commercial-snow-ice-management", href: "/services/commercial-snow-ice-management" },
-  { title: "Industrial & Agricultural Land", description: "Heavy-duty care for farms, industrial sites and working rural acreage.", image: serviceIndustrial, icon: Tractor, slug: "industrial-agricultural" },
+  { title: "Industrial & Agricultural Land", description: "Pasture, fence-line, and grounds care for farms and industrial sites.", image: serviceIndustrial, icon: Tractor, slug: "industrial-agricultural" },
   { title: "Land Clearing & Mulching", description: "Selective clearing and forestry mulching that opens up acreage responsibly.", image: serviceClearing, icon: Trees, slug: "land-clearing" },
-  { title: "Fine Grading & Site Prep", description: "Precision cut-and-fill that gives every project a true, build-ready foundation.", image: serviceGrading, icon: Mountain, slug: "grading-site-preparation" },
-  { title: "Drainage Solutions", description: "French drains, swales and retention work planned around the property's water-management needs.", image: serviceDrainage, icon: Droplets, slug: "drainage" },
-  { title: "Turf Installation & Seeding", description: "Sod and seed installation built for large-scale acreage and lasting cover.", image: serviceTurf, icon: Sprout, slug: "turf-installation-seeding" },
-  { title: "Tree & Brush Management", description: "Removal, trimming and stump grinding handled with the right heavy iron.", image: serviceTree, icon: Trees, slug: "tree-services" },
+  { title: "Fine Grading & Site Prep", description: "Shape the ground for construction, access, and drainage.", image: serviceGrading, icon: Mountain, slug: "grading-site-preparation" },
+  { title: "Drainage Solutions", description: "French drains, swales, and pond work to manage water on your property.", image: serviceDrainage, icon: Droplets, slug: "drainage" },
+  { title: "Turf Installation & Seeding", description: "Sod and seeding for commercial grounds, pastures, and other large sites.", image: serviceTurf, icon: Sprout, slug: "turf-installation-seeding" },
+  { title: "Tree & Brush Management", description: "Tree trimming, removal, selective clearing, and stump grinding.", image: serviceTree, icon: Trees, slug: "tree-services" },
   { title: "Pond & Waterway Management", description: "Design, excavation and long-term care of ponds and working waterways.", image: servicePond, icon: Waves, slug: "pond-waterway-management" },
-  { title: "Property Reconstruction", description: "Full-scale rebuilds from drainage overhaul to complete site regrading.", image: serviceReconstruction, icon: Wrench, slug: "property-reconstruction" },
+  { title: "Property Reconstruction", description: "Restore damaged ground with clearing, grading, drainage, and new turf.", image: serviceReconstruction, icon: Wrench, slug: "property-reconstruction" },
 ];
 
 /**

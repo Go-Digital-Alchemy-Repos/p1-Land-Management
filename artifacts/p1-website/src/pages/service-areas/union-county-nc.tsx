@@ -39,13 +39,13 @@ export default function UnionCountyNC() {
     <Layout>
       <SEO
         title="Land Management in Union County, NC | P1"
-        description="Commercial landscaping, grounds maintenance, land clearing, grading & drainage for qualifying Union County, NC sites. Call (704) 221-8928."
+        description="Commercial landscaping, grounds maintenance, land clearing, grading & drainage for Union County, NC sites. Call (704) 221-8928."
         jsonLd={[
           serviceAreaSchema({
             areaName: "Union County, North Carolina",
             areaType: "AdministrativeArea",
             description:
-              "Commercial landscaping, grounds maintenance, agricultural land care, land clearing, grading, drainage, turf, and pond services for qualifying properties across Union County, NC.",
+              "Commercial landscaping, grounds maintenance, agricultural land care, land clearing, grading, drainage, turf, and pond services for properties across Union County, NC.",
             path: "/service-areas/union-county-nc",
           }),
           breadcrumbSchema([
@@ -67,7 +67,7 @@ export default function UnionCountyNC() {
             </em>
           </>
         }
-        subtitle="P1 Land & Property Management provides commercial landscaping and grounds maintenance for commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger throughout Union County, from Monroe and Indian Trail to Waxhaw and Weddington. Connected services extend through agricultural land care, clearing, grading, drainage, and complete reconstruction."
+        subtitle="Commercial landscaping and grounds maintenance throughout Union County, from Monroe and Indian Trail to Waxhaw and Weddington. We also care for farm acreage and handle clearing, grading, drainage, and restoration."
         image={heroImg}
         imageAlt="Land Clearing & Property Management in Union County, NC"
       />
@@ -80,7 +80,7 @@ export default function UnionCountyNC() {
               Union County is one of the fastest-growing counties in North Carolina. Growth is reshaping the land through new commercial corridors, industrial sites, public facilities, and institutional campuses around Indian Trail, Stallings, and Monroe, while the county's western and southern reaches remain defined by working farms, pasture, and rural acreage.
             </p>
             <p>
-              That combination is exactly what P1 Land & Property Management is built for. Whether you manage a commercial site in Monroe, a developing tract in Indian Trail, or working agricultural acreage in Unionville, P1 delivers the equipment, expertise, and reliability that large Union County properties demand.
+              We work on commercial grounds in Monroe, development tracts in Indian Trail, and farm acreage near Unionville. Tell us how you use the property and what you'd like to improve.
             </p>
           </FeatureRow>
 
@@ -93,7 +93,7 @@ export default function UnionCountyNC() {
                   "Agricultural property maintenance — pastures, fields, fence lines, and access roads",
                   "Land clearing and forestry mulching — lot clearing, right-of-way, and rural acreage",
                   "Fine grading and site preparation for commercial, industrial, municipal, and institutional development",
-                  "Drainage planning and scoped French-drain, retention and erosion work",
+                  "Drainage work — French drains, ponds, ditches, and erosion repairs",
                   "Turf installation — sod and large-acreage seeding for Piedmont soils",
                   "Tree services — trimming, removal, and selective clearing",
                   "Pond and waterway management — construction, restoration, and water quality",
@@ -139,7 +139,7 @@ export default function UnionCountyNC() {
                 Agriculture remains an important part of Union County's economy, especially around Waxhaw, Marvin, Weddington, Mineral Springs, and the county's rural communities. Working farms and large agricultural properties need commercial-scale care, including pasture management and reseeding, drainage across large tracts, access-road grading, selective clearing along fence lines, and pond maintenance for livestock and irrigation.
               </p>
               <p>
-                Agriculture also remains a genuine part of Union County's economy, from row crops like soybeans, grains, and cotton to poultry, cattle, and hay operations. P1 works with farm and ranch owners on pasture renovation, land clearing, access-road grading, drainage correction, and pond construction — the earthwork and ongoing maintenance that keep working land productive. Our combined expertise in earthmoving and land maintenance makes us a natural fit for Union County's agricultural landowners.
+                We help row-crop, poultry, cattle, and hay operations keep land and access in working order. A job might mean restoring pasture, clearing a fence line, repairing a farm road, or improving drainage around a pond.
               </p>
             </div>
           </div>
@@ -148,10 +148,10 @@ export default function UnionCountyNC() {
             <h2 className="text-2xl font-serif font-bold text-secondary">Commercial & Development Site Work in Union County</h2>
             <div className="prose prose-lg prose-p:text-secondary/80 max-w-none space-y-4">
               <p>
-                The growth spreading south and east out of Charlotte has made Union County one of the most active development markets in the region, with Indian Trail, Monroe, and Waxhaw each managing significant new commercial, industrial, municipal, and institutional construction. P1 supports that growth with land clearing, forestry mulching, fine grading, site preparation, stormwater and drainage installation, and turf establishment — handling large, complex sites that require the scale of equipment and crew most contractors can't bring.
+                For development around Indian Trail, Monroe, and Waxhaw, we handle clearing, grading, drainage, and turf establishment. We work with your project team to prepare the ground in the right order.
               </p>
               <p>
-                For commercial property managers, developers, industrial facilities, municipalities, and institutions, P1 also offers ongoing grounds maintenance programs that keep sites presentable and compliant year-round, long after the initial site work is complete.
+                After the site is established, we can keep the grounds maintained on a regular schedule.
               </p>
             </div>
           </div>
@@ -160,10 +160,10 @@ export default function UnionCountyNC() {
             <h2 className="text-2xl font-serif font-bold text-secondary">Why Union County Property Teams Choose P1</h2>
             <div className="prose prose-lg prose-p:text-secondary/80 max-w-none space-y-4">
               <p>
-                We're not a regional franchise or a national chain applying a one-size-fits-all approach to your property. P1 is built for the Carolinas — we understand the red clay soils of the Union County Piedmont, the drainage challenges of the area's rolling terrain and creek-fed bottomland, the grass and pasture species that thrive here, and the seasonal patterns that drive maintenance needs throughout the year.
+                Union County's clay soils, slopes, and creek-fed low ground all affect drainage and maintenance. We take those conditions into account when planning work on your property.
               </p>
               <p>
-                From commercial landscaping and grounds maintenance contracts to land clearing, grading, drainage, and full reconstruction, P1 gives Union County property teams one contractor for the full life of their land.
+                From the first clearing job to regular upkeep, you'll have one team to call about your Union County property.
               </p>
             </div>
           </div>

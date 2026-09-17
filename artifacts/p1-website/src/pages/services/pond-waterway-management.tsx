@@ -16,7 +16,7 @@ const FAQS = [
   {
     question: "Does P1 build new ponds?",
     answer:
-      "Yes. P1 constructs new ponds that are properly sized and graded from the start — handling excavation, dam construction, inlet and outlet installation, and shoreline stabilization — and also restores existing ponds that have silted in or lost embankment integrity.",
+      "Yes. We construct and restore ponds, including excavation, embankment work, inlets, outlets, and shoreline stabilization. We'll review the site and confirm engineering and approvals before construction.",
   },
   {
     question: "How often should a pond be professionally maintained?",
@@ -26,12 +26,12 @@ const FAQS = [
   {
     question: "Can P1 restore a pond that has silted in or become overgrown?",
     answer:
-      "Yes. P1 restores neglected ponds to full function — sediment and silt management, embankment repair, shoreline restoration, vegetation clearing, and inlet/outlet work — whether it's a farm pond, a decorative water feature, or a stormwater basin.",
+      "Yes. We clear overgrowth, manage sediment, repair banks, and work on inlets and outlets. We'll assess the pond before recommending repairs and explain any specialist help needed.",
   },
   {
     question: "Does P1 maintain stormwater retention ponds for compliance?",
     answer:
-      "Yes. Commercial retention ponds are often subject to local and state maintenance requirements. P1 provides documented maintenance programs that keep retention systems functioning within regulatory standards — with the records to prove it.",
+      "We maintain stormwater retention ponds and provide service records. We'll work with your property team on its maintenance plan; required inspections and regulatory decisions remain with the responsible professionals.",
   },
 ];
 
@@ -40,7 +40,7 @@ export default function PondWaterwayManagement() {
     <Layout>
       <SEO 
         title="Pond & Waterway Management in SC & NC | P1"
-        description="Pond management, waterway clearing, shoreline work, and maintenance for qualifying large properties in Upstate SC and Charlotte. Call (704) 221-8928."
+        description="Pond management, waterway clearing, shoreline work, and maintenance for large properties in Upstate SC and Charlotte. Call (704) 221-8928."
         jsonLd={[
           serviceSchema({ name: "Pond & Waterway Management", description: "Professional pond management, waterway clearing, shoreline restoration, and water quality maintenance for large properties. Serving Upstate SC and Charlotte NC. Call (704) 221-8928.", path: "/services/pond-waterway-management" }),
           breadcrumbSchema([
@@ -65,7 +65,7 @@ export default function PondWaterwayManagement() {
             in the Carolinas
           </>
         }
-        subtitle="A healthy pond or waterway is an asset. A neglected one is a liability. P1 keeps your water features functioning, clean, and properly maintained — whether it's a farm pond, a stormwater retention basin, or a decorative water feature on a commercial property."
+        subtitle="We care for farm ponds, stormwater basins, and commercial water features. From regular maintenance to bank repairs and clearing overgrowth, we help keep the water and surrounding ground in good condition."
         image={heroImg}
         imageAlt="Pristine retention pond with banks"
       />
@@ -98,7 +98,7 @@ export default function PondWaterwayManagement() {
                   "Pond dam inspection and minor repairs",
                   "Sediment and silt management planning",
                   "Fish habitat management and stocking coordination",
-                  "Stormwater retention pond compliance and maintenance"
+                  "Stormwater retention pond maintenance and service records"
                 ].map((item, i) => (
                   <li key={i} className="flex items-start gap-3 bg-muted p-4 rounded-lg">
                     <CheckCircle2 className="w-6 h-6 text-primary shrink-0 mt-0.5" />
@@ -132,7 +132,7 @@ export default function PondWaterwayManagement() {
 
           <FeatureRow heading="Pond Construction & Restoration" image={pondConstructionImg} imageAlt="Excavator reshaping a pond embankment during construction" reverse>
             <p>
-              If your pond has silted in, lost its embankment integrity, or simply never performed well, P1 can restore it to full function or construct a new pond that's properly sized and graded from the start. We handle excavation, dam construction, inlet and outlet installation, and shoreline stabilization.
+              A silted pond or damaged bank needs a closer look before repairs begin. We handle excavation, embankment work, inlets, outlets, and shoreline stabilization, with engineering and approvals confirmed where needed.
             </p>
           </FeatureRow>
 
@@ -141,7 +141,7 @@ export default function PondWaterwayManagement() {
               Stormwater Retention Compliance
             </h2>
             <p className="text-lg text-secondary/80 leading-relaxed">
-              Commercial properties with stormwater retention ponds are often subject to local and state maintenance requirements. P1 provides documented maintenance programs that keep your retention systems functioning within regulatory standards — and gives you the records to prove it.
+              Stormwater ponds may have required inspections and maintenance plans. We'll work with your property team on the maintenance and service records; regulatory and engineering decisions stay with the responsible professionals.
             </p>
           </div>
 

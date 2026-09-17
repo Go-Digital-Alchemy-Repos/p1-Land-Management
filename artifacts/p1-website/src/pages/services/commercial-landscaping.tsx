@@ -16,12 +16,12 @@ const FAQS = [
   {
     question: "What's included in a P1 commercial landscaping program?",
     answer:
-      "Programs are customized to each site, but typically include turf mowing and edging, tree trimming and canopy management, pond and stormwater retention care, drainage inspection and maintenance, erosion control, seasonal seeding and fertilization, and brush management for undeveloped acreage.",
+      "Your plan can include mowing and edging, tree care, ponds, drainage checks, erosion repairs, seasonal seeding, and brush control. We'll walk the site with you and put the regular tasks and visit schedule in writing.",
   },
   {
     question: "How is a commercial maintenance schedule established?",
     answer:
-      "P1 starts with a free site assessment, then builds a recurring grounds schedule around seasonal growth, site priorities, and your operating hours. The written program defines visit frequency and the work included.",
+      "We start with a free site assessment. Then we plan visits around seasonal growth, deliveries, opening hours, and the areas that need the most attention. You'll know how often we're coming and what's included.",
   },
   {
     question: "Is there a minimum property size for commercial programs?",
@@ -31,7 +31,7 @@ const FAQS = [
   {
     question: "How are insurance, licensing and procurement documents handled?",
     answer:
-      "Ask P1 to provide the current documentation relevant to your project's agreed scope before work is scheduled. Documentation, vendor onboarding requirements and any specialist involvement are confirmed during qualification.",
+      "Share your vendor requirements with us before scheduling. We'll review current insurance and license documents for the work, complete the necessary paperwork, and explain where a specialist may be needed.",
   },
 ];
 
@@ -64,7 +64,7 @@ export default function CommercialLandscaping() {
             </em>
           </>
         }
-        subtitle="P1 provides commercial landscaping and scheduled exterior grounds maintenance for commercial sites, business campuses, industrial properties, and large commercial landholdings throughout Upstate South Carolina and the Charlotte, NC region."
+        subtitle="We look after the grounds around offices, industrial sites, and other large properties across Upstate South Carolina and greater Charlotte. Regular mowing, seasonal care, and repairs planned around your site."
         image={heroImg}
         imageAlt="Manicured commercial property landscape"
       />
@@ -75,10 +75,10 @@ export default function CommercialLandscaping() {
           
           <FeatureRow heading="Your Commercial Property. Our Full Attention." image={attentionImg} imageAlt="Crew maintaining a large commercial property's grounds">
             <p>
-              A well-maintained commercial property supports a professional presentation, protects the work already invested in the site and helps your team identify exterior needs early. P1 Land & Property Management helps large properties define and maintain an agreed exterior-work scope.
+              Your grounds need to look good and work for the people using them. We handle mowing, tree and brush care, ponds, and drainage, with a schedule built around your property.
             </p>
             <p>
-              We work with commercial developers, property managers, business campus operators, industrial facility managers, municipalities, institutions, and agricultural operators across both our markets.
+              We'll talk through regular upkeep, seasonal work, and any repairs that need separate attention, so you know what's included.
             </p>
           </FeatureRow>
 
@@ -87,7 +87,7 @@ export default function CommercialLandscaping() {
               What's Included in Our Commercial Programs
             </h2>
             <p className="text-lg text-secondary/80 leading-relaxed mb-6">
-              P1 commercial landscaping programs are customized to your site — but typically include:
+              We'll build the plan around your site. Services can include:
             </p>
             <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[
@@ -111,10 +111,10 @@ export default function CommercialLandscaping() {
 
           <FeatureRow heading="Maintenance Schedules That Work for Your Operation" image={scheduleImg} imageAlt="Operator on a commercial maintenance schedule" reverse>
             <p>
-              Keep entrances, turf, planted areas, and perimeter vegetation on a predictable care schedule. We plan visits around deliveries, staff and visitor access, seasonal growth, and the presentation standards of your property.
+              We plan visits around deliveries, employees, visitors, and seasonal growth. Entrances, turf, planting beds, and perimeter vegetation each get the attention they need.
             </p>
             <p>
-              Your grounds program identifies routine activities, seasonal tasks, and follow-up observations. Larger corrective projects are priced and approved separately, so recurring care remains easy to budget and manage.
+              You'll know which jobs are part of regular upkeep and which are seasonal. Larger repairs get a separate price and your approval before we start.
             </p>
           </FeatureRow>
 
@@ -124,11 +124,11 @@ export default function CommercialLandscaping() {
             </h2>
             <ul className="space-y-4">
               {[
-                "1-acre minimum — we're built for large properties, not small lawns",
+                "Crews and equipment for properties 1 acre and larger",
                 "Nearly 30 years of experience in land and property care",
                 "Commercial grounds management across Upstate SC and greater Charlotte",
-                "Recurring schedules coordinated around your operating hours",
-                "Free site assessment and a clear written grounds program"
+                "Regular visits planned around your operating hours",
+                "A free site assessment and a maintenance plan in writing"
               ].map((item, i) => (
                 <li key={i} className="flex items-center gap-3 text-lg text-secondary/80 font-medium">
                   <div className="w-2 h-2 rounded-full bg-primary" />

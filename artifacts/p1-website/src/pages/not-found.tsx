@@ -52,7 +52,7 @@ export default function NotFound() {
             </em>
           </>
         }
-        subtitle="The page you're looking for couldn't be found — it may have been moved or never existed. But your property still needs work, and we're here to help you find your way."
+        subtitle="We couldn&#x27;t find that page. Use the links below to explore our services or get in touch."
       >
         <div className="flex flex-col sm:flex-row items-center gap-4">
           <Button

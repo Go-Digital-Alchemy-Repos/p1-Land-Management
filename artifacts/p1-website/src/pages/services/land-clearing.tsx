@@ -16,7 +16,7 @@ const FAQS = [
   {
     question: "How much does land clearing cost in Upstate SC and Charlotte NC?",
     answer:
-      "Land clearing cost depends on acreage, vegetation density, terrain, and the clearing method used — forestry mulching is often significantly less expensive than traditional clear-and-haul. P1 provides free on-site assessments and written estimates so you know the full scope and price before work begins.",
+      "Cost depends on acreage, vegetation, terrain, access, and how debris will be handled. Forestry mulching can be a good option when material can stay on site. We provide a free site assessment and written estimate before work begins.",
   },
   {
     question: "What is forestry mulching and when is it the better option?",
@@ -40,7 +40,7 @@ export default function LandClearing() {
     <Layout>
       <SEO 
         title="Land Clearing in Upstate SC & Charlotte | P1"
-        description="Land clearing and forestry mulching for qualifying commercial, industrial, agricultural, municipal, and institutional sites. Call (704) 221-8928."
+        description="Land clearing and forestry mulching for commercial, industrial, agricultural, municipal, and institutional sites. Call (704) 221-8928."
         jsonLd={[
           serviceSchema({ name: "Land Clearing", description: "Professional land clearing for commercial, industrial, agricultural, municipal, and institutional properties. Trees, brush, stumps, and vegetation removed efficiently. Serving Upstate SC and Charlotte NC. Call (704) 221-8928.", path: "/services/land-clearing" }),
           breadcrumbSchema([
@@ -65,7 +65,7 @@ export default function LandClearing() {
             in Upstate SC and Charlotte NC
           </>
         }
-        subtitle="From clearing a few overgrown acres to opening up 100+ acres for development, P1 Land & Property Management has the equipment and experience to do it efficiently, cleanly, and on schedule."
+        subtitle="We clear overgrown acreage and prepare large tracts for their next use. We&#x27;ll choose the equipment and method around your land, access, and plans."
         image={heroImg}
         imageAlt="Excavator clearing brush in woods"
       />
@@ -76,7 +76,7 @@ export default function LandClearing() {
           
           <FeatureRow heading="Professional Land Clearing That Prepares Your Property for What's Next" image={preparesImg} imageAlt="Land being cleared and prepared for its next use">
             <p>
-              Whether you're preparing land for construction, expanding agricultural acreage, eliminating invasive vegetation, or simply reclaiming overgrown land you've let go, P1 delivers professional clearing that leaves your property ready for its next use.
+              Preparing a construction site, opening pasture, or reclaiming overgrown ground starts with a plan for what stays and what goes. We'll walk the land with you before clearing begins.
             </p>
             <p>
               We handle the full clearing process — trees, stumps, brush, vines, briars, and debris — using the right equipment for each site and each soil type. We serve commercial developers, farmers, industrial facilities, municipalities, institutions, and property managers across Upstate South Carolina and the greater Charlotte, North Carolina area.
@@ -120,7 +120,7 @@ export default function LandClearing() {
               What Comes After Clearing
             </h2>
             <p className="text-lg text-secondary/80 leading-relaxed mb-6">
-              Land clearing is often just the first step. P1 can take your newly cleared property through every subsequent stage: fine grading, drainage installation, seeding, turf establishment, and ongoing maintenance. Starting a project with P1 means you have a partner for the full lifecycle of your land, not just the first cut.
+              Clearing may be the first job, with grading, drainage, and seeding to follow. We can help you plan those stages and look after the grounds once they're established.
             </p>
             <h3 className="text-xl font-serif font-bold text-secondary mt-8 mb-4">
               Service Area

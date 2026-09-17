@@ -39,13 +39,13 @@ export default function LancasterCountySC() {
     <Layout>
       <SEO
         title="Land Management in Lancaster County, SC | P1"
-        description="Commercial landscaping, grounds maintenance, land clearing, grading & drainage for qualifying Lancaster County, SC sites. Call (704) 221-8928."
+        description="Commercial landscaping, grounds maintenance, land clearing, grading & drainage for Lancaster County, SC sites. Call (704) 221-8928."
         jsonLd={[
           serviceAreaSchema({
             areaName: "Lancaster County, South Carolina",
             areaType: "AdministrativeArea",
             description:
-              "Commercial landscaping, grounds maintenance, agricultural land care, land clearing, grading, drainage, turf, and pond services for qualifying properties across Lancaster County, SC.",
+              "Commercial landscaping, grounds maintenance, agricultural land care, land clearing, grading, drainage, turf, and pond services for properties across Lancaster County, SC.",
             path: "/service-areas/lancaster-county-sc",
           }),
           breadcrumbSchema([
@@ -67,7 +67,7 @@ export default function LancasterCountySC() {
             </em>
           </>
         }
-        subtitle="P1 Land & Property Management provides commercial landscaping and grounds maintenance for commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger throughout Lancaster County, from Indian Land and Van Wyck to Lancaster, Kershaw, and Heath Springs. Connected services extend through agricultural land care, clearing, grading, drainage, and complete reconstruction."
+        subtitle="Commercial landscaping and grounds maintenance across Lancaster County, from Indian Land and Van Wyck to Kershaw and Heath Springs. We also help with farm upkeep, clearing, grading, drainage, and larger property repairs."
         image={heroImg}
         imageAlt="Land Clearing & Property Management in Lancaster County, SC"
       />
@@ -80,7 +80,7 @@ export default function LancasterCountySC() {
               Lancaster County is one of the fastest-growing counties in the Charlotte region. Its northern panhandle around Indian Land and Van Wyck has seen major commercial, industrial, and institutional development — while the central and southern reaches around Lancaster, Kershaw, and Heath Springs remain defined by working farmland, pasture, and timber.
             </p>
             <p>
-              That combination is exactly what P1 Land & Property Management is built for. Whether you manage a commercial site in Indian Land, a developing tract along the U.S. 521 corridor, or working agricultural acreage outside Kershaw, P1 delivers the equipment, expertise, and reliability that large Lancaster County properties demand.
+              We work on commercial grounds in Indian Land, development tracts along U.S. 521, and farmland outside Kershaw. Each job starts with how you use the property and what needs attention.
             </p>
           </FeatureRow>
 
@@ -93,7 +93,7 @@ export default function LancasterCountySC() {
                   "Agricultural property maintenance — pastures, fields, fence lines, and access roads",
                   "Land clearing and forestry mulching — lot clearing, right-of-way, and rural acreage",
                   "Fine grading and site preparation for commercial, industrial, municipal, and institutional development",
-                  "Drainage planning and scoped French-drain, retention and erosion work",
+                  "Drainage work — French drains, ponds, ditches, and erosion repairs",
                   "Turf installation — sod and large-acreage seeding for Piedmont soils",
                   "Tree services — trimming, removal, and selective clearing",
                   "Pond and waterway management — construction, restoration, and water quality",
@@ -139,7 +139,7 @@ export default function LancasterCountySC() {
                 Agriculture remains a genuine part of Lancaster County's identity, from Van Wyck and the northern panhandle south toward Kershaw and Heath Springs. Working farms and large agricultural properties need commercial-scale care, including pasture management and reseeding, drainage across large tracts, access-road grading, selective clearing along fence lines, and pond maintenance for livestock and irrigation.
               </p>
               <p>
-                From row crops and hay ground to cattle and poultry operations, P1 works with Lancaster County farm and ranch owners on pasture renovation, land clearing, access-road grading, drainage correction, and pond construction — the earthwork and ongoing maintenance that keep working land productive. Our combined expertise in earthmoving and land maintenance makes us a natural fit for the county's agricultural landowners.
+                We help farm owners restore pasture, clear overgrowth, grade access roads, and look after ponds. We'll walk the land with you and plan work around animals, equipment, and seasonal use.
               </p>
             </div>
           </div>
@@ -148,10 +148,10 @@ export default function LancasterCountySC() {
             <h2 className="text-2xl font-serif font-bold text-secondary">Commercial & Development Site Work in Lancaster County</h2>
             <div className="prose prose-lg prose-p:text-secondary/80 max-w-none space-y-4">
               <p>
-                Few markets in the Carolinas are developing faster than Lancaster County's panhandle, where builders and commercial developers are racing to keep pace along the U.S. 521 corridor through Indian Land and Van Wyck. That growth demands land clearing, forestry mulching, fine grading, site preparation, stormwater and drainage installation, and turf establishment — handling large, complex sites that require the scale of equipment and crew most contractors can't bring. As the county tightens its development standards and infrastructure requirements, getting sites properly cleared, graded, and drained the first time matters more than ever.
+                New sites along U.S. 521 through Indian Land and Van Wyck need careful preparation. We handle clearing, grading, drainage, and turf establishment, working with your project team and approved plans.
               </p>
               <p>
-                For commercial property managers, developers, industrial facilities, municipalities, and institutions, P1 also offers ongoing grounds maintenance programs that keep sites presentable and compliant year-round, long after the initial site work is complete.
+                After the site is established, we can keep the grounds maintained on a regular schedule.
               </p>
             </div>
           </div>
@@ -160,10 +160,10 @@ export default function LancasterCountySC() {
             <h2 className="text-2xl font-serif font-bold text-secondary">Why Lancaster County Property Teams Choose P1</h2>
             <div className="prose prose-lg prose-p:text-secondary/80 max-w-none space-y-4">
               <p>
-                We're not a regional franchise or a national chain applying a one-size-fits-all approach to your property. P1 is built for the Carolinas — we understand the red clay soils of the Lancaster County Piedmont, the drainage challenges of the area's rolling terrain and the creek- and river-fed bottomland along the Catawba, the grass and pasture species that thrive here, and the seasonal patterns that drive maintenance needs throughout the year.
+                Local soil and terrain shape the work. We consider the Piedmont's clay, rolling slopes, and bottomland near the Catawba when planning drainage, grading, and seasonal care.
               </p>
               <p>
-                From commercial landscaping and grounds maintenance contracts to land clearing, grading, drainage, and full reconstruction, P1 gives Lancaster County property teams one contractor for the full life of their land.
+                From clearing and drainage repairs to regular grounds care, you'll have one team to call about your Lancaster County property.
               </p>
             </div>
           </div>

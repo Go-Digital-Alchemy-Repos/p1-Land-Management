@@ -31,7 +31,7 @@ const FAQS = [
   {
     question: "What size properties does P1 work on in Upstate South Carolina?",
     answer:
-      "P1 focuses on commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger, bringing the equipment and expertise that small-scale landscaping companies can't provide. P1 does not provide residential services.",
+      "We serve commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger. We do not provide residential services.",
   },
 ];
 
@@ -40,9 +40,9 @@ export default function UpstateSC() {
     <Layout>
       <SEO 
         title="Land Management in Upstate South Carolina | P1"
-        description="Commercial landscaping, grounds maintenance, land clearing, grading & drainage for qualifying sites across Upstate SC. Call (704) 221-8928."
+        description="Commercial landscaping, grounds maintenance, land clearing, grading & drainage for sites across Upstate SC. Call (704) 221-8928."
         jsonLd={[
-          serviceAreaSchema({ areaName: "Upstate South Carolina", areaType: "AdministrativeArea", description: "Commercial landscaping, grounds maintenance, land clearing, grading, drainage, turf, tree, pond, and reconstruction services for qualifying properties across Upstate South Carolina.", path: "/service-areas/upstate-south-carolina" }),
+          serviceAreaSchema({ areaName: "Upstate South Carolina", areaType: "AdministrativeArea", description: "Commercial landscaping, grounds maintenance, land clearing, grading, drainage, turf, tree, pond, and reconstruction services for properties across Upstate South Carolina.", path: "/service-areas/upstate-south-carolina" }),
           breadcrumbSchema([
             { name: "Home", path: "/" },
             { name: "Service Areas", path: "/service-areas" },
@@ -62,7 +62,7 @@ export default function UpstateSC() {
             </em>
           </>
         }
-        subtitle="Commercial landscaping and grounds maintenance lead P1's full-service care for commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger throughout Upstate South Carolina. Connected services extend through land clearing, grading, drainage, and complete property reconstruction."
+        subtitle="Commercial landscaping, grounds maintenance, and land care for properties 1 acre and larger throughout Upstate South Carolina. We also handle clearing, grading, drainage, and property restoration."
         image={heroImg}
         imageAlt="Land & Property Management in Upstate South Carolina"
       />
@@ -72,10 +72,10 @@ export default function UpstateSC() {
           
           <FeatureRow heading="Your Upstate SC Property Partner" image={upstateImg} imageAlt="Rolling Upstate South Carolina countryside with large properties">
             <p>
-              Upstate South Carolina is one of the fastest-growing regions in the Southeast — and with that growth comes increasing demand for professional land and property management at commercial, industrial, and agricultural scale. P1 Land & Property Management has built its operations around serving this market with the full range of services that large properties actually need.
+              We help owners and managers care for large properties across the Upstate. Regular mowing, clearing overgrowth, repairing drainage, and preparing new ground are all part of that work.
             </p>
             <p>
-              Whether you manage a commercial campus in Greenville, agricultural acreage in Anderson County, an industrial facility near Spartanburg, or a municipal property in the foothills, P1 delivers the expertise, equipment, and reliability your property demands.
+              We work on commercial campuses in Greenville, farms in Anderson County, industrial sites near Spartanburg, and public grounds across the region.
             </p>
           </FeatureRow>
 
@@ -88,7 +88,7 @@ export default function UpstateSC() {
                   "Industrial and agricultural land maintenance",
                   "Land clearing and forestry mulching",
                   "Fine grading and site preparation",
-                  "Drainage planning and scoped installation work",
+                  "Drainage planning, installation, and repairs",
                   "Turf installation — sod and large-acreage seeding",
                   "Tree services — trimming, removal, and selective clearing",
                   "Pond and waterway management",
@@ -133,10 +133,10 @@ export default function UpstateSC() {
             </h2>
             <div className="prose prose-lg prose-p:text-secondary/80 max-w-none">
               <p>
-                We're not a regional franchise or a national chain applying a one-size-fits-all approach to your property. P1 is built for the Carolinas — we understand the red clay soils of the Piedmont, the drainage challenges of the region's rolling terrain, the grass species that thrive here, and the seasonal patterns that drive maintenance needs throughout the year.
+                We plan around the Piedmont's clay soils, rolling ground, and seasonal growth. Those details matter when choosing grass, moving water, or setting a maintenance schedule.
               </p>
               <p>
-                We work with local commercial developers, regional farm operators, industrial facility managers, municipalities, and institutions. If your qualifying non-residential property is 1 acre or larger and needs professional management, P1 is the call to make.
+                We serve commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger. Tell us where your property is and what needs attention.
               </p>
               <p className="font-bold text-secondary mt-6 border-l-4 border-primary pl-4">
                 Call <a href="tel:7042218928" className="text-primary hover:underline">+1 (704) 221-8928</a> or <Link href="/contact" className="text-primary hover:underline">request a free estimate online</Link> to discuss your property.
@@ -182,7 +182,7 @@ export default function UpstateSC() {
       </section>
 
       <aside className="site-shell pb-12 text-lg">
-        <p><Link href="/services" className="text-primary underline">Compare land management services</Link> or <Link href="/contact" className="text-primary underline">tell us about your property</Link> to discuss scope and availability.</p>
+        <p><Link href="/services" className="text-primary underline">Compare land management services</Link> or <Link href="/contact" className="text-primary underline">tell us about your property</Link> to talk through the work and available dates.</p>
       </aside>
       <FinalCTA />
     </Layout>

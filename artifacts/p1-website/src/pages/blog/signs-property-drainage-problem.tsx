@@ -72,7 +72,7 @@ export default function BlogPost() {
               If you have areas where grass simply won't establish despite repeated seeding, or where turf dies out every season, poor drainage is a likely culprit. Waterlogged soil creates anaerobic conditions that suffocate root systems. Grass needs oxygen in the soil as much as it needs water — saturated ground starves roots of air.
             </p>
             <p>
-              If you're spending money repeatedly seeding problem areas without addressing the underlying drainage issue, you're in a cycle that won't end until the drainage is fixed.
+              Before paying to seed the same bare patch again, check whether water is keeping the grass from taking root.
             </p>
 
             <h2>Sign 4: Drainage Ditches That Are Silted, Overgrown, or Undersized</h2>
@@ -80,7 +80,7 @@ export default function BlogPost() {
               Ditches that were designed to carry runoff off your property can't do their job if they're silted in with sediment, choked with vegetation, or undersized for current runoff volumes. A blocked or undersized ditch backs water up onto adjacent land — which is often when standing water problems in fields or near structures appear.
             </p>
             <p>
-              Agricultural properties in particular rely on properly functioning drainage ditches for field workability. A ditch that hasn't been maintained in several years has often lost 30–50% or more of its original flow capacity.
+              Farm drainage ditches need regular attention. Sediment and overgrowth can reduce the space available for runoff, leaving nearby fields wet and harder to use.
             </p>
 
             <h2>Sign 5: Water Intrusion Near Structures</h2>

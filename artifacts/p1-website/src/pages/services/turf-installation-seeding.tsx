@@ -31,7 +31,7 @@ const FAQS = [
   {
     question: "Why do large turf installations fail within a few years?",
     answer:
-      "Most failures trace back to bad grade, poor soil preparation, wrong species selection, or inadequate establishment practices. P1 handles the full process — soil testing, grading, amendment, species selection, and installation — so the result establishes strong and lasts.",
+      "Poor drainage, soil preparation, grass choice, or early care can keep turf from establishing well. We review those conditions before planting and explain the watering and maintenance needed afterward.",
   },
 ];
 
@@ -40,7 +40,7 @@ export default function TurfInstallationSeeding() {
     <Layout>
       <SEO 
         title="Large-Acreage Turf Installation in SC & NC | P1"
-        description="Sod and seed installation for qualifying commercial, industrial, agricultural, municipal, and institutional properties. Call (704) 221-8928."
+        description="Sod and seed installation for commercial, industrial, agricultural, municipal, and institutional properties. Call (704) 221-8928."
         jsonLd={[
           serviceSchema({ name: "Turf Installation & Seeding", description: "Large-acreage sod and seed installation for commercial, industrial, agricultural, municipal, and institutional properties. Bermuda, fescue, zoysia, and more. Serving Upstate SC and Charlotte NC. Call (704) 221-8928.", path: "/services/turf-installation-seeding" }),
           breadcrumbSchema([
@@ -65,7 +65,7 @@ export default function TurfInstallationSeeding() {
             in the Carolinas
           </>
         }
-        subtitle="From commercial grounds and institutional campuses to farm pastures and municipal sites, P1 installs turf that establishes strong, lasts long, and performs in the Carolinas' climate — at any scale."
+        subtitle="Sod and seeding for commercial grounds, campuses, pastures, and public sites. We prepare the ground and help you choose grass suited to the way you&#x27;ll use it."
         image={heroImg}
         imageAlt="Lush new sod and grass"
       />
@@ -76,10 +76,10 @@ export default function TurfInstallationSeeding() {
           
           <FeatureRow heading="Turf Done Right Starts Before the First Seed" image={turfPrepImg} imageAlt="Site being prepared and graded before turf installation">
             <p>
-              A healthy stand of turf — whether it's a commercial property lawn, a farm pasture, a sports field, or an institutional campus — begins with proper site preparation. Bad grade, poor soil, improper species selection, and inadequate establishment practices are the reasons most large-acreage turf jobs fail within two to three years.
+              Good turf starts with the ground underneath it. Grade, drainage, soil, grass choice, and watering all affect how well it takes.
             </p>
             <p>
-              Discuss soil testing, site grading, amendment, species selection and seeding or sod installation with P1 as part of the agreed scope. Establishment practices, responsibilities and any result commitments should be confirmed in writing before work begins.
+              We'll review soil testing, grading, and any amendments needed before planting. You'll know what's included and who will handle watering and establishment care afterward.
             </p>
           </FeatureRow>
 
@@ -128,7 +128,7 @@ export default function TurfInstallationSeeding() {
 
           <FeatureRow heading="Grass Species for the Carolinas" image={turfSpeciesImg} imageAlt="Close-up of lush, healthy established turf grass" reverse>
             <p>
-              Upstate South Carolina and the Charlotte NC region span the transition zone between warm- and cool-season grasses, which means species selection matters more here than almost anywhere. P1 recommends the right species for your specific use, sun exposure, soil type, and maintenance commitment:
+              Grass choice in the Carolinas depends on sun, soil, traffic, and seasonal conditions. We'll help you choose a variety that fits the site and the maintenance you can provide:
             </p>
           </FeatureRow>
 
@@ -154,7 +154,7 @@ export default function TurfInstallationSeeding() {
               From Cleared Ground to Established Turf
             </h2>
             <p className="text-lg text-secondary/80 leading-relaxed">
-              If P1 cleared your land, graded it, and installed drainage — we can take you all the way to a thriving stand of turf. That continuity eliminates finger-pointing between contractors, ensures grade is correct for both drainage and turf health, and gives you a single team responsible for the outcome.
+              We can carry the work from clearing and grading through drainage and planting. That lets us prepare the ground with the finished turf in mind, and gives you one team to call about the job.
             </p>
           </div>
 

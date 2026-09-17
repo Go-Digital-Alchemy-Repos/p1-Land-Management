@@ -28,7 +28,7 @@ const FAQS = [
   {
     question: "What size properties does P1 work on in Concord?",
     answer:
-      "P1 focuses on commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger, bringing equipment and expertise that small-scale landscaping companies can't match. P1 does not provide residential services.",
+      "We serve commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger. We do not provide residential services.",
   },
 ];
 
@@ -39,7 +39,7 @@ export default function ConcordNC() {
         title="Land Management in Concord, NC | P1"
         description="Commercial landscaping, grounds maintenance, land clearing, grading & drainage for 1-acre-plus Concord and Cabarrus County sites. Call (704) 221-8928."
         jsonLd={[
-          serviceAreaSchema({ areaName: "Concord, North Carolina", areaType: "City", description: "Commercial landscaping, grounds maintenance, land clearing, grading, drainage, and turf services for qualifying Concord and Cabarrus County properties.", path: "/service-areas/concord-nc" }),
+          serviceAreaSchema({ areaName: "Concord, North Carolina", areaType: "City", description: "Commercial landscaping, grounds maintenance, land clearing, grading, drainage, and turf services for Concord and Cabarrus County properties.", path: "/service-areas/concord-nc" }),
           breadcrumbSchema([
             { name: "Home", path: "/" },
             { name: "Service Areas", path: "/service-areas" },
@@ -59,7 +59,7 @@ export default function ConcordNC() {
             </em>
           </>
         }
-        subtitle="P1 Land & Property Management leads with commercial landscaping and grounds maintenance for commercial, industrial, agricultural, municipal, and institutional properties throughout Concord and Cabarrus County. P1 also coordinates land clearing, grading, drainage, turf, tree, and pond services for qualifying sites at scale."
+        subtitle="We provide commercial landscaping and grounds maintenance across Concord and Cabarrus County, along with clearing, grading, drainage, turf, tree, and pond care for large properties."
         image={heroImg}
         imageAlt="Land Clearing & Property Management in Concord, NC"
       />
@@ -99,14 +99,14 @@ export default function ConcordNC() {
           <div className="grid gap-10 border-y border-border py-12 md:grid-cols-2">
             <div className="space-y-4">
               <h2 className="text-2xl font-serif font-bold text-secondary">Large-site work in Concord and Cabarrus County</h2>
-              <p className="leading-relaxed text-secondary/80">Concord combines active commercial and industrial corridors with institutional grounds and working acreage outside the urban core. Each setting changes the practical sequence: busy sites may require phased access and careful coordination, while agricultural land may prioritize drainage, equipment routes, soil protection, and the next productive use.</p>
-              <p className="leading-relaxed text-secondary/80">P1 evaluates the requested work in that site context. Clearing, grading, drainage, turf, tree, and recurring grounds needs can be considered together so one improvement does not create a problem for the next.</p>
+              <p className="leading-relaxed text-secondary/80">Around Concord, a busy commercial site needs room for deliveries and staff access. Farmland may need better field drainage or equipment routes. We plan the work around the way your land is used.</p>
+              <p className="leading-relaxed text-secondary/80">Clearing, grading, drainage, and turf work often depend on one another. We'll explain the order that makes sense for your property before the crew starts.</p>
             </div>
             <div className="space-y-4">
               <h2 className="text-2xl font-serif font-bold text-secondary">What to prepare for an assessment</h2>
-              <p className="leading-relaxed text-secondary/80">Bring any available site plans, known utility information, drainage history, access restrictions, and target use for the property. P1 uses those details and the visible conditions to define the proposed scope, assumptions, exclusions, and schedule.</p>
-              <p className="leading-relaxed text-secondary/80">Work that requires engineering, permitting, surveys, utility coordination, or another licensed specialty is identified during qualification rather than silently folded into a broad promise. That gives property teams a clearer basis for comparing estimates and planning mobilization.</p>
-              <p className="leading-relaxed text-secondary/80">The assessment can also distinguish urgent corrective work from improvements that can be phased. A washed access route, active erosion, or blocked drainage path may need attention before finish grading, seeding, or recurring maintenance begins. For occupied Concord properties, that sequence can be coordinated around traffic, staff, tenants, or public access. The final written scope establishes what P1 will perform, how work areas will be accessed, and what the property team must complete before mobilization.</p>
+              <p className="leading-relaxed text-secondary/80">Bring any site plans and notes about utilities, drainage, and access. We'll use them to work out what's needed and prepare your estimate.</p>
+              <p className="leading-relaxed text-secondary/80">If the job needs engineering, permits, surveys, or another specialist, we'll identify that early. You'll know what our crew will handle and what needs separate arrangements.</p>
+              <p className="leading-relaxed text-secondary/80">A washed-out road or blocked drain may need fixing before the ground can be seeded or maintained. On occupied properties, we'll plan those stages around vehicles, staff, tenants, and public access. Your written estimate will explain the work and what needs to be ready before we arrive.</p>
               <p className="leading-relaxed text-secondary/80">Before the visit, mark priority areas and collect photos showing how conditions change after rain or during normal operations. That context helps connect a visible symptom to the surrounding site.</p>
             </div>
           </div>
@@ -119,7 +119,7 @@ export default function ConcordNC() {
       </section>
 
       <aside className="site-shell pb-12 text-lg">
-        <p><Link href="/services" className="text-primary underline">Compare land management services</Link> or <Link href="/contact" className="text-primary underline">tell us about your property</Link> to discuss scope and availability.</p>
+        <p><Link href="/services" className="text-primary underline">Compare land management services</Link> or <Link href="/contact" className="text-primary underline">tell us about your property</Link> to talk through the work and available dates.</p>
       </aside>
       <FinalCTA />
     </Layout>

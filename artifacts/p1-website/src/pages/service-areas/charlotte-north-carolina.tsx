@@ -16,7 +16,7 @@ const FAQS = [
   {
     question: "What areas around Charlotte does P1 serve?",
     answer:
-      "P1 serves qualifying properties throughout Charlotte and Mecklenburg County, including commercial and industrial corridors near Uptown, University City, Pineville, Matthews, Huntersville, and the surrounding Charlotte metro.",
+      "P1 serves large properties throughout Charlotte and Mecklenburg County, including commercial and industrial corridors near Uptown, University City, Pineville, Matthews, Huntersville, and the surrounding Charlotte metro.",
   },
   {
     question: "Does P1 handle both one-time projects and ongoing maintenance?",
@@ -26,7 +26,7 @@ const FAQS = [
   {
     question: "Does P1 provide commercial landscaping in Charlotte?",
     answer:
-      "Yes. Commercial landscaping and grounds maintenance are core P1 services for qualifying Charlotte properties. Programs can include turf and vegetation care, tree services, drainage and pond attention, seasonal planning, and corrective exterior work under a defined scope.",
+      "Yes. We handle mowing, vegetation and tree care, drainage, and pond maintenance for large Charlotte properties. We'll agree a regular schedule and price larger repairs separately.",
   },
   {
     question: "What size properties does P1 work on in Charlotte?",
@@ -40,9 +40,9 @@ export default function CharlotteNorthCarolina() {
     <Layout>
       <SEO 
         title="Land Management in Charlotte, NC | P1"
-        description="Commercial landscaping, grounds maintenance, land clearing, grading and drainage for qualifying Charlotte and Mecklenburg County sites. Call (704) 221-8928."
+        description="Commercial landscaping, grounds maintenance, land clearing, grading and drainage for Charlotte and Mecklenburg County sites. Call (704) 221-8928."
         jsonLd={[
-          serviceAreaSchema({ areaName: "Charlotte, North Carolina", areaType: "City", description: "Commercial landscaping, grounds maintenance, land clearing, grading, drainage, turf, tree, pond, and reconstruction services for qualifying Charlotte and Mecklenburg County properties.", path: "/service-areas/charlotte-north-carolina" }),
+          serviceAreaSchema({ areaName: "Charlotte, North Carolina", areaType: "City", description: "Commercial landscaping, grounds maintenance, land clearing, grading, drainage, turf, tree, pond, and reconstruction services for Charlotte and Mecklenburg County properties.", path: "/service-areas/charlotte-north-carolina" }),
           breadcrumbSchema([
             { name: "Home", path: "/" },
             { name: "Service Areas", path: "/service-areas" },
@@ -62,7 +62,7 @@ export default function CharlotteNorthCarolina() {
             </em>
           </>
         }
-        subtitle="P1 provides commercial landscaping and grounds maintenance for commercial, industrial, municipal, and institutional properties throughout Charlotte and Mecklenburg County. Connected services include land clearing, grading, drainage, turf, tree, pond, and property reconstruction for qualifying sites 1 acre and larger."
+        subtitle="Commercial landscaping and grounds maintenance for large properties throughout Charlotte and Mecklenburg County. We also handle clearing, grading, drainage, turf, trees, ponds, and property restoration."
         image={heroImg}
         imageAlt="Charlotte, North Carolina skyline and surrounding commercial districts"
       />
@@ -72,10 +72,10 @@ export default function CharlotteNorthCarolina() {
           
           <FeatureRow heading="Commercial-Scale Property Management for Charlotte" image={charlotteImg} imageAlt="Large-acreage property development in the Charlotte NC region">
             <p>
-              Charlotte properties often combine visible landscaping, active operations, stormwater infrastructure, access routes, and undeveloped acreage within one site. P1 helps owners and facility teams coordinate those connected exterior needs under a clearly defined scope.
+              A Charlotte property can include landscaped entrances, loading areas, stormwater ponds, and undeveloped ground. We help you look after each area without losing sight of how the whole site works.
             </p>
             <p>
-              From commercial campuses and industrial facilities to municipal and institutional grounds, P1 brings the crews, equipment, and planning needed for qualifying non-residential properties throughout Charlotte and Mecklenburg County.
+              We serve commercial, industrial, municipal, and institutional properties 1 acre and larger, with crews and equipment suited to the work.
             </p>
           </FeatureRow>
 
@@ -88,7 +88,7 @@ export default function CharlotteNorthCarolina() {
                   "Industrial and agricultural land maintenance",
                   "Land clearing and forestry mulching",
                   "Fine grading and site preparation",
-                  "Drainage planning and scoped installation work",
+                  "Drainage planning, installation, and repairs",
                   "Turf installation — sod and large-acreage seeding",
                   "Tree services — trimming, removal, and selective clearing",
                   "Pond and waterway management",
@@ -130,7 +130,7 @@ export default function CharlotteNorthCarolina() {
             </h2>
             <div className="prose prose-lg prose-p:text-secondary/80 max-w-none">
               <p>
-                Charlotte commercial and institutional properties rarely have a single exterior need. Routine grounds care may connect to drainage trouble, aging vegetation, pond maintenance, erosion, access improvements, or a larger site reconstruction project. P1 evaluates those relationships so immediate work and longer-term maintenance can be sequenced without creating avoidable rework.
+                A wet lawn may point to a blocked drain. An eroding slope may affect a pond below it. We look at those connections before recommending repairs, so today's work supports the property's longer-term care.
               </p>
               <p className="font-bold text-secondary mt-6 border-l-4 border-primary pl-4">
                 Call <a href="tel:7042218928" className="text-primary hover:underline">+1 (704) 221-8928</a> or <Link href="/contact" className="text-primary hover:underline">request a free estimate online</Link> to discuss your property.
@@ -141,13 +141,13 @@ export default function CharlotteNorthCarolina() {
           <div className="grid gap-10 border-y border-border py-12 md:grid-cols-2">
             <div className="space-y-4">
               <h2 className="text-2xl font-serif font-bold text-secondary">Built around Charlotte operations</h2>
-              <p className="leading-relaxed text-secondary/80">Within Charlotte, P1 focuses on qualifying commercial, industrial, municipal, and institutional properties where acreage, operating complexity, or connected exterior needs call for more than a small landscape crew. The scope may involve an active campus, development tract, retention area, access route, or a combination of land preparation and recurring care.</p>
-              <p className="leading-relaxed text-secondary/80">One assessment can account for the immediate work area, connected drainage and access conditions, and the recurring care the property may need after corrective work is complete.</p>
+              <p className="leading-relaxed text-secondary/80">We work on active campuses, development tracts, retention areas, and access roads across Charlotte. Tell us which areas need attention and how the crew will need to work around your operations.</p>
+              <p className="leading-relaxed text-secondary/80">A site visit gives us a chance to review the immediate problem, nearby drainage and access, and the maintenance you'll need afterward.</p>
             </div>
             <div className="space-y-4">
-              <h2 className="text-2xl font-serif font-bold text-secondary">A regional scope with local constraints</h2>
-              <p className="leading-relaxed text-secondary/80">Across the metro, project planning changes with site access, active operations, visible water movement, surrounding uses, and the property’s next purpose. P1 reviews those conditions before proposing work and flags engineering, permitting, utility, survey, or specialist responsibilities where they may apply.</p>
-              <p className="leading-relaxed text-secondary/80">Share plans, known utilities, drainage history, access windows, and target timing when requesting an assessment. The more complete the operating context, the more clearly the estimate can define work areas, assumptions, exclusions, and coordination.</p>
+              <h2 className="text-2xl font-serif font-bold text-secondary">Plan Around Your Property</h2>
+              <p className="leading-relaxed text-secondary/80">We'll check access, visible water movement, and the surrounding land before proposing work. If engineering, permits, surveys, or other specialist help is needed, we'll explain that before scheduling.</p>
+              <p className="leading-relaxed text-secondary/80">Share any site plans, known utilities, drainage history, and preferred work hours. Those details help us put together a useful estimate.</p>
             </div>
           </div>
 

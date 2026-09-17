@@ -19,7 +19,7 @@ const services = [
   "Commercial landscaping and exterior grounds maintenance contracts",
   "Land clearing and forestry mulching — lot clearing, right-of-way, and rural acreage",
   "Fine grading and site preparation for commercial, industrial, municipal, and institutional development",
-  "Drainage planning and scoped French-drain, retention, and erosion work",
+  "Drainage work — French drains, ponds, ditches, and erosion repairs",
   "Turf installation — sod and large-acreage seeding for Piedmont soils",
   "Tree services — trimming, removal, and selective clearing",
   "Pond and waterway management — construction, restoration, and water quality",
@@ -51,7 +51,7 @@ export function LocationPage({ page, image }: { page: LocationContent; image: st
         {index > 0 && <span aria-hidden="true" className="mr-2">›</span>}
         {index === crumbs.length - 1 ? <span aria-current="page">{crumb.name}</span> : <Link className="underline hover:text-primary" href={crumb.path}>{crumb.name}</Link>}
       </li>)}</ol></nav>
-      <p className="mt-8 max-w-4xl text-lg leading-relaxed">P1 Land &amp; Property Management is a commercial grounds management and land contractor serving commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger in {page.city}, {page.state}.</p>
+      <p className="mt-8 max-w-4xl text-lg leading-relaxed">We serve commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger in {page.city}, {page.state}.</p>
     </div>
     <div className="site-shell space-y-14 pb-16">
       {page.sections.map((section, index) => <section key={section.heading} className="max-w-4xl">
@@ -60,7 +60,7 @@ export function LocationPage({ page, image }: { page: LocationContent; image: st
         {index === 0 && <section className="mt-12 rounded-lg bg-muted p-6 sm:p-8">
           <h2 className="font-display text-2xl">Land &amp; Property Management Services in {page.city}</h2>
           <ul className="mt-6 list-disc space-y-3 pl-5">{services.map(service => <li key={service}>{service}</li>)}</ul>
-          <p className="mt-6 leading-relaxed">Our exterior facility maintenance covers the grounds, vegetation, water movement, and access areas around your operation.</p>
+          <p className="mt-6 leading-relaxed">We'll plan regular upkeep and larger repairs around the way you use your property.</p>
         </section>}
       </section>)}
       <section className="max-w-4xl">

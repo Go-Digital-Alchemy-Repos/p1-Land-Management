@@ -31,7 +31,7 @@ const FAQS = [
   {
     question: "How do I find out if P1 serves my property?",
     answer:
-      "The fastest way is to call (704) 221-8928 or request a free estimate online. Tell us where the property is located and what you need done, and we'll let you know right away whether it falls within our service area and schedule a site visit.",
+      "Call (704) 221-8928 or use our contact form. Tell us where the property is and what needs attention. We'll confirm coverage and talk through available times for a visit.",
   },
 ];
 
@@ -61,7 +61,7 @@ export default function ServiceAreasIndex() {
             </em>
           </>
         }
-        subtitle="Commercial landscaping and grounds maintenance lead our full-service property care for sites 1 acre and larger from the Greenville-Spartanburg corridor to greater Charlotte."
+        subtitle="We provide commercial landscaping, grounds maintenance, and land care for properties 1 acre and larger across Upstate South Carolina and greater Charlotte."
         image={heroImg}
         imageAlt="Heavy equipment clearing land in the Carolinas"
       />
@@ -236,7 +236,7 @@ export default function ServiceAreasIndex() {
       </section>
 
       <aside className="site-shell pb-12 text-lg">
-        <p><Link href="/services" className="text-primary underline">Compare land management services</Link> or <Link href="/contact" className="text-primary underline">tell us about your property</Link> to discuss scope and availability.</p>
+        <p><Link href="/services" className="text-primary underline">Compare land management services</Link> or <Link href="/contact" className="text-primary underline">tell us about your property</Link> to talk through the work and available dates.</p>
       </aside>
       <section className="site-shell pb-16"><h2 className="font-display text-3xl">Local grounds management and land services</h2><h3 className="mt-8 font-display text-2xl">Upstate South Carolina</h3><ul className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"><li><Link className="underline hover:text-primary" href="/service-areas/greer-sc">Greer, SC</Link></li><li><Link className="underline hover:text-primary" href="/service-areas/simpsonville-sc">Simpsonville, SC</Link></li><li><Link className="underline hover:text-primary" href="/service-areas/easley-sc">Easley, SC</Link></li><li><Link className="underline hover:text-primary" href="/service-areas/gaffney-sc">Gaffney, SC</Link></li><li><Link className="underline hover:text-primary" href="/service-areas/duncan-sc">Duncan, SC</Link></li><li><Link className="underline hover:text-primary" href="/service-areas/inman-sc">Inman, SC</Link></li><li><Link className="underline hover:text-primary" href="/service-areas/boiling-springs-sc">Boiling Springs, SC</Link></li></ul><h3 className="mt-8 font-display text-2xl">Greater Charlotte and the South Carolina border</h3><ul className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"><li><Link className="underline hover:text-primary" href="/service-areas/huntersville-nc">Huntersville, NC</Link></li><li><Link className="underline hover:text-primary" href="/service-areas/matthews-nc">Matthews, NC</Link></li><li><Link className="underline hover:text-primary" href="/service-areas/kannapolis-nc">Kannapolis, NC</Link></li><li><Link className="underline hover:text-primary" href="/service-areas/waxhaw-nc">Waxhaw, NC</Link></li><li><Link className="underline hover:text-primary" href="/service-areas/fort-mill-sc">Fort Mill, SC</Link></li><li><Link className="underline hover:text-primary" href="/service-areas/rock-hill-sc">Rock Hill, SC</Link></li><li><Link className="underline hover:text-primary" href="/service-areas/indian-land-sc">Indian Land, SC</Link></li><li><Link className="underline hover:text-primary" href="/service-areas/indian-trail-nc">Indian Trail, NC</Link></li><li><Link className="underline hover:text-primary" href="/service-areas/monroe-nc">Monroe, NC</Link></li><li><Link className="underline hover:text-primary" href="/service-areas/belmont-nc">Belmont, NC</Link></li><li><Link className="underline hover:text-primary" href="/service-areas/mount-holly-nc">Mount Holly, NC</Link></li><li><Link className="underline hover:text-primary" href="/service-areas/cornelius-nc">Cornelius, NC</Link></li></ul></section>
       <FinalCTA />

@@ -23,7 +23,7 @@ const FAQS = [
   {
     question: "Does P1 provide year-round commercial maintenance near Mooresville?",
     answer:
-      "Yes. P1 offers ongoing maintenance programs covering turf, tree care, drainage, and pond management for qualifying commercial, industrial, municipal, and institutional properties around Lake Norman.",
+      "Yes. P1 offers ongoing maintenance programs covering turf, tree care, drainage, and pond management for commercial, industrial, municipal, and institutional properties around Lake Norman.",
   },
   {
     question: "What size properties does P1 work on near Lake Norman?",
@@ -39,7 +39,7 @@ export default function MooresvilleLakeNormanNC() {
         title="Land Management in Mooresville & Lake Norman | P1"
         description="Commercial landscaping, grounds maintenance, land clearing, drainage & pond care for large sites near Mooresville and Lake Norman. Call (704) 221-8928."
         jsonLd={[
-          serviceAreaSchema({ areaName: "Mooresville & Lake Norman, North Carolina", areaType: "City", description: "Commercial landscaping, grounds maintenance, land clearing, grading, drainage, turf, and pond services for qualifying Mooresville and Lake Norman properties.", path: "/service-areas/mooresville-lake-norman-nc" }),
+          serviceAreaSchema({ areaName: "Mooresville & Lake Norman, North Carolina", areaType: "City", description: "Commercial landscaping, grounds maintenance, land clearing, grading, drainage, turf, and pond services for Mooresville and Lake Norman properties.", path: "/service-areas/mooresville-lake-norman-nc" }),
           breadcrumbSchema([
             { name: "Home", path: "/" },
             { name: "Service Areas", path: "/service-areas" },
@@ -59,7 +59,7 @@ export default function MooresvilleLakeNormanNC() {
             </em>
           </>
         }
-        subtitle="P1 Land & Property Management provides commercial landscaping and grounds maintenance for commercial, industrial, agricultural, municipal, and institutional properties in the Mooresville and Lake Norman area. Our connected services extend through land clearing, grading, drainage, turf, tree, shoreline, and pond care for qualifying sites."
+        subtitle="Commercial landscaping and grounds care around Mooresville and Lake Norman. We help maintain large properties, including clearing, grading, drainage, turf, trees, ponds, and shoreline work."
         image={heroImg}
         imageAlt="Land & Property Management Near Mooresville & Lake Norman, NC"
       />
@@ -75,7 +75,7 @@ export default function MooresvilleLakeNormanNC() {
                   "Commercial and institutional property maintenance programs",
                   "Land clearing and selective tree management",
                   "Grading and site preparation",
-                  "Drainage planning and scoped installation work for sloped and waterfront terrain",
+                  "Drainage planning and installation for sloped and waterfront ground",
                   "Large-acreage turf installation and seeding",
                   "Pond and waterway management — including shoreline restoration and water quality maintenance",
                   "Stormwater and erosion management"
@@ -91,7 +91,7 @@ export default function MooresvilleLakeNormanNC() {
             <div className="space-y-6 flex flex-col justify-center">
               <div className="prose prose-lg prose-p:text-secondary/80 max-w-none">
                 <p>
-                  Lake Norman waterfront properties often face unique land management challenges: erosion on steep slopes, pond and shoreline maintenance, drainage across varied terrain, and turf establishment on challenging soils. P1's combined expertise in earthwork, drainage, and land maintenance makes us the right choice for these demanding sites.
+                  Waterfront grounds often need attention to slopes, shorelines, and runoff as well as turf. We look at the ground and water together when planning the work.
                 </p>
                 <p className="font-bold text-secondary mt-6 border-l-4 border-primary pl-4">
                   Call <a href="tel:7042218928" className="text-primary hover:underline">+1 (704) 221-8928</a> or <Link href="/contact" className="text-primary hover:underline">request a free estimate online</Link> to discuss your property.
@@ -103,14 +103,14 @@ export default function MooresvilleLakeNormanNC() {
           <div className="grid gap-10 border-y border-border py-12 md:grid-cols-2">
             <div className="space-y-4">
               <h2 className="text-2xl font-serif font-bold text-secondary">Plan for slopes, water, and occupied sites</h2>
-              <p className="leading-relaxed text-secondary/80">Around Mooresville and Lake Norman, commercial campuses, institutional grounds, municipal property, and working land often sit on sloped terrain influenced by coves, tributaries, ponds, and concentrated runoff. Clearing or grading without considering where water moves can shift erosion and maintenance problems elsewhere on the site.</p>
-              <p className="leading-relaxed text-secondary/80">P1 reviews access, visible grades, drainage patterns, vegetation, shore or pond edges, and the property’s intended use before defining a proposed sequence of work.</p>
+              <p className="leading-relaxed text-secondary/80">Around Lake Norman, runoff can travel from a slope into a cove, pond, or neighboring area. Before clearing or grading, we check where that water goes and how the work may affect it.</p>
+              <p className="leading-relaxed text-secondary/80">We'll walk access routes, look at grades and vegetation, and review the pond or shoreline areas you want to improve.</p>
             </div>
             <div className="space-y-4">
               <h2 className="text-2xl font-serif font-bold text-secondary">Clear boundaries for waterfront work</h2>
               <p className="leading-relaxed text-secondary/80">Shoreline and stormwater-adjacent work may involve property-specific restrictions, protected areas, engineered plans, permits, or other specialist responsibilities. Those requirements should be confirmed before vegetation removal, earthwork, stabilization, or access changes begin.</p>
-              <p className="leading-relaxed text-secondary/80">Bring available plans, known utilities, drainage history, operating-hour limits, and the desired outcome to the assessment. P1 can scope the work it will perform, identify exclusions, and coordinate the schedule around an active large-format property.</p>
-              <p className="leading-relaxed text-secondary/80">That review can also divide urgent stabilization, access, or drainage concerns from finish work and recurring care. Phasing helps reduce rework when the same slope or work area needs clearing, earthwork, erosion control, and vegetation establishment. The written estimate defines the property-specific work and assumptions so owners and facility teams can coordinate budgets, operations, and any outside approvals before mobilization.</p>
+              <p className="leading-relaxed text-secondary/80">Share available plans, known utilities, drainage history, and work-hour limits. We'll explain what's included in the estimate and schedule around your property's use.</p>
+              <p className="leading-relaxed text-secondary/80">Some sites need drainage or bank repairs before finish grading and planting. We'll explain the order of work and identify outside approvals, so you can plan the budget and timing before the crew arrives.</p>
             </div>
           </div>
 
@@ -122,7 +122,7 @@ export default function MooresvilleLakeNormanNC() {
       </section>
 
       <aside className="site-shell pb-12 text-lg">
-        <p><Link href="/services" className="text-primary underline">Compare land management services</Link> or <Link href="/contact" className="text-primary underline">tell us about your property</Link> to discuss scope and availability.</p>
+        <p><Link href="/services" className="text-primary underline">Compare land management services</Link> or <Link href="/contact" className="text-primary underline">tell us about your property</Link> to talk through the work and available dates.</p>
       </aside>
       <FinalCTA />
     </Layout>

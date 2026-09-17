@@ -21,13 +21,13 @@ const BLOG_POSTS = [
   },
   {
     title: "How to Manage a Retention Pond on Your Property in South Carolina and North Carolina",
-    excerpt: "Whether your property has a farm pond, a stormwater retention basin, or a decorative lake, that water feature is either an asset or a liability — depending on how well it's maintained.",
+    excerpt: "Pond care starts with a few regular checks. Learn what to watch for around the water, banks, and drainage structures, and when to call for help.",
     image: blog2Img,
     slug: "how-to-manage-retention-pond-south-carolina"
   },
   {
     title: "Best Grass Types for Large-Acreage Properties in the Carolinas",
-    excerpt: "Choosing the wrong grass species for a large-acreage property in South Carolina or North Carolina is an expensive mistake. Reseed or re-sod even a modest number of acres and you're talking about thousands of dollars.",
+    excerpt: "The best grass for your acreage depends on sunlight, soil, traffic, and how much maintenance you want to take on. Here's how the common options compare.",
     image: blog3Img,
     slug: "best-grass-large-acreage-carolinas"
   },

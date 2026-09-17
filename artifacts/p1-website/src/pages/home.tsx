@@ -28,10 +28,10 @@ import {
 const TAN = "hsl(32 42% 62%)";
 
 const values = [
-  { n: "01", title: "Equipment Matched to the Work", desc: "We plan access and match equipment to the approved grading, clearing, or maintenance scope.", icon: Truck },
-  { n: "02", title: "Large-Acreage Expertise", desc: "Built around properties most crews can't handle — farms, industrial grounds, public sites, and commercial campuses.", icon: Ruler },
-  { n: "03", title: "Drainage Planning", desc: "We assess visible slope and water movement, define the proposed work, and identify specialist needs before construction.", icon: Droplets },
-  { n: "04", title: "Defined Scheduling", desc: "Every approved scope establishes coordination, responsibilities, and the working schedule before mobilization.", icon: CalendarCheck },
+  { n: "01", title: "Equipment Matched to the Work", desc: "We check access and bring the equipment suited to your clearing, grading, or maintenance job.", icon: Truck },
+  { n: "02", title: "Large-Acreage Expertise", desc: "Crews and equipment for farms, industrial grounds, public sites, and commercial campuses.", icon: Ruler },
+  { n: "03", title: "Drainage Planning", desc: "We look at where water collects and how it moves before recommending drainage work. We'll explain when an engineer or other specialist is needed.", icon: Droplets },
+  { n: "04", title: "A Clear Plan Before We Start", desc: "Before work starts, you'll know what we're doing, who to contact, and when to expect the crew.", icon: CalendarCheck },
 ];
 
 import { FaqAccordion } from "@/components/content/FaqAccordion";
@@ -40,12 +40,12 @@ const FAQS = [
   {
     question: "What does P1 Land & Property Management do?",
     answer:
-      "P1 is a full-service land and property management company. We provide commercial landscaping and grounds maintenance, along with land clearing and forestry mulching, fine grading and site preparation, drainage solutions, turf installation and seeding, tree and brush management, pond and waterway management, and complete property reconstruction.",
+      "We handle commercial landscaping and grounds maintenance, along with clearing, grading, drainage, turf, trees, and ponds. Whether you're preparing land or looking after an established property, we can help you plan the work.",
   },
   {
     question: "Is there a minimum property size for P1's services?",
     answer:
-      "Yes. P1 specializes in properties 1 acre and larger — commercial sites, industrial facilities, agricultural land, municipal grounds, and institutional campuses. We do not provide residential services. That focus lets us bring the heavy equipment and expertise that large properties demand.",
+      "Yes. We serve commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger. We do not provide residential services.",
   },
   {
     question: "What areas does P1 Land & Property Management serve?",
@@ -109,13 +109,13 @@ export default function Home() {
               <Kicker onDark>The Land Specialists</Kicker>
             </div>
             <h1 className="max-w-3xl font-display text-[clamp(2.6rem,6.4vw,5.4rem)] font-light leading-[0.98] tracking-[-0.02em] text-white">
-              Your first impression{" "}
+              Your First Impression{" "}
               <em className="font-semibold not-italic text-tan" style={{ fontStyle: "italic" }}>
-                starts at the curb.
+                Starts at the Curb.
               </em>
             </h1>
             <p className="mt-7 max-w-xl text-lg leading-relaxed" style={{ color: "hsl(40 20% 92% / 0.82)" }}>
-              Commercial landscaping and commercial grounds management, plus grading, drainage, clearing and ponds for large properties across Upstate South Carolina and the Charlotte metro. Heavy-equipment professionals for commercial, industrial, agricultural, municipal, and institutional sites.
+              We keep large properties looking good and working well across Upstate South Carolina and greater Charlotte. Commercial landscaping, grading, drainage, clearing, and pond care—with one team to call.
             </p>
             <div className="mt-9 flex flex-wrap items-center gap-4">
               <Button asChild size="lg" className="group h-12 rounded-[3px] border-0 bg-primary px-7 font-sans text-[15px] font-bold text-primary-foreground hover:bg-primary/90" style={{ boxShadow: "0 18px 40px -14px hsl(206 70% 48%)" }}>
@@ -169,11 +169,11 @@ export default function Home() {
               <h2 className="mt-4 max-w-2xl font-display text-[clamp(2rem,4.2vw,3.4rem)] font-light leading-[1.02] tracking-[-0.02em] text-secondary">
                 A full field of capabilities,
                 <br />
-                <span className="text-primary">one accountable crew.</span>
+                <span className="text-primary">one team to call.</span>
               </h2>
             </div>
             <p className="max-w-xs text-[15px] leading-relaxed" style={{ color: "hsl(215 20% 35%)" }}>
-              From commercial grounds management to corrective site work, P1 connects the services your large property needs under a clearly defined scope.
+              From regular mowing to drainage repairs and site preparation, we help you take care of the whole property.
             </p>
           </div>
 
@@ -207,13 +207,13 @@ export default function Home() {
               Grading for New Construction
             </h2>
             <p className="mt-5 text-[15px] leading-relaxed" style={{ color: "hsl(215 20% 34%)" }}>
-              Before construction begins, grading and drainage need a coordinated plan. Discuss building pads, site grades, and sub-grade preparation with P1 alongside the requirements of your project team.
+              A good building site starts with the ground underneath it. We prepare pads and grades and plan drainage with your project team before construction begins.
             </p>
             <ul className="mt-6 space-y-3">
               {[
-                "Cut-and-fill planning within the agreed scope",
+                "Cut-and-fill planning for your site",
                 "Pad and sub-grade preparation",
-                "Drainage considerations coordinated with the project team",
+                "Drainage planned with your project team",
               ].map((t) => (
                 <li key={t} className="flex items-start gap-3">
                   <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full" style={{ background: "hsl(145 40% 35% / 0.14)" }}>
@@ -248,7 +248,7 @@ export default function Home() {
                 <span className="text-tan" style={{ fontStyle: "italic" }}>groundwork.</span>
               </h2>
               <p className="mt-5 max-w-sm text-[15px] leading-relaxed" style={{ color: "hsl(40 20% 92% / 0.7)" }}>
-                P1 brings land preparation, water management, turf, tree care, and recurring exterior work into one coordinated property plan.
+                We look at how your land, water, trees, and turf work together, then plan the care each needs.
               </p>
               <div className="mt-8 inline-flex items-center gap-2 rounded-[3px] px-4 py-2 font-sans text-[12px] font-bold uppercase" style={{ background: "hsl(145 40% 35% / 0.18)", color: "hsl(145 45% 70%)", letterSpacing: "0.16em" }}>
                 <ShieldCheck className="h-4 w-4" />
@@ -290,8 +290,8 @@ export default function Home() {
               </div>
             </div>
             <div className="col-span-12 md:col-span-7 md:pl-4">
-              <h2 className="font-display text-3xl text-secondary">A coordinated approach to your property</h2>
-              <p className="mt-5 text-lg leading-relaxed text-secondary">From clearing and grading to drainage and ongoing maintenance, discuss the services your property needs with one team.</p>
+              <h2 className="font-display text-3xl text-secondary">Care for the Whole Property</h2>
+              <p className="mt-5 text-lg leading-relaxed text-secondary">Start with what needs attention now. We'll help you plan clearing, grading, drainage, and regular upkeep as your property needs change.</p>
               <Link href="/contact" className="mt-7 inline-block font-bold text-primary underline">Tell us about your project</Link>
 
             </div>
@@ -305,7 +305,7 @@ export default function Home() {
           <div className="mb-12 text-center">
             <Kicker>Where We Work</Kicker>
             <h2 className="mt-4 font-display text-[clamp(1.9rem,4vw,3rem)] font-light leading-[1.05] tracking-[-0.02em] text-secondary">
-              Two of the Carolinas' fastest-growing markets.
+              Serving Upstate SC and Greater Charlotte
             </h2>
           </div>
           <div className="mx-auto grid max-w-4xl grid-cols-1 gap-6 text-left md:grid-cols-2">
@@ -348,7 +348,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="site-shell py-12"><div className="border-l-4 border-primary bg-muted p-7"><h2 className="text-2xl font-bold">Managing a commercial or industrial property?</h2><p className="mt-3 text-muted-foreground">Bring grounds, drainage, land and recurring exterior work into one scope discussion.</p><div className="mt-5 flex flex-wrap gap-x-6 gap-y-3"><Link href="/commercial" className="font-bold text-primary underline">Explore Commercial Site Management</Link><Link href="/commercial/data-centers-secure-facilities" className="font-bold text-primary underline">Data center & secure facility grounds</Link></div></div></section>
+      <section className="site-shell py-12"><div className="border-l-4 border-primary bg-muted p-7"><h2 className="text-2xl font-bold">Managing a commercial or industrial property?</h2><p className="mt-3 text-muted-foreground">Talk through grounds care, drainage, clearing, and repairs with one team.</p><div className="mt-5 flex flex-wrap gap-x-6 gap-y-3"><Link href="/commercial" className="font-bold text-primary underline">Explore Commercial Site Management</Link><Link href="/commercial/data-centers-secure-facilities" className="font-bold text-primary underline">Data center & secure facility grounds</Link></div></div></section>
       <FinalCTA />
     </Layout>
   );

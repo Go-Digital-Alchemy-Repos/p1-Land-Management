@@ -11,7 +11,7 @@ export default function BlogPost() {
     <Layout>
       <SEO 
         title="Retention Pond Management in SC & NC | P1"
-        description="Learn the routine inspections, vegetation control, sediment review, shoreline care, and professional coordination involved in retention pond management."
+        description="Learn what to check around a retention pond, from vegetation and sediment to shoreline erosion, and when to bring in a professional."
         jsonLd={articleSchema({
           headline: "How to Manage a Retention Pond on Your Property in SC & NC",
           description: "A retention pond that isn't maintained becomes a liability. Learn what routine pond management involves and when to call a professional.",
@@ -42,7 +42,7 @@ export default function BlogPost() {
         <section className="py-16 bg-background">
           <div className="site-shell prose prose-lg prose-h2:font-serif prose-h2:text-3xl prose-h2:text-secondary prose-h3:font-serif prose-h3:text-2xl prose-h3:text-secondary prose-p:text-secondary/80 prose-li:text-secondary/80 prose-a:text-primary hover:prose-a:text-primary/80">
             <p>
-              Whether your property has a farm pond, a stormwater retention basin, or a decorative lake, that water feature is either an asset or a liability — depending on how well it's maintained.
+              Pond care starts with a few regular checks. Learn what to watch for around the water, banks, and drainage structures, and when to call for help.
             </p>
             <p>
               Pond management starts with understanding the purpose of the water feature, its condition, and the maintenance responsibilities for the property. Watch for changes in water quality, sediment, vegetation, and shoreline condition.
@@ -98,7 +98,7 @@ export default function BlogPost() {
               For a stormwater pond, review the approved maintenance plan and contact the relevant local stormwater office about the property’s requirements. Keep inspection and maintenance records with the property documentation.
             </p>
             <p>
-              Discuss maintenance scope and recordkeeping needs with P1 before arranging a pond maintenance program.
+              Tell us what your pond needs and which maintenance records you keep. We'll work those details into the plan.
             </p>
 
             <h2>When to Call a Professional</h2>

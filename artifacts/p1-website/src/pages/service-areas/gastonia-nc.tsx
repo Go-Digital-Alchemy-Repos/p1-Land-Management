@@ -18,17 +18,17 @@ const FAQS = [
   {
     question: "Does P1 handle industrial site vegetation management in Gaston County?",
     answer:
-      "Yes. P1 provides ongoing grounds maintenance, vegetation management, and land clearing for industrial facilities and manufacturing sites throughout Gaston County, keeping large properties safe, accessible, and compliant.",
+      "Yes. We mow, manage vegetation, and clear overgrown land around industrial and manufacturing facilities throughout Gaston County. We plan the work around access and daily operations.",
   },
   {
     question: "Can P1 fix drainage problems on Gastonia properties?",
     answer:
-      "Gaston County's red clay soils and rolling terrain can create drainage and erosion challenges. P1 reviews visible site conditions and discusses a scope for French drains, stormwater-related work or erosion control, with engineering, permitting and specialist responsibilities confirmed separately where needed.",
+      "Yes. We'll look at where water collects and how the land slopes before recommending drains, swales, or grading changes. If engineering, permits, or specialist review is needed, we'll confirm that separately.",
   },
   {
     question: "What size properties does P1 work on in Gastonia?",
     answer:
-      "P1 focuses on commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger, bringing heavy equipment and experienced crews that small-scale landscapers can't provide. P1 does not provide residential services.",
+      "We serve commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger. We do not provide residential services.",
   },
 ];
 
@@ -39,7 +39,7 @@ export default function GastoniaNC() {
         title="Land Management in Gastonia, NC | P1"
         description="Commercial landscaping, grounds maintenance, land clearing, grading & drainage for 1-acre-plus Gastonia and Gaston County sites. Call (704) 221-8928."
         jsonLd={[
-          serviceAreaSchema({ areaName: "Gastonia, North Carolina", areaType: "City", description: "Commercial landscaping, grounds maintenance, industrial land care, land clearing, grading, drainage, and turf services for qualifying Gastonia properties.", path: "/service-areas/gastonia-nc" }),
+          serviceAreaSchema({ areaName: "Gastonia, North Carolina", areaType: "City", description: "Commercial landscaping, grounds maintenance, industrial land care, land clearing, grading, drainage, and turf services for Gastonia properties.", path: "/service-areas/gastonia-nc" }),
           breadcrumbSchema([
             { name: "Home", path: "/" },
             { name: "Service Areas", path: "/service-areas" },
@@ -99,14 +99,14 @@ export default function GastoniaNC() {
           <div className="grid gap-10 border-y border-border py-12 md:grid-cols-2">
             <div className="space-y-4">
               <h2 className="text-2xl font-serif font-bold text-secondary">Property work shaped by Gaston County ground</h2>
-              <p className="leading-relaxed text-secondary/80">Rolling terrain and clay-heavy soils make water movement and access central to many Gastonia-area scopes. A clearing project can expose grades that need stabilization; a turf project can fail if surface drainage and soil preparation are not addressed first; recurring maintenance must account for the way the site is actually used.</p>
-              <p className="leading-relaxed text-secondary/80">P1 reviews these connected conditions before defining the work. The goal is a clear sequence built around the property’s intended use, not a menu of isolated services.</p>
+              <p className="leading-relaxed text-secondary/80">Gastonia's clay soils and rolling ground make drainage worth checking before other work starts. Clearing may leave slopes that need protection, and new turf needs a grade that lets water drain.</p>
+              <p className="leading-relaxed text-secondary/80">We look at those details together and plan the work around what you want to do with the land.</p>
             </div>
             <div className="space-y-4">
               <h2 className="text-2xl font-serif font-bold text-secondary">Commercial corridors and working acreage</h2>
-              <p className="leading-relaxed text-secondary/80">Industrial and commercial sites near Gastonia’s primary transportation corridors often need work phased around vehicles, employees, tenants, and operating hours. Agricultural, municipal, and institutional properties elsewhere in Gaston County may instead prioritize durable access, vegetation control, pond edges, field drainage, or manageable maintenance cycles.</p>
-              <p className="leading-relaxed text-secondary/80">Share site plans, known utilities, problem areas, access windows, and the desired result during qualification. P1 can then identify scope boundaries and flag any permitting, engineering, or specialist coordination needed before mobilization.</p>
-              <p className="leading-relaxed text-secondary/80">A site review can separate stabilization or access work that should happen first from finish work and recurring care that follows. That sequencing is especially useful where runoff, exposed soil, vehicle movement, and vegetation management affect the same area. For each Gaston County property, the written estimate records the proposed work and assumptions rather than relying on generic service-page language. Owners and facility teams can use that document to compare options, coordinate internal responsibilities, and plan around active operations.</p>
+              <p className="leading-relaxed text-secondary/80">At industrial sites, we work around trucks, employees, and operating hours. On farms and public grounds, the priorities may be access roads, overgrowth, pond banks, or a regular mowing schedule.</p>
+              <p className="leading-relaxed text-secondary/80">Tell us about known utilities, drainage trouble, work-hour limits, and the result you're after. We'll explain any permits, engineering, or specialist help needed before scheduling.</p>
+              <p className="leading-relaxed text-secondary/80">We may recommend fixing drainage or access before finish grading and seeding. Your estimate will describe each stage, so you can plan the budget and keep the property in use while work is underway.</p>
               <p className="leading-relaxed text-secondary/80">Recent photos after rainfall, notes about recurring washouts, and a map of priority work areas can help P1 focus the assessment and distinguish isolated maintenance from a broader site issue.</p>
             </div>
           </div>
@@ -119,7 +119,7 @@ export default function GastoniaNC() {
       </section>
 
       <aside className="site-shell pb-12 text-lg">
-        <p><Link href="/services" className="text-primary underline">Compare land management services</Link> or <Link href="/contact" className="text-primary underline">tell us about your property</Link> to discuss scope and availability.</p>
+        <p><Link href="/services" className="text-primary underline">Compare land management services</Link> or <Link href="/contact" className="text-primary underline">tell us about your property</Link> to talk through the work and available dates.</p>
       </aside>
       <FinalCTA />
     </Layout>

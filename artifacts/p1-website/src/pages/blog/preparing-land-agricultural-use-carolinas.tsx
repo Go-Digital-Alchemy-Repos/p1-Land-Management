@@ -42,7 +42,7 @@ export default function BlogPost() {
         <section className="py-16 bg-background">
           <div className="site-shell prose prose-lg prose-h2:font-serif prose-h2:text-3xl prose-h2:text-secondary prose-h3:font-serif prose-h3:text-2xl prose-h3:text-secondary prose-p:text-secondary/80 prose-li:text-secondary/80 prose-a:text-primary hover:prose-a:text-primary/80">
             <p>
-              Whether you've acquired raw land you want to put into production, reclaimed overgrown acreage that once was farmed, or inherited a neglected property you want to make productive again, the path from raw or overgrown land to working agricultural acreage follows a specific sequence — and skipping steps in that sequence leads to expensive problems down the road.
+              Turning overgrown land into pasture or crop ground takes more than clearing it. Soil, drainage, access, and the next planting all need a place in the plan. Here's how to think through the work.
             </p>
             <p>
               This guide walks through the correct order of operations for converting land to agricultural use in South Carolina and North Carolina, with particular attention to the soil and drainage conditions common in the Upstate SC and Charlotte NC region.
@@ -71,12 +71,12 @@ export default function BlogPost() {
               After clearing, rough grading shapes the land to the slopes and contours you need. For agricultural land, grading serves two primary purposes: directing water off productive ground and improving access for equipment. Poor grade is one of the leading causes of waterlogged fields, eroded slopes, and equipment access problems — and correcting it after seeding is already done means starting over.
             </p>
             <p>
-              At this stage, drainage ditches, swales, and any retention features are also roughed in. Getting the drainage infrastructure designed and positioned during grading — rather than added later — integrates it into the site's topography properly.
+              Plan ditches, swales, and other drainage features alongside grading. That way, the ground is shaped with a route for water before planting begins.
             </p>
 
             <h2>Step 4: Drainage Installation</h2>
             <p>
-              Drainage is the single most important factor in field productivity and long-term agricultural land performance. Upstate South Carolina's red clay soils and the Piedmont's rolling terrain create conditions where drainage failures are common — and persistent.
+              Drainage affects when you can work a field and how well crops or grass establish. Clay soils and rolling ground deserve a careful look before you invest in planting.
             </p>
             <p>
               Agricultural drainage options include surface grading and swales, perimeter ditching, and subsurface tile drainage for fields that need significant improvement in soil workability. The right approach depends on your soil type, the extent of the drainage problem, and your intended use of the land.
@@ -103,12 +103,12 @@ export default function BlogPost() {
               <li>Mixed pasture seedings can be timed to get cool-season species established in fall and overseed with warm-season species the following spring</li>
             </ul>
             <p>
-              Seeding rate, seed-to-soil contact, and post-planting moisture management are all critical to establishment success. Large-acreage seedings that are done carelessly — broadcast without proper incorporation, or seeded at the wrong time — waste seed and money and require expensive re-establishment.
+              Seeding rate, contact with the soil, and moisture all matter while grass establishes. Choose the method and planting time for your crop or forage, and plan the follow-up care before seeding begins.
             </p>
 
             <h2>Work With a Contractor Who Handles All of It</h2>
             <p>
-              The sequence above — clearing, grading, drainage, amendment, seeding — is most efficiently managed by a single contractor who handles the whole project. When multiple contractors hand off between phases, grade corrections get missed, drainage timing gets compromised, and seeding happens before the site is actually ready.
+              Plan clearing, grading, drainage, soil preparation, and planting as a sequence. Whoever handles each stage needs to understand what the next one requires.
             </p>
             <p>
               P1 Land & Property Management handles the full agricultural land preparation process for properties throughout Upstate South Carolina and the Charlotte, NC region. If you're looking at raw or neglected land and trying to figure out where to start, we'll walk the property with you and give you a clear plan.
