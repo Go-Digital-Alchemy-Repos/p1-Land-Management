@@ -227,3 +227,21 @@ four Core policy and three client resolver checks passed, with both typechecks.
 No production redirect rules were changed. Fresh database tests were skipped without
 a fixture URL; historical release evidence records five isolated database checks.
 Nonempty live execution, full CRUD authorization acceptance and stale-edit CAS remain.
+
+
+## Crew browser persistence acceptance — September 19
+
+The real built dashboard passed the isolated Chrome153 browser harness in
+`scripts/consolidation/crew-offline-browser-acceptance.mjs`, including an independent
+parent rerun. Actual UI time-start/completion events persisted in IndexedDB across
+offline navigation reload and a full browser-process restart with the same profile.
+A failed acknowledgement retained both exact IDs/payloads; reconnect retried those
+IDs, cleared acknowledged entries, and an empty resync made no request. The fixture
+received two batches and applied two unique events. Dashboard index SHA256 was
+`890b7ba281adf153ec2f48a577c07d62441e93f4a9c815a633a5511031fe8821`.
+
+The receiver was synthetic and isolated to loopback; it establishes browser queue
+behavior, not production server idempotency. The separate actual HTTP/PostgreSQL
+agreement/crew test supplies backend evidence. No physical reboot, photo upload,
+reassignment, storage eviction or provider delivery is established by this run.
+Browser/server/profile cleanup completed. Full operational acceptance remains open.
