@@ -1,0 +1,15 @@
+import { beforeEach, afterEach, expect, it, vi } from "vitest";
+import express from "express";
+import type { Server } from "node:http";
+import type { SeoSettings } from "@shared/schema";
+const state = vi.hoisted(() => ({ get: vi.fn() }));
+vi.mock("../storage", () => ({ storage: { seoSettings: { get: state.get } } }));
+import router from "./website-robots-public.routes";
+import { projectWebsiteRobots } from "../services/public-website-robots.service";
+let server: Server, base: string;
+beforeEach(async () => { vi.stubEnv("PUBLIC_SITE_ORIGIN", "https://www.p1landmanagement.com"); state.get.mockResolvedValue(undefined); const app = express(); app.use(router); server = app.listen(0,"127.0.0.1"); await new Promise<void>(r=>server.once("listening",r)); base=`http://127.0.0.1:${(server.address() as any).port}`; });
+afterEach(async()=>{ vi.unstubAllEnvs(); await new Promise<void>(r=>server.close(()=>r())); });
+it("projects defaults without leaking SEO settings, with stable content version",async()=>{const r=await fetch(base+"/website-robots");expect(r.status).toBe(200);expect(r.headers.get("cache-control")).toBe("no-store");const body=await r.json();expect(Object.keys(body).sort()).toEqual(["content","schemaVersion","stackId","version"]);expect(body.content).toContain("Disallow: /admin\nDisallow: /api");expect(body.version).toMatch(/^[a-f0-9]{64}$/);expect(body).toEqual(projectWebsiteRobots());});
+it("preserves authored custom replacement, reset and generated noindex semantics",()=>{const custom="User-agent: SpecialBot\nAllow: /\n# café 🌳\n";const p=projectWebsiteRobots({customRobotsTxt:custom,defaultRobotsNoindex:true} as SeoSettings);expect(p.content).toBe(custom);expect(projectWebsiteRobots({customRobotsTxt:null,defaultRobotsNoindex:true} as SeoSettings).content).toBe("User-agent: *\nDisallow: /\n");expect(projectWebsiteRobots({customRobotsTxt:" "} as SeoSettings)).toEqual(projectWebsiteRobots());expect(p.version).not.toBe(projectWebsiteRobots().version);});
+it("rejects invalid Unicode, control characters and oversized UTF8",()=>{for(const content of ["a".repeat(32769),"é".repeat(16385),"x\u0000","x\ud800"]){expect(()=>projectWebsiteRobots({customRobotsTxt:content} as SeoSettings)).toThrow();}});
+it("rejects query and sanitizes database failures",async()=>{expect((await fetch(base+"/website-robots?secret=x")).status).toBe(400);state.get.mockRejectedValue(Error("private-data"));const r=await fetch(base+"/website-robots");expect(r.status).toBe(503);expect(await r.text()).not.toContain("private-data");expect((await fetch(base+"/website-robots",{method:"POST"})).status).toBe(404);});

@@ -1,3 +1,4 @@
+import websiteRobotsPublic from "./website-robots-public.routes";
 import websiteIdentityPublic from "./public-website-identity.routes";
 import websiteSocialPublic from "./website-social-public.routes";
 import websiteFontsPublic from "./website-fonts-public.routes";
@@ -49,6 +50,7 @@ export function registerApiRoutes(app: Express) {
   app.use("/api/p1/google-analytics", p1GoogleAnalyticsRoutes);
   app.use("/api/p1", websiteHeadPublic);
   app.use("/api/p1", websiteIdentityPublic);
+  app.use("/api/p1", websiteRobotsPublic);
   app.use("/api/p1", websiteColorsPublic);
   app.use("/api/p1", websiteFontsPublic);
   app.use("/api/p1", websiteSocialPublic);

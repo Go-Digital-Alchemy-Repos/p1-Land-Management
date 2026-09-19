@@ -1,3 +1,4 @@
+import { createWebsiteRobotsStore, publicRobotsContent } from "./website-robots.mjs";
 import { createWebsiteIdentityStore, identityIconHead } from "./website-identity.mjs";
 import { createWebsiteSocialStore } from "./website-social.mjs";
 import { typographyPreview } from "./typography-preview.mjs";
@@ -27,6 +28,7 @@ async function pageSnapshot(routePath) {
   const [page, identity] = await Promise.all([content.snapshot(routePath), websiteIdentity.snapshot()]);
   return page ? {...page, identity} : null;
 }
+const websiteRobots = createWebsiteRobotsStore({ origin, cacheDir: process.env.P1_CONTENT_CACHE_DIR ?? "/tmp/p1-public-content" });
 const googleReviews = createGoogleReviewsStore();
 const headTags = createHeadTagStore({ origin });
 const websiteColors = createWebsiteColorStore({ origin });
@@ -159,7 +161,7 @@ const server=http.createServer(async(req,res)=>{
       try { return send(req,res,200,typographyPreview(url.searchParams),'text/html; charset=utf-8','no-store'); }
       catch { return send(req,res,400,'Invalid typography preview','text/plain; charset=utf-8','no-store'); }
     }
-    if(pathname==='/robots.txt' && !indexableDeployment)return send(req,res,200,'User-agent: *\nDisallow: /\n','text/plain; charset=utf-8');
+    if(pathname==='/robots.txt')return send(req,res,200,await publicRobotsContent(indexableDeployment, websiteRobots),'text/plain; charset=utf-8','no-cache');
     if(url.searchParams.has('cmsPreview')) {
       res.setHeader('X-Robots-Tag','noindex, nofollow');
       if (content.routes.has(pathname)) {

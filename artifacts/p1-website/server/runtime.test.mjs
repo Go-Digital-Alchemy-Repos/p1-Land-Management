@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import http from 'node:http';
@@ -24,6 +25,11 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
   const upstreamRequests = [];
   const upstream = http.createServer((req, res) => {
     upstreamRequests.push({ path: req.url, headers: req.headers });
+    if (req.url === '/api/p1/website-robots') {
+      const content='User-agent: FixtureBot\nDisallow: /fixture-only\n';
+      res.setHeader('Content-Type','application/json');
+      return res.end(JSON.stringify({schemaVersion:1,stackId:'p1-land-management',version:createHash('sha256').update(content).digest('hex'),content}));
+    }
     if (req.url === '/api/p1/website-identity') {
       res.setHeader('Content-Type','application/json');res.end(JSON.stringify({schemaVersion:1,stackId:'p1-land-management',version:'a'.repeat(64),companyName:'QA Identity Company',companyAddress:null,phoneDisplay:'(704) 555-1234',phoneHref:'tel:+17045551234',logoUrl:'/r2/cms/branding/qa.webp',faviconUrl:'/r2/cms/branding/icon.webp',googleBusinessUrl:'https://www.google.com/maps/place/QA'}));
     } else if (req.url === '/api/p1/website-social') {
@@ -242,6 +248,9 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
     assert.equal(railwayAlias.headers.location, 'https://www.p1landmanagement.com/contact?utm_source=qa');
     const robots = await request(port, '/robots.txt', { Host: 'www.p1landmanagement.com' });
     assert.equal(robots.status, 200);
+    assert.equal(robots.body, 'User-agent: FixtureBot\nDisallow: /fixture-only\n');
+    assert.equal(robots.headers['cache-control'], 'no-cache');
+    assert.equal((await request(port, '/robots.txt', { Host: 'www.p1landmanagement.com' }, 'HEAD')).body, '');
     assert(!/^Disallow:\s*\/\s*$/m.test(robots.body), 'Production robots must not block the entire site');
     const preview = await request(port, '/?cmsPreview=1', { Host: 'www.p1landmanagement.com' });
     assert.equal(preview.headers['x-robots-tag'], 'noindex, nofollow');
@@ -281,6 +290,7 @@ test('staging manifest blocks indexing across public and proxied responses regar
   await copyFile(resolve(root, 'server/website-fonts.mjs'), resolve(temporary, 'server/website-fonts.mjs'));
   await copyFile(resolve(root, 'server/public-settings.mjs'), resolve(temporary, 'server/public-settings.mjs'));
   await copyFile(resolve(root, 'server/website-identity.mjs'), resolve(temporary, 'server/website-identity.mjs'));
+  await copyFile(resolve(root, 'server/website-robots.mjs'), resolve(temporary, 'server/website-robots.mjs'));
   await copyFile(resolve(root, 'server/website-social.mjs'), resolve(temporary, 'server/website-social.mjs'));
   await copyFile(resolve(root, 'server/typography-preview.mjs'), resolve(temporary, 'server/typography-preview.mjs'));
   await copyFile(resolve(root, 'server/content.mjs'), resolve(temporary, 'server/content.mjs'));
