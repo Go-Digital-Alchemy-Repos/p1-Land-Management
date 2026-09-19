@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Verify an existing legacy backup in a fresh owned local database; never fetch backups."""
+"""Verify a trusted P1 backup in a fresh owned local database; never fetch backups."""
 from __future__ import annotations
 import argparse
 import hashlib
+import gzip
 import json
 import os
 import pathlib
@@ -16,6 +17,45 @@ import uuid
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 MAX_COMPRESSED_BYTES = 256 * 1024 * 1024
+MAX_SNAPSHOT_BYTES = 1024 * 1024 * 1024
+
+
+def validate_snapshot_identity(path, expected_stack_id=None, allow_legacy_backup=False):
+    """Reject wrong provenance before provisioning a database. Never rewrite it."""
+    with gzip.open(path, 'rb') as source:
+        data = source.read(MAX_SNAPSHOT_BYTES + 1)
+    if len(data) > MAX_SNAPSHOT_BYTES:
+        raise ValueError('snapshot-too-large')
+    snapshot = json.loads(data)
+    manifest = snapshot.get('manifest')
+    if not isinstance(manifest, dict) or manifest.get('schemaVersion') != 1:
+        raise ValueError('invalid-manifest')
+    identity = manifest.get('clientStackId')
+    if identity is not None and not isinstance(identity, str):
+        raise ValueError('invalid-stack-identity')
+    identity = (identity or '').strip()
+    expected = (expected_stack_id or '').strip()
+    if identity:
+        if not expected or identity != expected:
+            raise ValueError('stack-identity-mismatch')
+        return expected, 'exact-match'
+    if not allow_legacy_backup or expected:
+        raise ValueError('legacy-acknowledgement-required')
+    return 'disposable-backup-recovery', 'legacy-explicit'
+
+
+def migration_files_digest(root):
+    """Fingerprint the SQL and journal actually consumed by server/migrate.ts."""
+    folder = root / 'p1-migrations'
+    paths = sorted(folder.glob('*.sql'))
+    journal = folder / 'meta' / '_journal.json'
+    if not paths or not journal.is_file():
+        raise ValueError('missing-p1-migrations')
+    paths.append(journal)
+    return hashlib.sha256(b''.join(
+        path.relative_to(folder).as_posix().encode() + b'\0' + path.read_bytes()
+        for path in paths
+    )).hexdigest()
 
 # Raw child logs can contain restored settings or SQL values. Never forward them.
 CHILD = r'''
@@ -35,7 +75,12 @@ const canonical = value => {
 };
 try {
   const snapshot=JSON.parse(gunzipSync(fs.readFileSync(process.env.RECOVERY_INPUT), {maxOutputLength: 1024*1024*1024}).toString('utf8'));
-  check(snapshot?.manifest?.schemaVersion===1 && !snapshot.manifest.clientStackId);
+  check(snapshot?.manifest?.schemaVersion===1);
+  const {assertBackupRestoreIdentity}=await load('server/services/backup-restore-identity.ts');
+  const identity=assertBackupRestoreIdentity(snapshot.manifest, {
+    targetStackId:process.env.CLIENT_STACK_ID,
+    allowLegacyBackup:process.env.RECOVERY_ALLOW_LEGACY==='true',
+  });
   check(Array.isArray(snapshot.tables) && snapshot.tables.length>0 && Array.isArray(snapshot.sequences));
   const names=snapshot.tables.map(table=>table.name);
   check(names.every(name=>typeof name==='string' && /^[a-z_][a-z0-9_]*$/.test(name)) && new Set(names).size===names.length);
@@ -62,7 +107,7 @@ try {
   }
   childStage='restore';
   const {restoreBackupSnapshot}=await load('server/services/system-backup.service.ts');
-  await restoreBackupSnapshot(snapshot,{allowLegacyBackup:true});
+  await restoreBackupSnapshot(snapshot,{allowLegacyBackup:process.env.RECOVERY_ALLOW_LEGACY==='true'});
   async function verify() {
     for(const table of snapshot.tables) {
       const count=await pool.query('SELECT count(*)::text AS count FROM public.'+quote(table.name));
@@ -81,7 +126,7 @@ try {
   await runMigrations();
   childStage='post-migration-comparison';
   await verify();
-  process.stdout.write('\nRECOVERY_RESULT='+JSON.stringify({tableCount:names.length,rowCount,restoredRowsVerified:true,postRestoreMigrationsVerified:true,legacyIdentityAcknowledged:true})+'\n');
+  process.stdout.write('\nRECOVERY_RESULT='+JSON.stringify({tableCount:names.length,rowCount,restoredRowsVerified:true,postRestoreMigrationsVerified:true,identity:identity.kind,legacyIdentityAcknowledged:identity.kind==='legacy-explicit'})+'\n');
 } catch {
   process.stdout.write('\nRECOVERY_FAILURE_STAGE='+childStage+'\n');
   process.exitCode=1;
@@ -91,7 +136,7 @@ try {
 '''
 
 
-def main(backup, output):
+def main(backup, output, expected_stack_id=None, allow_legacy_backup=False):
     if backup.resolve() == output.resolve() or (backup.exists() and output.exists() and os.path.samefile(backup, output)):
         print(json.dumps({'status': 'failed', 'error': 'Input and report must be different files.'}))
         return 1
@@ -128,6 +173,10 @@ def main(backup, output):
                     target.write(chunk)
             report['backupSha256'] = digest.hexdigest()
             report['compressedBytes'] = total
+            stage = 'snapshot-identity'
+            target_stack_id, identity_kind = validate_snapshot_identity(
+                private_input, expected_stack_id, allow_legacy_backup)
+            report['identity'] = identity_kind
             stage = 'local-docker-check'
             context = os.environ.get('DOCKER_CONTEXT')
             endpoint = (os.environ.get('DOCKER_HOST') if not context else None) or run(['docker', 'context', 'inspect', *([context] if context else []), '--format', '{{.Endpoints.docker.Host}}']).stdout.strip()
@@ -135,7 +184,7 @@ def main(backup, output):
                 raise RuntimeError('local-unix-socket-required')
             report['candidate'] = run(['git', 'rev-parse', 'HEAD']).stdout.strip()
             report['restoreSourceSha256'] = hashlib.sha256((ROOT/'server/services/system-backup.service.ts').read_bytes()).hexdigest()
-            report['migrationFilesSha256'] = hashlib.sha256(b''.join(path.name.encode()+b'\0'+path.read_bytes() for path in sorted((ROOT/'migrations').glob('*.sql')))).hexdigest()
+            report['migrationFilesSha256'] = migration_files_digest(ROOT)
             report['migrationRunnerSha256'] = hashlib.sha256((ROOT/'server/migrate.ts').read_bytes()).hexdigest()
             stage = 'database-start'
             cleanup_required = True
@@ -148,7 +197,7 @@ def main(backup, output):
                 time.sleep(.25)
             stage = 'restore-and-compare'
             environment = {key: os.environ[key] for key in ('PATH', 'HOME', 'TMPDIR') if key in os.environ}
-            environment.update(NODE_ENV='test', TZ='UTC', CLIENT_STACK_ID='disposable-backup-recovery', DATABASE_URL=f'postgresql://recovery:{password}@127.0.0.1:{port}/core_backup_recovery', SESSION_SECRET='synthetic-recovery-only-not-production', SYSTEM_BACKUPS_ENABLED='false', RECOVERY_INPUT=str(private_input))
+            environment.update(NODE_ENV='test', TZ='UTC', CLIENT_STACK_ID=target_stack_id, RECOVERY_ALLOW_LEGACY='true' if allow_legacy_backup else 'false', DATABASE_URL=f'postgresql://recovery:{password}@127.0.0.1:{port}/core_backup_recovery', SESSION_SECRET='synthetic-recovery-only-not-production', SYSTEM_BACKUPS_ENABLED='false', RECOVERY_INPUT=str(private_input))
             result = run(['node', '--import', 'tsx', '--input-type=module', '-e', CHILD], env=environment, timeout=300, check=False)
             if result.returncode:
                 for marker in ('snapshot-validation','initial-migration','restore','restored-row-comparison','post-restore-migration','post-migration-comparison'):
@@ -192,9 +241,14 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--backup', type=pathlib.Path, required=True)
     parser.add_argument('--output', type=pathlib.Path, required=True)
+    provenance = parser.add_mutually_exclusive_group(required=True)
+    provenance.add_argument('--expected-stack-id', help='Reviewed stack ID; must exactly match snapshot provenance.')
+    provenance.add_argument('--allow-legacy-backup', action='store_true', help='Explicitly acknowledge a snapshot without stack provenance.')
     args = parser.parse_args()
+    if args.expected_stack_id is not None and not args.expected_stack_id.strip():
+        parser.error('--expected-stack-id must not be blank')
     def interrupted(_number, _frame):
         raise RuntimeError('interrupted')
     signal.signal(signal.SIGINT, interrupted)
     signal.signal(signal.SIGTERM, interrupted)
-    raise SystemExit(main(args.backup, args.output))
+    raise SystemExit(main(args.backup, args.output, args.expected_stack_id, args.allow_legacy_backup))
