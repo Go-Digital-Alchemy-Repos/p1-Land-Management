@@ -75,6 +75,9 @@ await copyFile(
   join(destination, "attached_assets", "Asset_1_1782329698014.svg"),
 );
 
+// Public branding consumers share the Core data contracts.
+await cp(join(root, "platform", "p1-core", "shared"), join(destination, "platform", "p1-core", "shared"), { recursive: true });
+
 await mkdir(join(destination, "platform", "p1-core", "script"), { recursive: true });
 await mkdir(join(destination, "platform", "p1-core", "config"), { recursive: true });
 await copyFile(

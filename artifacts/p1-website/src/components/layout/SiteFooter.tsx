@@ -1,3 +1,4 @@
+import { SiteSocialLinks } from "./SiteSocialLinks";
 import { Link } from "wouter";
 import logo from "@assets/Asset_1_1782329698014.svg";
 import { Button } from "@/components/ui/button";
@@ -7,7 +8,7 @@ import { GOOGLE_BUSINESS_URL } from "@/lib/site";
 export function SiteFooter() {
   return (
     <footer className="bg-secondary text-secondary-foreground py-16 border-t border-border">
-      <div className="site-shell grid grid-cols-2 gap-10 md:grid-cols-3 lg:grid-cols-6">
+      <div className="site-shell grid grid-cols-2 gap-10 [overflow-wrap:anywhere] md:grid-cols-3 lg:grid-cols-6">
         {/* Brand + contact */}
         <div className="col-span-2 space-y-6">
           <Link href="/">
@@ -16,6 +17,7 @@ export function SiteFooter() {
           <p className="text-secondary-foreground/70 text-sm leading-relaxed max-w-xs">
             Full-service land and property management for commercial, agricultural, industrial, municipal, and institutional properties 1 acre and larger across Upstate SC and the Charlotte, NC region.
           </p>
+          <SiteSocialLinks />
           <div className="space-y-2 pt-2">
             <a href="tel:7042218928" className="flex items-center gap-2 text-xl font-sans font-bold hover:text-primary transition-colors">
               <Phone className="h-5 w-5 text-primary" />
@@ -90,7 +92,7 @@ export function SiteFooter() {
             <li>Saturday: By Appointment</li>
             <li>Sunday: Closed</li>
             <li className="pt-4">
-              <Button asChild variant="outline" className="w-full bg-transparent border-secondary-foreground/20 hover:bg-secondary-foreground/10 text-white">
+              <Button asChild variant="outline" className="h-auto min-h-9 w-full whitespace-normal px-2 text-center bg-transparent border-secondary-foreground/20 hover:bg-secondary-foreground/10 text-white">
                 <Link href="/contact">Get a Free Site Assessment</Link>
               </Button>
             </li>

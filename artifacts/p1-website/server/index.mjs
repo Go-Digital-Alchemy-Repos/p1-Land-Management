@@ -1,3 +1,8 @@
+import { createWebsiteSocialStore } from "./website-social.mjs";
+import { typographyPreview } from "./typography-preview.mjs";
+import { createWebsiteFontStore } from "./website-fonts.mjs";
+import { createWebsiteColorStore } from "./website-colors.mjs";
+import { createHeadTagStore, insertHeadTags } from "./head-tags.mjs";
 import http from 'node:http';
 import https from 'node:https';
 import { readFile, stat } from 'node:fs/promises';
@@ -8,6 +13,7 @@ import { createGzip, createBrotliCompress } from 'node:zlib';
 import { createContentStore } from './content.mjs';
 import { clientIp } from './client-ip.mjs';
 import { createGoogleReviewsStore } from './google-reviews.mjs';
+import { BUSINESS_CENTER_ORIGIN } from '../config/preview-origins.mjs';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const publicDir = path.join(root,'dist/public');
 const manifest = JSON.parse(await readFile(path.join(root,'config/client-site-manifest.json'),'utf8'));
@@ -16,6 +22,10 @@ const { render } = await import(pathToFileURL(path.join(root,'dist/server/entry-
 const origin = process.env.P1_CORE_ORIGIN?.replace(/\/$/,'');
 const content = createContentStore({ manifest, origin, cacheDir: process.env.P1_CONTENT_CACHE_DIR });
 const googleReviews = createGoogleReviewsStore();
+const headTags = createHeadTagStore({ origin });
+const websiteColors = createWebsiteColorStore({ origin });
+const websiteFonts = createWebsiteFontStore({ origin });
+const websiteSocial = createWebsiteSocialStore({ origin });
 const canonical = 'https://www.p1landmanagement.com';
 const legacyPublicRoutes = new Map([
   ['/commercial-snow-ice-management', '/services/commercial-snow-ice-management'],
@@ -88,6 +98,8 @@ const server=http.createServer(async(req,res)=>{
     res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Referrer-Policy','strict-origin-when-cross-origin');res.setHeader('X-Frame-Options','SAMEORIGIN');
     res.setHeader('Permissions-Policy','camera=(), microphone=(), geolocation=()');
     if(process.env.NODE_ENV==='production')res.setHeader('Strict-Transport-Security','max-age=31536000');
+    // Railway probes use an internal Host; readiness must not redirect to the public site.
+    if(pathname==='/healthz')return send(req,res,200,'{"status":"ok"}','application/json','no-store');
     const host=(req.headers.host || '').split(':')[0].toLowerCase();
     const backendPath = ['/admin','/api','/uploads','/r2'].some(prefix => pathname === prefix || pathname.startsWith(prefix + '/'));
     if (backendPath) res.setHeader('X-Robots-Tag','noindex, nofollow');
@@ -116,6 +128,11 @@ const server=http.createServer(async(req,res)=>{
     if (legacyDestination) {res.writeHead(301,{Location:`${redirectToCanonicalHost?canonical:''}${legacyDestination}${url.search}`});return res.end();}
     if(redirectToCanonicalHost || normalized!==pathname) {res.writeHead(308,{Location:`${redirectToCanonicalHost?canonical:''}${normalized}${url.search}`});return res.end();}
     if(pathname==='/api/p1/page-content' && ['GET','HEAD'].includes(req.method)) {const snapshot=await content.snapshot(url.searchParams.get('path')||'/');return send(req,res,snapshot?200:404,JSON.stringify(snapshot||{error:'Not found'}),'application/json','no-store');}
+    if(pathname==='/api/p1/social-links') {
+      if(!['GET','HEAD'].includes(req.method))return send(req,res,405,'Method not allowed','text/plain; charset=utf-8','no-store');
+      if(url.search)return send(req,res,400,'Unsupported query','text/plain; charset=utf-8','no-store');
+      return send(req,res,200,JSON.stringify(await websiteSocial.snapshot()),'application/json; charset=utf-8','no-store');
+    }
     if(pathname==='/api/p1/google-reviews' && ['GET','HEAD'].includes(req.method)) {
       try {
         const snapshot=await googleReviews.snapshot();
@@ -125,12 +142,26 @@ const server=http.createServer(async(req,res)=>{
         return send(req,res,unavailable?503:502,JSON.stringify({ error: 'Reviews are temporarily unavailable.' }),'application/json','no-store');
       }
     }
-    if(pathname==='/healthz')return send(req,res,200,'{"status":"ok"}','application/json','no-store');
     if(backendPath)return proxy(req,res);
     if(!['GET','HEAD'].includes(req.method))return send(req,res,405,'Method not allowed');
     res.setHeader('Content-Security-Policy',"default-src 'self'; script-src 'self' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://tiles.openfreemap.org https://www.google-analytics.com https://region1.google-analytics.com; frame-ancestors 'self'; base-uri 'self'; object-src 'none'; form-action 'self'");
+    if(pathname==='/cms-preview/typography') {
+      res.setHeader('X-Robots-Tag','noindex, nofollow');
+      res.removeHeader('X-Frame-Options');
+      res.setHeader('Referrer-Policy','no-referrer');
+      res.setHeader('Content-Security-Policy',`default-src 'none'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'none'; frame-ancestors 'self' ${BUSINESS_CENTER_ORIGIN}; base-uri 'none'; form-action 'none'`);
+      try { return send(req,res,200,typographyPreview(url.searchParams),'text/html; charset=utf-8','no-store'); }
+      catch { return send(req,res,400,'Invalid typography preview','text/plain; charset=utf-8','no-store'); }
+    }
     if(pathname==='/robots.txt' && !indexableDeployment)return send(req,res,200,'User-agent: *\nDisallow: /\n','text/plain; charset=utf-8');
-    if(url.searchParams.has('cmsPreview'))res.setHeader('X-Robots-Tag','noindex, nofollow');
+    if(url.searchParams.has('cmsPreview')) {
+      res.setHeader('X-Robots-Tag','noindex, nofollow');
+      if (content.routes.has(pathname)) {
+        // Only public preview documents may be framed by the consolidated editor.
+        res.removeHeader('X-Frame-Options');
+        res.setHeader('Content-Security-Policy', String(res.getHeader('Content-Security-Policy')).replace("frame-ancestors 'self'", `frame-ancestors 'self' ${BUSINESS_CENTER_ORIGIN}`));
+      }
+    }
     if(pathname==='/sitemap.xml') {
       const snapshots=await Promise.all([...content.routes.keys()].filter(p=>!retiredRoutes.has(p)).map(p=>content.snapshot(p)));
       const body=`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${snapshots.map(s=>`<url><loc>${canonical}${escape(s.route)}</loc>${s.publishedAt?`<lastmod>${escape(new Date(s.publishedAt).toISOString())}</lastmod>`:''}</url>`).join('')}</urlset>`;
@@ -140,7 +171,8 @@ const server=http.createServer(async(req,res)=>{
       const snapshot=await content.snapshot(pathname); const result=render(pathname,snapshot);
       const state=JSON.stringify(snapshot).replaceAll('<','\\u003c');
       const html=template.replace(/<!--seo-head-start-->[\s\S]*?<!--seo-head-end-->/,`<!--seo-head-start-->${headHtml(result.head,pathname)}<!--seo-head-end-->`).replace(/<div id="root">[\s\S]*<\/div>/,`<div id="root">${result.html}</div><script type="application/json" id="p1-published-content">${state}</script>`);
-      return send(req,res,200,html,'text/html; charset=utf-8',url.searchParams.has('cmsPreview')?'private, no-store':'no-cache');
+      const [palette, fonts, markup] = await Promise.all([websiteColors.snapshot(), websiteFonts.snapshot(), url.searchParams.has('cmsPreview') ? '' : headTags.snapshot()]);
+      return send(req,res,200,insertHeadTags(html, palette + fonts + markup),'text/html; charset=utf-8',url.searchParams.has('cmsPreview')?'private, no-store':'no-cache');
     }
     const file=path.resolve(publicDir,'.'+pathname);
     if(!file.startsWith(publicDir+path.sep)||pathname.split('/').some(p=>p.startsWith('.')) )return send(req,res,404,'Not found');

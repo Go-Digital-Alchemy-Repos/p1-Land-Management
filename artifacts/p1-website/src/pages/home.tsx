@@ -103,22 +103,22 @@ export default function Home() {
         </div>
         <div className="absolute inset-x-0 bottom-0 h-24" style={{ background: "linear-gradient(to bottom, transparent, hsl(40 20% 98%))" }} />
 
-        <div className="site-shell relative grid grid-cols-12 gap-8 pb-28 pt-24 lg:pt-28">
-          <div className="col-span-12 lg:col-span-8">
+        <div className="site-shell relative grid grid-cols-1 gap-8 lg:grid-cols-12 pb-28 pt-24 lg:pt-28">
+          <div className="min-w-0 lg:col-span-8">
             <div className="mb-7 flex items-center gap-4">
               <Kicker onDark>The Land Specialists</Kicker>
             </div>
-            <h1 className="max-w-3xl font-display text-[clamp(2.6rem,6.4vw,5.4rem)] font-light leading-[0.98] tracking-[-0.02em] text-white">
+            <h1 style={{ color: "hsl(var(--public-text-h1, var(--public-text-inverse, 0 0% 100%)))" }} className="max-w-3xl font-display text-[clamp(2.6rem,6.4vw,5.4rem)] font-light leading-[0.98] tracking-[-0.02em] text-white">
               Your First Impression{" "}
               <em className="font-semibold not-italic text-tan" style={{ fontStyle: "italic" }}>
                 Starts at the Curb.
               </em>
             </h1>
-            <p className="mt-7 max-w-xl text-lg leading-relaxed" style={{ color: "hsl(40 20% 92% / 0.82)" }}>
+            <p className="mt-7 max-w-xl text-lg leading-relaxed" style={{ color: "hsl(var(--public-text-heading-subtext, 40 20% 92%) / 0.82)" }}>
               We keep large properties looking good and working well across Upstate South Carolina and greater Charlotte. Commercial landscaping, grading, drainage, clearing, and pond care—with one team to call.
             </p>
             <div className="mt-9 flex flex-wrap items-center gap-4">
-              <Button asChild size="lg" className="group h-12 rounded-[3px] border-0 bg-primary px-7 font-sans text-[15px] font-bold text-primary-foreground hover:bg-primary/90" style={{ boxShadow: "0 18px 40px -14px hsl(206 70% 48%)" }}>
+              <Button asChild size="lg" className="group h-12 rounded-[3px] border-0 bg-primary px-4 sm:px-7 font-sans text-[15px] font-bold text-primary-foreground hover:bg-primary/90" style={{ boxShadow: "0 18px 40px -14px hsl(206 70% 48%)" }}>
                 <Link href="/contact">
                   Get a Free Site Assessment
                   <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
@@ -131,7 +131,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="col-span-12 hidden lg:col-span-4 lg:flex lg:items-end lg:justify-end">
+          <div className="min-w-0 hidden lg:col-span-4 lg:flex lg:items-end lg:justify-end">
             <IndexOfWork />
           </div>
         </div>
@@ -186,8 +186,8 @@ export default function Home() {
         <div className="absolute inset-0 opacity-50">
           <ContourField stroke={TAN} opacity={0.16} />
         </div>
-        <div className="site-shell relative grid grid-cols-12 items-center gap-10">
-          <div className="col-span-12 lg:col-span-7">
+        <div className="site-shell relative grid grid-cols-1 items-center gap-10 lg:grid-cols-12">
+          <div className="min-w-0 lg:col-span-7">
             <div className="relative">
               <div className="absolute -left-4 -top-4 h-full w-full rounded-[4px] bg-primary" style={{ opacity: 0.9 }} />
               <div className="absolute -bottom-5 -right-5 h-28 w-28 rounded-[4px] bg-clay" />
@@ -201,7 +201,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="col-span-12 lg:col-span-5 lg:pl-6">
+          <div className="min-w-0 lg:col-span-5 lg:pl-6">
             <Kicker>Feature · Site Prep</Kicker>
             <h2 className="mt-4 font-display text-[clamp(1.9rem,3.6vw,3rem)] font-light leading-[1.05] tracking-[-0.02em] text-secondary">
               Grading for New Construction
@@ -240,8 +240,8 @@ export default function Home() {
         </div>
         <div className="absolute inset-x-0 top-0 h-px" style={{ background: "hsl(40 30% 90% / 0.1)" }} />
         <div className="site-shell relative">
-          <div className="grid grid-cols-12 gap-10">
-            <div className="col-span-12 lg:col-span-4">
+          <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
+            <div className="min-w-0 lg:col-span-4">
               <Kicker onDark>Why P1</Kicker>
               <h2 className="mt-4 font-display text-[clamp(2rem,4vw,3.2rem)] font-light leading-[1.03] tracking-[-0.02em] text-white">
                 The difference is in the{" "}
@@ -256,7 +256,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="col-span-12 lg:col-span-8">
+            <div className="min-w-0 lg:col-span-8">
               <div className="grid grid-cols-1 gap-px overflow-hidden rounded-[4px] sm:grid-cols-2" style={{ background: "hsl(40 30% 90% / 0.1)" }}>
                 {values.map((v) => (
                   <div key={v.n} className="group relative bg-navy-deep p-8">
@@ -280,8 +280,8 @@ export default function Home() {
       {/* PROPERTY PLANNING */}
       <section className="relative bg-background py-24">
         <div className="mx-auto max-w-[1100px] px-6">
-          <div className="grid grid-cols-12 items-center gap-10">
-            <div className="col-span-12 md:col-span-5">
+          <div className="grid grid-cols-1 items-center gap-10 md:grid-cols-12">
+            <div className="min-w-0 md:col-span-5">
               <div className="relative">
                 <div className="absolute -left-3 -top-3 h-full w-full rounded-[4px] bg-clay" style={{ opacity: 0.9 }} />
                 <div className="relative overflow-hidden rounded-[4px] border-4 border-white" style={{ boxShadow: "0 30px 60px -28px hsl(215 45% 15%)" }}>
@@ -289,7 +289,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <div className="col-span-12 md:col-span-7 md:pl-4">
+            <div className="min-w-0 md:col-span-7 md:pl-4">
               <h2 className="font-display text-3xl text-secondary">Care for the Whole Property</h2>
               <p className="mt-5 text-lg leading-relaxed text-secondary">Start with what needs attention now. We'll help you plan clearing, grading, drainage, and regular upkeep as your property needs change.</p>
               <Link href="/contact" className="mt-7 inline-block font-bold text-primary underline">Tell us about your project</Link>

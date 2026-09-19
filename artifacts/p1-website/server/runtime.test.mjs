@@ -24,7 +24,15 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
   const upstreamRequests = [];
   const upstream = http.createServer((req, res) => {
     upstreamRequests.push({ path: req.url, headers: req.headers });
-    if (req.url.startsWith('/api/client-site-content/')) {
+    if (req.url === '/api/p1/website-social') {
+      res.setHeader('Content-Type','application/json');res.end(JSON.stringify({schemaVersion:1,stackId:'p1-land-management',iconStyle:'outline',links:[{platform:'facebook',url:'https://example.test/profile'}]}));
+    } else if (req.url === '/api/p1/website-fonts') {
+      res.setHeader('Content-Type','application/json');res.end(JSON.stringify({schemaVersion:1,stackId:'p1-land-management',body:{name:'Inter',fallback:'sans-serif'},heading:{name:'Lora',fallback:'serif'}}));
+    } else if (req.url === '/api/p1/website-colors') {
+      res.setHeader('Content-Type','application/json');res.end(JSON.stringify({schemaVersion:1,stackId:'p1-land-management',colors:{brand_primary_color:'#FF0000',text_h1_color:'#123456'}}));
+    } else if (req.url === '/api/p1/website-head-tags') {
+      res.setHeader('Content-Type','application/json');res.end(JSON.stringify({schemaVersion:1,stackId:'p1-land-management',html:'<meta name="p1-head-fixture" content="literal $&"><script>window.syntheticHeadRan=true</script>'}));
+    } else if (req.url.startsWith('/api/client-site-content/')) {
       const [routeId, componentKey] = req.url.split('/').slice(-2);
       res.setHeader('Content-Type', 'application/json');
       res.end(JSON.stringify({ stackId: 'p1-land-management', routeId, componentKey, revision: 77,
@@ -58,6 +66,38 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
     child.stdout.on('data', chunk => { if (String(chunk).includes('P1 website listening')) { clearTimeout(timer); resolveReady(); } });
   });
 
+  await t.test('global head markup appears only on public documents without expanding CSP',async()=>{
+    const page=await request(port,'/');
+    assert.equal(page.status,200);assert(page.body.includes('<meta name="p1-head-fixture" content="literal $&">'));
+    assert(page.body.indexOf('name="p1-head-fixture"')<page.body.indexOf('</head>'));
+    assert(!page.headers['content-security-policy'].includes("script-src 'self' 'unsafe-inline'"));
+    assert(!page.headers['content-security-policy'].includes('sha256-'));
+    const preview=await request(port,'/?cmsPreview=1');assert(!preview.body.includes('p1-head-fixture'));
+    const admin=await request(port,'/admin/');assert(!admin.body.includes('p1-head-fixture'));
+    const requests=upstreamRequests.filter(r=>r.path==='/api/p1/website-head-tags');assert.equal(requests.length,1);assert.equal(requests[0].headers.cookie,undefined);assert.equal(requests[0].headers.authorization,undefined);
+  });
+  await t.test('public palette reaches public and preview documents without visitor credentials or admin leakage',async()=>{
+    for(const route of ['/', '/?cmsPreview=1']){const response=await request(port,route);assert(response.body.includes('id="p1-website-colors"'));assert(response.body.includes('id="p1-website-fonts"'));assert(response.body.includes('--primary:0 100% 50%'));assert(response.body.includes('h1{color:#123456}'));}
+    for(const route of ['/admin/','/not-a-page','/api/p1/page-content?path=%2F'])assert(!(await request(port,route)).body.includes('id="p1-website-colors"'));
+    const fontReads=upstreamRequests.filter(r=>r.path==='/api/p1/website-fonts');assert.equal(fontReads.length,1);assert.equal(fontReads[0].headers.cookie,undefined);assert.equal(fontReads[0].headers.authorization,undefined);
+    const reads=upstreamRequests.filter(r=>r.path==='/api/p1/website-colors');assert.equal(reads.length,1);assert.equal(reads[0].headers.cookie,undefined);assert.equal(reads[0].headers.authorization,undefined);
+  });
+  await t.test('draft typography is stateless, no-store, non-indexable and framed only by the approved editor',async()=>{
+    const before=upstreamRequests.length;
+    const response=await request(port,'/cms-preview/typography?body=Inter&bodyType=sans-serif&heading=Lora&headingType=serif');
+    assert.equal(response.status,200);assert.equal(response.headers['cache-control'],'no-store');assert.equal(response.headers['x-robots-tag'],'noindex, nofollow');assert.equal(response.headers['referrer-policy'],'no-referrer');assert.equal(response.headers['x-frame-options'],undefined);
+    assert(response.headers['content-security-policy'].includes("script-src 'none'"));assert(response.headers['content-security-policy'].includes("frame-ancestors 'self' https://dashboard.p1landmanagement.com"));
+    assert(response.body.includes("--app-font-display:'Lora',serif"));assert(!response.body.includes('p1-head-fixture'));assert(!response.body.includes('id="p1-website-colors"'));
+    assert.equal(upstreamRequests.length,before);
+    const bad=await request(port,'/cms-preview/typography?body=%3Cscript%3E&bodyType=serif');assert.equal(bad.status,400);assert(!bad.body.includes('<script>'));
+    assert.equal((await request(port,'/cms-preview/typography',{},'POST')).status,405);
+  });
+  await t.test('footer social projection is credential-free, no-store and rejects queries and writes',async()=>{
+    const response=await request(port,'/api/p1/social-links',{Cookie:'private-session',Authorization:'Bearer private'});
+    assert.equal(response.status,200);assert.equal(response.headers['cache-control'],'no-store');assert.deepEqual(JSON.parse(response.body),{iconStyle:'outline',links:[{platform:'facebook',url:'https://example.test/profile'}]});
+    const reads=upstreamRequests.filter(r=>r.path==='/api/p1/website-social');assert.equal(reads.length,1);assert.equal(reads[0].headers.cookie,undefined);assert.equal(reads[0].headers.authorization,undefined);
+    assert.equal((await request(port,'/api/p1/social-links?key=secret')).status,400);assert.equal((await request(port,'/api/p1/social-links',{},'POST')).status,405);
+  });
   await t.test('absolute and network-path targets reject without forwarding credentials', async () => {
     const before = upstreamRequests.length;
     for (const target of [`http://127.0.0.1:${trapPort}/api/secret`, `//127.0.0.1:${trapPort}/api/secret`, '/%E0%A4%A']) {
@@ -144,6 +184,14 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
     assert(!upstreamRequests.some(item => /draft|preview/.test(item.path)));
     assert(!/<script[^>]+src="[^"]*(?:admin|dashboard)/.test(response.body));
     const preview = await request(port, '/?cmsPreview=1'); assert.equal(preview.headers['x-robots-tag'], 'noindex, nofollow');
+    assert.equal(preview.headers['x-frame-options'], undefined);
+    assert(preview.headers['content-security-policy'].includes("frame-ancestors 'self' https://dashboard.p1landmanagement.com;"));
+    assert.equal(preview.headers['cache-control'], 'private, no-store');
+    assert.equal(response.headers['x-frame-options'], 'SAMEORIGIN');
+    assert(!response.headers['content-security-policy'].includes('dashboard.p1landmanagement.com'));
+    const unknown = await request(port, '/not-a-page?cmsPreview=1');
+    assert.equal(unknown.headers['x-frame-options'], 'SAMEORIGIN');
+    assert(!unknown.headers['content-security-policy'].includes('dashboard.p1landmanagement.com'));
   });
   await t.test('Google reviews endpoint fails closed until server credentials are configured', async () => {
     const response = await request(port, '/api/p1/google-reviews');
@@ -164,6 +212,10 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
     const head = await request(port, asset[1], {}, 'HEAD'); assert.equal(head.status, 200); assert.equal(head.body, '');
   });
   await t.test('production only serves indexable public documents on the canonical host', async () => {
+    const health = await request(port, '/healthz', { Host: 'healthcheck.railway.app' });
+    assert.equal(health.status, 200);
+    assert.equal(health.headers.location, undefined);
+    assert.deepEqual(JSON.parse(health.body), { status: 'ok' });
     const home = await request(port, '/', { Host: 'www.p1landmanagement.com' });
     assert.equal(home.status, 200);
     assert.equal(home.headers['x-robots-tag'], undefined);
@@ -207,9 +259,16 @@ test('staging manifest blocks indexing across public and proxied responses regar
   t.after(() => rm(temporary, { recursive: true, force: true }));
   await mkdir(resolve(temporary, 'server')); await mkdir(resolve(temporary, 'config'));
   await copyFile(resolve(root, 'server/index.mjs'), resolve(temporary, 'server/index.mjs'));
+  await copyFile(resolve(root, 'server/head-tags.mjs'), resolve(temporary, 'server/head-tags.mjs'));
+  await copyFile(resolve(root, 'server/website-colors.mjs'), resolve(temporary, 'server/website-colors.mjs'));
+  await copyFile(resolve(root, 'server/website-fonts.mjs'), resolve(temporary, 'server/website-fonts.mjs'));
+  await copyFile(resolve(root, 'server/public-settings.mjs'), resolve(temporary, 'server/public-settings.mjs'));
+  await copyFile(resolve(root, 'server/website-social.mjs'), resolve(temporary, 'server/website-social.mjs'));
+  await copyFile(resolve(root, 'server/typography-preview.mjs'), resolve(temporary, 'server/typography-preview.mjs'));
   await copyFile(resolve(root, 'server/content.mjs'), resolve(temporary, 'server/content.mjs'));
   await copyFile(resolve(root, 'server/client-ip.mjs'), resolve(temporary, 'server/client-ip.mjs')); 
   await copyFile(resolve(root, 'server/google-reviews.mjs'), resolve(temporary, 'server/google-reviews.mjs'));
+  await copyFile(resolve(root, 'config/preview-origins.mjs'), resolve(temporary, 'config/preview-origins.mjs'));
   await symlink(resolve(root, 'dist'), resolve(temporary, 'dist'), 'dir');
   const manifest = JSON.parse(await readFile(resolve(root, 'config/client-site-manifest.json'), 'utf8'));
   manifest.origins.publicSite = 'https://p1-staging-example.up.railway.app';

@@ -23,3 +23,9 @@ attached_assets/*.docx
 attached_assets/*.eps
 attached_assets/Screenshot*
 docs/audits/security
+
+# Public footer uses shared data-only social definitions.
+!platform/p1-core/shared/
+platform/p1-core/shared/*
+!platform/p1-core/shared/social-media.ts
+!platform/p1-core/shared/social-icon-paths.ts
