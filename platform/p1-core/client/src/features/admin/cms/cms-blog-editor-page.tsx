@@ -1,9 +1,9 @@
 import type {
-  MarketingBlogPublicationPost,
-  MarketingBlogPublicationActionAction,
-  MarketingBlogRevision,
-  MarketingBlogPreview,
-} from "../../../../../../../lib/api-client-react/src/dashboard/models";
+  BlogPublicationPostResponse as MarketingBlogPublicationPost,
+  BlogPublicationAction as MarketingBlogPublicationActionAction,
+  BlogRevisionResponse as MarketingBlogRevision,
+  BlogPreviewResponse as MarketingBlogPreview,
+} from "@shared/blog-publication-response";
 import {
   BlogEditorTabs,
   BlogEditorCard,

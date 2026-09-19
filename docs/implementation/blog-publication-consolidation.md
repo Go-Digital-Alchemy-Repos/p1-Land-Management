@@ -240,3 +240,11 @@ not include media bytes or DDL. Existing archives were not pruned. This is captu
 evidence, not a claim of full production recovery. The final public route fails
 with 503 on a settings-read failure rather than enabling a disabled Blog by default;
 its six route tests, Core typecheck and production build passed.
+
+Release packaging correction: Railway rejected the first Core build at `52a604d8`
+because the retained editor referenced generated types outside the standalone Core
+build context. Website and Dashboard built successfully; the previous Core runtime
+remained available. Core now derives type-only serialized responses from its own
+publication services. No runtime server code is imported by the editor. A clean
+isolated typecheck and seven retained-editor tests passed; the isolated production build also passed. Coordinated redeployment follows. The initial isolated harness omitted the
+migration folder; that harness omission was corrected before the build rerun.
