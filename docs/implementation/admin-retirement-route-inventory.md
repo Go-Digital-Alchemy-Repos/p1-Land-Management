@@ -44,13 +44,13 @@ All destination paths below are on the Business Center host. They are proposed m
 | `/admin/cms/website` | `/marketing/content/website` | Published P1 content contracts remain distinct from generic CMS pages. |
 | `/admin/cms/website/:routeId/:componentKey` | `/marketing/content/website?routeId=<encoded>&componentKey=<encoded>` | Native query selection exists; validate both keys, record permission and draft/preview restoration. |
 | `/admin/cms` | No identical overview; choose reviewed Content landing | Do not silently equate overview with Website Editor or generic Pages. |
-| `/admin/cms/pages`, `/admin/cms/pages/new`, `/admin/cms/pages/:id` | `/marketing/content/pages` | Native list/editor exists; add validated deep-link selection/create intent before losing IDs. Test revision/publish/schedule/unpublish/relationships/delete operations. |
+| `/admin/cms/pages`, `/admin/cms/pages/new`, `/admin/cms/pages/:id` | `/marketing/content/pages?page=<id or new>` | Validated direct selection/create intent released at `112f1d1`; see native-cms-editor-deep-links.md. Test revision/publish/schedule/unpublish/relationships/delete operations. |
 | `/admin/cms/media` | `/marketing/content/media` | Preserve uploads, metadata, deletion/reference guards, storage URLs and actual asset bytes. |
 | `/admin/cms/team` | `/marketing/content/team` | Preserve ordering/visibility/images and public rendering. |
-| `/admin/cms/galleries`, `/admin/cms/galleries/new`, `/admin/cms/galleries/:id` | `/marketing/content/galleries` | Validate create/record deep links, item ordering and public consumer parity. |
+| `/admin/cms/galleries`, `/admin/cms/galleries/new`, `/admin/cms/galleries/:id` | `/marketing/content/galleries?gallery=<id or new>` | Direct selection/create intent released at `112f1d1`; retained-record, item ordering and public consumer parity remain. |
 | `/admin/cms/blog`, `/admin/cms/blog/:id` | `/marketing/content/blog?post=<encoded id>` | Native `post` query selection exists; validate old IDs and revision/draft/publish behavior. |
 | `/admin/cms/blog/new`, `/admin/cms/blog/settings`, `/admin/cms/blog/comments` | `/marketing/content/blog` | Distinct creation/settings/comments intent must be retained; no verified native URL intent mapping is established here. |
-| `/admin/cms/sections`, `/admin/cms/sections/new`, `/admin/cms/sections/:id` | `/marketing/content/sections` | Preserve create/record deep links, editing and references. |
+| `/admin/cms/sections`, `/admin/cms/sections/new`, `/admin/cms/sections/:id` | `/marketing/content/sections?section=<id or new>` | Direct selection/create intent released at `112f1d1`; full editing/reference parity remains. |
 | `/admin/cms/seo` | `/marketing/content/seo` | Include redirects, robots/global metadata and affected public responses. |
 | `/admin/cms/menus` | `/marketing/content/menus` | Preserve hierarchy/order/locations, deletion relationships and public navigation. |
 | `/admin/cms/sidebars` | `/marketing/content/sidebars` | Preserve assignment/order and public rendering. |

@@ -2,6 +2,18 @@
 
 Updated September 18, 2026. Read this current-state update before older checkpoint details below.
 
+## September 19 native CMS continuation
+
+Native editor deep links released at `112f1d1`; all three unsaved creation intents opened in the authenticated browser without saving data. Mobile quick contact now shares the published identity at `74c9534`; all three Railway services reached SUCCESS and live homepage markup was verified. Robots settings, CMS redirects and menu assignments have source-confirmed missing public consumers; see consolidation-acceptance.md. Search Console domain access permission is prepared but awaits the pending action-time confirmation. Do not retire retained admin.
+
+## September 19 recovery and reconciliation checkpoint
+
+Completed work is on both `main` and `codex/business-center-consolidation` through `fe4c0a5`; Railway reports SUCCESS for Dashboard, Core and website at that revision. Historical Core archive recovery now passes: 52 tables, 519 rows and both catalog sequences. The rehearsal found and fixed generated-always identity inserts and missing historical identity-sequence metadata. See `docs/implementation/core-recovery-acquisition-2026-09-19.md` for exact source hashes, failed-attempt history and limits. No production restore was performed.
+
+Synthetic CRM import/replay/restore passed, including preservation of a later native task edit. The separate read-only account-access metadata reconciler now covers explicit suspension, verification/MFA representation, grants, notification settings and relationship scopes. These are tools and synthetic evidence, not actual account/CRM migration or authenticated Owner mapping approval. See `synthetic-crm-restore-rehearsal.md` and `account-access-reconciliation.md` in the implementation docs.
+
+The retained admin route inventory now identifies native destinations, missing edit/create links, restore parity and backend dependencies. Application startup/previous-image rollback, complete media recovery, real source/account reconciliation, agreement/crew/offline acceptance, Search Console domain/www access and safe retirement remain open. Use `consolidation-acceptance.md` as the requirement-level tracker; do not treat source-matched local images as actual deployed Railway image digests.
+
 ## September 19 public identity checkpoint
 
 Public identity delivery is released at `4d85894` on main and the consolidation branch. Core, dashboard and website Railway deployments reached SUCCESS; homepage/contact SSR identity revisions match the live projection, and desktop/mobile read-only checks preserve current P1 branding. See `docs/implementation/public-website-identity.md` for exact release evidence and remaining live-edit/cache limits. Native Integrations and Email Templates were released earlier; their contract documents retain the scoped evidence. The full consolidation remains incomplete. Native backup status/run and history correctness are now released at `47e8136`, with ten real history entries verified read-only in the Owner screen. See `docs/implementation/website-backups-contract.md`. No production backup, retention deletion or restore was performed. Core/media restore, CRM/account reconciliation and crew/offline acceptance remain open.

@@ -86,3 +86,5 @@ Guidance follow-up `06acff2f7901be42e7ea88d247e5cb6cd59e4c81` also reached SUCCE
 ### Mobile quick-contact consistency — September 19
 
 The sticky mobile Call P1 link now consumes the same resolved published identity as the header, including an accessible label with its matching display number. Existing styling and visible label are preserved. Two component checks plus nine identity checks and website type checking passed; the production build prerendered all 54 routes (existing source-map/large-chunk warnings remain). No production identity fields were changed. Live changed-number acceptance remains separate from synthetic revision/fallback checks.
+
+Release `74c9534` reached SUCCESS on Dashboard (`92fd1346-9d88-44d1-a2a0-faf4e17b5665`), website (`56ff2282-b72e-468b-9b97-e23b1118b880`) and Core (`2cb17a1b-c09b-4583-aae5-c16cb98de7eb`). Live homepage returned HTTP200; rendered quick-contact markup contains the expected phone href and matching accessible label. This read-only check preserves the existing production phone; changed-number behavior was tested synthetically.

@@ -21,3 +21,7 @@ Existing dirty-close confirmations and the shared `p1:before-navigation`/unload 
 Fifteen mocked-provider component tests cover all three managers: direct opaque-ID selection, invalid selectors with no record fetch, missing-record escape, create intent without writes, unsaved draft cancellation/navigation, and explicit successful save replacing the URL with the new record ID. No actual CMS content was created or modified during validation.
 
 These links supply native destinations for eventual exact legacy route mappings. No `/admin` redirects, authentication changes or backend/API contracts were introduced. Full retained-operation parity, real account reconciliation, browser acceptance and retirement authorization remain separate gates.
+
+## Released read-only checks
+
+Commit `112f1d1` is on main and the task branch. Railway dashboard deployment `a97ad844-eb79-48f6-91a0-1f419ad91b5e` reached SUCCESS. The authenticated Owner browser opened Pages, Galleries and Sections creation intents directly; the Page Back control removed its query selection and restored the list. No save or publish action was submitted. Actual retained-record refresh, mobile layout, reservation conflicts and complete browser Back/Forward dirty-draft behavior remain separate acceptance checks.
