@@ -1,3 +1,12 @@
+## September 19 — Forms live; Media candidate accepted for release
+
+Forms7ea1fee dashboard/Core SUCCESS; liveheading/tabs/palette/no-alerts verified.
+Media sharedgrid/details/upload/crop editor accepted witheighttests,bothbuilds,
+independentreview andlocalbrowser metadata/crop-preview/mobile/dialog checks.
+Production data untouched; optionalmultiselectpicker remains open. Dependencies
+reusedexactCoreversions, runtimeallowlist/dedupe added; isolateddashboardbuild
+withoutCore node_modules passed. Seeparitydoc forvalidationlimits.
+
 ## September 19 — Forms candidate accepted for release
 
 Fresh browser verification succeeded: Entries list/detail, clean tabs/new draft,

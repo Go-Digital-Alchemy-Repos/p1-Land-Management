@@ -177,3 +177,29 @@ confirmation tab was a browser-control issue; fresh-turn verification succeeded.
 No production forms/submissions changed. Scoped CSS reset and accessible names were
 corrected from browser findings. Native selects and extra preview/reload/delivery
 actions remain explicit adapter differences. Retained admin retirement remains gated.
+
+Forms `7ea1fee` verified live: dashboard `5c6bcfc0-aab4-4f8b-9072-de3403cfe795`
+and Core `8f0b4b82-26c1-48f9-970d-48fd09f9bad2` SUCCESS. Authenticated read-only
+inspection confirmed one Forms heading, Builder/Entries tabs, palette and no alerts.
+The verification tab was closed to release its editor reservation.
+
+## Media Library restoration
+
+Shared original presentation now supplies square responsive tiles, usage badges/counts,
+scrollable details dialog, all nine metadata fields with guidance, live/draft reference
+paths and upload dialog/dropzone. The retained crop editor is shared with native
+authenticated blob transport, original drag handles/compression and native numeric
+controls. Dirty-close guards, download source authorization, destructive confirmation,
+partial upload retention and existing single-selection filtering remain. Optional
+multiselect picker parity remains a separate unresolved caller-level requirement.
+
+Dependencies reuse existing Core exact versions: react-image-crop11.0.10(ISC),
+browser-image-compression2.0.2(MIT,uzip transitive). Vite deduplicates these at the
+dashboard package; isolated build without Core node_modules passes. Dashboard crop
+compression uses its main thread to preserve CSP. Both application typechecks/builds
+and eight focused tests pass. Independent review's hidden upload-error finding was
+fixed with an assertion that errors render inside the modal. Parent synthetic browser
+checks confirmed metadata save, usage path, authenticated download link, crop width
+adjustment/preview, upload dialog and390pxdialogcontainment. Browser destructive crop
+replacement was not submitted; codec/dimension/failure coverage is automated. No
+production media/metadata/files were modified during verification.

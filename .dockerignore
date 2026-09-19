@@ -46,3 +46,6 @@ platform/p1-core/client/src/components/shared/*
 !platform/p1-core/client/src/components/shared/branding-editor.tsx
 
 !platform/p1-core/client/src/components/shared/forms-workspace.tsx
+
+!platform/p1-core/client/src/components/shared/media-library-presentation.tsx
+!platform/p1-core/client/src/components/shared/image-cropper-editor.tsx

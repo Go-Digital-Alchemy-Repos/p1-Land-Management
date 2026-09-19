@@ -102,7 +102,7 @@ const assert = require("node:assert/strict");
       }
       if (path.endsWith("/replace")) {
         replaced++;
-        assert(req.postDataBuffer().includes(Buffer.from("crop.webp")));
+        assert(req.postDataBuffer().includes(Buffer.from("photo.webp")));
         body = assets[0];
       }
       if (path.endsWith("/media/image") && req.method() === "DELETE") {
@@ -112,7 +112,7 @@ const assert = require("node:assert/strict");
       await route.fulfill({ json: body });
     });
     await page.goto("http://127.0.0.1:4347/marketing/content/media");
-    await page.getByText("2 of 2 assets").waitFor();
+    await page.getByText(/2 media items uploaded/).waitFor();
     await page.getByLabel("Type", { exact: true }).selectOption("documents");
     assert.equal(await page.locator(".media-grid button").count(), 1);
     await page.getByLabel("Type", { exact: true }).selectOption("all");
@@ -120,26 +120,26 @@ const assert = require("node:assert/strict");
     assert.equal(await page.locator(".media-grid button").count(), 1);
     await page.locator(".media-grid button").first().click();
     await page
-      .getByLabel("Alternative text", { exact: true })
+      .getByLabel("Alt Text", { exact: true })
       .fill("Updated field description");
     page.once("dialog", (d) => d.dismiss());
     await page
       .getByRole("button", { name: "Back to media", exact: true })
       .click();
     assert.equal(
-      await page.getByLabel("Alternative text", { exact: true }).inputValue(),
+      await page.getByLabel("Alt Text", { exact: true }).inputValue(),
       "Updated field description",
     );
     await page
-      .getByRole("button", { name: "Save metadata", exact: true })
+      .getByRole("button", { name: "Save Details", exact: true })
       .click();
     await page.getByText("Metadata saved.", { exact: true }).waitFor();
     assert.equal(saved.alt, "Updated field description");
-    await page.getByText("Home page · content · Published website").waitFor();
-    await page.getByRole("button", { name: "Crop image", exact: true }).click();
-    await page.getByAltText("Image to crop").waitFor();
+    await page.getByText("Home page", { exact: true }).waitFor();
+    await page.getByRole("button", { name: "Crop Image", exact: true }).click();
+    await page.getByAltText("Crop preview").waitFor();
     await page.waitForFunction(
-      () => document.querySelector(".media-crop-stage img").naturalWidth > 0,
+      () => document.querySelector(".media-crop-preview").naturalWidth > 0,
     );
     page.once("dialog", (d) => d.accept());
     await page.getByRole("button", { name: "Save crop", exact: true }).click();
@@ -157,12 +157,19 @@ const assert = require("node:assert/strict");
       .click();
     await page.getByLabel("Search media", { exact: true }).fill("");
     await page
+      .getByRole("button", { name: "Upload File", exact: true })
+      .first()
+      .click();
+    await page
       .getByLabel("Upload files", { exact: true })
       .setInputFiles({ name: "file.png", mimeType: "image/png", buffer: png });
     await page.waitForFunction(
       () => !document.body.textContent.includes("Uploading…"),
     );
     assert.equal(uploads, 1);
+    await page
+      .getByRole("button", { name: "Close upload", exact: true })
+      .click();
     await page.setViewportSize({ width: 390, height: 844 });
     await page.waitForFunction(
       () =>
@@ -177,18 +184,14 @@ const assert = require("node:assert/strict");
     await page.screenshot({ path: "/tmp/p1-media-mobile.png", fullPage: true });
     await page
       .locator(".media-grid button")
-      .filter({ hasText: "Field photo" })
+      .filter({ hasText: "photo.png" })
       .click();
     page.once("dialog", (d) => d.dismiss());
-    await page
-      .getByRole("button", { name: "Delete media", exact: true })
-      .click();
+    await page.getByRole("button", { name: "Delete", exact: true }).click();
     assert.equal(assets.length, 2);
     page.once("dialog", (d) => d.accept());
-    await page
-      .getByRole("button", { name: "Delete media", exact: true })
-      .click();
-    await page.getByText("1 of 1 assets").waitFor();
+    await page.getByRole("button", { name: "Delete", exact: true }).click();
+    await page.getByText(/1 media item uploaded/).waitFor();
     assert.equal(assets.length, 1);
     deny = true;
     await page.reload();

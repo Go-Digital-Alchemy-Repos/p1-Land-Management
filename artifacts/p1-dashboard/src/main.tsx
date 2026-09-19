@@ -1351,7 +1351,7 @@ function App() {
           </button>
         </header>
         <main className="content">
-          {!accountWorkspace && view !== "Website Documents" && (routeUnavailable || view !== "Website Forms") && <div className={view === "Overview" ? "page-heading page-hero" : "page-heading"}>
+          {!accountWorkspace && view !== "Website Documents" && (routeUnavailable || !["Website Forms", "Media Library"].includes(view)) && <div className={view === "Overview" ? "page-heading page-hero" : "page-heading"}>
             <div>
               {!marketingPageCopy[view] && <p className="eyebrow">P1 · PROPERTY OPERATIONS</p>}
               <h1>
