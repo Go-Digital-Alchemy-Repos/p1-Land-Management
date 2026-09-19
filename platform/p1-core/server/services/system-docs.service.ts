@@ -393,6 +393,16 @@ async function getSystemDocDefinitions(): Promise<SystemDocDefinition[]> {
   }));
 }
 
+/** Resolve all source content before a versioned, atomic synchronization. */
+export async function loadSystemDocDefinitions() {
+  const definitions = await getSystemDocDefinitions();
+  return Promise.all(definitions.map(async definition => ({
+    title: definition.title, slug: definition.slug, category: definition.category,
+    sortOrder: definition.sortOrder,
+    content: definition.content ?? await fs.readFile(path.join(DOCS_ROOT, definition.relativePath), "utf8"),
+  })));
+}
+
 type EnsureSystemDocsOptions = {
   refreshExisting?: boolean;
 };

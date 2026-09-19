@@ -14,6 +14,11 @@ export interface CmsOperation {
 }
 /** Explicit method/path pairs. Adding a Core route never exposes it automatically. */
 export const cmsOperations: CmsOperation[] = [];
+for (const [method, path] of [
+  ["GET", "/website-system/docs"], ["POST", "/website-system/docs"],
+  ["POST", "/website-system/docs/sync"], ["PUT", "/website-system/docs/:id"],
+  ["DELETE", "/website-system/docs/:id"],
+] as const) cmsOperations.push({method, path, capabilities:[], ownerOnly:true});
 cmsOperations.push({method:"POST",path:"/design/branding/assets",capabilities:["marketing.design.branding"],multipart:true});
 for (const method of ["GET", "PUT"] as const) cmsOperations.push({method,path:"/design/branding",capabilities:["marketing.design.branding"]});
 for (const path of ["/website-system/head-tags", "/website-system/features"]) {
@@ -339,7 +344,7 @@ export async function callCms(
     : operation.method === "POST" ||
         operation.method === "PUT" ||
         operation.method === "PATCH" ||
-        (operation.method === "DELETE" && operation.path === "/careers/jobs/:id")
+        (operation.method === "DELETE" && ["/careers/jobs/:id", "/website-system/docs/:id"].includes(operation.path))
       ? JSON.stringify(body ?? {})
       : undefined;
   if (

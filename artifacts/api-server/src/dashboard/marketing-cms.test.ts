@@ -513,3 +513,21 @@ test("Career deletion forwards its version body without adding bodies to legacy 
     return Response.json({success:true});
   });
 });
+
+test("document bridge operations are explicit and Owner-only", () => {
+  for (const [method,path] of [["GET","/website-system/docs"],["POST","/website-system/docs"],["POST","/website-system/docs/sync"],["PUT","/website-system/docs/:id"],["DELETE","/website-system/docs/:id"]]) {
+    const op=operation(method,path);
+    assert.equal(op.ownerOnly,true);
+    assert.deepEqual(op.capabilities,[]);
+    assert.match(cmsDestination(op,{id:"11111111-1111-4111-8111-111111111111"},{}), /website-system\/docs/);
+  }
+  assert.equal(cmsOperations.some(op=>op.path==="/website-system/docs/:id"&&op.method==="PATCH"),false);
+});
+
+test("document deletion retains its optimistic version through the bridge", async () => {
+  const body={expectedVersion:"a".repeat(64)};
+  await callCms(connection,operation("DELETE","/website-system/docs/:id"),{id:"document"},{},body,"grant",async(_url,options)=>{
+    assert.deepEqual(JSON.parse(String(options?.body)),body);
+    return Response.json({deleted:true});
+  });
+});

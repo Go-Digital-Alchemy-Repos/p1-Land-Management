@@ -1,3 +1,4 @@
+import websiteDocs from "./business-center-docs.routes";
 import websiteIdentity from "./business-center-identity.routes";
 import websiteSocial from "./business-center-social.routes";
 import websiteTypography from "./business-center-typography.routes";
@@ -80,6 +81,7 @@ router.get("/notification-forms", async (req, res, next) => {
     next(error);
   }
 });
+router.use("/website-system/docs", websiteDocs);
 router.use("/website-system", websiteSystem);
 router.use("/design/branding", websiteIdentity);
 router.use("/design/colors", websiteColors);

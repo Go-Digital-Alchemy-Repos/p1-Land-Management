@@ -1,0 +1,39 @@
+# Developer Resources consolidation
+
+## September 18: versioned storage and authenticated bridge
+
+Implemented the storage/write contract and private Business Center bridge needed by the native document manager. The existing Core `docs` table remains authoritative. There is no schema migration, copied document store, credential change or provider side effect.
+
+### Interface
+
+Dashboard prefix: `/api/v1/marketing/cms/website-system/docs`.
+Core prefix: `/api/integrations/business-center/cms/website-system/docs` (through the existing service/grant boundary).
+
+- GET collection: `{ version, docs }`; each document retains its existing fields and adds `version`.
+- POST collection: editable fields only (`title`, `slug`, `category`, `content`, `sortOrder`, `isPublished`); author is the resolved actor. Returns the saved versioned document.
+- PUT `/:id`: `{ document: <editable fields>, expectedVersion }`.
+- DELETE `/:id`: `{ expectedVersion }`; the bridge explicitly forwards this DELETE body.
+- POST `/sync`: `{ expectedVersion }` using the collection version; returns `{ created, updated, total, version, docs }`. Source definitions are loaded before the database transaction.
+
+Unknown fields/queries, missing versions and invalid IDs fail validation. Core requires an active, attested Owner; Dashboard also requires Owner before issuing a grant. Results are private/no-store. Audit actions use fixed names and record only the document identifier/slug or operation description, never document bodies.
+
+### Concurrency and durability
+
+Each versioned mutation takes a short PostgreSQL table lock with a five-second lock timeout, following the existing atomic settings pattern. It compares the saved version inside the transaction and commits the document change with its audit record. A stale save/delete/sync fails with 409. Sync is all-or-nothing, preserves custom documents and existing publication/author/ID fields, and detects duplicate source slugs before writes. Readers remain available. Concurrent normal SQL/legacy writes cannot interleave inside this transaction.
+
+This **does not** make the old `/admin/docs` editor version-aware. An old client can still issue a later unversioned write. Before full acceptance, move its mutation paths to the same versioned contract or intentionally redirect the complete editor after parity is proven. Existing editor reservations remain separate; the next native editor must preserve reservation UI plus conflict-safe draft recovery. Version checks are not a replacement for the requested editing workflow.
+
+### Validation actually run
+
+- Core TypeScript check and production build passed.
+- API-server TypeScript check and Dashboard server build passed.
+- Six real disposable PostgreSQL tests passed: concurrent-save winner, stale delete, legacy-write detection, stale sync, custom/visibility/provenance preservation, audit/constraint failure rollback, duplicate definitions and successful delete.
+- Fifty-four Core route/service tests passed, including three new document-route tests, existing 49 CMS bridge tests and two system documentation tests.
+- Fourteen Dashboard transport tests passed, including exact Owner-only method/path allowlisting and preservation of the DELETE version body.
+- No production document was created, edited, synchronized, or deleted for validation.
+
+### Remaining implementation and acceptance
+
+Native reader/editor, generated client contract, category/search, Markdown/heading navigation and safe previews, create/edit/publication/order, delete/sync confirmation, edit reservations, cross-surface version-aware writes, old deep links, mobile/keyboard/error recovery and live authenticated read verification. The backend being implemented is not full Developer Resources parity and does not permit `/admin` retirement.
+
+Rollback: revert this additive backend change on reconciled main; retained legacy routes and data remain available. No down-migration is required.
