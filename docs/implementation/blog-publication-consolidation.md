@@ -204,7 +204,7 @@ Independent parent validation completed before release:
 - 32 actual PostgreSQL publication tests and 11 private-route/lease tests.
 - Six populated backup/recovery tests and one actual migration-runner test.
 - 15 native editor tests and seven retained-editor/lease-hook tests.
-- 13 public projection/media/route tests and 26 website cache/HTTP tests.
+- 15 public projection/media/route tests and 26 website cache/HTTP tests.
 - 20 dashboard bridge tests, API typecheck, final Core production build, and
   public layout/navigation checks.
 
@@ -230,3 +230,13 @@ and media recovery/rollback, and the broader CMS/admin-retirement gates. A saved
 private preview displays sanitized article content; it is not a full website-theme
 or sidebar preview. Production release identifiers and read-only live verification
 must be recorded separately before describing this candidate as deployed.
+
+Pre-release capture (2026-09-19T23:00:52Z): a private, read-only repeatable-read
+snapshot captured 55 public tables / 592 rows from the Core service at `edddf3cd`.
+The compressed archive SHA-256 is
+`d946ccd12c32e7c813bb63bdfc683cf8debba199e07afabc27168b215759d6b9`.
+It is stored privately outside Git, includes existing backup exclusions, and does
+not include media bytes or DDL. Existing archives were not pruned. This is capture
+evidence, not a claim of full production recovery. The final public route fails
+with 503 on a settings-read failure rather than enabling a disabled Blog by default;
+its six route tests, Core typecheck and production build passed.

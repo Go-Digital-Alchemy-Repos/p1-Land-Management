@@ -6,7 +6,7 @@ vi.mock("../services/public-blog-media.service", () => ({
   resolvePublicBlogMedia: async (rows: unknown) => rows,
 }));
 const state = vi.hoisted(() => ({ get: vi.fn(), features: vi.fn() }));
-vi.mock("../services/site-features.service", () => ({ getSiteFeatures: state.features }));
+vi.mock("../storage", () => ({ storage: { settings: { getDecryptedCategory: state.features } } }));
 vi.mock("../services/blog-publication.service", () => ({ listPublishedBlogSnapshots: state.get }));
 import router from "./blog-publication-public.routes";
 let server: Server, base: string;
@@ -26,7 +26,8 @@ afterAll(
 );
 beforeEach(() => {
   state.get.mockReset();
-  state.features.mockResolvedValue({ cmsEnabled: true, blogEnabled: true });
+  state.features.mockReset();
+  state.features.mockResolvedValue({ enable_cms: "true", enable_blog: "true" });
   state.get.mockResolvedValue([]);
 });
 it("serves a public bounded projection with no-store and nosniff", async () => {
@@ -48,10 +49,26 @@ it("returns generic unavailable response without private errors", async () => {
   expect(await response.json()).toEqual({ error: "Blog publications unavailable" });
 });
 
-it("returns authoritative empty assignments when CMS is disabled without reading menus", async () => {
-  state.features.mockResolvedValue({ cmsEnabled: false });
+it("returns authoritative empty publications when CMS is disabled without reading posts", async () => {
+  state.features.mockResolvedValue({ enable_cms: "false" });
   const response = await fetch(base);
   expect(response.status).toBe(200);
   expect((await response.json()).posts).toEqual([]);
+  expect(state.get).not.toHaveBeenCalled();
+});
+
+it("keeps Blog disabled independently from CMS", async () => {
+  state.features.mockResolvedValue({ enable_cms: "true", enable_blog: "false" });
+  const response = await fetch(base);
+  expect(response.status).toBe(200);
+  expect((await response.json()).posts).toEqual([]);
+  expect(state.get).not.toHaveBeenCalled();
+});
+
+it("fails unavailable rather than defaulting to enabled after a settings read failure", async () => {
+  state.features.mockRejectedValue(Error("private configuration failure"));
+  const response = await fetch(base);
+  expect(response.status).toBe(503);
+  expect(await response.json()).toEqual({ error: "Blog publications unavailable" });
   expect(state.get).not.toHaveBeenCalled();
 });
