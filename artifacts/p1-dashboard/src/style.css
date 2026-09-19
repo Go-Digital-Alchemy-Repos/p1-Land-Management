@@ -730,24 +730,35 @@ small {
   border: 1px solid hsl(var(--border));
 }
 .property-art {
-  height: 125px;
-  background: hsl(var(--muted)) url("/images/property-topography.webp") center / cover no-repeat;
-  padding: 22px;
-  display: flex;
-  justify-content: space-between;
-  color: hsl(var(--muted-foreground));
+  height: 180px;
+  position: relative;
+  background: var(--paper);
 }
-.property-art span {
+.property-art .property-acreage {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 1;
+  pointer-events: none;
   font-size: 9px;
   letter-spacing: 1.2px;
-  background: hsl(var(--muted));
+  background: var(--paper);
   padding: 5px 8px;
-  height: max-content;
   border-radius: 4px;
 }
-.property-info {
+.property-art .property-card-map { height: 180px; min-height: 180px; width: 100%; }
+.property-art .property-card-map.property-location-map--unavailable { padding: 20px; }
+.property-card button.property-info {
   padding: 19px;
+  width: 100%;
+  display: block;
+  text-align: left;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
+.property-card button.property-info:focus-visible { outline-offset: -3px; }
 .property-info .property-type-label { display: block; margin: 10px 0 0; color: hsl(var(--foreground)); font-size: 10px; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
 .property-info .property-type-label + small { display: block; margin-top: 8px; }
 .property-info h3 {

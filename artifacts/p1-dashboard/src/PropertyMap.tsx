@@ -174,26 +174,27 @@ export function PropertyMap({
   );
 }
 
-export function PropertyLocationMap({ property }: { property: PropertyPoint }) {
+export function PropertyLocationMap({ property, card = false }: { property: PropertyPoint; card?: boolean }) {
   const coordinates = propertyCoordinates(property);
   if (!coordinates) {
     return (
       <div
-        className="property-location-map property-location-map--unavailable"
+        className={`property-location-map property-location-map--unavailable${card ? " property-card-map" : ""}`}
         aria-label="Property map unavailable"
       >
-        <MapPin aria-hidden="true" size={22} />
+        {!card && <MapPin aria-hidden="true" size={22} />}
         <p>Map placement is not available for this property yet.</p>
       </div>
     );
   }
   const { latitude, longitude } = coordinates;
   return (
-    <div className="property-location-map" data-testid="property-location-map">
+    <div className={`property-location-map${card ? " property-card-map" : ""}`} data-testid="property-location-map">
       <Map
         workerUrl={workerUrl}
         key={property.id}
-        initialViewState={{ latitude, longitude, zoom: 13.5 }}
+        initialViewState={{ latitude, longitude, zoom: card ? 16 : 13.5 }}
+        interactive={!card}
         mapStyle={MAP_STYLE_URL}
         attributionControl={{ compact: true }}
         dragRotate={false}
@@ -201,7 +202,7 @@ export function PropertyLocationMap({ property }: { property: PropertyPoint }) {
         touchPitch={false}
         style={{ height: "100%", width: "100%" }}
       >
-        <NavigationControl position="top-right" showCompass={false} />
+        {!card && <NavigationControl position="top-right" showCompass={false} />}
         <Marker latitude={latitude} longitude={longitude} anchor="bottom">
           <span
             className="property-map-pin property-map-pin--static"

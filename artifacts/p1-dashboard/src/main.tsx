@@ -103,6 +103,7 @@ const TeamManager = lazy(() => import("./marketing/TeamManager"));
 const MediaLibrary = lazy(() => import("./marketing/MediaLibrary"));
 const WebsiteEditor = lazy(() => import("./marketing/WebsiteEditor"));
 const CmsMenus = lazy(() => import("./marketing/CmsMenus"));
+const PropertyCardMap = lazy(() => import("./PropertyMap").then(({ PropertyLocationMap }) => ({ default: PropertyLocationMap })));
 const PropertyMap = lazy(() =>
   import("./PropertyMap").then(({ PropertyMap }) => ({ default: PropertyMap })),
 );
@@ -2956,20 +2957,22 @@ function PropertyCards({
   return properties.length ? (
     <div className="property-grid">
       {properties.map((p) => (
-        <button className="property-card" key={p.id} onClick={() => onOpen(p)}>
+        <article className="property-card" key={p.id}>
           <div className="property-art">
-            <MapPin size={26} />
-            <span>{p.acreage ? `${p.acreage} ACRES` : "PROPERTY RECORD"}</span>
+            <Suspense fallback={<div className="property-card-map" role="status">Loading property map…</div>}>
+              <PropertyCardMap property={p} card />
+            </Suspense>
+            <span className="property-acreage">{p.acreage ? `${p.acreage} ACRES` : "PROPERTY RECORD"}</span>
           </div>
-          <div className="property-info">
+          <button className="property-info" onClick={() => onOpen(p)}>
             <h3>
               {p.name} <ArrowUpRight size={18} />
             </h3>
             <p>{p.address}</p>
             {p.property_type_name && <small className="property-type-label">{p.property_type_name}</small>}
             <small>View property history</small>
-          </div>
-        </button>
+          </button>
+        </article>
       ))}
     </div>
   ) : (
