@@ -16,8 +16,8 @@ pending their reviewed import. Release evidence is recorded below.
 
 ### Coordinated editor/public delivery candidate
 
-The next cutover is in progress, not deployed or accepted. Both editor hosts must
-use the same publication APIs before release. The private `/blog/publications`
+The coordinated cutover is deployed at `e6125fb9`; full acceptance remains open.
+Both editor hosts now use the same publication APIs. The private `/blog/publications`
 collection returns explicit legacy-adoption state or a versioned draft envelope.
 New creation and reviewed adoption return an exact editor-instance lease. Actions
 require version and lease proofs: Save changes only the draft; Save & Publish is
@@ -248,3 +248,28 @@ remained available. Core now derives type-only serialized responses from its own
 publication services. No runtime server code is imported by the editor. A clean
 isolated typecheck and seven retained-editor tests passed; the isolated production build also passed. Coordinated redeployment follows. The initial isolated harness omitted the
 migration folder; that harness omission was corrected before the build rerun.
+
+## Verified Blog editor and public delivery release — September 19
+
+Runtime `e6125fb9c76732ada9b1fae60a857f281197a986` is on main and the
+consolidation branch. Railway SUCCESS:
+- Core `7b27ec34-7a3b-4a8f-a98e-1e9aae4982bc`
+- Website `dd553555-a49e-4f88-b719-6aa4788dcf7a`
+- Dashboard `f854efd2-569b-4a67-86e4-4356479bbedb`
+
+Core logs confirm migrations completed. Core readiness and Dashboard health return
+200. The public Blog publication endpoint returns its valid empty collection;
+private Core and Dashboard publication routes return 401 without authentication.
+Public Blog SSR retains all five original article links. Authenticated browser
+checks verified the restored Blog tools and new-post Content/Layout/SEO tabs,
+rich-text toolbar and media picker; no post was saved, adopted or published.
+Social Media retains its restored Design navigation, profile fields and icon preview.
+
+The first Core build failed on an out-of-context generated type import; the fix
+uses type-only responses derived from Core services and passed isolated typecheck,
+production build and seven editor tests before this successful deployment.
+See `docs/implementation/blog-publication-consolidation.md` for backup/test evidence.
+Full Blog acceptance still requires actual editing/publication acceptance, reviewed
+import of the five articles, full public sidebar/comment presentation and recovery.
+Remaining CMS/System parity, Search Console access, CRM/account reconciliation,
+operational acceptance and safe admin retirement remain open. Goal stays active.
