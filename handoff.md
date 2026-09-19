@@ -1,3 +1,23 @@
+## Static Blog import review bundle — September 19
+
+Read-only review tooling now lives in `scripts/consolidation/prepare-blog-import.mjs`
+and `.test.mjs`. Five tests cover parsing without script execution, content/structure
+preservation, unsafe-link changes, wrong/duplicate routes/layout, bounds, deterministic
+fingerprints and incomplete input. Full tool constraints and the approved ownership
+contract are in `docs/implementation/blog-static-import-plan.md`.
+
+Fresh five-page capture was bracketed by Railway website SUCCESS observation
+`f75d9dce-bd05-4cdb-a82d-51ff22c976a7` at2c72c98f. All five preserve content/structure;
+source fingerprint `b89dfa689c4e1e71866b2ecbf89dea1c06118d6bb6ec7c0111b36d48f469f6c4`.
+`/tmp/p1-blog-public-review-fresh-path` points to captured HTML/evidence; latest local
+review bundle is `/tmp/p1-blog-import-reviewed-structure-20260919/review.json`.
+These local artifacts are review evidence, not an executed import or archival guarantee.
+The exploratory earlier bundle has incorrect caller provenance and is superseded.
+No production content, media or database changes occurred. Next: implement immutable
+five-route ownership receipts plus coordinated public projection/consumer and restore
+preflight safeguards, with reviewed hero/author/date/media preservation before import.
+Goal remains active; all other acceptance gates remain in the tracker.
+
 ## Verified Blog formatting release — September 19
 
 Code `4c74f67a0f4ea6d5c2e77735232c13ddaf0ce86f` is pushed to main and the
