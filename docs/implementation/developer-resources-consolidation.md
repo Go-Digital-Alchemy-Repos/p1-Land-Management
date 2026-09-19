@@ -68,3 +68,13 @@ Still required before full acceptance: convert retained legacy document writes t
 
 
 Live read verification on the September 18 release: the authenticated Owner opened the native destination, with the retained sidebar/header and a successful empty library (0 documents). No seed/sync/create/delete was performed. Production currently has no documents to use for a real-content read check; rendered synthetic-content tests cover the reader. A duplicate outer heading observed in that check was removed for this destination.
+
+## September 19: retained editor uses versioned writes
+
+The retained `/api/admin/docs` routes now use the same atomic, audited storage operations and shared editable-field schemas as the Business Center bridge. The legacy collection response is now `{version, docs}`; its editor was updated together. PUT requires `{document, expectedVersion}`, DELETE and repository refresh require `{expectedVersion}`. An already-open older editor must reload; unversioned writes fail validation rather than silently overwriting current content. Legacy authentication/role gates and Business Center's attested-Owner gates remain unchanged. Slug lookup remains supported and returns a document version.
+
+The retained editor no longer closes and discards its draft when a reservation is lost. It leaves the draft available for download and disables saves. Failed/uncertain saves block replay and offer explicit download plus confirmed reload of the saved document. Reload failure or deletion preserves the draft. Repository refresh and deletion now require confirmation. No production content was changed for testing.
+
+Validation: 12 focused tests passed across legacy route boundaries, consolidated route boundaries and the retained rendered editor, including missing-version/provenance rejection, conflict forwarding, lost-reservation retention and failed-save replay prevention. Core type checking and client/server production build passed; existing PostCSS and large-chunk warnings remain. Existing storage transaction behavior is reused unchanged; no schema migration. This closes the known unversioned HTTP writer gap, not the remaining whole-feature/browser/retirement acceptance. Retained API read/write shape changes are deliberate and released with their sole discovered application client. CLI/bootstrap storage methods are not exposed through these routes.
+
+Rollback: revert this coordinated route/client/shared-schema commit and redeploy Core; no data conversion is needed. Such a rollback restores the old unversioned-write limitation and must be treated as reopening this acceptance gate.

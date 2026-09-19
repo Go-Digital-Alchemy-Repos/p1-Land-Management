@@ -5,16 +5,7 @@ import { requireWebsiteOwner } from "../middleware/website-owner";
 import { asyncHandler } from "../middleware/error-handler";
 import { loadSystemDocDefinitions } from "../services/system-docs.service";
 const router = Router();
-const version = z.string().regex(/^[a-f0-9]{64}$/);
-const identifier = z.string().uuid();
-const fields = z.object({
-  title: z.string().trim().min(1).max(255),
-  slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).max(160),
-  category: z.string().trim().min(1).max(120),
-  content: z.string().max(500000),
-  sortOrder: z.number().int().min(-100000).max(100000),
-  isPublished: z.boolean(),
-}).strict();
+import { documentVersionSchema as version, documentIdentifierSchema as identifier, documentFieldsSchema as fields } from "@shared/document-contract";
 router.use(requireWebsiteOwner);
 router.use((req, _res, next) => {
   try { z.object({}).strict().parse(req.query); next(); } catch(error) { next(error); }

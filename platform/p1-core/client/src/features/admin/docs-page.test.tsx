@@ -101,7 +101,7 @@ describe("DocsPage", () => {
     mutationStates = [];
     useQueryMock.mockImplementation(({ queryKey }: { queryKey: unknown[] }) => {
       if (queryKey[0] === "/api/admin/docs") {
-        return { data: mockDocs, isLoading: false };
+        return { data: { version: "a".repeat(64), docs: mockDocs.map(doc => ({...doc, version: "b".repeat(64)})) }, isLoading: false, refetch: vi.fn() };
       }
 
       return { data: [], isLoading: false };
@@ -200,38 +200,28 @@ describe("DocsPage", () => {
     document.body.innerHTML = "";
   });
 
-  it("closes the document sheet when a lock conflict is detected", async () => {
+  it("retains the draft and disables saving when the reservation is lost", async () => {
+    editorLockState.isReadOnly = false;
     root = createRoot(container);
+    await act(async () => { root!.render(React.createElement(DocsPage)); });
+    await act(async () => { (document.querySelector('[data-testid="button-edit-doc"]') as HTMLButtonElement).click(); });
+    editorLockState.isReadOnly = true;
+    await act(async () => { root!.render(React.createElement(DocsPage)); });
+    expect((document.querySelector('[data-testid="input-doc-title"]') as HTMLInputElement).value).toBe("Editor Workflow");
+    expect((document.querySelector('[data-testid="button-save-doc"]') as HTMLButtonElement).disabled).toBe(true);
+    expect(document.body.textContent).toContain("Download draft");
+  });
 
-    await act(async () => {
-      root!.render(React.createElement(DocsPage));
-    });
-
-    const editButton = document.body.querySelector(
-      '[data-testid="button-edit-doc"]',
-    ) as HTMLButtonElement | null;
-    expect(editButton).not.toBeNull();
-
-    await act(async () => {
-      editButton?.click();
-    });
-
-    expect(document.body.querySelector('[data-testid="input-doc-title"]')).not.toBeNull();
-    expect(lockGuardMock).toHaveBeenLastCalledWith(
-      expect.objectContaining({
-        resourceId: "doc-1",
-        resourceLabel: "document",
-        editorLock: editorLockState,
-      }),
-    );
-
-    const guardArgs = lockGuardMock.mock.calls.at(-1)?.[0] as { onConflict: () => void };
-
-    await act(async () => {
-      guardArgs.onConflict();
-    });
-
-    expect(document.body.querySelector('[data-testid="input-doc-title"]')).toBeNull();
+  it("retains a draft after a failed save and blocks immediate replay", async () => {
+    editorLockState.isReadOnly = false;
+    root = createRoot(container);
+    await act(async () => { root!.render(React.createElement(DocsPage)); });
+    await act(async () => { (document.querySelector('[data-testid="button-edit-doc"]') as HTMLButtonElement).click(); });
+    const update = useMutationMock.mock.calls.slice(-4)[2][0];
+    await act(async () => { update.onError(new Error("Documentation changed")); });
+    expect((document.querySelector('[data-testid="input-doc-title"]') as HTMLInputElement).value).toBe("Editor Workflow");
+    expect((document.querySelector('[data-testid="button-save-doc"]') as HTMLButtonElement).disabled).toBe(true);
+    expect(document.body.textContent).toContain("Reload saved document");
   });
 
   it("submits the edited document through the update mutation", async () => {

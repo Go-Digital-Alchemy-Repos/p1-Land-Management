@@ -34,7 +34,6 @@ import { MarkdownDocument } from "@/components/shared/markdown-document";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { useEditorLock } from "@/hooks/use-editor-lock";
-import { useLockConflictGuard } from "@/hooks/use-lock-conflict-guard";
 import { useEditorSaveState } from "@/hooks/use-editor-save-state";
 import { useUnsavedChangesGuard } from "@/hooks/use-unsaved-changes-guard";
 import {
@@ -57,7 +56,9 @@ import {
   Search,
   Trash2,
 } from "lucide-react";
-import type { Doc } from "@shared/schema";
+import type { Doc as StoredDoc } from "@shared/schema";
+import { documentFieldsSchema } from "@shared/document-contract";
+type Doc = StoredDoc & { version: string };
 
 const PREFERRED_CATEGORIES = [
   "Getting Started",
@@ -117,27 +118,24 @@ export default function DocsPage() {
     enabled: sheetOpen && Boolean(editingDoc?.id),
   });
 
-  useLockConflictGuard({
-    active: sheetOpen && Boolean(editingDoc?.id),
-    resourceId: sheetOpen && editingDoc?.id ? editingDoc.id : null,
-    resourceLabel: "document",
-    editorLock,
-    onConflict: () => {
-      setSheetOpen(false);
-      setEditingDoc(null);
-      setShowPreview(false);
-    },
-  });
-
-  const { data: allDocs = [], isLoading } = useQuery<Doc[]>({
+  const [writeBlocked, setWriteBlocked] = useState(false);
+  const { data: library, isLoading, refetch } = useQuery<{ version: string; docs: Doc[] }>({
     queryKey: ["/api/admin/docs"],
   });
+  const allDocs = library?.docs ?? [];
+  const downloadDraft = () => {
+    const url = URL.createObjectURL(new Blob([JSON.stringify(editingDoc, null, 2)], { type: "application/json" }));
+    const link = document.createElement("a");
+    link.href = url; link.download = "p1-document-draft.json"; link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
 
   const docBySlug = useMemo(() => new Map(allDocs.map((doc) => [doc.slug, doc])), [allDocs]);
 
   const syncMutation = useMutation({
+    onError: (error: Error) => { toast({ title: "Refresh failed", description: error.message, variant: "destructive" }); },
     mutationFn: async () => {
-      const res = await apiRequest("POST", "/api/admin/docs/sync");
+      const res = await apiRequest("POST", "/api/admin/docs/sync", { expectedVersion: library?.version });
       return res.json();
     },
     onSuccess: async (payload: {
@@ -158,7 +156,7 @@ export default function DocsPage() {
 
   const createMutation = useMutation({
     mutationFn: async (data: Partial<Doc>) => {
-      const res = await apiRequest("POST", "/api/admin/docs", data);
+      const res = await apiRequest("POST", "/api/admin/docs", documentFieldsSchema.parse(data));
       return res.json();
     },
     onSuccess: async () => {
@@ -170,6 +168,7 @@ export default function DocsPage() {
       toast({ title: "Document created" });
     },
     onError: (error: Error) => {
+      setWriteBlocked(true);
       saveFeedbackRef.current.markError();
       toast({
         title: "Failed to create document",
@@ -180,8 +179,8 @@ export default function DocsPage() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: async ({ id, ...data }: Partial<Doc> & { id: string }) => {
-      const res = await apiRequest("PUT", `/api/admin/docs/${id}`, data);
+    mutationFn: async ({ id, version, createdBy, createdAt, updatedAt, ...data }: Partial<Doc> & { id: string }) => {
+      const res = await apiRequest("PUT", `/api/admin/docs/${id}`, { document: documentFieldsSchema.parse(data), expectedVersion: version });
       return res.json();
     },
     onSuccess: async (updated: Doc) => {
@@ -196,6 +195,7 @@ export default function DocsPage() {
       toast({ title: "Document updated" });
     },
     onError: (error: Error) => {
+      setWriteBlocked(true);
       saveFeedbackRef.current.markError();
       toast({
         title: "Failed to update document",
@@ -206,8 +206,9 @@ export default function DocsPage() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      await apiRequest("DELETE", `/api/admin/docs/${id}`);
+    onError: (error: Error) => { toast({ title: "Delete failed", description: error.message, variant: "destructive" }); },
+    mutationFn: async (doc: Doc) => {
+      await apiRequest("DELETE", `/api/admin/docs/${doc.id}`, { expectedVersion: doc.version });
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["/api/admin/docs"] });
@@ -324,6 +325,7 @@ export default function DocsPage() {
   }, [categories, selectedCategory]);
 
   const handleSave = () => {
+    if (writeBlocked || editorLock.isReadOnly) return;
     if (!editingDoc?.title || !editingDoc?.slug || !editingDoc?.category || !editingDoc?.content) {
       toast({ title: "Please fill in all required fields", variant: "destructive" });
       return;
@@ -358,6 +360,7 @@ export default function DocsPage() {
   };
 
   const openCreate = () => {
+    setWriteBlocked(false);
     const blankDoc = {
       title: "",
       slug: "",
@@ -374,7 +377,8 @@ export default function DocsPage() {
   };
 
   const openEdit = (doc: Doc) => {
-    const nextDoc = { ...doc };
+    setWriteBlocked(false);
+    const nextDoc = { ...(allDocs.find(saved => saved.id === doc.id) ?? doc) };
     setEditingDoc(nextDoc);
     setSavedDocSnapshot(JSON.stringify(nextDoc));
     saveFeedbackRef.current.clearFeedback();
@@ -409,8 +413,8 @@ export default function DocsPage() {
           <div className="flex flex-wrap items-center gap-2">
             <Button
               variant="outline"
-              onClick={() => syncMutation.mutate()}
-              disabled={syncMutation.isPending}
+              onClick={() => { if (window.confirm("Refresh repository documents? This replaces matching saved document content.")) syncMutation.mutate(); }}
+              disabled={syncMutation.isPending || sheetOpen || !library?.version}
               data-testid="button-sync-system-docs"
             >
               {syncMutation.isPending ? <LoadingSpinner /> : <RefreshCw className="mr-2 h-4 w-4" />}
@@ -599,7 +603,7 @@ export default function DocsPage() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => deleteMutation.mutate(selectedDoc.id)}
+                        onClick={() => { if (window.confirm("Delete this document?")) deleteMutation.mutate(selectedDoc); }}
                         data-testid="button-delete-doc"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -665,6 +669,18 @@ export default function DocsPage() {
             </SheetDescription>
           </SheetHeader>
           <SheetBody>
+            {writeBlocked && <p role="alert">The save did not complete reliably. Your draft is retained. Download it before closing, then reopen the saved document to compare before trying again.</p>}
+            {editingDoc && <div className="flex gap-2 mb-4">
+              <Button variant="outline" onClick={downloadDraft}>Download draft</Button>
+              {writeBlocked && <Button variant="outline" onClick={async () => {
+                if (!window.confirm("Replace this draft with the saved document? Download your draft first if you need to keep it.")) return;
+                const result = await refetch();
+                if (result.error) { toast({ title: "Reload failed", description: "Your draft is still retained.", variant: "destructive" }); return; }
+                const saved = result.data?.docs.find(doc => doc.id === editingDoc.id || (!editingDoc.id && doc.slug === editingDoc.slug));
+                if (!saved) { toast({ title: "Saved document not found", description: "Your draft is still retained. Compare the refreshed library before creating a new document.", variant: "destructive" }); return; }
+                setEditingDoc({ ...saved }); setSavedDocSnapshot(JSON.stringify(saved)); setWriteBlocked(false);
+              }}>Reload saved document</Button>}
+            </div>}
             {editorLock.summary ? (
               <div className="mb-4">
                 <EditorLockBanner
@@ -799,7 +815,7 @@ export default function DocsPage() {
                 </Button>
                 <Button
                   onClick={handleSave}
-                  disabled={isSaving || editorLock.isReadOnly}
+                  disabled={isSaving || writeBlocked || editorLock.isReadOnly}
                   data-testid="button-save-doc"
                 >
                   {isSaving && <LoadingSpinner />}
