@@ -311,3 +311,15 @@ the Blog index return200; each original route occurs once in sitemap. No real
 article import occurred. Source media/date/author/hero preservation and complete
 CMS workflow acceptance remain open. Exact deployments/backup evidence: handoff.md
 and blog-static-import-plan.md. `/admin` retirement remains gated.
+
+## Blog presentation preservation release — September 19
+
+Runtime5799e3f3 deployed successfully to Website, Core and Dashboard. Optional versioned
+presentation survives immutable revisions and both original editor controllers; public
+editorial rendering preserves hero/body/aside semantics and declared date precision.
+19 realPG cutover tests,25 Core pipeline/route,20 native editor,9 retained editor,
+40 website and6 review-bundle tests passed. Typechecks/builds passed; local desktop/
+390px visual check confirms no horizontal overflow and original related-link styles.
+Live health and Blog reads passed without production content mutation. Remaining:
+presentation editing controls, registered originals+responsive variants, genuine date/
+source review and atomic import acceptance. No full Blog/CMS parity claim yet.

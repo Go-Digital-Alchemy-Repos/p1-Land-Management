@@ -198,3 +198,23 @@ route25, native editor20, retained editor9 and website40 tests passed. Source
 field identities for all six Blog routes remain unchanged. Core and website builds
 and typechecks passed; exact release observations are recorded in handoff.md.
 No production content import or mutation occurred in this increment.
+
+## Registered image delivery gate — source inventory
+
+Read-only inventory confirmed five original PNGs and fifteen 480/768/1280 WebP
+variants against the image manifest (original SHA256 and derivative byte counts).
+Original dimensions are1408×768. Existing `createCmsMediaAssetFromUpload` supports
+`optimize:false`; ordinary upload routes re-encode by default and cannot be used
+as evidence of exact reviewed-byte preservation. Existing create-only storage and
+bounded readback helpers provide the necessary primitive operations, not a complete
+import workflow. `cms_media` currently has no variant-set, dimensions or hash fields.
+
+Next implementation must prepare a reviewed20-file manifest, preserve original
+bytes through create-only storage with hash-verified readback, register each asset,
+and record all identities in immutable import provenance. An additive optional
+editorial media-set contract must bind the retained original and responsive variants
+before public URL/dimension projection. Both revision deletion protection and
+PageHero SSR/hydration must cover the complete set. Object writes cannot be made
+transactional with PostgreSQL: use staged idempotent create-only uploads and then
+atomic DB registration/publication, with an explicit recoverable orphan/retry policy.
+Do not describe a successful upload as completed import or media-recovery acceptance.

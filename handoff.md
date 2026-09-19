@@ -1,3 +1,20 @@
+## Verified presentation preservation release — September 19
+
+Runtime `5799e3f3b5369471ae190f519b8858c863d208de` is pushed to main/task branch.
+Railway SUCCESS: Core `6288153a-ed3d-49af-aa30-cb939becafd7`, Website
+`8d07ea66-2fa8-4989-9773-843e51660a96`, Dashboard
+`89e640e2-2c63-4c92-8e75-d4b62b312b5d`. Core readiness, dashboard health and
+public v2 Blog endpoint returned200; posts/ownership remain empty (no imports).
+Public Blog and representative original article return200 with oneH1.
+All3 production builds succeeded. Goal remains active.
+
+Next slice: editable presentation controls and reviewed20-file managed-media manifest
+plus immutable responsive media references, then atomic five-article import. Source
+image inventory proves five originals and15 derivative files intact locally; it does
+not prove managed-storage delivery or recovery. Details and gates are in the static
+import plan. Broader CRM/account, Search Console, operational acceptance and retirement
+gates remain unchanged. Do not let the Blog increment redefine full-goal completion.
+
 ## Article presentation preservation candidate — September 19
 
 Optional nullable versioned presentation metadata now survives creation, revision
