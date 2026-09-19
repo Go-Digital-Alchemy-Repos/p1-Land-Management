@@ -19,7 +19,8 @@ import {
   resetEmailBrandingCache,
 } from "../services/email.service";
 import * as r2Service from "../services/r2.service";
-import { ensureSystemEmailTemplates } from "../services/system-email-templates.service";
+import { SYSTEM_EMAIL_TEMPLATE_DEFAULTS } from "../services/system-email-templates.service";
+import { emailTemplateSaveSchema, emailTemplateRestoreSchema } from "@shared/email-template-contract";
 import { testMailchimpConnection } from "../services/mailchimp.service";
 import { isDesignEditableBrandingSetting } from "../utils/branding-settings-policy";
 
@@ -215,44 +216,29 @@ router.get(
   "/email-templates",
   requireRole("admin"),
   asyncHandler(async (_req, res) => {
-    const templates = await storage.emailTemplates.getAllTemplates();
-    res.json(templates);
+    res.setHeader("Cache-Control", "private, no-store");
+    res.json(await storage.emailTemplates.getVersionedTemplates());
   }),
 );
 
 router.post(
   "/email-templates/restore",
   requireRole("admin"),
-  asyncHandler(async (_req, res) => {
-    const result = await ensureSystemEmailTemplates(true);
-    const templates = await storage.emailTemplates.getAllTemplates();
-    res.json({
-      restored: result.total,
-      templates,
-    });
+  asyncHandler(async (req, res) => {
+    const body = emailTemplateRestoreSchema.parse(req.body);
+    res.json(await storage.emailTemplates.restoreVersionedTemplates(SYSTEM_EMAIL_TEMPLATE_DEFAULTS, body.expectedVersion,
+      { userId: req.user!.id, action: "website_email_templates_restored", details: "System defaults restored; activation preserved" }));
   }),
 );
-
-const updateTemplateSchema = z.object({
-  subject: z.string().optional(),
-  htmlBody: z.string().optional(),
-  isActive: z.boolean().optional(),
-});
 
 router.put(
   "/email-templates/:slug",
   requireRole("admin"),
   asyncHandler(async (req, res) => {
-    const data = updateTemplateSchema.parse(req.body);
-    const template = await storage.emailTemplates.updateTemplate(
-      paramString(req.params.slug),
-      data,
-    );
-    if (!template) {
-      res.status(404).json({ message: "Template not found" });
-      return;
-    }
-    res.json(template);
+    const body = emailTemplateSaveSchema.parse(req.body);
+    const slug = paramString(req.params.slug);
+    res.json(await storage.emailTemplates.saveVersionedTemplate(slug, body.template, body.expectedVersion,
+      { userId: req.user!.id, action: "website_email_template_updated", details: slug }));
   }),
 );
 

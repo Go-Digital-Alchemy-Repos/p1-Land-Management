@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { db } from "../db";
 import { emailTemplates, type InsertEmailTemplate } from "@shared/schema";
 import type { EmailTemplateModule } from "@shared/schema/email-templates";
@@ -324,82 +324,92 @@ const SYSTEM_EMAIL_TEMPLATE_BASE_DEFAULTS: Omit<InsertEmailTemplate, "module">[]
 ];
 
 export const SYSTEM_EMAIL_TEMPLATE_DEFAULTS: InsertEmailTemplate[] =
-  SYSTEM_EMAIL_TEMPLATE_BASE_DEFAULTS.filter((template) => template.slug !== "new-client-registration").map((template) => ({
+  SYSTEM_EMAIL_TEMPLATE_BASE_DEFAULTS.filter(
+    (template) => template.slug !== "new-client-registration",
+  ).map((template) => ({
     ...template,
     module: TEMPLATE_MODULES[template.slug] ?? "system",
   }));
 
 export async function ensureSystemEmailTemplates(refreshExisting = false) {
-  let created = 0;
-  let updated = 0;
+  return db
+    .transaction(async (tx) => {
+      await tx.execute(sql`SET LOCAL lock_timeout = '5s'`);
+      await tx.execute(sql`LOCK TABLE email_templates IN SHARE ROW EXCLUSIVE MODE`);
+      let created = 0;
+      let updated = 0;
 
-  for (const template of SYSTEM_EMAIL_TEMPLATE_DEFAULTS) {
-    if (!refreshExisting) {
-      const existing = await db.query.emailTemplates.findFirst({
-        where: (emailTemplate, { eq }) => eq(emailTemplate.slug, template.slug),
+      for (const template of SYSTEM_EMAIL_TEMPLATE_DEFAULTS) {
+        if (!refreshExisting) {
+          const existing = await tx.query.emailTemplates.findFirst({
+            where: (emailTemplate, { eq }) => eq(emailTemplate.slug, template.slug),
+          });
+
+          if (
+            existing &&
+            (template.slug === "contact-form-submission" ||
+              template.slug === "managed-form-submission")
+          ) {
+            const nextHtmlBody = removeLegacyAdminCta(existing.htmlBody);
+            const nextVariables = template.variables;
+            const variablesChanged =
+              JSON.stringify(existing.variables) !== JSON.stringify(nextVariables);
+
+            if (nextHtmlBody !== existing.htmlBody || variablesChanged) {
+              await tx
+                .update(emailTemplates)
+                .set({
+                  htmlBody: nextHtmlBody,
+                  module: template.module,
+                  variables: nextVariables,
+                  updatedAt: new Date(),
+                })
+                .where(eq(emailTemplates.slug, template.slug));
+              updated += 1;
+            }
+          }
+        }
+
+        if (refreshExisting) {
+          await tx
+            .insert(emailTemplates)
+            .values(template)
+            .onConflictDoUpdate({
+              target: emailTemplates.slug,
+              set: {
+                name: template.name,
+                module: template.module,
+                subject: template.subject,
+                htmlBody: template.htmlBody,
+                description: template.description,
+                variables: template.variables,
+                    updatedAt: new Date(),
+              },
+            });
+          updated += 1;
+          continue;
+        }
+
+        const inserted = await tx.insert(emailTemplates).values(template).onConflictDoNothing({
+          target: emailTemplates.slug,
+        });
+        created += inserted.rowCount ?? 0;
+      }
+
+      logger.app.info("System email templates ensured", {
+        total: SYSTEM_EMAIL_TEMPLATE_DEFAULTS.length,
+        created,
+        updated,
+        refreshExisting,
       });
 
-      if (
-        existing &&
-        (template.slug === "contact-form-submission" || template.slug === "managed-form-submission")
-      ) {
-        const nextHtmlBody = removeLegacyAdminCta(existing.htmlBody);
-        const nextVariables = template.variables;
-        const variablesChanged =
-          JSON.stringify(existing.variables) !== JSON.stringify(nextVariables);
-
-        if (nextHtmlBody !== existing.htmlBody || variablesChanged) {
-          await db
-            .update(emailTemplates)
-            .set({
-              htmlBody: nextHtmlBody,
-              module: template.module,
-              variables: nextVariables,
-              updatedAt: new Date(),
-            })
-            .where(eq(emailTemplates.slug, template.slug));
-          updated += 1;
-        }
-      }
-    }
-
-    if (refreshExisting) {
-      await db
-        .insert(emailTemplates)
-        .values(template)
-        .onConflictDoUpdate({
-          target: emailTemplates.slug,
-          set: {
-            name: template.name,
-            module: template.module,
-            subject: template.subject,
-            htmlBody: template.htmlBody,
-            description: template.description,
-            variables: template.variables,
-            isActive: template.isActive ?? true,
-            updatedAt: new Date(),
-          },
-        });
-      updated += 1;
-      continue;
-    }
-
-    const inserted = await db.insert(emailTemplates).values(template).onConflictDoNothing({
-      target: emailTemplates.slug,
+      return {
+        total: SYSTEM_EMAIL_TEMPLATE_DEFAULTS.length,
+        created,
+        updated,
+      };
+    })
+    .catch(() => {
+      throw new Error("System email template initialization failed");
     });
-    created += inserted.rowCount ?? 0;
-  }
-
-  logger.app.info("System email templates ensured", {
-    total: SYSTEM_EMAIL_TEMPLATE_DEFAULTS.length,
-    created,
-    updated,
-    refreshExisting,
-  });
-
-  return {
-    total: SYSTEM_EMAIL_TEMPLATE_DEFAULTS.length,
-    created,
-    updated,
-  };
 }

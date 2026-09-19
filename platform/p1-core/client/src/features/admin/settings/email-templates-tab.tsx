@@ -47,7 +47,6 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { EditorLockBanner } from "@/components/shared/editor-lock-banner";
-import { useLockConflictGuard } from "@/hooks/use-lock-conflict-guard";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient, STALE_TIMES } from "@/lib/queryClient";
 import { cn } from "@/lib/utils";
@@ -55,6 +54,7 @@ import { useEditorLock } from "@/hooks/use-editor-lock";
 import { DEFAULT_SITE_FEATURES, type SiteFeatures } from "@shared/site-features";
 
 interface EmailTemplate {
+  version: string;
   id: string;
   slug: string;
   name: string;
@@ -189,6 +189,7 @@ function TemplateEditor({
 }) {
   const { toast } = useToast();
   const [subject, setSubject] = useState(template.subject);
+  const [writeBlocked, setWriteBlocked] = useState(false);
   const [htmlBody, setHtmlBody] = useState(template.htmlBody);
   const [editorTab, setEditorTab] = useState<"visual" | "html">("visual");
   const [previewHtml, setPreviewHtml] = useState<string | null>(null);
@@ -203,6 +204,7 @@ function TemplateEditor({
   });
 
   useEffect(() => {
+    setWriteBlocked(false);
     setSubject(template.subject);
     setHtmlBody(template.htmlBody);
     setPreviewHtml(null);
@@ -210,14 +212,6 @@ function TemplateEditor({
     setLinkUrl("");
     setShowLinkPanel(false);
   }, [template]);
-
-  useLockConflictGuard({
-    active: open,
-    resourceId: open ? template.slug : null,
-    resourceLabel: "email template",
-    editorLock,
-    onConflict: onClose,
-  });
 
   useEffect(() => {
     if (!open) return;
@@ -236,9 +230,10 @@ function TemplateEditor({
 
   const updateMutation = useMutation({
     mutationFn: async () => {
+      if (writeBlocked || editorLock.isReadOnly) throw new Error("Reload the saved template before trying again.");
       await apiRequest("PUT", `/api/admin/email-templates/${template.slug}`, {
-        subject,
-        htmlBody,
+        template: { subject, htmlBody },
+        expectedVersion: template.version,
       });
     },
     onSuccess: () => {
@@ -247,6 +242,8 @@ function TemplateEditor({
       onClose();
     },
     onError: (err: Error) => {
+      setWriteBlocked(true);
+      void queryClient.invalidateQueries({ queryKey: ["/api/admin/email-templates"] });
       toast({ title: "Error saving template", description: err.message, variant: "destructive" });
     },
   });
@@ -596,6 +593,8 @@ function TemplateEditor({
               </div>
               {previewHtml ? (
                 <iframe
+                  sandbox=""
+                  referrerPolicy="no-referrer"
                   srcDoc={previewHtml}
                   className="w-full h-[420px] bg-white"
                   title="Email preview"
@@ -617,9 +616,14 @@ function TemplateEditor({
           </div>
         </SheetBody>
         <SheetFooter>
+          {writeBlocked && <p role="alert">Save was not confirmed. Your draft is retained. Download it before closing, then reopen the saved template to compare.</p>}
+          <Button variant="outline" onClick={() => {
+            const url = URL.createObjectURL(new Blob([JSON.stringify({slug: template.slug, subject, htmlBody}, null, 2)], {type: "application/json"}));
+            const link = document.createElement("a"); link.href = url; link.download = `${template.slug}-draft.json`; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+          }}>Download draft</Button>
           <Button
             onClick={() => updateMutation.mutate()}
-            disabled={updateMutation.isPending || editorLock.isReadOnly}
+            disabled={updateMutation.isPending || editorLock.isReadOnly || writeBlocked}
             data-testid="button-save-template"
           >
             {updateMutation.isPending ? (
@@ -668,7 +672,7 @@ export function EmailTemplatesTab() {
   const [moduleFilter, setModuleFilter] = useState<EmailTemplateModule | "all">("all");
   const [statusFilter, setStatusFilter] = useState<EmailTemplateStatusFilter>("all");
 
-  const { data: templates, isLoading } = useQuery<EmailTemplate[]>({
+  const { data: snapshot, isLoading } = useQuery<{ version: string; templates: EmailTemplate[] }>({
     queryKey: ["/api/admin/email-templates"],
   });
   const { data: siteFeaturesData, isLoading: isSiteFeaturesLoading } = useQuery<SiteFeatures>({
@@ -684,7 +688,7 @@ export function EmailTemplatesTab() {
     [siteFeatures],
   );
 
-  const templateList = templates || [];
+  const templateList = snapshot?.templates || [];
   const visibleTemplateList = useMemo(() => {
     return filterEmailTemplates(templateList, {
       siteFeatures,
@@ -712,7 +716,8 @@ export function EmailTemplatesTab() {
   const toggleMutation = useMutation({
     mutationFn: async ({ slug, isActive }: { slug: string; isActive: boolean }) => {
       await apiRequest("PUT", `/api/admin/email-templates/${slug}`, {
-        isActive,
+        template: { isActive },
+        expectedVersion: templateList.find(template => template.slug === slug)?.version,
       });
     },
     onSuccess: () => {
@@ -727,7 +732,7 @@ export function EmailTemplatesTab() {
 
   const restoreMutation = useMutation({
     mutationFn: async () => {
-      const res = await apiRequest("POST", "/api/admin/email-templates/restore");
+      const res = await apiRequest("POST", "/api/admin/email-templates/restore", { expectedVersion: snapshot?.version });
       return res.json();
     },
     onSuccess: async (payload: { restored: number }) => {
@@ -834,8 +839,8 @@ export function EmailTemplatesTab() {
         </Select>
         <Button
           variant="outline"
-          onClick={() => restoreMutation.mutate()}
-          disabled={restoreMutation.isPending}
+          onClick={() => { if (window.confirm("Restore system template content to defaults? Custom content in system templates will be replaced. Existing activation choices and custom templates will be preserved.")) restoreMutation.mutate(); }}
+          disabled={restoreMutation.isPending || !snapshot}
           data-testid="button-restore-email-templates"
         >
           {restoreMutation.isPending ? (
