@@ -1,3 +1,5 @@
+// Leave browser redirect headroom for canonical host/path normalization.
+export const MAX_REDIRECT_CHAIN_LENGTH = 10;
 export type PublicRedirect = { fromPath: string; toPath: string; statusCode: 301 | 302 };
 export class RedirectPolicyError extends Error {
   constructor(
@@ -73,6 +75,11 @@ export function validateRedirectCollection(
     while (next && rules.has(next)) {
       if (seen.has(next)) throw new RedirectPolicyError(409, "Redirect cycles are not permitted.");
       seen.add(next);
+      if (seen.size > MAX_REDIRECT_CHAIN_LENGTH)
+        throw new RedirectPolicyError(
+          409,
+          `Redirect chains may contain at most ${MAX_REDIRECT_CHAIN_LENGTH} rules.`,
+        );
       next = rules.get(next)?.toPath;
     }
   }

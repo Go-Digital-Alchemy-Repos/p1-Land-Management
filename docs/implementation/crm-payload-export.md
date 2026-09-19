@@ -1,6 +1,6 @@
 # Read-only CRM export bundle
 
-Status: implemented and tested against disposable databases using the actual Core CRM migrations. No production export or source freeze has run. The exporter reads CRM payloads and a limited matching inventory; it never modifies either database.
+Status: implemented and tested against disposable databases using the actual Core CRM migrations. A private read-only production payload export completed September 19; source freeze and import have not run. The exporter reads CRM payloads and a limited matching inventory; it never modifies either database.
 
 ## Run
 
@@ -41,3 +41,37 @@ JSONB source columns are transferred as text and parsed with numeric-token check
 `node scripts/test-dashboard.mjs` covers the actual source migrations, read-only transaction evidence, export→prepare→import→re-export/replay, private exclusive bundles and hashes, the real CLI, concurrent source edits, schema/type drift, missing identity linkage, JSON numeric precision and timezone cases. Offline migration tests cover the JSON parser and preparation contracts.
 
 Review the manifest using [payload preservation](crm-payload-preservation.md), then follow [reviewed import](crm-payload-import.md). Production source convention/freeze verification, unresolved mappings, unsupported values, full field functionality, archive access, count/checksum reconciliation, restore rehearsal and admin retirement remain release gates. No production release authority is granted by this command.
+
+
+## Actual private export — September 19, 2026
+
+The exported snapshot contains three leads and zero clients, lead/client notes or
+lead/client tasks. Its source lead IDs exactly match the prior metadata capture.
+One lead has a receipt-backed parent match; two remain blocked by
+`parent_mapping_requires_review` (source stages New and Contacted). No automatic
+mapping, source freeze, import, account grant or operational onboarding occurred.
+
+UTC was selected for this specific snapshot using independent evidence: all three
+naive lead creation values, interpreted as UTC, follow linked form-effect jobs’
+absolute timestamps by approximately 6–20 seconds. The supported follow-up and
+edited timestamp writers serialize JavaScript dates to ISO UTC. This is a documented
+snapshot-specific inference assuming the inspected application writers, not a claim
+that every historical naive timestamp in every Core instance is UTC. A different
+source inventory requires renewed convention review.
+
+Private bundle pointer: `/tmp/p1-crm-payload-private-path`. Bundle directory mode0700;
+export, manifest and evidence files mode0600. Both database snapshots reported
+transaction_read_only=on; no database writes were performed. Database endpoints
+remain private: the export ran over authorized Railway SSH with the destination
+connection passed through stdin, not command arguments or logs. No public database
+endpoint or persistent credential was created.
+
+Verified SHA256:
+- export.json: `09354af6ee30f1f7454d16f32b0eb5237f4725c43db0f588d26e716342f2174a`
+- manifest.json: `e25fe573b11ddb827998b365b664d7635beb54650166c500b45fa48f03590a89`
+
+An initial read-only acquisition attempt failed at a wrapper assertion referencing
+an incorrect result key after export; it produced no usable bundle and no writes.
+The corrected attempt used the actual records contract, checked the three-lead
+inventory, and wrote evidence last. Reviewed mapping, isolated actual-payload import
+rehearsal, fresh frozen-source export and final migration acceptance remain open.

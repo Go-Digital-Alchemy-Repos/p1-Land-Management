@@ -1,3 +1,20 @@
+## September 19 follow-up — CRM payload and redirect safety
+
+Private read-only CRM payload export now completed: three leads, no clients/notes/
+tasks; one receipt-backed match, two unresolved parent mappings. File hashes,
+snapshot-specific UTC evidence and private bundle pointer are documented in
+`docs/implementation/crm-payload-export.md`. No import/freeze or production writes.
+
+Redirect consumer was already released; stale missing-consumer notes are corrected
+in the acceptance tracker. New validation caps redirect chains at ten edges while
+preserving mixed301/302 and query behavior. 32 focused checks and both typechecks
+passed; parent independently reran 25 website runtime/store checks.
+
+Blog revision/publication foundation is being implemented separately by the bounded
+Blog agent. Its uncommitted additive schema/service work is excluded from this
+redirect release until independently reviewed and validated. Existing APIs, scheduler
+and five static article URLs remain unchanged. The full consolidation goal stays active.
+
 ## Verified Website System release — September 19
 
 Runtime `001ac605a648d83fbefc6cbc49a07915003b3354` is pushed to main and

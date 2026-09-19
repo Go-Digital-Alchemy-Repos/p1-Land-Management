@@ -87,3 +87,63 @@ test("refresh failures retain previous rules while valid empty collection remove
   body = sample([]);
   assert.equal(await resolveWebsiteRedirect(store, "/old", "", "GET"), null);
 });
+
+const chain = (length) =>
+  Array.from({ length }, (_, index) => ({
+    fromPath: `/hop-${index}`,
+    toPath: `/hop-${index + 1}`,
+    statusCode: index % 2 ? 302 : 301,
+  }));
+test("accepts exactly ten edges and retains authored mixed status codes and query strings", async () => {
+  const projection = sample(chain(10));
+  assert.deepEqual(parseWebsiteRedirects(projection), projection);
+  for (const rule of projection.redirects)
+    assert.deepEqual(
+      await resolveWebsiteRedirect(
+        { snapshot: async () => projection },
+        rule.fromPath,
+        "?source=a%2Fb&source=c",
+        "HEAD",
+      ),
+      {
+        status: rule.statusCode,
+        location: rule.toPath + "?source=a%2Fb&source=c",
+      },
+    );
+  assert.throws(
+    () => parseWebsiteRedirects(sample(chain(11))),
+    /chain too long/,
+  );
+  assert.throws(() =>
+    parseWebsiteRedirects(
+      sample([
+        ...chain(10),
+        { fromPath: "/other", toPath: "/hop-0", statusCode: 301 },
+      ]),
+    ),
+  );
+  assert.throws(
+    () =>
+      parseWebsiteRedirects(
+        sample([
+          { fromPath: "/a", toPath: "/b", statusCode: 301 },
+          { fromPath: "/b", toPath: "/a", statusCode: 302 },
+        ]),
+      ),
+    /cycle/,
+  );
+});
+test("an overlong upstream projection never replaces the last valid rules", async () => {
+  let time = 0,
+    body = sample(chain(10));
+  const store = createWebsiteRedirectStore({
+    origin: "https://core.test",
+    now: () => time,
+    ttl: 10,
+    fetcher: async () => Response.json(body),
+  });
+  const saved = await store.snapshot();
+  time = 11;
+  body = sample(chain(11));
+  assert.deepEqual(await store.snapshot(), saved);
+});

@@ -48,3 +48,22 @@ it("rejects duplicates, cycles and oversized collections", () => {
   ])
     expect(() => validateRedirectCollection(rows)).toThrow();
 });
+
+it("accepts ten edges without collapsing mixed statuses and rejects an eleventh", () => {
+  const chain = Array.from({ length: 10 }, (_, index) => ({
+    ...rule(`/hop-${index}`, `/hop-${index + 1}`),
+    statusCode: index % 2 ? 302 : 301,
+  }));
+  const projected = validateRedirectCollection([...chain].reverse());
+  expect(projected).toEqual(chain.map(({ isActive, ...value }) => value));
+  const eleven = [...chain, rule("/hop-10", "/hop-11")];
+  expect(() => validateRedirectCollection(eleven)).toThrow("at most 10 rules");
+  // The longest path matters even when multiple starting paths join the same suffix.
+  expect(() => validateRedirectCollection([...chain, rule("/other", "/hop-0")])).toThrow(
+    "at most 10 rules",
+  );
+  expect(
+    validateRedirectCollection([...chain, { ...rule("/hop-10", "/hop-11"), isActive: false }]),
+  ).toEqual(projected);
+  expect(() => validateRedirectCollection([...chain, rule("/hop-10", "/hop-0")])).toThrow();
+});

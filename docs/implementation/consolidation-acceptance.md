@@ -46,8 +46,7 @@ or dynamic public-route behavior.
 
 Read-only account and CRM inventories have been captured privately. The actual CRM
 metadata contains three Core leads and one dashboard lead: one receipt-backed match
-needs review and two Core records remain unmapped. Payload export, reviewed mapping,
-source freeze and real import/reconciliation remain undone. Account inventory is
+needs review and two Core records remain unmapped. Private payload export completed September 19 with all three source leads and verified hashes. Reviewed mapping, source freeze and real import/reconciliation remain undone. Account inventory is
 not approval to activate seven inactive accounts or change the Owner’s MFA policy.
 
 Recovery review confirms that the archive stores database rows/sequences, not media
@@ -107,13 +106,13 @@ Historical Core archive recovery passed on PostgreSQL18.6 after fixing generated
 
 Native Pages, Galleries and Sections now retain editor selections in direct URLs at `112f1d1`. Fifteen focused component tests, dashboard type checking and production build passed (existing large-chunk warning remains). See [editor deep links](native-cms-editor-deep-links.md). Railway dashboard deployment `a97ad844-eb79-48f6-91a0-1f419ad91b5e` reached SUCCESS. Authenticated browser checks opened all three `new` editors directly and verified page return-to-list clears its selector; no CMS records were created or published. Existing-record, real reservation, mobile and dirty-history acceptance remain open.
 
-A source review confirmed three remaining public-delivery gaps: native SEO robots settings are saved but production `/robots.txt` still serves the static file; CMS redirects are editable but the public server only applies hardcoded redirects; menu-location assignments are saved but `SiteHeader` still builds its navigation from fixed definitions. These must be connected with explicit publication/cache contracts, preserving staging noindex, canonical redirects, reserved infrastructure routes and accessible desktop/mobile navigation. Native editor existence is not public-consumer parity.
+Historical source review identified three public-delivery gaps: robots settings, CMS redirects and menu assignments. All three now have released consumers with publication/cache contracts. Their narrower remaining acceptance checks are recorded below; the old finding must not be used to treat their implementations as missing.
 
 Search Console domain-property access remains pending: the verified Owner browser lists `mike@godigitalalchemy.com`, while `mike@p1landmanagement.com` receives a domain-property access denial. The existing reporting token lists only the apex URL property. Restricted domain access has been prepared but not submitted; browser permission expansion awaits the requested action-time confirmation. No provider credentials or reporting property were changed.
 
 The [isolated application rollback runner](core-application-rollback-runner.md) now has a genuine partial result (evidence04). Current/prior source rebuilds booted on separate restored clones with unchanged baseline and verified cleanup. Only form updated timestamps changed; three added rows belong to the migration ledger. Empty archived content prevents published-content recovery proof; media, authenticated/provider and original Railway-image rollback gates remain open. Seven offline runner checks passed independently.
 
-Robots public delivery is implemented at `ec899b3`; five Core and 21 website checks, both typechecks and the Core production build passed. Independent review found no blocker. Canonical live projection/robots equality and GET/HEAD headers passed after release `550534b`; a separate live staging check remains unverified. This historical checkpoint predates the released menu consumer. Menus are now connected; redirect delivery still needs its separate acceptance evidence.
+Robots public delivery is implemented at `ec899b3`; five Core and 21 website checks, both typechecks and the Core production build passed. Independent review found no blocker. Canonical live projection/robots equality and GET/HEAD headers passed after release `550534b`; a separate live staging check remains unverified. Redirect delivery was released at `8068e29`/`31d0c4b`; four-slot menu delivery was released at `4b7cf0f6`. Read-only live redirect projection checks were repeated September 19; nonempty production-rule execution remains unverified because the live collection contains zero rules.
 
 ## Composed agreement / crew acceptance — September 19
 
@@ -156,7 +155,7 @@ the manifest step passed after supplying the actual base revision. Specialist ra
 5 isolated PostgreSQL concurrency/policy tests and reported browser navigation,
 query, stale-response and failure checks. No production redirect records were created
 or changed. Full CRUD authorization runtime coverage and live nonempty-rule acceptance
-remain separate from these checks. Menus are still an unfinished public consumer.
+remain separate from these checks. This checkpoint predates menu delivery at `4b7cf0f6`; menus are now connected.
 
 Redirect release `8068e29` reached SUCCESS on Website
 `b835bc61-4c68-49f0-a5c3-8993e709f66d` and Core
@@ -214,3 +213,17 @@ transactions. The CRM report proposes one receipt-backed existing lead and two
 unmapped leads with zero conflicts. It is not an approved mapping/import. Owner
 account/MFA disposition and all source-freeze, content-preserving migration, session/
 notification, recovery and operational acceptance remain open.
+
+
+## September 19 redirect revalidation and chain guard
+
+The released consumer passed 29 read-only/runtime checks; its live projection is
+valid and empty. A ten-edge chain limit now prevents browser hop-budget failures
+without collapsing or changing authored 301/302 rules. Core policy and the mirrored
+public parser reject longer chains; invalid upstream snapshots preserve last-valid
+rules. Boundary/graph coverage includes ten accepted, eleven rejected, prefix joins,
+mixed statuses, inactive edges and cycles. After the change, 25 website runtime/store,
+four Core policy and three client resolver checks passed, with both typechecks.
+No production redirect rules were changed. Fresh database tests were skipped without
+a fixture URL; historical release evidence records five isolated database checks.
+Nonempty live execution, full CRUD authorization acceptance and stale-edit CAS remain.

@@ -1,6 +1,8 @@
 import { createHash } from "node:crypto";
 import path from "node:path";
 import { createPublicSettingsStore } from "./public-settings.mjs";
+// Mirror shared/public-redirects.ts; production executes this module without a TS loader.
+const MAX_REDIRECT_CHAIN_LENGTH = 10;
 const reserved = [
   "/admin",
   "/api",
@@ -64,6 +66,8 @@ export function parseWebsiteRedirects(data) {
     while (rules.has(next)) {
       if (seen.has(next)) throw Error("Redirect cycle");
       seen.add(next);
+      if (seen.size > MAX_REDIRECT_CHAIN_LENGTH)
+        throw Error("Redirect chain too long");
       next = rules.get(next).toPath;
     }
   }
