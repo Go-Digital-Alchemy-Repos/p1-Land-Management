@@ -1,3 +1,13 @@
+## September 19 — Branding restoration accepted for release
+
+Shared logo/favicon cards/company fields restored with capability-gated media
+selection and staged versioned saves. Six focused tests, both app typechecks/builds,
+independent review and local synthetic browser checks passed. Nested-button and
+hidden-input visual defects fixed before release. Runtime source explicitly allowed
+in Docker context. Forms restoration remains in progress; unrelated redirects/menu
+drafts remain excluded. Website Modules2afc0d3 is now verified live on both apps;
+see marketing-admin-interface-parity.md for exact deployment IDs/evidence.
+
 ## September 19 — Website Modules shared presentation increment
 
 Feature Apps now shares the retained card/rows/switches with native Website Modules.

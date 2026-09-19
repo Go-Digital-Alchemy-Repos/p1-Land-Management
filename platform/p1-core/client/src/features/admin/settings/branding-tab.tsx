@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { ImageIcon, Link2, Loader2, MapPin, Palette, Save, Type } from "lucide-react";
+import { ImageIcon, Link2, Loader2, Palette, Save, Type } from "lucide-react";
 
+import { BrandingEditor, BrandingImageEditor, normalizeBrandingUrl } from "@/components/shared/branding-editor";
 import { ColorEditor, BRANDING_COLOR_FIELDS, type BrandingColorSettingKey } from "@/components/shared/color-editor";
 import { TypographyEditor } from "@/components/shared/typography-editor";
 import { CmsImageUpload } from "@/features/admin/cms/components/cms-image-upload";
@@ -10,7 +11,6 @@ import { SocialMediaLinks } from "@/components/shared/social-media-links";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
@@ -96,33 +96,13 @@ function BrandingImageCard({
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-base">
-          <ImageIcon className="h-4 w-4 text-primary" />
-          {title}
-        </CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex min-h-[120px] items-center justify-center rounded-xl border border-dashed bg-muted/20 p-4">
-          {displayUrl ? (
-            <img src={displayUrl} alt={title} className="max-h-16 w-auto object-contain" />
-          ) : (
-            <div className="text-center text-sm text-muted-foreground">
-              <p>No image uploaded yet.</p>
-            </div>
-          )}
-        </div>
-
-        <CmsImageUpload
-          value={displayUrl}
-          onChange={handleBrandingImageChange}
-          helpText="Upload or choose an existing image from the shared Media Library."
-          data-testid={`branding-media-${settingKey}`}
-        />
-      </CardContent>
-    </Card>
+    <BrandingImageEditor
+      components={{ Card, CardHeader, CardTitle, CardDescription, CardContent }}
+      title={title} description={description} imageUrl={displayUrl}
+      control={<CmsImageUpload value={displayUrl} onChange={handleBrandingImageChange}
+        helpText="Upload or choose an existing image from the shared Media Library."
+        data-testid={`branding-media-${settingKey}`} />}
+    />
   );
 }
 
@@ -480,113 +460,24 @@ export function BrandingTab({
         </TabsList>
 
         <TabsContent value="branding" className="space-y-6">
-          <div className="grid gap-6 xl:grid-cols-2">
-            <BrandingImageCard
-              settingKey="frontend_logo_url"
-              title="Frontend Logo"
-              description="Shown in the site header and footer."
-              currentUrl={brandingSettings.frontend_logo_url?.value || ""}
-            />
-            <BrandingImageCard
-              settingKey="favicon_url"
-              title="Favicon"
-              description="Shown in the browser tab, bookmarks, and saved shortcuts."
-              currentUrl={brandingSettings.favicon_url?.value || ""}
-            />
-          </div>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base">
-                <MapPin className="h-4 w-4 text-primary" />
-                Company Information
-              </CardTitle>
-              <CardDescription>
-                These details automatically populate the Location card on the Contact page and the
-                live Contact Form block.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="company-name">Business Name</Label>
-                <Input
-                  id="company-name"
-                  value={companyInfo.company_name}
-                  onChange={(event) =>
-                    setCompanyInfo((current) => ({ ...current, company_name: event.target.value }))
-                  }
-                  placeholder="Core Platform"
-                  data-testid="input-company-name"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="company-google-business-url">Google Business Listing URL</Label>
-                <Input
-                  id="company-google-business-url"
-                  value={companyInfo.company_google_business_url}
-                  onChange={(event) =>
-                    setCompanyInfo((current) => ({
-                      ...current,
-                      company_google_business_url: event.target.value,
-                    }))
-                  }
-                  placeholder="https://maps.google.com/..."
-                  autoPrependHttps
-                  data-testid="input-company-google-business-url"
-                />
-              </div>
-              <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="company-address">Address</Label>
-                <Textarea
-                  id="company-address"
-                  value={companyInfo.company_address}
-                  onChange={(event) =>
-                    setCompanyInfo((current) => ({
-                      ...current,
-                      company_address: event.target.value,
-                    }))
-                  }
-                  placeholder={"123 Example Street\nSuite 100\nAtlanta, GA 30303"}
-                  rows={4}
-                  data-testid="textarea-company-address"
-                />
-              </div>
-              <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="company-phone-numbers">Phone Number(s)</Label>
-                <Textarea
-                  id="company-phone-numbers"
-                  value={companyInfo.company_phone_numbers}
-                  onChange={(event) =>
-                    setCompanyInfo((current) => ({
-                      ...current,
-                      company_phone_numbers: event.target.value,
-                    }))
-                  }
-                  placeholder={"(555) 123-4567\n(555) 765-4321"}
-                  rows={3}
-                  data-testid="textarea-company-phone-numbers"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Add one phone number per line to display multiple phone numbers.
-                </p>
-              </div>
-              <div className="md:col-span-2 flex gap-2">
-                <Button
-                  type="button"
-                  onClick={() => saveCompanyInfoMutation.mutate()}
-                  disabled={!hasCompanyInfoChanges || saveCompanyInfoMutation.isPending}
-                  data-testid="button-save-company-information"
-                >
-                  {saveCompanyInfoMutation.isPending ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : (
-                    <Save className="mr-2 h-4 w-4" />
-                  )}
-                  Save Company Information
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          <BrandingEditor
+            components={{ Card, CardHeader, CardTitle, CardDescription, CardContent }}
+            images={<>
+              <BrandingImageCard settingKey="frontend_logo_url" title="Frontend Logo" description="Shown in the site header and footer." currentUrl={brandingSettings.frontend_logo_url?.value || ""} />
+              <BrandingImageCard settingKey="favicon_url" title="Favicon" description="Shown in the browser tab, bookmarks, and saved shortcuts." currentUrl={brandingSettings.favicon_url?.value || ""} />
+            </>}
+            renderField={(field) => field.rows ? (
+              <Textarea id={field.id} value={companyInfo[field.key]} onChange={(event) => setCompanyInfo((current) => ({ ...current, [field.key]: event.target.value }))}
+                placeholder={field.placeholder} rows={field.rows} data-testid={`textarea-${field.id}`} />
+            ) : (
+              <Input id={field.id} value={companyInfo[field.key]} onChange={(event) => setCompanyInfo((current) => ({ ...current, [field.key]: field.key === "company_google_business_url" ? normalizeBrandingUrl(event.target.value) : event.target.value }))}
+                placeholder={field.placeholder} autoPrependHttps={field.key === "company_google_business_url"} data-testid={`input-${field.id}`} />
+            )}
+            toolbar={<Button type="button" onClick={() => saveCompanyInfoMutation.mutate()} disabled={!hasCompanyInfoChanges || saveCompanyInfoMutation.isPending} data-testid="button-save-company-information">
+              {saveCompanyInfoMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+              Save Company Information
+            </Button>}
+          />
         </TabsContent>
 
         <TabsContent value="social-media" className="space-y-6">

@@ -130,3 +130,23 @@ Three focused tests passed; an independent review found only stale browser-scrip
 assertions, which were updated for disabled switches and actual-control readiness.
 Local synthetic browser checks confirmed switch/default/save behavior and a 390px
 layout without document overflow. No production module settings were changed.
+
+Website Modules release `2afc0d3` is verified live: dashboard
+`9805748a-fd16-4324-9075-21896f56d687` and Core
+`210f1aee-d0bc-4798-8371-b9cdc8dd4489` both SUCCESS. Authenticated read-only
+inspection confirmed five labeled switches, Events/Careers off and unchanged Save
+disabled. No module settings were changed.
+
+## Branding presentation restoration
+
+Both hosts now share separate Frontend Logo/Favicon cards and Company Information
+layout. Core retains its media and company mutation adapters; dashboard retains
+changed-field/versioned writes, staged image changes, safe URL validation, conflict
+blocking and dirty guards. Its existing Media Library mounts only with media capability.
+Dashboard Save Branding Settings explicitly includes staged images; native library
+dialog, visible image actions and upload status differ from retained primitives.
+Independent review found no blocking behavior regression; nested interactive controls
+and globally unhidden file inputs were corrected. Six focused tests passed, plus
+dashboard/Core typechecks and builds. Local synthetic browser inspection verified
+desktop/mobile layout, confirmed company save, real Media Library dialog loading, and
+hidden file inputs. No production branding data was changed.

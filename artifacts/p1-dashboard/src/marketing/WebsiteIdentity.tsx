@@ -1,8 +1,16 @@
+import { Loader2, RefreshCw, Save } from "lucide-react";
+import {
+  BrandingEditor,
+  BrandingImageEditor,
+  normalizeBrandingUrl,
+} from "../../../../platform/p1-core/client/src/components/shared/branding-editor";
+import { BrandingMediaInput } from "./BrandingMediaInput";
+import "./website-identity.css";
 import {
   WEBSITE_IDENTITY_FIELDS,
   validWebsiteIdentityValue,
 } from "../../../../platform/p1-core/shared/website-identity";
-import { useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import {
   uploadWebsiteIdentityAsset,
   getWebsiteIdentity,
@@ -11,7 +19,22 @@ import {
 import { useCmsUnsavedChanges } from "./useCmsUnsavedChanges";
 type Snapshot = Awaited<ReturnType<typeof getWebsiteIdentity>>;
 type Settings = Snapshot["settings"];
-export default function WebsiteIdentity() {
+const MediaLibrary = lazy(() =>
+  import("./MediaLibrary").then((module) => ({ default: module.MediaLibrary })),
+);
+export default function WebsiteIdentity({
+  canUseMedia = false,
+}: {
+  canUseMedia?: boolean;
+}) {
+  const [mediaField, setMediaField] = useState<
+    "frontend_logo_url" | "favicon_url" | null
+  >(null);
+  const mediaDialog = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    if (mediaField && canUseMedia) mediaDialog.current?.showModal();
+    else mediaDialog.current?.close();
+  }, [mediaField, canUseMedia]);
   const [saved, setSaved] = useState<Snapshot | null>(null),
     [values, setValues] = useState<Settings | null>(null),
     [busy, setBusy] = useState(false),
@@ -127,7 +150,16 @@ export default function WebsiteIdentity() {
     key: "frontend_logo_url" | "favicon_url",
     file: File,
   ) {
-    if (gate.current || blocked) return;
+    if (gate.current || blocked || !values) return;
+    if (
+      !["image/png", "image/jpeg", "image/webp", "image/gif"].includes(
+        file.type,
+      ) &&
+      !/\.(png|jpe?g|webp|gif)$/i.test(file.name)
+    ) {
+      setError("Only PNG, JPEG, WebP, and GIF files are accepted.");
+      return;
+    }
     if (file.size > 10 * 1024 * 1024) {
       setError("Choose an image no larger than 10 MB.");
       return;
@@ -168,129 +200,175 @@ export default function WebsiteIdentity() {
         validWebsiteIdentityValue(key, values[key].trim()),
     );
   return (
-    <section className="panel" aria-label="Website branding">
-      <h2>Website branding</h2>
-      <p>
-        Manage the retained company identity, website logo and favicon. These
-        settings are separate from the business dashboard identity.
-      </p>
-      <p>
-        Saved identity overrides update the public website without a deployment.
-        Allow about 30 seconds, then reload the website to see changes. Blank
-        fields and inherited P1 defaults keep existing published website content
-        and P1 assets. Retained CMS and email consumers may also use these settings.
-      </p>
-      <p>
-        Upload a logo or favicon, or use an existing public CMS image. External
-        image addresses must belong to an image already registered in the media
-        library. Leave a field blank to clear its override. All identity values
-        must be valid before saving; repair or clear any unsupported old values.
-      </p>
-      {error && <p role="alert">{error}</p>}
-      {message && <p role="status">{message}</p>}
-      {busy && <p role="status">Working…</p>}
-      <button type="button" disabled={busy} onClick={() => void load(true)}>
-        Reload saved branding settings
-      </button>
-      {values && (
-        <section aria-label="Draft identity preview">
-          <h3>Draft identity preview</h3>
-          <p>{values.company_name}</p>
-          <p style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>
-            {values.company_address}
-          </p>
-          {(["frontend_logo_url", "favicon_url"] as const).map((key) =>
-            values[key] && validWebsiteIdentityValue(key, values[key]) ? (
-              <img
+    <section className="website-identity" aria-label="Website branding">
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          if (valid) void save();
+        }}
+      >
+        <BrandingEditor
+          notices={
+            <>
+              {error && <p role="alert">{error}</p>}
+              {message && <p role="status">{message}</p>}
+              {busy && <p role="status">Working…</p>}
+              {saved && values && !valid && (
+                <p role="alert">
+                  Correct the changed fields before saving. Use full HTTP or
+                  HTTPS URLs without credentials and keep company details within
+                  their length limits.
+                </p>
+              )}
+            </>
+          }
+          images={(["frontend_logo_url", "favicon_url"] as const).map((key) => {
+            const title =
+              key === "frontend_logo_url" ? "Frontend Logo" : "Favicon";
+            const value = values?.[key] ?? "";
+            return (
+              <BrandingImageEditor
                 key={key}
-                src={values[key]}
-                alt={
+                title={title}
+                description={
                   key === "frontend_logo_url"
-                    ? "Draft website logo"
-                    : "Draft favicon"
+                    ? "Shown in the site header and footer."
+                    : "Shown in the browser tab, bookmarks, and saved shortcuts."
                 }
-                referrerPolicy="no-referrer"
-                style={{
-                  maxWidth: "100%",
-                  maxHeight: key === "favicon_url" ? 48 : 120,
-                  objectFit: "contain",
+                imageUrl={validWebsiteIdentityValue(key, value) ? value : ""}
+                control={
+                  <BrandingMediaInput
+                    settingKey={key}
+                    title={title}
+                    value={value}
+                    disabled={!values || busy || blocked}
+                    canUseMedia={canUseMedia}
+                    onLibrary={() => setMediaField(key)}
+                    onUpload={(file) => void uploadAsset(key, file)}
+                    onChange={(url) => {
+                      if (values && !busy && !blocked)
+                        setValues({ ...values, [key]: url });
+                    }}
+                  />
+                }
+              />
+            );
+          })}
+          renderField={(field) => {
+            const props = {
+              id: field.id,
+              value: values?.[field.key] ?? "",
+              disabled: !values || busy || blocked,
+              placeholder: field.placeholder,
+              onChange: (
+                event: import("react").ChangeEvent<
+                  HTMLInputElement | HTMLTextAreaElement
+                >,
+              ) =>
+                values &&
+                setValues({
+                  ...values,
+                  [field.key]:
+                    field.key === "company_google_business_url"
+                      ? normalizeBrandingUrl(event.target.value)
+                      : event.target.value,
+                }),
+            };
+            return field.rows ? (
+              <textarea
+                {...props}
+                rows={field.rows}
+                data-testid={`textarea-${field.id}`}
+              />
+            ) : (
+              <input
+                {...props}
+                autoComplete="off"
+                data-testid={`input-${field.id}`}
+                inputMode={
+                  field.key === "company_google_business_url" ? "url" : "text"
+                }
+                onFocus={(event) => {
+                  if (
+                    field.key === "company_google_business_url" &&
+                    values &&
+                    !event.currentTarget.value
+                  ) {
+                    const input = event.currentTarget;
+                    setValues({ ...values, [field.key]: "https://" });
+                    requestAnimationFrame(() => input.setSelectionRange(8, 8));
+                  }
                 }}
               />
-            ) : null,
-          )}
-        </section>
-      )}
-      {saved && values && (
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (valid) void save();
+            );
           }}
-        >
-          <fieldset
-            disabled={busy || blocked}
-            style={{
-              minWidth: 0,
-              marginBlock: "1rem",
-              display: "grid",
-              gap: "1rem",
-            }}
-          >
-            <legend>Company and website identity</legend>
-            {WEBSITE_IDENTITY_FIELDS.map(({ key, label }) => (
-              <div key={key}>
-                <label htmlFor={key}>{label}</label>
-                {key === "company_address" ||
-                key === "company_phone_numbers" ? (
-                  <textarea
-                    id={key}
-                    value={values[key]}
-                    onChange={(e) =>
-                      setValues({ ...values, [key]: e.target.value })
-                    }
-                    style={{ width: "100%", minWidth: 0 }}
-                  />
+          toolbar={
+            <>
+              <button
+                className="branding-save"
+                type="submit"
+                data-testid="button-save-company-information"
+                disabled={!saved || busy || blocked || !dirty || !valid}
+              >
+                {busy ? (
+                  <Loader2 className="branding-spinner" aria-hidden="true" />
                 ) : (
-                  <input
-                    id={key}
-                    autoComplete="off"
-                    inputMode={key.endsWith("_url") ? "url" : "text"}
-                    value={values[key]}
-                    onChange={(e) =>
-                      setValues({ ...values, [key]: e.target.value })
-                    }
-                    style={{ width: "100%", minWidth: 0 }}
-                  />
+                  <Save aria-hidden="true" />
                 )}
-                {(key === "frontend_logo_url" || key === "favicon_url") && (
-                  <label>
-                    Upload {key === "frontend_logo_url" ? "logo" : "favicon"}
-                    <input
-                      type="file"
-                      accept="image/png,image/jpeg,image/webp,image/gif"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        e.target.value = "";
-                        if (file) void uploadAsset(key, file);
-                      }}
-                    />
-                  </label>
-                )}
-              </div>
-            ))}
-          </fieldset>
-          {!valid && (
-            <p role="alert">
-              Correct the changed fields before saving. Use full HTTP or HTTPS
-              URLs without credentials and keep company details within their
-              length limits.
-            </p>
-          )}
-          <button type="submit" disabled={busy || blocked || !dirty || !valid}>
-            Save branding settings
-          </button>
-        </form>
-      )}
+                Save Branding Settings
+              </button>
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => void load(true)}
+              >
+                <RefreshCw aria-hidden="true" />
+                Reload saved branding settings
+              </button>
+            </>
+          }
+        />
+      </form>
+      <p className="branding-save-help">
+        Image uploads, library selections and removals are staged until you
+        save. Only changed fields are saved. External image addresses must
+        already belong to the Media Library. Clear an override to restore the
+        website fallback.
+      </p>
+      <dialog
+        ref={mediaDialog}
+        className="media-picker"
+        aria-label="Choose branding image"
+        onCancel={() => setMediaField(null)}
+      >
+        <button type="button" onClick={() => setMediaField(null)}>
+          Close image picker
+        </button>
+        {mediaField && canUseMedia && (
+          <Suspense fallback={<p role="status">Loading Media Library…</p>}>
+            <MediaLibrary
+              acceptAsset={(asset) =>
+                asset.mimeType.startsWith("image/") &&
+                validWebsiteIdentityValue(mediaField, asset.url)
+              }
+              onSelect={(asset) => {
+                if (
+                  values &&
+                  !busy &&
+                  !blocked &&
+                  validWebsiteIdentityValue(mediaField, asset.url)
+                ) {
+                  setValues({ ...values, [mediaField]: asset.url });
+                  setMessage(
+                    "Image selected from Media. Save branding settings to apply it.",
+                  );
+                  setMediaField(null);
+                }
+              }}
+            />
+          </Suspense>
+        )}
+      </dialog>
     </section>
   );
 }

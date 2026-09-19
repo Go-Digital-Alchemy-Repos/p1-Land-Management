@@ -1499,7 +1499,7 @@ function App() {
               onRefresh={session}
             />
           )}
-          {view === "Website Identity" && <Suspense fallback={<p role="status">Loading branding settings…</p>}><WebsiteIdentity key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
+          {view === "Website Identity" && <Suspense fallback={<p role="status">Loading branding settings…</p>}><WebsiteIdentity canUseMedia={can("marketing.content.media")} key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Website Social" && <Suspense fallback={<p role="status">Loading social settings…</p>}><WebsiteSocial key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Website Typography" && <Suspense fallback={<p role="status">Loading website fonts…</p>}><WebsiteTypography key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Website Colors" && <Suspense fallback={<p role="status">Loading website colors…</p>}><WebsiteColors key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
