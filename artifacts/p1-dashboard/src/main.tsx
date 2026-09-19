@@ -1295,7 +1295,7 @@ function App() {
           </button>
         </header>
         <main className="content">
-          {!accountWorkspace && <div className={view === "Overview" ? "page-heading page-hero" : "page-heading"}>
+          {!accountWorkspace && view !== "Website Documents" && <div className={view === "Overview" ? "page-heading page-hero" : "page-heading"}>
             <div>
               <p className="eyebrow">P1 · PROPERTY OPERATIONS</p>
               <h1>

@@ -65,3 +65,6 @@ The Markdown renderer was moved to Core `shared/document-markdown.ts` with a com
 Validation: six rendered-component tests cover reading/deep links, save and collection refresh, conflict retention/no repeat, reservation loss, canceled destructive actions, and versioned sync/delete; nine dashboard route tests include Owner-only navigation; twelve Markdown/document-route/editor-lock tests passed; Dashboard and Core type checks and Dashboard production build passed. The separate Core `vitest.dashboard.config.ts` uses the Dashboard React version for the cross-application component tests.
 
 Still required before full acceptance: convert retained legacy document writes to the same versioned contract, validate legacy deep-link retirement, full mobile/keyboard/draft recovery review and post-deployment authenticated reading. Do not retire `/admin/docs` yet. Production document mutation has not been used as a test.
+
+
+Live read verification on the September 18 release: the authenticated Owner opened the native destination, with the retained sidebar/header and a successful empty library (0 documents). No seed/sync/create/delete was performed. Production currently has no documents to use for a real-content read check; rendered synthetic-content tests cover the reader. A duplicate outer heading observed in that check was removed for this destination.
