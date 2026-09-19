@@ -448,3 +448,31 @@ Final Team/Sidebars gate: isolated HEAD `effa8d77` plus 21 exact hashed overlays
 passed both clean typechecks (`--incremental false`), both production builds and
 the restricted dashboard build without Core node_modules. Source hashes matched
 the tested manifest. Existing build chunk-size warnings remain.
+
+## September 19 — Careers/Events restoration candidate
+
+Shared original Careers job table/editor grouping/settings cards/application
+list-detail workspace now drive both hosts. Shared original Events list cards,
+filter toolbar, four tabs and Details card layout likewise drive both hosts.
+Native adapters retain capability checks, uncertain-save fences, UTC conversion,
+review versions and dirty-state protection. No modules or payments were enabled.
+Independent review corrected embedded attendee buttons submitting the event form,
+pending attendance navigation, and public-origin image preview resolution.
+
+Verified: Careers native 6 tests; Events native 7 and retained 10 tests; clean
+Core/dashboard typechecks/builds; restricted dashboard runtime closure build.
+Local browser: Careers draft save/readback; Events Details/Registrants presentation.
+The browser stalled at a synthetic attendance confirmation; that click was not
+accepted as browser evidence. Its underlying embedded action has regression tests.
+
+Still incomplete for Events: original presets, StructuredDataStatus diagnostic,
+image upload dropzone, full-screen editor sheet, registration status/delete/bulk/
+CSV operations, archive entitlement/payment controls and recurrence generation.
+Payments/membership are excluded from P1 scope; do not activate them to fill a UI
+gap. Remaining in-scope operations require capability-backed API parity.
+
+Public menu delivery now has a complete candidate API, SSR consumer, hydration,
+last-valid cache and lazy managed-form dialogs. Live catalog is empty; existing
+navigation remains unchanged until a supported location is assigned. This closes
+the generic menu consumer implementation gap, subject to deployment verification;
+it does not close unrelated Blog, Sidebars or CMS publication/conflict gates.

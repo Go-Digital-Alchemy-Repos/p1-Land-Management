@@ -1,3 +1,10 @@
+import {
+  CareerApplicationsTable,
+  CareerApplicationWorkspace,
+} from "../../../../platform/p1-core/client/src/components/shared/career-admin-presentation";
+import { CAREER_APPLICATION_STATUS_LABELS } from "../../../../platform/p1-core/shared/careers-display";
+import { careerUI } from "./career-primitives";
+import "./career-admin.css";
 import { useEffect, useRef, useState } from "react";
 import {
   listMarketingCareerApplications,
@@ -30,10 +37,12 @@ function Review({
   row,
   changed,
   close,
+  onBusyChange,
 }: {
   row: MarketingCareerApplication;
   changed: (row: MarketingCareerApplication) => void;
   close: () => void;
+  onBusyChange: (busy: boolean) => void;
 }) {
   const [status, setStatus] = useState(row.status),
     [note, setNote] = useState(""),
@@ -47,6 +56,10 @@ function Review({
       alive.current = false;
     };
   }, []);
+  useEffect(() => {
+    onBusyChange(busy);
+    return () => onBusyChange(false);
+  }, [busy, onBusyChange]);
   const dirty = status !== row.status || Boolean(note);
   useCmsUnsavedChanges(dirty || busy);
   async function run(save: boolean) {
@@ -77,7 +90,7 @@ function Review({
     }
   }
   return (
-    <section className="template-library" aria-label="Application review">
+    <section className="career-review" aria-label="Application review">
       <h2>
         {row.firstName} {row.lastName}
       </h2>
@@ -98,7 +111,11 @@ function Review({
           application to check whether a previous attempt completed.
         </p>
       )}
-      <CareerResumeDownload key={row.id} id={row.id} fileName={row.resumeFileName || "resume"} />
+      <CareerResumeDownload
+        key={row.id}
+        id={row.id}
+        fileName={row.resumeFileName || "resume"}
+      />
       {(["linkedinUrl", "portfolioUrl"] as const).map((key) =>
         safeLink(row[key]) ? (
           <p key={key}>
@@ -202,6 +219,7 @@ export default function CareerApplications({ close }: { close: () => void }) {
     [error, setError] = useState(""),
     [search, setSearch] = useState(""),
     [status, setStatus] = useState("all");
+  const [reviewBusy, setReviewBusy] = useState(false);
   const alive = useRef(true),
     gate = useRef(false);
   async function load() {
@@ -229,26 +247,23 @@ export default function CareerApplications({ close }: { close: () => void }) {
       alive.current = false;
     };
   }, []);
-  if (selected)
-    return (
-      <Review
-        key={`${selected.id}:${revision}`}
-        row={selected}
-        changed={(row) => {
-          setSelected(row);
-          setRevision((n) => n + 1);
-        }}
-        close={() => {
-          setSelected(null);
-          void load();
-        }}
-      />
-    );
   return (
-    <section className="template-library" aria-label="Career applications">
-      <h2>Applications</h2>
-      <button onClick={close}>Job postings</button>
-      <button disabled={loading} onClick={() => void load()}>
+    <section className="career-admin" aria-label="Career applications">
+      <h1>Careers</h1>
+      <button
+        disabled={reviewBusy}
+        onClick={() => {
+          if (
+            window.dispatchEvent(
+              new Event("p1:before-navigation", { cancelable: true }),
+            )
+          )
+            close();
+        }}
+      >
+        Job postings
+      </button>
+      <button disabled={loading || reviewBusy} onClick={() => void load()}>
         Refresh applications
       </button>
       {error && <p role="alert">{error}</p>}
@@ -277,49 +292,69 @@ export default function CareerApplications({ close }: { close: () => void }) {
         </select>
       </label>
       {!loading && !error && !rows.length && <p>No applications yet.</p>}
-      <div className="template-grid">
-        {rows
-          .filter(
-            (row) =>
-              (status === "all" || row.status === status) &&
-              `${row.firstName} ${row.lastName} ${row.email}`
-                .toLowerCase()
-                .includes(search.toLowerCase()),
-          )
-          .map((row) => (
-            <article key={row.id}>
-              <h3>
-                {row.firstName} {row.lastName}
-              </h3>
-              <p>Applied for: {jobTitle(row)}</p>
-              <p>
-                {row.status} · {row.email}
-              </p>
-              <button
-                disabled={loading}
-                onClick={async () => {
-                  if (gate.current) return;
-                  gate.current = true;
-                  setLoading(true);
-                  try {
-                    const detail = await getMarketingCareerApplication(row.id);
-                    if (alive.current) {
-                      setSelected(detail);
-                      setRevision((n) => n + 1);
-                    }
-                  } catch (e) {
-                    if (alive.current) setError(careerError(e));
-                  } finally {
-                    gate.current = false;
-                    if (alive.current) setLoading(false);
-                  }
-                }}
-              >
-                Review {row.firstName} {row.lastName}
-              </button>
-            </article>
-          ))}
-      </div>
+      <CareerApplicationWorkspace
+        ui={careerUI}
+        list={
+          <CareerApplicationsTable
+            ui={careerUI}
+            applications={rows.filter(
+              (row) =>
+                (status === "all" || row.status === status) &&
+                `${row.firstName} ${row.lastName} ${row.email}`
+                  .toLowerCase()
+                  .includes(search.toLowerCase()),
+            )}
+            jobTitle={jobTitle}
+            statusLabel={(value) =>
+              CAREER_APPLICATION_STATUS_LABELS[
+                value as keyof typeof CAREER_APPLICATION_STATUS_LABELS
+              ] || value
+            }
+            disabled={loading || reviewBusy}
+            onSelect={async (row) => {
+              if (
+                reviewBusy ||
+                !window.dispatchEvent(
+                  new Event("p1:before-navigation", { cancelable: true }),
+                )
+              )
+                return;
+              if (gate.current) return;
+              gate.current = true;
+              setLoading(true);
+              try {
+                const detail = await getMarketingCareerApplication(row.id);
+                if (alive.current) {
+                  setSelected(detail);
+                  setRevision((n) => n + 1);
+                }
+              } catch (e) {
+                if (alive.current) setError(careerError(e));
+              } finally {
+                gate.current = false;
+                if (alive.current) setLoading(false);
+              }
+            }}
+          />
+        }
+        detail={
+          selected ? (
+            <Review
+              key={`${selected.id}:${revision}`}
+              row={selected}
+              onBusyChange={setReviewBusy}
+              changed={(row) => {
+                setSelected(row);
+                setRevision((n) => n + 1);
+              }}
+              close={() => {
+                setSelected(null);
+                void load();
+              }}
+            />
+          ) : null
+        }
+      />
     </section>
   );
 }

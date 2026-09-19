@@ -14,3 +14,14 @@ test('successful route response without identity retains last valid identity', (
   const cleared = { ...identity, version: 'b', companyName: null, logoUrl: null };
   assert.equal(retainPublishedIdentity(old, { ...next, identity: cleared }).identity, cleared);
 });
+
+test('menu revision is retained during navigation, replaced by new publication, and explicitly cleared', () => {
+  const menus = {schemaVersion: 1 as const, stackId: 'p1-land-management' as const, revision: 'a'.repeat(64), locations: {main_navigation: {id:'main',version:1,items:[]},p1_footer_services:null,p1_footer_service_areas:null,p1_footer_company:null}};
+  const previous = {...old,menus};
+  assert.equal(snapshotForRoute(previous,'/contact').menus, menus);
+  const next = {route:'/contact',content:{},global:{}};
+  assert.equal(retainPublishedIdentity(previous,next).menus, menus);
+  assert.equal(retainPublishedIdentity(previous,{...next,menus:null}).menus, null);
+  const replacement = {...menus,revision:'b'.repeat(64)};
+  assert.equal(retainPublishedIdentity(previous,{...next,menus:replacement}).menus, replacement);
+});

@@ -1,3 +1,11 @@
+import {
+  EventAdminCard,
+  EventAdminFilters,
+} from "@/components/shared/event-admin-list-presentation";
+import {
+  EventAdminTabs,
+  EventAdminDetails,
+} from "@/components/shared/event-admin-editor-presentation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -749,278 +757,137 @@ function EventsContent({ initialCreate = false }: AdminEventsPageProps) {
         </Button>
       </div>
 
-      <div
-        className="mb-4 rounded-lg border bg-card p-4 shadow-sm"
-        data-testid="admin-events-filter-toolbar"
-      >
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-[minmax(220px,1fr)_repeat(4,minmax(140px,auto))_auto]">
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              value={searchTerm}
-              onChange={(event) => setSearchTerm(event.target.value)}
-              placeholder="Search events"
-              className="pl-9"
-              data-testid="input-admin-event-search"
-            />
-          </div>
-          <Select value={eventTypeFilter} onValueChange={setEventTypeFilter}>
-            <SelectTrigger data-testid="select-admin-event-type-filter">
-              <SelectValue placeholder="Type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Types</SelectItem>
-              {EVENT_TYPES.map((eventType) => (
-                <SelectItem key={eventType} value={eventType}>
-                  {EVENT_TYPE_LABELS[eventType]}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger data-testid="select-admin-event-category-filter">
-              <SelectValue placeholder="Category" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
-              {EVENT_CATEGORIES.map((category) => (
-                <SelectItem key={category} value={category}>
-                  {EVENT_CATEGORY_LABELS[category]}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger data-testid="select-admin-event-status-filter">
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Statuses</SelectItem>
-              {EVENT_STATUSES.map((status) => (
-                <SelectItem key={status} value={status}>
-                  {eventStatusLabel(status)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={deliveryModeFilter} onValueChange={setDeliveryModeFilter}>
-            <SelectTrigger data-testid="select-admin-event-delivery-filter">
-              <SelectValue placeholder="Delivery" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Delivery Modes</SelectItem>
-              {EVENT_DELIVERY_MODES.map((deliveryMode) => (
-                <SelectItem key={deliveryMode} value={deliveryMode}>
-                  {EVENT_DELIVERY_MODE_LABELS[deliveryMode]}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {hasActiveEventFilters && (
-            <Button
-              type="button"
-              variant="outline"
-              onClick={clearEventFilters}
-              data-testid="button-clear-admin-event-filters"
-            >
-              <X className="h-4 w-4 mr-2" />
-              Clear
-            </Button>
-          )}
-        </div>
-        <p className="mt-3 text-sm text-muted-foreground" data-testid="text-admin-event-count">
-          Showing {filteredEvents.length} of {eventList.length} events
-        </p>
-      </div>
-
+      <EventAdminFilters
+        ui={{ Input, Select, SelectTrigger, SelectValue, SelectContent, SelectItem, Button }}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        eventTypeFilter={eventTypeFilter}
+        setEventTypeFilter={setEventTypeFilter}
+        categoryFilter={categoryFilter}
+        setCategoryFilter={setCategoryFilter}
+        statusFilter={statusFilter}
+        setStatusFilter={setStatusFilter}
+        deliveryModeFilter={deliveryModeFilter}
+        setDeliveryModeFilter={setDeliveryModeFilter}
+        hasActiveEventFilters={hasActiveEventFilters}
+        clearEventFilters={clearEventFilters}
+        visibleCount={filteredEvents.length}
+        totalCount={eventList.length}
+        options={{
+          EVENT_TYPES: [...EVENT_TYPES],
+          EVENT_TYPE_LABELS,
+          EVENT_CATEGORIES: [...EVENT_CATEGORIES],
+          EVENT_CATEGORY_LABELS,
+          EVENT_STATUSES: [...EVENT_STATUSES],
+          EVENT_DELIVERY_MODES: [...EVENT_DELIVERY_MODES],
+          EVENT_DELIVERY_MODE_LABELS,
+        }}
+      />
       <div className="space-y-4">
         {filteredEvents.map((event) => (
-          <Card
+          <EventAdminCard
             key={event.id}
-            data-testid={`card-event-${event.id}`}
-            className="cursor-pointer hover:border-primary/40 transition-colors overflow-hidden"
-            onClick={() => openEdit(event)}
-          >
-            <div className={event.imageUrl ? "flex flex-col sm:flex-row" : ""}>
-              {event.imageUrl && (
-                <div
-                  className="sm:w-32 sm:min-w-[8rem] shrink-0"
-                  data-testid={`img-event-thumbnail-${event.id}`}
-                >
-                  <img
-                    src={event.imageUrl}
-                    alt={event.title}
-                    className="h-32 sm:h-full w-full object-cover"
-                    style={getImageObjectPositionStyle(event.imagePositionX, event.imagePositionY)}
-                  />
-                </div>
-              )}
-              <div className="flex-1 min-w-0">
-                <CardHeader className="flex flex-row items-start justify-between gap-2 space-y-0 pb-2">
-                  <div>
-                    <CardTitle
-                      className="text-lg flex items-center gap-2"
-                      data-testid={`text-event-title-${event.id}`}
-                    >
-                      {event.title}
-                      {event.registrationEnabled && event.capacity && (
-                        <CapacityBadge eventId={event.id} capacity={event.capacity} />
-                      )}
-                    </CardTitle>
-                    <div className="flex items-center gap-2 mt-1 flex-wrap">
-                      <span className="flex items-center gap-1 text-sm text-muted-foreground">
-                        <CalendarDays className="h-3 w-3" />
-                        {event.date
-                          ? formatEventDate(event.date, event.timezone, {
-                              month: "short",
-                              day: "numeric",
-                              year: "numeric",
-                            })
-                          : "—"}
-                      </span>
-                      {event.location && (
-                        <span className="flex items-center gap-1 text-sm text-muted-foreground">
-                          <MapPin className="h-3 w-3" />
-                          {event.location}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
-                    {event.registrationEnabled && (
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            data-testid={`button-analytics-${event.id}`}
-                          >
-                            <BarChart3 className="h-4 w-4" />
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent align="end">
-                          <EventAnalytics
-                            eventId={event.id}
-                            registrationEnabled={event.registrationEnabled}
-                          />
-                        </PopoverContent>
-                      </Popover>
-                    )}
-                    {new Date(event.date) > new Date() && (
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        onClick={() => notifyMutation.mutate({ id: event.id, type: "reminder" })}
-                        disabled={notifyMutation.isPending}
-                        data-testid={`button-notify-reminder-${event.id}`}
-                        title="Send Reminder"
-                      >
-                        <Bell className="h-4 w-4" />
-                      </Button>
-                    )}
-                    {event.recordingUrl && new Date(event.date) < new Date() && (
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        onClick={() => notifyMutation.mutate({ id: event.id, type: "recording" })}
-                        disabled={notifyMutation.isPending}
-                        data-testid={`button-notify-recording-${event.id}`}
-                        title="Notify Recording"
-                      >
-                        <Copy className="h-4 w-4" />
-                      </Button>
-                    )}
+            ui={{ Card, CardHeader, CardTitle, CardContent, Badge }}
+            event={event}
+            onEdit={() => openEdit(event)}
+            capacity={
+              event.registrationEnabled && event.capacity ? (
+                <CapacityBadge eventId={event.id} capacity={event.capacity} />
+              ) : null
+            }
+            schedule={
+              event.date
+                ? formatEventDate(event.date, event.timezone, {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })
+                : "—"
+            }
+            imageStyle={getImageObjectPositionStyle(event.imagePositionX, event.imagePositionY)}
+            typeLabel={event.eventType ? EVENT_TYPE_LABELS[event.eventType] : undefined}
+            categoryLabel={event.category ? EVENT_CATEGORY_LABELS[event.category] : undefined}
+            description={stripHtml(event.description || "")}
+            statusStyle={statusVariant(event.status)}
+            visibility={visibilityLabel(event.visibility)}
+            actions={
+              <>
+                {" "}
+                <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                  {event.registrationEnabled && (
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          data-testid={`button-analytics-${event.id}`}
+                        >
+                          <BarChart3 className="h-4 w-4" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent align="end">
+                        <EventAnalytics
+                          eventId={event.id}
+                          registrationEnabled={event.registrationEnabled}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  )}
+                  {new Date(event.date) > new Date() && (
                     <Button
                       size="icon"
                       variant="ghost"
-                      onClick={() => duplicateMutation.mutate(event.id)}
-                      disabled={duplicateMutation.isPending}
-                      data-testid={`button-duplicate-event-${event.id}`}
-                      title="Duplicate Event"
+                      onClick={() => notifyMutation.mutate({ id: event.id, type: "reminder" })}
+                      disabled={notifyMutation.isPending}
+                      data-testid={`button-notify-reminder-${event.id}`}
+                      title="Send Reminder"
+                    >
+                      <Bell className="h-4 w-4" />
+                    </Button>
+                  )}
+                  {event.recordingUrl && new Date(event.date) < new Date() && (
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => notifyMutation.mutate({ id: event.id, type: "recording" })}
+                      disabled={notifyMutation.isPending}
+                      data-testid={`button-notify-recording-${event.id}`}
+                      title="Notify Recording"
                     >
                       <Copy className="h-4 w-4" />
                     </Button>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={() => openEdit(event)}
-                      data-testid={`button-edit-event-${event.id}`}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={() => setDeleteTarget(event)}
-                      disabled={deleteMutation.isPending}
-                      data-testid={`button-delete-event-${event.id}`}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  {event.description && (
-                    <p
-                      className="text-sm text-muted-foreground mb-2 line-clamp-2"
-                      data-testid={`text-event-desc-${event.id}`}
-                    >
-                      {stripHtml(event.description)}
-                    </p>
                   )}
-                  <div className="flex gap-2 flex-wrap">
-                    <Badge
-                      variant={statusVariant(event.status)}
-                      data-testid={`badge-status-${event.id}`}
-                    >
-                      {(event.status ?? "published").charAt(0).toUpperCase() +
-                        (event.status ?? "published").slice(1)}
-                    </Badge>
-                    <Badge variant="outline" data-testid={`badge-visibility-${event.id}`}>
-                      {visibilityLabel(event.visibility)}
-                    </Badge>
-                    {event.eventType && (
-                      <Badge variant="secondary" data-testid={`badge-event-type-${event.id}`}>
-                        {EVENT_TYPE_LABELS[event.eventType] ?? event.eventType}
-                      </Badge>
-                    )}
-                    {event.category && (
-                      <Badge variant="outline" data-testid={`badge-event-category-${event.id}`}>
-                        {EVENT_CATEGORY_LABELS[event.category] ?? event.category}
-                      </Badge>
-                    )}
-                    {event.registrationApprovalMode === "manual" && (
-                      <Badge variant="outline" data-testid={`badge-manual-approval-${event.id}`}>
-                        Manual Approval
-                      </Badge>
-                    )}
-                    {event.isVirtual && (
-                      <Badge variant="secondary" data-testid={`badge-virtual-${event.id}`}>
-                        Virtual
-                      </Badge>
-                    )}
-                    {event.memberOnly && (
-                      <Badge variant="secondary" data-testid={`badge-member-only-${event.id}`}>
-                        Members Only
-                      </Badge>
-                    )}
-                    {event.isRecurring && (
-                      <Badge variant="secondary" data-testid={`badge-recurring-${event.id}`}>
-                        <Repeat className="h-3 w-3 mr-1" />
-                        Recurring
-                      </Badge>
-                    )}
-                    {event.showInArchives && (
-                      <Badge variant="secondary" data-testid={`badge-archived-${event.id}`}>
-                        <Video className="h-3 w-3 mr-1" />
-                        In Archives
-                      </Badge>
-                    )}
-                  </div>
-                </CardContent>
-              </div>
-            </div>
-          </Card>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => duplicateMutation.mutate(event.id)}
+                    disabled={duplicateMutation.isPending}
+                    data-testid={`button-duplicate-event-${event.id}`}
+                    title="Duplicate Event"
+                  >
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => openEdit(event)}
+                    data-testid={`button-edit-event-${event.id}`}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => setDeleteTarget(event)}
+                    disabled={deleteMutation.isPending}
+                    data-testid={`button-delete-event-${event.id}`}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </>
+            }
+          />
         ))}
         {eventList.length === 0 && (
           <p className="text-center text-muted-foreground py-8">No events found.</p>
@@ -1089,690 +956,292 @@ function EventsContent({ initialCreate = false }: AdminEventsPageProps) {
               <Form {...form}>
                 <form id="event-form" onSubmit={form.handleSubmit(onSubmit)}>
                   <Tabs value={activeTab} onValueChange={handleEditorTabChange}>
-                    <TabsList
-                      className="w-full grid grid-cols-4 mb-6"
-                      data-testid="tabs-event-editor"
-                    >
-                      <TabsTrigger
-                        value="details"
-                        className="text-xs sm:text-sm"
-                        data-testid="tab-details"
-                      >
-                        <CalendarDays className="h-3.5 w-3.5 mr-1.5 hidden text-purple-600 sm:inline-block" />
-                        Details
-                      </TabsTrigger>
-                      <TabsTrigger
-                        value="registrations"
-                        className="text-xs sm:text-sm"
-                        data-testid="tab-registrations"
-                      >
-                        <Users className="h-3.5 w-3.5 mr-1.5 hidden text-blue-600 sm:inline-block" />
-                        Registrants
-                      </TabsTrigger>
-                      <TabsTrigger
-                        value="video-archive"
-                        className="text-xs sm:text-sm"
-                        data-testid="tab-video-archive"
-                      >
-                        <Video className="h-3.5 w-3.5 mr-1.5 hidden text-rose-600 sm:inline-block" />
-                        Video Archive
-                      </TabsTrigger>
-                      <TabsTrigger
-                        value="recurring"
-                        className="text-xs sm:text-sm"
-                        data-testid="tab-recurring"
-                      >
-                        <Repeat className="h-3.5 w-3.5 mr-1.5 hidden text-emerald-600 sm:inline-block" />
-                        Recurring
-                      </TabsTrigger>
-                    </TabsList>
+                    <EventAdminTabs ui={{ TabsList, TabsTrigger }} />
 
                     {/* ===== DETAILS TAB ===== */}
                     <TabsContent value="details" className="space-y-6">
-                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        {/* Left column */}
-                        <div className="space-y-6">
-                          <Card>
-                            <CardHeader className="pb-3">
-                              <CardTitle className="text-base">Basic Info</CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                              <FormField
-                                control={form.control}
-                                name="title"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Title</FormLabel>
-                                    <FormControl>
-                                      <Input {...field} data-testid="input-event-title" />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              <FormField
-                                control={form.control}
-                                name="slug"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>URL Slug</FormLabel>
-                                    <FormControl>
-                                      <Input
-                                        {...field}
-                                        value={field.value ?? ""}
-                                        onChange={(event) =>
-                                          field.onChange(slugifyEventTitle(event.target.value))
-                                        }
-                                        placeholder={slugifyEventTitle(
-                                          watchEventTitle || "event-name",
-                                        )}
-                                        data-testid="input-event-slug"
-                                      />
-                                    </FormControl>
-                                    <p className="text-xs text-muted-foreground">
-                                      Public URL: /events/
-                                      {watchEventSlug ||
-                                        slugifyEventTitle(watchEventTitle || "event-name")}
-                                    </p>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              <FormField
-                                control={form.control}
-                                name="description"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Description</FormLabel>
-                                    <FormControl>
-                                      <CmsRichTextEditor
-                                        value={field.value ?? ""}
-                                        onChange={field.onChange}
-                                        placeholder="Add the event overview, key details, and any helpful registration notes..."
-                                        data-testid="input-event-description"
-                                      />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              <FormField
-                                control={form.control}
-                                name="imageUrl"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Event Image</FormLabel>
-                                    <CmsImageUpload
+                      <EventAdminDetails
+                        ui={{ Card, CardHeader, CardTitle, CardContent }}
+                        basic={
+                          <>
+                            <FormField
+                              control={form.control}
+                              name="title"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Title</FormLabel>
+                                  <FormControl>
+                                    <Input {...field} data-testid="input-event-title" />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="slug"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>URL Slug</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      {...field}
+                                      value={field.value ?? ""}
+                                      onChange={(event) =>
+                                        field.onChange(slugifyEventTitle(event.target.value))
+                                      }
+                                      placeholder={slugifyEventTitle(
+                                        watchEventTitle || "event-name",
+                                      )}
+                                      data-testid="input-event-slug"
+                                    />
+                                  </FormControl>
+                                  <p className="text-xs text-muted-foreground">
+                                    Public URL: /events/
+                                    {watchEventSlug ||
+                                      slugifyEventTitle(watchEventTitle || "event-name")}
+                                  </p>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="description"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Description</FormLabel>
+                                  <FormControl>
+                                    <CmsRichTextEditor
                                       value={field.value ?? ""}
                                       onChange={field.onChange}
-                                      data-testid="input-event-image-url"
+                                      placeholder="Add the event overview, key details, and any helpful registration notes..."
+                                      data-testid="input-event-description"
                                     />
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              {watchEventImageUrl && (
-                                <ImagePositionPicker
-                                  imageUrl={watchEventImageUrl}
-                                  positionX={watchEventImagePositionX ?? 50}
-                                  positionY={watchEventImagePositionY ?? 50}
-                                  onPositionChange={(x, y) => {
-                                    form.setValue("imagePositionX", x, { shouldDirty: true });
-                                    form.setValue("imagePositionY", y, { shouldDirty: true });
-                                  }}
-                                />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
                               )}
-                              <div className="space-y-4 rounded-lg border bg-muted/20 p-4">
-                                <div className="space-y-1">
-                                  <p className="text-sm font-medium">Event Preset</p>
-                                  <p className="text-xs text-muted-foreground">
-                                    Choose a services/education template to prefill the flexible
-                                    event settings.
-                                  </p>
-                                </div>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                  <FormField
-                                    control={form.control}
-                                    name="eventType"
-                                    render={({ field }) => (
-                                      <FormItem>
-                                        <FormLabel>Event Type</FormLabel>
-                                        <Select
-                                          onValueChange={(value: EventType) => applyPreset(value)}
-                                          value={field.value || ""}
-                                        >
-                                          <FormControl>
-                                            <SelectTrigger data-testid="select-event-type">
-                                              <SelectValue placeholder="Select a preset" />
-                                            </SelectTrigger>
-                                          </FormControl>
-                                          <SelectContent>
-                                            {EVENT_TYPES.map((eventType) => (
-                                              <SelectItem key={eventType} value={eventType}>
-                                                {EVENT_TYPE_LABELS[eventType]}
-                                              </SelectItem>
-                                            ))}
-                                          </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                      </FormItem>
-                                    )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="imageUrl"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Event Image</FormLabel>
+                                  <CmsImageUpload
+                                    value={field.value ?? ""}
+                                    onChange={field.onChange}
+                                    data-testid="input-event-image-url"
                                   />
-                                  <FormField
-                                    control={form.control}
-                                    name="deliveryMode"
-                                    render={({ field }) => (
-                                      <FormItem>
-                                        <FormLabel>Delivery Mode</FormLabel>
-                                        <Select
-                                          onValueChange={(value) => {
-                                            field.onChange(value);
-                                            form.setValue("isVirtual", value !== "in_person", {
-                                              shouldDirty: true,
-                                            });
-                                          }}
-                                          value={field.value || ""}
-                                        >
-                                          <FormControl>
-                                            <SelectTrigger data-testid="select-event-delivery-mode">
-                                              <SelectValue placeholder="Select delivery" />
-                                            </SelectTrigger>
-                                          </FormControl>
-                                          <SelectContent>
-                                            {EVENT_DELIVERY_MODES.map((mode) => (
-                                              <SelectItem key={mode} value={mode}>
-                                                {EVENT_DELIVERY_MODE_LABELS[mode]}
-                                              </SelectItem>
-                                            ))}
-                                          </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                      </FormItem>
-                                    )}
-                                  />
-                                  <FormField
-                                    control={form.control}
-                                    name="category"
-                                    render={({ field }) => (
-                                      <FormItem>
-                                        <FormLabel>Category</FormLabel>
-                                        <Select
-                                          onValueChange={field.onChange}
-                                          value={field.value || ""}
-                                        >
-                                          <FormControl>
-                                            <SelectTrigger data-testid="select-event-category">
-                                              <SelectValue placeholder="Select category" />
-                                            </SelectTrigger>
-                                          </FormControl>
-                                          <SelectContent>
-                                            {EVENT_CATEGORIES.map((category) => (
-                                              <SelectItem key={category} value={category}>
-                                                {EVENT_CATEGORY_LABELS[category]}
-                                              </SelectItem>
-                                            ))}
-                                          </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                      </FormItem>
-                                    )}
-                                  />
-                                  <FormField
-                                    control={form.control}
-                                    name="audience"
-                                    render={({ field }) => (
-                                      <FormItem>
-                                        <FormLabel>Audience</FormLabel>
-                                        <Select
-                                          onValueChange={field.onChange}
-                                          value={field.value || ""}
-                                        >
-                                          <FormControl>
-                                            <SelectTrigger data-testid="select-event-audience">
-                                              <SelectValue placeholder="Select audience" />
-                                            </SelectTrigger>
-                                          </FormControl>
-                                          <SelectContent>
-                                            {EVENT_AUDIENCES.map((audience) => (
-                                              <SelectItem key={audience} value={audience}>
-                                                {EVENT_AUDIENCE_LABELS[audience]}
-                                              </SelectItem>
-                                            ))}
-                                          </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                      </FormItem>
-                                    )}
-                                  />
-                                  <FormField
-                                    control={form.control}
-                                    name="format"
-                                    render={({ field }) => (
-                                      <FormItem>
-                                        <FormLabel>Format</FormLabel>
-                                        <Select
-                                          onValueChange={field.onChange}
-                                          value={field.value || ""}
-                                        >
-                                          <FormControl>
-                                            <SelectTrigger data-testid="select-event-format">
-                                              <SelectValue placeholder="Select format" />
-                                            </SelectTrigger>
-                                          </FormControl>
-                                          <SelectContent>
-                                            {EVENT_FORMATS.map((format) => (
-                                              <SelectItem key={format} value={format}>
-                                                {EVENT_FORMAT_LABELS[format]}
-                                              </SelectItem>
-                                            ))}
-                                          </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                      </FormItem>
-                                    )}
-                                  />
-                                  <FormField
-                                    control={form.control}
-                                    name="tags"
-                                    render={({ field }) => (
-                                      <FormItem>
-                                        <FormLabel>Tags</FormLabel>
-                                        <FormControl>
-                                          <Input
-                                            {...field}
-                                            placeholder="leadership, CE, onboarding"
-                                            data-testid="input-event-tags"
-                                          />
-                                        </FormControl>
-                                        <p className="text-xs text-muted-foreground">
-                                          Separate tags with commas.
-                                        </p>
-                                        <FormMessage />
-                                      </FormItem>
-                                    )}
-                                  />
-                                </div>
-                              </div>
-                              <div className="grid grid-cols-2 gap-4">
-                                <FormField
-                                  control={form.control}
-                                  name="status"
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <FormLabel>Status</FormLabel>
-                                      <Select
-                                        onValueChange={field.onChange}
-                                        value={field.value || "published"}
-                                      >
-                                        <FormControl>
-                                          <SelectTrigger data-testid="select-event-status">
-                                            <SelectValue />
-                                          </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                          <SelectItem value="draft">Draft</SelectItem>
-                                          <SelectItem value="published">Published</SelectItem>
-                                          <SelectItem value="canceled">Canceled</SelectItem>
-                                          <SelectItem value="completed">Completed</SelectItem>
-                                          <SelectItem value="archived">Archived</SelectItem>
-                                        </SelectContent>
-                                      </Select>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
-                                <FormField
-                                  control={form.control}
-                                  name="visibility"
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <FormLabel>Visibility</FormLabel>
-                                      <Select
-                                        onValueChange={field.onChange}
-                                        value={field.value || "public"}
-                                      >
-                                        <FormControl>
-                                          <SelectTrigger data-testid="select-event-visibility">
-                                            <SelectValue />
-                                          </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                          <SelectItem value="public">Public</SelectItem>
-                                          <SelectItem value="members_only">Members Only</SelectItem>
-                                          <SelectItem value="counselors_only">
-                                            Verified Providers Only
-                                          </SelectItem>
-                                          <SelectItem value="admins_only">Admins Only</SelectItem>
-                                        </SelectContent>
-                                      </Select>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
-                              </div>
-                              <FormField
-                                control={form.control}
-                                name="memberOnly"
-                                render={({ field }) => (
-                                  <FormItem className="flex items-center gap-2">
-                                    <FormControl>
-                                      <Switch
-                                        checked={field.value}
-                                        onCheckedChange={field.onChange}
-                                        data-testid="switch-event-member-only"
-                                      />
-                                    </FormControl>
-                                    <FormLabel className="!mt-0">Members Only (legacy)</FormLabel>
-                                  </FormItem>
-                                )}
-                              />
-                            </CardContent>
-                          </Card>
-
-                          <Card>
-                            <CardHeader className="pb-3">
-                              <CardTitle className="text-base">Schedule</CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                              <div className="grid grid-cols-2 gap-4">
-                                <FormField
-                                  control={form.control}
-                                  name="date"
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <FormLabel>Start Date</FormLabel>
-                                      <FormControl>
-                                        <Input
-                                          type="datetime-local"
-                                          {...field}
-                                          data-testid="input-event-date"
-                                        />
-                                      </FormControl>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
-                                <FormField
-                                  control={form.control}
-                                  name="endDate"
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <FormLabel>End Date</FormLabel>
-                                      <FormControl>
-                                        <Input
-                                          type="datetime-local"
-                                          {...field}
-                                          data-testid="input-event-end-date"
-                                        />
-                                      </FormControl>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
-                              </div>
-                              <FormField
-                                control={form.control}
-                                name="timezone"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Timezone</FormLabel>
-                                    <FormControl>
-                                      <Input
-                                        {...field}
-                                        placeholder="e.g. America/New_York"
-                                        data-testid="input-event-timezone"
-                                      />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                            </CardContent>
-                          </Card>
-
-                          <Card>
-                            <CardHeader className="pb-3">
-                              <CardTitle className="text-base">Structured Data (JSON-LD)</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                              <StructuredDataStatus
-                                contentType="event"
-                                fields={{
-                                  hasTitle: !!watchEventTitle,
-                                  hasDescription: !!watchEventDescription,
-                                  hasDate: !!watchEventDate,
-                                  hasLocation: !!watchEventLocation,
-                                  hasRecordingUrl: !!watchEventRecordingUrl,
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            {watchEventImageUrl && (
+                              <ImagePositionPicker
+                                imageUrl={watchEventImageUrl}
+                                positionX={watchEventImagePositionX ?? 50}
+                                positionY={watchEventImagePositionY ?? 50}
+                                onPositionChange={(x, y) => {
+                                  form.setValue("imagePositionX", x, { shouldDirty: true });
+                                  form.setValue("imagePositionY", y, { shouldDirty: true });
                                 }}
-                                data-testid="structured-data-status-event"
                               />
-                            </CardContent>
-                          </Card>
-                        </div>
-
-                        {/* Right column */}
-                        <div className="space-y-6">
-                          <Card>
-                            <CardHeader className="pb-3">
-                              <CardTitle className="text-base">Location & Attendance</CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                              <FormField
-                                control={form.control}
-                                name="venueId"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <div className="flex items-center justify-between gap-3">
-                                      <FormLabel>Saved Venue</FormLabel>
-                                      <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={openVenueDialog}
-                                        disabled={editorLock.isReadOnly}
-                                        data-testid="button-create-venue"
-                                      >
-                                        <Plus className="h-4 w-4 mr-2" />
-                                        New venue
-                                      </Button>
-                                    </div>
-                                    <div className="flex gap-2">
+                            )}
+                            <div className="space-y-4 rounded-lg border bg-muted/20 p-4">
+                              <div className="space-y-1">
+                                <p className="text-sm font-medium">Event Preset</p>
+                                <p className="text-xs text-muted-foreground">
+                                  Choose a services/education template to prefill the flexible event
+                                  settings.
+                                </p>
+                              </div>
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <FormField
+                                  control={form.control}
+                                  name="eventType"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Event Type</FormLabel>
                                       <Select
-                                        onValueChange={applyVenue}
-                                        value={field.value || "none"}
+                                        onValueChange={(value: EventType) => applyPreset(value)}
+                                        value={field.value || ""}
                                       >
                                         <FormControl>
-                                          <SelectTrigger data-testid="select-event-venue">
-                                            <SelectValue />
+                                          <SelectTrigger data-testid="select-event-type">
+                                            <SelectValue placeholder="Select a preset" />
                                           </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
-                                          <SelectItem value="none">No saved venue</SelectItem>
-                                          {venues.map((venue) => (
-                                            <SelectItem key={venue.id} value={venue.id}>
-                                              {venue.name}
+                                          {EVENT_TYPES.map((eventType) => (
+                                            <SelectItem key={eventType} value={eventType}>
+                                              {EVENT_TYPE_LABELS[eventType]}
                                             </SelectItem>
                                           ))}
                                         </SelectContent>
                                       </Select>
-                                    </div>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              <FormField
-                                control={form.control}
-                                name="isVirtual"
-                                render={({ field }) => (
-                                  <FormItem className="flex items-center gap-2">
-                                    <FormControl>
-                                      <Switch
-                                        checked={field.value}
-                                        onCheckedChange={field.onChange}
-                                        data-testid="switch-event-virtual"
-                                      />
-                                    </FormControl>
-                                    <FormLabel className="!mt-0">Virtual Event</FormLabel>
-                                  </FormItem>
-                                )}
-                              />
-                              <FormField
-                                control={form.control}
-                                name="location"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Location</FormLabel>
-                                    <FormControl>
-                                      <Input {...field} data-testid="input-event-location" />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              <FormField
-                                control={form.control}
-                                name="locationName"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Location Name</FormLabel>
-                                    <FormControl>
-                                      <Input
-                                        {...field}
-                                        placeholder="e.g. Conference Center"
-                                        data-testid="input-event-location-name"
-                                      />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              <FormField
-                                control={form.control}
-                                name="locationAddress"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Location Address</FormLabel>
-                                    <FormControl>
-                                      <Input
-                                        {...field}
-                                        data-testid="input-event-location-address"
-                                      />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              <div className="grid grid-cols-2 gap-4">
-                                <FormField
-                                  control={form.control}
-                                  name="latitude"
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <FormLabel>Latitude</FormLabel>
-                                      <FormControl>
-                                        <Input {...field} data-testid="input-event-latitude" />
-                                      </FormControl>
                                       <FormMessage />
                                     </FormItem>
                                   )}
                                 />
                                 <FormField
                                   control={form.control}
-                                  name="longitude"
+                                  name="deliveryMode"
                                   render={({ field }) => (
                                     <FormItem>
-                                      <FormLabel>Longitude</FormLabel>
+                                      <FormLabel>Delivery Mode</FormLabel>
+                                      <Select
+                                        onValueChange={(value) => {
+                                          field.onChange(value);
+                                          form.setValue("isVirtual", value !== "in_person", {
+                                            shouldDirty: true,
+                                          });
+                                        }}
+                                        value={field.value || ""}
+                                      >
+                                        <FormControl>
+                                          <SelectTrigger data-testid="select-event-delivery-mode">
+                                            <SelectValue placeholder="Select delivery" />
+                                          </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                          {EVENT_DELIVERY_MODES.map((mode) => (
+                                            <SelectItem key={mode} value={mode}>
+                                              {EVENT_DELIVERY_MODE_LABELS[mode]}
+                                            </SelectItem>
+                                          ))}
+                                        </SelectContent>
+                                      </Select>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                <FormField
+                                  control={form.control}
+                                  name="category"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Category</FormLabel>
+                                      <Select
+                                        onValueChange={field.onChange}
+                                        value={field.value || ""}
+                                      >
+                                        <FormControl>
+                                          <SelectTrigger data-testid="select-event-category">
+                                            <SelectValue placeholder="Select category" />
+                                          </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                          {EVENT_CATEGORIES.map((category) => (
+                                            <SelectItem key={category} value={category}>
+                                              {EVENT_CATEGORY_LABELS[category]}
+                                            </SelectItem>
+                                          ))}
+                                        </SelectContent>
+                                      </Select>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                <FormField
+                                  control={form.control}
+                                  name="audience"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Audience</FormLabel>
+                                      <Select
+                                        onValueChange={field.onChange}
+                                        value={field.value || ""}
+                                      >
+                                        <FormControl>
+                                          <SelectTrigger data-testid="select-event-audience">
+                                            <SelectValue placeholder="Select audience" />
+                                          </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                          {EVENT_AUDIENCES.map((audience) => (
+                                            <SelectItem key={audience} value={audience}>
+                                              {EVENT_AUDIENCE_LABELS[audience]}
+                                            </SelectItem>
+                                          ))}
+                                        </SelectContent>
+                                      </Select>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                <FormField
+                                  control={form.control}
+                                  name="format"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Format</FormLabel>
+                                      <Select
+                                        onValueChange={field.onChange}
+                                        value={field.value || ""}
+                                      >
+                                        <FormControl>
+                                          <SelectTrigger data-testid="select-event-format">
+                                            <SelectValue placeholder="Select format" />
+                                          </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                          {EVENT_FORMATS.map((format) => (
+                                            <SelectItem key={format} value={format}>
+                                              {EVENT_FORMAT_LABELS[format]}
+                                            </SelectItem>
+                                          ))}
+                                        </SelectContent>
+                                      </Select>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                <FormField
+                                  control={form.control}
+                                  name="tags"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Tags</FormLabel>
                                       <FormControl>
-                                        <Input {...field} data-testid="input-event-longitude" />
+                                        <Input
+                                          {...field}
+                                          placeholder="leadership, CE, onboarding"
+                                          data-testid="input-event-tags"
+                                        />
                                       </FormControl>
+                                      <p className="text-xs text-muted-foreground">
+                                        Separate tags with commas.
+                                      </p>
                                       <FormMessage />
                                     </FormItem>
                                   )}
                                 />
                               </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
                               <FormField
                                 control={form.control}
-                                name="zoomLink"
+                                name="status"
                                 render={({ field }) => (
                                   <FormItem>
-                                    <FormLabel>Zoom / Meeting Link</FormLabel>
-                                    <FormControl>
-                                      <Input
-                                        {...field}
-                                        placeholder="https://zoom.us/j/..."
-                                        autoPrependHttps
-                                        data-testid="input-event-zoom-link"
-                                      />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              <FormField
-                                control={form.control}
-                                name="virtualJoinUrl"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Virtual Join URL</FormLabel>
-                                    <FormControl>
-                                      <Input
-                                        {...field}
-                                        placeholder="https://..."
-                                        autoPrependHttps
-                                        data-testid="input-event-virtual-join-url"
-                                      />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              <FormField
-                                control={form.control}
-                                name="virtualDialInInfo"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Dial-In Info</FormLabel>
-                                    <FormControl>
-                                      <Textarea
-                                        {...field}
-                                        placeholder="Phone number, access code, etc."
-                                        data-testid="input-event-dial-in-info"
-                                      />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                            </CardContent>
-                          </Card>
-
-                          <Card>
-                            <CardHeader className="pb-3">
-                              <CardTitle className="text-base">Speaker / Host</CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                              <FormField
-                                control={form.control}
-                                name="organizerId"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Saved Organizer</FormLabel>
+                                    <FormLabel>Status</FormLabel>
                                     <Select
-                                      onValueChange={applyOrganizer}
-                                      value={field.value || "none"}
+                                      onValueChange={field.onChange}
+                                      value={field.value || "published"}
                                     >
                                       <FormControl>
-                                        <SelectTrigger data-testid="select-event-organizer">
+                                        <SelectTrigger data-testid="select-event-status">
                                           <SelectValue />
                                         </SelectTrigger>
                                       </FormControl>
                                       <SelectContent>
-                                        <SelectItem value="none">No saved organizer</SelectItem>
-                                        {organizers.map((organizer) => (
-                                          <SelectItem key={organizer.id} value={organizer.id}>
-                                            {organizer.name}
-                                          </SelectItem>
-                                        ))}
+                                        <SelectItem value="draft">Draft</SelectItem>
+                                        <SelectItem value="published">Published</SelectItem>
+                                        <SelectItem value="canceled">Canceled</SelectItem>
+                                        <SelectItem value="completed">Completed</SelectItem>
+                                        <SelectItem value="archived">Archived</SelectItem>
                                       </SelectContent>
                                     </Select>
                                     <FormMessage />
@@ -1781,49 +1250,384 @@ function EventsContent({ initialCreate = false }: AdminEventsPageProps) {
                               />
                               <FormField
                                 control={form.control}
-                                name="speakerName"
+                                name="visibility"
                                 render={({ field }) => (
                                   <FormItem>
-                                    <FormLabel>Speaker Name</FormLabel>
-                                    <FormControl>
-                                      <Input {...field} data-testid="input-event-speaker-name" />
-                                    </FormControl>
+                                    <FormLabel>Visibility</FormLabel>
+                                    <Select
+                                      onValueChange={field.onChange}
+                                      value={field.value || "public"}
+                                    >
+                                      <FormControl>
+                                        <SelectTrigger data-testid="select-event-visibility">
+                                          <SelectValue />
+                                        </SelectTrigger>
+                                      </FormControl>
+                                      <SelectContent>
+                                        <SelectItem value="public">Public</SelectItem>
+                                        <SelectItem value="members_only">Members Only</SelectItem>
+                                        <SelectItem value="counselors_only">
+                                          Verified Providers Only
+                                        </SelectItem>
+                                        <SelectItem value="admins_only">Admins Only</SelectItem>
+                                      </SelectContent>
+                                    </Select>
                                     <FormMessage />
                                   </FormItem>
                                 )}
                               />
-                              <FormField
-                                control={form.control}
-                                name="speakerBio"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Speaker Bio</FormLabel>
-                                    <FormControl>
-                                      <Textarea {...field} data-testid="input-event-speaker-bio" />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              <FormField
-                                control={form.control}
-                                name="speakerImageUrl"
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel>Speaker Image</FormLabel>
-                                    <CmsImageUpload
-                                      value={field.value ?? ""}
-                                      onChange={field.onChange}
-                                      data-testid="input-event-speaker-image-url"
+                            </div>
+                            <FormField
+                              control={form.control}
+                              name="memberOnly"
+                              render={({ field }) => (
+                                <FormItem className="flex items-center gap-2">
+                                  <FormControl>
+                                    <Switch
+                                      checked={field.value}
+                                      onCheckedChange={field.onChange}
+                                      data-testid="switch-event-member-only"
                                     />
+                                  </FormControl>
+                                  <FormLabel className="!mt-0">Members Only (legacy)</FormLabel>
+                                </FormItem>
+                              )}
+                            />
+                          </>
+                        }
+                        schedule={
+                          <>
+                            <div className="grid grid-cols-2 gap-4">
+                              <FormField
+                                control={form.control}
+                                name="date"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Start Date</FormLabel>
+                                    <FormControl>
+                                      <Input
+                                        type="datetime-local"
+                                        {...field}
+                                        data-testid="input-event-date"
+                                      />
+                                    </FormControl>
                                     <FormMessage />
                                   </FormItem>
                                 )}
                               />
-                            </CardContent>
-                          </Card>
-                        </div>
-                      </div>
+                              <FormField
+                                control={form.control}
+                                name="endDate"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>End Date</FormLabel>
+                                    <FormControl>
+                                      <Input
+                                        type="datetime-local"
+                                        {...field}
+                                        data-testid="input-event-end-date"
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                            <FormField
+                              control={form.control}
+                              name="timezone"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Timezone</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      {...field}
+                                      placeholder="e.g. America/New_York"
+                                      data-testid="input-event-timezone"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </>
+                        }
+                        structured={
+                          <>
+                            <StructuredDataStatus
+                              contentType="event"
+                              fields={{
+                                hasTitle: !!watchEventTitle,
+                                hasDescription: !!watchEventDescription,
+                                hasDate: !!watchEventDate,
+                                hasLocation: !!watchEventLocation,
+                                hasRecordingUrl: !!watchEventRecordingUrl,
+                              }}
+                              data-testid="structured-data-status-event"
+                            />
+                          </>
+                        }
+                        location={
+                          <>
+                            <FormField
+                              control={form.control}
+                              name="venueId"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <div className="flex items-center justify-between gap-3">
+                                    <FormLabel>Saved Venue</FormLabel>
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={openVenueDialog}
+                                      disabled={editorLock.isReadOnly}
+                                      data-testid="button-create-venue"
+                                    >
+                                      <Plus className="h-4 w-4 mr-2" />
+                                      New venue
+                                    </Button>
+                                  </div>
+                                  <div className="flex gap-2">
+                                    <Select
+                                      onValueChange={applyVenue}
+                                      value={field.value || "none"}
+                                    >
+                                      <FormControl>
+                                        <SelectTrigger data-testid="select-event-venue">
+                                          <SelectValue />
+                                        </SelectTrigger>
+                                      </FormControl>
+                                      <SelectContent>
+                                        <SelectItem value="none">No saved venue</SelectItem>
+                                        {venues.map((venue) => (
+                                          <SelectItem key={venue.id} value={venue.id}>
+                                            {venue.name}
+                                          </SelectItem>
+                                        ))}
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="isVirtual"
+                              render={({ field }) => (
+                                <FormItem className="flex items-center gap-2">
+                                  <FormControl>
+                                    <Switch
+                                      checked={field.value}
+                                      onCheckedChange={field.onChange}
+                                      data-testid="switch-event-virtual"
+                                    />
+                                  </FormControl>
+                                  <FormLabel className="!mt-0">Virtual Event</FormLabel>
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="location"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Location</FormLabel>
+                                  <FormControl>
+                                    <Input {...field} data-testid="input-event-location" />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="locationName"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Location Name</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      {...field}
+                                      placeholder="e.g. Conference Center"
+                                      data-testid="input-event-location-name"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="locationAddress"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Location Address</FormLabel>
+                                  <FormControl>
+                                    <Input {...field} data-testid="input-event-location-address" />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <div className="grid grid-cols-2 gap-4">
+                              <FormField
+                                control={form.control}
+                                name="latitude"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Latitude</FormLabel>
+                                    <FormControl>
+                                      <Input {...field} data-testid="input-event-latitude" />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              <FormField
+                                control={form.control}
+                                name="longitude"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel>Longitude</FormLabel>
+                                    <FormControl>
+                                      <Input {...field} data-testid="input-event-longitude" />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                            <FormField
+                              control={form.control}
+                              name="zoomLink"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Zoom / Meeting Link</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      {...field}
+                                      placeholder="https://zoom.us/j/..."
+                                      autoPrependHttps
+                                      data-testid="input-event-zoom-link"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="virtualJoinUrl"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Virtual Join URL</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      {...field}
+                                      placeholder="https://..."
+                                      autoPrependHttps
+                                      data-testid="input-event-virtual-join-url"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="virtualDialInInfo"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Dial-In Info</FormLabel>
+                                  <FormControl>
+                                    <Textarea
+                                      {...field}
+                                      placeholder="Phone number, access code, etc."
+                                      data-testid="input-event-dial-in-info"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </>
+                        }
+                        speaker={
+                          <>
+                            <FormField
+                              control={form.control}
+                              name="organizerId"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Saved Organizer</FormLabel>
+                                  <Select
+                                    onValueChange={applyOrganizer}
+                                    value={field.value || "none"}
+                                  >
+                                    <FormControl>
+                                      <SelectTrigger data-testid="select-event-organizer">
+                                        <SelectValue />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      <SelectItem value="none">No saved organizer</SelectItem>
+                                      {organizers.map((organizer) => (
+                                        <SelectItem key={organizer.id} value={organizer.id}>
+                                          {organizer.name}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="speakerName"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Speaker Name</FormLabel>
+                                  <FormControl>
+                                    <Input {...field} data-testid="input-event-speaker-name" />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="speakerBio"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Speaker Bio</FormLabel>
+                                  <FormControl>
+                                    <Textarea {...field} data-testid="input-event-speaker-bio" />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="speakerImageUrl"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Speaker Image</FormLabel>
+                                  <CmsImageUpload
+                                    value={field.value ?? ""}
+                                    onChange={field.onChange}
+                                    data-testid="input-event-speaker-image-url"
+                                  />
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </>
+                        }
+                      />
                     </TabsContent>
 
                     {/* ===== REGISTRANTS TAB ===== */}

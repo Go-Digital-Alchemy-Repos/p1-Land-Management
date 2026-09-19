@@ -69,11 +69,30 @@ await copyFile(
   join(destination, "lib", "api-client-react", "tsconfig.json"),
 );
 
+// Vite resolves root TypeScript project references even for data-only shared imports.
+for (const name of ["db", "api-zod"]) {
+  await mkdir(join(destination, "lib", name), { recursive: true });
+  await copyFile(join(root, "lib", name, "tsconfig.json"), join(destination, "lib", name, "tsconfig.json"));
+}
+
 await mkdir(join(destination, "attached_assets"), { recursive: true });
 await copyFile(
   join(root, "attached_assets", "Asset_1_1782329698014.svg"),
   join(destination, "attached_assets", "Asset_1_1782329698014.svg"),
 );
+
+// Public menu dialogs reuse only the standalone form presentation, never the admin app.
+for (const relative of [
+  "features/admin/cms/builder/form-presentation.tsx",
+  "features/admin/cms/builder/form-presentation-host.tsx",
+  "features/admin/cms/builder/builder-host.tsx",
+  "lib/html.ts",
+  "lib/utils.ts",
+]) {
+  const target = join(destination, "platform/p1-core/client/src", relative);
+  await mkdir(resolve(target, ".."), { recursive: true });
+  await copyFile(join(root, "platform/p1-core/client/src", relative), target);
+}
 
 // Public branding consumers share the Core data contracts.
 await cp(join(root, "platform", "p1-core", "shared"), join(destination, "platform", "p1-core", "shared"), { recursive: true });

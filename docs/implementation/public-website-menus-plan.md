@@ -1,9 +1,9 @@
 # Public website menu delivery — implementation contract
 
-Status: approved implementation direction; not implemented or release acceptance.
-September 19 source review confirms that CMS menu assignments are currently stored
-but do not drive P1 public navigation. Existing site-chrome content controls fixed
-navigation labels and destinations. Do not remove that fallback during migration.
+Status: implemented release candidate, September 19; deployment verification pending.
+Four P1 menu slots now have a bounded public projection, persisted last-valid
+cache, server rendering and matching browser snapshot. Live menu catalog was
+read-only checked and has no assignments; existing navigation remains fallback.
 
 ## End state
 
@@ -76,3 +76,27 @@ server/public-settings.mjs, server/index.mjs, src/lib/cms.tsx,
 src/lib/cms-route-snapshot.ts, src/components/layout/SiteHeader.tsx and
 SiteFooter.tsx. New contract/projection/store/renderer files should follow the
 existing public identity and redirect patterns.
+
+## Candidate validation and operational behavior
+
+22 backend tests, 10 store tests (included in 76 public-server tests), 3 snapshot
+tests, 4 native menu adapter tests and 5 shared-form/accessibility tests passed.
+Core/site/dashboard typechecks/builds passed; restricted public/dashboard builds
+verified runtime closure. Browser fixture verified three levels, nested focus
+restoration, 390px sheet-to-modal handoff, input retention after failure, same
+idempotency key/payload on retry, accepted receipt and disabled preview submission.
+Runtime tests verify one menu revision across SSR, serialized hydration and route
+responses, with no forwarded private credentials.
+
+CMS disabled returns all-null slots. Invalid slots fall back independently;
+transport failures preserve the last valid snapshot. An assigned empty menu is
+intentionally empty. Unassign/delete restores the existing site-chrome fallback.
+Saved assignments publish without a second draft/publish step, normally within
+30 seconds. Both editor hosts state this explicitly. Form dialogs reuse the
+original CMS presentation and durable public submission endpoint; no admin app
+bundle, account credentials, or private submission data are included in public
+menu projections. No production test forms were submitted.
+
+Rollback: redeploy the preceding three service revisions together if necessary;
+no database schema or stored menu migration is involved. Existing assignments are
+preserved and old consumers ignore them. Retain `/admin` throughout acceptance.

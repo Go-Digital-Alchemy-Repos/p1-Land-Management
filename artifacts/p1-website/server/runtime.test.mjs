@@ -25,6 +25,10 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
   const upstreamRequests = [];
   const upstream = http.createServer((req, res) => {
     upstreamRequests.push({ path: req.url, headers: req.headers });
+    if (req.url === '/api/p1/website-menus') {
+      res.setHeader('Content-Type','application/json');
+      return res.end(JSON.stringify({schemaVersion:1,stackId:'p1-land-management',revision:'b'.repeat(64),locations:{main_navigation:{id:'qa-main',version:3,items:[{id:'qa-link',label:'QA Published Menu',url:'/contact',action:'internal-link',openInNewTab:false,formSlug:null,modalTitle:null,modalDescription:null,children:[]}]},p1_footer_services:null,p1_footer_service_areas:null,p1_footer_company:{id:'qa-empty',version:1,items:[]}}}));
+    }
     if (req.url === '/api/p1/website-redirects') {
       const redirects = [
         {fromPath:'/old-cms-page',toPath:'/contact',statusCode:301},
@@ -96,6 +100,17 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
     assert.deepEqual(navigation.identity,serialized.identity);
     assert.equal(serialized.identity.version,'a'.repeat(64));
     const reads=upstreamRequests.filter(r=>r.path==='/api/p1/website-identity');assert.equal(reads.length,1);assert.equal(reads[0].headers.cookie,undefined);assert.equal(reads[0].headers.authorization,undefined);
+  });
+  await t.test('published menus use the same SSR, hydration and navigation snapshot without private credentials',async()=>{
+    const page=await request(port,'/',{Cookie:'private',Authorization:'Bearer private'});
+    const serialized=JSON.parse(page.body.match(/<script type="application\/json" id="p1-published-content">([\s\S]*?)<\/script>/)[1]);
+    assert(page.body.includes('QA Published Menu'));
+    assert.equal(serialized.menus.revision,'b'.repeat(64));
+    assert.deepEqual(serialized.menus.locations.p1_footer_company.items,[]);
+    const navigation=JSON.parse((await request(port,'/api/p1/page-content?path=/contact')).body);
+    assert.deepEqual(navigation.menus,serialized.menus);
+    const reads=upstreamRequests.filter(r=>r.path==='/api/p1/website-menus');
+    assert.equal(reads.length,1);assert.equal(reads[0].headers.cookie,undefined);assert.equal(reads[0].headers.authorization,undefined);
   });
   await t.test('global head markup appears only on public documents without expanding CSP',async()=>{
     const page=await request(port,'/');
@@ -322,6 +337,7 @@ test('staging manifest blocks indexing across public and proxied responses regar
   await copyFile(resolve(root, 'server/website-fonts.mjs'), resolve(temporary, 'server/website-fonts.mjs'));
   await copyFile(resolve(root, 'server/public-settings.mjs'), resolve(temporary, 'server/public-settings.mjs'));
   await copyFile(resolve(root, 'server/website-identity.mjs'), resolve(temporary, 'server/website-identity.mjs'));
+  await copyFile(resolve(root, 'server/website-menus.mjs'), resolve(temporary, 'server/website-menus.mjs'));
   await copyFile(resolve(root, 'server/website-robots.mjs'), resolve(temporary, 'server/website-robots.mjs'));
   await copyFile(resolve(root, 'server/website-redirects.mjs'), resolve(temporary, 'server/website-redirects.mjs'));
   await copyFile(resolve(root, 'server/website-social.mjs'), resolve(temporary, 'server/website-social.mjs'));

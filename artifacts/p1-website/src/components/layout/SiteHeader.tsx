@@ -1,4 +1,7 @@
-import { createElement, useRef, useState } from "react";
+import { useCms } from "@/lib/cms";
+import { PublishedMenu, type MenuFormRequest } from "../menus/PublishedMenu";
+const MenuFormDialog = lazy(() => import("../menus/MenuFormDialog"));
+import { createElement, lazy, Suspense, useRef, useState } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
@@ -13,6 +16,9 @@ import { useSiteIdentity } from "@/lib/use-site-identity";
 
 export function SiteHeader({ assessmentCta = false }: { assessmentCta?: boolean }) {
   const identity = useSiteIdentity();
+  const assignedMenu = useCms().snapshot.menus?.locations.main_navigation;
+  const [formRequest, setFormRequest] = useState<MenuFormRequest | null>(null);
+  const pendingMobileForm = useRef<MenuFormRequest | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const focusAssessmentAfterClose = useRef(false);
   const focusAssessment = () => {
@@ -47,6 +53,7 @@ export function SiteHeader({ assessmentCta = false }: { assessmentCta?: boolean 
         
         {/* Desktop Nav */}
         <nav aria-label="Main navigation" className="hidden lg:flex items-center gap-6 font-medium text-sm text-foreground/80">
+          {assignedMenu ? <PublishedMenu items={assignedMenu.items} variant="desktop" onForm={setFormRequest} /> : <>
           <Link href="/" className="group relative hover:text-primary transition-colors">
             Home
             <span className="absolute -bottom-1.5 left-0 h-[2px] w-0 bg-clay transition-all duration-300 group-hover:w-full" />
@@ -81,6 +88,7 @@ export function SiteHeader({ assessmentCta = false }: { assessmentCta?: boolean 
             Contact
             <span className="absolute -bottom-1.5 left-0 h-[2px] w-0 bg-clay transition-all duration-300 group-hover:w-full" />
           </Link>
+          </>}
         </nav>
 
         <div className="flex items-center gap-4">
@@ -92,12 +100,19 @@ export function SiteHeader({ assessmentCta = false }: { assessmentCta?: boolean 
           {/* Mobile Menu */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild className="lg:hidden">
-              <Button variant="ghost" size="icon" className="text-secondary">
+              <Button data-p1-menu-trigger variant="ghost" size="icon" className="text-secondary">
                 <Menu className="h-6 w-6" />
                 <span className="sr-only">Toggle Menu</span>
               </Button>
             </SheetTrigger>
             <SheetContent onCloseAutoFocus={(event) => {
+              if (pendingMobileForm.current) {
+                event.preventDefault();
+                const request = pendingMobileForm.current;
+                pendingMobileForm.current = null;
+                requestAnimationFrame(() => setFormRequest(request));
+                return;
+              }
               if (!focusAssessmentAfterClose.current) return;
               event.preventDefault();
               focusAssessmentAfterClose.current = false;
@@ -108,6 +123,7 @@ export function SiteHeader({ assessmentCta = false }: { assessmentCta?: boolean 
                 <Link href="/" onClick={() => setIsOpen(false)}>
                   {createElement("img", { src: identity.logoUrl, alt: identity.companyName, className: "h-8 w-auto mb-4" })}
                 </Link>
+                {assignedMenu ? <PublishedMenu items={assignedMenu.items} variant="mobile" onNavigate={() => setIsOpen(false)} onForm={request => {pendingMobileForm.current = request; setIsOpen(false);}} /> : (
                 <div className="flex flex-col gap-4">
                   <Link href="/" onClick={() => setIsOpen(false)} className="text-lg font-medium text-secondary">Home</Link>
                   <Link href="/about" onClick={() => setIsOpen(false)} className="text-lg font-medium text-secondary">About</Link>
@@ -128,6 +144,7 @@ export function SiteHeader({ assessmentCta = false }: { assessmentCta?: boolean 
 
                   <Link href="/contact" onClick={() => setIsOpen(false)} className="text-lg font-medium text-secondary">Contact</Link>
                 </div>
+                )}
 
                 <div className="mt-6 flex flex-col gap-4 border-t border-border pt-6">
                   {createElement("a", { href: identity.phoneHref, className: "flex items-center gap-2 text-lg font-bold text-secondary" }, createElement(Phone, { className: "h-5 w-5 text-primary" }), identity.phoneDisplay)}
@@ -140,6 +157,7 @@ export function SiteHeader({ assessmentCta = false }: { assessmentCta?: boolean 
           </Sheet>
         </div>
       </div>
+      {formRequest && <Suspense fallback={<p role="status" className="sr-only">Loading form</p>}><MenuFormDialog request={formRequest} onClose={() => setFormRequest(null)} /></Suspense>}
     </header>
   );
 }

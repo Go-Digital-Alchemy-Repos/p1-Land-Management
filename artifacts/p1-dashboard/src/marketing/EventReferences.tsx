@@ -11,7 +11,9 @@ import type {
 export function EventReferences({
   value,
   patch,
+  kind,
 }: {
+  kind?: "venue" | "organizer";
   value: MarketingEventInput;
   patch: (change: Partial<MarketingEventInput>) => void;
 }) {
@@ -61,101 +63,111 @@ export function EventReferences({
         </p>
       )}
       {busy && <p role="status">Loading venue and organizer choices…</p>}
-      <label>
-        Shared venue
-        <select
-          aria-label="Shared venue"
-          disabled={busy || !!error}
-          value={value.venueId || ""}
-          onChange={(event) => patch({ venueId: event.target.value || null })}
-        >
-          <option value="">None</option>
-          {value.venueId && !venue && (
-            <option value={value.venueId}>Saved venue (unavailable)</option>
+      {kind !== "organizer" && (
+        <>
+          <label>
+            Shared venue
+            <select
+              aria-label="Shared venue"
+              disabled={busy || !!error}
+              value={value.venueId || ""}
+              onChange={(event) =>
+                patch({ venueId: event.target.value || null })
+              }
+            >
+              <option value="">None</option>
+              {value.venueId && !venue && (
+                <option value={value.venueId}>Saved venue (unavailable)</option>
+              )}
+              {venues.map((row) => (
+                <option key={row.id} value={row.id}>
+                  {row.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          {venue && !busy && !error && (
+            <button
+              type="button"
+              onClick={() => {
+                if (
+                  window.confirm(
+                    "Replace this event’s location details with the selected venue?",
+                  )
+                )
+                  patch({
+                    locationName: venue.name,
+                    locationAddress: [
+                      venue.address,
+                      venue.city,
+                      venue.region,
+                      venue.postalCode,
+                      venue.country,
+                    ]
+                      .filter(Boolean)
+                      .join(", "),
+                    location: venue.isVirtual ? "Virtual" : venue.name,
+                    latitude: venue.latitude,
+                    longitude: venue.longitude,
+                    isVirtual: !!venue.isVirtual,
+                    deliveryMode: venue.isVirtual
+                      ? "virtual"
+                      : value.deliveryMode === "virtual"
+                        ? "in_person"
+                        : value.deliveryMode,
+                  });
+              }}
+            >
+              Use venue details
+            </button>
           )}
-          {venues.map((row) => (
-            <option key={row.id} value={row.id}>
-              {row.name}
-            </option>
-          ))}
-        </select>
-      </label>
-      {venue && !busy && !error && (
-        <button
-          type="button"
-          onClick={() => {
-            if (
-              window.confirm(
-                "Replace this event’s location details with the selected venue?",
-              )
-            )
-              patch({
-                locationName: venue.name,
-                locationAddress: [
-                  venue.address,
-                  venue.city,
-                  venue.region,
-                  venue.postalCode,
-                  venue.country,
-                ]
-                  .filter(Boolean)
-                  .join(", "),
-                location: venue.isVirtual ? "Virtual" : venue.name,
-                latitude: venue.latitude,
-                longitude: venue.longitude,
-                isVirtual: !!venue.isVirtual,
-                deliveryMode: venue.isVirtual
-                  ? "virtual"
-                  : value.deliveryMode === "virtual"
-                    ? "in_person"
-                    : value.deliveryMode,
-              });
-          }}
-        >
-          Use venue details
-        </button>
+        </>
       )}
-      <label>
-        Shared organizer
-        <select
-          aria-label="Shared organizer"
-          disabled={busy || !!error}
-          value={value.organizerId || ""}
-          onChange={(event) =>
-            patch({ organizerId: event.target.value || null })
-          }
-        >
-          <option value="">None</option>
-          {value.organizerId && !organizer && (
-            <option value={value.organizerId}>
-              Saved organizer (unavailable)
-            </option>
+      {kind !== "venue" && (
+        <>
+          <label>
+            Shared organizer
+            <select
+              aria-label="Shared organizer"
+              disabled={busy || !!error}
+              value={value.organizerId || ""}
+              onChange={(event) =>
+                patch({ organizerId: event.target.value || null })
+              }
+            >
+              <option value="">None</option>
+              {value.organizerId && !organizer && (
+                <option value={value.organizerId}>
+                  Saved organizer (unavailable)
+                </option>
+              )}
+              {organizers.map((row) => (
+                <option key={row.id} value={row.id}>
+                  {row.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          {organizer && !busy && !error && (
+            <button
+              type="button"
+              onClick={() => {
+                if (
+                  window.confirm(
+                    "Replace this event’s speaker details with the selected organizer?",
+                  )
+                )
+                  patch({
+                    speakerName: organizer.name,
+                    speakerBio: organizer.description,
+                    speakerImageUrl: organizer.imageUrl,
+                  });
+              }}
+            >
+              Use organizer details
+            </button>
           )}
-          {organizers.map((row) => (
-            <option key={row.id} value={row.id}>
-              {row.name}
-            </option>
-          ))}
-        </select>
-      </label>
-      {organizer && !busy && !error && (
-        <button
-          type="button"
-          onClick={() => {
-            if (
-              window.confirm(
-                "Replace this event’s speaker details with the selected organizer?",
-              )
-            )
-              patch({
-                speakerName: organizer.name,
-                speakerBio: organizer.description,
-                speakerImageUrl: organizer.imageUrl,
-              });
-          }}
-        >
-          Use organizer details
-        </button>
+        </>
       )}
       <p>
         Selecting a shared record changes its link only. Use its details to

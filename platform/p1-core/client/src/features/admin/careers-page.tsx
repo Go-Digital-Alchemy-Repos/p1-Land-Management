@@ -1,3 +1,10 @@
+import {
+  CareerJobsTable,
+  CareerApplicationsTable,
+  CareerApplicationWorkspace,
+  CareerSettingsCards,
+  CareerJobFields,
+} from "@/components/shared/career-admin-presentation";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Briefcase, Download, ExternalLink, LinkIcon, Plus, Settings, Users } from "lucide-react";
@@ -81,6 +88,21 @@ const emptyJob = {
   noindex: false,
 };
 
+const careerUI = {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+  Badge,
+  Card,
+  CardHeader,
+  CardContent,
+  CardTitle,
+  CardDescription,
+};
+
 function toLocalInput(value?: string | Date | null) {
   if (!value) return "";
   const date = new Date(value);
@@ -158,178 +180,208 @@ function JobEditor({ job, onClose }: { job?: CareerJob | null; onClose: () => vo
         mutation.mutate();
       }}
     >
-      <div className="grid gap-4 md:grid-cols-2">
-        <div className="space-y-1.5">
-          <Label>Title</Label>
-          <Input
-            value={form.title}
-            onChange={(event) => set("title", event.target.value)}
-            required
-          />
-        </div>
-        <div className="space-y-1.5">
-          <Label>Slug</Label>
-          <Input
-            value={form.slug}
-            onChange={(event) => set("slug", event.target.value)}
-            placeholder="auto-generated"
-          />
-        </div>
-        <div className="space-y-1.5">
-          <Label>Department</Label>
-          <Input
-            value={form.department}
-            onChange={(event) => set("department", event.target.value)}
-          />
-        </div>
-        <div className="space-y-1.5">
-          <Label>Location</Label>
-          <Input value={form.location} onChange={(event) => set("location", event.target.value)} />
-        </div>
-        <div className="space-y-1.5">
-          <Label>Employment type</Label>
-          <Select
-            value={form.employmentType}
-            onValueChange={(value) => set("employmentType", value)}
-          >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {Object.entries(CAREER_EMPLOYMENT_TYPE_LABELS).map(([value, label]) => (
-                <SelectItem key={value} value={value}>
-                  {label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-1.5">
-          <Label>Work mode</Label>
-          <Select value={form.workMode} onValueChange={(value) => set("workMode", value)}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {Object.entries(CAREER_WORK_MODE_LABELS).map(([value, label]) => (
-                <SelectItem key={value} value={value}>
-                  {label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-1.5">
-          <Label>Status</Label>
-          <Select value={form.status} onValueChange={(value) => set("status", value)}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {CAREER_JOB_STATUSES.map((value) => (
-                <SelectItem key={value} value={value}>
-                  {CAREER_JOB_STATUS_LABELS[value]}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-1.5">
-          <Label>Publish at</Label>
-          <Input
-            value={form.publishedAt}
-            type="datetime-local"
-            onChange={(event) => set("publishedAt", event.target.value)}
-          />
-        </div>
-        <div className="space-y-1.5">
-          <Label>Close at</Label>
-          <Input
-            value={form.closesAt}
-            type="datetime-local"
-            onChange={(event) => set("closesAt", event.target.value)}
-          />
-        </div>
-        <div className="space-y-1.5">
-          <Label>Salary range</Label>
-          <div className="grid grid-cols-2 gap-2">
-            <Input
-              value={form.salaryMin}
-              type="number"
-              placeholder="Min"
-              onChange={(event) => set("salaryMin", event.target.value)}
-            />
-            <Input
-              value={form.salaryMax}
-              type="number"
-              placeholder="Max"
-              onChange={(event) => set("salaryMax", event.target.value)}
-            />
-          </div>
-        </div>
-      </div>
-      <label className="flex items-center gap-2 text-sm">
-        <Switch
-          checked={form.salaryVisible}
-          onCheckedChange={(value) => set("salaryVisible", value)}
-        />
-        Show salary publicly
-      </label>
-      <div className="space-y-1.5">
-        <Label>Summary</Label>
-        <Textarea
-          value={form.summary}
-          onChange={(event) => set("summary", event.target.value)}
-          rows={3}
-        />
-      </div>
-      {(["description", "requirements", "benefits", "applicationInstructions"] as const).map(
-        (key) => (
-          <div key={key} className="space-y-1.5">
-            <Label>
-              {key === "applicationInstructions"
-                ? "Application instructions"
-                : key[0].toUpperCase() + key.slice(1)}
-            </Label>
-            <Textarea
-              value={form[key]}
-              onChange={(event) => set(key, event.target.value)}
-              rows={5}
-            />
-          </div>
-        ),
-      )}
-      <div className="grid gap-4 md:grid-cols-2">
-        <div className="space-y-1.5">
-          <Label>SEO title</Label>
-          <Input
-            value={form.metaTitle}
-            onChange={(event) => set("metaTitle", event.target.value)}
-          />
-        </div>
-        <div className="space-y-1.5">
-          <Label>SEO description</Label>
-          <Input
-            value={form.metaDescription}
-            onChange={(event) => set("metaDescription", event.target.value)}
-          />
-        </div>
-      </div>
-      <label className="flex items-center gap-2 text-sm">
-        <Checkbox
-          checked={form.noindex}
-          onCheckedChange={(value) => set("noindex", value === true)}
-        />
-        Hide from search engines
-      </label>
-      <div className="flex justify-end gap-2">
-        <Button type="button" variant="outline" onClick={onClose}>
-          Cancel
-        </Button>
-        <Button type="submit" disabled={mutation.isPending}>
-          {mutation.isPending ? "Saving..." : "Save Job"}
-        </Button>
-      </div>
+      <CareerJobFields
+        details={
+          <>
+            <div className="space-y-1.5">
+              <Label>Title</Label>
+              <Input
+                value={form.title}
+                onChange={(event) => set("title", event.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Slug</Label>
+              <Input
+                value={form.slug}
+                onChange={(event) => set("slug", event.target.value)}
+                placeholder="auto-generated"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Department</Label>
+              <Input
+                value={form.department}
+                onChange={(event) => set("department", event.target.value)}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Location</Label>
+              <Input
+                value={form.location}
+                onChange={(event) => set("location", event.target.value)}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Employment type</Label>
+              <Select
+                value={form.employmentType}
+                onValueChange={(value) => set("employmentType", value)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(CAREER_EMPLOYMENT_TYPE_LABELS).map(([value, label]) => (
+                    <SelectItem key={value} value={value}>
+                      {label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label>Work mode</Label>
+              <Select value={form.workMode} onValueChange={(value) => set("workMode", value)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(CAREER_WORK_MODE_LABELS).map(([value, label]) => (
+                    <SelectItem key={value} value={value}>
+                      {label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label>Status</Label>
+              <Select value={form.status} onValueChange={(value) => set("status", value)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {CAREER_JOB_STATUSES.map((value) => (
+                    <SelectItem key={value} value={value}>
+                      {CAREER_JOB_STATUS_LABELS[value]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label>Publish at</Label>
+              <Input
+                value={form.publishedAt}
+                type="datetime-local"
+                onChange={(event) => set("publishedAt", event.target.value)}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Close at</Label>
+              <Input
+                value={form.closesAt}
+                type="datetime-local"
+                onChange={(event) => set("closesAt", event.target.value)}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Salary range</Label>
+              <div className="grid grid-cols-2 gap-2">
+                <Input
+                  value={form.salaryMin}
+                  type="number"
+                  placeholder="Min"
+                  onChange={(event) => set("salaryMin", event.target.value)}
+                />
+                <Input
+                  value={form.salaryMax}
+                  type="number"
+                  placeholder="Max"
+                  onChange={(event) => set("salaryMax", event.target.value)}
+                />
+              </div>
+            </div>
+          </>
+        }
+        salaryVisible={
+          <>
+            {" "}
+            <label className="flex items-center gap-2 text-sm">
+              <Switch
+                checked={form.salaryVisible}
+                onCheckedChange={(value) => set("salaryVisible", value)}
+              />
+              Show salary publicly
+            </label>
+          </>
+        }
+        summary={
+          <>
+            <div className="space-y-1.5">
+              <Label>Summary</Label>
+              <Textarea
+                value={form.summary}
+                onChange={(event) => set("summary", event.target.value)}
+                rows={3}
+              />
+            </div>
+          </>
+        }
+        body={
+          <>
+            {" "}
+            {(["description", "requirements", "benefits", "applicationInstructions"] as const).map(
+              (key) => (
+                <div key={key} className="space-y-1.5">
+                  <Label>
+                    {key === "applicationInstructions"
+                      ? "Application instructions"
+                      : key[0].toUpperCase() + key.slice(1)}
+                  </Label>
+                  <Textarea
+                    value={form[key]}
+                    onChange={(event) => set(key, event.target.value)}
+                    rows={5}
+                  />
+                </div>
+              ),
+            )}
+          </>
+        }
+        seo={
+          <>
+            <div className="space-y-1.5">
+              <Label>SEO title</Label>
+              <Input
+                value={form.metaTitle}
+                onChange={(event) => set("metaTitle", event.target.value)}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>SEO description</Label>
+              <Input
+                value={form.metaDescription}
+                onChange={(event) => set("metaDescription", event.target.value)}
+              />
+            </div>
+          </>
+        }
+        noindex={
+          <>
+            {" "}
+            <label className="flex items-center gap-2 text-sm">
+              <Checkbox
+                checked={form.noindex}
+                onCheckedChange={(value) => set("noindex", value === true)}
+              />
+              Hide from search engines
+            </label>
+          </>
+        }
+        actions={
+          <>
+            <Button type="button" variant="outline" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={mutation.isPending}>
+              {mutation.isPending ? "Saving..." : "Save Job"}
+            </Button>
+          </>
+        }
+      />
     </form>
   );
 }
@@ -378,51 +430,36 @@ function JobsTab({ initialCreate = false }: { initialCreate?: boolean }) {
         </Dialog>
       </CardHeader>
       <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Title</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Location</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {jobs.map((job) => (
-              <TableRow key={job.id}>
-                <TableCell>
-                  <div className="font-medium">{job.title}</div>
-                  <div className="text-xs text-muted-foreground">/careers/{job.slug}</div>
-                </TableCell>
-                <TableCell>
-                  <Badge variant={job.status === "published" ? "default" : "outline"}>
-                    {CAREER_JOB_STATUS_LABELS[job.status]}
-                  </Badge>
-                </TableCell>
-                <TableCell>{CAREER_EMPLOYMENT_TYPE_LABELS[job.employmentType]}</TableCell>
-                <TableCell>{job.location || "Remote/unspecified"}</TableCell>
-                <TableCell className="text-right">
-                  <Button variant="ghost" size="sm" asChild>
-                    <a href={`/careers/${job.slug}`} target="_blank" rel="noreferrer">
-                      <ExternalLink className="h-4 w-4" />
-                    </a>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      setEditing(job);
-                      setOpen(true);
-                    }}
-                  >
-                    Edit
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        <CareerJobsTable
+          ui={careerUI}
+          jobs={jobs}
+          statusLabel={(value) =>
+            CAREER_JOB_STATUS_LABELS[value as keyof typeof CAREER_JOB_STATUS_LABELS]
+          }
+          employmentLabel={(value) =>
+            CAREER_EMPLOYMENT_TYPE_LABELS[value as keyof typeof CAREER_EMPLOYMENT_TYPE_LABELS]
+          }
+          actions={(job) => (
+            <>
+              {" "}
+              <Button variant="ghost" size="sm" asChild>
+                <a href={`/careers/${job.slug}`} target="_blank" rel="noreferrer">
+                  <ExternalLink className="h-4 w-4" />
+                </a>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setEditing(job);
+                  setOpen(true);
+                }}
+              >
+                Edit
+              </Button>
+            </>
+          )}
+        />
       </CardContent>
     </Card>
   );
@@ -451,53 +488,25 @@ function ApplicationsTab() {
   });
 
   return (
-    <div className="grid gap-4 xl:grid-cols-[1fr_380px]">
-      <Card>
-        <CardHeader>
-          <CardTitle>Applications</CardTitle>
-          <CardDescription>Review applicants and update hiring status.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Applicant</TableHead>
-                <TableHead>Job</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Submitted</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {applications.map((application) => (
-                <TableRow
-                  key={application.id}
-                  className="cursor-pointer"
-                  onClick={() => setSelected(application)}
-                >
-                  <TableCell>
-                    <div className="font-medium">
-                      {application.firstName} {application.lastName}
-                    </div>
-                    <div className="text-xs text-muted-foreground">{application.email}</div>
-                  </TableCell>
-                  <TableCell>{application.job?.title ?? "Deleted job"}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline">
-                      {CAREER_APPLICATION_STATUS_LABELS[application.status]}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>{new Date(application.createdAt).toLocaleDateString()}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>Application Detail</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+    <CareerApplicationWorkspace
+      ui={careerUI}
+      list={
+        <>
+          <CareerApplicationsTable
+            ui={careerUI}
+            applications={applications}
+            statusLabel={(value) =>
+              CAREER_APPLICATION_STATUS_LABELS[
+                value as keyof typeof CAREER_APPLICATION_STATUS_LABELS
+              ]
+            }
+            jobTitle={(application) => application.job?.title ?? "Deleted job"}
+            onSelect={setSelected}
+          />
+        </>
+      }
+      detail={
+        <>
           {selected ? (
             <>
               <div>
@@ -552,9 +561,9 @@ function ApplicationsTab() {
           ) : (
             <p className="text-sm text-muted-foreground">Select an application to review.</p>
           )}
-        </CardContent>
-      </Card>
-    </div>
+        </>
+      }
+    />
   );
 }
 
@@ -592,13 +601,10 @@ function SettingsTab() {
       </Card>
     );
   return (
-    <div className="grid gap-4 xl:grid-cols-2">
-      <Card>
-        <CardHeader>
-          <CardTitle>Share Options</CardTitle>
-          <CardDescription>Control share actions on public job pages.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
+    <CareerSettingsCards
+      ui={careerUI}
+      sharing={
+        <>
           <label className="flex items-center justify-between gap-3">
             <span>Enable sharing</span>
             <Switch
@@ -622,16 +628,10 @@ function SettingsTab() {
               {label}
             </label>
           ))}
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>Integrations</CardTitle>
-          <CardDescription>
-            Enable job discovery and ATS bridge points when partner credentials are available.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
+        </>
+      }
+      integrations={
+        <>
           <label className="flex items-center justify-between gap-3">
             <span>Google Indexing API</span>
             <Switch
@@ -714,9 +714,9 @@ function SettingsTab() {
           <Button onClick={() => mutation.mutate()} disabled={mutation.isPending}>
             {mutation.isPending ? "Saving..." : "Save Settings"}
           </Button>
-        </CardContent>
-      </Card>
-    </div>
+        </>
+      }
+    />
   );
 }
 

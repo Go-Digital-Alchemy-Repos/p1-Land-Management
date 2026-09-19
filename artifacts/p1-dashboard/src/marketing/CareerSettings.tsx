@@ -1,3 +1,6 @@
+import { CareerSettingsCards } from "../../../../platform/p1-core/client/src/components/shared/career-admin-presentation";
+import { careerUI } from "./career-primitives";
+import "./career-admin.css";
 import { useEffect, useRef, useState } from "react";
 import "./career-settings.css";
 import {
@@ -133,8 +136,8 @@ export default function CareerSettings({ close }: { close: () => void }) {
     setMessage("");
   }
   return (
-    <section className="template-library" aria-label="Careers settings">
-      <h2>Website Careers settings</h2>
+    <section className="career-admin" aria-label="Careers settings">
+      <h1>Careers</h1>
       <p>Manage job sharing and the website’s recruiting integrations.</p>
       {busy && (
         <p role="status">
@@ -172,133 +175,148 @@ export default function CareerSettings({ close }: { close: () => void }) {
             void run(true);
           }}
         >
-          <fieldset disabled={busy}>
-            <legend>Job sharing</legend>
-            {sharing.map(([key, label]) => (
-              <label className="career-setting-toggle" key={key}>
-                <input
-                  type="checkbox"
-                  checked={draft.sharing?.[key] ?? true}
-                  onChange={(event) =>
-                    update("sharing", key, event.target.checked)
-                  }
-                />
-                {label}
-              </label>
-            ))}
-          </fieldset>
-          <fieldset disabled={busy}>
-            <legend>Integration settings</legend>
-            <p>
-              These selections retain the website’s integration configuration.
-              Saving a selection does not verify a provider connection or
-              complete a partner setup.
-            </p>
-            {integrations.map(([key, label]) => (
-              <label className="career-setting-toggle" key={key}>
-                <input
-                  type="checkbox"
-                  checked={draft.integrations?.[key] ?? false}
-                  disabled={clearCredentials.some(
-                    (credential) => credentialIntegration[credential] === key,
-                  )}
-                  onChange={(event) =>
-                    update("integrations", key, event.target.checked)
-                  }
-                />
-                {label}
-              </label>
-            ))}
-            <label>
-              LinkedIn partner ID
-              <input
-                value={draft.integrations?.linkedinPartnerId ?? ""}
-                onChange={(event) =>
-                  update(
-                    "integrations",
-                    "linkedinPartnerId",
-                    event.target.value,
-                  )
-                }
-              />
-            </label>
-            <label>
-              Webhook URL
-              <input
-                type="url"
-                value={draft.integrations?.genericWebhookUrl ?? ""}
-                onChange={(event) =>
-                  update(
-                    "integrations",
-                    "genericWebhookUrl",
-                    event.target.value,
-                  )
-                }
-              />
-            </label>
-            <p>
-              Enabled webhooks send job and application changes to this address.
-            </p>
-            <p>
-              Indeed feed path on the public website:{" "}
-              <code>/api/careers/feed/indeed.xml</code>
-            </p>
-          </fieldset>
-          <fieldset disabled={busy}>
-            <legend>Manage credentials</legend>
-            <p>
-              Stored credentials are hidden. Leave a field blank to keep its
-              saved value. Selecting removal also turns off that integration
-              when you save.
-            </p>
-            {credentials.map(([key, label]) => (
-              <div key={key}>
-                <label>
-                  {label}
-                  <input
-                    type="password"
-                    autoComplete="new-password"
-                    spellCheck={false}
-                    disabled={clearCredentials.includes(key)}
-                    value={draft.integrations?.[key] ?? ""}
-                    onChange={(event) =>
-                      update("integrations", key, event.target.value)
-                    }
-                  />
-                </label>
-                <label className="career-setting-toggle">
-                  <input
-                    type="checkbox"
-                    checked={clearCredentials.includes(key)}
-                    onChange={(event) => {
-                      const remove = event.target.checked;
-                      setClearCredentials((current) =>
-                        remove
-                          ? [...current, key]
-                          : current.filter((item) => item !== key),
-                      );
-                      if (remove) {
-                        setDraft((current) =>
-                          current
-                            ? {
-                                ...current,
-                                integrations: {
-                                  ...current.integrations,
-                                  [key]: "",
-                                  [credentialIntegration[key]]: false,
-                                },
-                              }
-                            : current,
-                        );
+          <CareerSettingsCards
+            ui={careerUI}
+            sharing={
+              <>
+                {" "}
+                <fieldset disabled={busy}>
+                  <legend>Job sharing</legend>
+                  {sharing.map(([key, label]) => (
+                    <label className="career-setting-toggle" key={key}>
+                      <input
+                        type="checkbox"
+                        checked={draft.sharing?.[key] ?? true}
+                        onChange={(event) =>
+                          update("sharing", key, event.target.checked)
+                        }
+                      />
+                      {label}
+                    </label>
+                  ))}
+                </fieldset>
+              </>
+            }
+            integrations={
+              <>
+                {" "}
+                <fieldset disabled={busy}>
+                  <legend>Integration settings</legend>
+                  <p>
+                    These selections retain the website’s integration
+                    configuration. Saving a selection does not verify a provider
+                    connection or complete a partner setup.
+                  </p>
+                  {integrations.map(([key, label]) => (
+                    <label className="career-setting-toggle" key={key}>
+                      <input
+                        type="checkbox"
+                        checked={draft.integrations?.[key] ?? false}
+                        disabled={clearCredentials.some(
+                          (credential) =>
+                            credentialIntegration[credential] === key,
+                        )}
+                        onChange={(event) =>
+                          update("integrations", key, event.target.checked)
+                        }
+                      />
+                      {label}
+                    </label>
+                  ))}
+                  <label>
+                    LinkedIn partner ID
+                    <input
+                      value={draft.integrations?.linkedinPartnerId ?? ""}
+                      onChange={(event) =>
+                        update(
+                          "integrations",
+                          "linkedinPartnerId",
+                          event.target.value,
+                        )
                       }
-                      setMessage("");
-                    }}
-                  />
-                  Remove saved {label}
-                </label>
-              </div>
-            ))}
-          </fieldset>
+                    />
+                  </label>
+                  <label>
+                    Webhook URL
+                    <input
+                      type="url"
+                      value={draft.integrations?.genericWebhookUrl ?? ""}
+                      onChange={(event) =>
+                        update(
+                          "integrations",
+                          "genericWebhookUrl",
+                          event.target.value,
+                        )
+                      }
+                    />
+                  </label>
+                  <p>
+                    Enabled webhooks send job and application changes to this
+                    address.
+                  </p>
+                  <p>
+                    Indeed feed path on the public website:{" "}
+                    <code>/api/careers/feed/indeed.xml</code>
+                  </p>
+                </fieldset>
+                <fieldset disabled={busy}>
+                  <legend>Manage credentials</legend>
+                  <p>
+                    Stored credentials are hidden. Leave a field blank to keep
+                    its saved value. Selecting removal also turns off that
+                    integration when you save.
+                  </p>
+                  {credentials.map(([key, label]) => (
+                    <div key={key}>
+                      <label>
+                        {label}
+                        <input
+                          type="password"
+                          autoComplete="new-password"
+                          spellCheck={false}
+                          disabled={clearCredentials.includes(key)}
+                          value={draft.integrations?.[key] ?? ""}
+                          onChange={(event) =>
+                            update("integrations", key, event.target.value)
+                          }
+                        />
+                      </label>
+                      <label className="career-setting-toggle">
+                        <input
+                          type="checkbox"
+                          checked={clearCredentials.includes(key)}
+                          onChange={(event) => {
+                            const remove = event.target.checked;
+                            setClearCredentials((current) =>
+                              remove
+                                ? [...current, key]
+                                : current.filter((item) => item !== key),
+                            );
+                            if (remove) {
+                              setDraft((current) =>
+                                current
+                                  ? {
+                                      ...current,
+                                      integrations: {
+                                        ...current.integrations,
+                                        [key]: "",
+                                        [credentialIntegration[key]]: false,
+                                      },
+                                    }
+                                  : current,
+                              );
+                            }
+                            setMessage("");
+                          }}
+                        />
+                        Remove saved {label}
+                      </label>
+                    </div>
+                  ))}
+                </fieldset>
+              </>
+            }
+          />{" "}
           <button disabled={busy || !dirty || !draft.version}>
             Save Careers settings
           </button>

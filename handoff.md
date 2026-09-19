@@ -1,3 +1,33 @@
+## Careers/Events and public menus — September 19 release candidate
+
+This checkpoint supersedes the historical entries below. Team/Sidebars revision
+`cc49b6740169d21c1f810306393440915e534e45` is already live: Railway dashboard
+`3912da69-3e3c-4391-94d9-73552c08a1d0`, Core
+`dd008d19-39c7-49b3-bb1d-64fabbe47299`, website
+`e236f317-6c39-46bf-b660-687c58fa3d01` all SUCCESS.
+
+Current candidate shares original Careers and Events presentation, retains native
+transport safeguards, and connects the four P1 menu slots to published public HTML.
+All modules remain disabled where previously disabled; no production content or
+accounts changed. The live menu catalog was rechecked and is empty, so activation
+preserves existing public navigation. See the Marketing parity and public-menu
+implementation documents for exact evidence and remaining feature gaps.
+
+Validation: Careers 6 and Events 7 native tests, retained Events 10 tests, menu
+adapter 4 tests, shared form accessibility/adapter 5 tests, menu backend 22 tests,
+public server 76 tests and snapshot retention 3 tests passed. Core/dashboard/site
+typechecks and builds passed; restricted dashboard/public build contexts passed.
+Synthetic browser checks covered Careers draft save/readback; Events four-tab
+layout and Registrants panel; menu nesting, mobile modal handoff/focus, retained
+retry payload/key, accepted receipt, and preview submission disablement. A browser
+confirmation stalled the synthetic attendance click; the real embedded attendance
+regression tests passed, but that browser action is not claimed verified.
+
+Original `/admin` remains retained. Outstanding goal gates still include full
+Marketing feature parity, dynamic Blog/public content consumers, write conflict
+coverage, CRM/account migration acceptance, real agreement/crew/offline acceptance,
+recovery/rollback and owner acceptance. QuickBooks/Twilio remain deferred.
+
 ## Team/Sidebars accepted release candidate — September 19
 
 Shared original Team cards/dialog and Sidebar Details/Widgets interfaces passed

@@ -1,4 +1,6 @@
-import { createElement } from "react";
+import { PublishedMenu, type MenuFormRequest } from "../menus/PublishedMenu";
+const MenuFormDialog = lazy(() => import("../menus/MenuFormDialog"));
+import { createElement, lazy, Suspense, useState } from "react";
 import { useSiteIdentity } from "@/lib/use-site-identity";
 import { cmsValue, useCms } from "@/lib/cms";
 import { SiteSocialLinks } from "./SiteSocialLinks";
@@ -11,6 +13,8 @@ import { Phone } from "lucide-react";
 export function SiteFooter() {
   const identity = useSiteIdentity();
   const context = useCms();
+  const menus = context.snapshot.menus?.locations;
+  const [formRequest, setFormRequest] = useState<MenuFormRequest | null>(null);
   return (
     <footer className="bg-secondary text-secondary-foreground py-16 border-t border-border">
       <div className="site-shell grid grid-cols-2 gap-10 [overflow-wrap:anywhere] md:grid-cols-3 lg:grid-cols-6">
@@ -34,6 +38,7 @@ export function SiteFooter() {
         {/* Services */}
         <div>
           <h4 className="font-serif text-[11px] font-bold uppercase tracking-[0.2em] text-tan mb-6">Services</h4>
+          {menus?.p1_footer_services ? <div className="text-sm text-secondary-foreground/70"><PublishedMenu items={menus.p1_footer_services.items} onForm={setFormRequest} /></div> : (
           <ul className="space-y-3 text-sm text-secondary-foreground/70">
             <li><Link href="/services/commercial-landscaping" className="hover:text-primary transition-colors">Commercial Landscaping</Link></li>
             <li><Link href="/services/commercial-snow-ice-management" className="hover:text-primary transition-colors">Commercial Snow & Ice</Link></li>
@@ -47,11 +52,13 @@ export function SiteFooter() {
             <li><Link href="/services/property-reconstruction" className="hover:text-primary transition-colors">Property Reconstruction</Link></li>
             <li><Link href="/services" className="font-semibold text-secondary-foreground/90 hover:text-primary transition-colors">All Services →</Link></li>
           </ul>
+          )}
         </div>
 
         {/* Service Areas */}
         <div>
           <h4 className="font-serif text-[11px] font-bold uppercase tracking-[0.2em] text-tan mb-6">Service Areas</h4>
+          {menus?.p1_footer_service_areas ? <div className="text-sm text-secondary-foreground/70"><PublishedMenu items={menus.p1_footer_service_areas.items} onForm={setFormRequest} /></div> : (
           <ul className="space-y-3 text-sm text-secondary-foreground/70">
             <li className="font-bold text-secondary-foreground/90">Upstate South Carolina</li>
             <li><Link href="/service-areas/greenville-sc" className="hover:text-primary transition-colors">Greenville</Link></li>
@@ -67,17 +74,20 @@ export function SiteFooter() {
             <li><Link href="/service-areas/union-county-nc" className="hover:text-primary transition-colors">Union County</Link></li>
             <li><Link href="/service-areas" className="font-semibold text-secondary-foreground/90 hover:text-primary transition-colors">All Areas →</Link></li>
           </ul>
+          )}
         </div>
 
         {/* Company */}
         <div>
           <h4 className="font-serif text-[11px] font-bold uppercase tracking-[0.2em] text-tan mb-6">Company</h4>
+          {menus?.p1_footer_company ? <div className="text-sm text-secondary-foreground/70"><PublishedMenu items={menus.p1_footer_company.items} onForm={setFormRequest} /></div> : (
           <ul className="space-y-3 text-sm text-secondary-foreground/70">
             <li><Link href="/about" className="hover:text-primary transition-colors">About Us</Link></li>
             <li><Link href="/gallery" className="hover:text-primary transition-colors">Service Gallery</Link></li>
             <li><Link href="/blog" className="hover:text-primary transition-colors">Blog & Resources</Link></li>
             <li><Link href="/contact" className="hover:text-primary transition-colors">Contact / Site Assessment</Link></li>
           </ul>
+          )}
         </div>
 
         {/* Hours */}
@@ -99,6 +109,7 @@ export function SiteFooter() {
       <div className="site-shell mt-16 border-t border-secondary-foreground/10 pt-8 text-center text-sm text-secondary-foreground/50">
         {createElement("span", null, cmsValue(context, "© ", "text", true), new Date().getFullYear(), (() => { const original = " P1 Land & Property Management. Serving Upstate South Carolina & the Charlotte, NC region. All rights reserved."; const published = cmsValue(context, original, "text", true); return context.snapshot.identity?.companyName ? published.replace("P1 Land & Property Management", identity.companyName) : published; })())}
       </div>
+      {formRequest && <Suspense fallback={<p role="status" className="sr-only">Loading form</p>}><MenuFormDialog request={formRequest} onClose={() => setFormRequest(null)} /></Suspense>}
     </footer>
   );
 }

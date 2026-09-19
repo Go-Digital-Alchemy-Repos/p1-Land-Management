@@ -1,3 +1,4 @@
+import { createWebsiteMenuStore } from "./website-menus.mjs";
 import { createWebsiteRedirectStore, resolveWebsiteRedirect } from "./website-redirects.mjs";
 import { createWebsiteRobotsStore, publicRobotsContent } from "./website-robots.mjs";
 import { createWebsiteIdentityStore, identityIconHead } from "./website-identity.mjs";
@@ -25,9 +26,10 @@ const { render } = await import(pathToFileURL(path.join(root,'dist/server/entry-
 const origin = process.env.P1_CORE_ORIGIN?.replace(/\/$/,'');
 const content = createContentStore({ manifest, origin, cacheDir: process.env.P1_CONTENT_CACHE_DIR });
 const websiteIdentity = createWebsiteIdentityStore({ origin, cacheDir: process.env.P1_CONTENT_CACHE_DIR ?? '/tmp/p1-public-content' });
+const websiteMenus = createWebsiteMenuStore({ origin, cacheDir: process.env.P1_CONTENT_CACHE_DIR ?? "/tmp/p1-public-content" });
 async function pageSnapshot(routePath) {
-  const [page, identity] = await Promise.all([content.snapshot(routePath), websiteIdentity.snapshot()]);
-  return page ? {...page, identity} : null;
+  const [page, identity, menus] = await Promise.all([content.snapshot(routePath), websiteIdentity.snapshot(), websiteMenus.snapshot()]);
+  return page ? {...page, identity, menus} : null;
 }
 const websiteRobots = createWebsiteRobotsStore({ origin, cacheDir: process.env.P1_CONTENT_CACHE_DIR ?? "/tmp/p1-public-content" });
 const websiteRedirects = createWebsiteRedirectStore({ origin, cacheDir: process.env.P1_CONTENT_CACHE_DIR ?? "/tmp/p1-public-content" });

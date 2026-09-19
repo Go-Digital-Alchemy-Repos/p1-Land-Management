@@ -173,3 +173,6 @@
 .site-social-brand a { background:white; border-radius:50%; }
 .site-social-outline a { border:1px solid currentColor; }
 .site-social-solid a { background:hsl(var(--secondary-foreground)); color:hsl(var(--secondary)); }
+
+/* Lazy public menu forms share the CMS renderer without loading the admin application. */
+@source "../../../platform/p1-core/client/src/features/admin/cms/builder/form-presentation.tsx";

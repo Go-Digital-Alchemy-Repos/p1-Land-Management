@@ -1,0 +1,160 @@
+@import "./career-admin.utilities.css";
+.career-admin {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+  color: hsl(var(--foreground));
+  font-size: 14px;
+  line-height: 1.5;
+}
+.career-admin :where(*) {
+  box-sizing: border-box;
+  border-width: 0;
+  border-style: solid;
+  border-color: hsl(var(--border));
+  --tw-ring-offset-shadow: 0 0 #0000;
+  --tw-ring-shadow: 0 0 #0000;
+  --tw-shadow: 0 0 #0000;
+}
+.career-admin :where(h1, h2, h3, p) {
+  margin: 0;
+}
+.career-admin :where(input, textarea, select) {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid hsl(var(--border));
+  border-radius: 6px;
+  background: hsl(var(--background));
+  color: inherit;
+  font: inherit;
+  padding: 8px 12px;
+}
+.career-admin :where(label) {
+  display: grid;
+  gap: 6px;
+}
+.career-admin :where(input[type="checkbox"]) {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+}
+.career-admin label:has(input[type="checkbox"]) {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.career-admin :where(fieldset) {
+  display: grid;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+.career-admin .forms-card {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.career-admin .forms-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 8px 16px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  font: inherit;
+}
+.career-admin .forms-button-outline {
+  background: hsl(var(--background));
+  color: inherit;
+  border-color: hsl(var(--border));
+}
+.career-admin.career-admin .forms-button-ghost {
+  background: transparent;
+  color: hsl(var(--foreground));
+}
+.career-admin .forms-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.career-admin .forms-button svg {
+  width: 1em;
+  height: 1em;
+}
+.career-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 14px;
+}
+.career-table :where(th, td) {
+  padding: 12px;
+  border-bottom: 1px solid hsl(var(--border));
+  vertical-align: middle;
+}
+.career-table th {
+  font-weight: 500;
+  color: hsl(var(--muted-foreground));
+}
+.career-table td button {
+  margin: 2px;
+}
+.career-table tbody tr:hover {
+  background: hsl(var(--muted) / 0.4);
+}
+.career-review {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+.career-review .agreement-text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.career-job-dialog[open] {
+  display: block;
+  position: fixed;
+  width: min(896px, calc(100vw - 32px));
+  max-width: calc(100vw - 32px);
+  max-height: 90vh;
+  overflow-y: auto;
+  margin: auto;
+  padding: 24px;
+  border: 1px solid hsl(var(--border));
+  border-radius: 12px;
+  background: hsl(var(--background));
+  box-shadow: 0 20px 70px #0004;
+}
+.career-job-dialog:not([open]) {
+  display: none;
+}
+.career-job-dialog::backdrop {
+  background: #0008;
+}
+.career-job-dialog > h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+.career-job-dialog > p {
+  margin-bottom: 14px;
+}
+.career-admin [role="alert"] {
+  color: hsl(var(--destructive));
+}
+@media (max-width: 650px) {
+  .career-admin .forms-card > .p-6 {
+    padding: 16px;
+    overflow-x: auto;
+  }
+  .career-table {
+    min-width: 520px;
+  }
+  .career-job-dialog[open] {
+    padding: 16px;
+  }
+}

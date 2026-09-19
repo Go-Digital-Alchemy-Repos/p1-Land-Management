@@ -1,3 +1,5 @@
+import { CareerJobFields } from "../../../../platform/p1-core/client/src/components/shared/career-admin-presentation";
+import "./career-admin.css";
 import { CmsRichTextEditor } from "./CmsRichTextEditor";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -113,6 +115,19 @@ export default function CareerJobEditor({
     [error, setError] = useState(""),
     [uncertain, setUncertain] = useState(false);
   const [deleteUncertain, setDeleteUncertain] = useState(false);
+  const modal = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    const dialog = modal.current;
+    const opener =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+    dialog?.showModal();
+    return () => {
+      dialog?.close();
+      if (opener?.isConnected) opener.focus();
+    };
+  }, []);
   const alive = useRef(true),
     gate = useRef(false);
   useEffect(() => {
@@ -126,6 +141,11 @@ export default function CareerJobEditor({
   const change = (key: string, v: unknown) =>
     setValue((row) => ({ ...row, [key]: v }));
   const existing = job !== "new";
+  function closeEditor() {
+    if (busy || gate.current) return;
+    if (!dirty || confirm("Leave this job editor and discard local edits?"))
+      close();
+  }
   async function save() {
     if (gate.current || deleteUncertain || (!existing && uncertain)) return;
     gate.current = true;
@@ -178,8 +198,16 @@ export default function CareerJobEditor({
     }
   }
   return (
-    <section className="template-library" aria-label="Career job editor">
-      <h2>{existing ? "Edit job" : "New job"}</h2>
+    <dialog
+      ref={modal}
+      className="career-admin career-job-dialog"
+      aria-labelledby="career-job-title"
+      onCancel={(event) => {
+        event.preventDefault();
+        closeEditor();
+      }}
+    >
+      <h2 id="career-job-title">{existing ? "Edit Job" : "Create Job"}</h2>
       <p>
         Published public jobs appear on the website when their publish date
         arrives. Internal, draft, closed and archived jobs are not public
@@ -204,191 +232,269 @@ export default function CareerJobEditor({
           void save();
         }}
       >
-        <fieldset disabled={busy}>
+        <fieldset disabled={busy} inert={busy ? true : undefined}>
           <legend>Job details</legend>
-          {textFields
-            .filter(
-              (key) =>
-                ![
-                  "description",
-                  "requirements",
-                  "benefits",
-                  "applicationInstructions",
-                ].includes(key),
-            )
-            .map((key) => (
-              <label key={key}>
-                {label(key)}
-                {[
-                  "summary",
-                  "description",
-                  "requirements",
-                  "benefits",
-                  "applicationInstructions",
-                  "metaDescription",
-                ].includes(key) ? (
-                  <textarea
-                    aria-label={label(key)}
-                    value={String(value[key] || "")}
-                    onChange={(e) => change(key, e.target.value)}
-                  />
-                ) : (
-                  <input
-                    required={key === "title"}
-                    value={String(value[key] || "")}
-                    onChange={(e) => change(key, e.target.value)}
-                  />
-                )}
-              </label>
-            ))}
-          {(
-            [
-              "description",
-              "requirements",
-              "benefits",
-              "applicationInstructions",
-            ] as const
-          ).map((key) => (
-            <section key={key}>
-              <h3>{label(key)}</h3>
-              <CmsRichTextEditor
-                label={label(key)}
-                value={value[key] || ""}
-                onChange={(html) => change(key, html)}
-                disabled={busy}
-              />
-            </section>
-          ))}
-          {Object.entries(choices).map(([key, options]) => (
-            <label key={key}>
-              {label(key)}
-              <select
-                value={String(
-                  value[key as keyof MarketingCareerJobInput] || options[0],
-                )}
-                onChange={(e) => change(key, e.target.value)}
-              >
-                {options.map((option) => (
-                  <option key={option} value={option}>
-                    {option.replaceAll("_", " ")}
-                  </option>
+          <CareerJobFields
+            details={
+              <>
+                {" "}
+                {textFields
+                  .filter((key) =>
+                    [
+                      "title",
+                      "slug",
+                      "department",
+                      "location",
+                      "locationAddress",
+                      "salaryCurrency",
+                      "salaryPeriod",
+                    ].includes(key),
+                  )
+                  .map((key) => (
+                    <label key={key}>
+                      {label(key)}
+                      {[
+                        "summary",
+                        "description",
+                        "requirements",
+                        "benefits",
+                        "applicationInstructions",
+                        "metaDescription",
+                      ].includes(key) ? (
+                        <textarea
+                          aria-label={label(key)}
+                          value={String(value[key] || "")}
+                          onChange={(e) => change(key, e.target.value)}
+                        />
+                      ) : (
+                        <input
+                          required={key === "title"}
+                          value={String(value[key] || "")}
+                          onChange={(e) => change(key, e.target.value)}
+                        />
+                      )}
+                    </label>
+                  ))}
+                {Object.entries(choices).map(([key, options]) => (
+                  <label key={key}>
+                    {label(key)}
+                    <select
+                      value={String(
+                        value[key as keyof MarketingCareerJobInput] ||
+                          options[0],
+                      )}
+                      onChange={(e) => change(key, e.target.value)}
+                    >
+                      {options.map((option) => (
+                        <option key={option} value={option}>
+                          {option.replaceAll("_", " ")}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
                 ))}
-              </select>
-            </label>
-          ))}
-          {(["salaryMin", "salaryMax"] as const).map((key) => (
-            <label key={key}>
-              {label(key)}
-              <input
-                type="number"
-                step="1"
-                min="0"
-                value={value[key] ?? ""}
-                onChange={(e) =>
-                  change(
-                    key,
-                    e.target.value === "" ? null : Number(e.target.value),
-                  )
-                }
-              />
-            </label>
-          ))}
-          {(["publishedAt", "closesAt"] as const).map((key) => (
-            <label key={key}>
-              {label(key)} (UTC)
-              <input
-                type="datetime-local"
-                step="1"
-                value={
-                  value[key]
-                    ? new Date(value[key]!).toISOString().slice(0, 19)
-                    : ""
-                }
-                onChange={(e) =>
-                  change(
-                    key,
-                    e.target.value
-                      ? new Date(e.target.value + "Z").toISOString()
-                      : null,
-                  )
-                }
-              />
-            </label>
-          ))}
-          {(["salaryVisible", "noindex"] as const).map((key) => (
-            <label key={key}>
-              <input
-                type="checkbox"
-                checked={Boolean(value[key])}
-                onChange={(e) => change(key, e.target.checked)}
-              />
-              {label(key)}
-            </label>
-          ))}
-          {existing && job.directoryProfileId && (
-            <p>The existing directory location link is retained.</p>
-          )}
-          <button
-            disabled={
-              busy ||
-              deleteUncertain ||
-              (!existing && uncertain) ||
-              (existing && !job.updatedAt)
+                {(["salaryMin", "salaryMax"] as const).map((key) => (
+                  <label key={key}>
+                    {label(key)}
+                    <input
+                      type="number"
+                      step="1"
+                      min="0"
+                      value={value[key] ?? ""}
+                      onChange={(e) =>
+                        change(
+                          key,
+                          e.target.value === "" ? null : Number(e.target.value),
+                        )
+                      }
+                    />
+                  </label>
+                ))}
+                {(["publishedAt", "closesAt"] as const).map((key) => (
+                  <label key={key}>
+                    {label(key)} (UTC)
+                    <input
+                      type="datetime-local"
+                      step="1"
+                      value={
+                        value[key]
+                          ? new Date(value[key]!).toISOString().slice(0, 19)
+                          : ""
+                      }
+                      onChange={(e) =>
+                        change(
+                          key,
+                          e.target.value
+                            ? new Date(e.target.value + "Z").toISOString()
+                            : null,
+                        )
+                      }
+                    />
+                  </label>
+                ))}
+              </>
             }
-          >
-            {busy ? "Saving…" : existing ? "Save job" : "Create job"}
-          </button>
-          {existing && (
-            <button
-              type="button"
-              onClick={async () => {
-                if (
-                  dirty &&
-                  !confirm("Discard these edits and reload the saved job?")
-                )
-                  return;
-                setBusy(true);
-                try {
-                  saved(await getMarketingCareerJob(job.id));
-                } catch (e) {
-                  setError(careerError(e));
-                } finally {
-                  setBusy(false);
-                }
-              }}
-            >
-              Reload saved job
-            </button>
-          )}
-          {existing && (
-            <div>
-              <p>
-                To retain recruiting history, set Status to Archived and save.
-                Save or discard local edits before deleting a job.
-              </p>
-              <button
-                type="button"
-                disabled={dirty || !job.updatedAt || deleteUncertain}
-                onClick={() => void remove()}
-              >
-                Delete job
-              </button>
-            </div>
-          )}
-          <button
-            type="button"
-            onClick={() => {
-              if (
-                !dirty ||
-                confirm("Leave this job editor and discard local edits?")
-              )
-                close();
-            }}
-          >
-            Back to jobs
-          </button>
+            salaryVisible={
+              <>
+                <label className="career-check">
+                  <input
+                    type="checkbox"
+                    checked={Boolean(value.salaryVisible)}
+                    onChange={(event) =>
+                      change("salaryVisible", event.target.checked)
+                    }
+                  />
+                  Show salary publicly
+                </label>
+              </>
+            }
+            summary={
+              <>
+                <label>
+                  Summary
+                  <textarea
+                    value={String(value.summary || "")}
+                    onChange={(event) => change("summary", event.target.value)}
+                  />
+                </label>
+              </>
+            }
+            body={
+              <>
+                {" "}
+                {(
+                  [
+                    "description",
+                    "requirements",
+                    "benefits",
+                    "applicationInstructions",
+                  ] as const
+                ).map((key) => (
+                  <section key={key}>
+                    <h3>{label(key)}</h3>
+                    <CmsRichTextEditor
+                      label={label(key)}
+                      value={value[key] || ""}
+                      onChange={(html) => change(key, html)}
+                      disabled={busy}
+                    />
+                  </section>
+                ))}
+              </>
+            }
+            seo={
+              <>
+                <label>
+                  SEO title
+                  <input
+                    value={String(value.metaTitle || "")}
+                    onChange={(event) =>
+                      change("metaTitle", event.target.value)
+                    }
+                  />
+                </label>
+                <label>
+                  SEO description
+                  <textarea
+                    value={String(value.metaDescription || "")}
+                    onChange={(event) =>
+                      change("metaDescription", event.target.value)
+                    }
+                  />
+                </label>
+              </>
+            }
+            noindex={
+              <>
+                <label className="career-check">
+                  <input
+                    type="checkbox"
+                    checked={Boolean(value.noindex)}
+                    onChange={(event) =>
+                      change("noindex", event.target.checked)
+                    }
+                  />
+                  Hide from search engines
+                </label>
+              </>
+            }
+            extra={
+              <>
+                {" "}
+                {existing && job.directoryProfileId && (
+                  <p>The existing directory location link is retained.</p>
+                )}
+              </>
+            }
+            actions={
+              <>
+                {" "}
+                <button
+                  disabled={
+                    busy ||
+                    deleteUncertain ||
+                    (!existing && uncertain) ||
+                    (existing && !job.updatedAt)
+                  }
+                >
+                  {busy ? "Saving…" : existing ? "Save job" : "Create job"}
+                </button>
+                {existing && (
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      if (
+                        dirty &&
+                        !confirm(
+                          "Discard these edits and reload the saved job?",
+                        )
+                      )
+                        return;
+                      setBusy(true);
+                      try {
+                        saved(await getMarketingCareerJob(job.id));
+                      } catch (e) {
+                        setError(careerError(e));
+                      } finally {
+                        setBusy(false);
+                      }
+                    }}
+                  >
+                    Reload saved job
+                  </button>
+                )}
+                {existing && (
+                  <div>
+                    <p>
+                      To retain recruiting history, set Status to Archived and
+                      save. Save or discard local edits before deleting a job.
+                    </p>
+                    <button
+                      type="button"
+                      disabled={dirty || !job.updatedAt || deleteUncertain}
+                      onClick={() => void remove()}
+                    >
+                      Delete job
+                    </button>
+                  </div>
+                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (
+                      !dirty ||
+                      confirm("Leave this job editor and discard local edits?")
+                    )
+                      close();
+                  }}
+                >
+                  Back to jobs
+                </button>
+              </>
+            }
+          />
         </fieldset>
       </form>
-    </section>
+    </dialog>
   );
 }

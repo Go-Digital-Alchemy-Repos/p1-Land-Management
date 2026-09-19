@@ -1,0 +1,388 @@
+/* Generated from shared CMS page JSX using retained Core Tailwind; scoped adapter. */
+.event-admin-presentation.event-admin-presentation .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0
+}
+.event-admin-presentation.event-admin-presentation .pointer-events-none {
+    pointer-events: none
+}
+.event-admin-presentation.event-admin-presentation .\!visible {
+    visibility: visible !important
+}
+.event-admin-presentation.event-admin-presentation .visible {
+    visibility: visible
+}
+.event-admin-presentation.event-admin-presentation .absolute {
+    position: absolute
+}
+.event-admin-presentation.event-admin-presentation .relative {
+    position: relative
+}
+.event-admin-presentation.event-admin-presentation .inset-0 {
+    inset: 0px
+}
+.event-admin-presentation.event-admin-presentation .inset-\[5px\] {
+    inset: 5px
+}
+.event-admin-presentation.event-admin-presentation .bottom-0 {
+    bottom: 0px
+}
+.event-admin-presentation.event-admin-presentation .left-0 {
+    left: 0px
+}
+.event-admin-presentation.event-admin-presentation .left-3 {
+    left: 0.75rem
+}
+.event-admin-presentation.event-admin-presentation .right-0 {
+    right: 0px
+}
+.event-admin-presentation.event-admin-presentation .top-0 {
+    top: 0px
+}
+.event-admin-presentation.event-admin-presentation .top-1\/2 {
+    top: 50%
+}
+.event-admin-presentation.event-admin-presentation .mb-2 {
+    margin-bottom: 0.5rem
+}
+.event-admin-presentation.event-admin-presentation .mb-4 {
+    margin-bottom: 1rem
+}
+.event-admin-presentation.event-admin-presentation .mb-6 {
+    margin-bottom: 1.5rem
+}
+.event-admin-presentation.event-admin-presentation .mr-1 {
+    margin-right: 0.25rem
+}
+.event-admin-presentation.event-admin-presentation .mr-1\.5 {
+    margin-right: 0.375rem
+}
+.event-admin-presentation.event-admin-presentation .mr-2 {
+    margin-right: 0.5rem
+}
+.event-admin-presentation.event-admin-presentation .mt-1 {
+    margin-top: 0.25rem
+}
+.event-admin-presentation.event-admin-presentation .mt-3 {
+    margin-top: 0.75rem
+}
+.event-admin-presentation.event-admin-presentation .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2
+}
+.event-admin-presentation.event-admin-presentation .flex {
+    display: flex
+}
+.event-admin-presentation.event-admin-presentation .grid {
+    display: grid
+}
+.event-admin-presentation.event-admin-presentation .hidden {
+    display: none
+}
+.event-admin-presentation.event-admin-presentation .h-3 {
+    height: 0.75rem
+}
+.event-admin-presentation.event-admin-presentation .h-3\.5 {
+    height: 0.875rem
+}
+.event-admin-presentation.event-admin-presentation .h-32 {
+    height: 8rem
+}
+.event-admin-presentation.event-admin-presentation .h-4 {
+    height: 1rem
+}
+.event-admin-presentation.event-admin-presentation .h-5 {
+    height: 1.25rem
+}
+.event-admin-presentation.event-admin-presentation .h-6 {
+    height: 1.5rem
+}
+.event-admin-presentation.event-admin-presentation .h-px {
+    height: 1px
+}
+.event-admin-presentation.event-admin-presentation .w-3 {
+    width: 0.75rem
+}
+.event-admin-presentation.event-admin-presentation .w-3\.5 {
+    width: 0.875rem
+}
+.event-admin-presentation.event-admin-presentation .w-4 {
+    width: 1rem
+}
+.event-admin-presentation.event-admin-presentation .w-5 {
+    width: 1.25rem
+}
+.event-admin-presentation.event-admin-presentation .w-full {
+    width: 100%
+}
+.event-admin-presentation.event-admin-presentation .w-px {
+    width: 1px
+}
+.event-admin-presentation.event-admin-presentation .min-w-0 {
+    min-width: 0px
+}
+.event-admin-presentation.event-admin-presentation .flex-1 {
+    flex: 1 1 0%
+}
+.event-admin-presentation.event-admin-presentation .shrink-0 {
+    flex-shrink: 0
+}
+.event-admin-presentation.event-admin-presentation .-translate-x-1\/2 {
+    --tw-translate-x: -50%;
+    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))
+}
+.event-admin-presentation.event-admin-presentation .-translate-y-1\/2 {
+    --tw-translate-y: -50%;
+    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))
+}
+.event-admin-presentation.event-admin-presentation .cursor-crosshair {
+    cursor: crosshair
+}
+.event-admin-presentation.event-admin-presentation .cursor-pointer {
+    cursor: pointer
+}
+.event-admin-presentation.event-admin-presentation .touch-none {
+    touch-action: none
+}
+.event-admin-presentation.event-admin-presentation .select-none {
+    user-select: none
+}
+.event-admin-presentation.event-admin-presentation .grid-cols-1 {
+    grid-template-columns: repeat(1, minmax(0, 1fr))
+}
+.event-admin-presentation.event-admin-presentation .grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr))
+}
+.event-admin-presentation.event-admin-presentation .grid-cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr))
+}
+.event-admin-presentation.event-admin-presentation .flex-row {
+    flex-direction: row
+}
+.event-admin-presentation.event-admin-presentation .flex-col {
+    flex-direction: column
+}
+.event-admin-presentation.event-admin-presentation .flex-wrap {
+    flex-wrap: wrap
+}
+.event-admin-presentation.event-admin-presentation .items-start {
+    align-items: flex-start
+}
+.event-admin-presentation.event-admin-presentation .items-center {
+    align-items: center
+}
+.event-admin-presentation.event-admin-presentation .justify-between {
+    justify-content: space-between
+}
+.event-admin-presentation.event-admin-presentation .gap-1 {
+    gap: 0.25rem
+}
+.event-admin-presentation.event-admin-presentation .gap-1\.5 {
+    gap: 0.375rem
+}
+.event-admin-presentation.event-admin-presentation .gap-2 {
+    gap: 0.5rem
+}
+.event-admin-presentation.event-admin-presentation .gap-3 {
+    gap: 0.75rem
+}
+.event-admin-presentation.event-admin-presentation .gap-6 {
+    gap: 1.5rem
+}
+.event-admin-presentation.event-admin-presentation :is(.space-y-0 > :not([hidden]) ~ :not([hidden])) {
+    --tw-space-y-reverse: 0;
+    margin-top: calc(0px * calc(1 - var(--tw-space-y-reverse)));
+    margin-bottom: calc(0px * var(--tw-space-y-reverse))
+}
+.event-admin-presentation.event-admin-presentation :is(.space-y-2 > :not([hidden]) ~ :not([hidden])) {
+    --tw-space-y-reverse: 0;
+    margin-top: calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));
+    margin-bottom: calc(0.5rem * var(--tw-space-y-reverse))
+}
+.event-admin-presentation.event-admin-presentation :is(.space-y-4 > :not([hidden]) ~ :not([hidden])) {
+    --tw-space-y-reverse: 0;
+    margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse)));
+    margin-bottom: calc(1rem * var(--tw-space-y-reverse))
+}
+.event-admin-presentation.event-admin-presentation :is(.space-y-6 > :not([hidden]) ~ :not([hidden])) {
+    --tw-space-y-reverse: 0;
+    margin-top: calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));
+    margin-bottom: calc(1.5rem * var(--tw-space-y-reverse))
+}
+.event-admin-presentation.event-admin-presentation .overflow-hidden {
+    overflow: hidden
+}
+.event-admin-presentation.event-admin-presentation .rounded-full {
+    border-radius: 9999px
+}
+.event-admin-presentation.event-admin-presentation .rounded-lg {
+    border-radius: 0.5rem
+}
+.event-admin-presentation.event-admin-presentation .rounded-md {
+    border-radius: 0.375rem
+}
+.event-admin-presentation.event-admin-presentation .border {
+    border-width: 1px
+}
+.event-admin-presentation.event-admin-presentation .border-2 {
+    border-width: 2px
+}
+.event-admin-presentation.event-admin-presentation .border-white {
+    --tw-border-opacity: 1;
+    border-color: rgb(255 255 255 / var(--tw-border-opacity, 1))
+}
+.event-admin-presentation.event-admin-presentation .bg-black\/20 {
+    background-color: rgb(0 0 0 / 0.2)
+}
+.event-admin-presentation.event-admin-presentation .bg-card {
+    --tw-bg-opacity: 1;
+    background-color: hsl(var(--card) / var(--tw-bg-opacity, 1))
+}
+.event-admin-presentation.event-admin-presentation .bg-white {
+    --tw-bg-opacity: 1;
+    background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1))
+}
+.event-admin-presentation.event-admin-presentation .bg-white\/40 {
+    background-color: rgb(255 255 255 / 0.4)
+}
+.event-admin-presentation.event-admin-presentation .object-cover {
+    object-fit: cover
+}
+.event-admin-presentation.event-admin-presentation .p-4 {
+    padding: 1rem
+}
+.event-admin-presentation.event-admin-presentation .px-1 {
+    padding-left: 0.25rem;
+    padding-right: 0.25rem
+}
+.event-admin-presentation.event-admin-presentation .pb-2 {
+    padding-bottom: 0.5rem
+}
+.event-admin-presentation.event-admin-presentation .pb-3 {
+    padding-bottom: 0.75rem
+}
+.event-admin-presentation.event-admin-presentation .pl-9 {
+    padding-left: 2.25rem
+}
+.event-admin-presentation.event-admin-presentation .text-center {
+    text-align: center
+}
+.event-admin-presentation.event-admin-presentation .text-\[10px\] {
+    font-size: 10px
+}
+.event-admin-presentation.event-admin-presentation .text-base {
+    font-size: 1rem;
+    line-height: 1.5rem
+}
+.event-admin-presentation.event-admin-presentation .text-lg {
+    font-size: 1.125rem;
+    line-height: 1.75rem
+}
+.event-admin-presentation.event-admin-presentation .text-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem
+}
+.event-admin-presentation.event-admin-presentation .text-xs {
+    font-size: 0.75rem;
+    line-height: 1rem
+}
+.event-admin-presentation.event-admin-presentation .font-medium {
+    font-weight: 500
+}
+.event-admin-presentation.event-admin-presentation .text-amber-600 {
+    --tw-text-opacity: 1;
+    color: rgb(217 119 6 / var(--tw-text-opacity, 1))
+}
+.event-admin-presentation.event-admin-presentation .text-blue-600 {
+    --tw-text-opacity: 1;
+    color: rgb(37 99 235 / var(--tw-text-opacity, 1))
+}
+.event-admin-presentation.event-admin-presentation .text-emerald-600 {
+    --tw-text-opacity: 1;
+    color: rgb(5 150 105 / var(--tw-text-opacity, 1))
+}
+.event-admin-presentation.event-admin-presentation .text-muted-foreground {
+    --tw-text-opacity: 1;
+    color: hsl(var(--muted-foreground) / var(--tw-text-opacity, 1))
+}
+.event-admin-presentation.event-admin-presentation .text-purple-600 {
+    --tw-text-opacity: 1;
+    color: rgb(147 51 234 / var(--tw-text-opacity, 1))
+}
+.event-admin-presentation.event-admin-presentation .text-rose-600 {
+    --tw-text-opacity: 1;
+    color: rgb(225 29 72 / var(--tw-text-opacity, 1))
+}
+.event-admin-presentation.event-admin-presentation .text-violet-600 {
+    --tw-text-opacity: 1;
+    color: rgb(124 58 237 / var(--tw-text-opacity, 1))
+}
+.event-admin-presentation.event-admin-presentation .shadow-md {
+    --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
+}
+.event-admin-presentation.event-admin-presentation .shadow-sm {
+    --tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
+}
+.event-admin-presentation.event-admin-presentation .outline {
+    outline-style: solid
+}
+.event-admin-presentation.event-admin-presentation .filter {
+    filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)
+}
+.event-admin-presentation.event-admin-presentation .transition-colors {
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms
+}
+.event-admin-presentation.event-admin-presentation .hover\:border-primary\/40:hover {
+    border-color: hsl(var(--primary) / 0.4)
+}
+@media (min-width: 640px) {
+    .event-admin-presentation.event-admin-presentation .sm\:inline-block {
+        display: inline-block
+    }
+    .event-admin-presentation.event-admin-presentation .sm\:h-full {
+        height: 100%
+    }
+    .event-admin-presentation.event-admin-presentation .sm\:w-32 {
+        width: 8rem
+    }
+    .event-admin-presentation.event-admin-presentation .sm\:min-w-\[8rem\] {
+        min-width: 8rem
+    }
+    .event-admin-presentation.event-admin-presentation .sm\:flex-row {
+        flex-direction: row
+    }
+    .event-admin-presentation.event-admin-presentation .sm\:text-sm {
+        font-size: 0.875rem;
+        line-height: 1.25rem
+    }
+}
+@media (min-width: 768px) {
+    .event-admin-presentation.event-admin-presentation .md\:grid-cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr))
+    }
+}
+@media (min-width: 1024px) {
+    .event-admin-presentation.event-admin-presentation .lg\:grid-cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr))
+    }
+}
+@media (min-width: 1280px) {
+    .event-admin-presentation.event-admin-presentation .xl\:grid-cols-\[minmax\(220px\2c 1fr\)_repeat\(4\2c minmax\(140px\2c auto\)\)_auto\] {
+        grid-template-columns: minmax(220px,1fr) repeat(4,minmax(140px,auto)) auto
+    }
+}

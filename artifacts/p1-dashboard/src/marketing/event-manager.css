@@ -1,3 +1,4 @@
+@import "../../../../platform/p1-core/client/src/components/shared/event-admin-presentation.utilities.css";
 .event-manager,
 .event-editor,
 .event-editor form {
@@ -51,3 +52,20 @@
   border-radius: 8px;
   overflow-wrap: anywhere;
 }
+
+.event-admin-presentation :where(*) { border-width:0; border-style:solid; border-color:var(--line); }
+.event-admin-presentation :where(h1,h2,h3,p,label,input,textarea,select) { margin:0; }
+.event-admin-presentation .sidebar-card-header { padding:20px 20px 12px; }
+.event-admin-presentation .sidebar-card-content { padding:0 20px 20px; }
+.event-admin-presentation .forms-card { background:var(--surface); }
+.event-admin-presentation .event-workspace-fields { padding:0; border:0; display:block; }
+.event-admin-presentation .event-editor-image { max-height:180px; width:auto; max-width:100%; object-fit:contain; }
+.event-admin-presentation .event-filter-toolbar { display:grid; grid-template-columns:2fr repeat(4,1fr) auto; gap:12px; padding:16px; border:1px solid var(--line); border-radius:8px; background:var(--surface); align-items:end; }
+.event-admin-presentation .event-filter-toolbar p { grid-column:1/-1; }
+.event-admin-presentation button { display:inline-flex; align-items:center; gap:6px; }
+.event-admin-presentation svg { flex-shrink:0; }
+.event-admin-presentation img { max-width:100%; }
+.event-admin-presentation .event-workspace-fields [role=tablist] { display:grid;grid-template-columns:repeat(4,minmax(0,1fr)); }
+.event-admin-presentation .event-workspace-fields [role=tab] { min-width:0; }
+.event-admin-presentation dialog { max-width:min(1000px,94vw);max-height:90vh;overflow:auto; }
+@media(max-width:800px){.event-admin-presentation .event-filter-toolbar{grid-template-columns:1fr 1fr}.event-admin-presentation .event-actions{flex-wrap:wrap}}

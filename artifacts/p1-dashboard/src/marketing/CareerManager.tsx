@@ -1,3 +1,13 @@
+import {
+  CareerJobsTable,
+  CareerCard,
+} from "../../../../platform/p1-core/client/src/components/shared/career-admin-presentation";
+import {
+  CAREER_JOB_STATUS_LABELS,
+  CAREER_EMPLOYMENT_TYPE_LABELS,
+} from "../../../../platform/p1-core/shared/careers-display";
+import { careerUI } from "./career-primitives";
+import "./career-admin.css";
 import CareerSettings from "./CareerSettings";
 import CareerApplications from "./CareerApplications";
 import { useEffect, useRef, useState } from "react";
@@ -48,24 +58,9 @@ export default function CareerManager({
     return <CareerSettings close={() => setSettings(false)} />;
   if (applications)
     return <CareerApplications close={() => setApplications(false)} />;
-  if (selected)
-    return (
-      <CareerJobEditor
-        key={`${selected === "new" ? "new" : selected.id}:${revision}`}
-        job={selected}
-        close={() => {
-          setSelected(null);
-          void load();
-        }}
-        saved={(row) => {
-          setSelected(row);
-          setRevision((n) => n + 1);
-        }}
-      />
-    );
   return (
-    <section className="template-library" aria-label="Careers">
-      <h2>Job postings</h2>
+    <section className="career-admin" aria-label="Careers">
+      <h1>Careers</h1>
       <button onClick={() => setApplications(true)}>Applications</button>
       {isOwner && (
         <button onClick={() => setSettings(true)}>Careers settings</button>
@@ -96,20 +91,31 @@ export default function CareerManager({
       </label>
       {loading && <p role="status">Loading jobs…</p>}
       {!loading && !error && !jobs.length && <p>No jobs yet.</p>}
-      <div className="template-grid">
-        {jobs
-          .filter((job) =>
+      <CareerCard
+        ui={careerUI}
+        title="Jobs"
+        description="Create and publish Career Center listings."
+      >
+        <CareerJobsTable
+          ui={careerUI}
+          jobs={jobs.filter((job) =>
             `${job.title} ${job.department || ""} ${job.location || ""}`
               .toLowerCase()
               .includes(search.toLowerCase()),
-          )
-          .map((job) => (
-            <article key={job.id}>
-              <h3>{job.title}</h3>
-              <p>
-                {job.status} · {job.visibility} ·{" "}
-                {job.location || "Location not set"}
-              </p>
+          )}
+          statusLabel={(value) =>
+            CAREER_JOB_STATUS_LABELS[
+              value as keyof typeof CAREER_JOB_STATUS_LABELS
+            ] || value
+          }
+          employmentLabel={(value) =>
+            CAREER_EMPLOYMENT_TYPE_LABELS[
+              value as keyof typeof CAREER_EMPLOYMENT_TYPE_LABELS
+            ] || value
+          }
+          actions={(job) => (
+            <>
+              {" "}
               <button
                 disabled={loading}
                 onClick={async () => {
@@ -129,9 +135,24 @@ export default function CareerManager({
               >
                 Edit {job.title}
               </button>
-            </article>
-          ))}
-      </div>
+            </>
+          )}
+        />
+      </CareerCard>
+      {selected && (
+        <CareerJobEditor
+          key={`${selected === "new" ? "new" : selected.id}:${revision}`}
+          job={selected}
+          close={() => {
+            setSelected(null);
+            void load();
+          }}
+          saved={(row) => {
+            setSelected(row);
+            setRevision((n) => n + 1);
+          }}
+        />
+      )}
     </section>
   );
 }

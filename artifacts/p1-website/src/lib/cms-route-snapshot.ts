@@ -1,7 +1,7 @@
 import type { CmsSnapshot } from './cms';
 export function snapshotForRoute(snapshot: CmsSnapshot, path: string): CmsSnapshot {
-  return snapshot.route === path ? snapshot : { route: path, content: {}, global: snapshot.global, identity: snapshot.identity };
+  return snapshot.route === path ? snapshot : { route: path, content: {}, global: snapshot.global, identity: snapshot.identity, menus: snapshot.menus };
 }
 export function retainPublishedIdentity(previous: CmsSnapshot, next: CmsSnapshot): CmsSnapshot {
-  return { ...next, identity: next.identity ?? previous.identity };
+  return { ...next, identity: next.identity ?? previous.identity, menus: next.menus === undefined ? previous.menus : next.menus };
 }

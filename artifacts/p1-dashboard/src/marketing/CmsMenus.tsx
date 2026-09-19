@@ -329,9 +329,7 @@ export default function CmsMenus() {
           <div>
             <h1>Navigation Menus</h1>
             <p className="muted">
-              These CMS menu assignments are not yet connected to P1’s public
-              navigation. Edit existing navigation labels and links in Website
-              content.
+              Saving a menu assigned to Main Navigation or a P1 Footer location publishes its links, usually within 30 seconds. An empty assigned menu hides those links; an unassigned location keeps the existing website navigation. Other locations are retained but are not rendered by this website.
             </p>
           </div>
           <button
@@ -352,7 +350,7 @@ export default function CmsMenus() {
       {!draft && !loading && (
         <div className="menu-presentation">
           <MenuLocationsPresentation
-            description="These CMS menu assignments are not yet connected to P1’s public navigation. Edit existing navigation labels and links in Website content."
+            description="Saving a menu assigned to Main Navigation or a P1 Footer location publishes its links, usually within 30 seconds. An empty assigned menu hides those links; an unassigned location keeps the existing website navigation. Other locations are retained but are not rendered by this website."
             locations={Object.entries(locations)
               .filter(
                 ([id]) => !["header", "footer", "unassigned"].includes(id),
@@ -466,6 +464,7 @@ export default function CmsMenus() {
           }}
           className="cms-menu-editor"
         >
+          <p className="muted">Saving a menu assigned to Main Navigation or a P1 Footer location publishes its links, usually within 30 seconds. An empty assigned menu hides those links; an unassigned location keeps the existing website navigation. Other locations are retained but are not rendered by this website.</p>
           <header>
             <h1>
               {draft.id ? `Edit ${draft.name}` : "Create website menu"}

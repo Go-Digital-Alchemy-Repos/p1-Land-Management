@@ -1,3 +1,4 @@
+import websiteMenusPublic from "./website-menus-public.routes";
 import websiteRedirectsPublic from "./website-redirects-public.routes";
 import websiteRobotsPublic from "./website-robots-public.routes";
 import websiteIdentityPublic from "./public-website-identity.routes";
@@ -56,6 +57,7 @@ export function registerApiRoutes(app: Express) {
   app.use("/api/p1", websiteColorsPublic);
   app.use("/api/p1", websiteFontsPublic);
   app.use("/api/p1", websiteSocialPublic);
+  app.use("/api/p1", websiteMenusPublic);
   app.use("/api/p1", p1AnalyticsRoutes);
   app.use("/r2", r2PublicRoutes);
   app.use("/api/auth/federation", federationRoutes);

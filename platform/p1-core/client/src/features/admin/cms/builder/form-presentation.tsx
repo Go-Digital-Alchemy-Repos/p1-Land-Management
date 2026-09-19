@@ -1,6 +1,6 @@
 import { splitFormPages } from "../../../../../../shared/form-pages";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 
 import type {
   CmsForm,
@@ -183,10 +183,12 @@ function validatePageFields(fields: CmsFormField[], values: FormValues) {
 }
 
 function ChoiceGroup({
+  fieldId,
   field,
   value,
   onChange,
 }: {
+  fieldId: string;
   field: CmsFormField;
   value: unknown;
   onChange: (next: unknown) => void;
@@ -239,7 +241,11 @@ function ChoiceGroup({
                 />
               ) : null}
               <div className="flex items-center gap-3">
-                <Checkbox checked={checked} className="pointer-events-none" />
+                <Checkbox
+                  aria-label={plainText(option.label)}
+                  checked={checked}
+                  className="pointer-events-none"
+                />
                 <span className="text-sm font-medium">{plainText(option.label)}</span>
               </div>
             </div>
@@ -252,7 +258,11 @@ function ChoiceGroup({
               key={option.value}
               className="flex items-start gap-3 rounded-lg border px-3 py-2"
             >
-              <Checkbox checked={checked} onCheckedChange={(next) => toggle(Boolean(next))} />
+              <Checkbox
+                aria-label={plainText(option.label)}
+                checked={checked}
+                onCheckedChange={(next) => toggle(Boolean(next))}
+              />
               <span className="text-sm">{plainText(option.label)}</span>
             </label>
           );
@@ -262,6 +272,7 @@ function ChoiceGroup({
           <label key={option.value} className="flex items-start gap-3 rounded-lg border px-3 py-2">
             <input
               type="radio"
+              name={fieldId}
               checked={checked}
               onChange={() => onChange(option.value)}
               className="mt-1 h-4 w-4"
@@ -275,10 +286,12 @@ function ChoiceGroup({
 }
 
 function ListField({
+  fieldId,
   field,
   value,
   onChange,
 }: {
+  fieldId: string;
   field: CmsFormField;
   value: unknown;
   onChange: (next: unknown) => void;
@@ -312,10 +325,14 @@ function ListField({
       {rows.map((row, index) => (
         <div key={index} className="rounded-lg border bg-muted/10 p-3">
           <div className="grid gap-3 md:grid-cols-2">
-            {columns.map((column) => (
+            {columns.map((column, columnIndex) => (
               <div key={column.id} className="space-y-1.5">
-                <Label>{plainText(column.label)}</Label>
+                <Label htmlFor={`${fieldId}-row-${index}-column-${columnIndex}`}>
+                  {plainText(column.label)}
+                </Label>
                 <Input
+                  id={`${fieldId}-row-${index}-column-${columnIndex}`}
+                  aria-label={`${plainText(field.label)}, row ${index + 1}, ${plainText(column.label)}`}
                   value={text(row[column.id])}
                   onChange={(event) => updateRow(index, column.id, event.target.value)}
                   placeholder={column.placeholder}
@@ -354,6 +371,7 @@ function renderFieldInput(
   value: unknown,
   setValue: (next: unknown) => void,
   compact: boolean,
+  fieldId: string,
 ) {
   if (field.type === "html") {
     return (
@@ -388,6 +406,7 @@ function renderFieldInput(
   if (field.type === "textarea") {
     return (
       <Textarea
+        id={fieldId}
         value={text(value)}
         onChange={(event) => setValue(event.target.value)}
         placeholder={field.placeholder}
@@ -399,7 +418,7 @@ function renderFieldInput(
   if (field.type === "select") {
     return (
       <Select value={text(value)} onValueChange={setValue}>
-        <SelectTrigger>
+        <SelectTrigger id={fieldId} aria-labelledby={`${fieldId}-label`}>
           <SelectValue
             placeholder={
               plainText(field.placeholder) || `Select ${plainText(field.label).toLowerCase()}`
@@ -421,6 +440,7 @@ function renderFieldInput(
     const current = arrayValue(value).map((item) => text(item));
     return (
       <select
+        id={fieldId}
         multiple
         value={current}
         onChange={(event) =>
@@ -438,14 +458,19 @@ function renderFieldInput(
   }
 
   if (supportsChoices(field.type)) {
-    return <ChoiceGroup field={field} value={value} onChange={setValue} />;
+    return <ChoiceGroup fieldId={fieldId} field={field} value={value} onChange={setValue} />;
   }
 
   if (field.type === "consent") {
     return (
       <div className="space-y-3 rounded-xl border bg-muted/10 p-4">
         <label className="flex items-start gap-3">
-          <Checkbox checked={value === true} onCheckedChange={(next) => setValue(Boolean(next))} />
+          <Checkbox
+            id={fieldId}
+            aria-label={plainText(field.config?.consentCheckboxLabel) || plainText(field.label)}
+            checked={value === true}
+            onCheckedChange={(next) => setValue(Boolean(next))}
+          />
           <span className="text-sm font-medium">
             {plainText(field.config?.consentCheckboxLabel) || plainText(field.label)}
           </span>
@@ -465,11 +490,13 @@ function renderFieldInput(
       return (
         <div className="grid gap-4 md:grid-cols-2">
           <Input
+            aria-label={`${plainText(field.label)}: First name`}
             value={text(record.firstName)}
             onChange={(event) => setValue({ ...record, firstName: event.target.value })}
             placeholder="First name"
           />
           <Input
+            aria-label={`${plainText(field.label)}: Last name`}
             value={text(record.lastName)}
             onChange={(event) => setValue({ ...record, lastName: event.target.value })}
             placeholder="Last name"
@@ -480,6 +507,7 @@ function renderFieldInput(
 
     return (
       <Input
+        id={fieldId}
         value={text(record.fullName)}
         onChange={(event) => setValue({ fullName: event.target.value })}
         placeholder={field.placeholder || "Full name"}
@@ -493,34 +521,40 @@ function renderFieldInput(
     return (
       <div className={cn("grid gap-4", compactLayout ? "md:grid-cols-2" : "grid-cols-1")}>
         <Input
+          aria-label={`${plainText(field.label)}: Street address`}
           value={text(record.street)}
           onChange={(event) => setValue({ ...record, street: event.target.value })}
           placeholder="Street address"
         />
         {field.config?.showStreet2 ? (
           <Input
+            aria-label={`${plainText(field.label)}: Address line 2`}
             value={text(record.street2)}
             onChange={(event) => setValue({ ...record, street2: event.target.value })}
             placeholder="Address line 2"
           />
         ) : null}
         <Input
+          aria-label={`${plainText(field.label)}: City`}
           value={text(record.city)}
           onChange={(event) => setValue({ ...record, city: event.target.value })}
           placeholder="City"
         />
         <Input
+          aria-label={`${plainText(field.label)}: State / Province`}
           value={text(record.state)}
           onChange={(event) => setValue({ ...record, state: event.target.value })}
           placeholder="State / Province"
         />
         <Input
+          aria-label={`${plainText(field.label)}: Postal code`}
           value={text(record.postalCode)}
           onChange={(event) => setValue({ ...record, postalCode: event.target.value })}
           placeholder="Postal code"
         />
         {field.config?.showCountry !== false ? (
           <Input
+            aria-label={`${plainText(field.label)}: Country`}
             value={text(record.country)}
             onChange={(event) => setValue({ ...record, country: event.target.value })}
             placeholder="Country"
@@ -531,7 +565,7 @@ function renderFieldInput(
   }
 
   if (field.type === "list") {
-    return <ListField field={field} value={value} onChange={setValue} />;
+    return <ListField fieldId={fieldId} field={field} value={value} onChange={setValue} />;
   }
 
   const inputType =
@@ -551,6 +585,7 @@ function renderFieldInput(
 
   return (
     <Input
+      id={fieldId}
       type={inputType}
       value={text(value)}
       onChange={(event) => setValue(event.target.value)}
@@ -578,6 +613,7 @@ export function FormPresentation({
   onSubmitSuccess,
 }: PublicFormRendererProps) {
   const { toast } = useFormPresentationHost();
+  const instanceId = useId();
   const [isPending, setPending] = useState(false);
   const FormElement = preview ? "div" : "form";
   const [values, setValues] = useState<FormValues>({});
@@ -722,16 +758,34 @@ export function FormPresentation({
           {visibleFields.map((field) => {
             if (field.type === "hidden") return null;
             const structural = isStructuralField(field.type);
+            const fieldId = `${instanceId}-${field.id}`;
+            const grouped =
+              ["checkbox", "radio", "image-choice", "address", "list"].includes(field.type) ||
+              (field.type === "name" && field.config?.nameFormat === "split");
             return (
-              <div key={field.id} className={cn("space-y-1.5", fieldSpanClass(field, compact))}>
+              <div
+                key={field.id}
+                role={grouped ? "group" : undefined}
+                aria-labelledby={grouped ? `${fieldId}-label` : undefined}
+                className={cn("space-y-1.5", fieldSpanClass(field, compact))}
+              >
                 {!["html", "section"].includes(field.type) ? (
-                  <Label htmlFor={`${slug}-${field.key}`}>{plainText(field.label)}</Label>
+                  grouped ? (
+                    <div id={`${fieldId}-label`} className="text-sm font-medium">
+                      {plainText(field.label)}
+                    </div>
+                  ) : (
+                    <Label id={`${fieldId}-label`} htmlFor={fieldId}>
+                      {plainText(field.label)}
+                    </Label>
+                  )
                 ) : null}
                 {renderFieldInput(
                   field,
                   values[field.key],
                   (next) => setValues((current) => ({ ...current, [field.key]: next })),
                   compact,
+                  fieldId,
                 )}
                 {!structural && field.helpText ? (
                   <p className="text-xs public-helper-text">{plainText(field.helpText)}</p>

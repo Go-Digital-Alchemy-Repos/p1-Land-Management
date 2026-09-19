@@ -18,7 +18,11 @@ export function EventAttendees({
   eventId,
   title,
   close,
+  embedded = false,
+  onBusyChange,
 }: {
+  embedded?: boolean;
+  onBusyChange?: (busy: boolean) => void;
   eventId: string;
   title: string;
   close: () => void;
@@ -31,6 +35,10 @@ export function EventAttendees({
   const [attempt, setAttempt] = useState(0),
     [query, setQuery] = useState(""),
     [status, setStatus] = useState("all");
+  useEffect(() => {
+    onBusyChange?.(saving);
+    return () => onBusyChange?.(false);
+  }, [saving, onBusyChange]);
   const gate = useRef(false),
     alive = useRef(true);
   useEffect(() => {
@@ -103,10 +111,13 @@ export function EventAttendees({
         use your device’s time zone.
       </p>
       <div className="event-actions">
-        <button disabled={saving} onClick={close}>
-          Back to events
-        </button>
+        {!embedded && (
+          <button type="button" disabled={saving} onClick={close}>
+            Back to events
+          </button>
+        )}
         <button
+          type="button"
           disabled={loading || saving}
           onClick={() => setAttempt((value) => value + 1)}
         >
@@ -161,6 +172,7 @@ export function EventAttendees({
                   <p style={{ whiteSpace: "pre-wrap" }}>{row.notes}</p>
                 )}
                 <button
+                  type="button"
                   disabled={saving || Boolean(error)}
                   onClick={() => void attendance(row)}
                 >

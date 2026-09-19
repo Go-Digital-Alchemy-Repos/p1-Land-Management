@@ -1,3 +1,4 @@
+import type { PublicWebsiteMenus } from "../../../../platform/p1-core/shared/public-menus";
 import { applyKnownPhoneReference } from "./site-identity";
 import { applyPreviewOverlay, type CmsPreviewOverlay } from "./cms-preview";
 import { acceptsPreviewParent, BUSINESS_CENTER_ORIGIN } from '../../config/preview-origins.mjs';
@@ -6,7 +7,7 @@ import React, { createContext, useContext, useEffect, useState, type ReactNode }
 
 export type CmsValues = Record<string, string>;
 export type CmsIdentity = { schemaVersion?: 1; stackId?: 'p1-land-management'; version: string; companyName: string | null; companyAddress: string | null; phoneDisplay: string | null; phoneHref: string | null; logoUrl: string | null; faviconUrl: string | null; googleBusinessUrl: string | null };
-export type CmsSnapshot = { identity?: CmsIdentity | null; route: string; content: CmsValues; global: CmsValues; revision?: number; publishedAt?: string; globalRevision?: number };
+export type CmsSnapshot = { menus?: PublicWebsiteMenus | null; identity?: CmsIdentity | null; route: string; content: CmsValues; global: CmsValues; revision?: number; publishedAt?: string; globalRevision?: number };
 export type CmsField = { path: string; label: string; type: 'text' | 'textarea' | 'image' | 'imageAlt' | 'ctaTarget'; required: boolean; maxLength: number };
 export type CmsCollection = { page: Record<string, { field: CmsField; value: string }>; global: Record<string, { field: CmsField; value: string }> };
 export function routeId(path: string) { return path === '/' ? 'home' : path.replace(/^\/+|\/+$/g, '').replace(/[^a-z0-9]+/g, '-'); }

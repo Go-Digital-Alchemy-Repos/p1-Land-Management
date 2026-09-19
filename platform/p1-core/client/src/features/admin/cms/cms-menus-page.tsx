@@ -184,6 +184,7 @@ function MenuEditor({
           />
         ) : null}
 
+        <p className="text-sm text-muted-foreground">Saving a menu assigned to Main Navigation or a P1 Footer location publishes its links, usually within 30 seconds. An empty assigned menu hides those links; an unassigned location keeps the existing website navigation. Other locations are retained but are not rendered by this website.</p>
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold" data-testid="text-menu-editor-title">
             {isNew ? "Create Menu" : `Edit: ${menu!.name}`}
@@ -397,8 +398,7 @@ export default function CmsMenusPage() {
               Navigation Menus
             </h1>
             <p className="text-sm text-muted-foreground mt-1">
-              Create reusable menus and assign them to theme locations like the main navigation and
-              footer areas.
+              Saving a menu assigned to Main Navigation or a P1 Footer location publishes its links, usually within 30 seconds. An empty assigned menu hides those links; an unassigned location keeps the existing website navigation. Other locations are retained but are not rendered by this website.
             </p>
           </div>
           <Button
@@ -413,6 +413,7 @@ export default function CmsMenusPage() {
         </div>
 
         <MenuLocationsPresentation
+          description="Saving a menu assigned to Main Navigation or a P1 Footer location publishes its links, usually within 30 seconds. An empty assigned menu hides those links; an unassigned location keeps the existing website navigation. Other locations are retained but are not rendered by this website."
           locations={STANDARD_LOCATION_OPTIONS}
           menus={menus || []}
           onManage={(location, id) => {

@@ -152,3 +152,8 @@ platform/p1-core/client/src/components/ui/*
 !platform/p1-core/client/src/components/shared/sidebar-editor-presentation.tsx
 
 !platform/p1-core/client/src/components/shared/sidebar-presentation.utilities.css
+
+!platform/p1-core/client/src/components/shared/career-admin-presentation.tsx
+!platform/p1-core/client/src/components/shared/event-admin-editor-presentation.tsx
+!platform/p1-core/client/src/components/shared/event-admin-list-presentation.tsx
+!platform/p1-core/client/src/components/shared/event-admin-presentation.utilities.css
