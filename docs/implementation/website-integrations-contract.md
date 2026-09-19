@@ -1,8 +1,8 @@
 # Website Integrations contract foundation
 
-September 19, 2026. Implemented but deliberately **unmounted** pending retained-route coordination and native UI integration. This is not full integration-management acceptance.
+September 19, 2026. The native Owner-only destination is now implemented at `/marketing/system/integrations`, with exact bridge allowlisting and generated clients. Live acceptance is pending this release. Google configuration management and full consolidation acceptance remain incomplete.
 
-`shared/website-integrations.ts` defines the exact Mailgun, Mailchimp and Cloudflare R2 provider keys. `server/routes/business-center-integrations.routes.ts` is an Owner-only router intended for `/website-system/integrations` inside the existing federated CMS bridge. It must never be mounted outside that authenticated boundary.
+`shared/website-integrations.ts` defines the exact Mailgun, Mailchimp and Cloudflare R2 provider keys. `server/routes/business-center-integrations.routes.ts` is an Owner-only router mounted at `/website-system/integrations` inside the existing federated CMS bridge. It must never be mounted outside that authenticated boundary.
 
 ## Operations
 
@@ -12,16 +12,15 @@ September 19, 2026. Implemented but deliberately **unmounted** pending retained-
 
 The response identifies deployment configuration separately from the editable database fallback. Saving R2 database settings does not migrate stored objects, change deployment overrides, or validate backup recovery. When backup storage falls back to that same category, edits can affect its destination too. SMTP remains a separate deployment fallback after Mailgun.
 
-## Required integration before exposure
+## Native integration and remaining acceptance
 
-1. Coordinate legacy generic settings PUT/DELETE with the same versioned contract or reject those provider writes with a destination message. The current legacy route can otherwise overwrite a later native edit.
-2. Add exact bridge operation allowlisting and generated contracts, then native Owner UI with draft preservation and explicit secret keep/replace/clear controls. No automatic mutation replay.
-3. Cross-process freshness is implemented for Mailgun, upload R2 and backup storage using a fresh database snapshot before each operation (details below). Deployment variables retain deployment/restart ownership. Mailchimp still uses the existing category TTL and requires separate review before claiming immediate convergence for every provider.
-4. Decide and implement active Google configuration management without rotating existing credentials or treating legacy DB Google fields as active. Current foundation reports deployment source only.
-5. Review environment-source R2 endpoints under existing deployment governance. The UI never accepts arbitrary provider endpoints. Complete configuration/access status still needs provider evidence; presence alone is insufficient.
-6. Verify existing stored non-secret provider values and desired storage changes, including rollback and backup implications, before mutations. No production fixtures or connection requests were executed during this implementation.
+The native screen provides explicit secret keep/replace/clear controls, category versions, retained drafts, bounded requests and no automatic mutation replay. Saved read-only checks are separate from saving. Confirmed saves clear replacement secret inputs. Deployment overrides, editable fallback, SMTP fallback and backup coupling are visible.
 
-Validation: ten mocked HTTP tests cover redaction/no-store, Owner denial, atomic versioned keep/clear, arbitrary input rejection, sanitized connection result/audit, conflict behavior, exact storage source precedence, sanitized storage failures, and Search Console site validation. Core type checking passed. These tests do not replace existing SettingsStorage transaction tests or live integration acceptance. QuickBooks, Twilio, filtered commerce integrations and existing credential stores are unchanged.
+Legacy GET excludes all registry keys/categories regardless of stored secrecy flags; generic PUT/DELETE reject registry keys, categories and historical reclassification. Retained provider cards point to the native destination; their old test route cannot call providers. Native reads validate all registered key categories/secrecy before decryption. Versioned transactions validate the same rules under the table lock, including secrets kept unchanged. Historical inconsistencies produce a withheld/disabled provider card and require explicit reconciliation; they are never silently moved.
+
+Mailchimp now joins Mailgun/upload/backup fresh snapshot reads. Final audience and server-prefix validation occurs in the service before every request, including inferred prefixes; exact Mailchimp API-host inputs normalize safely. Redirects and raw provider error bodies are prohibited. No subscriber or mail operation is triggered by the native screen's read-only checks.
+
+Remaining: active Google configuration management, verified canonical Search Console access, production configuration reconciliation when needed, mobile/live acceptance and complete provider delivery/recovery evidence. No credential rotation, provider provisioning, bucket migration or production fixtures are part of this release. QuickBooks/Twilio remain deferred. Presence is not proof of provider access.
 
 ## Source selector follow-up
 
@@ -40,3 +39,5 @@ Mailgun, R2 uploads and backup storage now read `getCategorySnapshot` before eac
 This deliberately costs one small indexed category read per DB-backed operation; no polling or cross-process message service is introduced. Snapshot revision is not needed for client comparison because the complete effective configuration is freshly resolved; unrelated category changes do not rebuild clients. Deployment precedence remains unchanged and makes no settings read. Clients already handed to running operations are not destroyed; subsequent operations acquire the newly resolved configuration. No bucket/object migration occurs.
 
 Validation: five dedicated freshness tests plus five existing environment-storage tests passed, covering credential replacement/clear/restoration, two independent upload/backup consumers, failed fresh reads, environment precedence/partial failure, client reuse and an already-started request finishing after rotation. No actual provider calls or database changes.
+
+Release validation (September 19): 108 Core route/service/cache regressions, 14 isolated PostgreSQL settings transaction tests, 29 transport/navigation tests and 10 native component tests passed. Core, Dashboard and API type checks and production builds passed. Tests cover misclassified legacy credential reads, historical key/secrecy mismatch, omitted keep-secret enforcement, rotation/clear/fresh-read failure, stale connection-result clearing and uncertain-write draft preservation. Live read-only acceptance is pending.

@@ -1,6 +1,6 @@
 import { Router, type ErrorRequestHandler } from "express";
 import { z } from "zod";
-import { integrationFields, integrationRegistry, integrationWriteSchema, websiteIntegrationProviderSchema, websiteIntegrationProviders, type WebsiteIntegrationProvider } from "@shared/website-integrations";
+import { integrationFields, integrationKeyRules, integrationRegistry, integrationWriteSchema, websiteIntegrationProviderSchema, websiteIntegrationProviders, type WebsiteIntegrationProvider } from "@shared/website-integrations";
 import { storage } from "../storage";
 import { requireWebsiteOwner } from "../middleware/website-owner";
 import { asyncHandler } from "../middleware/error-handler";
@@ -17,12 +17,13 @@ function source(provider: WebsiteIntegrationProvider) {
   return provider === "cloudflare_r2" && hasS3("S3") ? "deployment" : "settings";
 }
 async function view(provider: WebsiteIntegrationProvider) {
-  const snapshot = await storage.settings.getCategorySnapshot(provider);
+  const snapshot = await storage.settings.getCategorySnapshot(provider, false, integrationKeyRules(provider));
   const registry = integrationRegistry[provider];
   return {
     provider, version: snapshot.version, effectiveSource: source(provider),
     fields: Object.fromEntries(registry.publicKeys.map(key => [key, snapshot.values[key] || ""])),
     secrets: Object.fromEntries(registry.secretKeys.map(key => [key, { configured: Boolean(snapshot.values[key]) }])),
+    configurationIssue: null,
     configurationManagement: "settings", // Editing a fallback does not change deployment configuration.
     testEffects: "Read-only provider request; no email, subscriptions, or object writes.",
   };
@@ -30,7 +31,17 @@ async function view(provider: WebsiteIntegrationProvider) {
 router.get("/", asyncHandler(async (req, res) => {
   empty.parse(req.query);
   res.json({
-    providers: await Promise.all(websiteIntegrationProviders.map(view)),
+    providers: await Promise.all(websiteIntegrationProviders.map(async provider => {
+      try { return await view(provider); } catch (error) {
+        if ((error as { code?: string }).code !== "settings_boundary_mismatch") throw error;
+        const registry = integrationRegistry[provider];
+        return { provider, version: "0".repeat(64), effectiveSource: source(provider),
+          fields: Object.fromEntries(registry.publicKeys.map(key => [key, ""])),
+          secrets: Object.fromEntries(registry.secretKeys.map(key => [key, { configured: false }])),
+          configurationManagement: "settings", configurationIssue: "Stored settings require category or secrecy reconciliation before editing. Values are withheld.",
+          testEffects: "Read-only provider request; no email, subscriptions, or object writes." };
+      }
+    })),
     google: {
       effectiveSource: "deployment", configurationManagement: "remaining",
       credentialMode: process.env.P1_GA_SERVICE_ACCOUNT_JSON ? "service-account" : process.env.P1_GA_CLIENT_ID && process.env.P1_GA_CLIENT_SECRET && process.env.P1_GA_REFRESH_TOKEN ? "oauth" : "missing",
@@ -54,7 +65,7 @@ router.put("/:provider", asyncHandler(async (req, res) => {
     if (field.operation === "keep") return [];
     return [{ key, category: provider, value: field.operation === "clear" ? "" : field.value!, isSecret: true }];
   });
-  await storage.settings.upsertSettings(entries, { category: provider, version: body.expectedVersion }, {
+  await storage.settings.upsertSettings(entries, { category: provider, version: body.expectedVersion, keyRules: integrationKeyRules(provider) }, {
     userId: req.user!.id, action: "website_integration_updated", details: JSON.stringify({ provider, keys: entries.map(entry => entry.key) }),
   });
   if (provider === "mailgun") resetMailgunConfig();
@@ -62,18 +73,19 @@ router.put("/:provider", asyncHandler(async (req, res) => {
   res.json({ saved: true, integration: await view(provider) });
 }));
 router.post("/:provider/test", asyncHandler(async (req, res) => {
-  empty.parse(req.query); empty.parse(req.body);
+  empty.parse(req.query); empty.parse(req.body ?? {});
   const provider = websiteIntegrationProviderSchema.parse(req.params.provider);
   // Validate persisted identifiers too: legacy values were accepted without provider constraints.
   if (source(provider) === "settings") {
-    const snapshot = await storage.settings.getCategorySnapshot(provider);
+    const snapshot = await storage.settings.getCategorySnapshot(provider, false, integrationKeyRules(provider));
     const registry = integrationRegistry[provider];
     const fields = Object.fromEntries([
       ...registry.publicKeys.map(key => [key, snapshot.values[key] || ""]),
       ...registry.secretKeys.map(key => [key, { operation: "keep" }]),
     ]);
     if (!integrationFields[provider].safeParse(fields).success || (provider === "mailchimp" && !snapshot.values.mailchimp_server_prefix && !/^[^-]+-us\d+$/.test(snapshot.values.mailchimp_api_key || ""))) {
-      res.json({ success: false, code: "invalid_configuration" }); return;
+      await storage.activity.log(req.user!.id, "website_integration_tested", JSON.stringify({ provider, success: false, code: "invalid_configuration" }));
+      res.json({ success: false, code: "invalid_configuration", effects: "read-only" }); return;
     }
   }
   let success = false;

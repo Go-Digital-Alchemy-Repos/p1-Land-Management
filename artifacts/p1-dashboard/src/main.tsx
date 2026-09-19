@@ -86,6 +86,7 @@ const WebsiteTypography = lazy(() => import("./marketing/WebsiteTypography"));
 const WebsiteColors = lazy(() => import("./marketing/WebsiteColors"));
 const WebsiteFeatures = lazy(() => import("./marketing/WebsiteFeatures"));
 const ClientStackOnboarding = lazy(() => import("./marketing/ClientStackOnboarding"));
+const WebsiteIntegrations = lazy(() => import("./marketing/WebsiteIntegrations"));
 const EmailTemplateManager = lazy(() => import("./marketing/EmailTemplateManager"));
 const DocumentManager = lazy(() => import("./marketing/DocumentManager"));
 const HeadTagSettings = lazy(() => import("./marketing/HeadTagSettings"));
@@ -147,6 +148,7 @@ const icons: Record<DashboardPageRoute["view"] | "Settings:security" | "Settings
   "Website Features": SlidersHorizontal,
   "Website Head Tags": SlidersHorizontal,
   "Website Documents": FileText,
+  "Website Integrations": SlidersHorizontal,
   "Website Email Templates": Mail,
   "Website Onboarding": FileText,
   "Website Sections": Menu,
@@ -1447,6 +1449,7 @@ function App() {
           {view === "Website Colors" && <Suspense fallback={<p role="status">Loading website colors…</p>}><WebsiteColors key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Website Features" && person.role === "owner" && <Suspense fallback={<p role="status">Loading website modules…</p>}><WebsiteFeatures key={person.id}/></Suspense>}
           {view === "Website Onboarding" && person.role === "owner" && <Suspense fallback={<p role="status">Loading onboarding…</p>}><ClientStackOnboarding key={person.id}/></Suspense>}
+          {view === "Website Integrations" && person.role === "owner" && <Suspense fallback={<p role="status">Loading website integrations…</p>}><WebsiteIntegrations key={person.id}/></Suspense>}
           {view === "Website Email Templates" && person.role === "owner" && <Suspense fallback={<p role="status">Loading email templates…</p>}><EmailTemplateManager key={person.id}/></Suspense>}
           {view === "Website Documents" && person.role === "owner" && <Suspense fallback={<p role="status">Loading developer resources…</p>}><DocumentManager key={person.id}/></Suspense>}
           {view === "Website Head Tags" && person.role === "owner" && <Suspense fallback={<p role="status">Loading website settings…</p>}><HeadTagSettings key={person.id}/></Suspense>}

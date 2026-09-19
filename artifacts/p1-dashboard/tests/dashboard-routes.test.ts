@@ -167,3 +167,11 @@ test("Email Templates is an Owner-only Website System destination", () => {
  assert.equal(canAccessRoute(route,"owner"),true);
  for(const role of ["admin","member","client","crew",null]) assert.equal(canAccessRoute(route,role,["marketing.content.pages"]),false);
 });
+
+test("Website Integrations is distinct from business settings and Owner-only", () => {
+ const route=routeFromPath("/marketing/system/integrations");
+ assert.equal(route.kind,"page");if(route.kind!=="page")return;
+ assert.equal(route.page.view,"Website Integrations");assert.equal(route.page.section,"Website System");
+ assert.equal(canAccessRoute(route,"owner"),true);
+ for(const role of ["admin","member","client","crew",null]) assert.equal(canAccessRoute(route,role,["marketing.content.pages"]),false);
+});

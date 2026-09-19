@@ -1,3 +1,4 @@
+import { integrationRegistry, websiteIntegrationProviders } from "@shared/website-integrations";
 import { isWebsiteIdentityKey } from "@shared/website-identity";
 import { isSocialSettingKey } from "@shared/social-media";
 import { isWebsiteFontKey } from "@shared/website-fonts";
@@ -13,7 +14,6 @@ import { asyncHandler } from "../middleware/error-handler";
 import { paramString } from "../utils/params";
 import {
   sendEmail,
-  testMailgunConnection,
   renderEmailShell,
   renderTemplate,
   resetEmailBrandingCache,
@@ -21,7 +21,6 @@ import {
 import * as r2Service from "../services/r2.service";
 import { SYSTEM_EMAIL_TEMPLATE_DEFAULTS } from "../services/system-email-templates.service";
 import { emailTemplateSaveSchema, emailTemplateRestoreSchema } from "@shared/email-template-contract";
-import { testMailchimpConnection } from "../services/mailchimp.service";
 import { isDesignEditableBrandingSetting } from "../utils/branding-settings-policy";
 
 const router = Router();
@@ -53,7 +52,20 @@ function requireAdminOrDesignEditor(req: Request, res: Response, next: NextFunct
   res.status(403).json({ message: "Forbidden" });
 }
 
+const integrationKeys = new Set<string>(Object.values(integrationRegistry).flatMap(provider => [...provider.publicKeys, ...provider.secretKeys]));
+function isWebsiteIntegrationSetting(key: unknown, category?: unknown) {
+  return (typeof key === "string" && integrationKeys.has(key)) ||
+    (typeof category === "string" && websiteIntegrationProviders.some(provider => provider === category));
+}
+const integrationMovedMessage = "Manage website integrations in Marketing > Website System > Integrations";
+function rejectLegacyIntegration(req: Request, res: Response) {
+  return isWebsiteOwner(req)
+    ? res.status(409).json({message: integrationMovedMessage})
+    : res.status(403).json({message: "Owner access required"});
+}
+
 function requireSettingWritePermission(req: Request, res: Response, next: NextFunction) {
+  if (isWebsiteIntegrationSetting(req.body?.key, req.body?.category)) return rejectLegacyIntegration(req,res);
   if (isWebsiteIdentityKey(req.body?.key)) return res.status(409).json({message:"Edit company identity in Marketing > Design > Branding"});
   if (isSocialSettingKey(req.body?.key)) return res.status(409).json({message:"Edit social links in Marketing > Design > Social media"});
   if (isWebsiteFontKey(req.body?.key)) return res.status(409).json({message:"Edit website fonts in Marketing > Design > Typography"});
@@ -78,6 +90,7 @@ router.get(
     const grouped: Record<string, Record<string, { value: string; isSecret: boolean }>> = {};
 
     for (const s of settings) {
+      if (isWebsiteIntegrationSetting(s.key, s.category)) continue;
       if (isRetiredPrivateProofSetting(s.key, s.category)) continue;
       if (_req.user?.role !== "admin" && s.category !== "branding") continue;
       if (!grouped[s.category]) grouped[s.category] = {};
@@ -115,6 +128,7 @@ router.put(
       isRetiredPrivateProofSetting(existingPrivate?.key, existingPrivate?.category)
     )
       return res.status(403).json({ message: "This retired private proof setting is protected" });
+    if (isWebsiteIntegrationSetting(existingPrivate?.key, existingPrivate?.category)) return rejectLegacyIntegration(req,res);
     const scope = websiteSettingScope(data.key,data.category) || websiteSettingScope(existingPrivate?.key,existingPrivate?.category);
     if (scope && !isWebsiteOwner(req)) return res.status(403).json({message:"Owner access required"});
     if (req.user?.role !== "admin" && !(scope && isWebsiteOwner(req))) {
@@ -164,6 +178,7 @@ router.delete(
     const existing = (await storage.settings.getAllSettings()).find(
       (s) => s.key === paramString(req.params.key),
     );
+    if (isWebsiteIntegrationSetting(paramString(req.params.key), existing?.category)) return rejectLegacyIntegration(req,res);
     if (isRetiredPrivateProofSetting(paramString(req.params.key), existing?.category))
       return res.status(403).json({ message: "This retired private proof setting is protected" });
     if (isWebsiteIdentityKey(paramString(req.params.key))) return res.status(409).json({message:"Clear company identity in Marketing > Design > Branding"});
@@ -188,27 +203,8 @@ router.post(
   "/settings/test-connection",
   requireRole("admin"),
   asyncHandler(async (req, res) => {
-    const { integration } = testConnectionSchema.parse(req.body);
-
-    if (integration === "mailgun") {
-      const result = await testMailgunConnection();
-      res.json(result);
-      return;
-    }
-
-    if (integration === "mailchimp") {
-      const result = await testMailchimpConnection();
-      res.json(result);
-      return;
-    }
-
-    if (integration === "cloudflare_r2") {
-      const result = await r2Service.testConnection();
-      res.json(result);
-      return;
-    }
-
-    res.status(400).json({ success: false, message: "Unknown integration" });
+    testConnectionSchema.parse(req.body);
+    rejectLegacyIntegration(req,res);
   }),
 );
 

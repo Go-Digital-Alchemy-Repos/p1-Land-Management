@@ -18,7 +18,7 @@ export const integrationFields = {
   }).strict(),
   mailchimp: z.object({
     mailchimp_audience_id: z.string().max(64).regex(/^[a-zA-Z0-9]*$/),
-    mailchimp_server_prefix: z.string().max(16).regex(/^(?:us[0-9]+)?$/),
+    mailchimp_server_prefix: z.string().max(2048).refine(value => !value || normalizeMailchimpServerPrefix(value) !== null).transform(value => value ? normalizeMailchimpServerPrefix(value)! : ""),
     mailchimp_api_key: secret,
   }).strict(),
   cloudflare_r2: z.object({
@@ -39,4 +39,22 @@ export const integrationRegistry = {
 } as const;
 export function integrationWriteSchema(provider: WebsiteIntegrationProvider) {
   return z.object({ expectedVersion: z.string().regex(/^[a-f0-9]{64}$/), fields: integrationFields[provider] }).strict();
+}
+
+/** Enforced before decryption and again inside the versioned write transaction. */
+export function integrationKeyRules(provider: WebsiteIntegrationProvider): Readonly<Record<string, boolean>> {
+  const registry = integrationRegistry[provider];
+  return Object.fromEntries([...registry.publicKeys.map(key => [key, false]), ...registry.secretKeys.map(key => [key, true])]);
+}
+
+export function normalizeMailchimpServerPrefix(value: string): string | null {
+  const text = value.trim();
+  if (/^us[0-9]{1,14}$/.test(text)) return text;
+  // Retain known Mailchimp API-host input, never arbitrary hosts or URL credentials.
+  try {
+    const url = new URL(/^https?:\/\//i.test(text) ? text : `https://${text}`);
+    const match = /^(us[0-9]{1,14})\.api\.mailchimp\.com$/i.exec(url.hostname);
+    if (!match || !["https:", "http:"].includes(url.protocol) || url.username || url.password || url.port || url.search || url.hash) return null;
+    return match[1].toLowerCase();
+  } catch { return null; }
 }

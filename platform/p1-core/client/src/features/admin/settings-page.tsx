@@ -1,3 +1,4 @@
+import { websiteIntegrationProviders } from "@shared/website-integrations";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -553,6 +554,11 @@ export const INTEGRATIONS: IntegrationConfig[] = [
   },
 ];
 
+const WEBSITE_INTEGRATIONS_URL = "https://dashboard.p1landmanagement.com/marketing/system/integrations";
+function isConsolidatedIntegration(category: string) {
+  return websiteIntegrationProviders.some(provider => provider === category);
+}
+
 export function IntegrationCard({
   config,
   settings,
@@ -622,6 +628,16 @@ export function IntegrationCard({
 
   const Icon = config.icon;
   const BrandIcon = config.brandIcon;
+
+  if (isConsolidatedIntegration(config.category)) return (
+    <Card data-testid={`card-integration-${config.category}`}>
+      <CardHeader><CardTitle>{config.title}</CardTitle></CardHeader>
+      <CardContent>
+        <p>Website integration settings and connection tests are managed by the Owner in the dashboard.</p>
+        <Button asChild className="mt-4"><a href={WEBSITE_INTEGRATIONS_URL}>Open website integrations</a></Button>
+      </CardContent>
+    </Card>
+  );
 
   return (
     <Card data-testid={`card-integration-${config.category}`}>
@@ -1107,7 +1123,7 @@ function IntegrationsTab({ settings }: { settings: SettingsData }) {
                     type="button"
                     variant="outline"
                     className="w-full"
-                    onClick={() => setSelectedIntegration(config)}
+                    onClick={() => { if (isConsolidatedIntegration(config.category)) window.location.assign(WEBSITE_INTEGRATIONS_URL); else setSelectedIntegration(config); }}
                     data-testid={`button-open-integration-${config.category}`}
                   >
                     Configure

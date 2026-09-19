@@ -41,6 +41,29 @@ suite("atomic settings real database", () => {
   afterAll(async () => {
     if (pool) await pool.end();
   });
+  it("rejects historical integration keys in the wrong category or secrecy class before reads and writes", async () => {
+    const rules = { mailgun_domain: false, mailgun_api_key: true };
+    await settings.upsertSetting("mailgun_api_key", "private", "wrong_category", true);
+    const before = await settings.getCategorySnapshot("mailgun");
+    await expect(settings.getCategorySnapshot("mailgun", false, rules)).rejects.toMatchObject({ code: "settings_boundary_mismatch" });
+    await expect(settings.upsertSettings([entry("mailgun_domain", "mg.example.test", "mailgun")],
+      { category: "mailgun", version: before.version, keyRules: rules })).rejects.toMatchObject({ code: "settings_boundary_mismatch" });
+    expect((await settings.getCategorySnapshot("mailgun")).values).toEqual({});
+    await settings.upsertSetting("mailgun_api_key", "private", "mailgun", false);
+    await expect(settings.getCategorySnapshot("mailgun", false, rules)).rejects.toMatchObject({ code: "settings_boundary_mismatch" });
+  });
+  it("checks every registered integration key under the write lock even when a secret is kept", async () => {
+    const rules = { mailgun_domain: false, mailgun_api_key: true };
+    await settings.upsertSetting("mailgun_api_key", "private", "mailgun", true);
+    const before = await settings.getCategorySnapshot("mailgun", false, rules);
+    await settings.upsertSettings([entry("mailgun_domain", "mg.example.test", "mailgun")],
+      { category: "mailgun", version: before.version, keyRules: rules });
+    const saved = await settings.getCategorySnapshot("mailgun", false, rules);
+    expect(saved.values.mailgun_api_key).toBe("private");
+    await expect(settings.upsertSettings([entry("unregistered", "x", "mailgun")],
+      { category: "mailgun", version: saved.version, keyRules: rules })).rejects.toMatchObject({ code: "settings_boundary_mismatch" });
+    expect((await settings.getCategorySnapshot("mailgun", false, rules)).version).toBe(saved.version);
+  });
   it("rolls back every setting when one write fails and retains warm committed cache", async () => {
     await settings.upsertSettings([
       entry("active_mode", "test"),

@@ -358,6 +358,11 @@ import type {
   WebsiteHeadTagsInput,
   WebsiteIdentityInput,
   WebsiteIdentityState,
+  WebsiteIntegrationProvider,
+  WebsiteIntegrationSave,
+  WebsiteIntegrationSaved,
+  WebsiteIntegrationTestResult,
+  WebsiteIntegrations,
   WebsiteMenu,
   WebsiteMenuInput,
   WebsiteMenuReferences,
@@ -8881,6 +8886,71 @@ export const getReleaseWebsiteEmailTemplateReservationUrl = (slug: string,) => {
 export const releaseWebsiteEmailTemplateReservation = async (slug: string, options?: RequestInit): Promise<WebsiteEditorReservation> => {
 
   return customFetch<WebsiteEditorReservation>(getReleaseWebsiteEmailTemplateReservationUrl(slug),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+export const getGetWebsiteIntegrationsUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/website-system/integrations`
+}
+
+export const getWebsiteIntegrations = async ( options?: RequestInit): Promise<WebsiteIntegrations> => {
+
+  return customFetch<WebsiteIntegrations>(getGetWebsiteIntegrationsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getSaveWebsiteIntegrationUrl = (provider: WebsiteIntegrationProvider,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/website-system/integrations/${provider}`
+}
+
+export const saveWebsiteIntegration = async (provider: WebsiteIntegrationProvider,
+    websiteIntegrationSave: WebsiteIntegrationSave, options?: RequestInit): Promise<WebsiteIntegrationSaved> => {
+
+  return customFetch<WebsiteIntegrationSaved>(getSaveWebsiteIntegrationUrl(provider),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      websiteIntegrationSave,)
+  }
+);}
+
+
+
+export const getTestWebsiteIntegrationUrl = (provider: WebsiteIntegrationProvider,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/website-system/integrations/${provider}/test`
+}
+
+export const testWebsiteIntegration = async (provider: WebsiteIntegrationProvider, options?: RequestInit): Promise<WebsiteIntegrationTestResult> => {
+
+  return customFetch<WebsiteIntegrationTestResult>(getTestWebsiteIntegrationUrl(provider),
   {
     ...options,
     method: 'POST'

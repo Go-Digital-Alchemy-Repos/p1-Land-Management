@@ -15579,6 +15579,87 @@
           }
         ]
       }
+    },
+    "/marketing/cms/website-system/integrations": {
+      "get": {
+        "operationId": "getWebsiteIntegrations",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteIntegrations"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/marketing/cms/website-system/integrations/{provider}": {
+      "put": {
+        "operationId": "saveWebsiteIntegration",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteIntegrationSaved"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebsiteIntegrationSave"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "provider",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/WebsiteIntegrationProvider"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/website-system/integrations/{provider}/test": {
+      "post": {
+        "operationId": "testWebsiteIntegration",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteIntegrationTestResult"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "provider",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/WebsiteIntegrationProvider"
+            }
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -31895,6 +31976,390 @@
             "type": "string"
           }
         }
+      },
+      "WebsiteIntegrationProvider": {
+        "type": "string",
+        "enum": [
+          "mailgun",
+          "mailchimp",
+          "cloudflare_r2"
+        ]
+      },
+      "WebsiteIntegrationSecretInput": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "keep"
+                ]
+              }
+            },
+            "required": [
+              "operation"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "clear"
+                ]
+              }
+            },
+            "required": [
+              "operation"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "replace"
+                ]
+              },
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 8192
+              }
+            },
+            "required": [
+              "operation",
+              "value"
+            ]
+          }
+        ]
+      },
+      "WebsiteIntegrationFields": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "mailgun_domain": {
+            "type": "string"
+          },
+          "mailgun_from_address": {
+            "type": "string"
+          },
+          "mailchimp_audience_id": {
+            "type": "string"
+          },
+          "mailchimp_server_prefix": {
+            "type": "string"
+          },
+          "r2_account_id": {
+            "type": "string"
+          },
+          "r2_bucket_name": {
+            "type": "string"
+          },
+          "r2_public_url": {
+            "type": "string"
+          }
+        },
+        "required": []
+      },
+      "WebsiteIntegrationSecrets": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "mailgun_api_key": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "configured": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "configured"
+            ]
+          },
+          "mailchimp_api_key": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "configured": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "configured"
+            ]
+          },
+          "r2_access_key_id": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "configured": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "configured"
+            ]
+          },
+          "r2_secret_access_key": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "configured": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "configured"
+            ]
+          }
+        },
+        "required": []
+      },
+      "WebsiteIntegration": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "provider": {
+            "$ref": "#/components/schemas/WebsiteIntegrationProvider"
+          },
+          "version": {
+            "type": "string"
+          },
+          "effectiveSource": {
+            "type": "string",
+            "enum": [
+              "settings",
+              "deployment"
+            ]
+          },
+          "fields": {
+            "$ref": "#/components/schemas/WebsiteIntegrationFields"
+          },
+          "secrets": {
+            "$ref": "#/components/schemas/WebsiteIntegrationSecrets"
+          },
+          "configurationManagement": {
+            "type": "string",
+            "enum": [
+              "settings"
+            ]
+          },
+          "configurationIssue": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "testEffects": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "provider",
+          "version",
+          "effectiveSource",
+          "fields",
+          "secrets",
+          "configurationManagement",
+          "configurationIssue",
+          "testEffects"
+        ]
+      },
+      "WebsiteIntegrations": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "providers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WebsiteIntegration"
+            }
+          },
+          "google": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "effectiveSource": {
+                "type": "string"
+              },
+              "configurationManagement": {
+                "type": "string"
+              },
+              "credentialMode": {
+                "type": "string",
+                "enum": [
+                  "service-account",
+                  "oauth",
+                  "missing"
+                ]
+              },
+              "propertyId": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "searchConsoleConfigured": {
+                "type": "boolean"
+              },
+              "searchConsoleSite": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "publicTrackingSource": {
+                "type": "string"
+              },
+              "note": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "effectiveSource",
+              "configurationManagement",
+              "credentialMode",
+              "propertyId",
+              "searchConsoleConfigured",
+              "searchConsoleSite",
+              "publicTrackingSource",
+              "note"
+            ]
+          },
+          "backups": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "effectiveSource": {
+                "type": "string",
+                "enum": [
+                  "BACKUP_S3",
+                  "S3",
+                  "BACKUP_R2",
+                  "settings"
+                ]
+              }
+            },
+            "required": [
+              "effectiveSource"
+            ]
+          },
+          "smtpFallbackConfigured": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "providers",
+          "google",
+          "backups",
+          "smtpFallbackConfigured"
+        ]
+      },
+      "WebsiteIntegrationSave": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "expectedVersion": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "fields": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "mailgun_domain": {
+                "type": "string"
+              },
+              "mailgun_from_address": {
+                "type": "string"
+              },
+              "mailchimp_audience_id": {
+                "type": "string"
+              },
+              "mailchimp_server_prefix": {
+                "type": "string"
+              },
+              "r2_account_id": {
+                "type": "string"
+              },
+              "r2_bucket_name": {
+                "type": "string"
+              },
+              "r2_public_url": {
+                "type": "string"
+              },
+              "mailgun_api_key": {
+                "$ref": "#/components/schemas/WebsiteIntegrationSecretInput"
+              },
+              "mailchimp_api_key": {
+                "$ref": "#/components/schemas/WebsiteIntegrationSecretInput"
+              },
+              "r2_access_key_id": {
+                "$ref": "#/components/schemas/WebsiteIntegrationSecretInput"
+              },
+              "r2_secret_access_key": {
+                "$ref": "#/components/schemas/WebsiteIntegrationSecretInput"
+              }
+            },
+            "required": []
+          }
+        },
+        "required": [
+          "expectedVersion",
+          "fields"
+        ]
+      },
+      "WebsiteIntegrationSaved": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "saved": {
+            "type": "boolean"
+          },
+          "integration": {
+            "$ref": "#/components/schemas/WebsiteIntegration"
+          }
+        },
+        "required": [
+          "saved",
+          "integration"
+        ]
+      },
+      "WebsiteIntegrationTestResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "code": {
+            "type": "string",
+            "enum": [
+              "connection_verified",
+              "connection_unavailable",
+              "invalid_configuration"
+            ]
+          },
+          "effects": {
+            "type": "string",
+            "enum": [
+              "read-only"
+            ]
+          }
+        },
+        "required": [
+          "success",
+          "code",
+          "effects"
+        ]
       }
     }
   }

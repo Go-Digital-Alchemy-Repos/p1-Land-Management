@@ -1,3 +1,4 @@
+import websiteIntegrationsRouter from "./business-center-integrations.routes";
 import clientStackOnboarding from "./admin/client-stack-onboarding.routes";
 import { requireWebsiteOwner } from "../middleware/website-owner";
 import websiteEmailTemplates from "./business-center-email-templates.routes";
@@ -85,6 +86,7 @@ router.get("/notification-forms", async (req, res, next) => {
   }
 });
 router.use("/website-system/onboarding", requireWebsiteOwner, clientStackOnboarding);
+router.use("/website-system/integrations", websiteIntegrationsRouter);
 router.use("/website-system/email-templates", websiteEmailTemplates);
 router.use("/website-system/docs", websiteDocs);
 router.use("/website-system", websiteSystem);

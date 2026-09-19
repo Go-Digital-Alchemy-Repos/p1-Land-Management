@@ -550,3 +550,12 @@ test("email template bridge permits only exact Owner operations", () => {
  }
  assert.equal(cmsOperations.some(op=>op.path.startsWith("/website-system/email-templates")&&op.method==="DELETE"),false);
 });
+
+test("website integration bridge has only the three Owner operations", () => {
+ for (const [method,suffix] of [["GET",""],["PUT","/:provider"],["POST","/:provider/test"]]) {
+  const op=operation(method,`/website-system/integrations${suffix}`);
+  assert.equal(op.ownerOnly,true);assert.deepEqual(op.capabilities,[]);
+  if(suffix) assert.throws(()=>cmsDestination(op,{provider:"../other"},{}));
+ }
+ assert.equal(cmsOperations.filter(op=>op.path.startsWith("/website-system/integrations")).length,3);
+});

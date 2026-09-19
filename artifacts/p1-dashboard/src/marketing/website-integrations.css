@@ -1,0 +1,86 @@
+.website-integrations {
+  min-width: 0;
+}
+.website-integrations h1,
+.website-integrations h2,
+.integration-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.integration-toolbar {
+  flex-wrap: wrap;
+  margin: 20px 0;
+}
+.integration-toolbar button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 40px;
+}
+.integration-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  align-items: start;
+}
+.integration-card {
+  min-width: 0;
+  padding: 24px;
+  border: 1px solid #e5e5e5;
+  border-radius: 24px;
+  background: #fff;
+  overflow-wrap: anywhere;
+}
+.integration-card h2 {
+  margin-top: 0;
+}
+.integration-card label {
+  display: grid;
+  gap: 7px;
+  margin: 16px 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+.integration-card fieldset {
+  border: 0;
+  padding: 0;
+  min-width: 0;
+}
+.integration-secret {
+  margin: 20px 0;
+  padding-top: 3px;
+  border-top: 1px solid #e5e5e5;
+}
+.integration-caption {
+  color: #737373;
+  font-size: 12px;
+}
+.integration-source {
+  font-size: 13px;
+}
+.integration-error {
+  padding: 14px;
+  border-left: 3px solid #b42318;
+}
+.integration-google {
+  margin-top: 24px;
+}
+.integration-google dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.integration-google dt {
+  font-size: 12px;
+  color: #737373;
+}
+.integration-google dd {
+  margin: 5px 0 0;
+}
+@media (max-width: 850px) {
+  .integration-grid,
+  .integration-google dl {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

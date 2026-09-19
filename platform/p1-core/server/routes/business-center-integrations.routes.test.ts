@@ -91,3 +91,25 @@ it("does not imply a default Search Console property or accept unrelated URLs", 
   vi.stubEnv("P1_GSC_SITE_URL", "sc-domain:p1landmanagement.com");
   body = await (await fetch(base)).json(); expect(body.google.searchConsoleConfigured).toBe(true); expect(body.google.searchConsoleSite).toBe("sc-domain:p1landmanagement.com");
 });
+
+it("withholds malformed historical rows and prevents test calls", async () => {
+  state.snapshot.mockRejectedValue(Object.assign(new Error("private-value"), {code:"settings_boundary_mismatch",statusCode:409}));
+  const response = await fetch(base);const body=await response.json();
+  expect(response.status).toBe(200);expect(body.providers[0].configurationIssue).toContain("reconciliation");
+  expect(JSON.stringify(body)).not.toContain("private-value");
+  const test=await fetch(`${base}/mailgun/test`,{method:"POST"});
+  expect(test.status).toBe(409);expect(state.mailgun).not.toHaveBeenCalled();
+});
+it("audits invalid stored configuration without making a provider request", async () => {
+  state.snapshot.mockResolvedValue({values:{mailgun_domain:"not-a-domain"},version:"a".repeat(64)});
+  const response=await fetch(`${base}/mailgun/test`,{method:"POST"});
+  expect(await response.json()).toEqual({success:false,code:"invalid_configuration",effects:"read-only"});
+  expect(state.log).toHaveBeenCalledOnce();expect(state.mailgun).not.toHaveBeenCalled();
+});
+
+it("accepts a safely normalized historical Mailchimp API hostname for read-only testing", async () => {
+  state.snapshot.mockResolvedValue({values:{mailchimp_server_prefix:"https://us1.api.mailchimp.com",mailchimp_audience_id:"abc123",mailchimp_api_key:"test-us1"},version:"a".repeat(64)});
+  state.mailchimp.mockResolvedValue({success:true});
+  const response=await fetch(`${base}/mailchimp/test`,{method:"POST"});
+  expect((await response.json()).code).toBe("connection_verified");expect(state.mailchimp).toHaveBeenCalledOnce();
+});

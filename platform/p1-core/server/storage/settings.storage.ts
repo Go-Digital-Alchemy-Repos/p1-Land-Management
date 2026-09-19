@@ -1,4 +1,4 @@
-import { eq, sql } from "drizzle-orm";
+import { eq, sql, or, inArray } from "drizzle-orm";
 import { db } from "../db";
 import { systemSettings, activityLogs, type SystemSetting } from "@shared/schema";
 import crypto from "crypto";
@@ -41,6 +41,17 @@ export class SettingsConflictError extends Error {
   constructor() {
     super("These settings changed. Reload saved settings before applying your edits.");
   }
+}
+
+export class SettingsBoundaryError extends Error {
+  readonly statusCode = 409;
+  readonly code = "settings_boundary_mismatch";
+  constructor() { super("Stored integration settings require category or secrecy reconciliation before editing."); }
+}
+
+function assertKeyRules(rows: SystemSetting[], category: string, rules: Readonly<Record<string, boolean>>) {
+  if (rows.some(row => Object.prototype.hasOwnProperty.call(rules, row.key) &&
+    (row.category !== category || row.isSecret !== rules[row.key]))) throw new SettingsBoundaryError();
 }
 
 function categoryVersion(rows: SystemSetting[]): string {
@@ -141,8 +152,13 @@ export class SettingsStorage {
   async getCategorySnapshot(
     category: string,
     publicOnly = false,
+    keyRules?: Readonly<Record<string, boolean>>,
   ): Promise<{ values: Record<string, string>; version: string }> {
-    const rows = await this.getSettingsByCategory(category);
+    const related = keyRules && Object.keys(keyRules).length
+      ? await this.database.select().from(systemSettings).where(or(eq(systemSettings.category, category), inArray(systemSettings.key, Object.keys(keyRules))))
+      : await this.getSettingsByCategory(category);
+    if (keyRules) assertKeyRules(related, category, keyRules);
+    const rows = related.filter(row => row.category === category);
     if (publicOnly && rows.some(row => row.isSecret)) throw new Error("Public setting category contains private data");
     return {
       values: Object.fromEntries(
@@ -169,7 +185,7 @@ export class SettingsStorage {
   /** One committed setting set; preparation failures cannot leave partial credentials. */
   async upsertSettings(
     entries: { key: string; value: string; category: string; isSecret: boolean }[],
-    expected?: { category: string; version: string; publicOnly?: boolean },
+    expected?: { category: string; version: string; publicOnly?: boolean; keyRules?: Readonly<Record<string, boolean>> },
     audit?: { userId: string; action: string; details: string },
   ): Promise<SystemSetting[]> {
     if (!entries.length) return [];
@@ -195,6 +211,13 @@ export class SettingsStorage {
           .select()
           .from(systemSettings)
           .where(eq(systemSettings.category, expected.category));
+        if (expected.keyRules) {
+          const rules = expected.keyRules;
+          const related = await tx.select().from(systemSettings).where(inArray(systemSettings.key, Object.keys(rules)));
+          assertKeyRules(related, expected.category, rules);
+          if (entries.some(entry => !Object.prototype.hasOwnProperty.call(rules, entry.key) || entry.isSecret !== rules[entry.key]))
+            throw new SettingsBoundaryError();
+        }
         if (expected.publicOnly) {
           if (current.some(row => row.isSecret) || entries.some(entry => entry.isSecret))
             throw new Error("Public setting boundary violation");

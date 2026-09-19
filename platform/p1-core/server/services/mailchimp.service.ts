@@ -1,3 +1,4 @@
+import { normalizeMailchimpServerPrefix } from "@shared/website-integrations";
 import crypto from "crypto";
 import { storage } from "../storage";
 import { logger } from "../utils/logger";
@@ -8,30 +9,29 @@ interface MailchimpConfig {
   serverPrefix: string;
 }
 
-function normalizeServerPrefix(value: string): string {
-  return value
-    .trim()
-    .replace(/^https?:\/\//i, "")
-    .replace(/\.api\.mailchimp\.com.*$/i, "");
-}
 
 function inferServerPrefixFromApiKey(apiKey: string): string | null {
-  const suffix = apiKey.split("-")[1];
-  return suffix ? suffix.trim() : null;
+  return /^[^-]+-(us[0-9]+)$/.exec(apiKey)?.[1] || null;
 }
 
 async function getMailchimpConfig(): Promise<MailchimpConfig | null> {
-  const settings = await storage.settings.getDecryptedCategory("mailchimp");
+  let settings: Record<string, string>;
+  try {
+    ({ values: settings } = await storage.settings.getCategorySnapshot("mailchimp"));
+  } catch {
+    // Database exceptions can include query parameters; preserve retryability without leaking them.
+    throw new Error("mailchimp_configuration_unavailable");
+  }
   const apiKey = settings.mailchimp_api_key?.trim();
   const audienceId = settings.mailchimp_audience_id?.trim();
   const configuredPrefix = settings.mailchimp_server_prefix?.trim();
   const serverPrefix = configuredPrefix
-    ? normalizeServerPrefix(configuredPrefix)
+    ? normalizeMailchimpServerPrefix(configuredPrefix)
     : apiKey
       ? inferServerPrefixFromApiKey(apiKey)
       : null;
 
-  if (!apiKey || !audienceId || !serverPrefix) {
+  if (!apiKey || apiKey.length > 8192 || /[\r\n\u0000]/.test(apiKey) || !audienceId || !/^[a-zA-Z0-9]{1,64}$/.test(audienceId) || !serverPrefix || !/^us[0-9]{1,14}$/.test(serverPrefix)) {
     return null;
   }
 
@@ -65,6 +65,7 @@ async function mailchimpRequest<T>(
     const response = await fetch(buildMailchimpUrl(config, path), {
       ...init,
       signal: controller.signal,
+      redirect: "error",
       headers: {
         Authorization: getAuthHeader(config.apiKey),
         "Content-Type": "application/json",
@@ -72,13 +73,15 @@ async function mailchimpRequest<T>(
       },
     });
     if (!response.ok) {
-      const body = await response.text();
-      throw new Error(`Mailchimp request failed (${response.status}): ${body}`);
+      await response.body?.cancel();
+      throw new Error("mailchimp_provider_unavailable");
     }
     if (response.status === 204) return undefined as T;
     // Await body consumption before clearing the abort deadline as headers can
     // arrive while the remote server leaves the response body open indefinitely.
     return (await response.json()) as T;
+  } catch {
+    throw new Error(controller.signal.aborted ? "mailchimp_request_timeout" : "mailchimp_provider_unavailable");
   } finally {
     clearTimeout(deadline);
   }
@@ -103,7 +106,7 @@ export async function testMailchimpConnection(): Promise<{ success: boolean; mes
   } catch (err) {
     return {
       success: false,
-      message: err instanceof Error ? err.message : "Mailchimp connection failed",
+      message: "Mailchimp connection failed",
     };
   }
 }
