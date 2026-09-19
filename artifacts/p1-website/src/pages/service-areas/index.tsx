@@ -10,6 +10,7 @@ import lancasterCountyImg from "@/assets/features/lancaster-sitework.png";
 import yorkCountyImg from "@/assets/features/york-county-lakewylie.png";
 import { MapPin, Map, ArrowRight } from "lucide-react";
 
+import { ServiceAreaMap } from "@/components/content/ServiceAreaMap";
 import { FaqAccordion } from "@/components/content/FaqAccordion";
 
 const FAQS = [
@@ -69,6 +70,7 @@ export default function ServiceAreasIndex() {
       {/* MARKETS */}
       <section className="py-24 bg-background">
         <div className="site-shell space-y-16">
+          <ServiceAreaMap />
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             {/* Upstate SC Market */}
