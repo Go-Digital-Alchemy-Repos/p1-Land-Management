@@ -1,0 +1,466 @@
+/* Generated from shared Forms JSX using retained Core Tailwind; scoped adapter. */
+.native-forms .pointer-events-none {
+    pointer-events: none
+}
+.native-forms .ml-3 {
+    margin-left: 0.75rem
+}
+.native-forms .mr-1\.5 {
+    margin-right: 0.375rem
+}
+.native-forms .mr-2 {
+    margin-right: 0.5rem
+}
+.native-forms .mt-0 {
+    margin-top: 0px
+}
+.native-forms .mt-0\.5 {
+    margin-top: 0.125rem
+}
+.native-forms .mt-1 {
+    margin-top: 0.25rem
+}
+.native-forms .mt-2 {
+    margin-top: 0.5rem
+}
+.native-forms .mt-3 {
+    margin-top: 0.75rem
+}
+.native-forms .block {
+    display: block
+}
+.native-forms .inline {
+    display: inline
+}
+.native-forms .flex {
+    display: flex
+}
+.native-forms .inline-flex {
+    display: inline-flex
+}
+.native-forms .grid {
+    display: grid
+}
+.native-forms .hidden {
+    display: none
+}
+.native-forms .h-10 {
+    height: 2.5rem
+}
+.native-forms .h-2 {
+    height: 0.5rem
+}
+.native-forms .h-3\.5 {
+    height: 0.875rem
+}
+.native-forms .h-4 {
+    height: 1rem
+}
+.native-forms .h-8 {
+    height: 2rem
+}
+.native-forms .h-9 {
+    height: 2.25rem
+}
+.native-forms .h-auto {
+    height: auto
+}
+.native-forms .h-fit {
+    height: fit-content
+}
+.native-forms .min-h-20 {
+    min-height: 5rem
+}
+.native-forms .w-10 {
+    width: 2.5rem
+}
+.native-forms .w-3\.5 {
+    width: 0.875rem
+}
+.native-forms .w-4 {
+    width: 1rem
+}
+.native-forms .w-8 {
+    width: 2rem
+}
+.native-forms .w-full {
+    width: 100%
+}
+.native-forms .min-w-0 {
+    min-width: 0px
+}
+.native-forms .flex-1 {
+    flex: 1 1 0%
+}
+.native-forms .shrink-0 {
+    flex-shrink: 0
+}
+.native-forms .select-none {
+    user-select: none
+}
+.native-forms .flex-row {
+    flex-direction: row
+}
+.native-forms .flex-col {
+    flex-direction: column
+}
+.native-forms .flex-wrap {
+    flex-wrap: wrap
+}
+.native-forms .items-start {
+    align-items: flex-start
+}
+.native-forms .items-end {
+    align-items: flex-end
+}
+.native-forms .items-center {
+    align-items: center
+}
+.native-forms .justify-start {
+    justify-content: flex-start
+}
+.native-forms .justify-center {
+    justify-content: center
+}
+.native-forms .justify-between {
+    justify-content: space-between
+}
+.native-forms .gap-1 {
+    gap: 0.25rem
+}
+.native-forms .gap-2 {
+    gap: 0.5rem
+}
+.native-forms .gap-3 {
+    gap: 0.75rem
+}
+.native-forms .gap-4 {
+    gap: 1rem
+}
+.native-forms .gap-6 {
+    gap: 1.5rem
+}
+.native-forms :is(.space-y-1 > :not([hidden]) ~ :not([hidden])) {
+    --tw-space-y-reverse: 0;
+    margin-top: calc(0.25rem * calc(1 - var(--tw-space-y-reverse)));
+    margin-bottom: calc(0.25rem * var(--tw-space-y-reverse))
+}
+.native-forms :is(.space-y-1\.5 > :not([hidden]) ~ :not([hidden])) {
+    --tw-space-y-reverse: 0;
+    margin-top: calc(0.375rem * calc(1 - var(--tw-space-y-reverse)));
+    margin-bottom: calc(0.375rem * var(--tw-space-y-reverse))
+}
+.native-forms :is(.space-y-2 > :not([hidden]) ~ :not([hidden])) {
+    --tw-space-y-reverse: 0;
+    margin-top: calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));
+    margin-bottom: calc(0.5rem * var(--tw-space-y-reverse))
+}
+.native-forms :is(.space-y-3 > :not([hidden]) ~ :not([hidden])) {
+    --tw-space-y-reverse: 0;
+    margin-top: calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));
+    margin-bottom: calc(0.75rem * var(--tw-space-y-reverse))
+}
+.native-forms :is(.space-y-4 > :not([hidden]) ~ :not([hidden])) {
+    --tw-space-y-reverse: 0;
+    margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse)));
+    margin-bottom: calc(1rem * var(--tw-space-y-reverse))
+}
+.native-forms :is(.space-y-5 > :not([hidden]) ~ :not([hidden])) {
+    --tw-space-y-reverse: 0;
+    margin-top: calc(1.25rem * calc(1 - var(--tw-space-y-reverse)));
+    margin-bottom: calc(1.25rem * var(--tw-space-y-reverse))
+}
+.native-forms :is(.space-y-6 > :not([hidden]) ~ :not([hidden])) {
+    --tw-space-y-reverse: 0;
+    margin-top: calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));
+    margin-bottom: calc(1.5rem * var(--tw-space-y-reverse))
+}
+.native-forms .truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap
+}
+.native-forms .whitespace-pre-wrap {
+    white-space: pre-wrap
+}
+.native-forms .rounded-full {
+    border-radius: 9999px
+}
+.native-forms .rounded-lg {
+    border-radius: 0.5rem
+}
+.native-forms .rounded-md {
+    border-radius: 0.375rem
+}
+.native-forms .rounded-xl {
+    border-radius: 0.75rem
+}
+.native-forms .border {
+    border-width: 1px
+}
+.native-forms .border-dashed {
+    border-style: dashed
+}
+.native-forms .border-card-border {
+    --tw-border-opacity: 1;
+    border-color: hsl(var(--card-border) / var(--tw-border-opacity, 1))
+}
+.native-forms .border-input {
+    --tw-border-opacity: 1;
+    border-color: hsl(var(--input) / var(--tw-border-opacity, 1))
+}
+.native-forms .border-primary {
+    --tw-border-opacity: 1;
+    border-color: hsl(var(--primary) / var(--tw-border-opacity, 1))
+}
+.native-forms .bg-background {
+    --tw-bg-opacity: 1;
+    background-color: hsl(var(--background) / var(--tw-bg-opacity, 1))
+}
+.native-forms .bg-card {
+    --tw-bg-opacity: 1;
+    background-color: hsl(var(--card) / var(--tw-bg-opacity, 1))
+}
+.native-forms .bg-muted {
+    --tw-bg-opacity: 1;
+    background-color: hsl(var(--muted) / var(--tw-bg-opacity, 1))
+}
+.native-forms .bg-muted\/10 {
+    background-color: hsl(var(--muted) / 0.1)
+}
+.native-forms .bg-muted\/20 {
+    background-color: hsl(var(--muted) / 0.2)
+}
+.native-forms .bg-primary\/10 {
+    background-color: hsl(var(--primary) / 0.1)
+}
+.native-forms .bg-primary\/40 {
+    background-color: hsl(var(--primary) / 0.4)
+}
+.native-forms .bg-primary\/5 {
+    background-color: hsl(var(--primary) / 0.05)
+}
+.native-forms .bg-transparent {
+    background-color: transparent
+}
+.native-forms .p-1 {
+    padding: 0.25rem
+}
+.native-forms .p-3 {
+    padding: 0.75rem
+}
+.native-forms .p-4 {
+    padding: 1rem
+}
+.native-forms .p-6 {
+    padding: 1.5rem
+}
+.native-forms .px-0 {
+    padding-left: 0px;
+    padding-right: 0px
+}
+.native-forms .px-2\.5 {
+    padding-left: 0.625rem;
+    padding-right: 0.625rem
+}
+.native-forms .px-3 {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem
+}
+.native-forms .px-4 {
+    padding-left: 1rem;
+    padding-right: 1rem
+}
+.native-forms .px-6 {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem
+}
+.native-forms .py-0 {
+    padding-top: 0px;
+    padding-bottom: 0px
+}
+.native-forms .py-0\.5 {
+    padding-top: 0.125rem;
+    padding-bottom: 0.125rem
+}
+.native-forms .py-10 {
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem
+}
+.native-forms .py-12 {
+    padding-top: 3rem;
+    padding-bottom: 3rem
+}
+.native-forms .py-2 {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem
+}
+.native-forms .py-3 {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem
+}
+.native-forms .py-8 {
+    padding-top: 2rem;
+    padding-bottom: 2rem
+}
+.native-forms .pt-0 {
+    padding-top: 0px
+}
+.native-forms .text-left {
+    text-align: left
+}
+.native-forms .text-center {
+    text-align: center
+}
+.native-forms .text-2xl {
+    font-size: 1.5rem;
+    line-height: 2rem
+}
+.native-forms .text-\[10px\] {
+    font-size: 10px
+}
+.native-forms .text-base {
+    font-size: 1rem;
+    line-height: 1.5rem
+}
+.native-forms .text-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem
+}
+.native-forms .text-xs {
+    font-size: 0.75rem;
+    line-height: 1rem
+}
+.native-forms .font-medium {
+    font-weight: 500
+}
+.native-forms .font-semibold {
+    font-weight: 600
+}
+.native-forms .uppercase {
+    text-transform: uppercase
+}
+.native-forms .leading-none {
+    line-height: 1
+}
+.native-forms .leading-snug {
+    line-height: 1.375
+}
+.native-forms .leading-tight {
+    line-height: 1.25
+}
+.native-forms .tracking-tight {
+    letter-spacing: -0.025em
+}
+.native-forms .tracking-wide {
+    letter-spacing: 0.025em
+}
+.native-forms .text-card-foreground {
+    --tw-text-opacity: 1;
+    color: hsl(var(--card-foreground) / var(--tw-text-opacity, 1))
+}
+.native-forms .text-cyan-600 {
+    --tw-text-opacity: 1;
+    color: rgb(8 145 178 / var(--tw-text-opacity, 1))
+}
+.native-forms .text-destructive {
+    --tw-text-opacity: 1;
+    color: hsl(var(--destructive) / var(--tw-text-opacity, 1))
+}
+.native-forms .text-foreground\/85 {
+    color: hsl(var(--foreground) / 0.85)
+}
+.native-forms .text-foreground\/90 {
+    color: hsl(var(--foreground) / 0.9)
+}
+.native-forms .text-indigo-600 {
+    --tw-text-opacity: 1;
+    color: rgb(79 70 229 / var(--tw-text-opacity, 1))
+}
+.native-forms .text-muted-foreground {
+    --tw-text-opacity: 1;
+    color: hsl(var(--muted-foreground) / var(--tw-text-opacity, 1))
+}
+.native-forms .text-primary {
+    --tw-text-opacity: 1;
+    color: hsl(var(--primary) / var(--tw-text-opacity, 1))
+}
+.native-forms .opacity-70 {
+    opacity: 0.7
+}
+.native-forms .shadow-sm {
+    --tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
+}
+.native-forms .outline {
+    outline-style: solid
+}
+.native-forms .ring-2 {
+    --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+    --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+    box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)
+}
+.native-forms .ring-primary\/10 {
+    --tw-ring-color: hsl(var(--primary) / 0.1)
+}
+.native-forms .filter {
+    filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)
+}
+.native-forms .transition-colors {
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms
+}
+.native-forms .hover\:border-primary:hover {
+    --tw-border-opacity: 1;
+    border-color: hsl(var(--primary) / var(--tw-border-opacity, 1))
+}
+.native-forms .hover\:bg-muted\/20:hover {
+    background-color: hsl(var(--muted) / 0.2)
+}
+.native-forms .hover\:bg-muted\/40:hover {
+    background-color: hsl(var(--muted) / 0.4)
+}
+.native-forms .hover\:bg-primary\/5:hover {
+    background-color: hsl(var(--primary) / 0.05)
+}
+.native-forms .hover\:bg-transparent:hover {
+    background-color: transparent
+}
+.native-forms .hover\:text-destructive:hover {
+    --tw-text-opacity: 1;
+    color: hsl(var(--destructive) / var(--tw-text-opacity, 1))
+}
+.native-forms .hover\:text-primary\/80:hover {
+    color: hsl(var(--primary) / 0.8)
+}
+@media (min-width: 640px) {
+    .native-forms .sm\:p-6 {
+        padding: 1.5rem
+    }
+}
+@media (min-width: 768px) {
+    .native-forms .md\:grid-cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr))
+    }
+}
+@media (min-width: 1280px) {
+    .native-forms .xl\:grid-cols-\[280px_minmax\(0\2c 1fr\)\] {
+        grid-template-columns: 280px minmax(0,1fr)
+    }
+    .native-forms .xl\:grid-cols-\[320px_minmax\(0\2c 1fr\)\] {
+        grid-template-columns: 320px minmax(0,1fr)
+    }
+}
+@media (min-width: 1536px) {
+    .native-forms .\32xl\:sticky {
+        position: sticky
+    }
+    .native-forms .\32xl\:top-24 {
+        top: 6rem
+    }
+    .native-forms .\32xl\:grid-cols-\[minmax\(0\2c 1fr\)_380px\] {
+        grid-template-columns: minmax(0,1fr) 380px
+    }
+}

@@ -214,4 +214,32 @@ describe("AdminFormsPage", () => {
       }),
     );
   });
+  it("keeps the retained palette, canvas and inspector connected to saved fields", async () => {
+    editorLockState.isReadOnly = false;
+    root = createRoot(container);
+    await act(async () =>
+      root!.render(
+        <QueryClientProvider client={queryClient}>
+          <AdminFormsPage />
+        </QueryClientProvider>,
+      ),
+    );
+    const button = (text: string) =>
+      Array.from(container.querySelectorAll("button")).find((node) =>
+        node.textContent?.includes(text),
+      )!;
+    expect(container.textContent).toContain("Form Library");
+    expect(container.textContent).toContain("Form Canvas");
+    await act(async () => button("Single Line Text").click());
+    expect(container.textContent).toContain("Field Settings");
+    await act(async () => button("Back to Fields").click());
+    await act(async () => button("Paragraph Text").click());
+    await act(async () => button("Save Form").click());
+    const payload = mutationStates.flatMap((state) => state.mutate.mock.calls).at(-1)?.[0];
+    expect(payload.fields.map((field: { type: string }) => field.type)).toEqual([
+      "text",
+      "textarea",
+    ]);
+    expect(new Set(payload.fields.map((field: { id: string }) => field.id)).size).toBe(2);
+  });
 });

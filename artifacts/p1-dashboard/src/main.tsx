@@ -1351,7 +1351,7 @@ function App() {
           </button>
         </header>
         <main className="content">
-          {!accountWorkspace && view !== "Website Documents" && <div className={view === "Overview" ? "page-heading page-hero" : "page-heading"}>
+          {!accountWorkspace && view !== "Website Documents" && (routeUnavailable || view !== "Website Forms") && <div className={view === "Overview" ? "page-heading page-hero" : "page-heading"}>
             <div>
               {!marketingPageCopy[view] && <p className="eyebrow">P1 · PROPERTY OPERATIONS</p>}
               <h1>
@@ -1517,7 +1517,7 @@ function App() {
           {view === "Website Galleries" && <Suspense fallback={<p role="status">Loading galleries…</p>}><GalleryManager canUseMedia={(person.capabilities || []).includes("marketing.content.media")} key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Website Careers" && <Suspense fallback={<p role="status">Loading careers…</p>}><CareerManager isOwner={person.role === "owner"} key={`${person.id}:${person.role}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Website Events" && <Suspense fallback={<p role="status">Loading events…</p>}><EventManager canUseMedia={(person.capabilities || []).includes("marketing.content.media")} key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
-          {view === "Website Forms" && <Suspense fallback={<p role="status">Loading forms…</p>}><FormManager canUseMedia={(person.capabilities || []).includes("marketing.content.media")} key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
+          {view === "Website Forms" && <Suspense fallback={<p role="status">Loading forms…</p>}><FormManager canUseMedia={can("marketing.content.media")} key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "CMS Pages" && <Suspense fallback={<p role="status">Loading CMS pages…</p>}><PageManager canUseMedia={(person.capabilities || []).includes("marketing.content.media")} canUseSections={(person.capabilities || []).includes("marketing.content.sections")} canUseMenus={(person.capabilities || []).includes("marketing.content.menus")} key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Website Sections" && <Suspense fallback={<p role="status">Loading sections…</p>}><SectionManager canUseMedia={(person.capabilities || []).includes("marketing.content.media")} key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Website SEO" && <Suspense fallback={<p role="status">Loading SEO…</p>}><SeoManager canUseMedia={(person.capabilities || []).includes("marketing.content.media")} key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}

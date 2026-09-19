@@ -63,22 +63,22 @@ continues to apply. The existing unified dashboard shell/theme remains intention
 Read-only source comparison on September 19 confirms these concrete gaps; this is
 not a claim of live functional testing:
 
-| Priority | Tool | Retained interface to restore |
+| Priority | Tool | Retained interface / current status |
 | --- | --- | --- |
-| 1 | Branding | Separate logo/favicon cards, media-library picker, company-information layout (`branding-tab.tsx`, `cms-image-upload.tsx`). |
-| 1 | Typography | Heading/body visual font option cards and serif/sans groups (`branding-tab.tsx`). |
-| 1 | Colors | Core, Typography and Text on Color Surfaces groups, descriptions and original palette preview (`branding-tab.tsx`). |
+| 1 | Branding | Restored and live at `f2335f4`: separate logo/favicon cards, media picker and company layout; adapter differences documented below. |
+| 1 | Typography | Restored and live at `fb2d322`: heading/body visual font cards and serif/sans groups. |
+| 1 | Colors | Restored and live at `7733706`: three groups, descriptions and original palette preview. |
 | 1 | Forms | Builder/Entries tabs, Form Library, draggable canvas and inspector (`forms-page.tsx`); retain delivery monitoring. |
 | 1 | CMS Pages | Shared builder canvas, structure panel, inspector and responsive preview (`cms/builder/page-builder*.tsx`); retain reservations, templates and revisions. |
 | 2 | Menus | Theme Locations overview and original menu cards/editor (`cms-menus-page.tsx`); existing hierarchy/drag support must survive. |
 | 2 | Media | Details dialog, usage badges and shared cropper (`cms-media-page.tsx`, `image-cropper-sheet.tsx`). |
 | 2 | Galleries | Details/Images/Display/Preview cards and preview dialog (`cms-gallery-editor-page.tsx`). |
 | 2 | SEO | Icon tabs, settings cards and omitted Roadmap/SEO Architecture material (`cms-seo-page.tsx`). |
-| 2 | Modules / Integrations | Original switch rows and provider cards/sheets; retain P1 module restrictions. |
+| 2 | Modules / Integrations | Modules restored and live at `2afc0d3`; Integrations provider cards/sheets remain open. P1 module restrictions preserved. |
 | Recovery gate | Backups | Restore control is missing; release only after recovery acceptance, not as an unreviewed cosmetic port. |
 
-The shared Design navigation and Social correction are the first accepted code
-increment. Remaining rows are open; the retained admin must stay available.
+Shared Design navigation, Social, Branding, Typography, Colors and Modules have
+verified releases. Other rows remain open; the retained admin must stay available.
 
 ## Typography increment and Social live verification
 
@@ -150,3 +150,30 @@ and globally unhidden file inputs were corrected. Six focused tests passed, plus
 dashboard/Core typechecks and builds. Local synthetic browser inspection verified
 desktop/mobile layout, confirmed company save, real Media Library dialog loading, and
 hidden file inputs. No production branding data was changed.
+
+Branding release `f2335f4` is live: dashboard
+`a3746239-ab2d-434f-8611-e3f03f0529a9` and Core
+`eb74fdc6-36b4-4630-97c7-39262480963c` both SUCCESS. Authenticated read-only
+inspection confirmed separate cards, existing logo, library/replace/remove actions,
+company fields and disabled unchanged Save. The existing nonconforming favicon
+address remains preserved (shown as Existing image address), not silently replaced.
+No production branding data was written.
+
+## Forms restoration candidate acceptance
+
+Both hosts consume the retained Forms workspace: library, settings, 21-field palette,
+canvas/reordering, inspector, Builder/Entries tabs, submission details and exports.
+Native transport retains versioned writes, active-form confirmation, preview, media,
+delivery monitoring and inactive-entry access. Unknown configuration is preserved.
+Independent review found and verified fixes for reload/draft races, stale reservation
+responses and one unsupported form hiding the entire library.
+
+Parent reran all 14 tests (six shared/retained; eight actual React19 native adapter).
+An isolated HEAD-plus-Forms candidate passed Core and dashboard typechecks/builds,
+excluding in-progress Media code. Browser checks on synthetic loopback state verified
+clean Entries transition/details, new inactive form creation, Email palette/inspector,
+confirmed save/relisted draft and 390px document containment. Prior blocked local
+confirmation tab was a browser-control issue; fresh-turn verification succeeded.
+No production forms/submissions changed. Scoped CSS reset and accessible names were
+corrected from browser findings. Native selects and extra preview/reload/delivery
+actions remain explicit adapter differences. Retained admin retirement remains gated.

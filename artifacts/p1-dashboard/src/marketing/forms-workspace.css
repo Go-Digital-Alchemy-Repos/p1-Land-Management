@@ -1,0 +1,136 @@
+/* Scoped adapter for the retained Forms workspace. Utility rules are generated from its source. */
+@import "./forms-workspace.utilities.css";
+.native-forms .forms-workspace {
+  min-width: 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.native-forms :where(.forms-workspace *) {
+  box-sizing: border-box;
+  border-style: solid;
+  border-width: 0;
+  border-color: hsl(var(--border));
+}
+.native-forms
+  :where(.forms-workspace h1, .forms-workspace h3, .forms-workspace p) {
+  margin: 0;
+}
+.native-forms .forms-workspace button,
+.native-forms .forms-workspace input,
+.native-forms .forms-workspace select,
+.native-forms .forms-workspace textarea {
+  font-family: inherit;
+  letter-spacing: normal;
+  box-shadow: none;
+}
+.native-forms .forms-workspace button {
+  cursor: pointer;
+}
+.native-forms .forms-workspace input,
+.native-forms .forms-workspace textarea,
+.native-forms .forms-workspace select {
+  min-width: 0;
+  margin: 0;
+  border-radius: 6px;
+}
+.native-forms .forms-workspace label {
+  display: block;
+  margin: 0;
+}
+.native-forms .forms-workspace button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.native-forms .forms-workspace svg {
+  flex-shrink: 0;
+}
+.native-forms .forms-workspace .forms-button {
+  min-height: 36px;
+  padding: 8px 16px;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border: 1px solid transparent;
+}
+.native-forms .forms-workspace .forms-button-outline {
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  border-color: hsl(var(--border));
+}
+.native-forms .forms-workspace .forms-button-ghost {
+  background: transparent;
+  color: inherit;
+}
+.native-forms .forms-workspace .forms-button-icon {
+  height: 36px;
+  width: 36px;
+  padding: 8px;
+}
+.native-forms .forms-workspace .forms-button-sm {
+  min-height: 32px;
+  padding: 6px 12px;
+}
+.native-forms .forms-workspace .forms-switch {
+  width: 40px;
+  height: 24px;
+  min-height: 24px;
+  padding: 2px;
+  border: 0;
+  border-radius: 20px;
+  background: hsl(var(--input));
+}
+.native-forms .forms-switch span {
+  display: block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 1px 2px #0002;
+  transition: transform 0.15s;
+}
+.native-forms .forms-switch[aria-checked="true"] {
+  background: hsl(var(--primary));
+}
+.native-forms .forms-switch[aria-checked="true"] span {
+  transform: translateX(16px);
+}
+.native-forms .forms-tabs button {
+  padding: 7px 12px;
+  display: flex;
+  align-items: center;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+}
+.native-forms .forms-tabs button[aria-selected="true"] {
+  background: hsl(var(--background));
+  box-shadow: 0 1px 3px #0002;
+}
+.native-forms .forms-workspace :focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+.native-forms .forms-native-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.native-forms .forms-workspace .forms-card {
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+@media (max-width: 640px) {
+  .native-forms .forms-workspace {
+    padding: 0;
+  }
+  .native-forms .forms-card > div {
+    padding: 16px;
+  }
+}
+
+.native-forms .forms-workspace fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}

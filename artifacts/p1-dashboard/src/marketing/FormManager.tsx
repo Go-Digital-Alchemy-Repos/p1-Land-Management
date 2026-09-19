@@ -1,72 +1,67 @@
-import { BuilderPreview } from "./BuilderPreview";
-import { buildSubmissionCsv } from "../../../../platform/p1-core/shared/form-submission-export";
-import { useEffect, useRef, useState } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import {
   listMarketingForms,
-  getMarketingFormBuilder,
   getMarketingForm,
+  getMarketingFormBuilder,
   createMarketingForm,
   updateMarketingForm,
+  deleteMarketingForm,
   listMarketingFormSubmissions,
+  deleteMarketingFormSubmission,
 } from "@workspace/api-client-react/dashboard";
 import type {
   MarketingForm,
   MarketingFormInput,
   MarketingFormSubmission,
 } from "../../../../lib/api-client-react/src/dashboard/models";
-import { useCmsUnsavedChanges } from "./useCmsUnsavedChanges";
-import "./form-manager.css";
+import type {
+  CmsForm,
+  CmsFormField,
+  CmsFormFieldType,
+  CmsFormFieldConfig,
+  CmsFormFieldOption,
+  CmsFormListColumn,
+  CmsFormSubmission,
+} from "../../../../platform/p1-core/shared/schema/forms";
+import {
+  FormsWorkspace,
+  FIELD_LIBRARY,
+  FIELD_LIBRARY_GROUPS,
+  createBlankForm,
+  normalizeEditableForm,
+  serializeEditableForm,
+  createField,
+  normalizeField,
+  isStructuralField,
+  isFullWidthField,
+  moveItem,
+  slugify,
+  generateId,
+  getFieldLibraryItem,
+  createDefaultOptions,
+  createDefaultConfig,
+  type EditableForm,
+} from "../../../../platform/p1-core/client/src/components/shared/forms-workspace";
+import {
+  useFormsQuery as useQuery,
+  useFormsMutation as useMutation,
+  useEditorSaveState,
+  useUnsavedChangesGuard,
+  useFormReservation,
+  loadForms,
+  loadSubmissions,
+  saveForm,
+  toForm,
+  formEditProblem,
+} from "./forms-runtime";
+import { formPrimitives, FormsMediaProvider } from "./forms-primitives";
 import { FormDeliveryQueue } from "./FormDeliveryQueue";
-import { FormFieldsEditor, validateFormFields } from "./FormFieldsEditor";
-
+import { BuilderPreview } from "./BuilderPreview";
+import { validateFormFields } from "./FormFieldsEditor";
+import "./forms-workspace.css";
+const PUBLIC_SITE_ORIGIN = "https://www.p1landmanagement.com";
 const message = (error: unknown) =>
-  (error as { data?: { message?: string; error?: string } }).data?.message ||
-  (error as { data?: { error?: string } }).data?.error ||
-  (error as Error).message ||
-  "Form request failed";
-const settingsLabels: Record<string, string> = {
-  notifyAdmins: "Notify subscribed team members",
-  storeAsContactMessage: "Store as a contact message",
-  createCrmLead: "Create a CRM lead",
-  mailchimpEnabled: "Send to Mailchimp",
-};
-function draft(form: MarketingForm | "new"): MarketingFormInput {
-  if (form === "new")
-    return {
-      name: "",
-      slug: "",
-      kind: "custom",
-      description: "",
-      isSystem: false,
-      isActive: false,
-      fields: [],
-      settings: {
-        submitButtonText: "Submit",
-        successMessage: "Thanks! Your submission has been received.",
-      },
-    };
-  const {
-    name,
-    slug,
-    kind,
-    description,
-    isSystem,
-    isActive,
-    fields,
-    settings,
-  } = form;
-  return structuredClone({
-    expectedUpdatedAt: form.updatedAt ?? null,
-    name,
-    slug,
-    kind,
-    description,
-    isSystem,
-    isActive,
-    fields,
-    settings,
-  });
-}
+  (error as Error).message || "Form request failed";
 function FormPreview({ value }: { value: MarketingFormInput }) {
   const [url, setUrl] = useState<string | null>(null),
     [loading, setLoading] = useState(true),
@@ -114,496 +109,676 @@ function FormPreview({ value }: { value: MarketingFormInput }) {
     />
   );
 }
-function Editor({
-  form,
-  close,
-  saved,
-  canUseMedia,
-  reloaded,
-}: {
-  canUseMedia: boolean;
-  reloaded: (form: MarketingForm) => void;
-  form: MarketingForm | "new";
-  close: () => void;
-  saved: () => void;
-}) {
-  const [showPreview, setShowPreview] = useState(false);
-  const [value, setValue] = useState(() => draft(form)),
-    [baseline, setBaseline] = useState(() => JSON.stringify(draft(form))),
-    [error, setError] = useState(""),
-    [busy, setBusy] = useState(false);
-  const gate = useRef(false),
-    alive = useRef(true);
-  useEffect(() => {
-    alive.current = true;
-    return () => {
-      alive.current = false;
-    };
-  }, []);
-  const dirty = JSON.stringify(value) !== baseline;
-  useCmsUnsavedChanges(dirty);
-  const patch = (update: Partial<MarketingFormInput>) =>
-    setValue((current) => ({ ...current, ...update }));
-  const setting = (key: string, val: unknown) =>
-    setValue((current) => ({
-      ...current,
-      settings: { ...current.settings, [key]: val },
-    }));
-  async function save() {
-    if (gate.current) return;
-    const fieldError = validateFormFields(value.fields || []);
-    if (fieldError) {
-      setError(fieldError);
-      return;
-    }
-    if (
-      value.isActive &&
-      !window.confirm(
-        "Save this active form? Changes will affect new submissions wherever the form is used.",
-      )
-    )
-      return;
-    gate.current = true;
-    setBusy(true);
-    setError("");
-    try {
-      if (form === "new") await createMarketingForm(value);
-      else
-        await updateMarketingForm(form.id, {
-          ...value,
-          expectedUpdatedAt: value.expectedUpdatedAt ?? null,
-        });
-      if (alive.current) {
-        setBaseline(JSON.stringify(value));
-        saved();
-      }
-    } catch (error) {
-      if (alive.current) setError(message(error));
-    } finally {
-      gate.current = false;
-      if (alive.current) setBusy(false);
-    }
-  }
-  async function reloadSaved() {
-    if (
-      form === "new" ||
-      gate.current ||
-      !window.confirm("Discard this draft and reload the latest saved form?")
-    )
-      return;
-    gate.current = true;
-    setBusy(true);
-    setError("");
-    try {
-      const fresh = await getMarketingForm(form.id);
-      if (alive.current) {
-        const next = draft(fresh);
-        setValue(next);
-        setBaseline(JSON.stringify(next));
-        reloaded(fresh);
-      }
-    } catch (error) {
-      if (alive.current) setError(message(error));
-    } finally {
-      gate.current = false;
-      if (alive.current) setBusy(false);
-    }
-  }
-  return (
-    <section className="form-editor" aria-label="Website form editor">
-      <h2>{form === "new" ? "Create form" : `Edit ${form.name}`}</h2>
-      <p>
-        Form changes apply wherever this form is used. Existing submissions keep
-        their saved answers.
-      </p>
-      {error && <p role="alert">{error}</p>}
-      {error && form !== "new" && (
-        <button
-          type="button"
-          disabled={busy}
-          onClick={() => void reloadSaved()}
-        >
-          Reload saved form
-        </button>
-      )}
-      <button
-        type="button"
-        onClick={() => setShowPreview((current) => !current)}
-      >
-        {showPreview ? "Hide form preview" : "Preview form"}
-      </button>
-      {showPreview && <FormPreview value={value} />}
-      <form
-        onSubmit={(event) => {
-          event.preventDefault();
-          void save();
-        }}
-      >
-        <fieldset disabled={busy}>
-          <legend>Form details</legend>
-          <label>
-            Name
-            <input
-              required
-              value={value.name}
-              onChange={(event) => patch({ name: event.target.value })}
-            />
-          </label>
-          <label>
-            Slug
-            <input
-              required
-              pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
-              disabled={value.isSystem}
-              value={value.slug}
-              onChange={(event) => patch({ slug: event.target.value })}
-            />
-          </label>
-          <label>
-            Description
-            <textarea
-              aria-label="Description"
-              value={value.description || ""}
-              onChange={(event) => patch({ description: event.target.value })}
-            />
-          </label>
-          <label>
-            Kind
-            <select
-              aria-label="Kind"
-              disabled={value.isSystem}
-              value={value.kind}
-              onChange={(event) =>
-                patch({
-                  kind: event.target.value as MarketingFormInput["kind"],
-                })
-              }
-            >
-              {[
-                "contact",
-                "newsletter",
-                "interest",
-                "application",
-                "custom",
-              ].map((kind) => (
-                <option key={kind}>{kind}</option>
-              ))}
-            </select>
-          </label>
-          {value.isSystem && (
-            <p>
-              System form identity is protected. Its slug and kind cannot be
-              changed.
-            </p>
-          )}
-          <label className="form-check">
-            <input
-              type="checkbox"
-              checked={!!value.isActive}
-              onChange={(event) => patch({ isActive: event.target.checked })}
-            />
-            Accept submissions
-          </label>
-        </fieldset>
-        <fieldset disabled={busy}>
-          <legend>Submission behavior</legend>
-          <label>
-            Submit button text
-            <input
-              value={String(value.settings?.submitButtonText || "")}
-              onChange={(event) =>
-                setting("submitButtonText", event.target.value)
-              }
-            />
-          </label>
-          <label>
-            Success message
-            <textarea
-              aria-label="Success message"
-              value={String(value.settings?.successMessage || "")}
-              onChange={(event) =>
-                setting("successMessage", event.target.value)
-              }
-            />
-          </label>
-          {Object.entries(settingsLabels).map(([key, label]) => (
-            <label className="form-check" key={key}>
-              <input
-                type="checkbox"
-                checked={!!value.settings?.[key]}
-                onChange={(event) => setting(key, event.target.checked)}
-              />
-              {label}
-            </label>
-          ))}
-          <label>
-            Mailchimp tag
-            <input
-              value={String(value.settings?.mailchimpTag || "")}
-              onChange={(event) => setting("mailchimpTag", event.target.value)}
-            />
-          </label>
-          <p>
-            Delivery uses the configured website integrations. Team notification
-            recipients are managed in People &amp; access after canonical
-            notification delivery is enabled.
-          </p>
-        </fieldset>
-        <fieldset disabled={busy}>
-          <legend>Fields ({value.fields?.length || 0})</legend>
-          <FormFieldsEditor
-            canUseMedia={canUseMedia}
-            fields={value.fields || []}
-            onChange={(fields) => patch({ fields })}
-          />
-        </fieldset>
-        <div className="form-actions">
-          <button disabled={busy} type="submit">
-            {busy ? "Saving…" : "Save form"}
-          </button>
-          <button
-            disabled={busy}
-            type="button"
-            onClick={() => {
-              if (
-                !dirty ||
-                window.confirm("Discard your unsaved form changes?")
-              )
-                close();
-            }}
-          >
-            Cancel
-          </button>
-        </div>
-      </form>
-    </section>
-  );
-}
-function Submissions({
-  form,
-  close,
-}: {
-  form: MarketingForm;
-  close: () => void;
-}) {
-  const [rows, setRows] = useState<MarketingFormSubmission[]>([]),
-    [error, setError] = useState(""),
-    [busy, setBusy] = useState(true),
-    [attempt, setAttempt] = useState(0);
-  useEffect(() => {
-    const controller = new AbortController();
-    setBusy(true);
-    setError("");
-    void listMarketingFormSubmissions(form.id, { signal: controller.signal })
-      .then((result) => {
-        if (!controller.signal.aborted) setRows(result);
-      })
-      .catch((error) => {
-        if (!controller.signal.aborted) setError(message(error));
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) setBusy(false);
-      });
-    return () => controller.abort();
-  }, [form.id, attempt]);
-  return (
-    <section className="form-manager" aria-label="Form submissions">
-      <h2>{form.name} submissions</h2>
-      <div className="form-actions">
-        {(["csv", "json"] as const).map((format) => (
-          <button
-            key={format}
-            disabled={busy || !!error || !rows.length}
-            onClick={() => {
-              const data =
-                format === "csv"
-                  ? "\uFEFF" + buildSubmissionCsv(rows)
-                  : JSON.stringify(rows, null, 2);
-              const url = URL.createObjectURL(
-                new Blob([data], {
-                  type:
-                    format === "csv"
-                      ? "text/csv;charset=utf-8"
-                      : "application/json;charset=utf-8",
-                }),
-              );
-              const anchor = document.createElement("a");
-              anchor.href = url;
-              anchor.download = `${form.slug.replace(/[^a-zA-Z0-9_-]/g, "_") || "form"}-submissions.${format}`;
-              document.body.append(anchor);
-              anchor.click();
-              anchor.remove();
-              setTimeout(() => URL.revokeObjectURL(url), 1000);
-            }}
-          >
-            Export {format.toUpperCase()}
-          </button>
-        ))}
-      </div>
-      <p>
-        CSV includes every saved answer key and treats formula-like values as
-        text. JSON preserves the exact saved values.
-      </p>
-
-      <button onClick={close}>Back to forms</button>
-      {busy && <p role="status">Loading submissions…</p>}
-      {error && (
-        <p role="alert">
-          {error}{" "}
-          <button onClick={() => setAttempt((current) => current + 1)}>
-            Retry
-          </button>
-        </p>
-      )}
-      {!busy && !error && !rows.length && <p>No submissions yet.</p>}
-      {!busy &&
-        !error &&
-        rows.map((row) => (
-          <article key={row.id}>
-            <h3>
-              {row.createdAt
-                ? new Date(row.createdAt).toLocaleString()
-                : "Submission"}
-            </h3>
-            <p>Reference: {row.id}</p>
-            {row.source && <p>Source: {row.source}</p>}
-            <dl>
-              {Object.entries(row.data).map(([key, value]) => (
-                <div key={key}>
-                  <dt>{key}</dt>
-                  <dd>
-                    {typeof value === "string"
-                      ? value
-                      : JSON.stringify(value, null, 2)}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          </article>
-        ))}
-    </section>
-  );
-}
 export default function FormManager({
   canUseMedia = false,
 }: {
   canUseMedia?: boolean;
 }) {
-  const [deliveries, setDeliveries] = useState(false);
-  const [rows, setRows] = useState<MarketingForm[]>([]),
-    [selected, setSelected] = useState<MarketingForm | "new" | null>(null),
-    [submissions, setSubmissions] = useState<MarketingForm | null>(null),
-    [error, setError] = useState(""),
-    [busy, setBusy] = useState(true),
-    [attempt, setAttempt] = useState(0),
-    [query, setQuery] = useState(""),
-    [notice, setNotice] = useState("");
-  useEffect(() => {
-    const controller = new AbortController();
-    setBusy(true);
-    setError("");
-    void listMarketingForms({ signal: controller.signal })
-      .then((result) => {
-        if (!controller.signal.aborted) setRows(result);
-      })
-      .catch((error) => {
-        if (!controller.signal.aborted) setError(message(error));
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) setBusy(false);
-      });
-    return () => controller.abort();
-  }, [attempt]);
-  if (deliveries)
-    return <FormDeliveryQueue close={() => setDeliveries(false)} />;
-  if (selected)
-    return (
-      <Editor
-        canUseMedia={canUseMedia}
-        reloaded={(fresh) =>
-          setRows((current) =>
-            current.map((row) => (row.id === fresh.id ? fresh : row)),
-          )
-        }
-        key={selected === "new" ? "new" : selected.id}
-        form={selected}
-        close={() => setSelected(null)}
-        saved={() => {
-          setSelected(null);
-          setNotice("Form saved.");
-          setAttempt((current) => current + 1);
-        }}
-      />
-    );
-  if (submissions)
-    return (
-      <Submissions form={submissions} close={() => setSubmissions(null)} />
-    );
-  const visible = rows.filter((row) =>
-    `${row.name} ${row.slug}`.toLowerCase().includes(query.toLowerCase()),
+  const [notice, setNotice] = useState("");
+  const toast = (item: {
+    title: string;
+    description?: string;
+    variant?: string;
+  }) => setNotice([item.title, item.description].filter(Boolean).join(": "));
+  const [showPreview, setShowPreview] = useState(false);
+  const [isReloading, setReloading] = useState(false);
+  const reloadGate = useRef(false);
+  const reloadAbort = useRef<AbortController | null>(null);
+  useEffect(() => () => reloadAbort.current?.abort(), []);
+  const [showDeliveries, setShowDeliveries] = useState(false);
+  const [includeInactiveEntries, setIncludeInactiveEntries] = useState(false);
+  const [refresh, setRefresh] = useState(0);
+  const queryClient = {
+    invalidateQueries: (_: unknown) => setRefresh((n) => n + 1),
+  };
+  const [activeTab, setActiveTab] = useState<"builder" | "entries">("builder");
+  const [selectedFormId, setSelectedFormId] = useState<string | null>(null);
+  const [selectedEntriesFormId, setSelectedEntriesFormId] = useState<
+    string | null
+  >(null);
+  const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null);
+  const [draft, setDraft] = useState<EditableForm | null>(null);
+  const [savedDraftSnapshot, setSavedDraftSnapshot] = useState("");
+  const saveFeedbackRef = useRef({
+    markSaved: () => {},
+    markError: () => {},
+    clearFeedback: () => {},
+  });
+  const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null);
+  const [draggingFieldType, setDraggingFieldType] =
+    useState<CmsFormFieldType | null>(null);
+  const [draggingFieldId, setDraggingFieldId] = useState<string | null>(null);
+  const [dropIndex, setDropIndex] = useState<number | null>(null);
+  const [formSettingsOpen, setFormSettingsOpen] = useState(true);
+  const [openGroups, setOpenGroups] = useState<
+    Record<"standard" | "advanced", boolean>
+  >({
+    standard: true,
+    advanced: true,
+  });
+
+  const {
+    data: forms = [],
+    isLoading,
+    error: formsError,
+  } = useQuery<CmsForm[]>({
+    queryKey: ["forms", refresh],
+    queryFn: () => loadForms(),
+  });
+
+  const activeForms = useMemo(
+    () =>
+      includeInactiveEntries ? forms : forms.filter((form) => form.isActive),
+    [forms, includeInactiveEntries],
   );
+
+  const {
+    data: submissions = [],
+    isLoading: isSubmissionsLoading,
+    error: entriesError,
+  } = useQuery<CmsFormSubmission[]>({
+    queryKey: ["submissions", selectedEntriesFormId, refresh],
+    enabled: Boolean(selectedEntriesFormId),
+    queryFn: () => loadSubmissions(selectedEntriesFormId!),
+  });
+
+  useEffect(() => {
+    if (draft) return;
+    if (!selectedFormId && forms.length > 0) {
+      const first = forms.find((form) => !formEditProblem(form));
+      if (!first) return;
+      const normalized = normalizeEditableForm(first);
+      setSelectedFormId(first.id);
+      setFormSettingsOpen(true);
+      setDraft(normalized);
+      setSavedDraftSnapshot(serializeEditableForm(normalized));
+      return;
+    }
+
+    if (selectedFormId) {
+      const match = forms.find((form) => form.id === selectedFormId);
+      if (match && !formEditProblem(match)) {
+        const normalized = normalizeEditableForm(match);
+        setDraft(normalized);
+        setSavedDraftSnapshot(serializeEditableForm(normalized));
+      }
+    }
+  }, [forms, selectedFormId, draft]);
+
+  useEffect(() => {
+    if (!selectedEntriesFormId && activeForms.length > 0) {
+      setSelectedEntriesFormId(activeForms[0].id);
+      setSelectedEntryId(null);
+      return;
+    }
+
+    if (
+      selectedEntriesFormId &&
+      !activeForms.some((form) => form.id === selectedEntriesFormId)
+    ) {
+      setSelectedEntriesFormId(activeForms[0]?.id ?? null);
+      setSelectedEntryId(null);
+    }
+  }, [activeForms, selectedEntriesFormId]);
+
+  useEffect(() => {
+    setSelectedEntryId(null);
+  }, [selectedEntriesFormId]);
+
+  useEffect(() => {
+    if (
+      selectedEntryId &&
+      !submissions.some((submission) => submission.id === selectedEntryId)
+    ) {
+      setSelectedEntryId(null);
+    }
+  }, [selectedEntryId, submissions]);
+
+  const saveMutation = useMutation({
+    mutationFn: async (form: EditableForm) => {
+      const fieldError = validateFormFields(form.fields);
+      if (fieldError) throw Error(fieldError);
+      if (
+        form.isActive &&
+        !window.confirm(
+          "Save this active form? Changes will affect new submissions wherever the form is used.",
+        )
+      )
+        return null;
+      const payload = {
+        name: form.name,
+        slug: form.slug,
+        description: form.description,
+        kind: form.kind,
+        isSystem: form.isSystem,
+        isActive: form.isActive,
+        fields: form.fields,
+        settings: form.settings,
+      };
+
+      if (form.id.startsWith("draft-")) {
+        return await saveForm(null, payload);
+      }
+
+      await editorLock.verify();
+      return await saveForm(form.id, {
+        ...payload,
+        expectedUpdatedAt: form.expectedUpdatedAt,
+      });
+    },
+    onSuccess: (saved) => {
+      if (!saved) return;
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/forms"] });
+      const normalized = normalizeEditableForm(saved);
+      setSelectedFormId(saved.id);
+      setDraft(normalized);
+      setSavedDraftSnapshot(serializeEditableForm(normalized));
+      saveFeedbackRef.current.markSaved();
+      toast({ title: "Form saved" });
+    },
+    onError: (error: Error) => {
+      saveFeedbackRef.current.markError();
+      toast({
+        title: "Unable to save form",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const isSaving = saveMutation.isPending;
+  const isDirty =
+    !!draft && serializeEditableForm(draft) !== savedDraftSnapshot;
+  const saveState = useEditorSaveState({
+    isDirty,
+    isSaving,
+  });
+  const unsavedChangesGuard = useUnsavedChangesGuard({
+    isDirty: activeTab === "builder" && isDirty,
+    message: "You have unsaved changes to this form. Leave without saving?",
+  });
+  saveFeedbackRef.current = saveState;
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      if (!window.confirm("Delete this form and its saved submissions?"))
+        return false;
+      await editorLock.verify();
+      await deleteMarketingForm(id);
+      return true;
+    },
+    onSuccess: (deleted) => {
+      if (!deleted) return;
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/forms"] });
+      setSelectedFieldId(null);
+      setSelectedFormId(null);
+      setDraft(null);
+      setSavedDraftSnapshot("");
+      toast({ title: "Form deleted" });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Unable to delete form",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteSubmissionMutation = useMutation({
+    mutationFn: async ({
+      formId,
+      submissionId,
+    }: {
+      formId: string;
+      submissionId: string;
+    }) => {
+      if (!window.confirm("Delete this saved submission?")) return false;
+      await deleteMarketingFormSubmission(formId, submissionId);
+      return true;
+    },
+    onSuccess: (deleted) => {
+      if (!deleted) return;
+      queryClient.invalidateQueries({
+        queryKey: ["submissions", selectedEntriesFormId, refresh],
+      });
+      toast({ title: "Entry deleted" });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Unable to delete entry",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const selectedField = useMemo(
+    () => draft?.fields.find((field) => field.id === selectedFieldId) ?? null,
+    [draft?.fields, selectedFieldId],
+  );
+
+  const groupedFieldLibrary = useMemo(
+    () =>
+      FIELD_LIBRARY_GROUPS.map((group) => ({
+        ...group,
+        items: FIELD_LIBRARY.filter((item) => item.group === group.key),
+      })),
+    [],
+  );
+
+  const selectedFieldLibraryItem = selectedField
+    ? getFieldLibraryItem(selectedField.type)
+    : null;
+  const selectedSubmission = useMemo(
+    () =>
+      submissions.find((submission) => submission.id === selectedEntryId) ??
+      null,
+    [selectedEntryId, submissions],
+  );
+
+  const publicFormLink =
+    typeof window !== "undefined" && draft?.slug
+      ? `${PUBLIC_SITE_ORIGIN}/forms/${draft.slug}`
+      : "";
+
+  const editorLock = useFormReservation(
+    activeTab === "builder" && draft && !draft.id.startsWith("draft-")
+      ? draft.id
+      : null,
+  );
+  const updateDraft = (updater: (current: EditableForm) => EditableForm) => {
+    setDraft((current) => (current ? updater(current) : current));
+  };
+
+  const updateField = (fieldId: string, updates: Partial<CmsFormField>) => {
+    updateDraft((current) => ({
+      ...current,
+      fields: current.fields.map((field) =>
+        field.id === fieldId ? normalizeField({ ...field, ...updates }) : field,
+      ),
+    }));
+  };
+
+  const updateFieldConfig = (
+    fieldId: string,
+    updates: Partial<CmsFormFieldConfig>,
+  ) => {
+    updateDraft((current) => ({
+      ...current,
+      fields: current.fields.map((field) =>
+        field.id === fieldId
+          ? normalizeField({
+              ...field,
+              config: { ...(field.config ?? {}), ...updates },
+            })
+          : field,
+      ),
+    }));
+  };
+
+  const replaceFieldType = (fieldId: string, type: CmsFormFieldType) => {
+    updateDraft((current) => ({
+      ...current,
+      fields: current.fields.map((field) =>
+        field.id === fieldId
+          ? normalizeField({
+              ...field,
+              type,
+              options: createDefaultOptions(type),
+              config: createDefaultConfig(type),
+              width: isFullWidthField(type) ? "full" : "half",
+              required:
+                !isStructuralField(type) && type !== "hidden"
+                  ? field.required
+                  : false,
+            })
+          : field,
+      ),
+    }));
+  };
+
+  const addField = (type: CmsFormFieldType, index?: number) => {
+    updateDraft((current) => {
+      const field = createField(type);
+      const insertAt =
+        typeof index === "number" ? index : current.fields.length;
+      const nextFields = [...current.fields];
+      nextFields.splice(insertAt, 0, field);
+      setSelectedFieldId(field.id);
+      return { ...current, fields: nextFields };
+    });
+  };
+
+  const removeField = (fieldId: string) => {
+    updateDraft((current) => ({
+      ...current,
+      fields: current.fields.filter((field) => field.id !== fieldId),
+    }));
+    if (selectedFieldId === fieldId) {
+      setSelectedFieldId(null);
+    }
+  };
+
+  const updateChoice = (
+    fieldId: string,
+    optionId: string,
+    updates: Partial<CmsFormFieldOption>,
+  ) => {
+    updateDraft((current) => ({
+      ...current,
+      fields: current.fields.map((field) =>
+        field.id === fieldId
+          ? normalizeField({
+              ...field,
+              options: (field.options ?? []).map((option) =>
+                option.value === optionId ? { ...option, ...updates } : option,
+              ),
+            })
+          : field,
+      ),
+    }));
+  };
+
+  const addChoice = (fieldId: string) => {
+    updateDraft((current) => ({
+      ...current,
+      fields: current.fields.map((field) =>
+        field.id === fieldId
+          ? normalizeField({
+              ...field,
+              options: [
+                ...(field.options ?? []),
+                {
+                  label: "New Option",
+                  value: slugify(`new-option-${generateId().slice(0, 4)}`),
+                  imageUrl: "",
+                },
+              ],
+            })
+          : field,
+      ),
+    }));
+  };
+
+  const removeChoice = (fieldId: string, optionId: string) => {
+    updateDraft((current) => ({
+      ...current,
+      fields: current.fields.map((field) =>
+        field.id === fieldId
+          ? normalizeField({
+              ...field,
+              options: (field.options ?? []).filter(
+                (option) => option.value !== optionId,
+              ),
+            })
+          : field,
+      ),
+    }));
+  };
+
+  const addListColumn = (fieldId: string) => {
+    const nextColumn: CmsFormListColumn = {
+      id: generateId(),
+      label: "Column",
+      placeholder: "",
+    };
+    const listColumns = Array.isArray(selectedField?.config?.listColumns)
+      ? selectedField.config.listColumns
+      : [];
+    updateFieldConfig(fieldId, { listColumns: [...listColumns, nextColumn] });
+  };
+
+  const updateListColumn = (
+    fieldId: string,
+    columnId: string,
+    updates: Partial<CmsFormListColumn>,
+  ) => {
+    const listColumns = Array.isArray(selectedField?.config?.listColumns)
+      ? selectedField.config.listColumns
+      : [];
+    updateFieldConfig(fieldId, {
+      listColumns: listColumns.map((column) =>
+        column.id === columnId ? { ...column, ...updates } : column,
+      ),
+    });
+  };
+
+  const removeListColumn = (fieldId: string, columnId: string) => {
+    const listColumns = Array.isArray(selectedField?.config?.listColumns)
+      ? selectedField.config.listColumns
+      : [];
+    updateFieldConfig(fieldId, {
+      listColumns: listColumns.filter((column) => column.id !== columnId),
+    });
+  };
+
+  const onDropFieldAtIndex = (index: number) => {
+    if (draggingFieldType) {
+      addField(draggingFieldType, index);
+    } else if (draggingFieldId && draft) {
+      const currentIndex = draft.fields.findIndex(
+        (field) => field.id === draggingFieldId,
+      );
+      if (currentIndex !== -1) {
+        updateDraft((current) => ({
+          ...current,
+          fields: moveItem(current.fields, currentIndex, index),
+        }));
+        setSelectedFieldId(draggingFieldId);
+      }
+    }
+
+    setDraggingFieldType(null);
+    setDraggingFieldId(null);
+    setDropIndex(null);
+  };
+
+  const switchToDraft = (nextDraft: EditableForm) => {
+    setSelectedFormId(nextDraft.id);
+    setSelectedFieldId(null);
+    setFormSettingsOpen(true);
+    setDraft(nextDraft);
+    setSavedDraftSnapshot(serializeEditableForm(nextDraft));
+    saveFeedbackRef.current.clearFeedback();
+  };
+
+  const handleCreateForm = () => {
+    if (isSaving || isReloading) return;
+    unsavedChangesGuard.confirmDiscardChanges(() => {
+      const blank = { ...createBlankForm(), isActive: false };
+      switchToDraft(blank);
+    });
+  };
+
+  const handleSelectForm = (form: CmsForm) => {
+    if (isSaving || isReloading) return;
+    if (selectedFormId === form.id) return;
+    const problem = formEditProblem(form);
+    if (problem) {
+      toast({
+        title: `Unable to edit ${form.name}`,
+        description: `${problem}. Saved data and entries are unchanged.`,
+      });
+      return;
+    }
+    unsavedChangesGuard.confirmDiscardChanges(() => {
+      switchToDraft(normalizeEditableForm(form));
+    });
+  };
+
+  const handleTabChange = (value: string) => {
+    if (isSaving || isReloading) return;
+    const nextTab = value === "entries" ? "entries" : "builder";
+    if (nextTab === activeTab) return;
+
+    if (nextTab === "entries") {
+      unsavedChangesGuard.confirmDiscardChanges(() => setActiveTab("entries"));
+      return;
+    }
+
+    setActiveTab("builder");
+  };
+
   return (
-    <section className="form-manager" aria-label="Website forms">
-      <p>Manage website forms and review their saved submissions.</p>
-      <button onClick={() => setDeliveries(true)}>Delivery monitoring</button>
-      {notice && <p role="status">{notice}</p>}
-      <div className="form-actions">
-        <button
-          disabled={busy || !!error}
-          onClick={() => {
-            setNotice("");
-            setSelected("new");
-          }}
-        >
-          Create form
-        </button>
-        <button
-          disabled={busy}
-          onClick={() => setAttempt((current) => current + 1)}
-        >
-          Refresh forms
-        </button>
-      </div>
-      <label>
-        Search forms
-        <input
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-        />
-      </label>
-      {busy && <p role="status">Loading forms…</p>}
-      {error && <p role="alert">{error}</p>}
-      {!busy && !error && (
-        <div className="form-grid">
-          {visible.map((row) => (
-            <article key={row.id}>
-              <h2>{row.name}</h2>
-              <p>
-                {row.slug} · {row.kind}
-              </p>
-              <p>
-                {row.isActive ? "Active" : "Inactive"}
-                {row.isSystem ? " · System" : ""} · {row.fields.length} fields
-              </p>
-              {row.description && <p>{row.description}</p>}
-              <div className="form-actions">
-                <button
-                  onClick={() => {
-                    setNotice("");
-                    setSelected(row);
-                  }}
-                >
-                  Edit {row.name}
-                </button>
-                <button onClick={() => setSubmissions(row)}>
-                  View {row.name} submissions
-                </button>
-              </div>
-            </article>
-          ))}
-          {!visible.length && <p>No matching forms.</p>}
+    <FormsMediaProvider canUseMedia={canUseMedia}>
+      <div className="native-forms">
+        {notice && <p role="status">{notice}</p>}
+        {(formsError || entriesError) && (
+          <p role="alert">
+            {(formsError || entriesError)?.message}{" "}
+            <button type="button" onClick={() => setRefresh((n) => n + 1)}>
+              Retry loading forms
+            </button>
+          </p>
+        )}
+        <div className="forms-native-tools">
+          <button type="button" onClick={() => setShowPreview((v) => !v)}>
+            Toggle public preview
+          </button>
+          {activeTab === "entries" && (
+            <button
+              type="button"
+              aria-pressed={includeInactiveEntries}
+              onClick={() => setIncludeInactiveEntries((v) => !v)}
+            >
+              {includeInactiveEntries
+                ? "Show active forms only"
+                : "Include inactive forms"}
+            </button>
+          )}
+          {activeTab === "entries" && (
+            <button
+              type="button"
+              disabled={
+                isSubmissionsLoading || !!entriesError || !submissions.length
+              }
+              onClick={() => {
+                const url = URL.createObjectURL(
+                  new Blob([JSON.stringify(submissions, null, 2)], {
+                    type: "application/json",
+                  }),
+                );
+                const anchor = document.createElement("a");
+                anchor.href = url;
+                anchor.download = `${activeForms.find((form) => form.id === selectedEntriesFormId)?.slug.replace(/[^a-zA-Z0-9_-]/g, "_") || "form"}-submissions.json`;
+                anchor.click();
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+              }}
+            >
+              Export JSON
+            </button>
+          )}
+          <button
+            type="button"
+            disabled={isSaving || isReloading}
+            onClick={async () => {
+              if (reloadGate.current) return;
+              if (!draft || draft.id.startsWith("draft-")) return;
+              if (
+                isDirty &&
+                !window.confirm(
+                  "Discard this draft and reload the latest saved form?",
+                )
+              )
+                return;
+              reloadGate.current = true;
+              setReloading(true);
+              try {
+                const controller = new AbortController();
+                reloadAbort.current = controller;
+                const fresh = await getMarketingForm(draft.id, {
+                  signal: controller.signal,
+                });
+                if (controller.signal.aborted) return;
+                const loaded = toForm(fresh);
+                const problem = formEditProblem(loaded);
+                if (problem) throw Error(problem);
+                const normalized = normalizeEditableForm(loaded);
+                setDraft(normalized);
+                setSavedDraftSnapshot(serializeEditableForm(normalized));
+                setRefresh((n) => n + 1);
+              } catch (e) {
+                toast({ title: message(e) });
+              } finally {
+                reloadGate.current = false;
+                setReloading(false);
+              }
+            }}
+          >
+            Reload saved form
+          </button>
         </div>
-      )}
-    </section>
+        <FormsWorkspace
+          model={{
+            activeTab,
+            handleTabChange,
+            draft,
+            forms,
+            isLoading,
+            selectedFormId,
+            handleSelectForm,
+            handleCreateForm,
+            editorLock,
+            saveState,
+            saveMutation: {
+              ...saveMutation,
+              isPending: saveMutation.isPending || isReloading,
+            },
+            deleteMutation,
+            selectedField,
+            selectedFieldId,
+            setSelectedFieldId,
+            formSettingsOpen,
+            setFormSettingsOpen,
+            updateDraft,
+            publicFormLink,
+            toast,
+            dropIndex,
+            setDropIndex,
+            onDropFieldAtIndex,
+            setDraggingFieldId,
+            setDraggingFieldType,
+            selectedFieldLibraryItem,
+            updateField,
+            replaceFieldType,
+            updateFieldConfig,
+            addChoice,
+            removeChoice,
+            updateChoice,
+            addListColumn,
+            updateListColumn,
+            removeListColumn,
+            removeField,
+            groupedFieldLibrary,
+            openGroups,
+            setOpenGroups,
+            addField,
+            activeForms,
+            selectedEntriesFormId,
+            setSelectedEntriesFormId,
+            submissions,
+            isSubmissionsLoading,
+            selectedSubmission,
+            setSelectedEntryId,
+            deleteSubmissionMutation,
+            unsavedChangesGuard,
+          }}
+          components={formPrimitives}
+          deliveryMonitor={
+            <section className="forms-delivery-panel">
+              {showDeliveries ? (
+                <FormDeliveryQueue close={() => setShowDeliveries(false)} />
+              ) : (
+                <button type="button" onClick={() => setShowDeliveries(true)}>
+                  Lead delivery monitoring
+                </button>
+              )}
+            </section>
+          }
+          preview={showPreview && draft ? <FormPreview value={draft} /> : null}
+        />
+      </div>
+    </FormsMediaProvider>
   );
 }

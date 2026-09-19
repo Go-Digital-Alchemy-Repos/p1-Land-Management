@@ -1,3 +1,44 @@
+## September 19 — Forms candidate accepted for release
+
+Fresh browser verification succeeded: Entries list/detail, clean tabs/new draft,
+Email palette/inspector, inactive synthetic save/relist and390pxcontainment. All14tests
+passed (six shared/Core plus eight React19 native). Isolated HEAD+Forms Core/dashboard
+typechecks/builds passed, excluding current Media changes. Reviewer reverified all
+three earlier blockers fixed. No production forms/submissions written. Forms source
+and scopedstyles/generator/tests/main integration belong this release; Media package/
+lock/components and redirects/menu remain excluded.
+
+## September 19 — Forms candidate awaiting browser completion
+
+Forms reviewer findings corrected by marketing_parity_inventory with seven native
+race/legacy/drag tests plus clean-click eighth test; React19 test-host alignment
+being completed. Six retained/shared tests and both typechecks/build passed before
+Media edits. Browser confirms original library/palette/inspector and corrected scoped
+borders/labels; a local active-save confirmation in tab23 blocked that tab and later
+button interactions despite textbox edits working. getJsDialog returned undefined;
+getAX/close for23 timed out. Do not claim interactive Entries/save verified or release
+Forms until fresh browser verification succeeds. Synthetic server44217 on4353;
+/tmp/p1-social-review-server.mjs supplies forms,reservations,submissions in memory.
+
+Parent added Forms shared runtime allowlist, removed duplicate Forms header and fixed
+owner/wildcard media prop in main (uncommitted Forms scope). Media restoration now
+owned by social_ui_reuse. Parent installed existing exact cropper dependencies
+react-image-crop11.0.10 ISC and browser-image-compression2.0.2MIT; dashboard package
+and pnpm lock changes belong to Media, not Forms. New Media runtime allowlisting
+will need media-library-presentation.tsx and image-cropper-editor.tsx when ready.
+No production data changed. Branding f2335f4 verified live in previous checkpoint.
+
+## September 19 — Branding live; Forms review corrections underway
+
+Branding f2335f4 dashboard/Core Railway SUCCESS and authenticated live verification
+complete. No production settings written. Forms independent review identified reload
+and reservation response races plus whole-list failure on a single unsupported form.
+marketing_parity_inventory is fixing these with tests, plus unnamed-control labels
+and missing scoped border-width reset discovered in browser. Parent main.tsx hides
+duplicate generic Forms heading and uses can(media) for owner/wildcard parity.
+Forms is NOT committed or released. New tests/config/utilities are part of its scope.
+Unrelated redirect/menu work remains dirty and excluded.
+
 ## September 19 — Branding restoration accepted for release
 
 Shared logo/favicon cards/company fields restored with capability-gated media
