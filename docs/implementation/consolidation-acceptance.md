@@ -1,6 +1,6 @@
 # Consolidation acceptance tracker
 
-Current assessment: **implementation in progress; not a complete release candidate**. Updated September 19, 2026. The approved scope remains unchanged. Main now contains the consolidated applications and validated public changes; `001ac605a648d83fbefc6cbc49a07915003b3354` was verified deployed successfully on Website, Dashboard and Core. Live Integrations, Email Templates and Developer Resources libraries render the restored original-style interfaces; detailed evidence is in handoff.md. Original checkout and Blythe remain outside this worktree's write scope.
+Current assessment: **implementation in progress; not a complete release candidate**. Updated September 19, 2026. The approved scope remains unchanged. Main now contains the consolidated applications and validated public changes; `5af08490509da3f315cac21eb10cc86bc541031f` was verified deployed successfully on Website, Dashboard and Core. Live Integrations, Email Templates and Developer Resources libraries render the restored original-style interfaces; detailed evidence is in handoff.md. Original checkout and Blythe remain outside this worktree's write scope.
 
 The Owner's identity link and Website Editor work. Live Analytics now works after correcting empty previous-period report normalization. Search Console remains blocked by property coverage/access (configured domain property returns 403; only the apex URL-prefix property appeared in the authorized list). Do not rotate existing Google credentials or equate apex access with canonical `www` coverage.
 
@@ -269,3 +269,13 @@ reviewed the retained-schema compatibility boundaries. Final parent publication
 rerun/build and release evidence are recorded in handoff. API/editor/scheduler
 cutover, private preview, static-article adoption, public SSR/hydration/metadata/
 sitemap/cache integration and full Blog feature acceptance remain open.
+
+
+## Latest recovery release — September 19
+
+Blog storage/recovery foundation shipped at9926fc01; dashboard lazy-tool recovery
+shipped at5af08490. All three Railway services reached SUCCESS for5af08490, both
+health checks passed and the delivered dashboard module contains the recovery UI.
+See handoff for deployment IDs. This does not complete Blog publication cutover or
+full consolidation acceptance. Build-log image digests are now recorded, but their
+retrievable immutable bytes and actual image-based rollback remain open.

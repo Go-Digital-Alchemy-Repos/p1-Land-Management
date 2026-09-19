@@ -1,3 +1,27 @@
+## Verified dashboard recovery release — September 19
+
+Runtime `5af08490509da3f315cac21eb10cc86bc541031f` is pushed to main and the
+consolidation branch. Railway SUCCESS:
+- Dashboard `ee0c3366-7be3-4625-b6d9-4be260d24a39`
+- Core `44a31ebd-ccd8-4285-bc87-f7ac396767eb`
+- Website `f28e23a2-cfe1-464d-a645-75d3f4eab142`
+
+Core readiness/database and dashboard health pass. Authenticated refreshed Blog
+list renders all existing tools and its correct empty CMS state. The delivered module bundle
+`/assets/index-DNKqOUTK.js` contains manual recovery and unsaved-warning controls.
+Initial bundle probe selected theme-init.js; corrected module-script selection
+verified the actual application asset. Existing tabs need a refresh for this fix.
+The full consolidation goal remains active: Blog editor/scheduler/public delivery,
+remaining CMS acceptance, Search Console access, CRM/account reconciliation,
+operational journey and complete recovery/retirement are still open.
+
+Railway build logs also yielded actual image digests: Core9926fc01 image
+`sha256:78e1d103c218befbaa3c9a001c6f9b2a42fe6d2a3d868085e7ad1312c8c1d8e8`
+and Dashboard5af08490 image
+`sha256:05897d6e0bed749c497b8329216ea075e0cc9bd6803f5240a2c162ac59ee2afb`.
+These establish build provenance only; immutable-image retrieval and actual
+image-based rollback rehearsal remain unverified.
+
 ## Dashboard stale-asset recovery — September 19 candidate
 
 The live deployment finding is corrected with a local error boundary around the
