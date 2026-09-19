@@ -11,6 +11,7 @@ import { OwnerMfaRecovery } from "./OwnerMfaRecovery";
 import { CommercialInbox } from "./CommercialInbox";
 import { PropertyFiles } from "./PropertyFiles";
 import { ScheduleCalendar } from "./ScheduleCalendar";
+import { scheduleDateTime } from "./schedule-dates";
 import { AssessmentAvailability } from "./AssessmentAvailability";
 import { ClientContacts } from "./ClientContacts";
 import { RequestComposer } from "./RequestComposer";
@@ -2087,7 +2088,10 @@ function App() {
           {view === "Recurring" && (
             <section className="panel">
               <Table
-                rows={data["recurring-jobs"] || []}
+                rows={(data["recurring-jobs"] || []).map((job: any) => ({
+                  ...job,
+                  next_visit: scheduleDateTime(job.next_visit),
+                }))}
                 columns={[
                   "title",
                   "generation_status",

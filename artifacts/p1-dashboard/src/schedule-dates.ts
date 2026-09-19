@@ -28,3 +28,11 @@ export function scheduleTime(value: string) {
     minute: "2-digit",
   }).format(new Date(value));
 }
+
+/** Display scheduled instants in P1's scheduling timezone, independent of the device. */
+export function scheduleDateTime(value: string | null | undefined) {
+  if (!value || !Number.isFinite(new Date(value).getTime())) return "—";
+  const [year, month, day] = scheduleDate(value).split("-");
+  const time = scheduleTime(value).replace(/\s/g, "").toLowerCase();
+  return `${month}/${day}/${year} ${time}`;
+}
