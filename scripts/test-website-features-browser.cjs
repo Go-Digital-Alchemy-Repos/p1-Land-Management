@@ -91,29 +91,30 @@ const assert = require("node:assert/strict");
     await page.goto("http://127.0.0.1:4347/marketing/system/features");
     const area = page.getByRole("region", { name: "Website module settings" });
     await area.getByRole("alert").waitFor();
-    assert.equal(await area.getByRole("checkbox").count(), 0);
+    assert.equal(await area.getByRole("switch").count(), 5);
+    for (const toggle of await area.getByRole("switch").all()) assert(!(await toggle.isEnabled()));
     await area.getByRole("button", { name: "Reload saved modules" }).click();
-    await area.getByRole("checkbox", { name: "CMS", exact: true }).waitFor();
+    await area.getByRole("switch", { name: "Enable CMS", exact: true }).waitFor();
     assert.equal(writes.length, 0);
-    for (const box of await area.getByRole("checkbox").all())
+    for (const box of await area.getByRole("switch").all())
       assert(!(await box.isChecked()));
-    await area.getByRole("checkbox", { name: "Events", exact: true }).check();
-    await area.getByRole("button", { name: "Save website modules" }).click();
+    await area.getByRole("switch", { name: "Enable Events", exact: true }).click();
+    await area.getByRole("button", { name: "Save Configuration" }).click();
     await area.getByRole("alert").waitFor();
     assert(
       await area
-        .getByRole("checkbox", { name: "Events", exact: true })
+        .getByRole("switch", { name: "Enable Events", exact: true })
         .isChecked(),
     );
     assert(
       await area
-        .getByRole("button", { name: "Save website modules" })
+        .getByRole("button", { name: "Save Configuration" })
         .isDisabled(),
     );
     await area.getByRole("button", { name: "Reload saved modules" }).click();
     assert(
       await area
-        .getByRole("checkbox", { name: "Events", exact: true })
+        .getByRole("switch", { name: "Enable Events", exact: true })
         .isChecked(),
     );
     accept = true;
@@ -124,52 +125,52 @@ const assert = require("node:assert/strict");
       .waitFor();
     assert(
       await area
-        .getByRole("checkbox", { name: "Events", exact: true })
+        .getByRole("switch", { name: "Enable Events", exact: true })
         .isChecked(),
     );
     await area.getByRole("button", { name: "Reload saved modules" }).click();
     await page.waitForFunction(
-      () => !document.querySelector("fieldset")?.disabled,
+      () => document.querySelector("#feature-cmsEnabled")?.disabled === false,
     );
     assert(
       !(await area
-        .getByRole("checkbox", { name: "Events", exact: true })
+        .getByRole("switch", { name: "Enable Events", exact: true })
         .isChecked()),
     );
     assert(
       await area
-        .getByRole("checkbox", { name: "Blog", exact: true })
+        .getByRole("switch", { name: "Enable Blog", exact: true })
         .isChecked(),
     );
     await area.getByRole("button", { name: "Use default selections" }).click();
     assert.equal(writes.length, 1);
     assert(
       await area
-        .getByRole("checkbox", { name: "CMS", exact: true })
+        .getByRole("switch", { name: "Enable CMS", exact: true })
         .isChecked(),
     );
     assert(
       !(await area
-        .getByRole("checkbox", { name: "Careers", exact: true })
+        .getByRole("switch", { name: "Enable Career Center", exact: true })
         .isChecked()),
     );
     lost = true;
-    await area.getByRole("button", { name: "Save website modules" }).click();
+    await area.getByRole("button", { name: "Save Configuration" }).click();
     await area.getByRole("alert").waitFor();
     assert.equal(writes[1].expectedVersion, "b".repeat(64));
     assert.deepEqual(writes[1].features, defaults);
     await area.getByRole("button", { name: "Reload saved modules" }).click();
     await page.waitForFunction(
-      () => !document.querySelector("fieldset")?.disabled,
+      () => document.querySelector("#feature-cmsEnabled")?.disabled === false,
     );
     assert(
       await area
-        .getByRole("checkbox", { name: "CMS", exact: true })
+        .getByRole("switch", { name: "Enable CMS", exact: true })
         .isChecked(),
     );
-    for (const box of await area.getByRole("checkbox").all())
-      await box.uncheck();
-    await area.getByRole("button", { name: "Save website modules" }).click();
+    for (const box of await area.getByRole("switch").all())
+      if (await box.isChecked()) await box.click();
+    await area.getByRole("button", { name: "Save Configuration" }).click();
     await area
       .getByRole("status")
       .filter({ hasText: "Website modules saved" })

@@ -1,3 +1,15 @@
+## September 19 — Website Modules shared presentation increment
+
+Feature Apps now shares the retained card/rows/switches with native Website Modules.
+Three focused tests, dashboard typecheck/build, and isolated Core typecheck/build
+passed. Core isolation used HEAD plus the two scoped runtime files because concurrent
+Forms work is still in progress. Synthetic browser switch/default/confirmed-save and
+390px layout checks passed. Independent review passed after browser-script updates.
+Colors7733706 is live: dashboard d3fe33ab-202f-43b1-bcb1-7d1a10e8b115 and Core
+42510145-0b45-4694-918e-5af509276add SUCCESS; all groups/18controls confirmed live.
+Branding implemented but awaiting parent acceptance; Forms in progress. Do not merge
+unrelated menu/redirect drafts or declare full Marketing parity complete.
+
 ## September 19 — Colors shared presentation increment
 
 Colors now shares the retained editor with three original sections, 18 paired

@@ -1,3 +1,6 @@
+import { Save, RefreshCw, Loader2 } from "lucide-react";
+import { FeatureAppsEditor } from "../../../../platform/p1-core/client/src/components/shared/feature-apps-editor";
+import "./website-features.css";
 import { useEffect, useRef, useState } from "react";
 import {
   getWebsiteFeatures,
@@ -13,30 +16,30 @@ const controls: Array<{
 }> = [
   {
     key: "cmsEnabled",
-    label: "CMS",
+    label: "Enable CMS",
     description:
       "Website editing, pages, media, sections, menus, galleries and SEO tools.",
   },
   {
     key: "blogEnabled",
-    label: "Blog",
+    label: "Enable Blog",
     description: "Website blog publishing tools and API entry points.",
   },
   {
     key: "eventsEnabled",
-    label: "Events",
+    label: "Enable Events",
     description:
       "Event administration, registration and event API entry points.",
   },
   {
     key: "crmEnabled",
-    label: "Website CRM intake",
+    label: "Enable CRM",
     description:
       "The retained website CRM pipeline and intake routes. Native Revenue / Sales stays available.",
   },
   {
     key: "careersEnabled",
-    label: "Careers",
+    label: "Enable Career Center",
     description: "Career tools, job listings and application API entry points.",
   },
 ];
@@ -146,87 +149,37 @@ export default function WebsiteFeatures() {
     }
   }
   return (
-    <section className="panel" aria-label="Website module settings">
-      <h2>Website modules</h2>
-      <p>
-        Control which website services are available. Turning off a module
-        preserves its stored records and does not change team permissions or
-        dashboard business settings.
-      </p>
-      <p>
-        Availability also depends on the public website’s configured routes.
-        Enabling a module does not create a new public page or navigation item.
-        CMS controls editing tools; it does not take the public website offline.
-      </p>
-      {error && <p role="alert">{error}</p>}
-      {message && <p role="status">{message}</p>}
-      {busy && <p role="status">Working…</p>}
-      <button type="button" disabled={busy} onClick={() => void load(true)}>
-        Reload saved modules
-      </button>
-      {saved && values && (
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            void save();
-          }}
-        >
-          <fieldset
-            disabled={busy || blocked}
-            style={{
-              display: "grid",
-              gap: "1rem",
-              marginBlock: "1rem",
-              minWidth: 0,
-              border: "1px solid hsl(var(--border))",
-              padding: "1rem",
-              borderRadius: ".5rem",
-            }}
-          >
-            <legend>Available website modules</legend>
-            {controls.map((control) => (
-              <div key={control.key}>
-                <label
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: ".5rem",
-                  }}
-                >
-                  <input
-                    type="checkbox"
-                    style={{ width: "1.1rem", minHeight: "1.1rem", flex: "0 0 auto" }}
-                    checked={values[control.key]}
-                    onChange={(e) =>
-                      setValues({ ...values, [control.key]: e.target.checked })
-                    }
-                  />
-                  {control.label}
-                </label>
-                <p style={{ margin: ".25rem 0 0", overflowWrap: "anywhere" }}>
-                  {control.description}
-                </p>
-              </div>
-            ))}
-          </fieldset>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: ".75rem" }}>
-            <button
-              type="button"
-              disabled={busy || blocked}
-              onClick={() => setValues({ ...saved.defaults })}
-            >
-              Use default selections
+    <section className="website-features" aria-label="Website module settings">
+      <form onSubmit={event => { event.preventDefault(); void save(); }}>
+        <FeatureAppsEditor
+          fields={controls}
+          notices={<>
+            {error && <p role="alert">{error}</p>}
+            {message && <p role="status">{message}</p>}
+            {busy && <p role="status">Working…</p>}
+          </>}
+          renderToggle={field => <button
+            id={`feature-${field.key}`}
+            type="button"
+            role="switch"
+            className="feature-apps-switch"
+            aria-labelledby={`feature-label-${field.key}`}
+            aria-describedby={`feature-help-${field.key}`}
+            aria-checked={Boolean(values?.[field.key as keyof Features])}
+            disabled={!values || busy || blocked}
+            onClick={() => values && setValues({ ...values, [field.key]: !values[field.key as keyof Features] })}
+          ><span /></button>}
+          toolbar={<>
+            <button className="feature-apps-save" type="submit" disabled={!saved || busy || blocked || !dirty}>
+              {busy ? <Loader2 aria-hidden="true" /> : <Save aria-hidden="true" />} Save Configuration
             </button>
-            <button type="submit" disabled={busy || blocked || !dirty}>
-              Save website modules
-            </button>
-          </div>
-          <p>
-            Default selections only change this form until you save. They keep
-            Events and Careers off.
-          </p>
-        </form>
-      )}
+            <button type="button" disabled={busy} onClick={() => void load(true)}><RefreshCw aria-hidden="true" /> Reload saved modules</button>
+            <button type="button" disabled={!saved || busy || blocked} onClick={() => saved && setValues({ ...saved.defaults })}>Use default selections</button>
+          </>}
+        />
+      </form>
+      <p className="feature-apps-note">Availability also depends on the public website’s configured routes. Enabling a module does not create a new public page or navigation item. CMS controls editing tools; it does not take the public website offline. These settings do not change team permissions or dashboard business settings.</p>
+      <p className="feature-apps-note">Default selections only change this form until you save. They keep Events and Careers off.</p>
     </section>
   );
 }

@@ -4,7 +4,7 @@ import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+import { FeatureAppsEditor } from "@/components/shared/feature-apps-editor";
 import { Switch } from "@/components/ui/switch";
 import { Loader2, Save } from "lucide-react";
 import { DEFAULT_SITE_FEATURES, normalizeBooleanSetting } from "@shared/site-features";
@@ -155,51 +155,22 @@ export function SystemConfigurationTab({ settings }: { settings: SettingsData })
         </p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Feature Apps</CardTitle>
-          <CardDescription>
-            These toggles hide or reveal major admin navigation and public entry routes. Existing
-            data is preserved when an app is turned off.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {SYSTEM_CONFIGURATION_FIELDS.map((field) => (
-            <div
-              key={field.key}
-              className="flex items-start justify-between gap-4 rounded-xl border p-4"
-            >
-              <div className="space-y-1">
-                <Label className="text-sm font-medium">{field.label}</Label>
-                <p className="text-xs text-muted-foreground">{field.description}</p>
-              </div>
-              <Switch
-                checked={values[field.key]}
-                onCheckedChange={(checked) =>
-                  setValues((current) => ({ ...current, [field.key]: checked }))
-                }
-                data-testid={`switch-${field.key}`}
-              />
-            </div>
-          ))}
-
-          <div className="flex gap-2 pt-2">
-            <Button
-              type="button"
-              onClick={() => saveMutation.mutate()}
-              disabled={!hasChanges || saveMutation.isPending}
-              data-testid="button-save-system-configuration"
-            >
-              {saveMutation.isPending ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Save className="mr-2 h-4 w-4" />
-              )}
-              Save Configuration
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <FeatureAppsEditor
+        components={{ Card, CardHeader, CardTitle, CardDescription, CardContent }}
+        fields={SYSTEM_CONFIGURATION_FIELDS}
+        renderToggle={(field) => <Switch
+          id={`feature-${field.key}`}
+          aria-labelledby={`feature-label-${field.key}`}
+          aria-describedby={`feature-help-${field.key}`}
+          checked={values[field.key as SystemConfigurationSettingKey]}
+          onCheckedChange={checked => setValues(current => ({ ...current, [field.key]: checked }))}
+          data-testid={`switch-${field.key}`}
+        />}
+        toolbar={<Button type="button" onClick={() => saveMutation.mutate()} disabled={!hasChanges || saveMutation.isPending} data-testid="button-save-system-configuration">
+          {saveMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+          Save Configuration
+        </Button>}
+      />
     </div>
   );
 }

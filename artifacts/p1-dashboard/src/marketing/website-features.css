@@ -1,0 +1,19 @@
+.website-features .feature-apps-editor { background:hsl(var(--card)); color:hsl(var(--card-foreground)); border:1px solid hsl(var(--border)); border-radius:12px; box-shadow:var(--shadow-sm); }
+.website-features .feature-apps-header { padding:24px; display:flex; flex-direction:column; gap:6px; }
+.website-features .feature-apps-title { font-size:16px; font-weight:600; }
+.website-features .feature-apps-description { color:hsl(var(--muted-foreground)); font-size:14px; line-height:1.5; }
+.website-features .feature-apps-content { padding:0 24px 24px; display:flex; flex-direction:column; gap:16px; }
+.website-features .feature-apps-row { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; border:1px solid hsl(var(--border)); border-radius:12px; padding:16px; }
+.website-features .feature-apps-copy { min-width:0; }
+.website-features .feature-apps-label { display:block; font-size:14px; font-weight:500; margin:0; }
+.website-features .feature-apps-help { color:hsl(var(--muted-foreground)); font-size:12px; line-height:1.5; margin:4px 0 0; }
+.website-features button.feature-apps-switch { display:inline-flex; align-items:center; flex-shrink:0; width:44px; height:24px; min-height:24px; padding:2px; border:0; border-radius:24px; background:hsl(var(--input)); box-shadow:none; }
+.website-features .feature-apps-switch span { display:block; width:20px; height:20px; border-radius:100%; background:hsl(var(--background)); box-shadow:0 1px 2px #0002; transition:transform .15s; }
+.website-features .feature-apps-switch[aria-checked="true"] { background:hsl(var(--primary)); }
+.website-features .feature-apps-switch[aria-checked="true"] span { transform:translateX(20px); }
+.website-features .feature-apps-toolbar { display:flex; flex-wrap:wrap; gap:8px; padding-top:8px; }
+.website-features .feature-apps-toolbar button { display:inline-flex; align-items:center; gap:8px; min-height:36px; padding:8px 12px; font-size:14px; }
+.website-features .feature-apps-toolbar svg { width:16px; height:16px; }
+.website-features .feature-apps-save { background:hsl(var(--primary)); color:hsl(var(--primary-foreground)); }
+.website-features .feature-apps-note { font-size:12px; line-height:1.5; color:hsl(var(--muted-foreground)); }
+@media (prefers-reduced-motion:reduce) { .website-features .feature-apps-switch span { transition:none; } }

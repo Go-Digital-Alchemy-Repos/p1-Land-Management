@@ -154,6 +154,10 @@ const marketingDesignCopy: Partial<Record<DashboardPageRoute["view"], { title: s
   "Website Colors": DESIGN_COPY.colors,
   "Website Typography": DESIGN_COPY.typography,
 };
+const marketingPageCopy = {
+  ...marketingDesignCopy,
+  "Website Features": { title: "System Configuration", description: "Control which website apps are active while preserving their stored data." },
+};
 async function api(path: string, body?: unknown, method: "POST" | "PATCH" | "DELETE" = "POST") {
   const r = await fetch("/api/v1" + path, {
     method: body === undefined ? "GET" : method,
@@ -1324,7 +1328,7 @@ function App() {
             <strong>
               {view === "Settings"
                 ? nav.find((item) => item.settingsSection === settingsSection)?.label
-                : marketingDesignCopy[view]?.title ?? view}
+                : marketingPageCopy[view]?.title ?? view}
             </strong>
           </div>
           <button
@@ -1349,7 +1353,7 @@ function App() {
         <main className="content">
           {!accountWorkspace && view !== "Website Documents" && <div className={view === "Overview" ? "page-heading page-hero" : "page-heading"}>
             <div>
-              {!marketingDesignCopy[view] && <p className="eyebrow">P1 · PROPERTY OPERATIONS</p>}
+              {!marketingPageCopy[view] && <p className="eyebrow">P1 · PROPERTY OPERATIONS</p>}
               <h1>
                 {routeUnavailable
                   ? "Page unavailable"
@@ -1357,7 +1361,7 @@ function App() {
                   ? "A clear view of the day."
                   : view === "Settings"
                     ? nav.find((item) => item.settingsSection === settingsSection)?.label
-                    : marketingDesignCopy[view]?.title ?? view}
+                    : marketingPageCopy[view]?.title ?? view}
               </h1>
               <p className="muted">
                 {routeUnavailable
@@ -1368,7 +1372,7 @@ function App() {
                     ? "Your assignments and field notes, wherever work takes you."
                     : view === "Settings"
                       ? "Control access, account security, connections and workspace defaults."
-                      : view === "Agreement Drafts" ? "Prepare client-specific terms, scope and costs from your agreement templates." : view === "Agreement Templates" ? "Manage reusable terms, scope, cost breakdowns, and published agreement packages." : view === "CMS Pages" ? "Manage CMS page content, publication, and revision history." : marketingDesignCopy[view]?.description ?? "Keep the details connected to the work."}
+                      : view === "Agreement Drafts" ? "Prepare client-specific terms, scope and costs from your agreement templates." : view === "Agreement Templates" ? "Manage reusable terms, scope, cost breakdowns, and published agreement packages." : view === "CMS Pages" ? "Manage CMS page content, publication, and revision history." : marketingPageCopy[view]?.description ?? "Keep the details connected to the work."}
               </p>
             </div>
             {!routeUnavailable && <div className="heading-actions">

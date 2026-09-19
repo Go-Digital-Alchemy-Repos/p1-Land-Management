@@ -112,3 +112,21 @@ cover validation, safe preview fallbacks, changed-only payloads and conflict/rel
 The original selected-typography preview remains in Core; dashboard currently uses
 its own font family in the color sample, an explicit remaining presentation difference.
 The new shared runtime component is allowlisted in the dashboard Docker build context.
+
+Colors release `7733706` is verified on Railway: dashboard deployment
+`d3fe33ab-202f-43b1-bcb1-7d1a10e8b115` and Core deployment
+`42510145-0b45-4694-918e-5af509276add` both SUCCESS. Read-only authenticated
+live inspection confirmed all three groups, 18 picker/hex pairs, full preview
+and disabled unchanged Save Color Palette. No production settings were written.
+
+## Website Modules presentation restoration
+
+The retained Feature Apps card is shared by Core System Configuration and native
+Website Modules. It restores the original bordered rows, labeled switches, help
+copy and Save Configuration action. Native defaults, versioned writes, conflict
+blocking, confirmed reloads and dirty guards remain unchanged. Events/Careers
+remain off by default; excluded apps remain absent. Defaults only stage selections.
+Three focused tests passed; an independent review found only stale browser-script
+assertions, which were updated for disabled switches and actual-control readiness.
+Local synthetic browser checks confirmed switch/default/save behavior and a 390px
+layout without document overflow. No production module settings were changed.

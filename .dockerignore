@@ -41,3 +41,4 @@ platform/p1-core/client/src/components/shared/*
 
 !platform/p1-core/client/src/components/shared/typography-editor.tsx
 !platform/p1-core/client/src/components/shared/color-editor.tsx
+!platform/p1-core/client/src/components/shared/feature-apps-editor.tsx
