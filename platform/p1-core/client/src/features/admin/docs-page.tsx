@@ -1,10 +1,14 @@
+import {
+  DocumentWorkspacePresentation,
+  PREFERRED_DOCUMENT_CATEGORIES as PREFERRED_CATEGORIES,
+  sortDocumentCategories as sortCategories,
+} from "@/components/shared/document-workspace-presentation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useLocation, useRoute } from "wouter";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { AdminSidebar } from "./admin-sidebar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -25,8 +29,6 @@ import {
   SheetBody,
   SheetFooter,
 } from "@/components/ui/sheet";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { LoadingSpinner } from "@/components/shared/loading-spinner";
 import { EditorLockBanner } from "@/components/shared/editor-lock-banner";
 import { EditorSaveIndicator } from "@/components/shared/editor-save-indicator";
@@ -39,61 +41,12 @@ import { useUnsavedChangesGuard } from "@/hooks/use-unsaved-changes-guard";
 import {
   docSlugFromMarkdownPath,
   extractMarkdownHeadings,
-  markdownToExcerpt,
   type MarkdownLinkResolution,
 } from "@/lib/markdown";
-import {
-  BookOpenText,
-  Edit,
-  Eye,
-  EyeOff,
-  FileText,
-  Hash,
-  Layers3,
-  ListTree,
-  Plus,
-  RefreshCw,
-  Search,
-  Trash2,
-} from "lucide-react";
+import { Eye, EyeOff, Plus, RefreshCw } from "lucide-react";
 import type { Doc as StoredDoc } from "@shared/schema";
 import { documentFieldsSchema } from "@shared/document-contract";
 type Doc = StoredDoc & { version: string };
-
-const PREFERRED_CATEGORIES = [
-  "Getting Started",
-  "Admin Guides",
-  "Architecture",
-  "Architecture Decisions",
-  "Operations & Recovery",
-  "Deployment & Release",
-  "API Reference",
-  "Engineering Quality",
-  "Security",
-  "Product & Planning",
-  "Reference",
-];
-
-function sortCategories(categories: string[]) {
-  return [...categories].sort((a, b) => {
-    const aIndex = PREFERRED_CATEGORIES.indexOf(a);
-    const bIndex = PREFERRED_CATEGORIES.indexOf(b);
-
-    if (aIndex === -1 && bIndex === -1) {
-      return a.localeCompare(b);
-    }
-
-    if (aIndex === -1) {
-      return 1;
-    }
-
-    if (bIndex === -1) {
-      return -1;
-    }
-
-    return aIndex - bIndex;
-  });
-}
 
 export default function DocsPage() {
   const { toast } = useToast();
@@ -119,23 +72,35 @@ export default function DocsPage() {
   });
 
   const [writeBlocked, setWriteBlocked] = useState(false);
-  const { data: library, isLoading, refetch } = useQuery<{ version: string; docs: Doc[] }>({
+  const {
+    data: library,
+    isLoading,
+    refetch,
+  } = useQuery<{ version: string; docs: Doc[] }>({
     queryKey: ["/api/admin/docs"],
   });
   const allDocs = library?.docs ?? [];
   const downloadDraft = () => {
-    const url = URL.createObjectURL(new Blob([JSON.stringify(editingDoc, null, 2)], { type: "application/json" }));
+    const url = URL.createObjectURL(
+      new Blob([JSON.stringify(editingDoc, null, 2)], { type: "application/json" }),
+    );
     const link = document.createElement("a");
-    link.href = url; link.download = "p1-document-draft.json"; link.click();
+    link.href = url;
+    link.download = "p1-document-draft.json";
+    link.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
   const docBySlug = useMemo(() => new Map(allDocs.map((doc) => [doc.slug, doc])), [allDocs]);
 
   const syncMutation = useMutation({
-    onError: (error: Error) => { toast({ title: "Refresh failed", description: error.message, variant: "destructive" }); },
+    onError: (error: Error) => {
+      toast({ title: "Refresh failed", description: error.message, variant: "destructive" });
+    },
     mutationFn: async () => {
-      const res = await apiRequest("POST", "/api/admin/docs/sync", { expectedVersion: library?.version });
+      const res = await apiRequest("POST", "/api/admin/docs/sync", {
+        expectedVersion: library?.version,
+      });
       return res.json();
     },
     onSuccess: async (payload: {
@@ -179,8 +144,18 @@ export default function DocsPage() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: async ({ id, version, createdBy, createdAt, updatedAt, ...data }: Partial<Doc> & { id: string }) => {
-      const res = await apiRequest("PUT", `/api/admin/docs/${id}`, { document: documentFieldsSchema.parse(data), expectedVersion: version });
+    mutationFn: async ({
+      id,
+      version,
+      createdBy,
+      createdAt,
+      updatedAt,
+      ...data
+    }: Partial<Doc> & { id: string }) => {
+      const res = await apiRequest("PUT", `/api/admin/docs/${id}`, {
+        document: documentFieldsSchema.parse(data),
+        expectedVersion: version,
+      });
       return res.json();
     },
     onSuccess: async (updated: Doc) => {
@@ -206,7 +181,9 @@ export default function DocsPage() {
   });
 
   const deleteMutation = useMutation({
-    onError: (error: Error) => { toast({ title: "Delete failed", description: error.message, variant: "destructive" }); },
+    onError: (error: Error) => {
+      toast({ title: "Delete failed", description: error.message, variant: "destructive" });
+    },
     mutationFn: async (doc: Doc) => {
       await apiRequest("DELETE", `/api/admin/docs/${doc.id}`, { expectedVersion: doc.version });
     },
@@ -378,7 +355,7 @@ export default function DocsPage() {
 
   const openEdit = (doc: Doc) => {
     setWriteBlocked(false);
-    const nextDoc = { ...(allDocs.find(saved => saved.id === doc.id) ?? doc) };
+    const nextDoc = { ...(allDocs.find((saved) => saved.id === doc.id) ?? doc) };
     setEditingDoc(nextDoc);
     setSavedDocSnapshot(JSON.stringify(nextDoc));
     saveFeedbackRef.current.clearFeedback();
@@ -413,7 +390,14 @@ export default function DocsPage() {
           <div className="flex flex-wrap items-center gap-2">
             <Button
               variant="outline"
-              onClick={() => { if (window.confirm("Refresh repository documents? This replaces matching saved document content.")) syncMutation.mutate(); }}
+              onClick={() => {
+                if (
+                  window.confirm(
+                    "Refresh repository documents? This replaces matching saved document content.",
+                  )
+                )
+                  syncMutation.mutate();
+              }}
               disabled={syncMutation.isPending || sheetOpen || !library?.version}
               data-testid="button-sync-system-docs"
             >
@@ -427,237 +411,50 @@ export default function DocsPage() {
           </div>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-3">
-          <Card>
-            <CardContent className="py-4">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <BookOpenText className="h-4 w-4" />
-                Documents
-              </div>
-              <div className="mt-1 text-2xl font-semibold" data-testid="text-doc-count">
-                {allDocs.length}
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="py-4">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Layers3 className="h-4 w-4" />
-                Systems
-              </div>
-              <div className="mt-1 text-2xl font-semibold">{categories.length}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="py-4">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <ListTree className="h-4 w-4" />
-                Visible results
-              </div>
-              <div className="mt-1 text-2xl font-semibold">{filteredDocs.length}</div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="grid min-h-0 flex-1 gap-6 xl:grid-cols-[280px_360px_minmax(0,1fr)] xl:overflow-hidden">
-          <Card className="flex min-h-0 flex-col overflow-hidden">
-            <CardHeader className="space-y-3">
-              <CardTitle className="text-base">System Index</CardTitle>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  placeholder="Search docs..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                  data-testid="input-search-docs"
-                />
-              </div>
-            </CardHeader>
-            <CardContent className="flex min-h-0 flex-1 flex-col overflow-hidden pb-4">
-              <ScrollArea className="min-h-0 flex-1 pr-3">
-                <div className="space-y-2">
-                  <button
-                    onClick={() => setSelectedCategory(null)}
-                    className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm ${!selectedCategory ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
-                    data-testid="button-category-all"
-                  >
-                    <span>All Systems</span>
-                    <span className="text-xs opacity-80">{allDocs.length}</span>
-                  </button>
-                  {categories.map((category) => {
-                    const count = allDocs.filter((doc) => doc.category === category).length;
-                    return (
-                      <button
-                        key={category}
-                        onClick={() => setSelectedCategory(category)}
-                        className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm ${selectedCategory === category ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
-                        data-testid={`button-category-${category.toLowerCase().replace(/\s+/g, "-")}`}
-                      >
-                        <span className="min-w-0 truncate">{category}</span>
-                        <span className="text-xs opacity-80">{count}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </ScrollArea>
-            </CardContent>
-          </Card>
-
-          <Card className="flex min-h-0 flex-col overflow-hidden">
-            <CardHeader>
-              <CardTitle className="text-base">Documents & Indexes</CardTitle>
-            </CardHeader>
-            <CardContent className="flex min-h-0 flex-1 flex-col overflow-hidden pb-4">
-              <ScrollArea className="min-h-0 flex-1 pr-3">
-                <div className="space-y-3">
-                  {filteredDocs.length === 0 ? (
-                    <div className="rounded-lg border border-dashed px-4 py-10 text-center text-sm text-muted-foreground">
-                      <BookOpenText className="mx-auto mb-3 h-10 w-10 opacity-50" />
-                      <p>No documentation found yet.</p>
-                      <p className="mt-1">
-                        Use “Sync System Docs” to import the repo documentation into the admin
-                        library.
-                      </p>
-                    </div>
-                  ) : (
-                    filteredDocs.map((doc) => (
-                      <button
-                        key={doc.id}
-                        type="button"
-                        className={`w-full rounded-md border p-4 text-left transition-colors ${selectedDoc?.id === doc.id ? "border-primary bg-primary/5" : "hover:border-primary/40 hover:bg-muted/50"}`}
-                        onClick={() => selectDoc(doc)}
-                        data-testid={`card-doc-${doc.id}`}
-                      >
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="space-y-2">
-                            <div className="font-medium leading-snug">{doc.title}</div>
-                            <div className="flex flex-wrap gap-2">
-                              <Badge variant="outline" className="text-xs">
-                                {doc.category}
-                              </Badge>
-                              {doc.slug.startsWith("system-") && (
-                                <Badge variant="secondary" className="text-xs">
-                                  Generated
-                                </Badge>
-                              )}
-                              {!doc.isPublished && (
-                                <Badge variant="secondary" className="text-xs">
-                                  Draft
-                                </Badge>
-                              )}
-                            </div>
-                            <p className="text-sm leading-6 text-muted-foreground">
-                              {markdownToExcerpt(doc.content)}
-                            </p>
-                          </div>
-                          <FileText className="mt-1 h-4 w-4 shrink-0 text-muted-foreground" />
-                        </div>
-                      </button>
-                    ))
-                  )}
-                </div>
-              </ScrollArea>
-            </CardContent>
-          </Card>
-
-          <Card className="flex min-h-0 flex-col overflow-hidden">
-            {selectedDoc ? (
-              <>
-                <CardHeader className="shrink-0 border-b">
-                  <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
-                    <div className="space-y-3">
-                      <div className="space-y-2">
-                        <CardTitle className="font-heading text-xl" data-testid="text-doc-title">
-                          {selectedDoc.title}
-                        </CardTitle>
-                        <p className="text-sm text-muted-foreground">
-                          Technical documentation for Core Platform systems, architecture, modules,
-                          and operating workflows.
-                        </p>
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        <Badge variant="outline">{selectedDoc.category}</Badge>
-                        {selectedDoc.slug.startsWith("system-") && (
-                          <Badge variant="secondary">Generated Index</Badge>
-                        )}
-                        {selectedDoc.isPublished ? (
-                          <Badge data-testid="badge-published">Published</Badge>
-                        ) : (
-                          <Badge variant="secondary" data-testid="badge-draft">
-                            Draft
-                          </Badge>
-                        )}
-                        <Badge variant="secondary">Slug: {selectedDoc.slug}</Badge>
-                      </div>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => openEdit(selectedDoc)}
-                        data-testid="button-edit-doc"
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => { if (window.confirm("Delete this document?")) deleteMutation.mutate(selectedDoc); }}
-                        data-testid="button-delete-doc"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="grid min-h-0 flex-1 gap-6 overflow-hidden pb-4 pt-6 lg:grid-cols-[minmax(0,1fr)_220px]">
-                  <ScrollArea className="min-h-0 pr-4">
-                    <MarkdownDocument
-                      content={selectedDoc.content}
-                      resolveLink={resolveDocLink}
-                      onDocLinkClick={handleDocLinkClick}
-                      data-testid="text-doc-content"
-                    />
-                  </ScrollArea>
-                  <aside className="hidden min-h-0 border-l pl-4 lg:block">
-                    <div className="mb-3 flex items-center gap-2 text-sm font-medium">
-                      <Hash className="h-4 w-4" />
-                      On this page
-                    </div>
-                    <ScrollArea className="h-full pr-2">
-                      {selectedDocHeadings.length === 0 ? (
-                        <p className="text-sm text-muted-foreground">No headings found.</p>
-                      ) : (
-                        <nav className="space-y-1" data-testid="doc-table-of-contents">
-                          {selectedDocHeadings.map((heading) => (
-                            <a
-                              key={heading.id}
-                              href={`#${heading.id}`}
-                              className={cn(
-                                "block rounded-md px-2 py-1 text-sm text-muted-foreground hover:bg-muted hover:text-foreground",
-                                heading.level === 3 && "pl-5 text-xs",
-                              )}
-                            >
-                              {heading.text}
-                            </a>
-                          ))}
-                        </nav>
-                      )}
-                    </ScrollArea>
-                  </aside>
-                </CardContent>
-              </>
-            ) : (
-              <CardContent className="flex h-full items-center justify-center p-8 text-center text-sm text-muted-foreground">
-                <div className="space-y-3">
-                  <BookOpenText className="mx-auto h-12 w-12 opacity-50" />
-                  <p>Select a document to read it here.</p>
-                </div>
-              </CardContent>
-            )}
-          </Card>
-        </div>
+        <DocumentWorkspacePresentation
+          documents={allDocs}
+          visibleDocuments={filteredDocs}
+          selected={selectedDoc}
+          category={selectedCategory}
+          query={searchQuery}
+          onQuery={setSearchQuery}
+          onCategory={setSelectedCategory}
+          onSelect={selectDoc}
+          headings={selectedDocHeadings}
+          actions={
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => selectedDoc && openEdit(selectedDoc)}
+                data-testid="button-edit-doc"
+              >
+                Edit document
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  if (selectedDoc && window.confirm("Delete this document?"))
+                    deleteMutation.mutate(selectedDoc);
+                }}
+                data-testid="button-delete-doc"
+              >
+                Delete
+              </Button>
+            </>
+          }
+          reader={
+            selectedDoc && (
+              <MarkdownDocument
+                content={selectedDoc.content}
+                resolveLink={resolveDocLink}
+                onDocLinkClick={handleDocLinkClick}
+                data-testid="text-doc-content"
+              />
+            )
+          }
+        />
       </div>
 
       <Sheet open={sheetOpen} onOpenChange={handleSheetOpenChange}>
@@ -669,18 +466,60 @@ export default function DocsPage() {
             </SheetDescription>
           </SheetHeader>
           <SheetBody>
-            {writeBlocked && <p role="alert">The save did not complete reliably. Your draft is retained. Download it before closing, then reopen the saved document to compare before trying again.</p>}
-            {editingDoc && <div className="flex gap-2 mb-4">
-              <Button variant="outline" onClick={downloadDraft}>Download draft</Button>
-              {writeBlocked && <Button variant="outline" onClick={async () => {
-                if (!window.confirm("Replace this draft with the saved document? Download your draft first if you need to keep it.")) return;
-                const result = await refetch();
-                if (result.error) { toast({ title: "Reload failed", description: "Your draft is still retained.", variant: "destructive" }); return; }
-                const saved = result.data?.docs.find(doc => doc.id === editingDoc.id || (!editingDoc.id && doc.slug === editingDoc.slug));
-                if (!saved) { toast({ title: "Saved document not found", description: "Your draft is still retained. Compare the refreshed library before creating a new document.", variant: "destructive" }); return; }
-                setEditingDoc({ ...saved }); setSavedDocSnapshot(JSON.stringify(saved)); setWriteBlocked(false);
-              }}>Reload saved document</Button>}
-            </div>}
+            {writeBlocked && (
+              <p role="alert">
+                The save did not complete reliably. Your draft is retained. Download it before
+                closing, then reopen the saved document to compare before trying again.
+              </p>
+            )}
+            {editingDoc && (
+              <div className="flex gap-2 mb-4">
+                <Button variant="outline" onClick={downloadDraft}>
+                  Download draft
+                </Button>
+                {writeBlocked && (
+                  <Button
+                    variant="outline"
+                    onClick={async () => {
+                      if (
+                        !window.confirm(
+                          "Replace this draft with the saved document? Download your draft first if you need to keep it.",
+                        )
+                      )
+                        return;
+                      const result = await refetch();
+                      if (result.error) {
+                        toast({
+                          title: "Reload failed",
+                          description: "Your draft is still retained.",
+                          variant: "destructive",
+                        });
+                        return;
+                      }
+                      const saved = result.data?.docs.find(
+                        (doc) =>
+                          doc.id === editingDoc.id ||
+                          (!editingDoc.id && doc.slug === editingDoc.slug),
+                      );
+                      if (!saved) {
+                        toast({
+                          title: "Saved document not found",
+                          description:
+                            "Your draft is still retained. Compare the refreshed library before creating a new document.",
+                          variant: "destructive",
+                        });
+                        return;
+                      }
+                      setEditingDoc({ ...saved });
+                      setSavedDocSnapshot(JSON.stringify(saved));
+                      setWriteBlocked(false);
+                    }}
+                  >
+                    Reload saved document
+                  </Button>
+                )}
+              </div>
+            )}
             {editorLock.summary ? (
               <div className="mb-4">
                 <EditorLockBanner

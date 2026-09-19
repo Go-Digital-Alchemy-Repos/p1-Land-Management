@@ -1,3 +1,24 @@
+## Website System interface restoration — September 19 candidate
+
+Original shared Integrations, Email Templates and Developer Resources presentation
+is restored in both retained Core and native dashboard hosts. This implements the
+Owner correction to reuse the original tools rather than reduced native forms.
+See `docs/implementation/marketing-admin-interface-parity.md` for exact scope,
+validation and remaining acceptance gates. All existing data/authentication contracts
+are preserved; no providers were provisioned and no production data was changed.
+
+14 Integrations, 14 Email, 7 retained email-helper and 9 Documents tests passed,
+with independent Documents review/rerun. Both clean typechecks and dashboard/Core
+client builds passed. The restricted dashboard build context passed. Local browser
+review verified original tool layout, synthetic saves/previews/token insertion and
+390px layouts. Release/deployment verification will be recorded above this entry.
+
+Remaining current work: deeper CMS/public-consumer and concurrency acceptance,
+Google connection management/Search Console permission coverage, reviewed real CRM
+payload export/mapping/freeze/import, account-policy decisions, complete crew/offline
+journey, populated content/media recovery and actual deployed-image rollback,
+final full-candidate acceptance and safe `/admin` retirement. Goal remains active.
+
 ## Verified release — September 19, Careers/Events and public menus
 
 `4b7cf0f6106b40af504f40a7a8e2c5e879a172c6` is pushed to main and the

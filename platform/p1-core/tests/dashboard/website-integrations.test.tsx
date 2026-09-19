@@ -36,6 +36,12 @@ const snapshot = {
 };
 let container: HTMLDivElement, root: Root;
 beforeEach(async () => {
+  HTMLDialogElement.prototype.showModal = function () {
+    this.setAttribute("open", "");
+  };
+  HTMLDialogElement.prototype.close = function () {
+    this.removeAttribute("open");
+  };
   vi.clearAllMocks();
   api.get.mockResolvedValue(snapshot);
   api.save.mockResolvedValue({
@@ -49,6 +55,7 @@ beforeEach(async () => {
   document.body.append(container);
   root = createRoot(container);
   await act(async () => root.render(<WebsiteIntegrations />));
+  await click("Configure");
 });
 afterEach(async () => {
   await act(async () => root.unmount());
@@ -77,7 +84,7 @@ async function change(element: HTMLInputElement | HTMLSelectElement, value: stri
   });
 }
 async function replaceSecret() {
-  await change(container.querySelector("select")!, "replace");
+  await change(container.querySelector("dialog select")!, "replace");
   await change(container.querySelector('input[type="password"]')!, "synthetic-new-key");
 }
 async function submit() {
@@ -95,7 +102,7 @@ it("shows redacted presence and deployment reporting limits without automatic te
   expect(api.test).not.toHaveBeenCalled();
 });
 it("keeps a credential without sending masks or replacement values", async () => {
-  await change(container.querySelector("input")!, "new.example.test");
+  await change(container.querySelector("dialog input")!, "new.example.test");
   await submit();
   expect(api.save).toHaveBeenCalledWith(
     "mailgun",
@@ -119,7 +126,7 @@ it("erases replacement credentials only after confirmed save", async () => {
     value: "synthetic-new-key",
   });
   expect(container.querySelector('input[type="password"]')).toBeNull();
-  expect(container.querySelector("select")!.value).toBe("keep");
+  expect(container.querySelector("dialog select")!.value).toBe("keep");
 });
 it("retains a failed replacement and blocks replay until successful explicit reload", async () => {
   await replaceSecret();
@@ -141,7 +148,7 @@ it("retains a failed replacement and blocks replay until successful explicit rel
   expect(window.confirm).toHaveBeenCalledWith(expect.stringContaining("replacement credentials"));
 });
 it("requires confirmation before clearing a saved credential", async () => {
-  await change(container.querySelector("select")!, "clear");
+  await change(container.querySelector("dialog select")!, "clear");
   vi.mocked(window.confirm).mockReturnValueOnce(false);
   await submit();
   expect(api.save).not.toHaveBeenCalled();
@@ -204,9 +211,11 @@ it("explains storage backup coupling without claiming a media migration", async 
     ],
   });
   await click("Reload saved configuration");
+  await click("Close");
+  await click("Configure");
   expect(container.textContent).toContain("Backups use these stored storage settings");
   expect(container.textContent).toContain("does not copy existing media or backups");
-  expect(container.querySelectorAll("select")).toHaveLength(2);
+  expect(container.querySelectorAll("dialog select")).toHaveLength(2);
 });
 it("replaces an earlier successful check with unavailable after a network failure", async () => {
   await click("Check saved Mailgun connection");
@@ -224,4 +233,64 @@ it("replaces an earlier successful check with unavailable after a network failur
   );
   expect(button("Check saved Mailgun connection").disabled).toBe(false);
   expect(button("Save Mailgun settings").disabled).toBe(false);
+});
+
+it("uses original provider library and sheet, retains dirty credentials on declined close", async () => {
+  expect(container.querySelector('[data-testid="library-integration-mailgun"]')).toBeTruthy();
+  expect(container.querySelector('svg[aria-label="Mailgun logo"]')).toBeTruthy();
+  expect(container.querySelector("dialog")?.hasAttribute("open")).toBe(true);
+  await replaceSecret();
+  vi.mocked(window.confirm).mockReturnValueOnce(false);
+  await click("Close");
+  expect(container.querySelector("dialog")?.hasAttribute("open")).toBe(true);
+  expect((container.querySelector('input[type="password"]') as HTMLInputElement).value).toBe(
+    "synthetic-new-key",
+  );
+  await click("Close");
+  expect(container.querySelector("dialog")?.hasAttribute("open")).toBe(false);
+  await click("Configure");
+  expect((container.querySelector('input[type="password"]') as HTMLInputElement).value).toBe(
+    "synthetic-new-key",
+  );
+});
+it("blocks Escape while a save is pending and displays uncertain errors within the sheet", async () => {
+  await replaceSecret();
+  let reject!: (e: Error) => void;
+  api.save.mockReturnValueOnce(new Promise((_r, j) => (reject = j)));
+  await submit();
+  const dialog = container.querySelector("dialog")!;
+  await act(async () => {
+    dialog.dispatchEvent(new Event("cancel", { cancelable: true }));
+  });
+  expect(dialog.hasAttribute("open")).toBe(true);
+  expect(button("Close").disabled).toBe(true);
+  await act(async () => reject(new Error("unknown outcome")));
+  expect(dialog.querySelector('[role="alert"]')?.textContent).toContain("save was not confirmed");
+  expect(button("Save Mailgun settings").disabled).toBe(true);
+});
+it("filters the shared provider library without discarding configuration drafts", async () => {
+  await replaceSecret();
+  await click("Close");
+  const search = container.querySelector('[aria-label="Search integrations"]') as HTMLInputElement;
+  await change(search, "no-match");
+  expect(container.textContent).toContain("No integrations match");
+  await click("Clear Filters");
+  await click("Configure");
+  expect((container.querySelector('input[type="password"]') as HTMLInputElement).value).toBe(
+    "synthetic-new-key",
+  );
+  expect(api.save).not.toHaveBeenCalled();
+  expect(api.test).not.toHaveBeenCalled();
+});
+
+it("retains original filter trigger widths in the native select adapter", () => {
+  const module = container.querySelector('[data-testid="select-integration-group-filter"]')!;
+  const category = container.querySelector('[data-testid="select-integration-category-filter"]')!;
+  const status = container.querySelector('[data-testid="select-integration-status-filter"]')!;
+  expect(module.tagName).toBe("SELECT");
+  expect(module.classList.contains("w-full")).toBe(true);
+  expect(module.classList.contains("sm:w-[190px]")).toBe(true);
+  expect(category.classList.contains("sm:w-[190px]")).toBe(true);
+  expect(status.classList.contains("sm:w-[165px]")).toBe(true);
+  expect(module.getAttribute("aria-label")).toBe("Module type");
 });

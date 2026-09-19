@@ -1,3 +1,7 @@
+import { IntegrationLibrary } from "../../../../platform/p1-core/client/src/components/shared/integration-library-presentation";
+import { IntegrationConfigurationFrame } from "../../../../platform/p1-core/client/src/components/shared/integration-configuration-presentation";
+import { SUPPORTED_INTEGRATIONS } from "../../../../platform/p1-core/client/src/components/shared/integration-provider-catalog";
+import { sidebarPrimitives } from "./sidebar-primitives";
 import React, { useEffect, useRef, useState, type FormEvent } from "react";
 import { Cloud, Mail, Plug, RefreshCw } from "lucide-react";
 import {
@@ -8,6 +12,61 @@ import {
 import { useCmsUnsavedChanges } from "./useCmsUnsavedChanges";
 import "./website-integrations.css";
 
+// Preserve the original trigger sizing while adapting Radix options to a native select.
+function IntegrationLibrarySelect({
+  children,
+  value,
+  onValueChange,
+  disabled,
+  "aria-label": label,
+}: {
+  children: React.ReactNode;
+  value: string;
+  onValueChange: (value: string) => void;
+  disabled?: boolean;
+  "aria-label"?: string;
+}) {
+  let trigger: {
+    className?: string;
+    "data-testid"?: string;
+    "aria-label"?: string;
+  } = {};
+  const options: React.ReactNode[] = [];
+  function visit(nodes: React.ReactNode) {
+    React.Children.forEach(nodes, (child) => {
+      if (
+        !React.isValidElement<{
+          children?: React.ReactNode;
+          className?: string;
+          "data-testid"?: string;
+          "aria-label"?: string;
+        }>(child)
+      )
+        return;
+      if (child.type === sidebarPrimitives.SelectTrigger) trigger = child.props;
+      if (child.type === sidebarPrimitives.SelectItem) options.push(child);
+      else visit(child.props.children);
+    });
+  }
+  visit(children);
+  return (
+    <select
+      value={value}
+      disabled={disabled}
+      aria-label={label || trigger["aria-label"]}
+      data-testid={trigger["data-testid"]}
+      className={`integration-library-select flex h-9 rounded-md border border-input bg-background px-3 py-2 text-sm ${trigger.className || ""}`}
+      onChange={(event) => onValueChange(event.target.value)}
+    >
+      {options}
+    </select>
+  );
+}
+const integrationUi = {
+  ...sidebarPrimitives,
+  Select: IntegrationLibrarySelect,
+};
+
 type Snapshot = Awaited<ReturnType<typeof getWebsiteIntegrations>>;
 type ProviderView = Snapshot["providers"][number];
 type Provider = "mailgun" | "mailchimp" | "cloudflare_r2";
@@ -17,6 +76,37 @@ type Draft = {
   fields: Record<string, string>;
   secrets: Record<string, SecretChange>;
   baseline: string;
+};
+const groups = [
+  {
+    key: "communications",
+    title: "Communications & CRM",
+    description: "Transactional email and customer operations.",
+  },
+  {
+    key: "marketing",
+    title: "Marketing & Analytics",
+    description: "Audience lifecycle tools.",
+  },
+  {
+    key: "infrastructure",
+    title: "Storage & Infrastructure",
+    description: "Media, uploads and backups.",
+  },
+];
+const sheetUi = {
+  SheetHeader: ({ children }: { children: React.ReactNode }) => (
+    <header className="integration-sheet-header">{children}</header>
+  ),
+  SheetTitle: ({ children }: { children: React.ReactNode }) => (
+    <h2 id="integration-sheet-title">{children}</h2>
+  ),
+  SheetDescription: ({ children }: { children: React.ReactNode }) => (
+    <p>{children}</p>
+  ),
+  SheetBody: ({ children }: { children: React.ReactNode }) => (
+    <div className="integration-sheet-body">{children}</div>
+  ),
 };
 const providers: Provider[] = ["mailgun", "mailchimp", "cloudflare_r2"];
 const names: Record<Provider, string> = {
@@ -60,6 +150,18 @@ function changed(draft?: Draft) {
   );
 }
 export default function WebsiteIntegrations() {
+  const [selected, setSelected] = useState<Provider | null>(null);
+  const dialog = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    if (!selected) return;
+    const opener = document.activeElement as HTMLElement | null;
+    const node = dialog.current;
+    node?.showModal();
+    return () => {
+      node?.close();
+      if (opener?.isConnected) opener.focus();
+    };
+  }, [selected]);
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [drafts, setDrafts] = useState<Partial<Record<Provider, Draft>>>({});
   const [blocked, setBlocked] = useState<Partial<Record<Provider, boolean>>>(
@@ -74,7 +176,7 @@ export default function WebsiteIntegrations() {
     request = useRef<AbortController | null>(null);
   const dirty = providers.some((provider) => changed(drafts[provider]));
   useCmsUnsavedChanges(
-    dirty || Object.values(blocked).some(Boolean),
+    busy || dirty || Object.values(blocked).some(Boolean),
     "Leave website integrations? Unsaved configuration and replacement credentials will be discarded.",
   );
   function options() {
@@ -139,6 +241,7 @@ export default function WebsiteIntegrations() {
     };
   }, []);
   function field(provider: Provider, key: string, value: string) {
+    if (gate.current) return;
     setDrafts((current) => {
       const draft = current[provider];
       return draft
@@ -150,6 +253,7 @@ export default function WebsiteIntegrations() {
     });
   }
   function secret(provider: Provider, key: string, change: SecretChange) {
+    if (gate.current) return;
     setDrafts((current) => {
       const draft = current[provider];
       return draft
@@ -240,6 +344,18 @@ export default function WebsiteIntegrations() {
       }
     });
   }
+  function closeConfiguration() {
+    if (gate.current) return;
+    if (
+      selected &&
+      (changed(drafts[selected]) || blocked[selected]) &&
+      !window.confirm(
+        "Close configuration? Unsaved inputs remain in this session. Reload saved configuration to discard them.",
+      )
+    )
+      return;
+    setSelected(null);
+  }
   return (
     <article className="website-integrations">
       <header className="page-hero">
@@ -269,165 +385,250 @@ export default function WebsiteIntegrations() {
       {!snapshot && !busy && (
         <p>Saved integration configuration is unavailable.</p>
       )}
-      <div className="integration-grid">
-        {snapshot?.providers.map((view) => {
-          const provider = view.provider as Provider;
-          const draft = drafts[provider];
-          if (!draft || !providers.includes(provider)) return null;
+      <IntegrationLibrary
+        ui={integrationUi}
+        integrations={SUPPORTED_INTEGRATIONS.filter((config) =>
+          snapshot?.providers.some((view) => view.provider === config.category),
+        )}
+        groups={groups}
+        description="Configure supported website providers. Saved credential presence is not verified connectivity. Other retained platform integrations are outside this website configuration scope."
+        isConfigured={(config) => {
+          const view = snapshot?.providers.find(
+            (p) => p.provider === config.category,
+          );
           return (
-            <section
-              key={provider}
-              className="integration-card"
-              aria-label={`${names[provider]} settings`}
-            >
-              <h2>
-                {provider === "cloudflare_r2" ? (
-                  <Cloud size={21} />
-                ) : (
-                  <Mail size={21} />
+            !!view &&
+            !view.configurationIssue &&
+            (Object.values(view.fields).some(Boolean) ||
+              Object.values(view.secrets).some((secret) => secret.configured))
+          );
+        }}
+        onOpen={(config) => {
+          if (!gate.current) setSelected(config.category as Provider);
+        }}
+      />
+      <dialog
+        ref={dialog}
+        className="integration-sheet"
+        aria-labelledby="integration-sheet-title"
+        onCancel={(event) => {
+          event.preventDefault();
+          closeConfiguration();
+        }}
+      >
+        <button
+          className="integration-sheet-close"
+          type="button"
+          aria-label="Close integration configuration"
+          disabled={busy}
+          onClick={closeConfiguration}
+        >
+          Close
+        </button>
+        <IntegrationConfigurationFrame
+          ui={sheetUi}
+          description="Edit stored configuration, preserve or replace credentials, and check the saved effective connection."
+        >
+          <button type="button" disabled={busy} onClick={() => void reload()}>
+            Reload saved configuration
+          </button>
+          {error && (
+            <p role="alert" className="integration-error">
+              {error}
+            </p>
+          )}
+          {notice && <p role="status">{notice}</p>}
+
+          {snapshot?.providers.map((view) => {
+            const provider = view.provider as Provider;
+            const draft = drafts[provider];
+            if (
+              !draft ||
+              !providers.includes(provider) ||
+              selected !== provider
+            )
+              return null;
+            const config = SUPPORTED_INTEGRATIONS.find(
+              (item) => item.category === provider,
+            )!;
+            const BrandIcon = config.brandIcon;
+            return (
+              <section
+                key={provider}
+                className="integration-card"
+                aria-label={`${names[provider]} settings`}
+              >
+                <h2>
+                  <BrandIcon
+                    aria-label={`${names[provider]} logo`}
+                    className={`integration-brand-icon ${config.brandColor}`}
+                  />
+                  {names[provider]}
+                </h2>
+                <p>{config.description}</p>
+                <details className="integration-setup">
+                  <summary>Setup instructions</summary>
+                  <ol>
+                    {config.instructions.map((step) => (
+                      <li key={step}>{step}</li>
+                    ))}
+                  </ol>
+                  <a href={config.accountUrl} target="_blank" rel="noreferrer">
+                    Open provider account
+                  </a>
+                  {config.docsUrl && (
+                    <>
+                      {" "}
+                      ·{" "}
+                      <a href={config.docsUrl} target="_blank" rel="noreferrer">
+                        Provider documentation
+                      </a>
+                    </>
+                  )}
+                </details>
+                <p className="integration-source">
+                  Effective configuration:{" "}
+                  <strong>
+                    {view.effectiveSource === "deployment"
+                      ? "Deployment override"
+                      : "Saved website settings"}
+                  </strong>
+                </p>
+                {view.effectiveSource === "deployment" && (
+                  <p>
+                    These fields edit the stored fallback. Deployment
+                    configuration currently overrides it; saving here does not
+                    change that override. The connection check uses the
+                    effective deployment configuration.
+                  </p>
                 )}
-                {names[provider]}
-              </h2>
-              <p className="integration-source">
-                Effective configuration:{" "}
-                <strong>
-                  {view.effectiveSource === "deployment"
-                    ? "Deployment override"
-                    : "Saved website settings"}
-                </strong>
-              </p>
-              {view.effectiveSource === "deployment" && (
-                <p>
-                  These fields edit the stored fallback. Deployment
-                  configuration currently overrides it; saving here does not
-                  change that override. The connection check uses the effective
-                  deployment configuration.
-                </p>
-              )}
-              {view.configurationIssue && (
-                <p role="alert" className="integration-error">
-                  {view.configurationIssue} Saving and connection checks are
-                  unavailable until this configuration issue is resolved.
-                </p>
-              )}
-              <form onSubmit={(event) => void save(event, provider, view)}>
-                <fieldset disabled={busy || Boolean(view.configurationIssue)}>
-                  {Object.entries(draft.fields).map(([key, value]) => (
-                    <label key={key}>
-                      {labels[key] ?? key}
-                      <input
-                        autoComplete="off"
-                        value={value}
-                        onChange={(event) =>
-                          field(provider, key, event.target.value)
-                        }
-                        maxLength={key === "r2_public_url" ? 2048 : 320}
-                        spellCheck={false}
-                      />
-                    </label>
-                  ))}
-                  {Object.entries(draft.secrets).map(([key, value]) => (
-                    <div className="integration-secret" key={key}>
-                      <label>
+                {view.configurationIssue && (
+                  <p role="alert" className="integration-error">
+                    {view.configurationIssue} Saving and connection checks are
+                    unavailable until this configuration issue is resolved.
+                  </p>
+                )}
+                <form onSubmit={(event) => void save(event, provider, view)}>
+                  <fieldset disabled={busy || Boolean(view.configurationIssue)}>
+                    {Object.entries(draft.fields).map(([key, value]) => (
+                      <label key={key}>
                         {labels[key] ?? key}
-                        <select
-                          value={value.operation}
+                        <input
+                          autoComplete="off"
+                          value={value}
                           onChange={(event) =>
-                            secret(provider, key, {
-                              operation: event.target
-                                .value as SecretChange["operation"],
-                            })
+                            field(provider, key, event.target.value)
                           }
-                        >
-                          <option value="keep">Keep saved credential</option>
-                          <option value="replace">Replace credential</option>
-                          <option value="clear">Clear saved credential</option>
-                        </select>
+                          maxLength={key === "r2_public_url" ? 2048 : 320}
+                          spellCheck={false}
+                        />
                       </label>
-                      <p className="integration-caption">
-                        {view.secrets[key as keyof typeof view.secrets]
-                          ?.configured
-                          ? "A saved credential is present. Its value is never displayed."
-                          : "No saved credential is configured."}
-                      </p>
-                      {value.operation === "replace" && (
+                    ))}
+                    {Object.entries(draft.secrets).map(([key, value]) => (
+                      <div className="integration-secret" key={key}>
                         <label>
-                          New {labels[key] ?? key}
-                          <input
-                            type="password"
-                            autoComplete="new-password"
-                            required
-                            maxLength={8192}
-                            value={value.value ?? ""}
+                          {labels[key] ?? key}
+                          <select
+                            value={value.operation}
                             onChange={(event) =>
                               secret(provider, key, {
-                                operation: "replace",
-                                value: event.target.value,
+                                operation: event.target
+                                  .value as SecretChange["operation"],
                               })
                             }
-                            spellCheck={false}
-                          />
+                          >
+                            <option value="keep">Keep saved credential</option>
+                            <option value="replace">Replace credential</option>
+                            <option value="clear">
+                              Clear saved credential
+                            </option>
+                          </select>
                         </label>
-                      )}
-                      {value.operation === "clear" && (
-                        <p>
-                          The saved credential will be removed when you save.
+                        <p className="integration-caption">
+                          {view.secrets[key as keyof typeof view.secrets]
+                            ?.configured
+                            ? "A saved credential is present. Its value is never displayed."
+                            : "No saved credential is configured."}
                         </p>
-                      )}
+                        {value.operation === "replace" && (
+                          <label>
+                            New {labels[key] ?? key}
+                            <input
+                              type="password"
+                              autoComplete="new-password"
+                              required
+                              maxLength={8192}
+                              value={value.value ?? ""}
+                              onChange={(event) =>
+                                secret(provider, key, {
+                                  operation: "replace",
+                                  value: event.target.value,
+                                })
+                              }
+                              spellCheck={false}
+                            />
+                          </label>
+                        )}
+                        {value.operation === "clear" && (
+                          <p>
+                            The saved credential will be removed when you save.
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                    <div className="integration-toolbar">
+                      <button
+                        type="submit"
+                        disabled={blocked[provider] || !changed(draft)}
+                      >
+                        Save {names[provider]} settings
+                      </button>
+                      <button
+                        type="button"
+                        disabled={blocked[provider]}
+                        onClick={() => void check(provider, view)}
+                      >
+                        Check saved {names[provider]} connection
+                      </button>
                     </div>
-                  ))}
-                  <div className="integration-toolbar">
-                    <button
-                      type="submit"
-                      disabled={blocked[provider] || !changed(draft)}
-                    >
-                      Save {names[provider]} settings
-                    </button>
-                    <button
-                      type="button"
-                      disabled={blocked[provider]}
-                      onClick={() => void check(provider, view)}
-                    >
-                      Check saved {names[provider]} connection
-                    </button>
-                  </div>
-                </fieldset>
-              </form>
-              <p className="integration-caption">
-                {view.testEffects} The check never uses unsaved fields.
-              </p>
-              {blocked[provider] && (
-                <p role="alert">
-                  Reload saved configuration before another save or connection
-                  check.
+                  </fieldset>
+                </form>
+                <p className="integration-caption">
+                  {view.testEffects} The check never uses unsaved fields.
                 </p>
-              )}
-              {checks[provider] && <p role="status">{checks[provider]}</p>}
-              {provider === "mailgun" && (
-                <p>
-                  SMTP fallback:{" "}
-                  {snapshot.smtpFallbackConfigured
-                    ? "deployment credentials are present"
-                    : "not configured"}
-                  . Credential presence does not establish SMTP connectivity.
-                  This check verifies Mailgun only.
-                </p>
-              )}
-              {provider === "cloudflare_r2" && (
-                <p>
-                  Backup destination source:{" "}
-                  <strong>{snapshot.backups.effectiveSource}</strong>.{" "}
-                  {snapshot.backups.effectiveSource === "settings"
-                    ? "Backups use these stored storage settings; changing them can change where backups are written and which history is visible."
-                    : "A deployment storage configuration determines backups; these fields do not change that override."}{" "}
-                  Changing storage settings does not copy existing media or
-                  backups.
-                </p>
-              )}
-            </section>
-          );
-        })}
-      </div>
+                {blocked[provider] && (
+                  <p role="alert">
+                    Reload saved configuration before another save or connection
+                    check.
+                  </p>
+                )}
+                {checks[provider] && <p role="status">{checks[provider]}</p>}
+                {provider === "mailgun" && (
+                  <p>
+                    SMTP fallback:{" "}
+                    {snapshot.smtpFallbackConfigured
+                      ? "deployment credentials are present"
+                      : "not configured"}
+                    . Credential presence does not establish SMTP connectivity.
+                    This check verifies Mailgun only.
+                  </p>
+                )}
+                {provider === "cloudflare_r2" && (
+                  <p>
+                    Backup destination source:{" "}
+                    <strong>{snapshot.backups.effectiveSource}</strong>.{" "}
+                    {snapshot.backups.effectiveSource === "settings"
+                      ? "Backups use these stored storage settings; changing them can change where backups are written and which history is visible."
+                      : "A deployment storage configuration determines backups; these fields do not change that override."}{" "}
+                    Changing storage settings does not copy existing media or
+                    backups.
+                  </p>
+                )}
+              </section>
+            );
+          })}
+        </IntegrationConfigurationFrame>
+      </dialog>
       {snapshot && (
         <section
           className="integration-card integration-google"

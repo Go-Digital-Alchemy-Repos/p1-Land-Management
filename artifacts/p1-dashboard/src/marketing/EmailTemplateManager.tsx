@@ -1,3 +1,13 @@
+import {
+  EmailTemplateLibrary,
+  emailTemplateSearchText,
+} from "../../../../platform/p1-core/client/src/components/shared/email-template-library-presentation";
+import {
+  EmailVariableTokens,
+  EmailTemplatePreviewPanel,
+} from "../../../../platform/p1-core/client/src/components/shared/email-template-editor-presentation";
+import { sidebarPrimitives as emailUI } from "./sidebar-primitives";
+import type { EmailVisualEditorHandle } from "./EmailVisualEditor";
 import React, { useEffect, useRef, useState, type FormEvent } from "react";
 import { Download, Mail, RefreshCw, Save } from "lucide-react";
 import {
@@ -47,6 +57,24 @@ export default function EmailTemplateManager() {
   const [blocked, setBlocked] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const sheet = useRef<HTMLDialogElement>(null),
+    source = useRef<HTMLTextAreaElement>(null),
+    visual = useRef<EmailVisualEditorHandle>(null);
+  useEffect(() => {
+    if (selected) {
+      const opener =
+        document.activeElement instanceof HTMLElement
+          ? document.activeElement
+          : null;
+      sheet.current?.showModal();
+      return () => {
+        sheet.current?.close();
+        if (opener?.isConnected) opener.focus();
+      };
+    }
+    sheet.current?.close();
+    return undefined;
+  }, [Boolean(selected)]);
   const gate = useRef(false),
     live = useRef(true),
     request = useRef<AbortController | null>(null);
@@ -70,9 +98,7 @@ export default function EmailTemplateManager() {
     (item) =>
       (!module || item.module === module) &&
       (!status || String(item.isActive) === status) &&
-      `${item.name} ${item.slug} ${item.description ?? ""}`
-        .toLowerCase()
-        .includes(query.toLowerCase()),
+      emailTemplateSearchText(item).includes(query.trim().toLowerCase()),
   );
   function options() {
     request.current = new AbortController();
@@ -152,7 +178,7 @@ export default function EmailTemplateManager() {
       request.current?.abort();
     };
   }, []);
-  function select(item: Template) {
+  function select(item: Template, active?: boolean) {
     if (
       gate.current ||
       ((dirty || blocked) &&
@@ -162,7 +188,17 @@ export default function EmailTemplateManager() {
     )
       return;
     setSelected(item.slug);
-    setDraft(null);
+    const fields = {
+      ...fieldsOf(item),
+      ...(active === undefined ? {} : { isActive: active }),
+    };
+    setDraft({
+      slug: item.slug,
+      version: item.version,
+      fields,
+      baseline: JSON.stringify(fieldsOf(item)),
+    });
+    setEditorMode("visual");
     setPreview(null);
     setBlocked(false);
     setError("");
@@ -181,6 +217,7 @@ export default function EmailTemplateManager() {
     setEditorMode("visual");
   }
   function patch(update: Partial<Fields>) {
+    if (gate.current) return;
     setDraft((value) =>
       value ? { ...value, fields: { ...value.fields, ...update } } : value,
     );
@@ -282,98 +319,151 @@ export default function EmailTemplateManager() {
       }
     }, true);
   }
+  function closeSheet() {
+    if (gate.current) return;
+    if (
+      (dirty || blocked) &&
+      !window.confirm(
+        "Discard your retained draft? Download it first if needed.",
+      )
+    )
+      return;
+    setDraft(null);
+    setSelected("");
+    setPreview(null);
+  }
+  function insertVariable(variable: string) {
+    if (!draft || gate.current || blocked || !reservation.owned) return;
+    const token = `{{${variable}}}`;
+    if (
+      editorMode === "visual" &&
+      !/<(?:html|head|body|!doctype)\b/i.test(draft.fields.htmlBody)
+    ) {
+      visual.current?.insertText(token);
+      return;
+    }
+    const element = source.current;
+    const start = element?.selectionStart ?? draft.fields.htmlBody.length;
+    const end = element?.selectionEnd ?? start;
+    patch({
+      htmlBody:
+        draft.fields.htmlBody.slice(0, start) +
+        token +
+        draft.fields.htmlBody.slice(end),
+    });
+    requestAnimationFrame(() => {
+      element?.focus();
+      element?.setSelectionRange(start + token.length, start + token.length);
+    });
+  }
+  const moduleOptions = [...new Set(templates.map((t) => t.module))].map(
+    (value) => ({
+      value,
+      label: value.charAt(0).toUpperCase() + value.slice(1),
+      description:
+        (
+          {
+            events: "Registration, reminders, payments, and recordings.",
+            forms: "Contact and managed form notifications.",
+            users: "Account, welcome, and password emails.",
+            crm: "Lead and client workflow notifications.",
+            system: "Fallback and platform-level emails.",
+          } as Record<string, string>
+        )[value] || "Website email templates.",
+    }),
+  );
   return (
-    <article className="email-template-manager">
-      <header className="page-hero">
-        <div>
-          <p className="eyebrow">WEBSITE SYSTEM</p>
-          <h1>
-            <Mail size={28} /> Email templates
-          </h1>
-          <p>Manage website email content, placeholders and activation.</p>
-        </div>
+    <article className="email-template-manager email-template-presentation">
+      <header>
+        <h1>
+          <Mail size={28} /> Email Templates
+        </h1>
+        <p>
+          Manage system email templates. Templates use {"{{variable}}"}{" "}
+          placeholders for dynamic content.
+        </p>
       </header>
       <div className="email-template-toolbar">
         <button disabled={busy} onClick={() => void reload()}>
           <RefreshCw size={16} /> Reload saved templates
         </button>
-        <button
-          disabled={busy || !collection || Boolean(draft) || blocked}
-          onClick={() => void restore()}
-        >
-          Restore built-in defaults
-        </button>
       </div>
-      {error && (
-        <p role="alert" className="email-template-error">
-          {error}
-        </p>
-      )}
-      {notice && <p role="status">{notice}</p>}
+      {!selected && error && <p role="alert">{error}</p>}
+      {!selected && notice && <p role="status">{notice}</p>}
       {busy && <p role="status">Working…</p>}
-      <div className="email-template-workspace">
-        <aside className="email-template-panel" aria-label="Template library">
-          <label>
-            Search templates
-            <input
-              type="search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
-          </label>
-          <label>
-            Module
-            <select value={module} onChange={(e) => setModule(e.target.value)}>
-              <option value="">All modules</option>
-              {[...new Set(templates.map((item) => item.module))]
-                .sort()
-                .map((name) => (
-                  <option key={name}>{name}</option>
-                ))}
-            </select>
-          </label>
-          <label>
-            Status
-            <select value={status} onChange={(e) => setStatus(e.target.value)}>
-              <option value="">All statuses</option>
-              <option value="true">Active</option>
-              <option value="false">Inactive</option>
-            </select>
-          </label>
-          <p>{shown.length} templates</p>
-          <nav aria-label="Email templates">
-            {shown.map((item) => (
-              <button
-                key={item.slug}
-                disabled={busy}
-                aria-current={selected === item.slug ? "page" : undefined}
-                onClick={() => select(item)}
-              >
-                <strong>{item.name}</strong>
-                <small>
-                  {item.module} · {item.isActive ? "Active" : "Inactive"}
-                </small>
-              </button>
-            ))}
-          </nav>
-        </aside>
-        <section
-          className="email-template-panel"
-          aria-label="Selected template"
-        >
+      <EmailTemplateLibrary
+        ui={emailUI}
+        enabledModuleOptions={moduleOptions}
+        moduleCounts={Object.fromEntries(
+          moduleOptions.map((m) => [
+            m.value,
+            templates.filter((t) => t.module === m.value).length,
+          ]),
+        )}
+        moduleFilter={module || "all"}
+        setModuleFilter={(v) => setModule(v === "all" ? "" : v)}
+        searchQuery={query}
+        setSearchQuery={setQuery}
+        statusFilter={
+          status === "true" ? "active" : status === "false" ? "inactive" : "all"
+        }
+        setStatusFilter={(v) =>
+          setStatus(v === "active" ? "true" : v === "inactive" ? "false" : "")
+        }
+        onRestore={() => void restore()}
+        restoring={busy}
+        canRestore={!!collection && !draft && !blocked}
+        filteredTemplates={shown}
+        visibleTemplateList={templates}
+        templateList={templates}
+        onEdit={(item) => select(item)}
+        onToggle={(item, active) => select(item, active)}
+        moduleLabel={(m) =>
+          moduleOptions.find((x) => x.value === m)?.label || m || "System"
+        }
+        disabled={busy || blocked}
+      />
+      <p className="email-template-caption">
+        Activation changes open the editor for review and a version-checked
+        save.
+      </p>
+      <dialog
+        ref={sheet}
+        className="email-template-sheet email-template-presentation"
+        aria-label="Email template editor"
+        onCancel={(e) => {
+          e.preventDefault();
+          closeSheet();
+        }}
+      >
+        <header className="email-template-sheet-header">
+          <h2>Edit email template</h2>
+          <button
+            type="button"
+            disabled={busy}
+            onClick={closeSheet}
+            aria-label="Close email template editor"
+          >
+            Close
+          </button>
+        </header>
+        <section className="email-template-panel">
+          <button type="button" disabled={busy} onClick={() => void reload()}>
+            Reload saved templates
+          </button>
+          {error && <p role="alert">{error}</p>}
+          {notice && <p role="status">{notice}</p>}{" "}
           {current || draft ? (
             <>
               <h2>{current?.name ?? draft?.slug}</h2>
               <p>{current?.description}</p>
               {current && (
-                <p>
-                  Available variables:{" "}
-                  {current.variables.length
-                    ? current.variables.map((variable) => (
-                        <code key={variable}>{`{{${variable}}} `}</code>
-                      ))
-                    : "None"}
-                </p>
+                <EmailVariableTokens
+                  ui={emailUI}
+                  variables={current.variables}
+                  disabled={!draft || busy || blocked || !reservation.owned}
+                  onInsert={insertVariable}
+                />
               )}
               {draft ? (
                 <form onSubmit={save}>
@@ -427,6 +517,7 @@ export default function EmailTemplateManager() {
                       draft.fields.htmlBody,
                     ) ? (
                       <EmailVisualEditor
+                        ref={visual}
                         value={draft.fields.htmlBody}
                         onChange={(htmlBody) => patch({ htmlBody })}
                         disabled={busy || blocked || !reservation.owned}
@@ -435,6 +526,7 @@ export default function EmailTemplateManager() {
                       <label>
                         HTML body
                         <textarea
+                          ref={source}
                           required
                           rows={18}
                           maxLength={500000}
@@ -480,6 +572,7 @@ export default function EmailTemplateManager() {
                             )
                           ) {
                             setDraft(null);
+                            setSelected("");
                             setPreview(null);
                           }
                         }}
@@ -521,19 +614,21 @@ export default function EmailTemplateManager() {
                 email.
               </p>
               {preview && (
-                <section aria-label="Email preview">
-                  <h3>Preview subject: {preview.subject}</h3>
-                  <iframe
-                    title="Email template preview"
-                    sandbox=""
-                    referrerPolicy="no-referrer"
-                    srcDoc={`<!doctype html><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data: https://www.p1landmanagement.com https://p1landmanagement.com https://dashboard.p1landmanagement.com; base-uri 'none'; form-action 'none'">${preview.html}`}
-                  />
-                  <p className="email-template-caption">
-                    Scripts, forms and remote resources are blocked in this
-                    preview.
-                  </p>
-                </section>
+                <EmailTemplatePreviewPanel>
+                  <section aria-label="Email preview">
+                    <h3>Preview subject: {preview.subject}</h3>
+                    <iframe
+                      title="Email template preview"
+                      sandbox=""
+                      referrerPolicy="no-referrer"
+                      srcDoc={`<!doctype html><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data: https://www.p1landmanagement.com https://p1landmanagement.com https://dashboard.p1landmanagement.com; base-uri 'none'; form-action 'none'">${preview.html}`}
+                    />
+                    <p className="email-template-caption">
+                      Scripts, forms and remote resources are blocked in this
+                      preview.
+                    </p>
+                  </section>
+                </EmailTemplatePreviewPanel>
               )}
             </>
           ) : (
@@ -546,7 +641,7 @@ export default function EmailTemplateManager() {
             </p>
           )}
         </section>
-      </div>
+      </dialog>
     </article>
   );
 }

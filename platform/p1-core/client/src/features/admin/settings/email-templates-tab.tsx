@@ -1,3 +1,12 @@
+import {
+  EmailFormattingToolbar,
+  EmailVariableTokens,
+  EmailTemplatePreviewPanel,
+} from "@/components/shared/email-template-editor-presentation";
+import {
+  EmailTemplateLibrary,
+  emailTemplateSearchText,
+} from "@/components/shared/email-template-library-presentation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
@@ -67,12 +76,7 @@ interface EmailTemplate {
   updatedAt: string;
 }
 
-type EmailTemplateModule =
-  | "events"
-  | "forms"
-  | "users"
-  | "crm"
-  | "system";
+type EmailTemplateModule = "events" | "forms" | "users" | "crm" | "system";
 
 type EmailTemplateStatusFilter = "all" | "active" | "inactive";
 
@@ -163,15 +167,7 @@ export function filterEmailTemplates<T extends EmailTemplateSearchable>(
       statusFilter === "all" ||
       (statusFilter === "active" && template.isActive) ||
       (statusFilter === "inactive" && !template.isActive);
-    const searchable = [
-      template.name,
-      template.slug,
-      template.subject,
-      template.description,
-      ...template.variables,
-    ]
-      .join(" ")
-      .toLowerCase();
+    const searchable = emailTemplateSearchText(template);
     const matchesSearch = !query || searchable.includes(query);
 
     return matchesEnabledModule && matchesModule && matchesStatus && matchesSearch;
@@ -230,7 +226,8 @@ function TemplateEditor({
 
   const updateMutation = useMutation({
     mutationFn: async () => {
-      if (writeBlocked || editorLock.isReadOnly) throw new Error("Reload the saved template before trying again.");
+      if (writeBlocked || editorLock.isReadOnly)
+        throw new Error("Reload the saved template before trying again.");
       await apiRequest("PUT", `/api/admin/email-templates/${template.slug}`, {
         template: { subject, htmlBody },
         expectedVersion: template.version,
@@ -360,26 +357,11 @@ function TemplateEditor({
               <p className="min-w-0 flex-1 text-sm text-muted-foreground">{template.description}</p>
             </div>
 
-            <div className="flex flex-wrap gap-1.5 mt-2">
-              <span className="text-xs text-muted-foreground mr-1">Variables:</span>
-              {template.variables.map((v) => (
-                <button
-                  key={v}
-                  type="button"
-                  onClick={() => insertVariable(v)}
-                  className="inline-flex"
-                  data-testid={`button-template-variable-${v}`}
-                >
-                  <Badge
-                    variant="secondary"
-                    className="cursor-pointer text-xs font-mono hover:bg-secondary/80"
-                  >
-                    {`{{${v}}}`}
-                  </Badge>
-                </button>
-              ))}
-            </div>
-
+            <EmailVariableTokens
+              ui={{ Badge }}
+              variables={template.variables}
+              onInsert={insertVariable}
+            />
             <div className="space-y-4 mt-4">
               <div className="space-y-1.5">
                 <Label htmlFor="template-subject">Subject</Label>
@@ -424,97 +406,14 @@ function TemplateEditor({
 
                 {editorTab === "visual" ? (
                   <div className="overflow-hidden rounded-xl border bg-background shadow-sm">
-                    <div className="flex flex-wrap items-center gap-1 border-b bg-muted/30 px-2 py-2">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 px-2"
-                        onClick={() => applyCommand("formatBlock", "<p>")}
-                      >
-                        <Pilcrow className="mr-1.5 h-3.5 w-3.5" />
-                        Paragraph
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 px-2"
-                        onClick={() => applyCommand("formatBlock", "<h2>")}
-                      >
-                        <Heading2 className="mr-1.5 h-3.5 w-3.5" />
-                        Heading
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => applyCommand("bold")}
-                      >
-                        <Bold className="h-3.5 w-3.5" />
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => applyCommand("italic")}
-                      >
-                        <Italic className="h-3.5 w-3.5" />
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => applyCommand("underline")}
-                      >
-                        <UnderlineIcon className="h-3.5 w-3.5" />
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => applyCommand("insertUnorderedList")}
-                      >
-                        <List className="h-3.5 w-3.5" />
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => applyCommand("insertOrderedList")}
-                      >
-                        <ListOrdered className="h-3.5 w-3.5" />
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 px-2"
-                        onClick={() => {
-                          focusVisualEditor();
-                          setShowLinkPanel((current) => !current);
-                        }}
-                      >
-                        <Link2 className="mr-1.5 h-3.5 w-3.5" />
-                        Link
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 px-2"
-                        onClick={() => applyCommand("removeFormat")}
-                      >
-                        <Eraser className="mr-1.5 h-3.5 w-3.5" />
-                        Clear
-                      </Button>
-                    </div>
-
+                    <EmailFormattingToolbar
+                      ui={{ Button }}
+                      applyCommand={applyCommand}
+                      onLink={() => {
+                        focusVisualEditor();
+                        setShowLinkPanel((current) => !current);
+                      }}
+                    />
                     {showLinkPanel ? (
                       <div className="border-b bg-muted/15 px-3 py-3">
                         <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
@@ -573,9 +472,8 @@ function TemplateEditor({
               </div>
             </div>
 
-            <div className="mt-4 border rounded-md overflow-hidden">
-              <div className="bg-muted px-3 py-2 text-xs font-medium flex items-center justify-between">
-                <span>Published Preview</span>
+            <EmailTemplatePreviewPanel
+              action={
                 <Button
                   variant="ghost"
                   size="sm"
@@ -590,7 +488,9 @@ function TemplateEditor({
                   )}
                   Refresh
                 </Button>
-              </div>
+              }
+            >
+              {" "}
               {previewHtml ? (
                 <iframe
                   sandbox=""
@@ -612,15 +512,33 @@ function TemplateEditor({
                   )}
                 </div>
               )}
-            </div>
+            </EmailTemplatePreviewPanel>
           </div>
         </SheetBody>
         <SheetFooter>
-          {writeBlocked && <p role="alert">Save was not confirmed. Your draft is retained. Download it before closing, then reopen the saved template to compare.</p>}
-          <Button variant="outline" onClick={() => {
-            const url = URL.createObjectURL(new Blob([JSON.stringify({slug: template.slug, subject, htmlBody}, null, 2)], {type: "application/json"}));
-            const link = document.createElement("a"); link.href = url; link.download = `${template.slug}-draft.json`; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
-          }}>Download draft</Button>
+          {writeBlocked && (
+            <p role="alert">
+              Save was not confirmed. Your draft is retained. Download it before closing, then
+              reopen the saved template to compare.
+            </p>
+          )}
+          <Button
+            variant="outline"
+            onClick={() => {
+              const url = URL.createObjectURL(
+                new Blob([JSON.stringify({ slug: template.slug, subject, htmlBody }, null, 2)], {
+                  type: "application/json",
+                }),
+              );
+              const link = document.createElement("a");
+              link.href = url;
+              link.download = `${template.slug}-draft.json`;
+              link.click();
+              setTimeout(() => URL.revokeObjectURL(url), 1000);
+            }}
+          >
+            Download draft
+          </Button>
           <Button
             onClick={() => updateMutation.mutate()}
             disabled={updateMutation.isPending || editorLock.isReadOnly || writeBlocked}
@@ -717,7 +635,7 @@ export function EmailTemplatesTab() {
     mutationFn: async ({ slug, isActive }: { slug: string; isActive: boolean }) => {
       await apiRequest("PUT", `/api/admin/email-templates/${slug}`, {
         template: { isActive },
-        expectedVersion: templateList.find(template => template.slug === slug)?.version,
+        expectedVersion: templateList.find((template) => template.slug === slug)?.version,
       });
     },
     onSuccess: () => {
@@ -732,7 +650,9 @@ export function EmailTemplatesTab() {
 
   const restoreMutation = useMutation({
     mutationFn: async () => {
-      const res = await apiRequest("POST", "/api/admin/email-templates/restore", { expectedVersion: snapshot?.version });
+      const res = await apiRequest("POST", "/api/admin/email-templates/restore", {
+        expectedVersion: snapshot?.version,
+      });
       return res.json();
     },
     onSuccess: async (payload: { restored: number }) => {
@@ -768,179 +688,45 @@ export function EmailTemplatesTab() {
         </p>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {enabledModuleOptions.map((module) => (
-          <button
-            key={module.value}
-            type="button"
-            onClick={() => setModuleFilter(module.value)}
-            className={cn(
-              "rounded-lg border bg-background p-3 text-left shadow-sm transition-colors hover:bg-muted/40",
-              moduleFilter === module.value && "border-primary bg-primary/5",
-            )}
-            data-testid={`button-template-module-${module.value}`}
-          >
-            <div className="flex items-center justify-between gap-3">
-              <span className="text-sm font-medium">{module.label}</span>
-              <Badge variant="secondary" className="text-xs">
-                {moduleCounts[module.value]}
-              </Badge>
-            </div>
-            <p className="mt-1 text-xs text-muted-foreground">{module.description}</p>
-          </button>
-        ))}
-      </div>
-
-      <div className="flex flex-wrap items-center gap-3 rounded-lg border bg-muted/20 p-3">
-        <div className="relative min-w-0 flex-1 basis-60">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            value={searchQuery}
-            onChange={(event) => setSearchQuery(event.target.value)}
-            placeholder="Search templates, subjects, slugs, variables..."
-            className="pl-9"
-            data-testid="input-search-email-templates"
-          />
-        </div>
-        <Select
-          value={moduleFilter}
-          onValueChange={(value) => setModuleFilter(value as EmailTemplateModule | "all")}
-        >
-          <SelectTrigger
-            className="w-full sm:w-[180px]"
-            data-testid="select-template-module-filter"
-          >
-            <SelectValue placeholder="Module" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Modules</SelectItem>
-            {enabledModuleOptions.map((module) => (
-              <SelectItem key={module.value} value={module.value}>
-                {module.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select
-          value={statusFilter}
-          onValueChange={(value) => setStatusFilter(value as EmailTemplateStatusFilter)}
-        >
-          <SelectTrigger
-            className="w-full sm:w-[160px]"
-            data-testid="select-template-status-filter"
-          >
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Statuses</SelectItem>
-            <SelectItem value="active">Active</SelectItem>
-            <SelectItem value="inactive">Inactive</SelectItem>
-          </SelectContent>
-        </Select>
-        <Button
-          variant="outline"
-          onClick={() => { if (window.confirm("Restore system template content to defaults? Custom content in system templates will be replaced. Existing activation choices and custom templates will be preserved.")) restoreMutation.mutate(); }}
-          disabled={restoreMutation.isPending || !snapshot}
-          data-testid="button-restore-email-templates"
-        >
-          {restoreMutation.isPending ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
-            <RefreshCw className="mr-2 h-4 w-4" />
-          )}
-          Restore System Templates
-        </Button>
-      </div>
-
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-muted-foreground" data-testid="text-template-result-count">
-          Showing {filteredTemplates.length} of {visibleTemplateList.length} templates
-        </p>
-        {(searchQuery || moduleFilter !== "all" || statusFilter !== "all") && (
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              setSearchQuery("");
-              setModuleFilter("all");
-              setStatusFilter("all");
-            }}
-            data-testid="button-clear-template-filters"
-          >
-            Clear Filters
-          </Button>
-        )}
-      </div>
-
-      {!templateList.length && (
-        <Card>
-          <CardContent className="flex items-center gap-3 py-8 justify-center text-muted-foreground">
-            <AlertCircle className="h-5 w-5" />
-            <span>
-              No email templates found. Use “Restore System Templates” to repopulate the defaults.
-            </span>
-          </CardContent>
-        </Card>
-      )}
-
-      <div className="space-y-3">
-        {templateList.length > 0 && filteredTemplates.length === 0 ? (
-          <Card>
-            <CardContent className="flex items-center gap-3 py-8 justify-center text-muted-foreground">
-              <AlertCircle className="h-5 w-5" />
-              <span>No email templates match the current filters.</span>
-            </CardContent>
-          </Card>
-        ) : null}
-
-        {filteredTemplates.map((t) => (
-          <Card key={t.slug} data-testid={`card-template-${t.slug}`}>
-            <CardContent className="py-4 px-5">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1 min-w-0">
-                  <div className="mb-1 flex flex-wrap items-center gap-2">
-                    <h4 className="font-medium text-sm">{t.name}</h4>
-                    <Badge variant="outline" className="text-xs">
-                      {getTemplateModuleLabel(t.module)}
-                    </Badge>
-                    <Badge
-                      variant={t.isActive ? "default" : "outline"}
-                      className="text-xs"
-                      data-testid={`badge-active-${t.slug}`}
-                    >
-                      {t.isActive ? "Active" : "Inactive"}
-                    </Badge>
-                  </div>
-                  <p className="text-xs text-muted-foreground mb-1">{t.description}</p>
-                  <p className="text-xs">
-                    <span className="text-muted-foreground">Subject: </span>
-                    <span className="font-mono">{t.subject}</span>
-                  </p>
-                </div>
-                <div className="flex items-center gap-3 flex-shrink-0">
-                  <Switch
-                    checked={t.isActive}
-                    onCheckedChange={(checked) =>
-                      toggleMutation.mutate({ slug: t.slug, isActive: checked })
-                    }
-                    data-testid={`switch-active-${t.slug}`}
-                  />
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setEditingTemplate(t)}
-                    data-testid={`button-edit-${t.slug}`}
-                  >
-                    <Pencil className="h-3.5 w-3.5 mr-1.5" />
-                    Edit
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      <EmailTemplateLibrary
+        ui={{
+          Card,
+          CardContent,
+          Badge,
+          Input,
+          Select,
+          SelectTrigger,
+          SelectValue,
+          SelectContent,
+          SelectItem,
+          Button,
+          Switch,
+        }}
+        enabledModuleOptions={enabledModuleOptions}
+        moduleCounts={moduleCounts}
+        moduleFilter={moduleFilter}
+        setModuleFilter={(v) => setModuleFilter(v as EmailTemplateModule | "all")}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        statusFilter={statusFilter}
+        setStatusFilter={(v) => setStatusFilter(v as EmailTemplateStatusFilter)}
+        onRestore={() => {
+          if (
+            window.confirm(
+              "Restore system template content to defaults? Custom content in system templates will be replaced. Existing activation choices and custom templates will be preserved.",
+            )
+          )
+            restoreMutation.mutate();
+        }}
+        restoring={restoreMutation.isPending}
+        canRestore={!!snapshot}
+        filteredTemplates={filteredTemplates}
+        visibleTemplateList={visibleTemplateList}
+        templateList={templateList}
+        onEdit={setEditingTemplate}
+        onToggle={(t, isActive) => toggleMutation.mutate({ slug: t.slug, isActive })}
+        moduleLabel={getTemplateModuleLabel}
+      />
 
       {editingTemplate && (
         <TemplateEditor

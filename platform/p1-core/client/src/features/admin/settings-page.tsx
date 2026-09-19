@@ -1,3 +1,6 @@
+import { SUPPORTED_INTEGRATIONS } from "@/components/shared/integration-provider-catalog";
+import { IntegrationLibrary } from "@/components/shared/integration-library-presentation";
+import { IntegrationConfigurationFrame } from "@/components/shared/integration-configuration-presentation";
 import { websiteIntegrationProviders } from "@shared/website-integrations";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -271,81 +274,8 @@ export function filterIntegrations(
 }
 
 export const INTEGRATIONS: IntegrationConfig[] = [
-  {
-    category: "mailgun",
-    title: "Mailgun",
-    description: "Transactional email delivery service",
-    group: "communications",
-    icon: Mail,
-    brandIcon: SiMailgun,
-    brandColor: "text-[#F06B66]",
-    accountUrl: "https://app.mailgun.com/app/account/security/api_keys",
-    docsUrl:
-      "https://help.mailgun.com/hc/en-us/articles/203380100-Where-can-I-find-my-API-keys-and-SMTP-credentials",
-    instructions: [
-      "Open Mailgun API Security and create or copy an API key.",
-      "Open Sending > Domains and copy the verified sending domain.",
-      "Enter the from address exactly as messages should appear to recipients.",
-    ],
-    fields: [
-      {
-        key: "mailgun_api_key",
-        label: "API Key",
-        isSecret: true,
-        placeholder: "key-...",
-      },
-      {
-        key: "mailgun_domain",
-        label: "Domain",
-        isSecret: false,
-        placeholder: "mg.yourdomain.com",
-      },
-      {
-        key: "mailgun_from_address",
-        label: "From Address",
-        isSecret: false,
-        placeholder: "Core Platform <noreply@yourdomain.com>",
-      },
-    ],
-  },
-  {
-    category: "mailchimp",
-    title: "Mailchimp",
-    description: "Audience sync used by managed forms and lifecycle tagging",
-    group: "marketing",
-    icon: Tag,
-    brandIcon: SiMailchimp,
-    brandColor: "text-[#FFE01B]",
-    libraryCategory: "Marketing & Analytics",
-    capabilities: ["Audience sync", "Lifecycle tagging", "Email marketing"],
-    accountUrl: "https://admin.mailchimp.com/account/api/",
-    docsUrl: "https://mailchimp.com/help/about-api-keys/",
-    instructions: [
-      "Open Mailchimp API Keys and create or copy an active API key.",
-      "Use the suffix after the API key hyphen as the Server Prefix, for example us6.",
-      "Open Audience settings to copy the Audience ID for the list this site should sync to.",
-    ],
-    fields: [
-      {
-        key: "mailchimp_api_key",
-        label: "API Key",
-        isSecret: true,
-        placeholder: "xxxxxxxxxxxxxxxxxxxx-us6",
-      },
-      {
-        key: "mailchimp_audience_id",
-        label: "Audience ID",
-        isSecret: false,
-        placeholder: "a1b2c3d4e5",
-      },
-      {
-        key: "mailchimp_server_prefix",
-        label: "Server Prefix",
-        isSecret: false,
-        placeholder: "us6",
-      },
-    ],
-  },
+  SUPPORTED_INTEGRATIONS.find(config => config.category === "mailgun") as IntegrationConfig,
+  SUPPORTED_INTEGRATIONS.find(config => config.category === "mailchimp") as IntegrationConfig,
   {
     category: "google_analytics",
     title: "Google Analytics",
@@ -502,56 +432,7 @@ export const INTEGRATIONS: IntegrationConfig[] = [
       },
     ],
   },
-  {
-    category: "cloudflare_r2",
-    title: "Cloudflare R2",
-    description: "Object storage for images and file uploads",
-    group: "infrastructure",
-    icon: Cloud,
-    brandIcon: SiCloudflare,
-    brandColor: "text-[#F38020]",
-    accountUrl: "https://dash.cloudflare.com/?to=/:account/r2/api-tokens",
-    docsUrl: "https://developers.cloudflare.com/r2/api/s3/tokens/",
-    instructions: [
-      "Open Cloudflare R2 API tokens for the correct account.",
-      "Create an Account API token with Object Read and Write access scoped to this bucket.",
-      "Copy the Access Key ID and Secret Access Key immediately; Cloudflare only shows the secret once.",
-      "Copy the Account ID from the R2 overview or account overview, then enter the bucket name.",
-      "Leave Public URL blank unless you have a custom public domain. Do not use the r2.cloudflarestorage.com API endpoint as the Public URL.",
-    ],
-    fields: [
-      {
-        key: "r2_account_id",
-        label: "Account ID",
-        isSecret: false,
-        placeholder: "Your Cloudflare Account ID",
-      },
-      {
-        key: "r2_access_key_id",
-        label: "Access Key ID",
-        isSecret: true,
-        placeholder: "Access key for R2",
-      },
-      {
-        key: "r2_secret_access_key",
-        label: "Secret Access Key",
-        isSecret: true,
-        placeholder: "Secret access key for R2",
-      },
-      {
-        key: "r2_bucket_name",
-        label: "Bucket Name",
-        isSecret: false,
-        placeholder: "core-platform-uploads",
-      },
-      {
-        key: "r2_public_url",
-        label: "Public URL",
-        isSecret: false,
-        placeholder: "https://cdn.yourdomain.com",
-      },
-    ],
-  },
+  SUPPORTED_INTEGRATIONS.find(config => config.category === "cloudflare_r2") as IntegrationConfig,
 ];
 
 const WEBSITE_INTEGRATIONS_URL = "https://dashboard.p1landmanagement.com/marketing/system/integrations";
@@ -884,257 +765,37 @@ export function IntegrationCard({
 }
 
 function IntegrationsTab({ settings }: { settings: SettingsData }) {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [groupFilter, setGroupFilter] = useState<IntegrationGroupKey | "all">("all");
-  const [categoryFilter, setCategoryFilter] = useState<IntegrationLibraryCategory | "all">("all");
-  const [statusFilter, setStatusFilter] = useState<IntegrationStatusFilter>("all");
-  const [selectedIntegration, setSelectedIntegration] = useState<IntegrationConfig | null>(null);
-  const platformIntegrations = INTEGRATIONS.filter(
+  const [selectedIntegration, setSelectedIntegration] =
+    useState<IntegrationConfig | null>(null);
+  const configs = INTEGRATIONS.filter(
     (config) => !ECOMMERCE_INTEGRATION_CATEGORIES.has(config.category),
   );
-  const configuredCount = platformIntegrations.filter((config) =>
-    isIntegrationConfigured(config, settings),
-  ).length;
-  const groupCounts = useMemo(
-    () => getIntegrationLibraryCounts(platformIntegrations, settings),
-    [platformIntegrations, settings],
-  );
-  const libraryCategories = useMemo(
-    () =>
-      Array.from(
-        new Set(
-          platformIntegrations.map(
-            (config) => config.libraryCategory || ("Other" as IntegrationLibraryCategory),
-          ),
-        ),
-      ).sort((a, b) => a.localeCompare(b)),
-    [platformIntegrations],
-  );
-  const filteredIntegrations = useMemo(
-    () =>
-      filterIntegrations(platformIntegrations, settings, {
-        searchQuery,
-        groupFilter,
-        categoryFilter,
-        statusFilter,
-      }),
-    [categoryFilter, groupFilter, platformIntegrations, searchQuery, settings, statusFilter],
-  );
-
   return (
-    <div className="space-y-6">
-      <div>
-        <h3 className="text-lg font-semibold" data-testid="text-integrations-heading">
-          Integrations
-        </h3>
-        <p className="text-sm text-muted-foreground">
-          Browse platform-wide integrations as a library. {configuredCount} of{" "}
-          {platformIntegrations.length} connections have saved settings, and secret values are
-          encrypted at rest.
-        </p>
-      </div>
-
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-        {INTEGRATION_GROUPS.map((group) => {
-          const counts = groupCounts[group.key] || { total: 0, configured: 0 };
-          if (counts.total === 0) return null;
-
-          return (
-            <button
-              key={group.key}
-              type="button"
-              onClick={() => setGroupFilter(group.key)}
-              className={cn(
-                "rounded-lg border bg-background p-3 text-left shadow-sm transition-colors hover:bg-muted/40",
-                groupFilter === group.key && "border-primary bg-primary/5",
-              )}
-              data-testid={`button-integration-group-${group.key}`}
-            >
-              <div className="flex items-center justify-between gap-3">
-                <span className="text-sm font-medium">{group.title}</span>
-                <Badge variant="secondary" className="text-xs">
-                  {counts.total}
-                </Badge>
-              </div>
-              <p className="mt-1 text-xs text-muted-foreground">{counts.configured} configured</p>
-            </button>
-          );
-        })}
-      </div>
-
-      <div className="flex flex-wrap items-center gap-3 rounded-lg border bg-muted/20 p-3">
-        <div className="relative min-w-0 flex-1 basis-60">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            value={searchQuery}
-            onChange={(event) => setSearchQuery(event.target.value)}
-            placeholder="Search integrations, providers, capabilities..."
-            className="pl-9"
-            data-testid="input-search-integrations"
-          />
-        </div>
-        <Select
-          value={groupFilter}
-          onValueChange={(value) => setGroupFilter(value as IntegrationGroupKey | "all")}
-        >
-          <SelectTrigger
-            className="w-full sm:w-[190px]"
-            data-testid="select-integration-group-filter"
-          >
-            <SelectValue placeholder="Module type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Module Types</SelectItem>
-            {INTEGRATION_GROUPS.map((group) => (
-              <SelectItem key={group.key} value={group.key}>
-                {group.title}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select
-          value={categoryFilter}
-          onValueChange={(value) => setCategoryFilter(value as IntegrationLibraryCategory | "all")}
-        >
-          <SelectTrigger
-            className="w-full sm:w-[190px]"
-            data-testid="select-integration-category-filter"
-          >
-            <SelectValue placeholder="Category" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Categories</SelectItem>
-            {libraryCategories.map((category) => (
-              <SelectItem key={category} value={category}>
-                {category}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select
-          value={statusFilter}
-          onValueChange={(value) => setStatusFilter(value as IntegrationStatusFilter)}
-        >
-          <SelectTrigger
-            className="w-full sm:w-[165px]"
-            data-testid="select-integration-status-filter"
-          >
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Statuses</SelectItem>
-            <SelectItem value="configured">Configured</SelectItem>
-            <SelectItem value="not_configured">Not Configured</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-muted-foreground" data-testid="text-integration-result-count">
-          Showing {filteredIntegrations.length} of {platformIntegrations.length} integrations
-        </p>
-        {(searchQuery ||
-          groupFilter !== "all" ||
-          categoryFilter !== "all" ||
-          statusFilter !== "all") && (
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              setSearchQuery("");
-              setGroupFilter("all");
-              setCategoryFilter("all");
-              setStatusFilter("all");
-            }}
-            data-testid="button-clear-integration-filters"
-          >
-            Clear Filters
-          </Button>
-        )}
-      </div>
-
-      {filteredIntegrations.length === 0 ? (
-        <Card>
-          <CardContent className="flex items-center justify-center gap-3 py-8 text-muted-foreground">
-            <AlertCircle className="h-5 w-5" />
-            <span>No integrations match the current filters.</span>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {filteredIntegrations.map((config) => {
-            const configured = isIntegrationConfigured(config, settings);
-            const Icon = config.icon;
-            const BrandIcon = config.brandIcon;
-
-            return (
-              <Card key={config.category} data-testid={`library-integration-${config.category}`}>
-                <CardContent className="space-y-4 p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex min-w-0 items-start gap-3">
-                      <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-lg border bg-background shadow-sm">
-                        {BrandIcon ? (
-                          <BrandIcon
-                            aria-label={`${config.title} logo`}
-                            className={cn("h-6 w-6", config.brandColor || "text-primary")}
-                          />
-                        ) : config.logoText ? (
-                          <span
-                            aria-label={`${config.title} logo`}
-                            className={cn(
-                              "px-1 text-center text-[10px] font-bold leading-tight tracking-normal",
-                              config.brandColor || "text-primary",
-                            )}
-                          >
-                            {config.logoText}
-                          </span>
-                        ) : (
-                          <Icon className={cn("h-5 w-5", config.brandColor || "text-primary")} />
-                        )}
-                      </div>
-                      <div className="min-w-0">
-                        <h4 className="truncate text-sm font-semibold">{config.title}</h4>
-                        <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
-                          {config.description}
-                        </p>
-                      </div>
-                    </div>
-                    <Badge variant={configured ? "default" : "outline"} className="text-xs">
-                      {configured ? "Configured" : "Not configured"}
-                    </Badge>
-                  </div>
-
-                  <div className="flex flex-wrap gap-1.5">
-                    <Badge variant="secondary" className="text-xs">
-                      {getIntegrationGroupLabel(config.group)}
-                    </Badge>
-                    <Badge variant="outline" className="text-xs">
-                      {config.libraryCategory || "Other"}
-                    </Badge>
-                    {(config.capabilities || []).slice(0, 2).map((capability) => (
-                      <Badge key={capability} variant="outline" className="text-xs font-normal">
-                        {capability}
-                      </Badge>
-                    ))}
-                  </div>
-
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full"
-                    onClick={() => { if (isConsolidatedIntegration(config.category)) window.location.assign(WEBSITE_INTEGRATIONS_URL); else setSelectedIntegration(config); }}
-                    data-testid={`button-open-integration-${config.category}`}
-                  >
-                    Configure
-                  </Button>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-      )}
-
+    <>
+      <IntegrationLibrary
+        ui={{
+          Badge,
+          Button,
+          Card,
+          CardContent,
+          Input,
+          Select,
+          SelectTrigger,
+          SelectValue,
+          SelectContent,
+          SelectItem,
+        }}
+        integrations={configs}
+        groups={INTEGRATION_GROUPS}
+        isConfigured={(config) =>
+          isIntegrationConfigured(config as IntegrationConfig, settings)
+        }
+        onOpen={(config) => {
+          if (isConsolidatedIntegration(config.category))
+            window.location.assign(WEBSITE_INTEGRATIONS_URL);
+          else setSelectedIntegration(config as IntegrationConfig);
+        }}
+      />
       <Sheet
         open={!!selectedIntegration}
         onOpenChange={(open) => {
@@ -1142,20 +803,19 @@ function IntegrationsTab({ settings }: { settings: SettingsData }) {
         }}
       >
         <SheetContent side="right" size="xl">
-          <SheetHeader>
-            <SheetTitle>Configure Integration</SheetTitle>
-            <SheetDescription>
-              Save credentials, review setup steps, and test supported connections.
-            </SheetDescription>
-          </SheetHeader>
-          <SheetBody>
+          <IntegrationConfigurationFrame
+            ui={{ SheetHeader, SheetTitle, SheetDescription, SheetBody }}
+          >
             {selectedIntegration ? (
-              <IntegrationCard config={selectedIntegration} settings={settings} />
+              <IntegrationCard
+                config={selectedIntegration}
+                settings={settings}
+              />
             ) : null}
-          </SheetBody>
+          </IntegrationConfigurationFrame>
         </SheetContent>
       </Sheet>
-    </div>
+    </>
   );
 }
 

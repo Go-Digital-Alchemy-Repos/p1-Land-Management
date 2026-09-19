@@ -1,10 +1,10 @@
 # Consolidation acceptance tracker
 
-Current assessment: **implementation in progress; not a complete release candidate**. Updated September 19, 2026. The approved scope remains unchanged. Main now contains the consolidated applications and validated public changes; `140a412` was verified deployed successfully on Website, Dashboard and Core. Original checkout and Blythe remain outside this worktree's write scope.
+Current assessment: **implementation in progress; not a complete release candidate**. Updated September 19, 2026. The approved scope remains unchanged. Main now contains the consolidated applications and validated public changes; `4b7cf0f6106b40af504f40a7a8e2c5e879a172c6` was verified deployed successfully on Website, Dashboard and Core; release notes are on main at `f806d84e`. Original checkout and Blythe remain outside this worktree's write scope.
 
 The Owner's identity link and Website Editor work. Live Analytics now works after correcting empty previous-period report normalization. Search Console remains blocked by property coverage/access (configured domain property returns 403; only the apex URL-prefix property appeared in the authorized list). Do not rotate existing Google credentials or equate apex access with canonical `www` coverage.
 
-The September 17 dashboard backup has passed an isolated restore, application of 19 consolidation SQL migrations, preservation of all preexisting business-table rows, and a second backup/restore comparison. See [restore evidence](dashboard-restore-rehearsal-2026-09-18.md). No real CRM import, full account reconciliation, application rollback rehearsal, complete media recovery or `/admin/` retirement has occurred. Historical Core archive row/sequence recovery passed September 19; see the recovery checkpoint below.
+The September 17 dashboard backup has passed an isolated restore, application of 19 consolidation SQL migrations, preservation of all preexisting business-table rows, and a second backup/restore comparison. See [restore evidence](dashboard-restore-rehearsal-2026-09-18.md). No real CRM import, approved account-policy reconciliation, actual deployed-image rollback, complete media recovery or `/admin/` retirement has occurred. An isolated current/prior source-rebuild startup rehearsal has a partial result; it does not establish deployed-image provenance or content recovery. Historical Core archive row/sequence recovery passed September 19; see the recovery checkpoint below.
 
 ## Requirement-level status
 
@@ -26,7 +26,36 @@ The September 17 dashboard backup has passed an isolated restore, application of
 | Approval → operations → activation → billing | `composed-estimate-preparation.integration.test.ts` and recorded mixed-billing rehearsal cover preparation, outbox-only send, approval, activation, visit generation and retry-safe billing. | Actual crew execution/review in the complete browser journey, offline behavior, cancellation/successor/change-order regressions and operational acceptance. Crew synchronization and manager review now use real local HTTP calls; browser offline storage and external posting remain unverified. |
 | Preserve public/media/preview/intake/offline compatibility | Existing retained handlers, stable data stores and targeted runtime/route checks. | Full compatibility inventory and cutover tests spanning both applications. No blanket parity claim is supported yet. |
 | Migration, restore, rollback and retirement | `scripts/consolidation/` has identity/CRM analysis, extraction, reviewed import and independent verification tools with synthetic tests. | Dashboard backup restore/migration/round-trip rehearsal passed September 18. P1 recovery runner now validates exact snapshot identity and fingerprints actual p1-migrations. Historical Core archive row/sequence recovery and a source-based retirement route inventory now exist (see September 19 evidence below). Remaining: application/media recovery, application rollback, tested retirement/deep-link behavior, identity+CRM reconciliation, ordering/freeze procedure and final release packet. |
-| Validated release candidate and Owner acceptance | Validated commits reconciled to main and incremental production release verified through 140a412; GitHub Actions remain disabled. | Full requirement audit, resolved release blockers, candidate-wide validation, reviewed migration/rollback artifacts and final full-goal acceptance. |
+| Validated release candidate and Owner acceptance | Validated commits reconciled to main and incremental production release verified through 4b7cf0f6; GitHub Actions remain disabled. | Full requirement audit, resolved release blockers, candidate-wide validation, reviewed migration/rollback artifacts and final full-goal acceptance. |
+
+
+## Current interface and recovery checkpoint — September 19
+
+The original shared presentations for Team, Sidebars, Careers and Events are now
+released in addition to the earlier Design and Content restoration. Careers and
+Events remain disabled in P1 production, as required. Events presets, structured
+data diagnostics, upload-dropzone and complete registration management still need
+scope-aware comparison; excluded commerce/membership controls must not be enabled
+to manufacture parity.
+
+Published menu delivery now connects four approved slots to server-rendered public
+HTML, hydration and subsequent page navigation, with last-valid caching and managed
+form dialogs. Live empty assignments preserve the existing fallback navigation.
+This does not establish every CMS family’s preview, restore, simultaneous editing
+or dynamic public-route behavior.
+
+Read-only account and CRM inventories have been captured privately. The actual CRM
+metadata contains three Core leads and one dashboard lead: one receipt-backed match
+needs review and two Core records remain unmapped. Payload export, reviewed mapping,
+source freeze and real import/reconciliation remain undone. Account inventory is
+not approval to activate seven inactive accounts or change the Owner’s MFA policy.
+
+Recovery review confirms that the archive stores database rows/sequences, not media
+object bytes. The verified historical archive has no media records, and the scoped
+uploads namespace was empty. A separate object manifest and isolated byte/link
+recovery rehearsal remain necessary. Existing rollback evidence uses source-built
+images; exact current/prior Railway image provenance and retrievable immutable
+image bytes remain necessary before claiming deployed-image rollback.
 
 ## Developer Resources implementation
 
@@ -38,11 +67,11 @@ The [operation-level inventory](website-system-parity-inventory.md) now records 
 
 ## Remaining work sequence
 
-1. Complete the legacy feature/endpoint inventory, especially Website System Integrations/Email Templates and nested CMS operations. Close the concrete public identity delivery gap already identified.
+1. Finish the original Website System interface restoration (Integrations, Email Templates and Developer Resources), then verify nested CMS behavior and public consumers. Public identity and four-slot menu delivery are already released; dynamic Blog delivery and publication/concurrency acceptance remain open.
 2. Finish missing native CRM/settings/identity behavior and reconcile the source data/account contracts. Keep provider provisioning and Owner-reviewed mappings explicit as external acceptance dependencies.
 3. Complete the whole-system capability matrix and full agreement/crew/offline journey. Reuse implemented proposal and billing services; do not rebuild them because an old checkpoint says they were pending.
 4. Run isolated export/import/reconciliation and backup/restore/rollback rehearsals; finish safe legacy deep-link and retirement behavior.
-5. Execute the final integrated browser/API/security/data compatibility audit and assemble the release candidate. Request production authority only with that concrete evidence packet.
+5. Execute the final integrated browser/API/security/data compatibility audit and assemble the release candidate. Incremental production releases have standing Owner authorization; destructive migration, policy changes and admin retirement still require their specific acceptance gates.
 
 ## Validation baseline and limits
 
@@ -84,7 +113,7 @@ Search Console domain-property access remains pending: the verified Owner browse
 
 The [isolated application rollback runner](core-application-rollback-runner.md) now has a genuine partial result (evidence04). Current/prior source rebuilds booted on separate restored clones with unchanged baseline and verified cleanup. Only form updated timestamps changed; three added rows belong to the migration ledger. Empty archived content prevents published-content recovery proof; media, authenticated/provider and original Railway-image rollback gates remain open. Seven offline runner checks passed independently.
 
-Robots public delivery is implemented at `ec899b3`; five Core and 21 website checks, both typechecks and the Core production build passed. Independent review found no blocker. Canonical live projection/robots equality and GET/HEAD headers passed after release `550534b`; a separate live staging check remains unverified. Menus and redirects remain unconnected public consumers.
+Robots public delivery is implemented at `ec899b3`; five Core and 21 website checks, both typechecks and the Core production build passed. Independent review found no blocker. Canonical live projection/robots equality and GET/HEAD headers passed after release `550534b`; a separate live staging check remains unverified. This historical checkpoint predates the released menu consumer. Menus are now connected; redirect delivery still needs its separate acceptance evidence.
 
 ## Composed agreement / crew acceptance — September 19
 

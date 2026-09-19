@@ -47,6 +47,18 @@ const doc = {
 let container: HTMLDivElement, root: Root;
 beforeEach(async () => {
   vi.clearAllMocks();
+  Object.defineProperty(HTMLDialogElement.prototype, "showModal", {
+    configurable: true,
+    value: function () {
+      this.setAttribute("open", "");
+    },
+  });
+  Object.defineProperty(HTMLDialogElement.prototype, "close", {
+    configurable: true,
+    value: function () {
+      this.removeAttribute("open");
+    },
+  });
   state.owned = true;
   state.verify.mockResolvedValue(undefined);
   state.list.mockResolvedValue({ docs: [doc], version });
@@ -171,4 +183,87 @@ it("uses collection and document versions for confirmed sync and deletion", asyn
   await click("Delete");
   expect(state.remove).toHaveBeenCalledWith(id, { expectedVersion: version }, expect.anything());
   expect(container.textContent).toContain("Document deleted.");
+});
+
+it("shares ordered system counts, excerpts, generated badges and hierarchical outline", async () => {
+  state.list.mockResolvedValue({
+    docs: [
+      doc,
+      {
+        ...doc,
+        id: "two",
+        slug: "system-intro",
+        category: "Getting Started",
+        title: "Start here",
+        content: "# Index\n\nUseful introduction\n\n### Nested topic",
+        isPublished: false,
+      },
+    ],
+    version,
+  });
+  await click("Reload saved documents");
+  const categories = Array.from(
+    container.querySelectorAll('[aria-label="Document categories"] button'),
+  );
+  expect(categories.map((button) => button.textContent)).toEqual([
+    "All Systems2",
+    "Getting Started1",
+    "Reference1",
+  ]);
+  expect(container.querySelectorAll(".document-stat")).toHaveLength(3);
+  expect(container.querySelector(".document-list")?.textContent).toContain("Useful introduction");
+  expect(container.querySelector(".document-list")?.textContent).toContain("Generated");
+  await act(async () => categories[1].dispatchEvent(new MouseEvent("click", { bubbles: true })));
+  expect(container.querySelectorAll(".document-list>button")).toHaveLength(1);
+  await act(async () =>
+    container.querySelector<HTMLButtonElement>(".document-list>button")!.click(),
+  );
+  expect(
+    container.querySelector(".document-outline a[href='#nested-topic']")?.getAttribute("style"),
+  ).toContain("26px");
+});
+it("guards dirty Escape and restores the opener when the Sheet closes", async () => {
+  const opener = Array.from(container.querySelectorAll("button")).find(
+    (button) => button.textContent === "Edit document",
+  )!;
+  opener.focus();
+  await click("Edit document");
+  expect(container.querySelector("dialog")?.hasAttribute("open")).toBe(true);
+  await changeContent("# Unsaved sheet draft");
+  vi.mocked(window.confirm).mockReturnValue(false);
+  await act(async () =>
+    container.querySelector("dialog")!.dispatchEvent(new Event("cancel", { cancelable: true })),
+  );
+  expect(container.querySelector("textarea")?.value).toBe("# Unsaved sheet draft");
+  vi.mocked(window.confirm).mockReturnValue(true);
+  await act(async () =>
+    container.querySelector("dialog")!.dispatchEvent(new Event("cancel", { cancelable: true })),
+  );
+  expect(container.querySelector("dialog")).toBeNull();
+  expect(document.activeElement).toBe(opener);
+});
+it("retains the open Sheet and draft throughout an uncertain pending save", async () => {
+  let reject!: (error: Error) => void;
+  state.save.mockReturnValue(
+    new Promise((_resolve, fail) => {
+      reject = fail;
+    }),
+  );
+  await click("Edit document");
+  await changeContent("# Pending draft");
+  await act(async () =>
+    container
+      .querySelector("form")!
+      .dispatchEvent(new Event("submit", { bubbles: true, cancelable: true })),
+  );
+  expect(container.querySelector("fieldset")?.disabled).toBe(true);
+  await act(async () =>
+    container.querySelector("dialog")!.dispatchEvent(new Event("cancel", { cancelable: true })),
+  );
+  expect(container.querySelector("dialog")).not.toBeNull();
+  await act(async () => reject(Error("transport lost")));
+  expect(container.querySelector("dialog [role='alert']")?.textContent).toContain(
+    "Your draft is retained",
+  );
+  expect(container.querySelector("textarea")?.value).toBe("# Pending draft");
 });

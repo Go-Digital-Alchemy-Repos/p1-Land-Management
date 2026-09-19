@@ -75,7 +75,7 @@ not a claim of live functional testing:
 | 2 | Media | Restored and live at `4ee1a90`: shared library, details, upload and crop dialogs; optional multiselect caller parity remains open. |
 | 2 | Galleries | Restored and live at `78fb0e72`: shared list, Details/Images/Display/Preview cards, upload and modal preview. |
 | 2 | SEO | Restored at `7714ccb9`; truthful empty-audit correction live at `78fb0e72`. |
-| 2 | Modules / Integrations | Modules restored and live at `2afc0d3`; Integrations provider cards/sheets remain open. P1 module restrictions preserved. |
+| 2 | Modules / Integrations | Modules restored and live at `2afc0d3`; Integrations provider cards/sheets are implemented in the Website System candidate below; deployment acceptance is recorded in handoff. P1 module restrictions preserved. |
 | Recovery gate | Backups | Restore control is missing; release only after recovery acceptance, not as an unreviewed cosmetic port. |
 
 Shared Design navigation, Social, Branding, Typography, Colors, Modules, Forms,
@@ -481,3 +481,40 @@ Release accepted at `4b7cf0f6106b40af504f40a7a8e2c5e879a172c6`: all three Railwa
 services SUCCESS; live public menu endpoint and matching SSR/navigation snapshots
 verified. Authenticated Menus notice/catalog and Careers disabled state verified.
 Remaining feature gaps above are unchanged; this is not full project acceptance.
+
+
+## Website System restoration — September 19 candidate
+
+Integrations, Email Templates and Developer Resources now reuse shared original
+presentation in both the retained Core hosts and the consolidated dashboard.
+The native controllers retain their version checks, reservations, pending-state
+protection, draft recovery and redacted credential handling. Shared runtime sources
+are explicitly included in the restricted dashboard build context.
+
+- Integrations: original provider library, search, group/category/status filters,
+  branded cards and right-side configuration sheet. Native scope remains Mailgun,
+  Mailchimp and Cloudflare R2; active Google reports still use deployment settings.
+  Saved configuration is not represented as verified connectivity.
+- Email Templates: module counts, descriptive/subject/status cards, search including
+  subjects and variables, clear filters, Sheet-style editor, formatting/link controls,
+  clickable variable insertion and preview panel. Activation stages an editor draft
+  for a reservation/version-checked save. Preview remains explicit, and full-document
+  HTML remains source-edited. Test email restrictions and preview sandbox remain.
+- Developer Resources: original summary counts, ordered System Index, document cards
+  with excerpts/generated badges, three-pane workspace, hierarchical outline and
+  right-side editor. Markdown rendering and existing conflict/recovery tools remain.
+
+Validation: 14 Integrations adapter tests, 14 Email adapter tests, 7 retained email
+helper tests and 9 Documents adapter tests passed. Documents received an independent
+9-test rerun; cross-component review found and corrected desktop filter-width loss.
+Both clean typechecks, dashboard build, Core client build and restricted dashboard
+context build passed. Parent browser review used an isolated memory-only server:
+provider search and local configuration save; HTML/visual variable insertion at the
+caret, preview and local template save; document outline, source editing, preview and
+local save. All three libraries fit a 390px viewport without document overflow; the
+email modal also fit. Synthetic fixture reference-endpoint warnings were not production
+errors. No real email, provider connection check or production configuration write ran.
+
+These changes close the identified presentation gaps for the supported controls.
+They do not close active Google configuration management, real provider delivery,
+whole-CMS publication/conflict acceptance, recovery or legacy admin retirement.

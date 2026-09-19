@@ -157,3 +157,14 @@ platform/p1-core/client/src/components/ui/*
 !platform/p1-core/client/src/components/shared/event-admin-editor-presentation.tsx
 !platform/p1-core/client/src/components/shared/event-admin-list-presentation.tsx
 !platform/p1-core/client/src/components/shared/event-admin-presentation.utilities.css
+
+!platform/p1-core/client/src/components/shared/integration-library-presentation.tsx
+!platform/p1-core/client/src/components/shared/integration-configuration-presentation.tsx
+!platform/p1-core/client/src/components/shared/integration-provider-catalog.ts
+!platform/p1-core/client/src/components/shared/integration-provider-icons.tsx
+
+!platform/p1-core/client/src/components/shared/document-workspace-presentation.tsx
+!platform/p1-core/client/src/components/shared/document-workspace-presentation.css
+!platform/p1-core/client/src/components/shared/email-template-editor-presentation.tsx
+!platform/p1-core/client/src/components/shared/email-template-library-presentation.tsx
+!platform/p1-core/client/src/components/shared/email-template-presentation.utilities.css

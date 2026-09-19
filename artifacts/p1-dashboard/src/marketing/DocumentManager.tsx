@@ -1,3 +1,4 @@
+import { DocumentWorkspacePresentation } from "../../../../platform/p1-core/client/src/components/shared/document-workspace-presentation";
 import React, {
   useEffect,
   useMemo,
@@ -75,6 +76,21 @@ export default function DocumentManager() {
   const live = useRef(true),
     gate = useRef(false),
     request = useRef<AbortController | null>(null);
+  const editorDialog = useRef<HTMLDialogElement>(null);
+  const editorOpen = draft !== null;
+  useEffect(() => {
+    if (!editorOpen) return;
+    const opener =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+    const dialog = editorDialog.current;
+    dialog?.showModal();
+    return () => {
+      dialog?.close();
+      if (opener?.isConnected) opener.focus();
+    };
+  }, [editorOpen]);
   const reservation = useDocumentReservation(draft?.id ?? null);
   const dirty = Boolean(
     draft && JSON.stringify(draft.fields) !== draft.baseline,
@@ -310,7 +326,6 @@ export default function DocumentManager() {
     }
   }
   const content = draft?.fields.content ?? current?.content ?? "";
-  const headings = useMemo(() => extractMarkdownHeadings(content), [content]);
   const html = useMemo(
     () =>
       markdownToHtml(content, {
@@ -327,14 +342,50 @@ export default function DocumentManager() {
       }),
     [content, collection],
   );
+  const savedHtml = useMemo(
+    () =>
+      markdownToHtml(current?.content || "", {
+        resolveLink: (href) => {
+          const slug = href.startsWith("/admin/docs/")
+            ? href.slice("/admin/docs/".length).split("#")[0]
+            : docSlugFromMarkdownPath(href);
+          return slug && docs.some((doc) => doc.slug === slug)
+            ? {
+                href: `/marketing/system/documents?doc=${encodeURIComponent(slug)}`,
+                docSlug: slug,
+              }
+            : null;
+        },
+      }),
+    [current?.content, collection],
+  );
+  function onMarkdownClick(event: React.MouseEvent<HTMLDivElement>) {
+    const target =
+      event.target instanceof Element
+        ? event.target.closest("a[data-doc-slug]")
+        : null;
+    const slug = target?.getAttribute("data-doc-slug");
+    if (slug) {
+      event.preventDefault();
+      select(slug);
+    }
+  }
+  function closeEditor() {
+    if (gate.current || busy) return;
+    if (dirty && !window.confirm("Discard your unsaved draft?")) return;
+    setDraft(null);
+    setBlocked(false);
+    void load();
+  }
   return (
     <article className="document-manager">
       <header className="page-hero">
         <div>
           <p className="eyebrow">WEBSITE SYSTEM</p>
-          <h1>
-            <BookOpen size={28} /> Developer resources
-          </h1>
+          <div className="doc-heading">
+            <BookOpen size={28} aria-hidden="true" />
+            <h1>Developer resources</h1>
+          </div>
           <p>
             Private website documentation, operating guides and technical
             references.
@@ -367,224 +418,174 @@ export default function DocumentManager() {
           Reload before continuing
         </button>
       )}
-      <div className="doc-workspace">
-        <aside className="doc-library" aria-label="Document library">
-          <label>
-            Search documents
-            <input
-              type="search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
-          </label>
-          <label>
-            Category
-            <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-            >
-              <option value="">All categories</option>
-              {[...new Set(docs.map((doc) => doc.category))]
-                .sort()
-                .map((name) => (
-                  <option key={name}>{name}</option>
-                ))}
-            </select>
-          </label>
-          <p>{shown.length} documents</p>
-          <nav aria-label="Documents">
-            {shown.map((doc) => (
-              <button
-                key={doc.id}
-                disabled={busy}
-                aria-current={current?.id === doc.id ? "page" : undefined}
-                onClick={() => select(doc.slug)}
-              >
-                <strong>{doc.title}</strong>
-                <small>
-                  {doc.category} · {doc.isPublished ? "Published" : "Draft"}
-                </small>
-              </button>
-            ))}
-          </nav>
-        </aside>
-        <section className="doc-content" aria-label="Selected document">
-          {draft ? (
-            <form onSubmit={save}>
-              <h2>{draft.id ? "Edit document" : "New document"}</h2>
-              {draft.id && !reservation.owned && (
-                <p role="alert">
-                  {reservation.error ||
-                    (reservation.holder
-                      ? `${reservation.holder} is editing this document.`
-                      : "Waiting for an edit reservation.")}{" "}
-                  Your draft stays here.{" "}
-                  <button
-                    type="button"
-                    onClick={() => void reservation.acquire()}
-                  >
-                    Retry reservation
-                  </button>
-                </p>
-              )}
-              <fieldset disabled={busy}>
-                <div className="doc-fields">
-                  <label>
-                    Title
-                    <input
-                      required
-                      maxLength={255}
-                      value={draft.fields.title}
-                      onChange={(e) => patch({ title: e.target.value })}
-                    />
-                  </label>
-                  <label>
-                    Slug
-                    <input
-                      required
-                      pattern="[a-z0-9]+(-[a-z0-9]+)*"
-                      maxLength={160}
-                      value={draft.fields.slug}
-                      onChange={(e) => patch({ slug: e.target.value })}
-                    />
-                  </label>
-                  <label>
-                    Category
-                    <input
-                      required
-                      maxLength={120}
-                      value={draft.fields.category}
-                      onChange={(e) => patch({ category: e.target.value })}
-                    />
-                  </label>
-                  <label>
-                    Sort order
-                    <input
-                      type="number"
-                      required
-                      min={-100000}
-                      max={100000}
-                      step={1}
-                      value={draft.fields.sortOrder}
-                      onChange={(e) =>
-                        patch({ sortOrder: Number(e.target.value) })
-                      }
-                    />
-                  </label>
-                </div>
-                <label className="doc-published">
-                  <input
-                    type="checkbox"
-                    checked={draft.fields.isPublished}
-                    onChange={(e) => patch({ isPublished: e.target.checked })}
-                  />{" "}
-                  Published in the private documentation library
-                </label>
-                <label>
-                  Markdown content
-                  <textarea
-                    rows={20}
-                    maxLength={500000}
-                    value={draft.fields.content}
-                    onChange={(e) => patch({ content: e.target.value })}
-                  />
-                </label>
-                <div className="doc-toolbar">
-                  <button
-                    type="submit"
-                    disabled={blocked || !reservation.owned}
-                  >
-                    <Save size={16} /> Save document
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setPreview(!preview)}
-                    aria-expanded={preview}
-                  >
-                    {preview ? "Hide" : "Show"} preview
-                  </button>
-                  <button type="button" onClick={downloadDraft}>
-                    <Download size={16} /> Download draft
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (
-                        !dirty ||
-                        window.confirm("Discard your unsaved draft?")
-                      ) {
-                        setDraft(null);
-                        setBlocked(false);
-                        void load();
-                      }
-                    }}
-                  >
-                    Close editor
-                  </button>
-                </div>
-              </fieldset>
-            </form>
-          ) : current ? (
-            <header>
-              <p>
-                {current.category} ·{" "}
-                {current.isPublished ? "Published" : "Draft"}
-              </p>
-              <h2>{current.title}</h2>
-              <div className="doc-toolbar">
-                <button
-                  disabled={busy || blocked}
-                  onClick={() => edit(current)}
-                >
-                  Edit document
-                </button>
-                <button
-                  disabled={busy || blocked}
-                  onClick={() => void remove()}
-                >
-                  <Trash2 size={16} /> Delete
-                </button>
-              </div>
-            </header>
-          ) : (
-            <p>
-              {collection
-                ? selected
-                  ? "This document is not available. Select one from the library."
-                  : "Select a document or create a new one."
-                : busy
-                  ? "Loading document library…"
-                  : "Document library unavailable. Reload saved documents to try again."}
+      <DocumentWorkspacePresentation
+        documents={docs}
+        visibleDocuments={shown}
+        selected={current}
+        category={category || null}
+        query={query}
+        onQuery={setQuery}
+        onCategory={(value) => setCategory(value || "")}
+        onSelect={(doc) => select(doc.slug)}
+        disabled={busy}
+        headings={extractMarkdownHeadings(current?.content || "")}
+        actions={
+          <>
+            <button disabled={busy || blocked} onClick={() => edit(current)}>
+              Edit document
+            </button>
+            <button disabled={busy || blocked} onClick={() => void remove()}>
+              <Trash2 size={16} /> Delete
+            </button>
+          </>
+        }
+        empty={
+          collection
+            ? selected
+              ? "This document is not available. Select one from the library."
+              : "Select a document or create a new one."
+            : busy
+              ? "Loading document library…"
+              : "Document library unavailable. Reload saved documents to try again."
+        }
+        reader={
+          <div
+            className="doc-markdown"
+            onClick={onMarkdownClick}
+            dangerouslySetInnerHTML={{ __html: savedHtml }}
+          />
+        }
+      />
+      {draft && (
+        <dialog
+          ref={editorDialog}
+          className="doc-editor-sheet"
+          aria-labelledby="doc-editor-title"
+          onCancel={(event) => {
+            event.preventDefault();
+            closeEditor();
+          }}
+        >
+          {error && (
+            <p role="alert" className="doc-message">
+              {error}
             </p>
           )}
-          {((!draft && current) || (draft && preview)) && (
-            <>
-              <nav className="doc-outline" aria-label="On this page">
-                {headings.map((heading) => (
-                  <a key={heading.id} href={`#${heading.id}`}>
-                    {heading.text}
-                  </a>
-                ))}
-              </nav>
-              <div
-                className="doc-markdown"
-                onClick={(event) => {
-                  const target =
-                    event.target instanceof Element
-                      ? event.target.closest("a[data-doc-slug]")
-                      : null;
-                  const slug = target?.getAttribute("data-doc-slug");
-                  if (slug) {
-                    event.preventDefault();
-                    select(slug);
-                  }
-                }}
-                dangerouslySetInnerHTML={{ __html: html }}
-              />
-            </>
+          {notice && <p role="status">{notice}</p>}
+          {busy && <p role="status">Working…</p>}
+          <form onSubmit={save}>
+            <h2 id="doc-editor-title">
+              {draft.id ? "Edit document" : "New document"}
+            </h2>
+            {draft.id && !reservation.owned && (
+              <p role="alert">
+                {reservation.error ||
+                  (reservation.holder
+                    ? `${reservation.holder} is editing this document.`
+                    : "Waiting for an edit reservation.")}{" "}
+                Your draft stays here.{" "}
+                <button
+                  type="button"
+                  onClick={() => void reservation.acquire()}
+                >
+                  Retry reservation
+                </button>
+              </p>
+            )}
+            <fieldset disabled={busy}>
+              <div className="doc-fields">
+                <label>
+                  Title
+                  <input
+                    required
+                    maxLength={255}
+                    value={draft.fields.title}
+                    onChange={(e) => patch({ title: e.target.value })}
+                  />
+                </label>
+                <label>
+                  Slug
+                  <input
+                    required
+                    pattern="[a-z0-9]+(-[a-z0-9]+)*"
+                    maxLength={160}
+                    value={draft.fields.slug}
+                    onChange={(e) => patch({ slug: e.target.value })}
+                  />
+                </label>
+                <label>
+                  Category
+                  <input
+                    required
+                    maxLength={120}
+                    value={draft.fields.category}
+                    onChange={(e) => patch({ category: e.target.value })}
+                  />
+                </label>
+                <label>
+                  Sort order
+                  <input
+                    type="number"
+                    required
+                    min={-100000}
+                    max={100000}
+                    step={1}
+                    value={draft.fields.sortOrder}
+                    onChange={(e) =>
+                      patch({ sortOrder: Number(e.target.value) })
+                    }
+                  />
+                </label>
+              </div>
+              <label className="doc-published">
+                <input
+                  type="checkbox"
+                  checked={draft.fields.isPublished}
+                  onChange={(e) => patch({ isPublished: e.target.checked })}
+                />{" "}
+                Published in the private documentation library
+              </label>
+              <label>
+                Markdown content
+                <textarea
+                  rows={20}
+                  maxLength={500000}
+                  value={draft.fields.content}
+                  onChange={(e) => patch({ content: e.target.value })}
+                />
+              </label>
+              <div className="doc-toolbar">
+                <button type="submit" disabled={blocked || !reservation.owned}>
+                  <Save size={16} /> Save document
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPreview(!preview)}
+                  aria-expanded={preview}
+                >
+                  {preview ? "Hide" : "Show"} preview
+                </button>
+                <button type="button" onClick={() => void load()}>
+                  Reload saved documents
+                </button>
+                <button type="button" onClick={downloadDraft}>
+                  <Download size={16} /> Download draft
+                </button>
+                <button type="button" onClick={closeEditor}>
+                  Close editor
+                </button>
+              </div>
+            </fieldset>
+          </form>
+          {preview && (
+            <div
+              className="doc-markdown doc-editor-preview"
+              onClick={onMarkdownClick}
+              dangerouslySetInnerHTML={{ __html: html }}
+            />
           )}
-        </section>
-      </div>
+        </dialog>
+      )}
     </article>
   );
 }

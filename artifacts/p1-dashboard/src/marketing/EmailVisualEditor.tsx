@@ -1,15 +1,30 @@
-import React, { useEffect, useRef, useState } from "react";
+import { EmailFormattingToolbar } from "../../../../platform/p1-core/client/src/components/shared/email-template-editor-presentation";
+import { sidebarPrimitives as emailUI } from "./sidebar-primitives";
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 
 /** Email fragments retain tables and inline styles; no schema conversion or automatic save. */
-export function EmailVisualEditor({
-  value,
-  onChange,
-  disabled,
-}: {
-  value: string;
-  onChange: (html: string) => void;
-  disabled: boolean;
-}) {
+export type EmailVisualEditorHandle = { insertText: (text: string) => void };
+export const EmailVisualEditor = forwardRef<
+  EmailVisualEditorHandle,
+  { value: string; onChange: (html: string) => void; disabled: boolean }
+>(function EmailVisualEditor(
+  {
+    value,
+    onChange,
+    disabled,
+  }: {
+    value: string;
+    onChange: (html: string) => void;
+    disabled: boolean;
+  },
+  ref,
+) {
   const frame = useRef<HTMLIFrameElement>(null);
   const last = useRef(value);
   const change = useRef(onChange);
@@ -53,15 +68,24 @@ export function EmailVisualEditor({
     doc.execCommand(name, false, argument);
     update();
   }
+  const [linkUrl, setLinkUrl] = useState("");
+  const [showLink, setShowLink] = useState(false);
+  const rangeRef = useRef<Range | null>(null);
+  function openLink() {
+    const selection = frame.current?.contentDocument?.getSelection();
+    rangeRef.current = selection?.rangeCount
+      ? selection.getRangeAt(0).cloneRange()
+      : null;
+    setShowLink((v) => !v);
+  }
+  useImperativeHandle(ref, () => ({
+    insertText: (text: string) => command("insertText", text),
+  }));
   function link() {
     const doc = frame.current?.contentDocument;
     const selection = doc?.getSelection();
-    const range = selection?.rangeCount
-      ? selection.getRangeAt(0).cloneRange()
-      : null;
-    const entered = window.prompt(
-      "Link URL (https://, http://, mailto: or tel:)",
-    );
+    const range = rangeRef.current;
+    const entered = linkUrl;
     if (!entered || !/^(https?:\/\/|mailto:|tel:)/i.test(entered.trim()))
       return;
     if (range && selection) {
@@ -69,44 +93,39 @@ export function EmailVisualEditor({
       selection.addRange(range);
     }
     command("createLink", entered.trim());
+    setShowLink(false);
+    setLinkUrl("");
   }
-  const commands: [string, string, string?][] = [
-    ["Paragraph", "formatBlock", "p"],
-    ["Heading", "formatBlock", "h2"],
-    ["Bold", "bold"],
-    ["Italic", "italic"],
-    ["Underline", "underline"],
-    ["Bulleted list", "insertUnorderedList"],
-    ["Numbered list", "insertOrderedList"],
-    ["Clear formatting", "removeFormat"],
-  ];
   return (
     <div>
-      <div
-        className="email-template-toolbar"
-        role="toolbar"
-        aria-label="Visual email formatting"
-      >
-        {commands.map(([label, name, argument]) => (
+      <EmailFormattingToolbar
+        ui={emailUI}
+        disabled={disabled}
+        applyCommand={command}
+        onLink={openLink}
+      />
+      {showLink && (
+        <div className="email-link-panel">
+          <label>
+            Link URL
+            <input
+              type="url"
+              value={linkUrl}
+              onChange={(e) => setLinkUrl(e.target.value)}
+              placeholder="https://example.com"
+              disabled={disabled}
+            />
+          </label>
           <button
-            key={name + (argument ?? "")}
             type="button"
-            disabled={disabled}
-            onMouseDown={(event) => event.preventDefault()}
-            onClick={() => command(name, argument)}
+            disabled={disabled || !linkUrl.trim()}
+            onClick={link}
           >
-            {label}
+            Apply link
           </button>
-        ))}
-        <button
-          type="button"
-          disabled={disabled}
-          onMouseDown={(event) => event.preventDefault()}
-          onClick={link}
-        >
-          Insert link
-        </button>
-      </div>
+          <p>Use https://, http://, mailto: or tel:.</p>
+        </div>
+      )}
       <iframe
         ref={frame}
         title="Visual email editor"
@@ -121,4 +140,4 @@ export function EmailVisualEditor({
       </p>
     </div>
   );
-}
+});

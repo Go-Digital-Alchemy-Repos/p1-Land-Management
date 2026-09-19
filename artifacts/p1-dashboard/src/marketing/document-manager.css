@@ -137,3 +137,97 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+.document-manager .doc-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.document-manager .doc-heading > svg {
+  color: hsl(var(--primary));
+  flex-shrink: 0;
+}
+.document-manager .document-search {
+  margin-bottom: 0;
+}
+.document-manager .document-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.doc-editor-sheet {
+  position: fixed;
+  inset: 0 0 0 auto;
+  margin: 0;
+  width: min(760px, 100%);
+  height: 100dvh;
+  max-width: 100%;
+  max-height: 100dvh;
+  border: 0;
+  border-left: 1px solid hsl(var(--border));
+  padding: 28px;
+  background: hsl(var(--card));
+  color: hsl(var(--foreground));
+  overflow: auto;
+  box-shadow: -12px 0 40px #0002;
+}
+.doc-editor-sheet::backdrop {
+  background: #0008;
+}
+.doc-editor-sheet fieldset {
+  border: 0;
+  padding: 0;
+  min-width: 0;
+}
+.doc-editor-sheet form h2 {
+  margin-top: 0;
+}
+.doc-editor-sheet label {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 14px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.doc-editor-sheet .doc-published {
+  display: flex;
+  align-items: center;
+}
+.doc-editor-sheet textarea {
+  width: 100%;
+  resize: vertical;
+  font:
+    13px/1.65 ui-monospace,
+    monospace;
+}
+.doc-editor-sheet .doc-published input {
+  width: auto;
+}
+.doc-editor-sheet .doc-toolbar {
+  position: sticky;
+  bottom: -28px;
+  background: hsl(var(--card));
+  padding: 16px 0;
+  margin-bottom: 0;
+  border-top: 1px solid hsl(var(--border));
+}
+.doc-editor-preview {
+  border: 1px solid hsl(var(--border));
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 20px;
+}
+.doc-editor-sheet :focus-visible {
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: 2px;
+}
+@media (max-width: 600px) {
+  .doc-editor-sheet {
+    padding: 20px;
+  }
+  .doc-editor-sheet .doc-toolbar {
+    bottom: -20px;
+  }
+  .doc-editor-sheet .doc-toolbar button {
+    flex: 1 1 140px;
+  }
+}

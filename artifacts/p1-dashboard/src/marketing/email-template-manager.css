@@ -1,3 +1,4 @@
+@import "../../../../platform/p1-core/client/src/components/shared/email-template-presentation.utilities.css";
 .email-template-manager {
   min-width: 0;
 }
@@ -98,3 +99,26 @@
     max-height: 220px;
   }
 }
+
+.email-template-presentation :where(*) {border-style:solid;border-width:0;border-color:var(--line);}
+.email-template-presentation :where(h1,h2,h3,h4,p,label,input,select,textarea) {margin:0;}
+.email-template-presentation .forms-card {background:var(--surface);}
+.email-template-presentation .sidebar-card-content {padding:16px 20px;}
+.email-template-presentation .forms-switch {width:34px;height:20px;border-radius:12px;padding:2px;background:#a3a3a3;display:inline-flex;flex-shrink:0;}
+.email-template-presentation .forms-switch span {width:16px;height:16px;background:white;border-radius:50%;}
+.email-template-presentation .forms-switch[aria-checked=true] {background:#171717;justify-content:flex-end;}
+.email-template-sheet {position:fixed;inset:0 0 0 auto;margin:0;width:min(100vw,1040px);max-width:100vw;height:100dvh;max-height:100dvh;border:0;border-left:1px solid var(--line);padding:0;background:var(--surface);color:var(--ink);overflow:auto;}
+.email-template-sheet::backdrop {background:rgb(0 0 0 / .45);}
+.email-template-sheet-header {position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:20px 24px;background:var(--surface);border-bottom:1px solid var(--line);}
+.email-template-sheet .email-template-panel {border:0;border-radius:0;}
+.email-template-sheet fieldset {padding:0;margin:0;border:0;min-width:0;}
+.email-template-sheet .email-template-toolbar {display:flex;gap:8px;flex-wrap:wrap;margin:16px 0;}
+.email-template-sheet label {display:grid;gap:6px;margin-bottom:12px;}
+.email-template-sheet input:not([type=checkbox]),.email-template-sheet textarea {width:100%;}
+.email-template-sheet iframe {width:100%;min-height:420px;border:1px solid var(--line);background:white;}
+.email-template-sheet .email-formatting-controls button {display:inline-flex;align-items:center;justify-content:center;gap:6px;}
+.email-template-sheet .email-formatting-controls {margin-bottom:8px;}
+.email-template-sheet .email-link-panel {padding:12px;border:1px solid var(--line);margin-bottom:10px;}
+.email-template-sheet .email-template-check {display:flex;gap:8px;align-items:center;}
+.email-template-sheet svg {flex-shrink:0;}
+@media(min-width:640px){.email-template-manager.email-template-presentation select[aria-label="Module"]{width:180px}.email-template-manager.email-template-presentation select[aria-label="Status"]{width:160px}}
