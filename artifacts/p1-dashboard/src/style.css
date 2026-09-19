@@ -679,14 +679,14 @@ small {
   min-height: 44px;
   display: grid;
   place-items: center;
-  color: hsl(var(--foreground));
+  color: #256fa7;
   filter: drop-shadow(0 2px 2px hsl(var(--foreground) / 0.28));
   background: transparent;
   border: 0;
   padding: 0;
   cursor: pointer;
 }
-.property-map-pin:hover { color: hsl(var(--foreground)); transform: translateY(-2px); }
+.property-map-pin:hover { color: #1d5988; transform: translateY(-2px); }
 .property-map-pin:focus-visible { border-radius: 50%; outline: 3px solid hsl(var(--border)); outline-offset: 2px; }
 .property-map-summary {
   position: absolute;
@@ -1913,3 +1913,8 @@ button[aria-pressed="true"], .workspace-tabs button.active { color: hsl(var(--ac
 .badge.delayed { background: hsl(var(--warning-surface)); color: hsl(var(--warning)); }
 .calendar-toolbar button[aria-pressed="true"] { color: hsl(var(--primary-foreground)); }
 .sidebar .nav-section-label { margin: 14px 12px 6px; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: hsl(var(--sidebar-foreground)); }
+
+/* Client portfolio map sits flush above the existing property list. */
+.client-property-map { height: 288px; min-height: 288px; width: 100%; overflow: hidden; }
+
+.property-map-announcement { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }

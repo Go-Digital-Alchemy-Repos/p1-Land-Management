@@ -1,13 +1,16 @@
 import { useEffect, useMemo, useRef } from "react";
-import Map, { Marker, NavigationControl, type MapRef } from "react-map-gl/maplibre";
+import Map, {
+  Marker,
+  NavigationControl,
+  type MapRef,
+} from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import { MapPin } from "lucide-react";
 import { propertyCoordinates } from "./property-coordinates";
 
-// Liberty gives property teams the road and place-label context they need while
-// retaining a calm, low-contrast base under Atlas pins and overlays.
-const MAP_STYLE_URL = "https://tiles.openfreemap.org/styles/liberty";
+// Match the public service-area map: muted streets and clear blue location pins.
+const MAP_STYLE_URL = "https://tiles.openfreemap.org/styles/positron";
 const P1_REGION: [number, number] = [34.95, -80.78];
 
 type PropertyPoint = {
@@ -18,11 +21,27 @@ type PropertyPoint = {
   longitude?: number | string | null;
 };
 
+function PropertyPin() {
+  return (
+    <svg viewBox="0 0 28 36" width="28" height="36" aria-hidden="true">
+      <path
+        d="M14 34S2 22 2 14a12 12 0 1 1 24 0c0 8-12 20-12 20Z"
+        fill="currentColor"
+        stroke="white"
+        strokeWidth="2"
+      />
+      <circle cx="14" cy="14" r="4" fill="white" />
+    </svg>
+  );
+}
+
 export function PropertyMap({
   properties,
   onOpen,
+  compact = false,
 }: {
   properties: PropertyPoint[];
+  compact?: boolean;
   onOpen: (property: PropertyPoint) => void;
 }) {
   const map = useRef<MapRef>(null);
@@ -49,28 +68,47 @@ export function PropertyMap({
     if (!instance) return;
     if (mappedProperties.length === 1) {
       instance.jumpTo({
-        center: [
-          mappedProperties[0].longitude,
-          mappedProperties[0].latitude,
-        ],
+        center: [mappedProperties[0].longitude, mappedProperties[0].latitude],
         zoom: 14,
       });
       return;
     }
     if (!bounds) return;
     instance.fitBounds(bounds, {
-      padding: { top: 72, right: 72, bottom: 56, left: 72 },
+      padding: { top: 48, right: 48, bottom: 48, left: 48 },
       maxZoom: 15,
       duration: 0,
     });
   }, [bounds]);
 
+  if (compact && !mappedProperties.length)
+    return (
+      <div
+        className="client-property-map property-location-map--unavailable"
+        role="status"
+      >
+        <MapPin aria-hidden="true" size={22} />
+        <p>
+          {properties.length
+            ? "Map locations are not available for these properties yet. The property list remains below."
+            : "Add a property to see its location here."}
+        </p>
+      </div>
+    );
+
   return (
-    <div className="property-map" data-testid="property-map">
+    <div
+      className={`property-map${compact ? " client-property-map" : ""}`}
+      data-testid="property-map"
+    >
       <Map
         ref={map}
         workerUrl={workerUrl}
-        initialViewState={{ latitude: P1_REGION[0], longitude: P1_REGION[1], zoom: 9 }}
+        initialViewState={{
+          latitude: P1_REGION[0],
+          longitude: P1_REGION[1],
+          zoom: 9,
+        }}
         mapStyle={MAP_STYLE_URL}
         attributionControl={{ compact: true }}
         dragRotate={false}
@@ -88,7 +126,7 @@ export function PropertyMap({
             });
           } else if (bounds) {
             target.fitBounds(bounds, {
-              padding: { top: 72, right: 72, bottom: 56, left: 72 },
+              padding: { top: 48, right: 48, bottom: 48, left: 48 },
               maxZoom: 15,
               duration: 0,
             });
@@ -110,16 +148,27 @@ export function PropertyMap({
               aria-label={`Open ${property.name}, ${property.address}`}
               onClick={() => onOpen(property)}
             >
-              <MapPin aria-hidden="true" size={31} strokeWidth={2.4} />
+              <PropertyPin />
             </button>
           </Marker>
         ))}
       </Map>
-      <div className="property-map-summary" aria-live="polite">
+      <div
+        className={
+          compact ? "property-map-announcement" : "property-map-summary"
+        }
+        aria-live="polite"
+      >
         <strong>
-          {mappedProperties.length} mapped {mappedProperties.length === 1 ? "property" : "properties"}
+          {mappedProperties.length} mapped{" "}
+          {mappedProperties.length === 1 ? "property" : "properties"}
         </strong>
-        <span>Choose a pin to open its property profile.</span>
+        <span>
+          Choose a pin to open its property profile.
+          {mappedProperties.length < properties.length
+            ? ` ${properties.length - mappedProperties.length} properties have no map location.`
+            : ""}
+        </span>
       </div>
     </div>
   );
@@ -129,7 +178,10 @@ export function PropertyLocationMap({ property }: { property: PropertyPoint }) {
   const coordinates = propertyCoordinates(property);
   if (!coordinates) {
     return (
-      <div className="property-location-map property-location-map--unavailable" aria-label="Property map unavailable">
+      <div
+        className="property-location-map property-location-map--unavailable"
+        aria-label="Property map unavailable"
+      >
         <MapPin aria-hidden="true" size={22} />
         <p>Map placement is not available for this property yet.</p>
       </div>
@@ -140,7 +192,8 @@ export function PropertyLocationMap({ property }: { property: PropertyPoint }) {
     <div className="property-location-map" data-testid="property-location-map">
       <Map
         workerUrl={workerUrl}
-        initialViewState={{ latitude, longitude, zoom: 14.4 }}
+        key={property.id}
+        initialViewState={{ latitude, longitude, zoom: 13.5 }}
         mapStyle={MAP_STYLE_URL}
         attributionControl={{ compact: true }}
         dragRotate={false}
@@ -150,12 +203,14 @@ export function PropertyLocationMap({ property }: { property: PropertyPoint }) {
       >
         <NavigationControl position="top-right" showCompass={false} />
         <Marker latitude={latitude} longitude={longitude} anchor="bottom">
-          <span className="property-map-pin property-map-pin--static" aria-label={`${property.name} location`}>
-            <MapPin aria-hidden="true" size={31} strokeWidth={2.4} />
+          <span
+            className="property-map-pin property-map-pin--static"
+            aria-label={`${property.name} location`}
+          >
+            <PropertyPin />
           </span>
         </Marker>
       </Map>
-      <div className="property-location-map-label"><MapPin size={13} aria-hidden="true" /><span>Approx. 1-mile context</span></div>
     </div>
   );
 }
