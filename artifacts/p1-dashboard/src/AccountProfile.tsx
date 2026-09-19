@@ -1,3 +1,4 @@
+import { AvatarCropper } from "./AvatarCropper";
 import QRCode from "qrcode";
 import {
   Camera,
@@ -46,6 +47,7 @@ export function AccountProfile({
   actions: AccountProfileActions;
   onRefresh: () => Promise<void>;
 }) {
+  const [cropFile, setCropFile] = useState<File | null>(null);
   const [avatarUrl, setAvatarUrl] = useState(account.avatarUrl || "");
   const [enrollment, setEnrollment] = useState<Enrollment | null>(null);
   const [qrCode, setQrCode] = useState("");
@@ -53,6 +55,8 @@ export function AccountProfile({
   const [notice, setNotice] = useState("");
   const [busy, setBusy] = useState(false);
   const input = useRef<HTMLInputElement>(null);
+  const changePhoto = useRef<HTMLButtonElement>(null);
+  const [cropRevision, setCropRevision] = useState(0);
   useEffect(() => setAvatarUrl(account.avatarUrl || ""), [account.avatarUrl]);
   useEffect(() => {
     let active = true;
@@ -91,7 +95,8 @@ export function AccountProfile({
     }
   }
 
-  async function uploadAvatar(file: File | undefined) {
+  function chooseAvatar(file: File | undefined) {
+    if (busy) return;
     if (!file) return;
     if (
       !["image/jpeg", "image/png", "image/webp"].includes(file.type) ||
@@ -100,7 +105,12 @@ export function AccountProfile({
       setError("Choose a JPEG, PNG, or WebP image under 5 MiB.");
       return;
     }
-    await run(async () => {
+    setError(""); setNotice(""); setCropFile(file); setCropRevision(value => value + 1);
+  }
+
+  async function uploadAvatar(file: File) {
+    setBusy(true);
+    try {
       const response = await fetch("/api/v1/profile/avatar", {
         method: "POST",
         headers: { "Content-Type": file.type },
@@ -112,7 +122,9 @@ export function AccountProfile({
       await onRefresh();
       setAvatarUrl(result.avatarUrl);
       setNotice("Profile photo updated.");
-    });
+      setCropFile(null);
+      changePhoto.current?.focus();
+    } finally { setBusy(false); }
   }
 
   return (
@@ -147,6 +159,7 @@ export function AccountProfile({
           <button
             type="button"
             className="avatar-change"
+            ref={changePhoto}
             onClick={() => input.current?.click()}
             disabled={busy}
           >
@@ -158,7 +171,7 @@ export function AccountProfile({
             type="file"
             accept="image/jpeg,image/png,image/webp"
             onChange={(event) => {
-              void uploadAvatar(event.target.files?.[0]);
+              chooseAvatar(event.target.files?.[0]);
               event.currentTarget.value = "";
             }}
           />
@@ -175,7 +188,7 @@ export function AccountProfile({
           onDragOver={(event) => event.preventDefault()}
           onDrop={(event) => {
             event.preventDefault();
-            void uploadAvatar(event.dataTransfer.files[0]);
+            chooseAvatar(event.dataTransfer.files[0]);
           }}
         >
           <Upload size={18} aria-hidden="true" />
@@ -185,12 +198,15 @@ export function AccountProfile({
             type="file"
             accept="image/jpeg,image/png,image/webp"
             onChange={(event) => {
-              void uploadAvatar(event.target.files?.[0]);
+              chooseAvatar(event.target.files?.[0]);
               event.currentTarget.value = "";
             }}
           />
         </label>
       </section>
+
+      {cropFile && <AvatarCropper key={cropRevision} file={cropFile}
+        onCancel={() => { setCropFile(null); changePhoto.current?.focus(); }} onSave={uploadAvatar} />}
 
       <div className="profile-grid">
         <section className="panel" aria-labelledby="profile-details-title">

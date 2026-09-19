@@ -1921,3 +1921,16 @@ input:not([type="checkbox"]):not([type="radio"]), select, textarea,
 .sidebar nav .nav-group-items > button { border-radius: var(--radius-buttons); }
 .account-hero-title h1, .page-heading h1 { font-weight: 600; letter-spacing: -.025em; }
 .content { padding-inline: max(var(--page-gutter), calc((100% - var(--page-max-width))/2)); }
+
+/* Local-only crop before the existing authenticated avatar upload. */
+.avatar-cropper { padding: 24px; }
+.avatar-cropper h2 { margin-top: 0; }
+.avatar-crop-layout { display: flex; align-items: center; gap: 32px; flex-wrap: wrap; }
+.avatar-crop-preview { position: relative; width: min(280px, 100%); aspect-ratio: 1; flex-shrink: 0; border-radius: 50%; overflow: hidden; background: var(--surface-subtle); touch-action: none; cursor: grab; box-shadow: 0 0 0 1px var(--line); }
+.avatar-crop-preview:active { cursor: grabbing; }
+.avatar-crop-preview img { position: absolute; max-width: none; user-select: none; pointer-events: none; }
+.avatar-crop-controls { display: grid; gap: 20px; flex: 1 1 240px; min-width: 0; }
+.avatar-crop-controls label { display: grid; gap: 8px; }
+.avatar-crop-controls input[type="range"] { width: 100%; min-height: 32px; padding: 0; accent-color: var(--ink); }
+.avatar-crop-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+@media (max-width: 480px) { .avatar-cropper { padding: 20px; } .avatar-crop-controls { flex-basis: 100%; } }
