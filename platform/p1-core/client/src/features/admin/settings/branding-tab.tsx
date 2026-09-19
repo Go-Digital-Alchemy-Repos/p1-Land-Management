@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { Check, ImageIcon, Link2, Loader2, MapPin, Palette, Save, Type } from "lucide-react";
+import { ImageIcon, Link2, Loader2, MapPin, Palette, Save, Type } from "lucide-react";
 
+import { TypographyEditor } from "@/components/shared/typography-editor";
 import { CmsImageUpload } from "@/features/admin/cms/components/cms-image-upload";
 import { SocialMediaEditor, normalizePrefilledSocialUrl } from "@/components/shared/social-media-editor";
 import { SocialMediaLinks } from "@/components/shared/social-media-links";
@@ -21,11 +22,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import {
   BRANDING_FONT_OPTIONS,
-  BRANDING_SANS_FONT_OPTIONS,
-  BRANDING_SERIF_FONT_OPTIONS,
   fontFamilyForBrandingOption,
   normalizeHexColor,
-  type BrandingFontOption,
 } from "@/lib/branding";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { cn } from "@/lib/utils";
@@ -591,54 +589,6 @@ export function BrandingTab({
     setColorValues((current) => ({ ...current, [key]: value }));
   };
 
-  const renderFontOptionCard = (
-    option: BrandingFontOption,
-    selectedValue: string,
-    onSelect: (value: string) => void,
-    sampleKind: "heading" | "body",
-  ) => (
-    <button
-      key={option.value}
-      type="button"
-      onClick={() => onSelect(option.value)}
-      className={cn(
-        "w-full rounded-xl border p-4 text-left transition-all hover:border-primary/50 hover:bg-primary/5",
-        selectedValue === option.value
-          ? "border-primary bg-primary/5 ring-1 ring-primary/20"
-          : "border-border/70 bg-background",
-      )}
-      data-testid={`button-branding-font-${sampleKind}-${option.value}`}
-    >
-      <div className="flex items-start justify-between gap-3">
-        <div className="space-y-1">
-          <p className="text-sm font-semibold" style={{ fontFamily: option.family }}>
-            {option.label}
-          </p>
-          <p className="text-xs uppercase tracking-wide text-muted-foreground">
-            {option.category === "sans" ? "Sans Serif" : "Serif"}
-          </p>
-        </div>
-        {selectedValue === option.value && (
-          <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-primary">
-            <Check className="h-3.5 w-3.5" />
-          </span>
-        )}
-      </div>
-      <p
-        className={cn(
-          "mt-3 text-balance text-slate-900",
-          sampleKind === "heading" ? "text-xl font-semibold" : "text-sm",
-        )}
-        style={{ fontFamily: option.family }}
-      >
-        {sampleKind === "heading"
-          ? "The right words should feel understood."
-          : "Thoughtful typography helps editors preview the real feeling of the brand before publishing."}
-      </p>
-      <p className="mt-2 text-xs text-muted-foreground">{option.preview}</p>
-    </button>
-  );
-
   return (
     <div className="space-y-6">
       {showHeader && (
@@ -1056,163 +1006,28 @@ export function BrandingTab({
         </TabsContent>
 
         <TabsContent value="typography" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base">
-                <Type className="h-4 w-4 text-primary" />
-                Frontend Typography
-              </CardTitle>
-              <CardDescription>
-                Choose one font for headings and another for body copy on the public-facing website.
-                Each option includes an inline sample so editors can compare type directly in the
-                admin.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-5">
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-1.5">
-                  <Label>Heading Font</Label>
-                  <Select value={headingFont} onValueChange={setHeadingFont}>
-                    <SelectTrigger data-testid="select-branding-heading-font">
-                      <SelectValue placeholder="Use current theme font" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="__default__">Use current theme font</SelectItem>
-                      {BRANDING_FONT_OPTIONS.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <p className="text-xs text-muted-foreground">
-                    Choose from 10 sans serif and 10 serif Google fonts.
-                  </p>
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label>Body Font</Label>
-                  <Select value={bodyFont} onValueChange={setBodyFont}>
-                    <SelectTrigger data-testid="select-branding-body-font">
-                      <SelectValue placeholder="Use current theme font" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="__default__">Use current theme font</SelectItem>
-                      {BRANDING_FONT_OPTIONS.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <p className="text-xs text-muted-foreground">
-                    Choose from the same balanced font library for paragraph copy.
-                  </p>
-                </div>
-              </div>
-
-              <div className="grid gap-6 xl:grid-cols-2">
-                <Card className="border-dashed">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-sm">Heading Font Picker</CardTitle>
-                    <CardDescription>
-                      Preview how each font feels in large editorial headings.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-3">
-                      <div>
-                        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                          Sans Serif Options
-                        </p>
-                      </div>
-                      <div className="grid gap-3">
-                        {BRANDING_SANS_FONT_OPTIONS.map((option) =>
-                          renderFontOptionCard(option, headingFont, setHeadingFont, "heading"),
-                        )}
-                      </div>
-                    </div>
-                    <div className="space-y-3">
-                      <div>
-                        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                          Serif Options
-                        </p>
-                      </div>
-                      <div className="grid gap-3">
-                        {BRANDING_SERIF_FONT_OPTIONS.map((option) =>
-                          renderFontOptionCard(option, headingFont, setHeadingFont, "heading"),
-                        )}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-dashed">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-sm">Body Font Picker</CardTitle>
-                    <CardDescription>
-                      Preview how each font reads in paragraph-sized content.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-3">
-                      <div>
-                        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                          Sans Serif Options
-                        </p>
-                      </div>
-                      <div className="grid gap-3">
-                        {BRANDING_SANS_FONT_OPTIONS.map((option) =>
-                          renderFontOptionCard(option, bodyFont, setBodyFont, "body"),
-                        )}
-                      </div>
-                    </div>
-                    <div className="space-y-3">
-                      <div>
-                        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                          Serif Options
-                        </p>
-                      </div>
-                      <div className="grid gap-3">
-                        {BRANDING_SERIF_FONT_OPTIONS.map((option) =>
-                          renderFontOptionCard(option, bodyFont, setBodyFont, "body"),
-                        )}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              <div className="rounded-xl border bg-muted/10 p-5">
-                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                  Preview
-                </p>
-                <h4 className="mt-3 text-2xl font-semibold" style={previewHeadingStyle}>
-                  Core Platform helps globally mobile families feel understood.
-                </h4>
-                <p className="mt-3 text-sm text-muted-foreground" style={previewBodyStyle}>
-                  Use this preview to compare heading and body combinations before saving. These
-                  font selections only apply to the public-facing website, not the admin dashboard.
-                </p>
-              </div>
-
-              <div className="flex gap-2">
-                <Button
-                  type="button"
-                  onClick={() => saveFontsMutation.mutate()}
-                  disabled={!hasFontChanges || saveFontsMutation.isPending}
-                  data-testid="button-save-branding-fonts"
-                >
-                  {saveFontsMutation.isPending ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : (
-                    <Save className="mr-2 h-4 w-4" />
-                  )}
-                  Save Typography
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          <TypographyEditor
+            components={{ Card, CardHeader, CardTitle, CardDescription, CardContent }}
+            options={BRANDING_FONT_OPTIONS}
+            headingValue={headingFont}
+            bodyValue={bodyFont}
+            onSelect={(kind, value) => kind === "heading" ? setHeadingFont(value) : setBodyFont(value)}
+            renderSelect={(kind) => (
+              <Select value={kind === "heading" ? headingFont : bodyFont} onValueChange={kind === "heading" ? setHeadingFont : setBodyFont}>
+                <SelectTrigger id={`frontend_${kind}_font`} data-testid={`select-branding-${kind}-font`}><SelectValue placeholder="Use current theme font" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__default__">Use current theme font</SelectItem>
+                  {BRANDING_FONT_OPTIONS.map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            )}
+            toolbar={
+              <Button type="button" onClick={() => saveFontsMutation.mutate()} disabled={!hasFontChanges || saveFontsMutation.isPending} data-testid="button-save-branding-fonts">
+                {saveFontsMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                Save Typography
+              </Button>
+            }
+          />
         </TabsContent>
       </Tabs>
     </div>

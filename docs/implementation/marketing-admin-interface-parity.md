@@ -79,3 +79,22 @@ not a claim of live functional testing:
 
 The shared Design navigation and Social correction are the first accepted code
 increment. Remaining rows are open; the retained admin must stay available.
+
+## Typography increment and Social live verification
+
+Social is verified live on dashboard deployment `d1ddbb62-160d-4ca3-94bd-bfdd05e17fc8`
+at `a9a7d79` (Railway SUCCESS). The first attempt at `3697235` failed at build because
+the restricted root Docker context excluded the shared component. The follow-up
+explicitly allows that source and deduplicates its Lucide runtime dependency.
+An isolated committed-source Vite build passed without Core's installed dependencies.
+The live authenticated Social page renders the shared editor; no settings were saved.
+
+Typography now shares its original retained presentation too: Heading and Body
+selectors, 20 allowed font choices per picker, sans/serif groups, sample cards,
+selection indicators and combination preview. The dashboard keeps versioned
+changed-field saves, custom stored values, API allowlist enforcement and recovery
+controls. Parent local browser review confirmed 40 cards, selection options and
+390px document containment at a 390px viewport. Original control popup differences
+(native dashboard select versus retained Radix select) remain explicit. The P1 sample
+heading replaces unrelated inherited Core business copy. No public fonts were changed.
+Typography's shared component is explicitly included in the restricted Docker context.

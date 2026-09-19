@@ -1,3 +1,7 @@
+import { Loader2, RefreshCw, Save } from "lucide-react";
+import { TypographyEditor } from "../../../../platform/p1-core/client/src/components/shared/typography-editor";
+import { BRANDING_FONT_OPTIONS } from "../../../../platform/p1-core/shared/website-fonts";
+import "./website-typography.css";
 import { TypographyPreview } from "./TypographyPreview";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -119,97 +123,123 @@ export default function WebsiteTypography() {
       if (alive.current) setBusy(false);
     }
   }
+  const fontOptions = BRANDING_FONT_OPTIONS.filter((option) =>
+    saved?.options.some((allowed) => allowed.value === option.value),
+  );
   return (
-    <section className="panel" aria-label="Website typography">
-      <h2>Website typography</h2>
-      <p>
-        Choose the website’s body and heading fonts. Business Center fonts stay
-        independent. Theme defaults restore the website’s original fonts.
-      </p>
-      <p>
-        Saved fonts apply on new public-page loads and previews within about 30
-        seconds. Web fonts load from Google Fonts; the browser uses a fallback
-        if they are unavailable.
-      </p>
-      <p>
-        <a
-          href="https://www.p1landmanagement.com/?cmsPreview=1"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Preview the saved website
-        </a>
-      </p>
-      {error && <p role="alert">{error}</p>}
-      {message && <p role="status">{message}</p>}
-      {busy && <p role="status">Working…</p>}
-      <button type="button" disabled={busy} onClick={() => void load(true)}>
-        Reload saved fonts
-      </button>
-      {saved && values && (
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            void save();
+    <section className="website-typography" aria-label="Website typography">
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          void save();
+        }}
+      >
+        <TypographyEditor
+          options={fontOptions}
+          headingValue={values?.frontend_heading_font ?? ""}
+          bodyValue={values?.frontend_body_font ?? ""}
+          disabled={!values || busy || blocked}
+          loadFonts
+          onSelect={(kind, value) => {
+            if (
+              values &&
+              !busy &&
+              !blocked &&
+              fontOptions.some((option) => option.value === value)
+            ) {
+              setValues({ ...values, [`frontend_${kind}_font`]: value });
+            }
           }}
-        >
-          <fieldset
-            disabled={busy || blocked}
-            style={{
-              minWidth: 0,
-              marginBlock: "1rem",
-              display: "grid",
-              gap: "1rem",
-            }}
+          notices={
+            <>
+              {error && <p role="alert">{error}</p>}
+              {message && <p role="status">{message}</p>}
+              {busy && <p role="status">Working…</p>}
+            </>
+          }
+          renderSelect={(kind) => {
+            const key = `frontend_${kind}_font` as keyof Fonts;
+            return (
+              <select
+                id={key}
+                data-testid={`select-branding-${kind}-font`}
+                disabled={!values || busy || blocked}
+                value={values?.[key] ?? ""}
+                onChange={(event) =>
+                  values && setValues({ ...values, [key]: event.target.value })
+                }
+              >
+                <option value="">Use current theme font</option>
+                {values?.[key] &&
+                  !saved?.options.some(
+                    (option) => option.value === values[key],
+                  ) && (
+                    <option value={values[key]}>
+                      Existing custom value: {values[key]}
+                    </option>
+                  )}
+                {(["sans", "serif"] as const).map((category) => (
+                  <optgroup
+                    key={category}
+                    label={category === "sans" ? "Sans Serif" : "Serif"}
+                  >
+                    {saved?.options
+                      .filter((option) => option.category === category)
+                      .map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                  </optgroup>
+                ))}
+              </select>
+            );
+          }}
+          toolbar={
+            <>
+              <button
+                className="typography-save"
+                type="submit"
+                data-testid="button-save-branding-fonts"
+                disabled={!saved || busy || blocked || !dirty}
+              >
+                {busy ? (
+                  <Loader2 className="typography-spinner" aria-hidden="true" />
+                ) : (
+                  <Save aria-hidden="true" />
+                )}
+                Save Typography
+              </button>
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => void load(true)}
+              >
+                <RefreshCw aria-hidden="true" />
+                Reload saved fonts
+              </button>
+            </>
+          }
+        />
+      </form>
+      <div className="typography-extra-preview">
+        <p>
+          Only changed selections are saved. Existing custom values remain
+          untouched until replaced. Web fonts may use a fallback if unavailable.
+        </p>
+        <p>
+          <a
+            href="https://www.p1landmanagement.com/?cmsPreview=1"
+            target="_blank"
+            rel="noopener noreferrer"
           >
-            <legend>Website fonts</legend>
-            {controls.map(({ key, label }) => (
-              <div key={key} style={{ display: "grid", gap: ".5rem" }}>
-                <label htmlFor={key}>{label}</label>
-                <select id={key}
-                  value={values[key]}
-                  onChange={(e) =>
-                    setValues({ ...values, [key]: e.target.value })
-                  }
-                  style={{ width: "100%", minWidth: 0, minHeight: 44 }}
-                >
-                  <option value="">Use website theme default</option>
-                  {values[key] &&
-                    !saved.options.some(
-                      (option) => option.value === values[key],
-                    ) && (
-                      <option value={values[key]}>
-                        Existing custom value: {values[key]}
-                      </option>
-                    )}
-                  {(["sans", "serif"] as const).map((category) => (
-                    <optgroup
-                      key={category}
-                      label={category === "sans" ? "Sans serif" : "Serif"}
-                    >
-                      {saved.options
-                        .filter((option) => option.category === category)
-                        .map((option) => (
-                          <option key={option.value} value={option.value}>
-                            {option.label}
-                          </option>
-                        ))}
-                    </optgroup>
-                  ))}
-                </select>
-              </div>
-            ))}
-          </fieldset>
-          <p>
-            Only changed selections are saved. Existing custom values remain
-            untouched until replaced.
-          </p>
-          <button type="submit" disabled={busy || blocked || !dirty}>
-            Save website fonts
-          </button>
-        </form>
-      )}
-      {saved && values && <TypographyPreview fonts={values} options={saved.options}/>}
+            Preview the saved website
+          </a>
+        </p>
+        {saved && values && (
+          <TypographyPreview fonts={values} options={saved.options} />
+        )}
+      </div>
     </section>
   );
 }

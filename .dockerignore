@@ -38,3 +38,5 @@ platform/p1-core/client/src/components/*
 !platform/p1-core/client/src/components/shared/
 platform/p1-core/client/src/components/shared/*
 !platform/p1-core/client/src/components/shared/social-media-editor.tsx
+
+!platform/p1-core/client/src/components/shared/typography-editor.tsx

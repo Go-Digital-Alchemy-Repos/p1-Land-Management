@@ -1,0 +1,267 @@
+/* Retained TypographyEditor presentation adapted to the unified dashboard theme. */
+.website-typography .typography-editor,
+.website-typography .typography-picker {
+  border: 1px solid hsl(var(--card-border));
+  border-radius: 12px;
+  background: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+  box-shadow: var(--shadow-sm);
+}
+.website-typography .typography-header,
+.website-typography .typography-picker-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 24px;
+}
+.website-typography .typography-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.025em;
+}
+.website-typography .typography-title svg {
+  width: 16px;
+  height: 16px;
+  color: #e11d48;
+}
+.website-typography .typography-description {
+  font-size: 14px;
+  line-height: 1.5;
+  color: hsl(var(--muted-foreground));
+}
+.website-typography .typography-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 0 24px 24px;
+}
+.website-typography .typography-content p {
+  margin: 0;
+}
+.website-typography .typography-controls {
+  display: grid;
+  gap: 16px;
+}
+.website-typography .typography-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.website-typography .typography-field label {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1;
+  font-weight: 500;
+}
+.website-typography .typography-field select {
+  width: 100%;
+  min-width: 0;
+  height: 36px;
+  box-sizing: border-box;
+  margin: 0;
+  border: 1px solid hsl(var(--input));
+  border-radius: 6px;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  padding: 8px 12px;
+  font-size: 14px;
+}
+.website-typography .typography-help {
+  font-size: 12px;
+  color: hsl(var(--muted-foreground));
+  line-height: 1.5;
+}
+.website-typography .typography-pickers {
+  display: grid;
+  gap: 24px;
+}
+.website-typography .typography-picker {
+  min-width: 0;
+  border-style: dashed;
+}
+.website-typography .typography-picker-header {
+  padding-bottom: 12px;
+}
+.website-typography .typography-picker-title {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.025em;
+}
+.website-typography .typography-picker-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 24px 24px;
+}
+.website-typography .typography-group,
+.website-typography .typography-options {
+  display: grid;
+  gap: 12px;
+}
+.website-typography .typography-category {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  color: hsl(var(--muted-foreground));
+}
+.website-typography button.typography-option {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  padding: 16px;
+  text-align: left;
+  white-space: normal;
+  border-radius: 12px;
+  border: 1px solid hsl(var(--border) / 0.7);
+  background: hsl(var(--background));
+  transition:
+    border-color 0.15s,
+    background-color 0.15s;
+}
+.website-typography button.typography-option:hover {
+  border-color: hsl(var(--primary) / 0.5);
+  background: hsl(var(--primary) / 0.05);
+}
+.website-typography button.typography-option.is-selected {
+  border-color: hsl(var(--primary));
+  background: hsl(var(--primary) / 0.05);
+  box-shadow: 0 0 0 1px hsl(var(--primary) / 0.2);
+}
+.website-typography .typography-option-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.website-typography .typography-option-labels {
+  display: grid;
+  gap: 4px;
+}
+.website-typography .typography-option-name {
+  font-size: 14px;
+  font-weight: 600;
+}
+.website-typography .typography-option-category {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  color: hsl(var(--muted-foreground));
+}
+.website-typography .typography-option-check {
+  display: inline-flex;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: hsl(var(--primary) / 0.1);
+  color: hsl(var(--primary));
+}
+.website-typography .typography-option-check svg {
+  width: 14px;
+  height: 14px;
+}
+.website-typography p.typography-option-sample {
+  margin-top: 12px;
+  text-wrap: balance;
+  line-height: 1.4;
+  color: hsl(var(--foreground));
+}
+.website-typography .typography-heading-sample {
+  font-size: 20px;
+  font-weight: 600;
+}
+.website-typography .typography-body-sample {
+  font-size: 14px;
+}
+.website-typography p.typography-option-description {
+  margin-top: 8px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: hsl(var(--muted-foreground));
+}
+.website-typography .typography-preview {
+  border: 1px solid hsl(var(--border));
+  border-radius: 12px;
+  padding: 20px;
+  background: hsl(var(--muted) / 0.1);
+}
+.website-typography .typography-preview-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  color: hsl(var(--muted-foreground));
+}
+.website-typography .typography-preview-heading {
+  margin: 12px 0 0;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.website-typography p.typography-preview-body {
+  margin-top: 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: hsl(var(--muted-foreground));
+}
+.website-typography .typography-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.website-typography .typography-toolbar button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+.website-typography .typography-toolbar svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+.website-typography button.typography-save {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border-color: hsl(var(--primary));
+}
+.website-typography button.typography-save:hover {
+  background: hsl(var(--primary) / 0.9);
+}
+.website-typography .typography-extra-preview {
+  margin-top: 24px;
+}
+.website-typography .typography-spinner {
+  animation: typography-spin 1s linear infinite;
+}
+@keyframes typography-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (min-width: 768px) {
+  .website-typography .typography-controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1280px) {
+  .website-typography .typography-pickers {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .website-typography .typography-spinner {
+    animation: none;
+  }
+}

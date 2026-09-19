@@ -1,3 +1,13 @@
+## September 19 — Social live; Typography restoration increment
+
+Social restoration is verified live at a9a7d79 after correcting the dashboard build
+context. Railway dashboard d1ddbb62-160d-4ca3-94bd-bfdd05e17fc8 SUCCESS; authenticated
+page displays original shared fields, preview, Design navigation and colorful icons.
+Typography original selectors/font-card libraries/preview now extracted and locally
+reviewed for desktop/mobile. No production settings changed. Remaining Marketing
+parity includes Branding, Colors, Forms, builder and other inventory rows; retained
+admin stays available. Menu/redirect draft files remain unrelated and uncommitted.
+
 ## September 19 — Marketing interface correction, Social increment
 
 Owner identified the simplified Marketing pages as a regression from retained `/admin`.
