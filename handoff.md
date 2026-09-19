@@ -38,7 +38,7 @@ read-only inventory from redirect_review is ready. Preserve all in-progress work
 
 Latest pushed revision `1f37c36d` is SUCCESS on the production dashboard, Core and
 public website. Runtime code `872d2bb7` restores the original CMS Pages list,
-templates, landing wizard and visual builder, with server-fenced page/menu edits.
+templates, landing wizard and visual builder, with exact-instance/version-fenced Pages and version-fenced Menus.
 Core startup verified the additive `p1-migrations/0003_cms_page_concurrency.sql`.
 Live CMS Pages list and new-draft controls were read without saving production data.
 

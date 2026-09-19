@@ -1,3 +1,4 @@
+@import "./blog-editor.utilities.css";
 .blog-manager,
 .blog-editor {
   display: grid;
@@ -104,5 +105,78 @@
   display: flex;
   align-items: center;
 }
-.blog-manager input[type="checkbox"] { width: 18px; height: 18px; flex: 0 0 18px; }
-.blog-manager fieldset { border:1px solid var(--line); border-radius:8px; padding:18px; }
+.blog-manager input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+}
+.blog-manager fieldset {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 18px;
+}
+
+.blog-presentation {
+  color: hsl(var(--foreground));
+  min-width: 0;
+}
+.blog-presentation :where(*) {
+  box-sizing: border-box;
+  border-style: solid;
+  border-width: 0;
+  border-color: hsl(var(--border));
+  --tw-ring-offset-shadow: 0 0 #0000;
+  --tw-ring-shadow: 0 0 #0000;
+  --tw-shadow: 0 0 #0000;
+}
+.blog-content-cards {
+  display: grid;
+  gap: 16px;
+}
+.blog-editor.blog-presentation > form > fieldset {
+  padding: 0;
+  border: 0;
+}
+.blog-presentation [role="tablist"] {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.blog-presentation [role="tab"][aria-selected="true"] {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+.blog-presentation svg {
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+}
+.blog-presentation .blog-card {
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.blog-presentation input[type="file"][hidden] {
+  display: none;
+}
+
+.blog-presentation .forms-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.blog-presentation .forms-card {
+  min-width: 0;
+}
+.blog-presentation .forms-card h3 > button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+.blog-presentation .blog-image-input {
+  display: grid;
+  gap: 12px;
+}

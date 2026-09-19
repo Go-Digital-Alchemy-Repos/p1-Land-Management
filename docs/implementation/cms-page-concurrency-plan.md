@@ -25,7 +25,7 @@ Scheduled publishing remains a trusted internal operation, never an externally s
 - `server/routes/admin/{cms,cms-menus,editor-locks}.routes.ts` and existing page/menu/revision storage; `cms-relationships.service.ts` pure transforms remain authoritative.
 - `server/services/scheduled-publish.service.ts` / page storage scheduler and `scripts/seed-cms-pages.ts`.
 - `lib/api-spec/dashboard.openapi.json`, generated dashboard clients/models, gateway `marketing-cms.transport.ts` and tests. DELETE bodies must explicitly survive transport.
-- Coordinated client integration, owned separately: native PageManager/usePageReservation/CmsMenus; retained Core page editor/use-editor-lock/menu editor. No user-only lease fallback.
+- Coordinated client integration, owned separately: native PageManager/usePageReservation/CmsMenus; retained Core page editor/use-editor-lock/menu editor. Pages have no user-only lease fallback. Menus retain advisory user-owned reservations; their mutation fence is the expected-version comparison.
 
 ## Migration and release ordering
 
@@ -65,3 +65,14 @@ A second database gate, `server/services/cms-page-migration.database.test.ts`, a
 The post-migration-path Core build passed. Its concurrent full typecheck reported one separately owned UI error in `client/src/components/shared/company-information-card.tsx` (nullable BrandingSettings companyName); the earlier full typecheck passed, and no backend type errors were reported. The Orchestrator was notified for integration resolution.
 
 Orchestrator final integration check: both current Core and dashboard TypeScript checks pass after the concurrent contact-card type fix. Parent independently reran the11 actual PostgreSQL concurrency cases successfully. Native browser tests verified same-user second-tab read-only behavior, a successful save, and stale-write rejection retaining unsaved content; immediate reservation release on abrupt tab close was not confirmed.
+
+## Verified menu scope clarification — September 19
+
+The872d2bb implementation provides exact user/instance/lease enforcement for
+**Pages**, plus expected-version CAS and transactional relationship coordination
+for **Menus**. Menus still use legacy user-owned advisory reservations. Their
+mutation service does not require an editor-instance/lease proof. Same-user tabs
+can share/release a reservation, but stale whole-menu writes are rejected by CAS.
+This distinction was verified in editor-lock dispatch and menu mutation handlers;
+it is not a new regression introduced by presentation extraction. Full per-instance
+menu reservations remain an acceptance gap if claimed across all editors.

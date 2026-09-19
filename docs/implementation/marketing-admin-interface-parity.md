@@ -69,16 +69,16 @@ not a claim of live functional testing:
 | 1 | Typography | Restored and live at `fb2d322`: heading/body visual font cards and serif/sans groups. |
 | 1 | Colors | Restored and live at `7733706`: three groups, descriptions and original palette preview. |
 | 1 | Forms | Restored and live at `7ea1fee`: shared Builder/Entries, library, canvas and inspector; native delivery monitoring retained. |
-| 1 | CMS Pages | Shared builder canvas, structure panel, inspector and responsive preview (`cms/builder/page-builder*.tsx`); retain reservations, templates and revisions. |
+| 1 | CMS Pages | Restored and live at `872d2bb7`: shared list/templates/builder; exact-instance and version-fenced Page writes. |
 | 2 | Menus | Theme Locations overview and original menu cards/editor (`cms-menus-page.tsx`); existing hierarchy/drag support must survive. |
 | 2 | Media | Restored and live at `4ee1a90`: shared library, details, upload and crop dialogs; optional multiselect caller parity remains open. |
-| 2 | Galleries | Details/Images/Display/Preview cards and preview dialog (`cms-gallery-editor-page.tsx`). |
-| 2 | SEO | Icon tabs, settings cards and omitted Roadmap/SEO Architecture material (`cms-seo-page.tsx`). |
+| 2 | Galleries | Restored and live at `78fb0e72`: shared list, Details/Images/Display/Preview cards, upload and modal preview. |
+| 2 | SEO | Restored at `7714ccb9`; truthful empty-audit correction live at `78fb0e72`. |
 | 2 | Modules / Integrations | Modules restored and live at `2afc0d3`; Integrations provider cards/sheets remain open. P1 module restrictions preserved. |
 | Recovery gate | Backups | Restore control is missing; release only after recovery acceptance, not as an unreviewed cosmetic port. |
 
-Shared Design navigation, Social, Branding, Typography, Colors, Modules, Forms and
-Media have verified releases. Remaining gaps above stay open; the retained admin must stay available.
+Shared Design navigation, Social, Branding, Typography, Colors, Modules, Forms,
+Media, Pages, Sections, SEO, Website, Galleries and Head Tags have verified releases. Remaining gaps above stay open; the retained admin must stay available.
 
 ## Typography increment and Social live verification
 
@@ -367,3 +367,41 @@ of a completed save/publish/restore lifecycle. No production content was written
 Head Tags also loaded its original cards/guidance with unchanged Save disabled.
 Social Media was rechecked live: two-column profile fields, Design tabs and colorful
 standalone Marketing icons. No production settings were saved.
+
+## Remaining publication and concurrency gaps confirmed September 19
+
+The public Website currently consumes the bounded `site-chrome` snapshot for
+existing navigation labels/links; it does not read generic `/api/cms/menus`
+assignments. Connecting full menu trees is still required. Native Menus must not
+promise that these assignments appear publicly after 30 seconds.
+
+Menu writes have expected-version CAS but user-owned advisory reservations. Blog
+updates retain user-owned advisory reservations without a server version or lease
+precondition; stale concurrent Blog edits can overwrite. These existing limits
+are not closed by presentation reuse and remain consolidation acceptance work.
+P1's existing five public Blog routes also remain distinct from arbitrary generic
+CMS post publication; dynamic post delivery must be implemented and verified.
+
+## Blog and Menus shared presentation acceptance — September 19
+
+Restored shared original Blog cards, Content/Layout/SEO editor tabs, taxonomy
+selection, focal controls and SEO previews. Restored original Menus location
+cards and recursive row controls with nesting and reorder operations. Both hosts
+consume the shared presentation; dashboard permissions and existing version
+checks remain in place. A lost menu-create response now requires inspection
+and explicit acknowledgement before another create attempt.
+
+Validation: 9 native Blog, 4 native Menus and 9 retained editor tests passed.
+Clean Core/dashboard typechecks and both production builds passed in an isolated
+26-file runtime candidate; restricted dashboard packaging build passed without
+Core node_modules. Existing chunk-size warnings remain. Fixed an explicit
+ReactNode flatMap type inference issue found by the clean dashboard typecheck.
+
+Local browser validation used synthetic in-memory fixtures only: Blog title
+and tag edits, tag removal, Layout/SEO tabs, draft save and reload; Menu indent,
+save and reload showing the nested item. Desktop visual checks and 390px mobile
+Blog/Menu checks passed with no document horizontal overflow. This is not
+production publication, upload, or concurrent-editor acceptance evidence.
+
+Remaining tools, dynamic Blog delivery, generic public menu consumption, Blog
+server concurrency and full publication/recovery acceptance remain open.

@@ -1,0 +1,278 @@
+/* Generated from shared CMS page JSX using retained Core Tailwind; scoped adapter. */
+.menu-presentation.menu-presentation .mr-2 {
+    margin-right: 0.5rem
+}
+.menu-presentation.menu-presentation .mt-1 {
+    margin-top: 0.25rem
+}
+.menu-presentation.menu-presentation .flex {
+    display: flex
+}
+.menu-presentation.menu-presentation .grid {
+    display: grid
+}
+.menu-presentation.menu-presentation .h-3 {
+    height: 0.75rem
+}
+.menu-presentation.menu-presentation .h-3\.5 {
+    height: 0.875rem
+}
+.menu-presentation.menu-presentation .h-4 {
+    height: 1rem
+}
+.menu-presentation.menu-presentation .h-5 {
+    height: 1.25rem
+}
+.menu-presentation.menu-presentation .h-7 {
+    height: 1.75rem
+}
+.menu-presentation.menu-presentation .h-8 {
+    height: 2rem
+}
+.menu-presentation.menu-presentation .min-h-4 {
+    min-height: 1rem
+}
+.menu-presentation.menu-presentation .w-3 {
+    width: 0.75rem
+}
+.menu-presentation.menu-presentation .w-3\.5 {
+    width: 0.875rem
+}
+.menu-presentation.menu-presentation .w-4 {
+    width: 1rem
+}
+.menu-presentation.menu-presentation .w-5 {
+    width: 1.25rem
+}
+.menu-presentation.menu-presentation .w-7 {
+    width: 1.75rem
+}
+.menu-presentation.menu-presentation .w-full {
+    width: 100%
+}
+.menu-presentation.menu-presentation .flex-1 {
+    flex: 1 1 0%
+}
+.menu-presentation.menu-presentation .shrink-0 {
+    flex-shrink: 0
+}
+.menu-presentation.menu-presentation .cursor-grab {
+    cursor: grab
+}
+.menu-presentation.menu-presentation .cursor-pointer {
+    cursor: pointer
+}
+.menu-presentation.menu-presentation .grid-cols-1 {
+    grid-template-columns: repeat(1, minmax(0, 1fr))
+}
+.menu-presentation.menu-presentation .items-start {
+    align-items: flex-start
+}
+.menu-presentation.menu-presentation .items-center {
+    align-items: center
+}
+.menu-presentation.menu-presentation .justify-between {
+    justify-content: space-between
+}
+.menu-presentation.menu-presentation .gap-1 {
+    gap: 0.25rem
+}
+.menu-presentation.menu-presentation .gap-1\.5 {
+    gap: 0.375rem
+}
+.menu-presentation.menu-presentation .gap-2 {
+    gap: 0.5rem
+}
+.menu-presentation.menu-presentation .gap-3 {
+    gap: 0.75rem
+}
+.menu-presentation.menu-presentation :is(.space-y-0\.5 > :not([hidden]) ~ :not([hidden])) {
+    --tw-space-y-reverse: 0;
+    margin-top: calc(0.125rem * calc(1 - var(--tw-space-y-reverse)));
+    margin-bottom: calc(0.125rem * var(--tw-space-y-reverse))
+}
+.menu-presentation.menu-presentation :is(.space-y-1 > :not([hidden]) ~ :not([hidden])) {
+    --tw-space-y-reverse: 0;
+    margin-top: calc(0.25rem * calc(1 - var(--tw-space-y-reverse)));
+    margin-bottom: calc(0.25rem * var(--tw-space-y-reverse))
+}
+.menu-presentation.menu-presentation :is(.space-y-2 > :not([hidden]) ~ :not([hidden])) {
+    --tw-space-y-reverse: 0;
+    margin-top: calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));
+    margin-bottom: calc(0.5rem * var(--tw-space-y-reverse))
+}
+.menu-presentation.menu-presentation .whitespace-nowrap {
+    white-space: nowrap
+}
+.menu-presentation.menu-presentation .break-all {
+    word-break: break-all
+}
+.menu-presentation.menu-presentation .rounded {
+    border-radius: 0.25rem
+}
+.menu-presentation.menu-presentation .rounded-lg {
+    border-radius: 0.5rem
+}
+.menu-presentation.menu-presentation .rounded-md {
+    border-radius: 0.375rem
+}
+.menu-presentation.menu-presentation .border {
+    border-width: 1px
+}
+.menu-presentation.menu-presentation .border-input {
+    --tw-border-opacity: 1;
+    border-color: hsl(var(--input) / var(--tw-border-opacity, 1))
+}
+.menu-presentation.menu-presentation .bg-background {
+    --tw-bg-opacity: 1;
+    background-color: hsl(var(--background) / var(--tw-bg-opacity, 1))
+}
+.menu-presentation.menu-presentation .bg-card {
+    --tw-bg-opacity: 1;
+    background-color: hsl(var(--card) / var(--tw-bg-opacity, 1))
+}
+.menu-presentation.menu-presentation .bg-muted\/40 {
+    background-color: hsl(var(--muted) / 0.4)
+}
+.menu-presentation.menu-presentation .p-1 {
+    padding: 0.25rem
+}
+.menu-presentation.menu-presentation .p-3 {
+    padding: 0.75rem
+}
+.menu-presentation.menu-presentation .p-4 {
+    padding: 1rem
+}
+.menu-presentation.menu-presentation .p-6 {
+    padding: 1.5rem
+}
+.menu-presentation.menu-presentation .px-2 {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem
+}
+.menu-presentation.menu-presentation .px-3 {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem
+}
+.menu-presentation.menu-presentation .px-6 {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem
+}
+.menu-presentation.menu-presentation .py-1 {
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem
+}
+.menu-presentation.menu-presentation .py-1\.5 {
+    padding-top: 0.375rem;
+    padding-bottom: 0.375rem
+}
+.menu-presentation.menu-presentation .pb-3 {
+    padding-bottom: 0.75rem
+}
+.menu-presentation.menu-presentation .pb-4 {
+    padding-bottom: 1rem
+}
+.menu-presentation.menu-presentation .pb-6 {
+    padding-bottom: 1.5rem
+}
+.menu-presentation.menu-presentation .pl-6 {
+    padding-left: 1.5rem
+}
+.menu-presentation.menu-presentation .pr-3 {
+    padding-right: 0.75rem
+}
+.menu-presentation.menu-presentation .pt-0 {
+    padding-top: 0px
+}
+.menu-presentation.menu-presentation .text-\[11px\] {
+    font-size: 11px
+}
+.menu-presentation.menu-presentation .text-base {
+    font-size: 1rem;
+    line-height: 1.5rem
+}
+.menu-presentation.menu-presentation .text-lg {
+    font-size: 1.125rem;
+    line-height: 1.75rem
+}
+.menu-presentation.menu-presentation .text-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem
+}
+.menu-presentation.menu-presentation .text-xs {
+    font-size: 0.75rem;
+    line-height: 1rem
+}
+.menu-presentation.menu-presentation .font-medium {
+    font-weight: 500
+}
+.menu-presentation.menu-presentation .font-semibold {
+    font-weight: 600
+}
+.menu-presentation.menu-presentation .text-amber-600 {
+    --tw-text-opacity: 1;
+    color: rgb(217 119 6 / var(--tw-text-opacity, 1))
+}
+.menu-presentation.menu-presentation .text-blue-500 {
+    --tw-text-opacity: 1;
+    color: rgb(59 130 246 / var(--tw-text-opacity, 1))
+}
+.menu-presentation.menu-presentation .text-destructive {
+    --tw-text-opacity: 1;
+    color: hsl(var(--destructive) / var(--tw-text-opacity, 1))
+}
+.menu-presentation.menu-presentation .text-muted-foreground {
+    --tw-text-opacity: 1;
+    color: hsl(var(--muted-foreground) / var(--tw-text-opacity, 1))
+}
+.menu-presentation.menu-presentation .text-primary {
+    --tw-text-opacity: 1;
+    color: hsl(var(--primary) / var(--tw-text-opacity, 1))
+}
+.menu-presentation.menu-presentation .text-violet-500 {
+    --tw-text-opacity: 1;
+    color: rgb(139 92 246 / var(--tw-text-opacity, 1))
+}
+.menu-presentation.menu-presentation .opacity-50 {
+    opacity: 0.5
+}
+.menu-presentation.menu-presentation .opacity-75 {
+    opacity: 0.75
+}
+.menu-presentation.menu-presentation .ring-offset-background {
+    --tw-ring-offset-color: hsl(var(--background) / 1)
+}
+.menu-presentation.menu-presentation .filter {
+    filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)
+}
+.menu-presentation.menu-presentation .hover\:text-foreground:hover {
+    --tw-text-opacity: 1;
+    color: hsl(var(--foreground) / var(--tw-text-opacity, 1))
+}
+.menu-presentation.menu-presentation .hover\:underline:hover {
+    text-decoration-line: underline
+}
+.menu-presentation.menu-presentation .focus\:text-destructive:focus {
+    --tw-text-opacity: 1;
+    color: hsl(var(--destructive) / var(--tw-text-opacity, 1))
+}
+.menu-presentation.menu-presentation .focus-visible\:outline-none:focus-visible {
+    outline: 2px solid transparent;
+    outline-offset: 2px
+}
+.menu-presentation.menu-presentation .focus-visible\:ring-2:focus-visible {
+    --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+    --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+    box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)
+}
+.menu-presentation.menu-presentation .active\:cursor-grabbing:active {
+    cursor: grabbing
+}
+@media (min-width: 640px) {
+    .menu-presentation.menu-presentation .sm\:grid-cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr))
+    }
+    .menu-presentation.menu-presentation .sm\:grid-cols-\[0\.9fr_1fr_1fr_1fr_auto\] {
+        grid-template-columns: 0.9fr 1fr 1fr 1fr auto
+    }
+}

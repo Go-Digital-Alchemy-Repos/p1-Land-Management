@@ -157,7 +157,7 @@ const Input = forwardRef<HTMLInputElement, any>(
   ),
 );
 function selectOptions(children: ReactNode): ReactNode[] {
-  return React.Children.toArray(children).flatMap((child) => {
+  return React.Children.toArray(children).flatMap<ReactNode>((child) => {
     if (!React.isValidElement(child)) return [];
     const element = child as React.ReactElement<{
       value?: string;

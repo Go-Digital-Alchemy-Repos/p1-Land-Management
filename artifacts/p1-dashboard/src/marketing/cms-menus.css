@@ -1,3 +1,4 @@
+@import "../../../../platform/p1-core/client/src/components/shared/menu-presentation.utilities.css";
 .cms-menus {
   display: grid;
   gap: 20px;
@@ -104,4 +105,79 @@
   .cms-menu-item .cms-menu-item {
     padding: 8px;
   }
+}
+
+.cms-menus .menu-presentation {
+  min-width: 0;
+  color: hsl(var(--foreground));
+}
+.cms-menus .menu-presentation :where(*) {
+  box-sizing: border-box;
+  border-width: 0;
+  border-style: solid;
+  border-color: hsl(var(--border));
+}
+.cms-menus .menu-presentation :is(p, h2, label, input, select, textarea) {
+  margin: 0;
+  min-width: 0;
+}
+.cms-menus .menu-presentation input:not([type="checkbox"]),
+.cms-menus .menu-presentation select {
+  height: 32px;
+  border: 1px solid hsl(var(--border));
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 13px;
+  background: hsl(var(--background));
+  width: 100%;
+}
+.menu-item-dropdown {
+  position: relative;
+  flex-shrink: 0;
+}
+.menu-item-summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+}
+.menu-item-summary::-webkit-details-marker {
+  display: none;
+}
+.menu-item-action-list {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  z-index: 20;
+  min-width: 180px;
+  background: hsl(var(--background));
+  border: 1px solid hsl(var(--border)) !important;
+  border-radius: 6px;
+  padding: 4px;
+  box-shadow: 0 4px 12px #0002;
+}
+.menu-item-action-list button {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 7px 9px;
+  white-space: nowrap;
+  border-radius: 4px;
+  justify-content: flex-start;
+}
+.menu-location-manage {
+  padding: 6px 12px;
+  border: 1px solid hsl(var(--border)) !important;
+  border-radius: 6px;
+  font-size: 13px;
+}
+.cms-menus .menu-locations-card > header {
+  display: block;
+}
+.cms-menus .menu-presentation .grid > * {
+  min-width: 0;
+}
+.cms-menus .menu-presentation input[type="checkbox"] {
+  width: auto;
+  height: auto;
 }

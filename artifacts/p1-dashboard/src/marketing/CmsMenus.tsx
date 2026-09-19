@@ -1,3 +1,16 @@
+import { MenuCardPresentation } from "../../../../platform/p1-core/client/src/components/shared/menu-card-presentation";
+import { MenuLocationsPresentation } from "../../../../platform/p1-core/client/src/components/shared/menu-locations-presentation";
+import {
+  MenuItemEditor,
+  MenuPresentationContext,
+} from "../../../../platform/p1-core/client/src/components/shared/menu-item-presentation";
+import {
+  indentMenuItem,
+  outdentMenuItem,
+  reorderMenuItems,
+} from "../../../../platform/p1-core/client/src/components/shared/menu-tree-operations";
+import type { MenuItem as MenuTreeItem } from "../../../../platform/p1-core/shared/schema/cms-menus";
+import { menuPrimitives } from "./menu-primitives";
 import { customFetch } from "../../../../lib/api-client-react/src/custom-fetch";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -54,294 +67,63 @@ function Items({
   items,
   change,
   references,
-  depth = 1,
   promote,
 }: {
   items: Item[];
   change: (items: Item[]) => void;
   references: References;
-  depth?: number;
   promote?: (item: Item) => void;
 }) {
+  const shared = items as unknown as MenuTreeItem[];
   return (
-    <div className="cms-menu-items">
-      {items.map((item, index) => {
-        const update = (values: Partial<Item>) =>
-          change(
-            items.map((row) =>
-              row.id === item.id ? { ...row, ...values } : row,
-            ),
-          );
-        const page = references.pages.find((row) => row.id === item.pageId);
-        return (
-          <section
-            className="cms-menu-item"
+    <MenuPresentationContext.Provider value={menuPrimitives}>
+      <div className="menu-presentation space-y-2">
+        {shared.map((item, index) => (
+          <MenuItemEditor
             key={item.id}
-            aria-label={`Menu item ${item.label}`}
-            onDragOver={(event) => event.preventDefault()}
-            onDrop={(event) => {
-              event.preventDefault();
-              event.stopPropagation();
-              const from = items.findIndex(
-                (row) =>
-                  row.id === event.dataTransfer.getData("text/p1-menu-item"),
-              );
-              if (from >= 0) change(move(items, from, index));
+            item={item}
+            pages={references.pages}
+            forms={references.forms}
+            depth={1}
+            index={index}
+            totalSiblings={shared.length}
+            onUpdate={(id, values) =>
+              change(
+                items.map((row) =>
+                  row.id === id ? ({ ...row, ...values } as Item) : row,
+                ),
+              )
+            }
+            onDelete={(id) => change(items.filter((row) => row.id !== id))}
+            onMoveUp={(id) => {
+              const n = items.findIndex((row) => row.id === id);
+              if (n > 0) change(move(items, n, n - 1));
             }}
-          >
-            <header>
-              <strong>{item.label || "Untitled link"}</strong>
-              <div className="cms-menu-actions">
-                <button
-                  type="button"
-                  draggable
-                  aria-label={`Drag ${item.label} to reorder`}
-                  onDragStart={(event) => {
-                    event.stopPropagation();
-                    event.dataTransfer.setData("text/p1-menu-item", item.id);
-                  }}
-                >
-                  ⠿
-                </button>
-                <button
-                  type="button"
-                  aria-label={`Move ${item.label} up`}
-                  disabled={index === 0}
-                  onClick={() => change(move(items, index, index - 1))}
-                >
-                  ↑
-                </button>
-                <button
-                  type="button"
-                  aria-label={`Move ${item.label} down`}
-                  disabled={index === items.length - 1}
-                  onClick={() => change(move(items, index, index + 1))}
-                >
-                  ↓
-                </button>
-                {depth > 1 && promote && (
-                  <button type="button" onClick={() => promote(item)}>
-                    Move to top level
-                  </button>
-                )}
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (
-                      window.confirm(
-                        `Remove ${item.label} and its nested links?`,
-                      )
-                    )
-                      change(items.filter((row) => row.id !== item.id));
-                  }}
-                >
-                  Remove
-                </button>
-              </div>
-            </header>
-            <div className="cms-menu-fields">
-              <label>
-                Link type
-                <select
-                  aria-label="Link type"
-                  value={
-                    item.action ||
-                    (item.pageId ? "internal-link" : "custom-link")
-                  }
-                  onChange={(event) =>
-                    update({
-                      action: event.target.value as Item["action"],
-                      pageId: null,
-                      formSlug: null,
-                      labelSource: "custom",
-                      modalTitle: null,
-                      modalDescription: null,
-                      openInNewTab: false,
-                      url: event.target.value === "form-modal" ? "#" : item.url,
-                    })
-                  }
-                >
-                  <option value="internal-link">Website page</option>
-                  <option value="custom-link">Custom link</option>
-                  <option value="form-modal">
-                    Form popup (not supported on the P1 public website)
-                  </option>
-                </select>
-              </label>
-              <label>
-                Label
-                <input
-                  required
-                  value={item.label}
-                  onChange={(event) =>
-                    update({ label: event.target.value, labelSource: "custom" })
-                  }
-                />
-              </label>
-              {(item.action === "internal-link" ||
-                (!item.action && item.pageId)) && (
-                <>
-                  <label>
-                    Website page
-                    <select
-                      aria-label="Website page"
-                      value={item.pageId || ""}
-                      onChange={(event) => {
-                        const p = references.pages.find(
-                          (row) => row.id === event.target.value,
-                        );
-                        if (p)
-                          update({
-                            pageId: p.id,
-                            label: p.title,
-                            labelSource: "page",
-                            url: pagePath(p.slug),
-                            openInNewTab: false,
-                          });
-                      }}
-                    >
-                      <option value="">Choose a page</option>
-                      {item.pageId && !page && (
-                        <option value={item.pageId}>Missing page</option>
-                      )}
-                      {references.pages.map((p) => (
-                        <option key={p.id} value={p.id}>
-                          {p.title} · {p.status}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  {page && (
-                    <button
-                      type="button"
-                      onClick={() =>
-                        update({
-                          label: page.title,
-                          labelSource: "page",
-                          url: pagePath(page.slug),
-                        })
-                      }
-                    >
-                      Use page title
-                    </button>
-                  )}
-                  {item.pageId && !page && (
-                    <p role="status">The linked page is no longer available.</p>
-                  )}
-                  {page && page.status !== "published" && (
-                    <p role="status">This page is not published.</p>
-                  )}
-                  <p className="muted">
-                    {item.labelSource === "page"
-                      ? "Label follows the page title."
-                      : "Custom label."}{" "}
-                    {item.url}
-                  </p>
-                </>
-              )}
-              {item.action !== "form-modal" &&
-                item.action !== "internal-link" &&
-                !item.pageId && (
-                  <>
-                    <label>
-                      URL
-                      <input
-                        required
-                        value={item.url}
-                        onChange={(event) =>
-                          update({ url: event.target.value })
-                        }
-                      />
-                    </label>
-                    <label className="cms-menu-check">
-                      <input
-                        type="checkbox"
-                        checked={item.openInNewTab}
-                        onChange={(event) =>
-                          update({ openInNewTab: event.target.checked })
-                        }
-                      />
-                      Open in new tab
-                    </label>
-                  </>
-                )}
-              {item.action === "form-modal" && (
-                <>
-                  <label>
-                    Form
-                    <select
-                      aria-label="Form"
-                      required
-                      value={item.formSlug || ""}
-                      onChange={(event) => {
-                        const f = references.forms.find(
-                          (row) => row.slug === event.target.value,
-                        );
-                        update({
-                          formSlug: event.target.value,
-                          url: "#",
-                          modalTitle: item.modalTitle || f?.name || null,
-                        });
-                      }}
-                    >
-                      <option value="">Choose a form</option>
-                      {item.formSlug &&
-                        !references.forms.some(
-                          (f) => f.slug === item.formSlug,
-                        ) && (
-                          <option value={item.formSlug}>
-                            Missing form: {item.formSlug}
-                          </option>
-                        )}
-                      {references.forms.map((f) => (
-                        <option key={f.id} value={f.slug}>
-                          {f.name}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  <label>
-                    Popup title
-                    <input
-                      value={item.modalTitle || ""}
-                      onChange={(event) =>
-                        update({ modalTitle: event.target.value })
-                      }
-                    />
-                  </label>
-                  <label>
-                    Popup description
-                    <textarea
-                      value={item.modalDescription || ""}
-                      onChange={(event) =>
-                        update({ modalDescription: event.target.value })
-                      }
-                    />
-                  </label>
-                </>
-              )}
-            </div>
-            <Items
-              items={item.children || []}
-              change={(children) => update({ children })}
-              references={references}
-              depth={depth + 1}
-              promote={promote}
-            />
-            {depth < 3 && (
-              <button
-                type="button"
-                onClick={() =>
-                  update({ children: [...(item.children || []), blankItem()] })
+            onMoveDown={(id) => {
+              const n = items.findIndex((row) => row.id === id);
+              if (n >= 0 && n < items.length - 1) change(move(items, n, n + 1));
+            }}
+            onReorder={(active, over) =>
+              change(reorderMenuItems(shared, active, over) as Item[])
+            }
+            onIndent={(id) => change(indentMenuItem(shared, id) as Item[])}
+            onOutdent={(id) => change(outdentMenuItem(shared, id) as Item[])}
+            onPromoteToRoot={(id) => {
+              const find = (rows: Item[]): Item | undefined => {
+                for (const row of rows) {
+                  if (row.id === id) return row;
+                  const child = find(row.children || []);
+                  if (child) return child;
                 }
-              >
-                Add nested link
-              </button>
-            )}
-          </section>
-        );
-      })}
-    </div>
+                return undefined;
+              };
+              const row = find(items);
+              if (row) promote?.(row);
+            }}
+          />
+        ))}
+      </div>
+    </MenuPresentationContext.Provider>
   );
 }
 function removeItem(items: Item[], id: string): Item[] {
@@ -366,6 +148,9 @@ export default function CmsMenus() {
     [notice, setNotice] = useState("");
   const [loading, setLoading] = useState(true),
     [busy, setBusy] = useState(false);
+  const [createUnconfirmed, setCreateUnconfirmed] = useState(false),
+    [recoveryLoaded, setRecoveryLoaded] = useState(false);
+  const actionGate = useRef(false);
   const alive = useRef(true),
     controller = useRef(new AbortController());
   const dirty = Boolean(draft && JSON.stringify(draft) !== baseline);
@@ -451,6 +236,8 @@ export default function CmsMenus() {
     };
   }, [draft?.id]);
   const perform = async (work: () => Promise<void>) => {
+    if (actionGate.current) return;
+    actionGate.current = true;
     setBusy(true);
     setError("");
     setNotice("");
@@ -459,6 +246,7 @@ export default function CmsMenus() {
     } catch (e) {
       if (alive.current) setError((e as Error).message);
     } finally {
+      actionGate.current = false;
       if (alive.current) setBusy(false);
     }
   };
@@ -478,7 +266,7 @@ export default function CmsMenus() {
   };
   const save = () =>
     perform(async () => {
-      if (!draft) return;
+      if (!draft || (!draft.id && createUnconfirmed)) return;
       if (draft.id) {
         const current = await heartbeatWebsiteMenuReservation(draft.id, {
           signal: controller.current.signal,
@@ -518,93 +306,158 @@ export default function CmsMenus() {
               }),
             },
           )
-        : createWebsiteMenu(payload, { signal: controller.current.signal }));
+        : createWebsiteMenu(payload, {
+            signal: controller.current.signal,
+          }).catch((error) => {
+            if (alive.current) {
+              setCreateUnconfirmed(true);
+              setRecoveryLoaded(false);
+            }
+            throw error;
+          }));
       if (alive.current) {
         setDraft(next);
         setBaseline(JSON.stringify(next));
-        setNotice(
-          "Website menu saved. Assigned P1 menus appear publicly within 30 seconds; there is no separate publish step.",
-        );
+        setNotice("Menu saved.");
         await readAll();
       }
     });
   return (
     <div className="cms-menus">
-      <header>
-        <div>
-          <h2>Website menus</h2>
-          <p className="muted">
-            Manage CMS navigation, footer links and form popups. P1 website
-            navigation is managed in the Website editor.
-          </p>
-        </div>
-        <button
-          disabled={busy}
-          onClick={() => {
-            if (discard()) {
-              const next = { name: "", location: "unassigned", items: [] };
-              setDraft(next);
-              setBaseline("");
-              setError("");
-            }
-          }}
-        >
-          Create menu
-        </button>
-      </header>
-      {error && <p role="alert">{error}</p>}
-      {notice && <p role="status">{notice}</p>}
-      {loading ? (
-        <p role="status">Loading website menus…</p>
-      ) : (
-        <div className="cms-menu-list">
-          {menus.map((menu) => (
-            <article key={menu.id}>
-              <strong>{menu.name}</strong>
-              <span>
-                {locations[menu.location] || menu.location} ·{" "}
-                {menu.items.length} top-level links
-              </span>
-              <div>
-                <button disabled={busy} onClick={() => edit(menu)}>
-                  Edit {menu.name}
-                </button>
-                <button
-                  disabled={busy}
-                  onClick={() => {
-                    if (
-                      window.confirm(
-                        `Delete ${menu.name}? This removes this CMS menu.`,
-                      )
-                    )
-                      void perform(async () => {
-                        await customFetch(
-                          `/api/v1/marketing/cms/menus/${encodeURIComponent(menu.id!)}`,
-                          {
-                            method: "DELETE",
-                            signal: controller.current.signal,
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                              expectedVersion: menu.version,
-                            }),
-                          },
-                        );
-                        if (draft?.id === menu.id) {
-                          setDraft(null);
-                          setBaseline("");
-                        }
-                        await readAll();
-                      });
-                  }}
-                >
-                  Delete
-                </button>
-              </div>
-            </article>
-          ))}
-          {!menus.length && <p>No website menus yet.</p>}
+      {!draft && (
+        <header>
+          <div>
+            <h1>Navigation Menus</h1>
+            <p className="muted">
+              These CMS menu assignments are not yet connected to P1’s public
+              navigation. Edit existing navigation labels and links in Website
+              content.
+            </p>
+          </div>
+          <button
+            disabled={busy || createUnconfirmed}
+            onClick={() => {
+              if (!createUnconfirmed && discard()) {
+                const next = { name: "", location: "unassigned", items: [] };
+                setDraft(next);
+                setBaseline("");
+                setError("");
+              }
+            }}
+          >
+            Create menu
+          </button>
+        </header>
+      )}
+      {!draft && !loading && (
+        <div className="menu-presentation">
+          <MenuLocationsPresentation
+            description="These CMS menu assignments are not yet connected to P1’s public navigation. Edit existing navigation labels and links in Website content."
+            locations={Object.entries(locations)
+              .filter(
+                ([id]) => !["header", "footer", "unassigned"].includes(id),
+              )
+              .map(([value, label]) => ({ value, label }))}
+            menus={menus}
+            disabled={busy || createUnconfirmed}
+            onManage={(location, id) => {
+              const menu = menus.find((m) => m.id === id);
+              if (menu) edit(menu);
+              else if (!createUnconfirmed && discard()) {
+                setDraft({ name: locations[location], location, items: [] });
+                setBaseline("");
+                setError("");
+              }
+            }}
+          />
         </div>
       )}
+      {createUnconfirmed && (
+        <section role="alert" className="menu-create-recovery">
+          <p>
+            The menu creation could not be confirmed. Your draft is retained.
+            Reload the saved menus and inspect the list before creating another
+            menu; the first request may have succeeded.
+          </p>
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() =>
+              void perform(async () => {
+                await readAll();
+                if (alive.current) setRecoveryLoaded(true);
+              })
+            }
+          >
+            Reload saved menus
+          </button>
+          {recoveryLoaded && (
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => {
+                if (
+                  window.confirm(
+                    "I have reviewed the reloaded menus and want to send a new create request. The earlier request may already have created a menu. Continue?",
+                  )
+                ) {
+                  setCreateUnconfirmed(false);
+                  setRecoveryLoaded(false);
+                }
+              }}
+            >
+              I reviewed the menus — allow a new create request
+            </button>
+          )}
+        </section>
+      )}
+      {error && <p role="alert">{error}</p>}
+      {notice && <p role="status">{notice}</p>}
+      {(!draft || createUnconfirmed) &&
+        (loading ? (
+          <p role="status">Loading website menus…</p>
+        ) : (
+          <div className="menu-presentation grid gap-4">
+            {menus.map((menu) => (
+              <MenuCardPresentation
+                key={menu.id}
+                id={menu.id}
+                name={menu.name}
+                locationLabel={locations[menu.location] || menu.location}
+                items={menu.items as MenuTreeItem[]}
+                disabled={busy}
+                editLabel={`Edit ${menu.name}`}
+                onEdit={() => edit(menu)}
+                onDelete={() => {
+                  if (
+                    window.confirm(
+                      `Delete ${menu.name}? This removes this CMS menu.`,
+                    )
+                  )
+                    void perform(async () => {
+                      await customFetch(
+                        `/api/v1/marketing/cms/menus/${encodeURIComponent(menu.id!)}`,
+                        {
+                          method: "DELETE",
+                          signal: controller.current.signal,
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            expectedVersion: menu.version,
+                          }),
+                        },
+                      );
+                      if (draft?.id === menu.id) {
+                        setDraft(null);
+                        setBaseline("");
+                      }
+                      await readAll();
+                    });
+                }}
+              />
+            ))}
+            {!menus.length && <p>No website menus yet.</p>}
+          </div>
+        ))}
       {draft && (
         <form
           onSubmit={(event) => {
@@ -614,19 +467,29 @@ export default function CmsMenus() {
           className="cms-menu-editor"
         >
           <header>
-            <h3>
+            <h1>
               {draft.id ? `Edit ${draft.name}` : "Create website menu"}
               {dirty ? " · Unsaved" : ""}
-            </h3>
-            <button
-              type="button"
-              disabled={busy}
-              onClick={() => {
-                if (discard()) setDraft(null);
-              }}
-            >
-              Close editor
-            </button>
+            </h1>
+            <div className="cms-menu-actions">
+              <button
+                type="submit"
+                disabled={
+                  busy || locked || !dirty || (!draft.id && createUnconfirmed)
+                }
+              >
+                {busy ? "Saving…" : "Save website menu"}
+              </button>
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => {
+                  if (discard()) setDraft(null);
+                }}
+              >
+                Close editor
+              </button>
+            </div>
           </header>
           {locked && (
             <p role="status">
@@ -681,8 +544,12 @@ export default function CmsMenus() {
             <Items
               items={draft.items}
               references={references}
-              change={(items) => setDraft({ ...draft, items })}
+              change={(items) => {
+                if (!busy && !locked) setDraft({ ...draft, items });
+              }}
               promote={(item) =>
+                !busy &&
+                !locked &&
                 setDraft({
                   ...draft,
                   items: [...removeItem(draft.items, item.id), item],
@@ -697,11 +564,6 @@ export default function CmsMenus() {
             >
               Add link
             </button>
-            <footer>
-              <button type="submit" disabled={!dirty}>
-                {busy ? "Saving…" : "Save website menu"}
-              </button>
-            </footer>
           </fieldset>
         </form>
       )}

@@ -1,3 +1,15 @@
+import { BlogImageInput } from "./BlogImageInput";
+import { BlogPostCard } from "../../../../platform/p1-core/client/src/components/shared/blog-list-presentation";
+import {
+  BlogEditorTabs,
+  BlogEditorCard,
+  BlogEditorHeader,
+  BlogTaxonomyPicker,
+} from "../../../../platform/p1-core/client/src/components/shared/blog-editor-presentation";
+import { SeoPreview } from "../../../../platform/p1-core/client/src/components/shared/seo-preview";
+import { StructuredDataStatus } from "../../../../platform/p1-core/client/src/components/shared/structured-data-status";
+import { ImagePositionPicker } from "../../../../platform/p1-core/client/src/features/admin/cms/builder/image-position-picker-workspace";
+import { builderPrimitives } from "./builder-primitives";
 import { useEffect, useRef, useState } from "react";
 import {
   listMarketingBlog,
@@ -24,6 +36,22 @@ import {
   BlogComments,
   BlogCommentSettings,
 } from "./BlogSettings";
+function BlogCheckbox({
+  checked,
+  onCheckedChange,
+}: {
+  checked: boolean;
+  onCheckedChange: (value: boolean) => void;
+}) {
+  return (
+    <input
+      type="checkbox"
+      checked={checked}
+      onChange={(event) => onCheckedChange(event.target.checked)}
+    />
+  );
+}
+const blogTaxonomyPrimitives = { ...builderPrimitives, Checkbox: BlogCheckbox };
 export function blogError(e: unknown) {
   const data = (e as { data?: { error?: string; message?: string } }).data;
   return (
@@ -106,6 +134,7 @@ function PostEditor({
     [error, setError] = useState(""),
     [notice, setNotice] = useState(""),
     [busy, setBusy] = useState(false),
+    [uploading, setUploading] = useState(false),
     [mediaField, setMediaField] = useState<
       "coverImageUrl" | "ogImageUrl" | null
     >(null),
@@ -115,7 +144,7 @@ function PostEditor({
     dialog = useRef<HTMLDialogElement>(null);
   const lock = useBlogReservation(id === "new" ? null : id);
   const dirty = JSON.stringify(form) !== JSON.stringify(saved);
-  useCmsUnsavedChanges(dirty);
+  useCmsUnsavedChanges(dirty || uploading);
   useEffect(() => {
     const controller = new AbortController();
     abort.current = controller;
@@ -145,7 +174,7 @@ function PostEditor({
     else dialog.current?.close();
   }, [mediaField]);
   async function save() {
-    if (!form) return;
+    if (!form || busy || uploading) return;
     setBusy(true);
     setError("");
     setNotice("");
@@ -187,11 +216,13 @@ function PostEditor({
     }
   }
   const leave = () => {
+    if (uploading || busy) return;
     if (!dirty || window.confirm("Discard unsaved post changes?")) onClose();
   };
   if (!form)
     return (
       <section>
+        <h1>Blog</h1>
         {error ? (
           <p role="alert">{error}</p>
         ) : (
@@ -211,14 +242,28 @@ function PostEditor({
       update(kind, [...(form[kind] || []), text]);
   };
   return (
-    <section className="blog-editor">
-      <button type="button" disabled={busy} onClick={leave}>
-        Back to posts
-      </button>
-      <h2>{id === "new" ? "New blog post" : form.title}</h2>
-      <p>
-        {status(form)} · {dirty ? "Unsaved changes" : "Saved"}
-      </p>
+    <section className="blog-editor blog-presentation">
+      <BlogEditorHeader
+        back={
+          <button type="button" disabled={busy || uploading} onClick={leave}>
+            Blog
+          </button>
+        }
+        title={id === "new" ? "New Post" : form.title || "Edit Post"}
+        status={<span>{status(form)}</span>}
+        actions={
+          <>
+            <span>{dirty ? "Unsaved changes" : "Saved"}</span>
+            <button
+              type="submit"
+              form="native-blog-form"
+              disabled={busy || uploading || !lock.owned}
+            >
+              {busy ? "Saving…" : "Save Post"}
+            </button>
+          </>
+        }
+      />
       {error && <p role="alert">{error}</p>}
       {notice && <p role="status">{notice}</p>}
       {!lock.owned && (
@@ -232,352 +277,438 @@ function PostEditor({
         </p>
       )}
       <form
+        id="native-blog-form"
         onSubmit={(e) => {
           e.preventDefault();
           void save();
         }}
       >
-        <fieldset disabled={busy || !lock.owned}>
-          <legend>Post content</legend>
-          <label>
-            Title
-            <input
-              required
-              value={form.title}
-              onChange={(e) => {
-                const title = e.target.value;
-                setForm({
-                  ...form,
-                  title,
-                  ...(id === "new" &&
-                  (!form.slug ||
-                    form.slug ===
-                      form.title
-                        .toLowerCase()
-                        .replace(/[^a-z0-9]+/g, "-")
-                        .replace(/^-|-$/g, ""))
-                    ? {
-                        slug: title
-                          .toLowerCase()
-                          .replace(/[^a-z0-9]+/g, "-")
-                          .replace(/^-|-$/g, ""),
-                      }
-                    : {}),
-                });
-              }}
-            />
-          </label>
-          <label>
-            Slug
-            <input
-              required
-              maxLength={255}
-              value={form.slug}
-              onChange={(e) => update("slug", e.target.value)}
-            />
-          </label>
-          <label>
-            Author name
-            <input
-              required
-              value={form.authorName}
-              onChange={(e) => update("authorName", e.target.value)}
-            />
-          </label>
-          <label>
-            Post type
-            <select
-              aria-label="Post type"
-              value={form.postType || "article"}
-              onChange={(e) => update("postType", e.target.value)}
-            >
-              <option value="article">Article</option>
-              <option value="podcast">Podcast</option>
-              <option value="external">External link</option>
-            </select>
-          </label>
-          {form.postType === "podcast" && (
-            <label>
-              Podcast URL
-              <input
-                type="url"
-                value={form.podcastUrl || ""}
-                onChange={(e) => update("podcastUrl", e.target.value || null)}
-              />
-            </label>
-          )}
-          {form.postType === "external" && (
-            <label>
-              External URL
-              <input
-                type="url"
-                value={form.externalUrl || ""}
-                onChange={(e) => update("externalUrl", e.target.value || null)}
-              />
-            </label>
-          )}
-          <label>
-            Excerpt
-            <textarea
-              value={form.excerpt || ""}
-              onChange={(e) => update("excerpt", e.target.value)}
-            />
-          </label>
-          <CmsRichTextEditor
-            blogMode
-            label="Post content"
-            disabled={busy || !lock.owned}
-            value={form.content}
-            onChange={(value) => update("content", value)}
-            canUseMedia={canUseMedia}
-            galleries={refs.galleries}
-          />
-          <label>
-            Cover image URL
-            <input
-              value={form.coverImageUrl || ""}
-              onChange={(e) => update("coverImageUrl", e.target.value || null)}
-            />
-          </label>
-          {canUseMedia && (
-            <button
-              type="button"
-              onClick={() => setMediaField("coverImageUrl")}
-            >
-              Choose cover image
-            </button>
-          )}
-          {form.coverImageUrl && (
-            <img
-              className="blog-cover-preview"
-              alt="Cover focal point preview"
-              src={
-                form.coverImageUrl.startsWith("/") &&
-                !form.coverImageUrl.startsWith("//")
-                  ? `https://www.p1landmanagement.com${form.coverImageUrl}`
-                  : form.coverImageUrl
-              }
-              style={{
-                objectPosition: `${form.coverImagePositionX ?? 50}% ${form.coverImagePositionY ?? 50}%`,
-              }}
-            />
-          )}
-          <div className="blog-fields">
-            {(["coverImagePositionX", "coverImagePositionY"] as const).map(
-              (key, i) => (
-                <label key={key}>
-                  Cover focal point {i ? "Y" : "X"} (%)
-                  <input
-                    type="range"
-                    min={0}
-                    max={100}
-                    value={form[key] ?? 50}
-                    onChange={(e) => update(key, Number(e.target.value))}
-                  />
-                  <output>{form[key] ?? 50}%</output>
+        <fieldset
+          disabled={busy || uploading || !lock.owned}
+          inert={busy || uploading || !lock.owned ? true : undefined}
+        >
+          <BlogEditorTabs
+            ui={builderPrimitives}
+            postType={
+              <>
+                {" "}
+                <label>
+                  Post type
+                  <select
+                    aria-label="Post type"
+                    value={form.postType || "article"}
+                    onChange={(e) => update("postType", e.target.value)}
+                  >
+                    <option value="article">Article</option>
+                    <option value="podcast">Podcast</option>
+                    <option value="external">External link</option>
+                  </select>
                 </label>
-              ),
-            )}
-          </div>
-          <section>
-            <h3>Categories</h3>
-            {(form.categories || []).map((name) => (
-              <button
-                type="button"
-                key={name}
-                onClick={() =>
-                  update(
-                    "categories",
-                    form.categories?.filter((v) => v !== name),
-                  )
-                }
-              >
-                Remove category {name}
-              </button>
-            ))}
-            <label>
-              Add category
-              <input
-                list="blog-categories"
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-              />
-            </label>
-            <datalist id="blog-categories">
-              {taxonomies
-                .filter((t) => t.type === "category")
-                .map((t) => (
-                  <option key={t.id} value={t.name} />
-                ))}
-            </datalist>
-            <button
-              type="button"
-              onClick={() => {
-                addTerm("categories", category);
-                setCategory("");
-              }}
-            >
-              Add category
-            </button>
-          </section>
-          <section>
-            <h3>Tags</h3>
-            {(form.tags || []).map((name) => (
-              <button
-                type="button"
-                key={name}
-                onClick={() =>
-                  update(
-                    "tags",
-                    form.tags?.filter((v) => v !== name),
-                  )
-                }
-              >
-                Remove tag {name}
-              </button>
-            ))}
-            <label>
-              Add tag
-              <input
-                list="blog-tags"
-                value={tag}
-                onChange={(e) => setTag(e.target.value)}
-              />
-            </label>
-            <datalist id="blog-tags">
-              {taxonomies
-                .filter((t) => t.type === "tag")
-                .map((t) => (
-                  <option key={t.id} value={t.name} />
-                ))}
-            </datalist>
-            <button
-              type="button"
-              onClick={() => {
-                addTerm("tags", tag);
-                setTag("");
-              }}
-            >
-              Add tag
-            </button>
-          </section>
-          <label>
-            Sidebar
-            <select
-              aria-label="Post sidebar"
-              value={form.sidebarId || ""}
-              onChange={(e) => update("sidebarId", e.target.value || null)}
-            >
-              <option value="">Default sidebar</option>
-              {form.sidebarId &&
-                !refs.sidebars.some((s) => s.id === form.sidebarId) && (
-                  <option value={form.sidebarId}>
-                    Saved sidebar (unavailable)
-                  </option>
-                )}
-              {refs.sidebars.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <section>
-            <h3>SEO</h3>
-            <label>
-              SEO title
-              <input
-                value={form.seoTitle || ""}
-                onChange={(e) => update("seoTitle", e.target.value || null)}
-              />
-            </label>
-            <label>
-              SEO description
-              <textarea
-                maxLength={160}
-                value={form.seoDescription || ""}
-                onChange={(e) =>
-                  update("seoDescription", e.target.value || null)
-                }
-              />
-            </label>
-            <label>
-              Social image URL
-              <input
-                value={form.ogImageUrl || ""}
-                onChange={(e) => update("ogImageUrl", e.target.value || null)}
-              />
-            </label>
-            {canUseMedia && (
-              <button type="button" onClick={() => setMediaField("ogImageUrl")}>
-                Choose social image
-              </button>
-            )}
-            <label className="blog-check">
-              <input
-                type="checkbox"
-                checked={form.noindex || false}
-                onChange={(e) => update("noindex", e.target.checked)}
-              />
-              Exclude from indexing
-            </label>
-            <aside aria-label="Search preview">
-              <strong>{form.seoTitle || form.title}</strong>
-              <p>/blog/{form.slug}</p>
-              <p>{form.seoDescription || form.excerpt}</p>
-            </aside>
-          </section>
-          <label>
-            Publication
-            <select
-              aria-label="Publication"
-              value={
-                form.isPublished
-                  ? "published"
-                  : form.scheduledAt
-                    ? "scheduled"
-                    : "draft"
-              }
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  isPublished: e.target.value === "published",
-                  scheduledAt:
-                    e.target.value === "scheduled"
-                      ? new Date(Date.now() + 86400000).toISOString()
-                      : null,
-                })
-              }
-            >
-              <option value="draft">Draft</option>
-              <option value="published">Published</option>
-              <option value="scheduled">Scheduled</option>
-            </select>
-          </label>
-          {form.scheduledAt && (
-            <label>
-              Scheduled publication (your local time)
-              <input
-                type="datetime-local"
-                required
-                value={localDate(form.scheduledAt)}
-                onChange={(e) => {
-                  if (e.target.value)
-                    update(
-                      "scheduledAt",
-                      new Date(e.target.value).toISOString(),
-                    );
-                }}
-              />
-            </label>
-          )}
+              </>
+            }
+            content={
+              <div className="blog-content-cards">
+                <BlogEditorCard ui={builderPrimitives} title="Post Details">
+                  <label>
+                    Title
+                    <input
+                      required
+                      value={form.title}
+                      onChange={(e) => {
+                        const title = e.target.value;
+                        setForm({
+                          ...form,
+                          title,
+                          ...(id === "new" &&
+                          (!form.slug ||
+                            form.slug ===
+                              form.title
+                                .toLowerCase()
+                                .replace(/[^a-z0-9]+/g, "-")
+                                .replace(/^-|-$/g, ""))
+                            ? {
+                                slug: title
+                                  .toLowerCase()
+                                  .replace(/[^a-z0-9]+/g, "-")
+                                  .replace(/^-|-$/g, ""),
+                              }
+                            : {}),
+                        });
+                      }}
+                    />
+                  </label>
+                  <label>
+                    Slug
+                    <input
+                      required
+                      maxLength={255}
+                      value={form.slug}
+                      onChange={(e) => update("slug", e.target.value)}
+                    />
+                  </label>
+                  <label>
+                    Author name
+                    <input
+                      required
+                      value={form.authorName}
+                      onChange={(e) => update("authorName", e.target.value)}
+                    />
+                  </label>
+                  {form.postType === "podcast" && (
+                    <label>
+                      Podcast URL
+                      <input
+                        type="url"
+                        value={form.podcastUrl || ""}
+                        onChange={(e) =>
+                          update("podcastUrl", e.target.value || null)
+                        }
+                      />
+                    </label>
+                  )}
+                  {form.postType === "external" && (
+                    <label>
+                      External URL
+                      <input
+                        type="url"
+                        value={form.externalUrl || ""}
+                        onChange={(e) =>
+                          update("externalUrl", e.target.value || null)
+                        }
+                      />
+                    </label>
+                  )}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <section>
+                      <h3>Categories</h3>
+                      <BlogTaxonomyPicker
+                        ui={blogTaxonomyPrimitives}
+                        kind="category"
+                        onRemove={(name) =>
+                          update(
+                            "categories",
+                            form.categories?.filter((value) => value !== name),
+                          )
+                        }
+                        selected={form.categories || []}
+                        options={taxonomies
+                          .filter((term) => term.type === "category")
+                          .map((term) => ({
+                            id: term.id,
+                            name: term.name,
+                            nested: !!term.parentId,
+                          }))}
+                        onChange={(values) => update("categories", values)}
+                        add={
+                          <>
+                            {" "}
+                            <label>
+                              Add category
+                              <input
+                                list="blog-categories"
+                                value={category}
+                                onChange={(e) => setCategory(e.target.value)}
+                              />
+                            </label>
+                            <datalist id="blog-categories">
+                              {taxonomies
+                                .filter((t) => t.type === "category")
+                                .map((t) => (
+                                  <option key={t.id} value={t.name} />
+                                ))}
+                            </datalist>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                addTerm("categories", category);
+                                setCategory("");
+                              }}
+                            >
+                              Add category
+                            </button>
+                          </>
+                        }
+                      />
+                    </section>
+                    <section>
+                      <h3>Tags</h3>
+                      <BlogTaxonomyPicker
+                        ui={blogTaxonomyPrimitives}
+                        kind="tag"
+                        onRemove={(name) =>
+                          update(
+                            "tags",
+                            form.tags?.filter((value) => value !== name),
+                          )
+                        }
+                        selected={form.tags || []}
+                        options={taxonomies
+                          .filter((term) => term.type === "tag")
+                          .map((term) => ({
+                            id: term.id,
+                            name: term.name,
+                            nested: !!term.parentId,
+                          }))}
+                        onChange={(values) => update("tags", values)}
+                        add={
+                          <>
+                            {" "}
+                            <label>
+                              Add tag
+                              <input
+                                list="blog-tags"
+                                value={tag}
+                                onChange={(e) => setTag(e.target.value)}
+                              />
+                            </label>
+                            <datalist id="blog-tags">
+                              {taxonomies
+                                .filter((t) => t.type === "tag")
+                                .map((t) => (
+                                  <option key={t.id} value={t.name} />
+                                ))}
+                            </datalist>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                addTerm("tags", tag);
+                                setTag("");
+                              }}
+                            >
+                              Add tag
+                            </button>
+                          </>
+                        }
+                      />
+                    </section>
+                  </div>
+                </BlogEditorCard>
+                <BlogEditorCard ui={builderPrimitives} title="Cover Image">
+                  {" "}
+                  <label>
+                    Cover image URL
+                    <input
+                      value={form.coverImageUrl || ""}
+                      onChange={(e) =>
+                        update("coverImageUrl", e.target.value || null)
+                      }
+                    />
+                  </label>
+                  <BlogImageInput
+                    label="Cover Image"
+                    value={form.coverImageUrl || ""}
+                    disabled={busy || uploading || !lock.owned}
+                    canUseMedia={canUseMedia}
+                    onBusy={setUploading}
+                    onChange={(url) => update("coverImageUrl", url || null)}
+                    onLibrary={() => setMediaField("coverImageUrl")}
+                  />
+                  {form.coverImageUrl && (
+                    <ImagePositionPicker
+                      components={builderPrimitives}
+                      imageUrl={
+                        form.coverImageUrl.startsWith("/") &&
+                        !form.coverImageUrl.startsWith("//")
+                          ? `https://www.p1landmanagement.com${form.coverImageUrl}`
+                          : form.coverImageUrl
+                      }
+                      positionX={form.coverImagePositionX ?? 50}
+                      positionY={form.coverImagePositionY ?? 50}
+                      onPositionChange={(x, y) =>
+                        setForm({
+                          ...form,
+                          coverImagePositionX: x,
+                          coverImagePositionY: y,
+                        })
+                      }
+                    />
+                  )}
+                </BlogEditorCard>
+                <BlogEditorCard ui={builderPrimitives} title="Content">
+                  {" "}
+                  <label>
+                    Excerpt
+                    <textarea
+                      value={form.excerpt || ""}
+                      onChange={(e) => update("excerpt", e.target.value)}
+                    />
+                  </label>
+                  <CmsRichTextEditor
+                    blogMode
+                    label="Post content"
+                    disabled={busy || uploading || !lock.owned}
+                    value={form.content}
+                    onChange={(value) => update("content", value)}
+                    canUseMedia={canUseMedia}
+                    galleries={refs.galleries}
+                  />
+                  <label>
+                    Publication
+                    <select
+                      aria-label="Publication"
+                      value={
+                        form.isPublished
+                          ? "published"
+                          : form.scheduledAt
+                            ? "scheduled"
+                            : "draft"
+                      }
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          isPublished: e.target.value === "published",
+                          scheduledAt:
+                            e.target.value === "scheduled"
+                              ? new Date(Date.now() + 86400000).toISOString()
+                              : null,
+                        })
+                      }
+                    >
+                      <option value="draft">Draft</option>
+                      <option value="published">Published</option>
+                      <option value="scheduled">Scheduled</option>
+                    </select>
+                  </label>
+                  {form.scheduledAt && (
+                    <label>
+                      Scheduled publication (your local time)
+                      <input
+                        type="datetime-local"
+                        required
+                        value={localDate(form.scheduledAt)}
+                        onChange={(e) => {
+                          if (e.target.value)
+                            update(
+                              "scheduledAt",
+                              new Date(e.target.value).toISOString(),
+                            );
+                        }}
+                      />
+                    </label>
+                  )}
+                </BlogEditorCard>
+              </div>
+            }
+            layout={
+              <section className="blog-card">
+                <h2>Sidebar Layout</h2>
+                <p>Blog posts always include a right sidebar.</p>
+                <p>
+                  Use the system-wide default blog sidebar, or choose a specific
+                  sidebar for this post.
+                </p>{" "}
+                <label>
+                  Sidebar
+                  <select
+                    aria-label="Post sidebar"
+                    value={form.sidebarId || ""}
+                    onChange={(e) =>
+                      update("sidebarId", e.target.value || null)
+                    }
+                  >
+                    <option value="">Default sidebar</option>
+                    {form.sidebarId &&
+                      !refs.sidebars.some((s) => s.id === form.sidebarId) && (
+                        <option value={form.sidebarId}>
+                          Saved sidebar (unavailable)
+                        </option>
+                      )}
+                    {refs.sidebars.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </section>
+            }
+            seo={
+              <>
+                {" "}
+                <BlogEditorCard ui={builderPrimitives} title="Search Engine">
+                  <label>
+                    SEO title
+                    <input
+                      value={form.seoTitle || ""}
+                      onChange={(e) =>
+                        update("seoTitle", e.target.value || null)
+                      }
+                    />
+                  </label>
+                  <label>
+                    SEO description
+                    <textarea
+                      maxLength={160}
+                      value={form.seoDescription || ""}
+                      onChange={(e) =>
+                        update("seoDescription", e.target.value || null)
+                      }
+                    />
+                  </label>
+                  <label className="blog-check">
+                    <input
+                      type="checkbox"
+                      checked={form.noindex || false}
+                      onChange={(e) => update("noindex", e.target.checked)}
+                    />
+                    Exclude from indexing
+                  </label>
+                </BlogEditorCard>
+                <BlogEditorCard ui={builderPrimitives} title="Open Graph">
+                  {" "}
+                  <label>
+                    Social image URL
+                    <input
+                      value={form.ogImageUrl || ""}
+                      onChange={(e) =>
+                        update("ogImageUrl", e.target.value || null)
+                      }
+                    />
+                  </label>
+                  <BlogImageInput
+                    label="Social Image"
+                    value={form.ogImageUrl || ""}
+                    disabled={busy || uploading || !lock.owned}
+                    canUseMedia={canUseMedia}
+                    onBusy={setUploading}
+                    onChange={(url) => update("ogImageUrl", url || null)}
+                    onLibrary={() => setMediaField("ogImageUrl")}
+                  />
+                </BlogEditorCard>{" "}
+                <SeoPreview
+                  title={form.seoTitle || form.title}
+                  description={form.seoDescription || form.excerpt || ""}
+                  url={`https://www.p1landmanagement.com/blog/${form.slug}`}
+                  ogImage={form.ogImageUrl || form.coverImageUrl || ""}
+                  siteName="P1 Land & Property Management"
+                  source="post"
+                />
+                <p>
+                  This is a prospective search preview. Publishing a CMS post
+                  does not create a public P1 blog route.
+                </p>
+                <StructuredDataStatus
+                  contentType="post"
+                  fields={{
+                    hasTitle: !!(form.seoTitle || form.title),
+                    hasDescription: !!form.seoDescription,
+                    hasImage: !!(form.ogImageUrl || form.coverImageUrl),
+                    hasAuthor: !!form.authorName,
+                    hasDate: !!form.isPublished,
+                    isPublished: !!form.isPublished,
+                    noindex: !!form.noindex,
+                  }}
+                />
+              </>
+            }
+          />
           <button type="submit">Save post</button>
         </fieldset>
       </form>
       {id !== "new" && (
         <button
           type="button"
-          disabled={busy || !lock.owned}
+          disabled={busy || uploading || !lock.owned}
           onClick={async () => {
             if (
               !window.confirm("Permanently delete this post and its comments?")
@@ -660,8 +791,16 @@ function BlogPosts({ canUseMedia = false }: { canUseMedia?: boolean }) {
         onCreated={select}
       />
     );
+  const filtered = posts.filter(
+    (p) =>
+      `${p.title} ${p.authorName} ${p.slug}`
+        .toLowerCase()
+        .includes(search.toLowerCase()) &&
+      (filter === "all" || status(p) === filter),
+  );
   return (
-    <section className="blog-manager">
+    <section className="blog-manager blog-presentation">
+      <h1>Blog</h1>
       <p>
         Manage CMS Blog posts. Primary P1 website pages remain in the Website
         editor.
@@ -696,29 +835,24 @@ function BlogPosts({ canUseMedia = false }: { canUseMedia?: boolean }) {
         <p role="status">Loading posts…</p>
       ) : (
         <div className="blog-list">
-          {posts
-            .filter(
-              (p) =>
-                `${p.title} ${p.authorName} ${p.slug}`
-                  .toLowerCase()
-                  .includes(search.toLowerCase()) &&
-                (filter === "all" || status(p) === filter),
-            )
-            .map((post) => (
-              <article key={post.id}>
-                <h2>{post.title}</h2>
-                <p>
-                  {post.authorName} · {status(post)}
-                  {post.scheduledAt
-                    ? ` · ${new Date(post.scheduledAt).toLocaleString()}`
-                    : ""}
-                </p>
-                <button onClick={() => select(post.id)}>
-                  Edit {post.title}
-                </button>
-              </article>
-            ))}
-          {!posts.length && <p>No posts yet.</p>}
+          {filtered.map((post) => (
+            <BlogPostCard
+              key={post.id}
+              ui={builderPrimitives}
+              post={post}
+              category={post.categories?.[0] || post.category}
+              displayPath={`CMS post: ${post.slug}`}
+              onEdit={() => select(post.id)}
+              formatDate={(value) => new Date(value).toLocaleString()}
+            />
+          ))}
+          {!filtered.length && (
+            <p>
+              {search || filter !== "all"
+                ? "No posts match your filters. Try different search terms or filters."
+                : "No blog posts yet. Create your first post to start sharing insights."}
+            </p>
+          )}
         </div>
       )}
     </section>
@@ -729,6 +863,7 @@ export default function BlogManager({ canUseMedia }: { canUseMedia: boolean }) {
   const [tab, setTab] = useState("Posts");
   return (
     <div className="blog-manager">
+      {tab !== "Posts" && <h1>Blog</h1>}
       <nav aria-label="Blog tools">
         {["Posts", "Categories and tags", "Comments", "Comment settings"].map(
           (name) => (
