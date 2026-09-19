@@ -225,3 +225,12 @@ The existing isolated preview protocol does not alone reproduce an interactive c
 Additional renderer data endpoints require an explicit contract review if necessary.
 Sections should reuse this builder afterward. Website's structured route-content
 editor is a separate contract and must not be replaced with generic block content.
+
+## Owner editor capability correction
+
+Marketing host props now use the existing shared capability helper for media, sections
+and menu controls, consistent with Forms and Branding. Explicit leaf-list checks
+incorrectly hid tools from owners, whose known-tool access is derived from their role.
+No server authorization or role policy changed: staff still require leaf grants, and
+crew/client and unknown capabilities remain denied. Dashboard typecheck and all five
+existing business-access policy tests passed.
