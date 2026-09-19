@@ -203,3 +203,56 @@ export const blogPublicationSchedules = pgTable(
       .where(sql`${table.status}='pending'`),
   ],
 );
+
+/** Permanent ownership receipts. Deferrability and immutability are migration-managed. */
+export const STATIC_BLOG_SOURCE_SLUGS = [
+  "land-clearing-cost-per-acre-south-carolina",
+  "how-to-manage-retention-pond-south-carolina",
+  "best-grass-large-acreage-carolinas",
+  "signs-property-drainage-problem",
+  "preparing-land-agricultural-use-carolinas",
+] as const;
+export const blogStaticImportReceipts = pgTable(
+  "blog_static_import_receipts",
+  {
+    sourceSlug: text("source_slug").primaryKey(),
+    postId: text("post_id").notNull(),
+    receiptId: text("receipt_id").notNull(),
+    importedRevisionId: text("imported_revision_id").notNull(),
+    bundleSha256: text("bundle_sha256").notNull(),
+    editorialSha256: text("editorial_sha256").notNull(),
+    actorId: text("actor_id").notNull(),
+    importedAt: timestamp("imported_at", { withTimezone: true }).notNull().defaultNow(),
+    sourceManifest: jsonb("source_manifest").$type<Record<string, unknown>>().notNull(),
+  },
+  (table): PgTableExtraConfigValue[] => [
+    unique("blog_static_receipt_post_unique").on(table.postId),
+    unique("blog_static_receipt_id_unique").on(table.receiptId),
+    foreignKey({
+      name: "blog_static_receipt_post_fk",
+      columns: [table.postId],
+      foreignColumns: [blogPublicationState.postId],
+    }),
+    foreignKey({
+      name: "blog_static_receipt_revision_fk",
+      columns: [table.postId, table.importedRevisionId],
+      foreignColumns: [blogPostRevisions.postId, blogPostRevisions.id],
+    }),
+    check(
+      "blog_static_receipt_slug_check",
+      sql`${table.sourceSlug} IN ('land-clearing-cost-per-acre-south-carolina','how-to-manage-retention-pond-south-carolina','best-grass-large-acreage-carolinas','signs-property-drainage-problem','preparing-land-agricultural-use-carolinas')`,
+    ),
+    check(
+      "blog_static_receipt_hash_check",
+      sql`${table.bundleSha256} ~ '^[0-9a-f]{64}$' AND ${table.editorialSha256} ~ '^[0-9a-f]{64}$'`,
+    ),
+    check(
+      "blog_static_receipt_identity_check",
+      sql`length(trim(${table.actorId}))>0 AND length(trim(${table.receiptId}))>0`,
+    ),
+    check(
+      "blog_static_receipt_manifest_check",
+      sql`jsonb_typeof(${table.sourceManifest})='object' AND ${table.sourceManifest}<>'{}'::jsonb`,
+    ),
+  ],
+);

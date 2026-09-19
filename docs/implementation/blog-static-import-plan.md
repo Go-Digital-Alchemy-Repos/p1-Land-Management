@@ -129,4 +129,39 @@ receipt ownership, including archives with an empty receipts table. Row immutabi
 alone does not protect against restore's TRUNCATE. A separately reviewed website
 rollback would be necessary to relinquish ownership. This contract is an approved
 Orchestrator implementation direction; schema, importer, consumers and restore
-checks are not yet implemented and must ship as a coordinated change.
+checks are implemented in the foundation below; the actual importer remains pending.
+
+## Ownership foundation — September 19
+
+Migration 0006 adds immutable receipts with deferred revision/state foreign keys.
+The internal receipt helper verifies revision identity, reviewed editorial hash and
+exact replay without overwriting later state. No HTTP import endpoint is exposed.
+Public schema v2 includes the permanent source slug/post mapping even when Blog is
+disabled or posts are withdrawn. Only the recorded owner may publish a reserved URL.
+Restore preflight protects complete existing receipts before any TRUNCATE.
+
+The website consumer requires confirmed v2 ownership before rendering the five
+static fallbacks, keeps the last valid snapshot and rejects ownership removal or
+remapping. Unknown ownership returns 503/noindex; known owned but unpublished
+routes return 404. SSR, hydration, listings and sitemap use the same decision.
+Build-time static extraction remains explicit so existing CMS field IDs are retained.
+This guarantees permanent route ownership, not globally monotonic editorial versions;
+reviewed content restoration remains an allowed operation.
+
+Release order is mandatory: deploy migration/Core v2, verify a live valid v2 response,
+then deploy the website consumer. No real transfers until both are verified. Keep the
+additive migration during rollback. After transfers, never roll the website back to
+static-only dispatch; use an ownership-aware build. Before transfers, the previous
+website remains a viable rollback because no source ownership has changed.
+
+Validation: 21 Core projection/media/route tests, 14 original actual-PostgreSQL
+publication tests, 6 receipt tests, 8 backup tests and migration replay passed.
+Core typecheck and build passed. Website validation/release evidence follows in
+handoff.md. These are scoped checks, not final CMS import acceptance.
+
+A fresh read-only private Core snapshot was captured before rollout at
+2026-09-19T23:33:48.781Z from f44a43f25087836420a91db811ea1d7b93dec3cc:
+56 tables/592 rows, gzip SHA256
+8046fac8fc1ab59d820820cc00d48006c2aec70d54e7aac08aecad48e67d1c99.
+It remains outside Git and includes no media bytes or database DDL. No production
+restore, content import or source-media registration was performed.

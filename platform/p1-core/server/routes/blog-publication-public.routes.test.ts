@@ -5,9 +5,12 @@ vi.mock("../db", () => ({ db: { transaction: async (fn: (tx: object) => unknown)
 vi.mock("../services/public-blog-media.service", () => ({
   resolvePublicBlogMedia: async (rows: unknown) => rows,
 }));
-const state = vi.hoisted(() => ({ get: vi.fn(), features: vi.fn() }));
+const state = vi.hoisted(() => ({ get: vi.fn(), features: vi.fn(), ownership: vi.fn() }));
 vi.mock("../storage", () => ({ storage: { settings: { getDecryptedCategory: state.features } } }));
 vi.mock("../services/blog-publication.service", () => ({ listPublishedBlogSnapshots: state.get }));
+vi.mock("../services/blog-static-import-receipts.service", () => ({
+  listStaticBlogRoutes: state.ownership,
+}));
 import router from "./blog-publication-public.routes";
 let server: Server, base: string;
 beforeAll(async () => {
@@ -26,6 +29,8 @@ afterAll(
 );
 beforeEach(() => {
   state.get.mockReset();
+  state.ownership.mockReset();
+  state.ownership.mockResolvedValue([]);
   state.features.mockReset();
   state.features.mockResolvedValue({ enable_cms: "true", enable_blog: "true" });
   state.get.mockResolvedValue([]);
@@ -71,4 +76,24 @@ it("fails unavailable rather than defaulting to enabled after a settings read fa
   expect(response.status).toBe(503);
   expect(await response.json()).toEqual({ error: "Blog publications unavailable" });
   expect(state.get).not.toHaveBeenCalled();
+});
+
+it("retains permanent static ownership when Blog is disabled", async () => {
+  state.features.mockResolvedValue({ enable_cms: "true", enable_blog: "false" });
+  const ownership = [{ slug: "signs-property-drainage-problem", postId: "imported" }];
+  state.ownership.mockResolvedValue(ownership);
+  const response = await fetch(base);
+  expect(response.status).toBe(200);
+  expect(await response.json()).toMatchObject({
+    schemaVersion: 2,
+    staticRoutes: ownership,
+    posts: [],
+  });
+  expect(state.get).not.toHaveBeenCalled();
+});
+it("fails unavailable rather than treating ownership read failure as unowned", async () => {
+  state.ownership.mockRejectedValue(Error("private receipt failure"));
+  const response = await fetch(base);
+  expect(response.status).toBe(503);
+  expect(await response.json()).toEqual({ error: "Blog publications unavailable" });
 });

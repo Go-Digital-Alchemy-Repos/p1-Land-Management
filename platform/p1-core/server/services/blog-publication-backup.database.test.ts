@@ -93,6 +93,12 @@ describe.skipIf(!testUrl)("Blog publication system backup recovery on PostgreSQL
         "utf8",
       ),
     );
+    await pool.query(
+      readFileSync(
+        new URL("../../p1-migrations/0006_blog_static_import_receipts.sql", import.meta.url),
+        "utf8",
+      ),
+    );
     const c = await pool.connect();
     try {
       await c.query("BEGIN");
@@ -224,9 +230,79 @@ describe.skipIf(!testUrl)("Blog publication system backup recovery on PostgreSQL
         .count,
     ).toBe(1);
   });
+  it("accepts an archive predating receipts while ownership is empty", async () => {
+    const snapshot = structuredClone(exportedSnapshot());
+    snapshot.tables = snapshot.tables.filter(
+      (table) => table.name !== "blog_static_import_receipts",
+    );
+    snapshot.manifest.restoreOrder = snapshot.manifest.restoreOrder.filter(
+      (name) => name !== "blog_static_import_receipts",
+    );
+    await restoreBackupSnapshot(snapshot);
+    expect(
+      (await pool.query("SELECT count(*)::int count FROM blog_publication_state")).rows[0].count,
+    ).toBe(2);
+    expect((await pool.query("SELECT * FROM blog_static_import_receipts")).rows).toEqual([]);
+  });
+  it("preserves permanent ownership on roundtrip and rejects omitted, empty or changed ownership archives", async () => {
+    const slug = "land-clearing-cost-per-acre-south-carolina";
+    await pool.query(
+      "INSERT INTO blog_static_import_receipts(source_slug,post_id,receipt_id,imported_revision_id,bundle_sha256,editorial_sha256,actor_id,imported_at,source_manifest) VALUES ($1,'published','receipt','r2',$2,$2,'actor','2026-09-19T12:00:00.123456Z','{\"source\":\"reviewed\"}')",
+      [slug, "a".repeat(64)],
+    );
+    vi.mocked(storage.uploadBackupObject).mockClear();
+    await runSystemBackup();
+    const snapshot = exportedSnapshot();
+    const before = (await pool.query("SELECT * FROM blog_static_import_receipts")).rows;
+    expect(
+      snapshot.tables.find((table) => table.name === "blog_static_import_receipts")!.rows[0]
+        .imported_at,
+    ).toContain(".123456");
+    await restoreBackupSnapshot(snapshot);
+    expect((await pool.query("SELECT * FROM blog_static_import_receipts")).rows).toEqual(before);
+    expect(
+      (
+        await pool.query(
+          "SELECT to_char(imported_at, 'US') AS micros FROM blog_static_import_receipts",
+        )
+      ).rows[0].micros,
+    ).toBe("123456");
+    for (const variant of [
+      "omitted",
+      "empty",
+      "changed",
+      "receipt_id",
+      "bundle_sha256",
+      "editorial_sha256",
+      "imported_revision_id",
+      "actor_id",
+      "source_manifest",
+      "imported_at",
+      "microsecond",
+      "invalid_time",
+    ] as const) {
+      const bad = structuredClone(snapshot);
+      const table = bad.tables.find((t) => t.name === "blog_static_import_receipts")!;
+      if (variant === "omitted") {
+        bad.tables = bad.tables.filter((t) => t !== table);
+        bad.manifest.restoreOrder = bad.manifest.restoreOrder.filter((t) => t !== table.name);
+      } else if (variant === "empty") table.rows = [];
+      else if (variant === "changed") table.rows[0].post_id = "withdrawn";
+      else if (variant === "source_manifest")
+        table.rows[0].source_manifest = { source: "different" };
+      else if (variant === "microsecond") table.rows[0].imported_at = "2026-09-19T12:00:00.123457Z";
+      else if (variant === "invalid_time") table.rows[0].imported_at = "invalid timestamp";
+      else if (variant === "imported_at") table.rows[0].imported_at = "2000-01-01T00:00:00.000Z";
+      else table.rows[0][variant] = variant.endsWith("sha256") ? "b".repeat(64) : "different";
+      await expect(restoreBackupSnapshot(bad)).rejects.toThrow(
+        variant === "invalid_time" ? "invalid input syntax" : "permanent static Blog ownership",
+      );
+      expect((await pool.query("SELECT * FROM blog_static_import_receipts")).rows).toEqual(before);
+    }
+  });
   it("allows historical restore when all sidecars are empty", async () => {
     await pool.query(
-      "TRUNCATE blog_publication_schedules,blog_publication_routes,blog_post_revisions,blog_publication_state",
+      "TRUNCATE blog_static_import_receipts,blog_publication_schedules,blog_publication_routes,blog_post_revisions,blog_publication_state",
     );
     const historical = structuredClone(exportedSnapshot());
     historical.tables = historical.tables.filter((t) => t.name === "blog_posts");

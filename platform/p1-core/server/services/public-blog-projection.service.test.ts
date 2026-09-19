@@ -4,6 +4,7 @@ import {
   PublicBlogCapacityError,
   type PublishedBlogRow,
 } from "./public-blog-projection.service";
+import { STATIC_BLOG_SLUGS } from "@shared/public-blog";
 const row = (): PublishedBlogRow => ({
   id: "post",
   revisionId: "revision",
@@ -39,6 +40,31 @@ describe("public Blog projection", () => {
     expect(JSON.stringify(data)).not.toContain("secret");
     expect(data).toEqual(projectPublicBlog([row()]));
     expect(projectPublicBlog([]).posts).toEqual([]);
+  });
+  it("permits an imported route only for its immutable owner", () => {
+    const imported = row();
+    imported.snapshot.slug = STATIC_BLOG_SLUGS[0];
+    const ownership = [{ slug: imported.snapshot.slug, postId: imported.id }];
+    expect(projectPublicBlog([imported], ownership).posts).toHaveLength(1);
+    expect(() => projectPublicBlog([{ ...imported, id: "foreign" }], ownership)).toThrow();
+    expect(projectPublicBlog([], ownership).staticRoutes).toEqual(ownership);
+    imported.snapshot.slug = "renamed-article";
+    expect(projectPublicBlog([imported], ownership).staticRoutes).toEqual(ownership);
+    expect(projectPublicBlog([], ownership).revision).not.toBe(projectPublicBlog([]).revision);
+  });
+  it("rejects malformed or ambiguous ownership and hashes stable order", () => {
+    const first = { slug: STATIC_BLOG_SLUGS[0], postId: "first" };
+    const second = { slug: STATIC_BLOG_SLUGS[1], postId: "second" };
+    expect(projectPublicBlog([], [first, second])).toEqual(projectPublicBlog([], [second, first]));
+    for (const bad of [
+      [{ ...first, slug: "not-static" }],
+      [first, first],
+      [first, { ...second, postId: first.postId }],
+      [{ ...first, actorId: "private" }],
+      [{ ...first, postId: "" }],
+      [{ ...first, postId: "x".repeat(201) }],
+    ])
+      expect(() => projectPublicBlog([], bad)).toThrow();
   });
   it("sanitizes active HTML and keeps only CSP-compatible images and safe ordinary links", () => {
     const x = row();
@@ -85,15 +111,21 @@ describe("public Blog projection", () => {
     expect(result.posts[0].snapshot.content).not.toContain("bad address");
   });
   it("preserves editor code, dividers and heading structure without active attributes", async () => {
-    const { parsePublicBlog } = await import("../../../../artifacts/p1-website/server/website-blog.mjs");
+    const { parsePublicBlog } =
+      await import("../../../../artifacts/p1-website/server/website-blog.mjs");
     const { safePublishedHtml, publicBlogListing } = await import("@shared/public-blog");
     const x = row();
-    x.snapshot.content = '<h1 style="text-align:center" onclick="evil()">Section</h1><p>Use <code class="evil" onclick="evil()">x &lt; y</code>.</p><pre style="background:url(https://evil.test)"><code>&lt;script&gt;example&lt;/script&gt;\nsecond line</code></pre><hr onload="evil()">';
+    x.snapshot.content =
+      '<h1 style="text-align:center" onclick="evil()">Section</h1><p>Use <code class="evil" onclick="evil()">x &lt; y</code>.</p><pre style="background:url(https://evil.test)"><code>&lt;script&gt;example&lt;/script&gt;\nsecond line</code></pre><hr onload="evil()">';
     const result = projectPublicBlog([x]);
-    expect(result.posts[0].snapshot.content).toContain('<h2 style="text-align:center">Section</h2>');
-    expect(result.posts[0].snapshot.content).toContain('<code>x &lt; y</code>');
-    expect(result.posts[0].snapshot.content).toContain('<pre><code>&lt;script&gt;example&lt;/script&gt;\nsecond line</code></pre>');
-    expect(result.posts[0].snapshot.content).toContain('<hr />');
+    expect(result.posts[0].snapshot.content).toContain(
+      '<h2 style="text-align:center">Section</h2>',
+    );
+    expect(result.posts[0].snapshot.content).toContain("<code>x &lt; y</code>");
+    expect(result.posts[0].snapshot.content).toContain(
+      "<pre><code>&lt;script&gt;example&lt;/script&gt;\nsecond line</code></pre>",
+    );
+    expect(result.posts[0].snapshot.content).toContain("<hr />");
     expect(result.posts[0].snapshot.content).not.toMatch(/onclick|onload|background|evil/);
     expect(parsePublicBlog(result, safePublishedHtml, publicBlogListing)).toEqual(result);
   });

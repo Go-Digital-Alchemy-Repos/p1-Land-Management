@@ -1,4 +1,12 @@
 /** Public Blog delivery contract. No database, sanitizer, or Node runtime dependencies. */
+export const STATIC_BLOG_SLUGS = [
+  "land-clearing-cost-per-acre-south-carolina",
+  "how-to-manage-retention-pond-south-carolina",
+  "best-grass-large-acreage-carolinas",
+  "signs-property-drainage-problem",
+  "preparing-land-agricultural-use-carolinas",
+] as const;
+export type PublicBlogStaticRoute = { slug: string; postId: string };
 export const MAX_PUBLIC_BLOG_POSTS = 1000;
 export const MAX_PUBLIC_BLOG_CONTENT_BYTES = 262144;
 export const MAX_PUBLIC_BLOG_BYTES = 4194304;
@@ -31,10 +39,11 @@ export type PublicBlogPost = {
   snapshot: PublicBlogSnapshot;
 };
 export type PublicBlogPublication = {
-  schemaVersion: 1;
+  schemaVersion: 2;
   stackId: "p1-land-management";
   revision: string;
   posts: PublicBlogPost[];
+  staticRoutes: PublicBlogStaticRoute[];
 };
 
 const text = (v: unknown, max: number): v is string =>

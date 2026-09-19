@@ -1,3 +1,5 @@
+import { listStaticBlogRoutes } from "./blog-static-import-receipts.service";
+import { STATIC_BLOG_SLUGS } from "@shared/public-blog";
 import { resolvePublicBlogMedia } from "./public-blog-media.service";
 import { projectPublicBlog, PublicBlogCapacityError } from "./public-blog-projection.service";
 import { createHash, randomUUID } from "node:crypto";
@@ -21,13 +23,7 @@ import {
   type CmsTransaction,
   type PagePreconditions,
 } from "./cms-concurrency";
-export const WEBSITE_OWNED_BLOG_SLUGS = new Set([
-  "land-clearing-cost-per-acre-south-carolina",
-  "how-to-manage-retention-pond-south-carolina",
-  "best-grass-large-acreage-carolinas",
-  "signs-property-drainage-problem",
-  "preparing-land-agricultural-use-carolinas",
-]);
+export const WEBSITE_OWNED_BLOG_SLUGS = new Set<string>(STATIC_BLOG_SLUGS);
 export async function lockBlogPublication(tx: CmsTransaction) {
   await tx.execute(sql`SET LOCAL lock_timeout = '5s'`);
   await tx.execute(
@@ -240,7 +236,12 @@ async function applyBlogMutation(
     sourceRevisionId = source.id;
   }
   if (action === "publish" || action === "schedule" || action === "scheduled_publish") {
-    if (WEBSITE_OWNED_BLOG_SLUGS.has(snapshot.slug))
+    if (
+      WEBSITE_OWNED_BLOG_SLUGS.has(snapshot.slug) &&
+      !(await listStaticBlogRoutes(tx)).some(
+        (route) => route.slug === snapshot.slug && route.postId === postId,
+      )
+    )
       fail(
         "BLOG_WEBSITE_OWNED_SLUG",
         "This existing website URL requires the explicit article import/ownership contract.",
@@ -357,7 +358,10 @@ async function applyBlogMutation(
           ]
         : published;
     try {
-      projectPublicBlog(await resolvePublicBlogMedia(candidate, tx));
+      projectPublicBlog(
+        await resolvePublicBlogMedia(candidate, tx),
+        await listStaticBlogRoutes(tx),
+      );
     } catch (error) {
       if (error instanceof PublicBlogCapacityError)
         throw new CmsMutationError(400, "BLOG_PUBLICATION_LIMIT", error.message);

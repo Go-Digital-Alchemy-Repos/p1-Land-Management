@@ -43,6 +43,13 @@
       "when": 1789833600002,
       "tag": "0005_blog_publication_cutover",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1789833600003,
+      "tag": "0006_blog_static_import_receipts",
+      "breakpoints": true
     }
   ]
 }

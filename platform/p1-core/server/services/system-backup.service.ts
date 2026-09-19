@@ -1,3 +1,4 @@
+import { isDeepStrictEqual } from "node:util";
 import { startStoppableWorker, type StoppableWorker } from "../utils/runtime-lifecycle";
 import { gzipSync, gunzipSync } from "zlib";
 import type { PoolClient } from "pg";
@@ -513,6 +514,35 @@ async function restoreBackupSnapshotWithClient(
       // cannot silently leave newer published content beside restored legacy rows.
       await client.query("SELECT pg_advisory_xact_lock(hashtextextended('blog-publication-writes', 0))");
       const tableNames = snapshot.tables.map((table) => table.name);
+      const receiptRelation = await client.query(
+        "SELECT to_regclass('public.blog_static_import_receipts') AS relation",
+      );
+      if (receiptRelation.rows[0]?.relation) {
+        const permanent = await client.query<Record<string, unknown>>(
+          "SELECT receipt.*, receipt.imported_at::text AS imported_at FROM public.blog_static_import_receipts receipt",
+        );
+        const archived = snapshot.tables.find((table) => table.name === "blog_static_import_receipts");
+        for (const owned of permanent.rows) {
+          const matches = archived?.rows.filter((row) => row.source_slug === owned.source_slug) ?? [];
+          const { imported_at: currentTime, ...currentIdentity } = owned;
+          const { imported_at: archiveTime, ...archiveIdentity } = matches[0] ?? {};
+          let sameTime = false;
+          if (matches.length === 1 && (typeof archiveTime === "string" || archiveTime instanceof Date)) {
+            // Let PostgreSQL compare instants with full microsecond precision.
+            // Invalid timestamp input aborts before any TRUNCATE occurs.
+            const compared = await client.query<{ equal: boolean }>(
+              "SELECT $1::timestamptz = $2::timestamptz AS equal",
+              [currentTime, archiveTime instanceof Date ? archiveTime.toISOString() : archiveTime],
+            );
+            sameTime = compared.rows[0]?.equal === true;
+          }
+          if (matches.length !== 1 || !sameTime || !isDeepStrictEqual(archiveIdentity, currentIdentity)) {
+            throw new Error(
+              "This archive would erase or change permanent static Blog ownership. Restore an archive retaining every existing complete import receipt, including its source mapping, revision, hashes, actor, provenance and import time; relinquishing ownership requires a separately reviewed website rollback.",
+            );
+          }
+        }
+      }
       const blogSidecars = ["blog_publication_state", "blog_post_revisions", "blog_publication_routes", "blog_publication_schedules"];
       if ([...blogSidecars, "blog_posts"].some((name) => !tableNames.includes(name))) {
         for (const name of blogSidecars) {

@@ -4,6 +4,8 @@ import { sanitizePublicRichHtml } from "../utils/sanitize-rich-html";
 import type { BlogEditorialSnapshot } from "@shared/schema/blog-publications";
 import {
   safePublishedHtml,
+  STATIC_BLOG_SLUGS,
+  type PublicBlogStaticRoute,
   publicBlogListing,
   MAX_PUBLIC_BLOG_BYTES,
   MAX_PUBLIC_BLOG_CONTENT_BYTES,
@@ -20,13 +22,7 @@ export type PublishedBlogRow = {
   modifiedAt: Date | string | null;
   snapshot: BlogEditorialSnapshot;
 };
-const reserved = new Set([
-  "land-clearing-cost-per-acre-south-carolina",
-  "how-to-manage-retention-pond-south-carolina",
-  "best-grass-large-acreage-carolinas",
-  "signs-property-drainage-problem",
-  "preparing-land-agricultural-use-carolinas",
-]);
+const reserved = new Set<string>(STATIC_BLOG_SLUGS);
 export class PublicBlogCapacityError extends Error {}
 function text(value: string, max: number) {
   if (
@@ -62,7 +58,33 @@ function taxonomy(value: string[] | null) {
   return value.map((item) => text(item, 300));
 }
 /** Pure and shared by publication acceptance and public delivery; never truncates. */
-export function projectPublicBlog(rows: PublishedBlogRow[]): PublicBlogPublication {
+export function projectPublicBlog(
+  rows: PublishedBlogRow[],
+  staticRoutes: PublicBlogStaticRoute[] = [],
+): PublicBlogPublication {
+  if (!Array.isArray(staticRoutes) || staticRoutes.length > STATIC_BLOG_SLUGS.length)
+    throw new PublicBlogCapacityError("Invalid static Blog ownership");
+  const owners = new Map<string, string>();
+  const ownedPosts = new Set<string>();
+  for (const route of staticRoutes) {
+    if (
+      !route ||
+      Object.keys(route).sort().join() !== "postId,slug" ||
+      !reserved.has(route.slug) ||
+      typeof route.postId !== "string" ||
+      !route.postId ||
+      owners.has(route.slug) ||
+      ownedPosts.has(route.postId)
+    )
+      throw new PublicBlogCapacityError("Invalid static Blog ownership");
+    text(route.postId, 200);
+    owners.set(route.slug, route.postId);
+    ownedPosts.add(route.postId);
+  }
+  // Emit a stable allowlist, never raw receipt/provenance or actor metadata.
+  const ownership = [...owners]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([slug, postId]) => ({ slug, postId }));
   if (rows.length > MAX_PUBLIC_BLOG_POSTS)
     throw new PublicBlogCapacityError("Too many published Blog posts");
   const slugs = new Set<string>(),
@@ -76,7 +98,7 @@ export function projectPublicBlog(rows: PublishedBlogRow[]): PublicBlogPublicati
         if (position !== null && (!Number.isInteger(position) || position < 0 || position > 100))
           throw new PublicBlogCapacityError("Image positions must be between 0 and 100");
       if (
-        reserved.has(s.slug) ||
+        (reserved.has(s.slug) && owners.get(s.slug) !== row.id) ||
         !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(s.slug) ||
         s.slug.length > 255 ||
         slugs.has(s.slug) ||
@@ -212,10 +234,13 @@ export function projectPublicBlog(rows: PublishedBlogRow[]): PublicBlogPublicati
     throw new PublicBlogCapacityError((error as Error).message);
   }
   const result: PublicBlogPublication = {
-    schemaVersion: 1,
+    schemaVersion: 2,
     stackId: "p1-land-management",
-    revision: createHash("sha256").update(JSON.stringify(posts)).digest("hex"),
+    revision: createHash("sha256")
+      .update(JSON.stringify({ posts, staticRoutes: ownership }))
+      .digest("hex"),
     posts,
+    staticRoutes: ownership,
   };
   if (Buffer.byteLength(JSON.stringify(result)) > MAX_PUBLIC_BLOG_BYTES)
     throw new PublicBlogCapacityError("Public Blog index exceeds supported size");
