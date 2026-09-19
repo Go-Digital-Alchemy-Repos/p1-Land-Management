@@ -112,3 +112,25 @@ The full consolidation remains in progress; this tool resolves the record-identi
 ## Payload preparation checkpoint
 
 [CRM payload preservation](crm-payload-preservation.md) now defines and implements a strict full-row preservation manifest for all six Core CRM tables. It derives this relationship preflight from the same payload rows, records deterministic per-record/content hashes, retains fields without native counterparts and flags incompatible note/task payloads. This advances payload reconciliation preparation; a [reviewed matched-record importer](crm-payload-import.md) now archives source snapshots and transfers notes/tasks in a transaction. Production application, full field reconciliation and retirement still require the documented release gates.
+
+## Actual metadata capture — September 19, 2026
+
+`crm-capture.mjs` uses explicit metadata projections, verified repeatable-read
+read-only transactions, statement/lock timeouts, row/byte bounds and snapshot
+digests. Private Railway SSH captures found three Core leads, no Core clients,
+notes or tasks, and one identity link. Dashboard has one lead, one client, eight
+users, one source-matched receipt and no archive mappings. The expected six Core
+CRM tables exist. No contact details, form bodies, credentials or content payloads
+were exported by this metadata capture.
+
+Strict offline reconciliation found zero conflicts, one receipt-backed
+`review_existing` proposal and two `review_unmapped` proposals. This is not mapping
+approval or migration completion. Inventory SHA256:
+`dc0a783ff5899b27f1332771915948aea7b15fd2aed8f406e340916799a54679`; report SHA256:
+`a6fb4a22a61ea36fb71a95d591678e4c240f520102e03117cf30f70753823dd2`.
+Private directory pointer is `/tmp/p1-crm-metadata-private-path`; directory mode0700,
+files mode0600. Capture/reconciliation tests:15 passed.
+
+Snapshots are sequential, not source-frozen across stores. Explicit proposal review,
+content-preserving payload export, coordinated freeze and verified import remain
+required. No production records, credentials or provider settings were changed.

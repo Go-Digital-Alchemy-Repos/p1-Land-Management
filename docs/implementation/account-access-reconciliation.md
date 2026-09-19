@@ -86,3 +86,27 @@ Provide connection strings only through private process environment variables `P
 The capture format intentionally has `review: null`, `sourceFreezeVerified: false`, and `releaseApproval: false`. It is **not** valid input to the strict reconciler until genuine identity provenance and independently reviewed expectations are supplied. Do not derive expected grants from captured actual grants merely to produce a passing result.
 
 Validation: three capture tests pass (read-only snapshot/projection behavior, rollback on verification/query failure, exclusive private output). Production capture remains incomplete: the existing Railway database configurations expose no `DATABASE_PUBLIC_URL`, and the attempted read-only remote runtime check did not connect. No public database endpoint was added, no database query ran, and no account or notification state changed. A verified private execution path is still needed.
+
+## Production read-only capture — September 19, 2026
+
+The prior remote-execution limitation is resolved: Railway SSH reached the existing
+Core and dashboard runtimes. The committed `captureSource` implementation ran there
+with existing local service database configuration, explicit projection queries and
+verified `REPEATABLE READ READ ONLY` transactions. No public database endpoint,
+credential transfer, application worker import, or account mutation was introduced.
+Private output files are mode0600 under `~/.codex/backups/p1-account-access-20260919`.
+
+Core capture SHA256 `ae06102e44ed05b8ccff2076509d43dc062f3972baf36dd29c45846fa005c36c`:
+1 privileged account,1 identity link,2 forms. Dashboard capture SHA256
+`fb9d0fce073fd2db36f3597fcee8920e0be4d01e788bdd3db20b1e76f3ebb4e1`:
+8 accounts,1 client,2 properties,0 client-access links,1 assigned work order.
+Exactly one account is active; seven are inactive. The active Owner is verified and
+MFA-enrolled, but the required-MFA flag is false. All eight have access records;
+none has recorded access-review metadata. The actual Core routing variable
+`CORE_DASHBOARD_FORM_NOTIFICATIONS_ENABLED` is false. Legacy routing is unchanged.
+
+The combined capture remains explicitly unreviewed, non-atomic across stores,
+not source-frozen and not release-approved. Owner input about retaining inactive
+accounts and requiring Owner MFA is pending. Do not fabricate reviewed expectations
+from this inventory or treat capture as reconciliation/import/retirement acceptance.
+No account, MFA, grant, session, notification flag or production row was changed.
