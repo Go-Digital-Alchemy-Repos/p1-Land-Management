@@ -39,7 +39,12 @@ function safeUrl(value, image = false) {
     return false;
   }
 }
-export function parsePublicBlog(data, validateHtml, projectListing) {
+export function parsePublicBlog(
+  data,
+  validateHtml,
+  projectListing,
+  validatePresentation,
+) {
   if (
     !exact(data, [
       "schemaVersion",
@@ -121,6 +126,7 @@ export function parsePublicBlog(data, validateHtml, projectListing) {
         "seoDescription",
         "ogImageUrl",
         "noindex",
+        ...(Object.hasOwn(s ?? {}, "presentation") ? ["presentation"] : []),
       ]) ||
       !text(s.title, 2000) ||
       !s.title.trim() ||
@@ -139,6 +145,15 @@ export function parsePublicBlog(data, validateHtml, projectListing) {
       !validateHtml(s.content)
     )
       throw Error("Invalid public Blog content");
+    if (
+      s.presentation !== undefined &&
+      s.presentation !== null &&
+      (typeof validatePresentation !== "function" ||
+        !validatePresentation(s.presentation, s.title) ||
+        !validateHtml(s.presentation.relatedContent) ||
+        /<img\b/i.test(s.presentation.relatedContent))
+    )
+      throw Error("Invalid public Blog presentation");
     slugs.add(s.slug);
     for (const key of ["coverImagePositionX", "coverImagePositionY"])
       if (
@@ -169,11 +184,17 @@ export function createWebsiteBlogStore({
   cacheDir = "/tmp/p1-public-content",
   validateHtml,
   projectListing,
+  validatePresentation,
   ...options
 } = {}) {
   const observed = new Map();
   function parse(data) {
-    const next = parsePublicBlog(data, validateHtml, projectListing);
+    const next = parsePublicBlog(
+      data,
+      validateHtml,
+      projectListing,
+      validatePresentation,
+    );
     const ownership = new Map(
       next.staticRoutes.map((entry) => [entry.slug, entry.postId]),
     );

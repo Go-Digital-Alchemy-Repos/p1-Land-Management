@@ -1,3 +1,4 @@
+import { validateBlogPresentation, type BlogPresentation } from "@shared/blog-presentation";
 import type {
   BlogPublicationPostResponse as MarketingBlogPublicationPost,
   BlogPublicationAction as MarketingBlogPublicationActionAction,
@@ -131,6 +132,7 @@ function buildCategoryPath(taxonomy: BlogTaxonomy, all: BlogTaxonomy[]): string 
 }
 
 const postFormSchema = z.object({
+  presentation: z.custom<BlogPresentation | null>().optional(),
   title: z.string().min(1, "Title is required"),
   slug: z.string().min(1, "Slug is required"),
   authorName: z.string().min(1, "Author name is required"),
@@ -237,6 +239,7 @@ function CmsBlogEditor() {
   const adoptSnapshot = (post: MarketingBlogPublicationPost) => {
     setSnapshot(post);
     form.reset({
+      ...(post.presentation !== undefined ? { presentation: post.presentation } : {}),
       title: post.title,
       slug: post.slug,
       authorName: post.authorName,
@@ -285,9 +288,19 @@ function CmsBlogEditor() {
   );
 
   const buildPayload = (data: PostForm) => {
+    const presentation =
+      data.presentation && data.title !== snapshot?.title
+        ? { ...data.presentation, titleParts: [{ text: data.title, emphasis: false }] }
+        : data.presentation;
+    if (presentation != null && !validateBlogPresentation(presentation, data.title))
+      throw Object.assign(
+        Error("This post contains unsupported presentation metadata. Your draft is retained."),
+        { status: 400 },
+      );
     const nextCategories = dedupeValues(data.categories ?? []);
     const nextTags = dedupeValues(data.tags ?? []);
     return {
+      ...(presentation !== undefined ? { presentation } : {}),
       title: data.title,
       slug: data.slug || generateSlug(data.title),
       excerpt: data.excerpt || null,
@@ -375,7 +388,7 @@ function CmsBlogEditor() {
         navigate("/admin/cms/blog");
         return;
       }
-      if (variables.data) form.reset(variables.data);
+      if (variables.data) form.reset({ ...variables.data, presentation: result.presentation });
       else if (["restore", "adopt"].includes(variables.action)) {
         // Explicit adoption/restore replaces the draft; background reads never do.
         queryClient.setQueryData(["/api/admin/blog/publications", id], result);

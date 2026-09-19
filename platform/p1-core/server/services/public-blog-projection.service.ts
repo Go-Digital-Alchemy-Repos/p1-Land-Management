@@ -1,3 +1,4 @@
+import { validateBlogPresentation, type BlogPresentation } from "@shared/blog-presentation";
 import { createHash } from "node:crypto";
 import sanitizeHtml from "sanitize-html";
 import { sanitizePublicRichHtml } from "../utils/sanitize-rich-html";
@@ -56,6 +57,67 @@ function taxonomy(value: string[] | null) {
   if (!Array.isArray(value) || value.length > 100)
     throw new PublicBlogCapacityError("Too many public Blog terms");
   return value.map((item) => text(item, 300));
+}
+function sanitizeBlogHtml(value: string): string {
+  return sanitizeHtml(sanitizePublicRichHtml(value) ?? "", {
+    allowedTags: [
+      "p",
+      "br",
+      "strong",
+      "b",
+      "em",
+      "i",
+      "u",
+      "s",
+      "ul",
+      "ol",
+      "li",
+      "blockquote",
+      "pre",
+      "code",
+      "hr",
+      "h2",
+      "h3",
+      "h4",
+      "a",
+      "img",
+    ],
+    allowedAttributes: {
+      p: ["style"],
+      h2: ["style"],
+      h3: ["style"],
+      h4: ["style"],
+      a: ["href", "target", "rel"],
+      img: ["src", "alt", "data-align", "class"],
+    },
+    allowedStyles: { "*": { "text-align": [/^(left|center|right)$/] } },
+    exclusiveFilter: (frame) => frame.tag === "img" && !safePublicBlogUrl(frame.attribs.src, true),
+    transformTags: {
+      img: (_tag, attrs) => ({
+        tagName: "img",
+        attribs: {
+          ...attrs,
+          src: safePublicBlogUrl(attrs.src, true) ?? "",
+          ...(attrs["data-align"] && !/^(left|center|right)$/.test(attrs["data-align"])
+            ? { "data-align": "center" }
+            : {}),
+        },
+      }),
+      a: (_tag, attrs) => {
+        const href = attrs.href;
+        const safe =
+          safePublicBlogUrl(href) ||
+          (/^(#[A-Za-z0-9_-]*|mailto:[^&\s]+|tel:[+0-9() -]+)$/.test(href || "") ? href : "#");
+        return {
+          tagName: "a",
+          attribs: {
+            href: safe,
+            ...(attrs.target === "_blank" ? { target: "_blank", rel: "noopener noreferrer" } : {}),
+          },
+        };
+      },
+    },
+  });
 }
 /** Pure and shared by publication acceptance and public delivery; never truncates. */
 export function projectPublicBlog(
@@ -120,68 +182,23 @@ export function projectPublicBlog(
         throw new PublicBlogCapacityError("Invalid public Blog identity");
       // First apply the established rich-text policy, then remove images that the
       // unchanged public site's same-origin CSP cannot display.
-      const content = sanitizeHtml(sanitizePublicRichHtml(s.content) ?? "", {
-        allowedTags: [
-          "p",
-          "br",
-          "strong",
-          "b",
-          "em",
-          "i",
-          "u",
-          "s",
-          "ul",
-          "ol",
-          "li",
-          "blockquote",
-          "pre",
-          "code",
-          "hr",
-          "h2",
-          "h3",
-          "h4",
-          "a",
-          "img",
-        ],
-        allowedAttributes: {
-          p: ["style"],
-          h2: ["style"],
-          h3: ["style"],
-          h4: ["style"],
-          a: ["href", "target", "rel"],
-          img: ["src", "alt", "data-align", "class"],
-        },
-        allowedStyles: { "*": { "text-align": [/^(left|center|right)$/] } },
-        exclusiveFilter: (frame) =>
-          frame.tag === "img" && !safePublicBlogUrl(frame.attribs.src, true),
-        transformTags: {
-          img: (_tag, attrs) => ({
-            tagName: "img",
-            attribs: {
-              ...attrs,
-              src: safePublicBlogUrl(attrs.src, true) ?? "",
-              ...(attrs["data-align"] && !/^(left|center|right)$/.test(attrs["data-align"])
-                ? { "data-align": "center" }
-                : {}),
-            },
-          }),
-          a: (_tag, attrs) => {
-            const href = attrs.href;
-            const safe =
-              safePublicBlogUrl(href) ||
-              (/^(#[A-Za-z0-9_-]*|mailto:[^&\s]+|tel:[+0-9() -]+)$/.test(href || "") ? href : "#");
-            return {
-              tagName: "a",
-              attribs: {
-                href: safe,
-                ...(attrs.target === "_blank"
-                  ? { target: "_blank", rel: "noopener noreferrer" }
-                  : {}),
-              },
-            };
-          },
-        },
-      });
+      const content = sanitizeBlogHtml(s.content);
+      let presentation: BlogPresentation | null | undefined;
+      if (s.presentation !== undefined) {
+        if (s.presentation === null) presentation = null;
+        else {
+          if (!validateBlogPresentation(s.presentation, s.title))
+            throw new PublicBlogCapacityError("Invalid Blog presentation metadata");
+          if (/<\s*img\b/i.test(s.presentation.relatedContent))
+            throw new PublicBlogCapacityError("Related article content does not support images");
+          const relatedContent = sanitizeBlogHtml(s.presentation.relatedContent);
+          if (!safePublishedHtml(relatedContent) || /<\s*img\b/i.test(relatedContent))
+            throw new PublicBlogCapacityError("Unsupported related article markup");
+          presentation = { ...s.presentation, relatedContent };
+          if (!validateBlogPresentation(presentation, s.title))
+            throw new PublicBlogCapacityError("Related article content exceeds supported bounds");
+        }
+      }
       text(content, MAX_PUBLIC_BLOG_CONTENT_BYTES);
       if (!safePublishedHtml(content))
         throw new PublicBlogCapacityError(
@@ -224,6 +241,7 @@ export function projectPublicBlog(
           seoDescription: optionalText(s.seoDescription, 12000),
           ogImageUrl: safePublicBlogUrl(s.ogImageUrl, true),
           noindex: s.noindex === true,
+          ...(presentation !== undefined ? { presentation } : {}),
         },
       };
     })

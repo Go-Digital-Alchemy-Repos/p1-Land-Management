@@ -165,3 +165,36 @@ A fresh read-only private Core snapshot was captured before rollout at
 8046fac8fc1ab59d820820cc00d48006c2aec70d54e7aac08aecad48e67d1c99.
 It remains outside Git and includes no media bytes or database DDL. No production
 restore, content import or source-media registration was performed.
+
+## Presentation preservation foundation — September 19
+
+Optional nullable `presentation` metadata now lives in immutable editorial snapshots:
+versioned editorial layout, eyebrow, plain-text title emphasis parts, image alt text,
+separate sanitized related-content aside, structured-data headline/description/type,
+author type, and explicit date-only source values. No default is injected into older
+snapshots, so old editorial hashes retain their meaning. Explicit null clears the
+layout; omitted metadata from older clients preserves existing metadata on save.
+Restore follows the selected immutable revision exactly. New-post creation writes
+metadata directly into the revision instead of losing it through the legacy table.
+
+Both editors preserve metadata through unrelated edits and flatten hero emphasis
+only when the title actually changes. This increment adds preservation, not new
+presentation editing controls. Those controls remain required before actual import.
+The public renderer reuses PageHero and the original body/aside layout. Unsafe
+related HTML is sanitized/validated; inline images in the aside are unsupported.
+Organization authors other than P1 are not assigned P1's canonical business identity.
+Explicit declared date-only strings remain strings; missing values use actual
+publication timestamps. This is not verification of historical publication dates.
+
+Review bundle schema2 emits body and aside separately and structured presentation
+metadata, refusing unsupported hero markup or invalid date/author data. A rerun of
+the prior verified source capture preserves all five articles and the same source
+fingerprint. `canApply` remains false. The import must still recheck live revisions.
+Registered-media ownership and responsive variants remain mandatory: build-manifest
+srcset URLs cannot simply be replaced with an R2 URL and called equivalent.
+
+Validation: review tooling6, real PostgreSQL publication/cutover19, Core pipeline/
+route25, native editor20, retained editor9 and website40 tests passed. Source
+field identities for all six Blog routes remain unchanged. Core and website builds
+and typechecks passed; exact release observations are recorded in handoff.md.
+No production content import or mutation occurred in this increment.

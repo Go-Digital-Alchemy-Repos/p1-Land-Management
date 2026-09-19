@@ -6,6 +6,7 @@ import { createRequire } from "node:module";
 import { readFile, mkdir, writeFile } from "node:fs/promises";
 import { resolve, join } from "node:path";
 import { pathToFileURL } from "node:url";
+import { validateBlogPresentation } from "../../platform/p1-core/shared/blog-presentation.ts";
 import { sanitizePublicRichHtml } from "../../platform/p1-core/shared/sanitize-rich-html.ts";
 const require = createRequire(
   new URL("../../platform/p1-core/package.json", import.meta.url),
@@ -103,7 +104,51 @@ export function prepareArticle(slug, html) {
     if (ld.length !== 1) throw Error("Expected one article schema");
     const combined = doc.createElement("div");
     combined.innerHTML = body.innerHTML + aside.innerHTML;
-    const proposed = sanitizePublicRichHtml(combined.innerHTML);
+    const bodyContent = sanitizePublicRichHtml(body.innerHTML);
+    const relatedContent = sanitizePublicRichHtml(aside.innerHTML);
+    const proposed = bodyContent + relatedContent;
+    const titleParts = [];
+    for (const child of title.childNodes) {
+      if (child.nodeType === 8) continue; // React separators have no visible content.
+      if (
+        child.nodeType !== 3 &&
+        (child.nodeName !== "EM" ||
+          [...child.childNodes].some(
+            (n) => n.nodeType !== 3 && n.nodeType !== 8,
+          ))
+      )
+        throw Error("Unsupported hero title markup; review before import");
+      titleParts.push({
+        text: child.textContent.replace(/\s+/g, " "),
+        emphasis: child.nodeName === "EM",
+      });
+    }
+    if (
+      !ld[0].author ||
+      typeof ld[0].author.name !== "string" ||
+      !ld[0].author.name.trim()
+    )
+      throw Error("Explicit article author identity required");
+    const presentation = {
+      schemaVersion: 1,
+      layout: "editorial",
+      eyebrow: text(eyebrow),
+      titleParts,
+      imageAlt: image.getAttribute("alt"),
+      relatedContent,
+      structuredData: {
+        type: ld[0]["@type"],
+        headline: ld[0].headline,
+        description: ld[0].description,
+        authorType: ld[0].author["@type"],
+        publishedDate: ld[0].datePublished ?? null,
+        modifiedDate: ld[0].dateModified ?? null,
+      },
+    };
+    if (!validateBlogPresentation(presentation, text(title)))
+      throw Error(
+        "Unsupported article presentation or declared date; review before import",
+      );
     const sanitized = doc.createElement("div");
     sanitized.innerHTML = proposed;
     const before = contentEvidence(combined),
@@ -114,7 +159,9 @@ export function prepareArticle(slug, html) {
     const editorial = {
       title: text(title),
       slug,
-      content: proposed,
+      content: bodyContent,
+      authorName: ld[0].author.name,
+      presentation,
       seoTitle: text(exactly(doc, "title")),
       seoDescription: exactly(doc, 'meta[name="description"]').getAttribute(
         "content",
@@ -156,8 +203,8 @@ export function prepareArticle(slug, html) {
       },
       reviewRequired: [
         "date provenance",
-        "organization authorship",
-        "hero presentation fields",
+        "reviewed organization identity",
+        "presentation editor and public-renderer parity",
         "immutable registered media",
         "durable route ownership and withdrawal",
         "reviewed source fingerprint",
@@ -195,7 +242,7 @@ export async function prepareBlogImport({
     ),
   );
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     mode: "review-only",
     canApply: false,
     deploymentObservation: {

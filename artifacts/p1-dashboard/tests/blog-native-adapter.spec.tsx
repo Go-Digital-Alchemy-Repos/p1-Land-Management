@@ -509,3 +509,71 @@ it("allows correcting deterministic validation failures without reloading the dr
   await click("Save post");
   expect(state.api.mutateMarketingBlogPublication).toHaveBeenCalledTimes(2);
 });
+
+const presentationFor = (title: string) => ({
+  schemaVersion: 1 as const,
+  layout: "editorial" as const,
+  eyebrow: "Land care",
+  titleParts: [{ text: title, emphasis: true }],
+  imageAlt: "A working property",
+  relatedContent:
+    '<p>Related <a href="/services/land-clearing">land clearing</a>.</p>',
+  structuredData: {
+    type: "Article" as const,
+    headline: "Declared headline",
+    description: "Declared description",
+    authorType: "Organization" as const,
+    publishedDate: "2026-06-24",
+    modifiedDate: "2026-09-14",
+  },
+});
+
+it.each([undefined, null, presentationFor("A retained post")])(
+  "roundtrips optional presentation without invention on unrelated saves: %j",
+  async (presentation) => {
+    state.api.getMarketingBlogPublication.mockResolvedValueOnce({
+      ...post,
+      ...(presentation !== undefined ? { presentation } : {}),
+    });
+    await edit();
+    await setInput(
+      host.querySelector('textarea[aria-label="Post content"]')!,
+      "Unrelated body edit",
+    );
+    await click("Save post");
+    const data = state.api.mutateMarketingBlogPublication.mock.calls[0][1].data;
+    if (presentation === undefined)
+      expect(data).not.toHaveProperty("presentation");
+    else expect(data.presentation).toEqual(presentation);
+  },
+);
+it("regenerates only hero title parts after a real title edit and retains date-only organization metadata", async () => {
+  const presentation = presentationFor("A retained post");
+  state.api.getMarketingBlogPublication.mockResolvedValueOnce({
+    ...post,
+    presentation,
+  });
+  await edit();
+  await setInput(host.querySelector("input[required]")!, "Changed title");
+  await click("Save post");
+  const first =
+    state.api.mutateMarketingBlogPublication.mock.calls[0][1].data.presentation;
+  expect(first).toEqual({
+    ...presentation,
+    titleParts: [{ text: "Changed title", emphasis: false }],
+  });
+  await click("Save post");
+  expect(
+    state.api.mutateMarketingBlogPublication.mock.calls[1][1].data.presentation,
+  ).toEqual(first);
+});
+it("blocks an unsupported presentation version instead of silently dropping it", async () => {
+  state.api.getMarketingBlogPublication.mockResolvedValueOnce({
+    ...post,
+    presentation: { ...presentationFor(post.title), schemaVersion: 99 },
+  });
+  await edit();
+  await click("Save post");
+  expect(state.api.mutateMarketingBlogPublication).not.toHaveBeenCalled();
+  expect(host.textContent).toContain("unsupported presentation metadata");
+});

@@ -5,6 +5,24 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createRoot, type Root } from "react-dom/client";
 import CmsBlogEditorPage from "@/features/admin/cms/cms-blog-editor-page";
 
+const presentationFor = (title: string) => ({
+  schemaVersion: 1 as const,
+  layout: "editorial" as const,
+  eyebrow: "Land care",
+  titleParts: [{ text: title, emphasis: true }],
+  imageAlt: "A working property",
+  relatedContent: '<p>Related <a href="/services/land-clearing">land clearing</a>.</p>',
+  structuredData: {
+    type: "Article" as const,
+    headline: "Declared headline",
+    description: "Declared description",
+    authorType: "Organization" as const,
+    publishedDate: "2026-06-24",
+    modifiedDate: "2026-09-14",
+  },
+});
+
+let loadedPresentation: ReturnType<typeof presentationFor> | null | undefined;
 const navigateMock = vi.fn();
 const lockGuardMock = vi.fn();
 const useQueryMock = vi.fn();
@@ -158,6 +176,7 @@ describe("CmsBlogEditorPage", () => {
   let root: Root | null = null;
 
   beforeEach(() => {
+    loadedPresentation = undefined;
     navigateMock.mockReset();
     lockGuardMock.mockReset();
     editorLockState.isReadOnly = true;
@@ -175,6 +194,7 @@ describe("CmsBlogEditorPage", () => {
       if (queryKey[0] === "/api/admin/blog/publications") {
         return {
           data: {
+            ...(loadedPresentation !== undefined ? { presentation: loadedPresentation } : {}),
             publication: {
               requiresAdoption: false,
               version: 3,
@@ -384,5 +404,67 @@ describe("CmsBlogEditorPage", () => {
       container.querySelector<HTMLButtonElement>('[data-testid="button-save-post"]')!.disabled,
     ).toBe(false);
     expect(input.value).toBe("Keep entered title");
+  });
+  it.each([undefined, null, presentationFor("Latest Insights")])(
+    "preserves optional presentation on unrelated title-unchanged saves: %j",
+    async (presentation) => {
+      loadedPresentation = presentation;
+      editorLockState.isReadOnly = false;
+      root = createRoot(container);
+      await act(async () => root!.render(React.createElement(CmsBlogEditorPage)));
+      await act(async () =>
+        container.querySelector<HTMLButtonElement>('[data-testid="button-save-post"]')!.click(),
+      );
+      const variables = mutationStates.flatMap((s) => s.mutate.mock.calls).at(-1)![0];
+      const handler = mutationOptions.filter((o) => o.onSuccess && o.onError).at(-2);
+      await act(async () => handler.mutationFn(variables));
+      const data = JSON.parse(vi.mocked(fetch).mock.calls.at(-1)![1]!.body as string).data;
+      if (presentation === undefined) expect(data).not.toHaveProperty("presentation");
+      else expect(data.presentation).toEqual(presentation);
+    },
+  );
+  it("regenerates changed title parts and adopts returned metadata for the next unchanged save", async () => {
+    loadedPresentation = presentationFor("Latest Insights");
+    editorLockState.isReadOnly = false;
+    root = createRoot(container);
+    await act(async () => root!.render(React.createElement(CmsBlogEditorPage)));
+    const input = container.querySelector<HTMLInputElement>('[data-testid="input-post-title"]')!;
+    await act(async () => {
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(
+        input,
+        "Changed title",
+      );
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    await act(async () =>
+      container.querySelector<HTMLButtonElement>('[data-testid="button-save-post"]')!.click(),
+    );
+    const variables = mutationStates.flatMap((s) => s.mutate.mock.calls).at(-1)![0];
+    const handler = mutationOptions.filter((o) => o.onSuccess && o.onError).at(-2);
+    const current = useQueryMock({ queryKey: ["/api/admin/blog/publications"] }).data;
+    const normalized = {
+      ...loadedPresentation,
+      titleParts: [{ text: "Changed title", emphasis: false }],
+    };
+    const result = {
+      ...current,
+      title: "Changed title",
+      presentation: normalized,
+      publication: { ...current.publication, version: 4 },
+    };
+    vi.mocked(fetch).mockResolvedValueOnce(new Response(JSON.stringify(result), { status: 200 }));
+    let returned: any;
+    await act(async () => {
+      returned = await handler.mutationFn(variables);
+    });
+    expect(
+      JSON.parse(vi.mocked(fetch).mock.calls.at(-1)![1]!.body as string).data.presentation,
+    ).toEqual(normalized);
+    await act(async () => handler.onSuccess(returned, variables));
+    await act(async () =>
+      container.querySelector<HTMLButtonElement>('[data-testid="button-save-post"]')!.click(),
+    );
+    const second = mutationStates.flatMap((s) => s.mutate.mock.calls).at(-1)![0];
+    expect(second.data.presentation).toEqual(normalized);
   });
 });

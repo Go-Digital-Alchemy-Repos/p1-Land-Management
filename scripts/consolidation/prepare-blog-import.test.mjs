@@ -12,13 +12,28 @@ const fixture = (
   slug = ARTICLE_SLUGS[0],
   body = '<p>Body &amp; detail <a href="/contact">Contact</a></p><h2>Section</h2><pre><code>x &lt; y</code></pre>',
 ) =>
-  `<!doctype html><html><head><title>Exact SEO</title><meta name="description" content="Exact description"><link rel="canonical" href="https://www.p1landmanagement.com/blog/${slug}"><script type="application/ld+json">${JSON.stringify({ "@type": "Article", author: { "@type": "Organization", name: "P1" }, datePublished: "2026-06-24", dateModified: "2026-09-14" })}</script></head><body><main><article><section><img src="/assets/hero.webp" alt="Actual alt" srcset="/assets/hero-480.webp 480w"><div class="site-shell"><div><span>Eyebrow</span><h1>Title <em>emphasis</em></h1></div></div></section><section><div class="prose">${body}</div></section></article><aside><p>Review <a href="/services">services</a>.</p></aside></main><script id="p1-published-content" type="application/json">${JSON.stringify({ route: "/blog/" + slug, revision: 7, globalRevision: 2, content: { example: "resolved" } })}</script><script>document.querySelector('h1').textContent='Executed malicious script';fetch('https://example.invalid')</script></body></html>`;
+  `<!doctype html><html><head><title>Exact SEO</title><meta name="description" content="Exact description"><link rel="canonical" href="https://www.p1landmanagement.com/blog/${slug}"><script type="application/ld+json">${JSON.stringify({ "@type": "Article", headline: "Source schema headline", description: "Source schema description", author: { "@type": "Organization", name: "P1" }, datePublished: "2026-06-24", dateModified: "2026-09-14" })}</script></head><body><main><article><section><img src="/assets/hero.webp" alt="Actual alt" srcset="/assets/hero-480.webp 480w"><div class="site-shell"><div><span>Eyebrow</span><h1>Title <em>emphasis</em></h1></div></div></section><section><div class="prose">${body}</div></section></article><aside><p>Review <a href="/services">services</a>.</p></aside></main><script id="p1-published-content" type="application/json">${JSON.stringify({ route: "/blog/" + slug, revision: 7, globalRevision: 2, content: { example: "resolved" } })}</script><script>document.querySelector('h1').textContent='Executed malicious script';fetch('https://example.invalid')</script></body></html>`;
 test("preserves resolved text, links, hero/aside/schema metadata and does not execute scripts", () => {
   const a = prepareArticle(ARTICLE_SLUGS[0], fixture());
   assert.equal(a.editorial.title, "Title emphasis");
   assert.equal(a.source.hero.titleHtml, "Title <em>emphasis</em>");
   assert.equal(a.source.hero.imageAlt, "Actual alt");
-  assert.match(a.editorial.content, /Review/);
+  assert.doesNotMatch(a.editorial.content, /Review/);
+  assert.match(a.editorial.presentation.relatedContent, /Review/);
+  assert.deepEqual(a.editorial.presentation.titleParts, [
+    { text: "Title ", emphasis: false },
+    { text: "emphasis", emphasis: true },
+  ]);
+  assert.equal(a.editorial.presentation.imageAlt, "Actual alt");
+  assert.equal(
+    a.editorial.presentation.structuredData.headline,
+    "Source schema headline",
+  );
+  assert.equal(
+    a.editorial.presentation.structuredData.publishedDate,
+    "2026-06-24",
+  );
+  assert.equal(a.editorial.authorName, "P1");
   assert.equal(a.source.articleSchema.author["@type"], "Organization");
   assert.equal(a.declaredDates.historicallyVerified, false);
   assert.deepEqual(a.revisions, { page: 7, global: 2 });
@@ -106,4 +121,14 @@ test("whole bundle is deterministic, complete, read-only and changes fingerprint
   } finally {
     await rm(dir, { recursive: true, force: true });
   }
+});
+
+test("rejects lossy hero markup, missing author and invalid date-only metadata", () => {
+  for (const html of [
+    fixture().replace("<em>emphasis</em>", "<strong>emphasis</strong>"),
+    fixture().replace('"name":"P1"', '"name":""'),
+    fixture().replace("2026-06-24", "2026-02-30"),
+    fixture().replace("2026-06-24", "2026-06-24T12:00:00Z"),
+  ])
+    assert.throws(() => prepareArticle(ARTICLE_SLUGS[0], html));
 });

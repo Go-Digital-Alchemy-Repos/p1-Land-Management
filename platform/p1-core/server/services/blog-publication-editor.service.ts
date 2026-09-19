@@ -25,7 +25,7 @@ export async function publicationEnvelope(tx: Pick<CmsTransaction, "select">, id
   const [state] = await tx.select().from(states).where(eq(states.postId, id));
   if (!state)
     return {
-      ...legacy,
+      ...(legacy as typeof legacy & Pick<BlogEditorialSnapshot, "presentation">),
       publication: {
         requiresAdoption: true,
         version: null,
@@ -115,15 +115,23 @@ export async function createBlogPublication(
         "A post already uses this URL. Reload the list before creating another post.",
       );
     // Legacy identity is durable and kept unpublished; content is owned by revisions.
+    const { presentation, ...legacyFields } = parsed;
     const [post] = await tx
       .insert(blogPosts)
-      .values({ ...parsed, isPublished: false, scheduledAt: null, publishedAt: null })
+      .values({ ...legacyFields, isPublished: false, scheduledAt: null, publishedAt: null })
       .returning();
-    await initializeBlogInTransaction(tx, post.id, user.id, {
-      kind: "legacy-adoption",
-      sourceReference: `created:${post.id}`,
-      reason: "Explicit new publication draft",
-    });
+    await initializeBlogInTransaction(
+      tx,
+      post.id,
+      user.id,
+      {
+        kind: "legacy-adoption",
+        sourceReference: `created:${post.id}`,
+        reason: "Explicit new publication draft",
+      },
+      undefined,
+      presentation,
+    );
     const lease = await blogLeaseInTransaction(tx, "acquire", post.id, user, { editorInstanceId });
     return { ...(await publicationEnvelope(tx, post.id)), lease };
   });

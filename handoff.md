@@ -1,3 +1,24 @@
+## Article presentation preservation candidate — September 19
+
+Optional nullable versioned presentation metadata now survives creation, revision
+history, both editor controllers, older-client saves and explicit clearing/restoration.
+Public rendering reuses the original PageHero, body and related-links aside, preserves
+source date-only metadata and safe Organization identities. No new editor controls
+or actual five-article import exist yet. Remaining import gates: structured editing
+controls, registered media/variants, reviewed dates/source fingerprint and atomic
+import/rollback acceptance. Do not claim migration complete or retire retained admin.
+
+Review-bundle schema2 emits distinct body/aside plus hero/schema metadata. The verified
+prior capture still has all five content/structure comparisons passing and unchanged
+source fingerprint. Latest local review: `/tmp/p1-blog-presentation-review-20260919`.
+Tests:6 review,19 realPG cutover,25 Core pipeline/route,20 native editor,9 retained editor,
+40 website; clean Core/dashboard/website/API typechecks and builds passed. Parent
+visual check used a local rendered source-article fixture; desktop and390px mobile
+retain hero emphasis/image and blue underlined aside links, oneH1 and390px document
+width. Preview was static/local (not authenticated live publishing); its initial
+missing charset was corrected in the temporary fixture server. Server/tab closed.
+The earlier no-metadata snapshots and existing five live source pages remain intact.
+
 ## Verified ownership foundation release — September 19
 
 Runtime `9d39eb5df5a4a4b182b21211b4260a5bf0514aa6` is on main and the task branch.

@@ -38,7 +38,12 @@ const manifest = JSON.parse(
   await readFile(path.join(root, "config/client-site-manifest.json"), "utf8"),
 );
 const template = await readFile(path.join(publicDir, "index.html"), "utf8");
-const { render, safePublishedHtml, publicBlogListing } = await import(
+const {
+  render,
+  safePublishedHtml,
+  publicBlogListing,
+  validateBlogPresentation,
+} = await import(
   pathToFileURL(path.join(root, "dist/server/entry-server.js")).href
 );
 const origin = process.env.P1_CORE_ORIGIN?.replace(/\/$/, "");
@@ -59,6 +64,7 @@ const websiteBlog = createWebsiteBlogStore({
   origin,
   validateHtml: safePublishedHtml,
   projectListing: publicBlogListing,
+  validatePresentation: validateBlogPresentation,
   cacheDir: process.env.P1_CONTENT_CACHE_DIR ?? "/tmp/p1-public-content",
 });
 const blogArticlePath = (route) =>

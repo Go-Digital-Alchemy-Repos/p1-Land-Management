@@ -92,6 +92,57 @@ suite("Blog cutover actual PostgreSQL", () => {
     ).rejects.toThrow();
     expect(await db.select().from(blogPosts)).toHaveLength(1);
   });
+  it("preserves optional presentation through create, old-client save, explicit clear and restore", async () => {
+    const presentation = {
+      schemaVersion: 1 as const,
+      layout: "editorial" as const,
+      eyebrow: "Property Insights",
+      titleParts: [{ text: "Original", emphasis: true }],
+      imageAlt: "A property",
+      relatedContent: '<p><a href="/contact">Discuss your property</a></p>',
+      structuredData: {
+        type: "Article" as const,
+        headline: "Original source headline",
+        description: "Source description",
+        authorType: "Organization" as const,
+        publishedDate: "2026-06-24",
+        modifiedDate: "2026-09-14",
+      },
+    };
+    const instance = randomUUID();
+    const post = await createBlogPublication({ ...body, presentation }, user, instance);
+    expect(post.presentation).toEqual(presentation);
+    const firstRevision = post.publication.draftRevisionId!;
+    const proof = {
+      expectedVersion: post.publication.version!,
+      editorInstanceId: instance,
+      leaseId: post.lease.lock!.id,
+    };
+    const saved = await mutate(post.id, user.id, proof, "save", {
+      data: { ...body, content: "<p>Edited body</p>" },
+    });
+    expect((await getBlogPublication(post.id)).presentation).toEqual(presentation);
+    const cleared = await mutate(
+      post.id,
+      user.id,
+      { ...proof, expectedVersion: saved.version },
+      "save",
+      { data: { ...body, presentation: null } },
+    );
+    expect((await getBlogPublication(post.id)).presentation).toBeNull();
+    const restored = await mutate(
+      post.id,
+      user.id,
+      { ...proof, expectedVersion: cleared.version },
+      "restore",
+      { revisionId: firstRevision },
+    );
+    expect((await getBlogPublication(post.id)).presentation).toEqual(presentation);
+    await mutate(post.id, user.id, { ...proof, expectedVersion: restored.version }, "publish");
+    const visible = (await listPublishedBlogSnapshots())[0];
+    expect(visible.snapshot.presentation).toEqual(presentation);
+    expect(new Date(visible.publishedAt!).getFullYear()).toBeGreaterThanOrEqual(2026);
+  });
   it("adoption fingerprints block unseen changes and converts only same-user legacy locks", async () => {
     const [legacy] = await db
       .insert(blogPosts)

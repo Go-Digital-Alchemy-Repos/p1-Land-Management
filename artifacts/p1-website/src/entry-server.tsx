@@ -1,3 +1,4 @@
+export { validateBlogPresentation } from "../../../platform/p1-core/shared/blog-presentation";
 export {
   safePublishedHtml,
   publicBlogListing,

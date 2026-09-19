@@ -1,3 +1,4 @@
+import type { BlogPresentation } from "./blog-presentation";
 /** Public Blog delivery contract. No database, sanitizer, or Node runtime dependencies. */
 export const STATIC_BLOG_SLUGS = [
   "land-clearing-cost-per-acre-south-carolina",
@@ -29,6 +30,7 @@ export type PublicBlogSnapshot = {
   seoDescription: string | null;
   ogImageUrl: string | null;
   noindex: boolean;
+  presentation?: BlogPresentation | null;
 };
 export type PublicBlogPost = {
   id: string;

@@ -70,6 +70,7 @@ export async function initializeBlogInTransaction(
   actorId: string,
   origin: BlogProvenance,
   expectedFingerprint?: string,
+  initialPresentation?: BlogEditorialSnapshot["presentation"],
 ) {
   await lockBlogPublication(tx);
   if ((await tx.select().from(states).where(eq(states.postId, postId))).length)
@@ -78,7 +79,10 @@ export async function initializeBlogInTransaction(
   if (!legacy) throw new CmsMutationError(404, "BLOG_NOT_FOUND", "Post not found");
   if (expectedFingerprint && expectedFingerprint !== legacyBlogFingerprint(legacy))
     fail("BLOG_LEGACY_STALE", "Legacy content changed; reload before adoption.");
-  const snapshot = legacyBlogEditorial(legacy),
+  const snapshot = blogEditorialSchema.parse({
+      ...legacyBlogEditorial(legacy),
+      ...(initialPresentation !== undefined ? { presentation: initialPresentation } : {}),
+    }),
     id = randomUUID(),
     now = await databaseNow(tx);
   const [state] = await tx
@@ -199,7 +203,12 @@ async function applyBlogMutation(
   let snapshot = blogEditorialSchema.parse(draft.snapshot),
     sourceRevisionId: string | null = draft.id;
   if (action === "save" || ((action === "publish" || action === "schedule") && options.data))
-    snapshot = blogEditorialSchema.parse(options.data);
+    snapshot = blogEditorialSchema.parse({
+      ...options.data,
+      ...(options.data?.presentation === undefined && snapshot.presentation !== undefined
+        ? { presentation: snapshot.presentation }
+        : {}),
+    });
   if (action === "scheduled_publish") {
     const [job] = await tx
       .select()

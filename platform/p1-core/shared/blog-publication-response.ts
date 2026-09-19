@@ -1,3 +1,4 @@
+import type { BlogPresentation } from "./blog-presentation";
 // Type-only response contracts derived from Core's own services. Keeping these
 // inside Core preserves its standalone Docker build boundary. No server code is
 // imported at runtime into the browser.
@@ -16,6 +17,7 @@ type JsonResponse<T> = T extends Date ? string
 type CreatedPost = JsonResponse<Awaited<ReturnType<typeof createBlogPublication>>>;
 export type BlogPublicationPostResponse = Omit<CreatedPost, "lease"> & {
   lease?: CreatedPost["lease"];
+  presentation?: BlogPresentation | null;
 };
 export type BlogPublicationAction = BlogMutationAction;
 export type BlogRevisionResponse = JsonResponse<Awaited<ReturnType<typeof blogRevisionSummaries>>[number]>;

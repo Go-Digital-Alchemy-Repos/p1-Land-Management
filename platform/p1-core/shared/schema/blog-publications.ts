@@ -1,3 +1,4 @@
+import { validateBlogPresentation, type BlogPresentation } from "../blog-presentation";
 import { sql } from "drizzle-orm";
 import {
   pgTable,
@@ -39,8 +40,22 @@ export const blogEditorialSchema = z
     seoDescription: z.string().nullable(),
     ogImageUrl: z.string().nullable(),
     noindex: z.boolean().nullable(),
+    presentation: z.custom<BlogPresentation>().nullable().optional(),
   })
-  .strict();
+  .strict()
+  .superRefine((value, context) => {
+    if (
+      value.presentation !== undefined &&
+      value.presentation !== null &&
+      !validateBlogPresentation(value.presentation, value.title)
+    ) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["presentation"],
+        message: "Invalid editorial presentation metadata",
+      });
+    }
+  });
 export type BlogEditorialSnapshot = z.infer<typeof blogEditorialSchema>;
 export const blogProvenanceSchema = z
   .object({

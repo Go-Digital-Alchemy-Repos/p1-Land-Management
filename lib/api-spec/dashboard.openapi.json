@@ -33309,6 +33309,116 @@
           "noindex": {
             "type": "boolean",
             "nullable": true
+          },
+          "presentation": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "schemaVersion",
+              "layout",
+              "eyebrow",
+              "titleParts",
+              "imageAlt",
+              "relatedContent",
+              "structuredData"
+            ],
+            "properties": {
+              "schemaVersion": {
+                "type": "integer",
+                "enum": [
+                  1
+                ]
+              },
+              "layout": {
+                "type": "string",
+                "enum": [
+                  "editorial"
+                ]
+              },
+              "eyebrow": {
+                "type": "string",
+                "maxLength": 200
+              },
+              "titleParts": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 20,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "text",
+                    "emphasis"
+                  ],
+                  "properties": {
+                    "text": {
+                      "type": "string",
+                      "maxLength": 2000,
+                      "minLength": 1
+                    },
+                    "emphasis": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              },
+              "imageAlt": {
+                "type": "string",
+                "maxLength": 2000
+              },
+              "relatedContent": {
+                "type": "string",
+                "maxLength": 32768
+              },
+              "structuredData": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "type",
+                  "headline",
+                  "description",
+                  "authorType",
+                  "publishedDate",
+                  "modifiedDate"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "Article",
+                      "BlogPosting"
+                    ]
+                  },
+                  "headline": {
+                    "type": "string",
+                    "maxLength": 2000,
+                    "minLength": 1
+                  },
+                  "description": {
+                    "type": "string",
+                    "maxLength": 12000
+                  },
+                  "authorType": {
+                    "type": "string",
+                    "enum": [
+                      "Organization",
+                      "Person"
+                    ]
+                  },
+                  "publishedDate": {
+                    "type": "string",
+                    "nullable": true,
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "modifiedDate": {
+                    "type": "string",
+                    "nullable": true,
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  }
+                }
+              }
+            },
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -33427,6 +33537,116 @@
               },
               "lease": {
                 "$ref": "#/components/schemas/WebsiteEditorReservation"
+              },
+              "presentation": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "schemaVersion",
+                  "layout",
+                  "eyebrow",
+                  "titleParts",
+                  "imageAlt",
+                  "relatedContent",
+                  "structuredData"
+                ],
+                "properties": {
+                  "schemaVersion": {
+                    "type": "integer",
+                    "enum": [
+                      1
+                    ]
+                  },
+                  "layout": {
+                    "type": "string",
+                    "enum": [
+                      "editorial"
+                    ]
+                  },
+                  "eyebrow": {
+                    "type": "string",
+                    "maxLength": 200
+                  },
+                  "titleParts": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 20,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "text",
+                        "emphasis"
+                      ],
+                      "properties": {
+                        "text": {
+                          "type": "string",
+                          "maxLength": 2000,
+                          "minLength": 1
+                        },
+                        "emphasis": {
+                          "type": "boolean"
+                        }
+                      }
+                    }
+                  },
+                  "imageAlt": {
+                    "type": "string",
+                    "maxLength": 2000
+                  },
+                  "relatedContent": {
+                    "type": "string",
+                    "maxLength": 32768
+                  },
+                  "structuredData": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "type",
+                      "headline",
+                      "description",
+                      "authorType",
+                      "publishedDate",
+                      "modifiedDate"
+                    ],
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "Article",
+                          "BlogPosting"
+                        ]
+                      },
+                      "headline": {
+                        "type": "string",
+                        "maxLength": 2000,
+                        "minLength": 1
+                      },
+                      "description": {
+                        "type": "string",
+                        "maxLength": 12000
+                      },
+                      "authorType": {
+                        "type": "string",
+                        "enum": [
+                          "Organization",
+                          "Person"
+                        ]
+                      },
+                      "publishedDate": {
+                        "type": "string",
+                        "nullable": true,
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                      },
+                      "modifiedDate": {
+                        "type": "string",
+                        "nullable": true,
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                      }
+                    }
+                  }
+                },
+                "nullable": true
               }
             }
           }

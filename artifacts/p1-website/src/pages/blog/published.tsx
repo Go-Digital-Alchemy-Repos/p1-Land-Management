@@ -2,6 +2,8 @@ import { Link } from "wouter";
 import { useCms } from "@/lib/cms";
 import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
+import { PageHero } from "@/components/layout/PageHero";
+import { articleSchema } from "@/lib/structured-data";
 import { SEO } from "@/components/seo";
 export default function PublishedBlog() {
   const { snapshot } = useCms();
@@ -37,6 +39,77 @@ export default function PublishedBlog() {
       </Layout>
     );
   const s = post.snapshot;
+  const presentation = s.presentation;
+  if (presentation) {
+    const data = presentation.structuredData;
+    const structured = articleSchema({
+      headline: data.headline,
+      description: data.description,
+      path: `/blog/${s.slug}`,
+      datePublished: data.publishedDate ?? post.publishedAt,
+      dateModified: data.modifiedDate ?? post.modifiedAt,
+    });
+    return (
+      <Layout>
+        <SEO
+          title={s.seoTitle || s.title}
+          description={s.seoDescription || s.excerpt || ""}
+          image={s.ogImageUrl || s.coverImageUrl || undefined}
+          noindex={s.noindex}
+          jsonLd={{
+            ...structured,
+            "@type": data.type,
+            author:
+              data.authorType === "Organization"
+                ? s.authorName ===
+                  (structured.author as Record<string, unknown>).name
+                  ? structured.author
+                  : { "@type": "Organization", name: s.authorName }
+                : { "@type": "Person", name: s.authorName },
+          }}
+        />
+        <article className="pb-24">
+          <PageHero
+            eyebrow={presentation.eyebrow}
+            title={
+              <>
+                {presentation.titleParts.map((part, index) =>
+                  part.emphasis ? (
+                    <em
+                      key={index}
+                      className="font-semibold not-italic text-tan"
+                      style={{ fontStyle: "italic" }}
+                    >
+                      {part.text}
+                    </em>
+                  ) : (
+                    <span key={index}>{part.text}</span>
+                  ),
+                )}
+              </>
+            }
+            {...(s.coverImageUrl
+              ? { image: s.coverImageUrl, imageAlt: presentation.imageAlt }
+              : { image: undefined })}
+            imagePosition={`${s.coverImagePositionX ?? 50}% ${s.coverImagePositionY ?? 50}%`}
+          />
+          <section className="py-16 bg-background">
+            <div
+              className="site-shell prose prose-lg prose-h2:font-serif prose-h2:text-3xl prose-h2:text-secondary prose-h3:font-serif prose-h3:text-2xl prose-h3:text-secondary prose-p:text-secondary/80 prose-li:text-secondary/80 prose-a:text-primary hover:prose-a:text-primary/80 min-w-0 break-words prose-pre:max-w-full prose-pre:overflow-x-auto"
+              dangerouslySetInnerHTML={{ __html: s.content }}
+            />
+          </section>
+        </article>
+        {presentation.relatedContent && (
+          <aside
+            className="site-shell pb-12 text-lg [&_a]:text-primary [&_a]:underline"
+            dangerouslySetInnerHTML={{ __html: presentation.relatedContent }}
+          />
+        )}
+        <FinalCTA />
+      </Layout>
+    );
+  }
   return (
     <Layout>
       <SEO

@@ -1,3 +1,5 @@
+import type { BlogPresentation } from "@shared/blog-presentation";
+import { blogEditorialSchema } from "@shared/schema/blog-publications";
 import { describe, it, expect } from "vitest";
 import {
   projectPublicBlog,
@@ -5,6 +7,25 @@ import {
   type PublishedBlogRow,
 } from "./public-blog-projection.service";
 import { STATIC_BLOG_SLUGS } from "@shared/public-blog";
+const fixturePresentation = (): BlogPresentation => ({
+  schemaVersion: 1,
+  layout: "editorial",
+  eyebrow: "Land care",
+  titleParts: [
+    { text: "Public ", emphasis: false },
+    { text: "title", emphasis: true },
+  ],
+  imageAlt: "Large acreage",
+  relatedContent: '<p><a href="/services/land-clearing">Land clearing</a></p>',
+  structuredData: {
+    type: "Article",
+    headline: "Public title",
+    description: "Practical land advice",
+    authorType: "Organization",
+    publishedDate: "2026-06-24",
+    modifiedDate: "2026-09-14",
+  },
+});
 const row = (): PublishedBlogRow => ({
   id: "post",
   revisionId: "revision",
@@ -34,6 +55,34 @@ const row = (): PublishedBlogRow => ({
   },
 });
 describe("public Blog projection", () => {
+  it("preserves optional metadata, sanitizes related links, and keeps old snapshots absent", () => {
+    const original = row();
+    const old = projectPublicBlog([original]);
+    expect(old.posts[0].snapshot).not.toHaveProperty("presentation");
+    expect(blogEditorialSchema.parse(original.snapshot)).not.toHaveProperty("presentation");
+    original.snapshot.presentation = undefined;
+    expect(projectPublicBlog([original]).revision).toBe(old.revision);
+    original.snapshot.presentation = null;
+    expect(projectPublicBlog([original]).posts[0].snapshot.presentation).toBeNull();
+    original.snapshot.presentation = fixturePresentation();
+    original.snapshot.presentation.relatedContent =
+      '<p onclick="bad()">Related <a href="javascript:bad()">service</a></p><script>bad()</script>';
+    const projected = projectPublicBlog([original]).posts[0].snapshot.presentation!;
+    expect(projected.structuredData.authorType).toBe("Organization");
+    expect(projected.structuredData.publishedDate).toBe("2026-06-24");
+    expect(projected.relatedContent).not.toMatch(/script|onclick|javascript/);
+    expect(original.snapshot.presentation.relatedContent).toContain("onclick");
+  });
+  it("rejects unsafe presentation contracts and related images before publishing", () => {
+    const original = row();
+    original.snapshot.presentation = fixturePresentation();
+    original.snapshot.presentation.relatedContent = '<p><img src="/r2/cms/image.webp"></p>';
+    expect(() => projectPublicBlog([original])).toThrow("does not support images");
+    original.snapshot.presentation = fixturePresentation();
+    original.snapshot.presentation.titleParts = [{ text: "Mismatched", emphasis: false }];
+    expect(() => projectPublicBlog([original])).toThrow("Invalid Blog presentation");
+    expect(() => blogEditorialSchema.parse(original.snapshot)).toThrow();
+  });
   it("allowlists immutable public fields and emits deterministic authoritative emptiness", () => {
     const data = projectPublicBlog([{ ...row(), privateSecret: "secret" } as PublishedBlogRow]);
     expect(data.posts[0].snapshot).not.toHaveProperty("sidebarId");

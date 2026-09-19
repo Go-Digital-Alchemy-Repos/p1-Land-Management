@@ -1,3 +1,4 @@
+import { validateBlogPresentation } from "../../../../platform/p1-core/shared/blog-presentation";
 import { BlogImageInput } from "./BlogImageInput";
 import { BlogPostCard } from "../../../../platform/p1-core/client/src/components/shared/blog-list-presentation";
 import {
@@ -70,7 +71,9 @@ export function blogError(e: unknown) {
     "Blog request failed"
   );
 }
-const empty: MarketingBlogInput = {
+type BlogForm = MarketingBlogInput &
+  Pick<MarketingBlogEditorial, "presentation">;
+const empty: BlogForm = {
   title: "",
   slug: "",
   content: "",
@@ -94,23 +97,52 @@ const empty: MarketingBlogInput = {
   ogImageUrl: null,
   noindex: false,
 };
-function input(post: MarketingBlogPost): MarketingBlogInput {
-  const next = { ...empty };
+function input(post: MarketingBlogPublicationPost): BlogForm {
+  const {
+    id: _id,
+    createdAt: _created,
+    updatedAt: _updated,
+    publication: _publication,
+    lease: _lease,
+    ...draft
+  } = post;
+  const next: BlogForm = { ...empty, ...draft };
   for (const key of Object.keys(empty) as (keyof MarketingBlogInput)[])
     Object.assign(next, { [key]: post[key] ?? empty[key] });
   if (!next.categories?.length && post.category)
     next.categories = [post.category];
   return next;
 }
-function editorial(form: MarketingBlogInput): MarketingBlogEditorial {
+function editorial(
+  form: BlogForm,
+  originalTitle?: string,
+): MarketingBlogEditorial {
   const {
     isPublished: _published,
     publishedAt: _date,
     scheduledAt: _schedule,
     ...data
   } = form;
+  const presentation =
+    form.presentation && form.title !== originalTitle
+      ? {
+          ...form.presentation,
+          titleParts: [{ text: form.title, emphasis: false }],
+        }
+      : form.presentation;
+  if (
+    presentation != null &&
+    !validateBlogPresentation(presentation, form.title)
+  )
+    throw Object.assign(
+      Error(
+        "This post contains unsupported presentation metadata. Your draft is retained.",
+      ),
+      { status: 400 },
+    );
   return {
     ...data,
+    ...(presentation !== undefined ? { presentation } : {}),
     category: form.categories?.[0] || null,
   } as MarketingBlogEditorial;
 }
@@ -132,10 +164,10 @@ function PostEditor({
   onClose: () => void;
   onCreated: (id: string) => void;
 }) {
-  const [form, setForm] = useState<MarketingBlogInput | null>(
+  const [form, setForm] = useState<BlogForm | null>(
       id === "new" ? { ...empty } : null,
     ),
-    [saved, setSaved] = useState<MarketingBlogInput | null>(
+    [saved, setSaved] = useState<BlogForm | null>(
       id === "new" ? { ...empty } : null,
     ),
     [refs, setRefs] = useState<MarketingBlogReferences>({
@@ -239,7 +271,10 @@ function PostEditor({
       let post: MarketingBlogPublicationPost;
       if (id === "new") {
         post = await createMarketingBlogPublication(
-          { data: editorial(form), editorInstanceId: lock.editorInstanceId },
+          {
+            data: editorial(form, saved?.title),
+            editorInstanceId: lock.editorInstanceId,
+          },
           { signal: abort.current.signal },
         );
       } else {
@@ -261,7 +296,7 @@ function PostEditor({
             ...proof,
             action,
             ...(action === "save" || action === "publish"
-              ? { data: editorial(form) }
+              ? { data: editorial(form, saved?.title) }
               : {}),
             ...(revisionId ? { revisionId } : {}),
             ...(action === "schedule"
