@@ -1,6 +1,17 @@
 # Business Center consolidation handoff
 
-Updated September 17, 2026. Source checkpoint before this handoff: `d0d9c9e`.
+Updated September 18, 2026. Read this current-state update before older checkpoint details below.
+
+## September 18 reconciliation and current state
+
+- All completed consolidation code was normally merged to `main`; both `main` and `codex/business-center-consolidation` reached `140a412`. Do not selectively deploy an older public-only main: that previously regressed Dashboard and Core and has been corrected. See `docs/implementation/reconciliation-2026-09-18.md` and `main-release-policy.md` in that directory.
+- At `140a412`, Railway reported SUCCESS for website `d431f347-021d-4e8e-9dce-3964ce86ae06`, Dashboard `2196e4ac-0c84-421f-9c54-b8ffdd52e628`, and Core `51843fa2-5821-4072-8d0f-8e65c2a58abd`. Worker remained on its existing compatible deployment. These supersede the September 17 deployment table below.
+- Analytics now returns real Google provider data in the consolidated authenticated dashboard. The failure was a valid empty previous-period report being rejected for missing headers; the normalizer and regression coverage were corrected in `8cd8ae1`. Do not provision replacement OAuth credentials.
+- Search Console remains open: configured domain property `sc-domain:p1landmanagement.com` returned 403; the authorized property list exposed only `https://p1landmanagement.com/`. Canonical `www`/domain coverage must be verified before switching settings or claiming completion.
+- The Service Areas map, sidebar, public improvements and Title Case links are live. The directory now begins with a full-width map; desktop and mobile were visually checked after `140a412` deployment.
+- The private September 17 dashboard backup is available on this workstation and an isolated restore/migration/second-restore rehearsal has now passed. See `docs/implementation/dashboard-restore-rehearsal-2026-09-18.md` for scope and limits. This does not establish complete Core/media recovery, application rollback, CRM/account reconciliation, or admin retirement.
+
+The older stopping-point, reporting-error and deployment sections below are historical context, not current operating instructions. Continue from the acceptance tracker. The full consolidation goal remains active.
 
 ## Start here on the next workstation
 
