@@ -27,3 +27,14 @@ docs/audits/security
 # Shared data-only CMS/branding modules are imported by both web frontends.
 !platform/p1-core/shared/
 !platform/p1-core/shared/**
+
+# Retained admin presentation reused by the unified dashboard.
+!platform/p1-core/client/
+platform/p1-core/client/*
+!platform/p1-core/client/src/
+platform/p1-core/client/src/*
+!platform/p1-core/client/src/components/
+platform/p1-core/client/src/components/*
+!platform/p1-core/client/src/components/shared/
+platform/p1-core/client/src/components/shared/*
+!platform/p1-core/client/src/components/shared/social-media-editor.tsx
