@@ -28,6 +28,10 @@ The September 17 dashboard backup has passed an isolated restore, application of
 | Migration, restore, rollback and retirement | `scripts/consolidation/` has identity/CRM analysis, extraction, reviewed import and independent verification tools with synthetic tests. | Dashboard backup restore/migration/round-trip rehearsal passed September 18. Remaining: Core/media restore, application rollback, retirement/redirect inventory, identity+CRM reconciliation, ordering/freeze procedure and final release packet. |
 | Validated release candidate and Owner acceptance | Validated commits reconciled to main and incremental production release verified through 140a412; GitHub Actions remain disabled. | Full requirement audit, resolved release blockers, candidate-wide validation, reviewed migration/rollback artifacts and final full-goal acceptance. |
 
+## Website System inventory
+
+The [operation-level inventory](website-system-parity-inventory.md) now records all five missing destinations, their retained operations, and the migration contracts needed before implementation. It confirms that the legacy Google settings card does not configure the active environment-backed reporting service; document synchronization overwrites matching stored documents and needs coordination with edits. These findings are not completed feature parity.
+
 ## Remaining work sequence
 
 1. Complete the legacy feature/endpoint inventory, especially Website System Integrations/Email Templates and nested CMS operations. Close the concrete public identity delivery gap already identified.
