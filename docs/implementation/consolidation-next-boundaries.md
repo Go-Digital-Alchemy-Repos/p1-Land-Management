@@ -6,6 +6,8 @@ Implemented public identity delivery now projects validated Design Branding into
 
 ## Native Backups and recovery
 
+Native status/run is released at `47e8136` with Owner read-only verification; see [backup contract and live evidence](website-backups-contract.md). Ten real archive summaries are available, latest September 18 with P1 provenance, 52 tables and 519 rows. Secure archive acquisition and isolated restore are still required; the history screen does not supply object bytes or prove recovery.
+
 Retained operations are status, manual run (snapshot upload and retention pruning), and restore by key (database replacement). Native parity must retain all three with Owner enforcement, exact stack/provenance checks, storage-prefix checks, shared advisory lock 880120441, transactional rollback, cache invalidation and no replay on uncertain response. Restore requires an explicit destructive confirmation; do not perform a production restore for acceptance. Manifest media counts are references, not backed-up object bytes.
 
 Read-only Railway metadata identified service Postgres `7913729e-39e9-45a9-ac58-ceb18711a0a6`, successful deployment `335faa38-fd8a-46cc-a615-4a942c2df1b9`, image `ghcr.io/railwayapp-templates/postgres-ssl:18`. Confirm Core actually references this service before treating it as Core's major. The current isolated runner uses PostgreSQL16. Trusted Core archive/provenance and media manifest/object copies are not yet available in the documented local backup directory. Authenticated backup status can provide manifest metadata without database rows or credentials; a Railway snapshot UUID alone is insufficient.
