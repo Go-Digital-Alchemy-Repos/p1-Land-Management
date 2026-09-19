@@ -17,6 +17,17 @@ import {
 } from "./agreement-composition.service";
 import { saveCompositionPricing } from "./agreement-pricing.service";
 const enabled = !!process.env.COMMERCIAL_TEST_DATABASE_URL;
+if (enabled) {
+  // The marker enables the test; DASHBOARD_DATABASE_URL actually selects the DB.
+  const databaseUrl = new URL(process.env.DASHBOARD_DATABASE_URL || "");
+  const originUrl = new URL(process.env.DASHBOARD_TEST_ORIGIN || "");
+  const loopback = new Set(["127.0.0.1", "localhost", "[::1]"]);
+  if (!loopback.has(databaseUrl.hostname) || !loopback.has(originUrl.hostname) ||
+      !/(test|fixture|acceptance)/i.test(databaseUrl.pathname)) {
+    throw new Error("Composed acceptance requires a named disposable loopback database and local HTTP server");
+  }
+}
+
 after(() => pool.end());
 test(
   "composed preparation freezes one proposal atomically and recovers identical retries without operational effects",
@@ -790,15 +801,15 @@ test(
     ).rows[0].d;
     await pool.query(
       "UPDATE business_account_access SET capabilities=$2 WHERE user_id=$1",
-      [user, ["operations.recurring", "revenue.sales"]],
+      [user, ["operations.recurring", "operations.schedule", "revenue.sales"]],
     );
-    const callStaff = async (path: string, body: unknown) => {
+    const callStaff = async (path: string, body: unknown, cookie = operationsCookie) => {
       const response = await fetch(
         `${process.env.DASHBOARD_TEST_ORIGIN}/api/v1${path}`,
         {
           method: "POST",
           headers: {
-            cookie: operationsCookie,
+            cookie,
             origin: process.env.DASHBOARD_TEST_ORIGIN!,
             "content-type": "application/json",
           },
@@ -809,6 +820,20 @@ test(
       assert(response.ok, JSON.stringify(result));
       return result;
     };
+    // A distinct crew identity exercises assignment and office-review boundaries.
+    const crewId = randomUUID(), crewToken = randomUUID();
+    await pool.query(
+      `INSERT INTO "user"(id,name,email,"emailVerified") VALUES($1,'Synthetic Crew',$2,true)`,
+      [crewId, `${crewId}@example.test`],
+    );
+    await pool.query("INSERT INTO staff_profile(user_id,role) VALUES($1,'crew')", [crewId]);
+    await pool.query(
+      `INSERT INTO session(id,"expiresAt",token,"userId") VALUES($1,now()+interval '1 hour',$2,$3)`,
+      [randomUUID(), crewToken, crewId],
+    );
+    const crewCookie = "p1-dashboard.session_token=" + encodeURIComponent(
+      crewToken + "." + createHmac("sha256", process.env.BETTER_AUTH_SECRET!).update(crewToken).digest("base64"),
+    );
     const liveDraft = await draft(today, today);
     const livePrepared = await callStaff(
       `/agreement-drafts/${liveDraft.id}/prepare`,
@@ -851,7 +876,7 @@ test(
     assert.equal(liveRecurrences.length, 2);
     for (const recurrence of liveRecurrences)
       await callStaff(`/recurring-jobs/${recurrence.id}/activate`, {
-        assignedTo: user,
+        assignedTo: crewId,
         nextDate: today,
         localTime: "08:00",
       });
@@ -881,12 +906,31 @@ test(
           prepareAgreementCharge(billingActor, recurrence.agreement_id, source),
           /manager-reviewed/,
         );
-        // Execution evidence/review is simulated here; its own lifecycle tests
-        // cover the crew completion and manager-review HTTP workflow.
-        await pool.query(
-          "UPDATE work_order SET status='reviewed' WHERE id=$1",
-          [work.id],
-        );
+        await callStaff(`/work-orders/${work.id}/status`, {
+          status: "scheduled", version: work.version,
+        });
+        const capturedAt = new Date().toISOString();
+        const events = [
+          { id: randomUUID(), workOrderId: work.id, baseVersion: work.version + 1,
+            kind: "time", payload: { action: "start" }, capturedAt },
+          { id: randomUUID(), workOrderId: work.id, baseVersion: work.version + 1,
+            kind: "complete", payload: { text: "Synthetic recurring visit completed offline" }, capturedAt },
+        ];
+        const synchronized = await callStaff("/field/sync", { events }, crewCookie);
+        assert.deepEqual(synchronized.results.map((row: any) => row.status), ["accepted", "accepted"]);
+        // Retrying the same offline batch is an actual HTTP replay, not a SQL simulation.
+        assert.deepEqual(await callStaff("/field/sync", { events }, crewCookie), synchronized);
+        const completed = (await pool.query("SELECT status,version FROM work_order WHERE id=$1", [work.id])).rows[0];
+        assert.equal(completed.status, "completed");
+        assert.equal((await pool.query("SELECT count(*)::int AS n FROM field_event WHERE work_order_id=$1", [work.id])).rows[0].n, 2);
+        await assert.rejects(prepareAgreementCharge(billingActor, recurrence.agreement_id, source), /manager-reviewed/);
+        const crewReview = await fetch(`${process.env.DASHBOARD_TEST_ORIGIN}/api/v1/work-orders/${work.id}/status`, {
+          method: "POST", headers: { cookie: crewCookie, origin: process.env.DASHBOARD_TEST_ORIGIN!, "content-type": "application/json" },
+          body: JSON.stringify({ status: "reviewed", version: completed.version }),
+        });
+        assert.equal(crewReview.status, 403, await crewReview.text());
+        await callStaff(`/work-orders/${work.id}/status`, { status: "reviewed", version: completed.version });
+        assert.equal((await pool.query("SELECT status FROM work_order WHERE id=$1", [work.id])).rows[0].status, "reviewed");
       }
       const charge = await prepareAgreementCharge(
         billingActor,

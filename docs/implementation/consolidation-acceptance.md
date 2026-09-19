@@ -23,7 +23,7 @@ The September 17 dashboard backup has passed an isolated restore, application of
 | Reusable MSA, scope, cost and package templates | Typed/versioned template library and migration; private composition, source snapshots, explicit switching, save-as-template and pricing review UI/API. | Final acceptance of all template scenarios, long documents and multi-client isolation on the integrated candidate. Owner-provided legal/template content remains distinct from synthetic tests. |
 | Agreement composition feeds existing Sales | `composed-estimate-preparation.service.ts`, revision/change-order services, mounted routes and native preparation UI. | Final integrated workflow acceptance. Older notes saying preparation is internal/unmounted are superseded. |
 | Customer review/PDF/approval match fixed agreement and pricing | `composed-estimate-document.ts`, immutable issuance, shared rendering, `composed-estimate-approval.ts`, document browser/PDF checks and integration tests. | Final full-candidate document/security regression, including historical estimates, long terms and permitted customer access. Do not claim a new electronic-signature workflow. |
-| Approval → operations → activation → billing | `composed-estimate-preparation.integration.test.ts` and recorded mixed-billing rehearsal cover preparation, outbox-only send, approval, activation, visit generation and retry-safe billing. | Actual crew execution/review in the complete browser journey, offline behavior, cancellation/successor/change-order regressions and operational acceptance. Crew completion was simulated in that fixture; external posting was not exercised. |
+| Approval → operations → activation → billing | `composed-estimate-preparation.integration.test.ts` and recorded mixed-billing rehearsal cover preparation, outbox-only send, approval, activation, visit generation and retry-safe billing. | Actual crew execution/review in the complete browser journey, offline behavior, cancellation/successor/change-order regressions and operational acceptance. Crew synchronization and manager review now use real local HTTP calls; browser offline storage and external posting remain unverified. |
 | Preserve public/media/preview/intake/offline compatibility | Existing retained handlers, stable data stores and targeted runtime/route checks. | Full compatibility inventory and cutover tests spanning both applications. No blanket parity claim is supported yet. |
 | Migration, restore, rollback and retirement | `scripts/consolidation/` has identity/CRM analysis, extraction, reviewed import and independent verification tools with synthetic tests. | Dashboard backup restore/migration/round-trip rehearsal passed September 18. P1 recovery runner now validates exact snapshot identity and fingerprints actual p1-migrations. Historical Core archive row/sequence recovery and a source-based retirement route inventory now exist (see September 19 evidence below). Remaining: application/media recovery, application rollback, tested retirement/deep-link behavior, identity+CRM reconciliation, ordering/freeze procedure and final release packet. |
 | Validated release candidate and Owner acceptance | Validated commits reconciled to main and incremental production release verified through 140a412; GitHub Actions remain disabled. | Full requirement audit, resolved release blockers, candidate-wide validation, reviewed migration/rollback artifacts and final full-goal acceptance. |
@@ -85,3 +85,25 @@ Search Console domain-property access remains pending: the verified Owner browse
 The [isolated application rollback runner](core-application-rollback-runner.md) now has a genuine partial result (evidence04). Current/prior source rebuilds booted on separate restored clones with unchanged baseline and verified cleanup. Only form updated timestamps changed; three added rows belong to the migration ledger. Empty archived content prevents published-content recovery proof; media, authenticated/provider and original Railway-image rollback gates remain open. Seven offline runner checks passed independently.
 
 Robots public delivery is implemented at `ec899b3`; five Core and 21 website checks, both typechecks and the Core production build passed. Independent review found no blocker. Canonical live projection/robots equality and GET/HEAD headers passed after release `550534b`; a separate live staging check remains unverified. Menus and redirects remain unconnected public consumers.
+
+## Composed agreement / crew acceptance — September 19
+
+The composed-preparation integration test now exercises a distinct assigned crew
+identity through `/api/v1/field/sync` after office dispatch, rather than marking work
+reviewed with SQL. A time-start/completion batch is accepted and replayed over HTTP;
+exactly two field events persist. Completed but unreviewed work still cannot prepare
+a per-visit charge. Crew self-review returns403; the manager status endpoint reviews
+the completed work, after which charge preparation is idempotent. Existing mixed
+proposal, recurrence, financial allocation and finite-term assertions still pass.
+
+Executed successfully with PostgreSQL18 in a disposable loopback-only container,
+all current dashboard migrations, a local dashboard HTTP server and synthetic users.
+The final guarded test passed1/1 with no skips. Both the server and owned database
+container were stopped, and container removal was verified. No production connection
+or provider worker was used. The test now refuses non-loopback database/server
+configuration or a database name lacking test/fixture/acceptance markers.
+
+This proves composed proposal → recurring job → crew synchronization/retry → manager
+review → charge preparation through actual application handlers. It does not prove
+browser IndexedDB/offline recovery, photos, device restart, reassignment recovery,
+all cancellation/successor cases, provider delivery, or full operational acceptance.
