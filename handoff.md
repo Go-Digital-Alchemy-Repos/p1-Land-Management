@@ -1,3 +1,13 @@
+## Verified redirect release — September 19
+
+Runtime `e139dba0be1e98ec1b3f794c67c801721515ef44` is pushed to main and
+`codex/business-center-consolidation`. Railway SUCCESS for Core
+`8fc4601c-335c-4f53-bf6f-d70f3bdba860` and website
+`a37a2a5e-7041-4954-99ae-914527068c16`. Read-only live checks returned the
+valid empty public redirect projection and HTTP200 for `/service-areas`.
+No production redirect settings or CRM data were changed. Blog foundation remains
+separate and uncommitted pending independent review; no full-parity claim is made.
+
 ## September 19 follow-up — CRM payload and redirect safety
 
 Private read-only CRM payload export now completed: three leads, no clients/notes/
