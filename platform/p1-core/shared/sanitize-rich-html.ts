@@ -13,6 +13,9 @@ const allowedTags = [
   "ol",
   "li",
   "blockquote",
+  "pre",
+  "code",
+  "hr",
   "h2",
   "h3",
   "h4",
@@ -84,6 +87,9 @@ export function sanitizePublicRichHtml(value: string | null | undefined): string
     allowedSchemesAppliedToAttributes: ["href", "src"],
     allowProtocolRelative: false,
     transformTags: {
+      // The article/page renderer owns the document H1. Preserve authored
+      // heading content as a section heading instead of silently flattening it.
+      h1: "h2",
       a: (_tagName, attribs) => ({
         tagName: "a",
         attribs: {

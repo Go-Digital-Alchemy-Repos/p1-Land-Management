@@ -56,6 +56,21 @@ describe("public Blog media resolution", () => {
     expect(resolved[0].snapshot.content).toContain('src="/r2/cms/media/image.webp"');
     expect(projectPublicBlog(resolved).posts).toHaveLength(1);
   });
+  it("preserves inert toolbar formatting through media resolution and public projection", async () => {
+    const { safePublishedHtml } = await import("@shared/public-blog");
+    const source = row();
+    source.snapshot.content = '<h1>Section heading</h1><p><code>x &lt; y</code></p><pre><code>line one\nline two</code></pre><hr><img src="https://cdn.test/namespace/cms/media/image.webp">';
+    const before = structuredClone(source);
+    const projected = projectPublicBlog(await resolvePublicBlogMedia([source]));
+    const html = projected.posts[0].snapshot.content;
+    expect(html).toContain('<h2>Section heading</h2>');
+    expect(html).toContain('<code>x &lt; y</code>');
+    expect(html).toContain('<pre><code>line one\nline two</code></pre>');
+    expect(html).toContain('<hr />');
+    expect(html).toContain('src="/r2/cms/media/image.webp"');
+    expect(safePublishedHtml(html)).toBe(true);
+    expect(source).toEqual(before);
+  });
   it("accepts registered local fallback uploads", async () => {
     state.assets = [{ url: "/uploads/cms/media/image.png", r2Key: null, mimeType: "image/png" }];
     const x = row();

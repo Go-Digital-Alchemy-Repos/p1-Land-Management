@@ -69,7 +69,7 @@ export function safePublishedHtml(html: string) {
     if (html.slice(end, match.index).includes("<")) return false;
     end = match.index + match[0].length;
     const tag =
-      /^<(\/?)(p|br|strong|b|em|i|u|s|ul|ol|li|blockquote|h2|h3|h4|a|img)(?=[\s/>])([^<>]*)>$/.exec(
+      /^<(\/?)(p|br|strong|b|em|i|u|s|ul|ol|li|blockquote|pre|code|hr|h2|h3|h4|a|img)(?=[\s/>])([^<>]*)>$/.exec(
         match[0],
       );
     if (!tag) return false;

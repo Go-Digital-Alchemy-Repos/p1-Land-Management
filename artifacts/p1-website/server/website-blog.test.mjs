@@ -71,6 +71,7 @@ test("shared normalized HTML grammar handles encoded ampersands and original edi
   for (const html of [
     '<p style="text-align:center">Centered<br />text</p>',
     "<blockquote><strong>Quote</strong></blockquote>",
+    "<h2>Section</h2><p><code>x &lt; y</code></p><pre><code>line one\nline two</code></pre><hr />",
     '<a href="https://example.test/?a=1&amp;b=2" target="_blank" rel="noopener noreferrer">Link</a>',
     '<a href="mailto:miles@example.test">Mail</a>',
     '<img src="/r2/a?x=1&amp;y=2" alt="A &quot;photo&quot;" data-align="left" class="cms-richtext-media cms-richtext-media-left" />',
@@ -81,6 +82,9 @@ test("shared normalized HTML grammar handles encoded ampersands and original edi
     '<a href="mailto:bad address@example.test">Bad</a>',
     '<p style="background:url(javascript:alert(1))">Bad</p>',
     '<img src="/x"/onerror="alert(1)">',
+    '<code onclick="evil()">Bad</code>',
+    '<pre style="background:url(https://evil.test)">Bad</pre>',
+    '<hr onload="evil()" />',
   ])
     assert.equal(safePublishedHtml(html), false, html);
 });

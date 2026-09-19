@@ -80,7 +80,7 @@ export default function PublishedBlog() {
           />
         )}
         <div
-          className="prose prose-lg max-w-4xl prose-headings:font-serif prose-headings:text-secondary prose-a:text-primary prose-img:max-w-full"
+          className="prose prose-lg max-w-4xl prose-headings:font-serif prose-headings:text-secondary prose-a:text-primary prose-img:max-w-full min-w-0 break-words prose-pre:max-w-full prose-pre:overflow-x-auto"
           dangerouslySetInnerHTML={{ __html: s.content }}
         />
         {s.podcastUrl && (

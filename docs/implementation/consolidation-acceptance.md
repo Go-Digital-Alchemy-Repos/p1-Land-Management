@@ -1,6 +1,6 @@
 # Consolidation acceptance tracker
 
-Current assessment: **implementation in progress; not a complete release candidate**. Updated September 19, 2026. The approved scope remains unchanged. Main now contains the consolidated applications and validated public changes; `5af08490509da3f315cac21eb10cc86bc541031f` was verified deployed successfully on Website, Dashboard and Core. Live Integrations, Email Templates and Developer Resources libraries render the restored original-style interfaces; detailed evidence is in handoff.md. Original checkout and Blythe remain outside this worktree's write scope.
+Current assessment: **implementation in progress; not a complete release candidate**. Updated September 19, 2026. The approved scope remains unchanged. Main now contains the consolidated applications and validated public changes; `e6125fb9c76732ada9b1fae60a857f281197a986` was verified deployed successfully on Website, Dashboard and Core. Live Integrations, Email Templates and Developer Resources libraries render the restored original-style interfaces; detailed evidence is in handoff.md. Original checkout and Blythe remain outside this worktree's write scope.
 
 The Owner's identity link and Website Editor work. Live Analytics now works after correcting empty previous-period report normalization. Search Console remains blocked by property coverage/access (configured domain property returns 403; only the apex URL-prefix property appeared in the authorized list). Do not rotate existing Google credentials or equate apex access with canonical `www` coverage.
 
@@ -66,7 +66,7 @@ The [operation-level inventory](website-system-parity-inventory.md) now records 
 
 ## Remaining work sequence
 
-1. Finish the original Website System interface restoration (Integrations, Email Templates and Developer Resources), then verify nested CMS behavior and public consumers. Public identity and four-slot menu delivery are already released; dynamic Blog delivery and publication/concurrency acceptance remain open.
+1. Finish the original Website System interface restoration (Integrations, Email Templates and Developer Resources), then verify nested CMS behavior and public consumers. Public identity and four-slot menu delivery are already released; dynamic Blog delivery is released; full publication acceptance and five-article import remain open.
 2. Finish missing native CRM/settings/identity behavior and reconcile the source data/account contracts. Keep provider provisioning and Owner-reviewed mappings explicit as external acceptance dependencies.
 3. Complete the whole-system capability matrix and full agreement/crew/offline journey. Reuse implemented proposal and billing services; do not rebuild them because an old checkpoint says they were pending.
 4. Run isolated export/import/reconciliation and backup/restore/rollback rehearsals; finish safe legacy deep-link and retirement behavior.
@@ -279,3 +279,21 @@ health checks passed and the delivered dashboard module contains the recovery UI
 See handoff for deployment IDs. This does not complete Blog publication cutover or
 full consolidation acceptance. Build-log image digests are now recorded, but their
 retrievable immutable bytes and actual image-based rollback remain open.
+
+## Blog publication and formatting checkpoint — September 19
+
+Both editors and public Blog delivery shipped at `e6125fb9` with successful Core,
+Dashboard and Website deployments. See handoff and the Blog consolidation contract
+for exact test/release evidence. Private routes reject unauthenticated requests;
+public SSR retains the five existing articles. Actual Owner publication acceptance,
+static-article import, complete sidebar/comments/gallery output and recovery remain.
+
+Review found that toolbar code blocks, inline code and dividers were lost in public
+sanitization. The follow-up preserves those inert tags across sanitizer, media
+resolution and projection, maps authored H1 to a section H2, and retains the active
+HTML/URL restrictions. Independent review found no blocker. Eleven Core pipeline,
+eight existing security and five website parser tests passed; the public HTTP test,
+both typechecks/builds and 54-route prerender passed. Local browser at390px proved
+page width390, code block width342, internal scrolling for a12890px code line, one
+H1 and a rendered divider. Synthetic preview server was stopped after inspection.
+This is formatting evidence, not full CMS or production-content acceptance.
