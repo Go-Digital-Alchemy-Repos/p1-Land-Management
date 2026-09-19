@@ -1,10 +1,11 @@
+import { useBuilderHost } from "./builder-host";
 import type { ReactNode, Ref } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Badge } from "./builder-host";
+import { Button } from "./builder-host";
+import { ScrollArea } from "./builder-host";
 import { Bookmark, ChevronDown, LocateFixed, Settings2 } from "lucide-react";
 import type { BlockDef, BlockInstance } from "./block-registry";
-import { ResilientBlockEditor } from "./block-editor";
+import { ResilientBlockEditor } from "./block-editor-workspace";
 import { BlockIcon } from "./page-builder-support";
 
 interface BlockInspectorPanelProps {
@@ -26,6 +27,7 @@ export function BlockInspectorPanel({
   onClose,
   onUpdateBlockProps,
 }: BlockInspectorPanelProps) {
+  const { canUseSections } = useBuilderHost();
   if (!selectedBlock || !selectedEditorDef) {
     return (
       <div className="flex h-full min-h-0 flex-col rounded-2xl border border-dashed border-border/70 bg-background/70 p-4 sm:p-6 text-center shadow-sm">
@@ -69,7 +71,13 @@ export function BlockInspectorPanel({
               <LocateFixed className="mr-1.5 h-4 w-4" />
               Locate
             </Button>
-            <Button type="button" variant="outline" size="sm" onClick={onSaveSection}>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={onSaveSection}
+              disabled={!canUseSections}
+            >
               <Bookmark className="mr-1.5 h-4 w-4" />
               Save Section
             </Button>

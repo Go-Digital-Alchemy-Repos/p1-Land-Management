@@ -6,6 +6,7 @@ import {
   timestamp,
   jsonb,
   boolean,
+  integer,
   index,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
@@ -19,6 +20,7 @@ export const cmsPages = pgTable(
     id: varchar("id")
       .primaryKey()
       .default(sql`gen_random_uuid()`),
+    version: integer("version").notNull().default(1),
     title: text("title").notNull(),
     slug: text("slug").notNull(),
     status: text("status").notNull().default("draft"),
@@ -47,6 +49,7 @@ export const cmsPages = pgTable(
 
 export const insertCmsPageSchema = createInsertSchema(cmsPages).omit({
   id: true,
+  version: true,
   createdAt: true,
   updatedAt: true,
 });

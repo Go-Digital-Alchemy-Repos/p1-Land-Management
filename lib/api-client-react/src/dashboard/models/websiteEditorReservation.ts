@@ -14,4 +14,5 @@ export interface WebsiteEditorReservation {
   resourceType: string;
   resourceId: string;
   lock: WebsiteEditorReservationLock;
+  ownedByCurrentEditor?: boolean;
 }

@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
-import type { SocialIconStyle, SocialMediaLink } from "@shared/social-media";
-import { cn } from "@/lib/utils";
+import type { SocialIconStyle, SocialMediaLink } from "../../../../shared/social-media";
+import { cn } from "../../lib/utils";
 import { SocialPlatformIcon } from "./social-icons";
 
 export function SocialMediaLinks({
@@ -49,7 +49,10 @@ export function SocialMediaLinks({
             )}
             data-testid={`link-social-${link.platform}`}
           >
-            <SocialPlatformIcon platform={link.platform} className={size === "sm" ? "h-4 w-4" : "h-[18px] w-[18px]"} />
+            <SocialPlatformIcon
+              platform={link.platform}
+              className={size === "sm" ? "h-4 w-4" : "h-[18px] w-[18px]"}
+            />
           </a>
         );
       })}

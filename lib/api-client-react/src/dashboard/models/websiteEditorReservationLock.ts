@@ -13,4 +13,5 @@ export type WebsiteEditorReservationLock = {
   lockedAt: string;
   lastHeartbeatAt: string;
   expiresAt: string;
+  editorInstanceId?: string | null;
 } | null;

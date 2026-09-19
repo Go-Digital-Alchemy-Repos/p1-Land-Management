@@ -1,10 +1,13 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, timestamp, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, timestamp, jsonb, integer } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 export const STANDARD_MENU_LOCATIONS = [
   "main_navigation",
+  "p1_footer_services",
+  "p1_footer_service_areas",
+  "p1_footer_company",
   "footer_platform",
   "footer_professionals",
   "footer_resources",
@@ -26,6 +29,9 @@ export type MenuLocation = (typeof MENU_LOCATIONS)[number];
 
 export const MENU_LOCATION_LABELS: Record<MenuLocation, string> = {
   main_navigation: "Main Navigation",
+  p1_footer_services: "P1 Footer Services",
+  p1_footer_service_areas: "P1 Footer Service Areas",
+  p1_footer_company: "P1 Footer Company",
   footer_platform: "Footer Platform Column",
   footer_professionals: "Footer Professionals Column",
   footer_resources: "Footer Resources Column",
@@ -77,6 +83,7 @@ export const cmsMenus = pgTable("cms_menus", {
   id: varchar("id")
     .primaryKey()
     .default(sql`gen_random_uuid()`),
+  version: integer("version").notNull().default(1),
   name: text("name").notNull(),
   location: text("location").notNull().default("unassigned"),
   items: jsonb("items").default([]),
@@ -86,6 +93,7 @@ export const cmsMenus = pgTable("cms_menus", {
 
 export const insertCmsMenuSchema = createInsertSchema(cmsMenus).omit({
   id: true,
+  version: true,
   createdAt: true,
   updatedAt: true,
 });

@@ -358,7 +358,7 @@ export async function callCms(
     : operation.method === "POST" ||
         operation.method === "PUT" ||
         operation.method === "PATCH" ||
-        (operation.method === "DELETE" && ["/careers/jobs/:id", "/website-system/docs/:id"].includes(operation.path))
+        (operation.method === "DELETE" && ["/careers/jobs/:id", "/website-system/docs/:id", "/pages/:id", "/menus/:id"].includes(operation.path))
       ? JSON.stringify(body ?? {})
       : undefined;
   if (

@@ -1,6 +1,6 @@
 import { db } from "../server/db";
 import { cmsPages } from "../shared/schema/cms-pages";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { randomUUID } from "crypto";
 
 function uid() {
@@ -572,6 +572,7 @@ async function seed() {
       await db
         .update(cmsPages)
         .set({
+          version: sql`${cmsPages.version}+1`,
           content: page.content as any,
           status: page.status,
           seoTitle: page.seoTitle,

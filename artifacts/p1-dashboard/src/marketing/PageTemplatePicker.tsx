@@ -1,72 +1,64 @@
-import { LandingPageGenerator } from "./LandingPageGenerator";
 import { useState } from "react";
-import { PAGE_TEMPLATES } from "../../../../platform/p1-core/shared/cms-builder/page-templates";
+import { TemplatePicker } from "../../../../platform/p1-core/client/src/components/shared/page-template-picker";
+import { LandingPageWizard } from "../../../../platform/p1-core/client/src/components/shared/page-landing-wizard";
 import type { MarketingSection } from "../../../../lib/api-client-react/src/dashboard/models";
-
+import { BuilderPreview } from "./BuilderPreview";
+import { pageTemplatePrimitives } from "./page-template-primitives";
 export default function PageTemplatePicker({
   disabled,
   onSelect,
   previewUrl,
+  onClose,
+  onCreateLanding,
 }: {
   disabled: boolean;
   previewUrl?: string | null;
   onSelect: (blocks: MarketingSection["blocks"], name: string) => void;
+  onClose?: () => void;
+  onCreateLanding?: (blocks: MarketingSection["blocks"], title: string) => void;
 }) {
-  const [generator, setGenerator] = useState(false);
-  const [selected, setSelected] = useState(PAGE_TEMPLATES[0].id);
-  const template = PAGE_TEMPLATES.find((item) => item.id === selected)!;
+  const [wizard, setWizard] = useState(false);
   return (
-    <fieldset disabled={disabled}>
-      <legend>Page starter layouts</legend>
+    <>
       <p>
-        These retained layouts contain example copy, statistics, testimonials
-        and links. They are not verified P1 facts. Replace examples and review
-        every link before publication.
+        Starter layouts include illustrative copy and claims. Verify and replace
+        examples before publication.
       </p>
-      <button
-        type="button"
-        aria-expanded={generator}
-        onClick={() => setGenerator((value) => !value)}
-      >
-        {generator
-          ? "Close landing page generator"
-          : "Open landing page generator"}
-      </button>
-      {generator && (
-        <LandingPageGenerator
-          disabled={disabled}
-          previewUrl={previewUrl}
-          onSelect={onSelect}
-        />
-      )}
-      <label>
-        Starter layout
-        <select
-          aria-label="Starter layout"
-          value={selected}
-          onChange={(event) => setSelected(event.target.value)}
-        >
-          {PAGE_TEMPLATES.map((item) => (
-            <option key={item.id} value={item.id}>
-              {item.name}
-            </option>
-          ))}
-        </select>
-      </label>
-      <p>
-        {template.description} · {template.blockCount} blocks
-      </p>
-      <button
-        type="button"
-        onClick={() =>
-          onSelect(
-            template.blocks().map((block) => ({ ...block })),
-            template.name,
-          )
-        }
-      >
-        Apply starter to draft
-      </button>
-    </fieldset>
+      <TemplatePicker
+        primitives={pageTemplatePrimitives}
+        open={!wizard && !disabled}
+        onClose={() => onClose?.()}
+        onOpenWizard={() => setWizard(true)}
+        onSelect={(content, name) => {
+          if (!disabled)
+            onSelect(
+              content.blocks.map((block) => ({ ...block })),
+              name,
+            );
+        }}
+      />
+      <LandingPageWizard
+        primitives={pageTemplatePrimitives}
+        open={wizard && !disabled}
+        onClose={() => {
+          setWizard(false);
+          onClose?.();
+        }}
+        onCreate={(content, title) => {
+          if (!disabled)
+            (onCreateLanding || onSelect)(
+              content.blocks.map((block) => ({ ...block })),
+              title,
+            );
+        }}
+        renderPreview={(blocks) => (
+          <BuilderPreview
+            previewUrl={previewUrl}
+            blocks={blocks}
+            label="page"
+          />
+        )}
+      />
+    </>
   );
 }

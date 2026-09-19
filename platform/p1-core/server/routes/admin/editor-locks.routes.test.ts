@@ -1,7 +1,12 @@
 import express from "express";
 import type { Server } from "node:http";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
-const state = vi.hoisted(() => ({ rows: new Map<string, any>(), work: vi.fn() }));
+const state = vi.hoisted(() => ({
+  rows: new Map<string, any>(),
+  work: vi.fn(),
+  pageLease: vi.fn(),
+}));
+vi.mock("../../services/cms-page-leases.service", () => ({ pageLease: state.pageLease }));
 vi.mock("../../storage", () => ({
   storage: {
     editorLocks: {
@@ -51,6 +56,8 @@ let actor: any, grant: any;
 beforeEach(async () => {
   state.rows.clear();
   state.work.mockClear();
+  state.pageLease.mockReset();
+  state.pageLease.mockResolvedValue({ status: "acquired", ownedByCurrentEditor: true });
   actor = {
     id: "one",
     role: "admin",
@@ -88,25 +95,26 @@ function request(path: string, body?: unknown) {
   });
 }
 it("retains acquisition, ownership, heartbeat, collision and release across both route forms", async () => {
-  const first = await request("/cms_page/page/acquire", {});
+  grant.capabilities = ["marketing.content.blog"];
+  const first = await request("/blog_post/page/acquire", {});
   expect(first.status).toBe(200);
   expect(await first.json()).toMatchObject({
     status: "acquired",
     ownedByCurrentUser: true,
     lock: { lockedByUserId: "one" },
   });
-  expect(await (await request("/resource/cms_page")).json()).toHaveLength(1);
+  expect(await (await request("/resource/blog_post")).json()).toHaveLength(1);
   actor.id = "two";
   expect(
-    await (await request("/acquire", { resourceType: "cms_page", resourceId: "page" })).json(),
+    await (await request("/acquire", { resourceType: "blog_post", resourceId: "page" })).json(),
   ).toMatchObject({ status: "locked_by_other", ownedByCurrentUser: false });
-  await request("/cms_page/page/release", {});
+  await request("/blog_post/page/release", {});
   expect(state.rows.size).toBe(1);
   actor.id = "one";
   expect(
-    await (await request("/heartbeat", { resourceType: "cms_page", resourceId: "page" })).json(),
+    await (await request("/heartbeat", { resourceType: "blog_post", resourceId: "page" })).json(),
   ).toMatchObject({ status: "acquired", ownedByCurrentUser: true });
-  await request("/release", { resourceType: "cms_page", resourceId: "page" });
+  await request("/release", { resourceType: "blog_post", resourceId: "page" });
   expect(state.rows.size).toBe(0);
 });
 it("authorizes by resource on all reads and writes, including legacy body-scoped operations", async () => {
@@ -135,7 +143,11 @@ it("authorizes by resource on all reads and writes, including legacy body-scoped
     expect((await request(`/${resource}/record/acquire`, { resourceType: "doc" })).status).toBe(
       200,
     );
-    expect(state.rows.has(`${resource}:record`)).toBe(true);
+    if (resource === "cms_page")
+      expect(state.pageLease).toHaveBeenCalledWith("acquire", "record", actor, {
+        resourceType: "doc",
+      });
+    else expect(state.rows.has(`${resource}:record`)).toBe(true);
     expect(state.rows.has("doc:record")).toBe(false);
   }
 });
@@ -152,17 +164,32 @@ it("reserves website system locks for an active attested Owner", async () => {
   }
 });
 it("blocks revoked grants from extending reservations; abandoned locks still expire", async () => {
-  await request("/cms_page/page/acquire", {});
+  grant.capabilities = ["marketing.content.blog"];
+  await request("/blog_post/page/acquire", {});
   const before = state.work.mock.calls.length;
   grant.capabilities = [];
-  expect((await request("/cms_page/page/heartbeat", {})).status).toBe(403);
-  expect((await request("/cms_page/page/release", {})).status).toBe(403);
+  expect((await request("/blog_post/page/heartbeat", {})).status).toBe(403);
+  expect((await request("/blog_post/page/release", {})).status).toBe(403);
   expect(state.work.mock.calls.length).toBe(before);
-  state.rows.get("cms_page:page").expiresAt = new Date(0);
-  grant.capabilities = ["marketing.content.pages"];
+  state.rows.get("blog_post:page").expiresAt = new Date(0);
+  grant.capabilities = ["marketing.content.blog"];
   actor.id = "next";
-  expect(await (await request("/cms_page/page/acquire", {})).json()).toMatchObject({
+  expect(await (await request("/blog_post/page/acquire", {})).json()).toMatchObject({
     status: "acquired",
     lock: { lockedByUserId: "next" },
   });
+});
+
+it("forwards exact page lease proof for body and path routes", async () => {
+  const proof = {
+    editorInstanceId: "11111111-1111-4111-8111-111111111111",
+    leaseId: "22222222-2222-4222-8222-222222222222",
+  };
+  for (const action of ["acquire", "heartbeat", "release"]) {
+    await request(`/cms_page/page/${action}`, proof);
+    expect(state.pageLease).toHaveBeenLastCalledWith(action, "page", actor, proof);
+    const body = { resourceType: "cms_page", resourceId: "page", ...proof };
+    await request(`/${action}`, body);
+    expect(state.pageLease).toHaveBeenLastCalledWith(action, "page", actor, body);
+  }
 });

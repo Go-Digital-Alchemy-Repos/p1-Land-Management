@@ -23,4 +23,8 @@ export interface MarketingPagePatch {
   /** Retained CMS JSON content. Preserve unknown fields and legacy shapes. */
   content?: unknown | null;
   noindex?: boolean | null;
+  /** @minimum 1 */
+  expectedVersion: number;
+  editorInstanceId: string;
+  leaseId: string;
 }

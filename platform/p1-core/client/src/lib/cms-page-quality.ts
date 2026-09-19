@@ -1,4 +1,4 @@
-import type { BlockInstance } from "@/features/admin/cms/builder/block-registry";
+import type { BlockInstance } from "../features/admin/cms/builder/block-registry";
 
 export type CmsPageQualitySeverity = "error" | "warning" | "info";
 export type CmsPageQualityTab = "builder" | "settings" | "seo";

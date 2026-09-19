@@ -6,6 +6,9 @@ import { createRoot, type Root } from "react-dom/client";
 import CmsPageEditorPage from "@/features/admin/cms/cms-page-editor-page";
 
 const navigateMock = vi.fn();
+const apiRequestMock = vi.fn();
+const leaseTransportMock = vi.fn();
+let routeId = "page-1";
 const lockGuardMock = vi.fn();
 const useQueryMock = vi.fn();
 const useMutationMock = vi.fn();
@@ -13,8 +16,10 @@ let mutationStates: Array<{
   mutate: ReturnType<typeof vi.fn>;
   mutateAsync: ReturnType<typeof vi.fn>;
   isPending: boolean;
+  options: any;
 }> = [];
 const mockPage = {
+  version: 1,
   id: "page-1",
   title: "Join the Network",
   slug: "join",
@@ -37,6 +42,11 @@ const editorLockState = {
   isReadOnly: true,
   isLoading: false,
   acquire: vi.fn(),
+  preconditions: vi.fn(async (expectedVersion: number) => ({
+    expectedVersion,
+    editorInstanceId: "editor-id",
+    leaseId: "lease-id",
+  })),
   summary: {
     variant: "warning" as const,
     title: "Page already checked out",
@@ -48,7 +58,7 @@ vi.mock("wouter", () => ({
   Link: ({ href, children }: { href: string; children: React.ReactNode }) =>
     React.createElement("a", { href }, children),
   useLocation: () => ["/admin/cms/pages/page-1", navigateMock],
-  useParams: () => ({ id: "page-1" }),
+  useParams: () => ({ id: routeId }),
 }));
 
 vi.mock("@tanstack/react-query", async (importOriginal) => {
@@ -199,6 +209,7 @@ vi.mock("@/hooks/use-toast", () => ({
 
 vi.mock("@/hooks/use-editor-lock", () => ({
   useEditorLock: () => editorLockState,
+  pageLeaseTransport: (...args: unknown[]) => leaseTransportMock(...args),
 }));
 
 vi.mock("@/hooks/use-lock-conflict-guard", () => ({
@@ -209,11 +220,19 @@ vi.mock("@/lib/cms-page-quality", () => ({
   analyzeCmsPageQuality: () => [],
 }));
 
+vi.mock("@/lib/queryClient", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/lib/queryClient")>()),
+  apiRequest: (...args: unknown[]) => apiRequestMock(...args),
+}));
+
 describe("CmsPageEditorPage", () => {
   let container: HTMLDivElement;
   let root: Root | null = null;
 
   beforeEach(() => {
+    routeId = "page-1";
+    apiRequestMock.mockReset();
+    leaseTransportMock.mockReset();
     navigateMock.mockReset();
     lockGuardMock.mockReset();
     editorLockState.isReadOnly = true;
@@ -245,8 +264,9 @@ describe("CmsPageEditorPage", () => {
       mutateAsync: vi.fn(),
       isPending: false,
     });
-    useMutationMock.mockImplementation(() => {
+    useMutationMock.mockImplementation((options) => {
       const state = {
+        options,
         mutate: vi.fn(),
         mutateAsync: vi.fn(),
         isPending: false,
@@ -273,7 +293,7 @@ describe("CmsPageEditorPage", () => {
     document.body.innerHTML = "";
   });
 
-  it("wires lock conflicts back to the CMS pages list and disables saving in read-only mode", async () => {
+  it("retains the page on lock conflict and disables saving in read-only mode", async () => {
     root = createRoot(container);
 
     await act(async () => {
@@ -300,7 +320,7 @@ describe("CmsPageEditorPage", () => {
     ) as HTMLButtonElement | null;
     expect(saveButton).not.toBeNull();
     expect(saveButton?.disabled).toBe(true);
-    expect(navigateMock).toHaveBeenCalledWith("/admin/cms/pages");
+    expect(navigateMock).not.toHaveBeenCalled();
   });
 
   it("saves combined builder and settings changes through the update mutation", async () => {
@@ -404,5 +424,81 @@ describe("CmsPageEditorPage", () => {
         },
       }),
     );
+  });
+  it("uses saved version for publish and retains the draft after stale publication", async () => {
+    editorLockState.isReadOnly = false;
+    root = createRoot(container);
+    await act(async () => {
+      root!.render(React.createElement(CmsPageEditorPage));
+    });
+    await act(async () => {
+      (
+        container.querySelector('[data-testid="button-builder-change"]') as HTMLButtonElement
+      ).click();
+    });
+    await act(async () => {
+      (container.querySelector('[data-testid="button-publish"]') as HTMLButtonElement).click();
+    });
+    const state = mutationStates.filter((state) => state.mutate.mock.calls.length).at(-1)!;
+    const payload = state.mutate.mock.calls.at(-1)![0];
+    apiRequestMock
+      .mockResolvedValueOnce(new Response(JSON.stringify({ ...mockPage, version: 2 })))
+      .mockRejectedValueOnce(Error("CMS_PAGE_STALE"));
+    await expect(state.options.mutationFn(payload)).rejects.toThrow("CMS_PAGE_STALE");
+    expect(apiRequestMock.mock.calls[0][2]).toMatchObject({ expectedVersion: 1 });
+    expect(apiRequestMock.mock.calls[1][2]).toEqual({
+      expectedVersion: 2,
+      editorInstanceId: "editor-id",
+      leaseId: "lease-id",
+    });
+    expect(navigateMock).not.toHaveBeenCalled();
+    await act(async () => {
+      (container.querySelector('[data-testid="button-save"]') as HTMLButtonElement).click();
+    });
+    expect(
+      mutationStates.flatMap((state) => state.mutate.mock.calls).at(-1)![0].content.blocks[0].id,
+    ).toBe("cta-1");
+  });
+  it("opens the created draft when publication lease acquisition fails", async () => {
+    routeId = "new";
+    editorLockState.isReadOnly = false;
+    root = createRoot(container);
+    await act(async () => {
+      root!.render(React.createElement(CmsPageEditorPage));
+    });
+    apiRequestMock.mockResolvedValueOnce(
+      new Response(JSON.stringify({ ...mockPage, id: "created", version: 1 })),
+    );
+    leaseTransportMock.mockRejectedValueOnce(Error("Network unavailable"));
+    await expect(
+      mutationStates[2].options.mutationFn({ ...mockPage, content: { blocks: [] } }),
+    ).rejects.toThrow("Network unavailable");
+    expect(navigateMock).toHaveBeenCalledWith("/admin/cms/pages/created");
+    expect(apiRequestMock).toHaveBeenCalledTimes(1);
+    expect(leaseTransportMock).toHaveBeenCalledTimes(1);
+  });
+  it("makes editing controls disabled and inert while saving without hiding tabs", async () => {
+    editorLockState.isReadOnly = false;
+    useMutationMock.mockImplementation((options) => ({
+      options,
+      mutate: vi.fn(),
+      mutateAsync: vi.fn(),
+      isPending: true,
+    }));
+    root = createRoot(container);
+    await act(async () => {
+      root!.render(React.createElement(CmsPageEditorPage));
+    });
+    const builder = container.querySelector(
+      '[data-testid="button-builder-change"]',
+    ) as HTMLButtonElement;
+    expect(builder.closest("fieldset")?.disabled).toBe(true);
+    expect(builder.closest("fieldset")?.hasAttribute("inert")).toBe(true);
+    const settings = container.querySelector('[data-testid="tab-settings"]') as HTMLButtonElement;
+    expect(settings.closest("fieldset")).toBeNull();
+    await act(async () => settings.click());
+    const input = container.querySelector('[data-testid="input-title"]') as HTMLInputElement;
+    expect(input.closest("fieldset")?.disabled).toBe(true);
+    expect(input.closest("fieldset")?.hasAttribute("inert")).toBe(true);
   });
 });

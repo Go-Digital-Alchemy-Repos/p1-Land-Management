@@ -1,11 +1,11 @@
 import type { DragEvent } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "./builder-host";
+import { Button } from "./builder-host";
+import { Input } from "./builder-host";
+import { ScrollArea } from "./builder-host";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./builder-host";
 import { ChevronDown, Copy, GripVertical, ListOrdered, Plus, Search, Trash2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "./builder-host";
 import { getBlockDef, isDynamicBlock, type BlockDef, type BlockInstance } from "./block-registry";
 import { BlockIcon, getBlockSummary, SectionsLibrary } from "./page-builder-support";
 import { FULL_WIDTH_BLOCK_TYPES } from "./page-builder-constants";

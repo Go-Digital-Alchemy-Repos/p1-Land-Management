@@ -1,3 +1,5 @@
+import { mutateCmsMenu } from "../../services/cms-menu-mutations.service";
+import { menuExpectedVersion, CmsMutationError } from "../../services/cms-concurrency";
 import { requireBusinessCapability as p1Authorize } from "../../middleware/auth";
 import { Router } from "express";
 import { z } from "zod";
@@ -11,12 +13,21 @@ const router = Router();
 // Menu selectors need titles/paths, never draft bodies or form submissions/settings.
 router.get("/menu-references", p1Authorize("marketing.content.menus"), async (_req, res, next) => {
   try {
-    const [pages, forms] = await Promise.all([storage.cmsPages.getAllPages(), storage.forms.getAll()]);
+    const [pages, forms] = await Promise.all([
+      storage.cmsPages.getAllPages(),
+      storage.forms.getAll(),
+    ]);
     res.json({
-      pages: pages.map(({id, title, slug, status}) => ({id, title, slug, status})),
-      forms: forms.map(({id, name, slug}) => ({id, name, slug})),
+      pages: pages.map(({ id, title, slug, status }) => ({ id, title, slug, status })),
+      forms: forms.map(({ id, name, slug }) => ({ id, name, slug })),
     });
-  } catch (error) { next(error); }
+  } catch (error) {
+    if (error instanceof CmsMutationError)
+      return res
+        .status(error.status)
+        .json({ error: error.message, code: error.code, ...error.details });
+    next(error);
+  }
 });
 
 const menuBodySchema = z.object({
@@ -40,6 +51,10 @@ router.get("/menus", p1Authorize("marketing.content.menus"), async (req, res) =>
     const menus = await storage.cmsMenus.getAll();
     res.json(menus);
   } catch (error) {
+    if (error instanceof CmsMutationError)
+      return res
+        .status(error.status)
+        .json({ error: error.message, code: error.code, ...error.details });
     logger.cms.error("Failed to fetch menus", error, { requestId: req.requestId });
     res.status(500).json({ error: "Failed to fetch menus" });
   }
@@ -52,6 +67,10 @@ router.get("/menus/:id", p1Authorize("marketing.content.menus"), async (req, res
     if (!menu) return res.status(404).json({ error: "Menu not found" });
     res.json(menu);
   } catch (error) {
+    if (error instanceof CmsMutationError)
+      return res
+        .status(error.status)
+        .json({ error: error.message, code: error.code, ...error.details });
     logger.cms.error("Failed to fetch menu", error, { requestId: req.requestId });
     res.status(500).json({ error: "Failed to fetch menu" });
   }
@@ -71,13 +90,13 @@ router.post("/menus", p1Authorize("marketing.content.menus"), async (req, res) =
       return res.status(400).json({ error: "Menu items cannot be nested more than 3 levels deep" });
     }
 
-    if (data.location !== "unassigned") {
-      await storage.cmsMenus.clearLocation(data.location);
-    }
-
-    const menu = await storage.cmsMenus.create(data);
+    const menu = await mutateCmsMenu(null, data);
     res.status(201).json(menu);
   } catch (error) {
+    if (error instanceof CmsMutationError)
+      return res
+        .status(error.status)
+        .json({ error: error.message, code: error.code, ...error.details });
     logger.cms.error("Failed to create menu", error, { requestId: req.requestId });
     res.status(500).json({ error: "Failed to create menu" });
   }
@@ -86,8 +105,7 @@ router.post("/menus", p1Authorize("marketing.content.menus"), async (req, res) =
 router.put("/menus/:id", p1Authorize("marketing.content.menus"), async (req, res) => {
   try {
     const id = paramString(req.params.id);
-    const existing = await storage.cmsMenus.getById(id);
-    if (!existing) return res.status(404).json({ error: "Menu not found" });
+    const expectedVersion = menuExpectedVersion(req.body);
 
     const parsed = menuBodySchema.partial().safeParse(req.body);
     if (!parsed.success) {
@@ -101,13 +119,13 @@ router.put("/menus/:id", p1Authorize("marketing.content.menus"), async (req, res
       return res.status(400).json({ error: "Menu items cannot be nested more than 3 levels deep" });
     }
 
-    if (data.location && data.location !== "unassigned" && data.location !== existing.location) {
-      await storage.cmsMenus.clearLocation(data.location);
-    }
-
-    const updated = await storage.cmsMenus.update(id, data);
+    const updated = await mutateCmsMenu(id, data, expectedVersion);
     res.json(updated);
   } catch (error) {
+    if (error instanceof CmsMutationError)
+      return res
+        .status(error.status)
+        .json({ error: error.message, code: error.code, ...error.details });
     logger.cms.error("Failed to update menu", error, { requestId: req.requestId });
     res.status(500).json({ error: "Failed to update menu" });
   }
@@ -116,11 +134,14 @@ router.put("/menus/:id", p1Authorize("marketing.content.menus"), async (req, res
 router.delete("/menus/:id", p1Authorize("marketing.content.menus"), async (req, res) => {
   try {
     const id = paramString(req.params.id);
-    const menu = await storage.cmsMenus.getById(id);
-    if (!menu) return res.status(404).json({ error: "Menu not found" });
-    await storage.cmsMenus.delete(id);
+    const expectedVersion = menuExpectedVersion(req.body);
+    await mutateCmsMenu(id, {}, expectedVersion, true);
     res.json({ success: true });
   } catch (error) {
+    if (error instanceof CmsMutationError)
+      return res
+        .status(error.status)
+        .json({ error: error.message, code: error.code, ...error.details });
     logger.cms.error("Failed to delete menu", error, { requestId: req.requestId });
     res.status(500).json({ error: "Failed to delete menu" });
   }

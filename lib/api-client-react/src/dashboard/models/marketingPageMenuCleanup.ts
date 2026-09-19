@@ -10,4 +10,6 @@ export interface MarketingPageMenuCleanup {
   success: boolean;
   menusUpdated: number;
   itemsRemoved: number;
+  /** @minimum 1 */
+  version: number;
 }

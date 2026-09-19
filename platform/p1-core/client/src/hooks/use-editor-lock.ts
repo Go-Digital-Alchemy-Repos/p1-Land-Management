@@ -1,3 +1,8 @@
+import {
+  usePageEditorLease,
+  type PageLeaseTransport,
+  type PageLeaseState,
+} from "../components/shared/use-page-editor-lease";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { EditorLockResourceType, EditorLockResponse } from "@shared/schema";
 import { useAuth } from "@/hooks/use-auth";
@@ -62,7 +67,7 @@ function releaseLockKeepAlive(resourceType: EditorLockResourceType, resourceId: 
   }).catch(() => undefined);
 }
 
-export function useEditorLock({ resourceType, resourceId, enabled = true }: UseEditorLockOptions) {
+function useLegacyEditorLock({ resourceType, resourceId, enabled = true }: UseEditorLockOptions) {
   const { user } = useAuth();
   const [lockState, setLockState] = useState<EditorLockResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -302,5 +307,76 @@ export function useEditorLock({ resourceType, resourceId, enabled = true }: UseE
     lostLock,
     acquire,
     refresh,
+  };
+}
+
+export const pageLeaseTransport: PageLeaseTransport = async (action, id, payload, options) => {
+  const response = await fetch(
+    `/api/admin/editor-locks/cms_page/${encodeURIComponent(id)}/${action}`,
+    {
+      ...options,
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    },
+  );
+  if (!response.ok) {
+    const detail = await response.json().catch(() => ({}));
+    throw Error(
+      detail.error || detail.message || "Page reservation failed. Your draft is retained.",
+    );
+  }
+  return response.json() as Promise<PageLeaseState>;
+};
+export function useEditorLock(options: UseEditorLockOptions) {
+  const { user } = useAuth();
+  const isPage = options.resourceType === "cms_page";
+  const enabled = options.enabled !== false;
+  const legacy = useLegacyEditorLock({ ...options, enabled: enabled && !isPage });
+  const lease = usePageEditorLease(
+    isPage && enabled && user ? options.resourceId || null : null,
+    pageLeaseTransport,
+  );
+  if (!isPage)
+    return {
+      ...legacy,
+      preconditions: async (_version: number) => {
+        throw Error("Page preconditions are only available for CMS pages");
+      },
+    };
+  const hasLocking = Boolean(enabled && user && options.resourceId);
+  const summary = !hasLocking
+    ? null
+    : lease.owned
+      ? {
+          variant: "active-owned" as const,
+          title: "You’re editing this page",
+          description: "This browser editor holds the page reservation.",
+        }
+      : {
+          variant: "locked-by-other" as const,
+          title: lease.error
+            ? "Editing access changed"
+            : lease.holder
+              ? `Checked out by ${lease.holder}`
+              : "Checking edit access",
+          description:
+            lease.error ||
+            "Another browser editor may be editing this page. Your draft is retained.",
+        };
+  return {
+    hasLocking,
+    lockState: lease.state as unknown as EditorLockResponse | null,
+    summary,
+    isLoading: lease.loading,
+    hasLoaded: Boolean(lease.state || lease.error),
+    isOwned: lease.owned,
+    isReadOnly: hasLocking && !lease.owned,
+    isLockedByOther: hasLocking && !lease.owned,
+    lostLock: Boolean(lease.error),
+    acquire: lease.acquire,
+    refresh: lease.acquire,
+    preconditions: lease.preconditions,
   };
 }

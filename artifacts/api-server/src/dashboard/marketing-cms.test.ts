@@ -569,3 +569,14 @@ test("website integration bridge has only the three Owner operations", () => {
    assert.equal(cmsOperations.filter(op=>op.path.startsWith("/website-system/backups")).length,2);
    assert.equal(cmsOperations.some(op=>op.path.includes("backups/restore")),false);
  });
+
+
+test("page and menu DELETE forward concurrency proofs", async () => {
+  for(const path of ["/pages/:id", "/menus/:id"]) {
+    const body=path.startsWith("/pages")?{expectedVersion:7,editorInstanceId:"instance",leaseId:"lease"}:{expectedVersion:9};
+    await callCms(connection,operation("DELETE",path),{id:"fixture"},path.startsWith("/pages")?{force:"true"}:{},body,"grant",async(_url,options)=>{
+      assert.equal(options?.method,"DELETE");assert.deepEqual(JSON.parse(String(options?.body)),body);
+      return Response.json({success:true});
+    });
+  }
+});

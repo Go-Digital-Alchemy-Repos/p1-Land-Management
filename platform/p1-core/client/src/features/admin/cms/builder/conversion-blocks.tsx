@@ -7,9 +7,9 @@ import {
   ExternalLink,
   XCircle,
 } from "lucide-react";
-import { FormModalButton } from "@/components/forms/form-modal-button";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { FormModalButton } from "./static-renderer-host";
+import { Button } from "./static-renderer-host";
+import { Card, CardContent } from "./static-renderer-host";
 import { SectionHeading } from "./section-heading";
 import { LucideIcon } from "./block-icons";
 import { arr, SPACING_MAP, str } from "./block-renderer.shared";

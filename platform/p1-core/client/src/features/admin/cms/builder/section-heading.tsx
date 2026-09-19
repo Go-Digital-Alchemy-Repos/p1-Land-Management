@@ -1,6 +1,6 @@
 import type { ElementType } from "react";
-import { stripHtml } from "@/lib/html";
-import { cn } from "@/lib/utils";
+import { stripHtml } from "../../../../lib/html";
+import { cn } from "./builder-host";
 
 type HeadingLevel = "h1" | "h2";
 type HeadingAlignment = "left" | "center" | "right";

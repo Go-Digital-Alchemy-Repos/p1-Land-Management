@@ -99,7 +99,7 @@ function syncMenuItemsForPage(items: MenuItem[], oldPage: CmsPage, newPage: CmsP
   return { items: nextItems, changed, itemsUpdated };
 }
 
-function collectMenuReferences(
+export function collectMenuReferences(
   items: MenuItem[],
   page: CmsPage,
   menu: { id: string; name: string; location: string },
@@ -189,7 +189,7 @@ export async function removeCmsPageMenuReferences(
     const result = removeMenuItemsForPage((menu.items as MenuItem[]) || [], page);
     if (!result.changed) continue;
 
-    await storage.cmsMenus.update(menu.id, { items: result.items });
+    await storage.cmsMenus.update(menu.id, { items: result.items }, menu.version);
     menusUpdated += 1;
     itemsRemoved += result.itemsRemoved;
   }
@@ -209,7 +209,7 @@ export async function syncCmsPageRelationships(
     const result = syncMenuItemsWithPage((menu.items as MenuItem[]) || [], oldPage, newPage);
     if (!result.changed) continue;
 
-    await storage.cmsMenus.update(menu.id, { items: result.items });
+    await storage.cmsMenus.update(menu.id, { items: result.items }, menu.version);
     menusUpdated += 1;
     itemsUpdated += result.itemsUpdated;
   }

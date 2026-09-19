@@ -8,4 +8,8 @@
 
 export interface MarketingPageSchedule {
   scheduledAt: string;
+  /** @minimum 1 */
+  expectedVersion: number;
+  editorInstanceId: string;
+  leaseId: string;
 }

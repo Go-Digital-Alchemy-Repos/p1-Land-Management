@@ -18,6 +18,7 @@ function lockPayload(lock: EditorLock | null) {
   if (!lock) return null;
   return {
     id: lock.id,
+    ...(lock.resourceType === "cms_page" ? {editorInstanceId:lock.editorInstanceId ?? null} : {}),
     lockedByUserId: lock.lockedByUserId,
     lockedByName: lock.lockedByName,
     lockedAt: toIso(lock.lockedAt),

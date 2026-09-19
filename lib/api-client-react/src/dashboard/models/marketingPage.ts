@@ -30,4 +30,6 @@ export interface MarketingPage {
   updatedAt?: string | null;
   publishedAt?: string | null;
   scheduledAt?: string | null;
+  /** @minimum 1 */
+  version: number;
 }

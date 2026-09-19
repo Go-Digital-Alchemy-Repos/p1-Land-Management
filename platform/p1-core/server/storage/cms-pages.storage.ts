@@ -1,5 +1,5 @@
 import { db } from "../db";
-import { cmsPages, type CmsPage, type InsertCmsPage } from "@shared/schema";
+import { cmsPages, cmsPageRevisions, type CmsPage, type InsertCmsPage } from "@shared/schema";
 import { eq, desc, and, lte, asc, sql } from "drizzle-orm";
 
 export class CmsPagesStorage {
@@ -31,7 +31,7 @@ export class CmsPagesStorage {
   async updatePage(id: string, data: Partial<InsertCmsPage>): Promise<CmsPage | undefined> {
     const [page] = await db
       .update(cmsPages)
-      .set({ ...data, updatedAt: new Date() })
+      .set({ ...data, version: sql`${cmsPages.version}+1`, updatedAt: new Date() })
       .where(eq(cmsPages.id, id))
       .returning();
     return page;
@@ -46,6 +46,7 @@ export class CmsPagesStorage {
     const [page] = await db
       .update(cmsPages)
       .set({
+        version: sql`${cmsPages.version}+1`,
         status: "published",
         publishedAt: new Date(),
         updatedBy: adminId,
@@ -60,6 +61,7 @@ export class CmsPagesStorage {
     const [page] = await db
       .update(cmsPages)
       .set({
+        version: sql`${cmsPages.version}+1`,
         status: "draft",
         publishedAt: null,
         scheduledAt: null,
@@ -75,6 +77,7 @@ export class CmsPagesStorage {
     const [page] = await db
       .update(cmsPages)
       .set({
+        version: sql`${cmsPages.version}+1`,
         status: "scheduled",
         scheduledAt,
         publishedAt: null,
@@ -87,13 +90,38 @@ export class CmsPagesStorage {
   }
 
   async publishScheduledPages(): Promise<number> {
-    const now = new Date();
-    const result = await db
-      .update(cmsPages)
-      .set({ status: "published", publishedAt: now, scheduledAt: null, updatedAt: now })
-      .where(and(eq(cmsPages.status, "scheduled"), lte(cmsPages.scheduledAt, now)))
-      .returning();
-    return result.length;
+    return db.transaction(async (tx) => {
+      const nowResult = await tx.execute(sql`select clock_timestamp() as now`);
+      const now = new Date(nowResult.rows[0].now as string);
+      const due = await tx
+        .select()
+        .from(cmsPages)
+        .where(and(eq(cmsPages.status, "scheduled"), lte(cmsPages.scheduledAt, now)))
+        .for("update", { skipLocked: true });
+      for (const page of due) {
+        await tx
+          .insert(cmsPageRevisions)
+          .values({
+            pageId: page.id,
+            title: page.title,
+            content: page.content,
+            status: page.status,
+            changedBy: null,
+            changeNote: "Before scheduled publication",
+          });
+        await tx
+          .update(cmsPages)
+          .set({
+            status: "published",
+            publishedAt: now,
+            scheduledAt: null,
+            updatedAt: now,
+            version: sql`${cmsPages.version}+1`,
+          })
+          .where(eq(cmsPages.id, page.id));
+      }
+      return due.length;
+    });
   }
 
   async getNextScheduledTime(): Promise<Date | null> {

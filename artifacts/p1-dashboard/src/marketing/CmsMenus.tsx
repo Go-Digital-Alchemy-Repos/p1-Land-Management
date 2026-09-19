@@ -1,11 +1,10 @@
+import { customFetch } from "../../../../lib/api-client-react/src/custom-fetch";
 import { useEffect, useRef, useState } from "react";
 import {
   listWebsiteMenus,
   getWebsiteMenuReferences,
   getWebsiteMenu,
   createWebsiteMenu,
-  updateWebsiteMenu,
-  deleteWebsiteMenu,
   acquireWebsiteMenuReservation,
   heartbeatWebsiteMenuReservation,
   releaseWebsiteMenuReservation,
@@ -19,11 +18,14 @@ import type {
 import "./cms-menus.css";
 
 type Item = WebsiteMenuItem;
-type Menu = WebsiteMenuInput & { id?: string };
+type Menu = WebsiteMenuInput & { id?: string; version?: number };
 type References = WebsiteMenuReferences;
 type Lock = WebsiteEditorReservation;
 const locations: Record<string, string> = {
   main_navigation: "Main Navigation",
+  p1_footer_services: "P1 Footer Services",
+  p1_footer_service_areas: "P1 Footer Service Areas",
+  p1_footer_company: "P1 Footer Company",
   footer_platform: "Footer Platform Column",
   footer_professionals: "Footer Professionals Column",
   footer_resources: "Footer Resources Column",
@@ -161,7 +163,9 @@ function Items({
                 >
                   <option value="internal-link">Website page</option>
                   <option value="custom-link">Custom link</option>
-                  <option value="form-modal">Form popup</option>
+                  <option value="form-modal">
+                    Form popup (not supported on the P1 public website)
+                  </option>
                 </select>
               </label>
               <label>
@@ -502,14 +506,25 @@ export default function CmsMenus() {
         items: draft.items,
       };
       const next = await (draft.id
-        ? updateWebsiteMenu(draft.id, payload, {
-            signal: controller.current.signal,
-          })
+        ? customFetch<Menu>(
+            `/api/v1/marketing/cms/menus/${encodeURIComponent(draft.id)}`,
+            {
+              method: "PUT",
+              signal: controller.current.signal,
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                ...payload,
+                expectedVersion: draft.version,
+              }),
+            },
+          )
         : createWebsiteMenu(payload, { signal: controller.current.signal }));
       if (alive.current) {
         setDraft(next);
         setBaseline(JSON.stringify(next));
-        setNotice("Website menu saved.");
+        setNotice(
+          "Website menu saved. Assigned P1 menus appear publicly within 30 seconds; there is no separate publish step.",
+        );
         await readAll();
       }
     });
@@ -519,7 +534,8 @@ export default function CmsMenus() {
         <div>
           <h2>Website menus</h2>
           <p className="muted">
-          Manage CMS navigation, footer links and form popups. P1 website navigation is managed in the Website editor.
+            Manage CMS navigation, footer links and form popups. P1 website
+            navigation is managed in the Website editor.
           </p>
         </div>
         <button
@@ -562,9 +578,17 @@ export default function CmsMenus() {
                       )
                     )
                       void perform(async () => {
-                        await deleteWebsiteMenu(menu.id!, {
-                          signal: controller.current.signal,
-                        });
+                        await customFetch(
+                          `/api/v1/marketing/cms/menus/${encodeURIComponent(menu.id!)}`,
+                          {
+                            method: "DELETE",
+                            signal: controller.current.signal,
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                              expectedVersion: menu.version,
+                            }),
+                          },
+                        );
                         if (draft?.id === menu.id) {
                           setDraft(null);
                           setBaseline("");

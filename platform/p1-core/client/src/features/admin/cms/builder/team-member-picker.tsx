@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useBuilderHost } from "./builder-host";
 import { ArrowUp, ArrowDown, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import type { TeamMember } from "@shared/schema";
+import { Button } from "./builder-host";
+import { Input } from "./builder-host";
 
 export function TeamMemberPicker({
   value,
@@ -14,10 +13,10 @@ export function TeamMemberPicker({
 }) {
   const [search, setSearch] = useState("");
   const {
-    data: members = [],
-    isLoading,
-    isError,
-  } = useQuery<TeamMember[]>({ queryKey: ["/api/admin/cms/team"] });
+    team: members,
+    teamLoading: isLoading = false,
+    teamError: isError = false,
+  } = useBuilderHost().useCatalog({ team: true });
   const ids = Array.isArray(value)
     ? [...new Set(value.filter((id): id is string => typeof id === "string"))]
     : [];

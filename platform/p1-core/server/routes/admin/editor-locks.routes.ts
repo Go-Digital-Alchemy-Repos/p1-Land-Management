@@ -1,3 +1,5 @@
+import { pageLease } from "../../services/cms-page-leases.service";
+import { CmsMutationError } from "../../services/cms-concurrency";
 import { Router } from "express";
 import { z } from "zod";
 import { asyncHandler } from "../../middleware/error-handler";
@@ -36,7 +38,11 @@ router.get(
   asyncHandler(async (req, res) => {
     const { resourceType, resourceId } = lockParamsSchema.parse(req.params);
     requireEditorLockAccess(req, resourceType);
-    res.json(await getEditorLock(resourceType, resourceId, req.user));
+    res.json(
+      resourceType === "cms_page"
+        ? await pageLease("status", resourceId, req.user)
+        : await getEditorLock(resourceType, resourceId, req.user),
+    );
   }),
 );
 
@@ -45,7 +51,11 @@ router.post(
   asyncHandler(async (req, res) => {
     const { resourceType, resourceId } = editorLockRequestSchema.parse(req.body);
     requireEditorLockAccess(req, resourceType);
-    res.json(await acquireEditorLock(resourceType, resourceId, req.user));
+    res.json(
+      resourceType === "cms_page"
+        ? await pageLease("acquire", resourceId, req.user, req.body)
+        : await acquireEditorLock(resourceType, resourceId, req.user),
+    );
   }),
 );
 
@@ -54,7 +64,11 @@ router.post(
   asyncHandler(async (req, res) => {
     const { resourceType, resourceId } = editorLockRequestSchema.parse(req.body);
     requireEditorLockAccess(req, resourceType);
-    res.json(await heartbeatEditorLock(resourceType, resourceId, req.user));
+    res.json(
+      resourceType === "cms_page"
+        ? await pageLease("heartbeat", resourceId, req.user, req.body)
+        : await heartbeatEditorLock(resourceType, resourceId, req.user),
+    );
   }),
 );
 
@@ -63,7 +77,11 @@ router.post(
   asyncHandler(async (req, res) => {
     const { resourceType, resourceId } = editorLockRequestSchema.parse(req.body);
     requireEditorLockAccess(req, resourceType);
-    res.json(await releaseEditorLock(resourceType, resourceId, req.user));
+    res.json(
+      resourceType === "cms_page"
+        ? await pageLease("release", resourceId, req.user, req.body)
+        : await releaseEditorLock(resourceType, resourceId, req.user),
+    );
   }),
 );
 
@@ -78,9 +96,32 @@ for (const [action, operation] of Object.entries({
     asyncHandler(async (req, res) => {
       const { resourceType, resourceId } = lockParamsSchema.parse(req.params);
       requireEditorLockAccess(req, resourceType);
-      res.json(await operation(resourceType, resourceId, req.user));
+      res.json(
+        resourceType === "cms_page"
+          ? await pageLease(
+              action as "acquire" | "heartbeat" | "release",
+              resourceId,
+              req.user,
+              req.body,
+            )
+          : await operation(resourceType, resourceId, req.user),
+      );
     }),
   );
 }
 
+router.use(
+  (
+    error: unknown,
+    _req: import("express").Request,
+    res: import("express").Response,
+    next: import("express").NextFunction,
+  ) => {
+    if (error instanceof CmsMutationError)
+      return res
+        .status(error.status)
+        .json({ error: error.message, code: error.code, ...error.details });
+    next(error);
+  },
+);
 export default router;

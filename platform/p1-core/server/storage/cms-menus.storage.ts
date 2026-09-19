@@ -1,6 +1,8 @@
+import { mutateCmsMenu } from "../services/cms-menu-mutations.service";
+import { lockMenus } from "../services/cms-concurrency";
 import { db } from "../db";
 import { cmsMenus, type CmsMenu, type InsertCmsMenu } from "@shared/schema";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, sql } from "drizzle-orm";
 
 export class CmsMenusStorage {
   async getAll(): Promise<CmsMenu[]> {
@@ -23,28 +25,26 @@ export class CmsMenusStorage {
   }
 
   async create(data: InsertCmsMenu): Promise<CmsMenu> {
-    const [menu] = await db.insert(cmsMenus).values(data).returning();
-    return menu;
+    return (await mutateCmsMenu(null, data)) as CmsMenu;
   }
-
-  async update(id: string, data: Partial<InsertCmsMenu>): Promise<CmsMenu | undefined> {
-    const [menu] = await db
-      .update(cmsMenus)
-      .set({ ...data, updatedAt: new Date() })
-      .where(eq(cmsMenus.id, id))
-      .returning();
-    return menu;
+  async update(
+    id: string,
+    data: Partial<InsertCmsMenu>,
+    expectedVersion: number,
+  ): Promise<CmsMenu> {
+    return (await mutateCmsMenu(id, data, expectedVersion)) as CmsMenu;
   }
-
-  async delete(id: string): Promise<boolean> {
-    const result = await db.delete(cmsMenus).where(eq(cmsMenus.id, id)).returning();
-    return result.length > 0;
+  async delete(id: string, expectedVersion: number): Promise<boolean> {
+    await mutateCmsMenu(id, {}, expectedVersion, true);
+    return true;
   }
-
   async clearLocation(location: string): Promise<void> {
-    await db
-      .update(cmsMenus)
-      .set({ location: "unassigned", updatedAt: new Date() })
-      .where(eq(cmsMenus.location, location));
+    await db.transaction(async (tx) => {
+      await lockMenus(tx);
+      await tx
+        .update(cmsMenus)
+        .set({ location: "unassigned", updatedAt: new Date(), version: sql`${cmsMenus.version}+1` })
+        .where(eq(cmsMenus.location, location));
+    });
   }
 }

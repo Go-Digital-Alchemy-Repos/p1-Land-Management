@@ -1,0 +1,255 @@
+/* Scoped adapter for the retained PageBuilder workspace. Utility rules are generated from its source. */
+@import "./native-page-builder.utilities.css";
+.native-page-builder {
+  min-width: 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.native-page-builder :where(*) {
+  box-sizing: border-box;
+  border-style: solid;
+  border-width: 0;
+  border-color: hsl(var(--border));
+}
+.native-page-builder :where(h1, h3, p) {
+  margin: 0;
+}
+.native-page-builder button,
+.native-page-builder input,
+.native-page-builder select,
+.native-page-builder textarea {
+  font-family: inherit;
+  letter-spacing: normal;
+  box-shadow: none;
+}
+.native-page-builder button {
+  cursor: pointer;
+}
+.native-page-builder input,
+.native-page-builder textarea,
+.native-page-builder select {
+  min-width: 0;
+  margin: 0;
+  border-radius: 6px;
+}
+.native-page-builder label {
+  display: block;
+  margin: 0;
+}
+.native-page-builder button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.native-page-builder svg {
+  flex-shrink: 0;
+}
+.native-page-builder .forms-button {
+  min-height: 36px;
+  padding: 8px 16px;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border: 1px solid transparent;
+}
+.native-page-builder .forms-button-outline {
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  border-color: hsl(var(--border));
+}
+.native-page-builder .forms-button-ghost {
+  background: transparent;
+  color: inherit;
+}
+.native-page-builder .forms-button-icon {
+  height: 36px;
+  width: 36px;
+  padding: 8px;
+}
+.native-page-builder .forms-button-sm {
+  min-height: 32px;
+  padding: 6px 12px;
+}
+.native-page-builder .forms-switch {
+  width: 40px;
+  height: 24px;
+  min-height: 24px;
+  padding: 2px;
+  border: 0;
+  border-radius: 20px;
+  background: hsl(var(--input));
+}
+.native-page-builder .forms-switch span {
+  display: block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 1px 2px #0002;
+  transition: transform 0.15s;
+}
+.native-page-builder .forms-switch[aria-checked="true"] {
+  background: hsl(var(--primary));
+}
+.native-page-builder .forms-switch[aria-checked="true"] span {
+  transform: translateX(16px);
+}
+.native-page-builder .forms-tabs button {
+  padding: 7px 12px;
+  display: flex;
+  align-items: center;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+}
+.native-page-builder .forms-tabs button[aria-selected="true"] {
+  background: hsl(var(--background));
+  box-shadow: 0 1px 3px #0002;
+}
+.native-page-builder :focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+.native-page-builder .forms-native-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.native-page-builder .forms-card {
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+@media (max-width: 640px) {
+  .native-page-builder {
+    padding: 0;
+  }
+  .native-page-builder .forms-card > div {
+    padding: 16px;
+  }
+}
+
+.native-page-builder fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.native-page-builder {
+  --background: 0 0% 100%;
+  --foreground: 222 47% 11%;
+  --muted: 210 40% 96%;
+  --muted-foreground: 215 16% 47%;
+  --primary: 263 70% 50%;
+  --primary-foreground: 0 0% 100%;
+  --border: 214 32% 91%;
+  --input: 214 32% 91%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --accent: 263 70% 50%;
+  --accent-foreground: 0 0% 100%;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-inline-size: 0;
+  color: hsl(var(--foreground));
+  background: hsl(var(--background));
+}
+.native-page-builder input,
+.native-page-builder select,
+.native-page-builder textarea {
+  display: block;
+  color: inherit;
+  background: hsl(var(--background));
+  padding: 8px 12px;
+  min-width: 0;
+  width: 100%;
+  border: 1px solid hsl(var(--border));
+  font: inherit;
+}
+.native-page-builder .builder-tabs {
+  display: flex;
+  gap: 4px;
+  background: hsl(var(--muted));
+  padding: 4px;
+  border-radius: 6px;
+}
+.native-page-builder [role="tab"][aria-selected="true"] {
+  background: hsl(var(--background));
+  box-shadow: 0 1px 3px #0002;
+}
+.native-builder-dialog {
+  position: fixed;
+  max-width: 96vw;
+  width: min(1100px, 96vw);
+  max-height: 94vh;
+  border: 1px solid hsl(var(--border));
+  border-radius: 12px;
+  padding: 24px;
+  margin: auto;
+  overflow: auto;
+}
+.native-builder-dialog::backdrop {
+  background: #0008;
+}
+.native-page-builder .native-builder-dialog-close {
+  position: absolute;
+  right: 10px;
+  top: 8px;
+  font-size: 24px;
+  z-index: 50;
+}
+.native-page-builder [data-panel-resize-handle-id] {
+  min-width: 6px;
+  cursor: col-resize;
+}
+.native-page-builder [data-panel-resize-handle-id]:focus-visible {
+  outline: 2px solid #8b5cf6;
+}
+.native-page-builder .builder-preview iframe {
+  height: 650px;
+  border: 0;
+}
+.native-page-builder .forms-button {
+  padding: 8px 12px;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border: 1px solid transparent;
+}
+.native-page-builder .forms-button-outline,
+.native-page-builder .forms-button-ghost {
+  background: transparent;
+  color: inherit;
+}
+.native-page-builder .forms-button-outline {
+  border-color: hsl(var(--border));
+}
+.native-page-builder .forms-button-secondary {
+  background: hsl(var(--muted));
+  color: inherit;
+}
+.native-page-builder .forms-button-icon {
+  padding: 8px;
+  aspect-ratio: 1;
+}
+.native-page-builder .forms-button-sm {
+  padding: 6px 10px;
+}
+.native-page-builder .forms-switch {
+  width: 36px;
+  height: 20px;
+  border-radius: 20px;
+  padding: 2px;
+  background: #cbd5e1;
+}
+.native-page-builder .forms-switch span {
+  display: block;
+  width: 16px;
+  height: 16px;
+  border-radius: 100%;
+  background: white;
+}
+.native-page-builder .forms-switch[aria-checked="true"] {
+  background: #7c3aed;
+}
+.native-page-builder .forms-switch[aria-checked="true"] span {
+  transform: translateX(16px);
+}

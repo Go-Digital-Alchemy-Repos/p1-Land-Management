@@ -12,6 +12,7 @@ const state = vi.hoisted(() => ({
   pages: vi.fn(),
   page: vi.fn(),
   publish: vi.fn(),
+  pageMutation: vi.fn(),
   menus: vi.fn(),
   updateMenu: vi.fn(),
   list: vi.fn(),
@@ -65,6 +66,7 @@ vi.mock("../services/federation-runtime", () => ({
   FEDERATION_COOKIE: "test",
   hasFederationHistory: vi.fn(),
 }));
+vi.mock("../services/cms-page-mutations.service",()=>({createPageWithRevision:vi.fn(),mutateCmsPage:state.pageMutation}));
 vi.mock("../storage", () => ({
   storage: {
     clientStackOnboarding: { record: state.onboardingRecord, list: state.onboardingList },
@@ -173,6 +175,7 @@ beforeEach(async () => {
   state.events.mockResolvedValue([]);
   state.pages.mockResolvedValue([{ id: "page", title: "Synthetic page" }]);
   state.page.mockResolvedValue({ id: "page", title: "Synthetic page", slug: "synthetic" });
+  state.pageMutation.mockResolvedValue({id:"page",version:2,status:"published"});
   state.publish.mockResolvedValue({ id: "page", status: "published" });
   state.menus.mockResolvedValue([
     {
@@ -253,12 +256,12 @@ it("uses the same page handlers and original local audit identity, with fresh gr
   expect(response.status).toBe(200);
   expect(response.headers.get("cache-control")).toContain("no-store");
   expect(await response.json()).toEqual([{ id: "page", title: "Synthetic page" }]);
-  expect((await request("/pages/page/publish", "POST")).status).toBe(200);
-  expect(state.publish).toHaveBeenCalledWith("page", "linked");
+  expect((await request("/pages/page/publish", "POST", {}, "/service", pageProof)).status).toBe(200);
+  expect(state.pageMutation).toHaveBeenCalledWith("page", "linked", pageProof, "publish");
   expect((await request("/menus")).status).toBe(403);
   identity.capabilities = [];
   expect((await request("/pages/page/publish", "POST")).status).toBe(403);
-  expect(state.publish).toHaveBeenCalledTimes(1);
+  expect(state.pageMutation).toHaveBeenCalledTimes(1);
   identity.capabilities = ["marketing.content.pages"];
   state.enabled.mockResolvedValue(false);
   expect((await request("/pages")).status).toBe(404);
@@ -267,8 +270,8 @@ it("requires Pages and Menus to explicitly remove page links from navigation", a
   expect((await request("/pages/page/relationships/remove-menu-items", "POST")).status).toBe(403);
   expect(state.menus).not.toHaveBeenCalled();
   identity.capabilities.push("marketing.content.menus");
-  expect((await request("/pages/page/relationships/remove-menu-items", "POST")).status).toBe(200);
-  expect(state.updateMenu).toHaveBeenCalledWith("menu", { items: [] });
+  expect((await request("/pages/page/relationships/remove-menu-items", "POST", {}, "/service", pageProof)).status).toBe(200);
+  expect(state.pageMutation).toHaveBeenCalledWith("page", "linked", pageProof, "remove-menu-items");
 });
 it("fails closed for every retained route without canonical grants, including local admin", async () => {
   const endpoints: [string, string][] = [
@@ -1201,4 +1204,12 @@ it("onboarding retains attributed append-only evidence and strict payloads", asy
  expect((await request("/website-system/onboarding/dns-verification","POST",{},"/service",{...payload,recordedByUserId:"spoof"})).status).toBe(400);
  const saved = await request("/website-system/onboarding/p1/evidence");
  expect(saved.status).toBe(200);expect(saved.headers.get("cache-control")).toBe("private, no-store");expect(state.onboardingList).toHaveBeenCalledWith("p1");
+});
+
+const pageProof={expectedVersion:1,editorInstanceId:"11111111-1111-4111-8111-111111111111",leaseId:"22222222-2222-4222-8222-222222222222"};
+it("requires complete version and lease proof before every existing-page mutation",async()=>{
+ identity.capabilities.push("marketing.content.menus");
+ const operations=[["PUT","/pages/page"],["DELETE","/pages/page"],...["publish","unpublish","schedule","relationships/remove-menu-items","revisions/revision/restore"].map(action=>["POST",`/pages/page/${action}`])];
+ for(const [method,path] of operations){const response=await request(path,method,{},"/service",{});expect(response.status).toBe(400);expect(await response.json()).toMatchObject({code:"CMS_CONCURRENCY_REQUIRED"});}
+ expect(state.pageMutation).not.toHaveBeenCalled();
 });

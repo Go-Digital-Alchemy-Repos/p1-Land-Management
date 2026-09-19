@@ -221,8 +221,11 @@ import type {
   MarketingPage,
   MarketingPageBuilder,
   MarketingPageInput,
+  MarketingPageLeaseAcquire,
+  MarketingPageLeaseProof,
   MarketingPageMenuCleanup,
   MarketingPagePatch,
+  MarketingPagePreconditions,
   MarketingPagePreviewLink,
   MarketingPageRelationships,
   MarketingPageRevision,
@@ -367,6 +370,8 @@ import type {
   WebsiteIntegrations,
   WebsiteMenu,
   WebsiteMenuInput,
+  WebsiteMenuPatch,
+  WebsiteMenuPreconditions,
   WebsiteMenuReferences,
   WebsiteSocialInput,
   WebsiteSocialState,
@@ -4230,7 +4235,7 @@ export const getUpdateWebsiteMenuUrl = (id: string,) => {
  * Requires marketing.content.menus. Core owns menu content and editor reservations. Private/no-store; no automatic mutation retry.
  */
 export const updateWebsiteMenu = async (id: string,
-    websiteMenuInput: WebsiteMenuInput, options?: RequestInit): Promise<WebsiteMenu> => {
+    websiteMenuPatch: WebsiteMenuPatch, options?: RequestInit): Promise<WebsiteMenu> => {
 
   return customFetch<WebsiteMenu>(getUpdateWebsiteMenuUrl(id),
   {
@@ -4238,7 +4243,7 @@ export const updateWebsiteMenu = async (id: string,
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
-      websiteMenuInput,)
+      websiteMenuPatch,)
   }
 );}
 
@@ -4255,14 +4260,16 @@ export const getDeleteWebsiteMenuUrl = (id: string,) => {
 /**
  * Requires marketing.content.menus. Core owns menu content and editor reservations. Private/no-store; no automatic mutation retry.
  */
-export const deleteWebsiteMenu = async (id: string, options?: RequestInit): Promise<DeleteWebsiteMenu200> => {
+export const deleteWebsiteMenu = async (id: string,
+    websiteMenuPreconditions: WebsiteMenuPreconditions, options?: RequestInit): Promise<DeleteWebsiteMenu200> => {
 
   return customFetch<DeleteWebsiteMenu200>(getDeleteWebsiteMenuUrl(id),
   {
     ...options,
-    method: 'DELETE'
-
-
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      websiteMenuPreconditions,)
   }
 );}
 
@@ -6157,14 +6164,16 @@ export const getDeleteMarketingPageUrl = (id: string,
  * Requires marketing.content.pages. Generic CMS content remains separate from primary Website manifest publication. Core owns validation, storage and publication.
  */
 export const deleteMarketingPage = async (id: string,
+    marketingPagePreconditions: MarketingPagePreconditions,
     params?: DeleteMarketingPageParams, options?: RequestInit): Promise<MarketingDeleteResult> => {
 
   return customFetch<MarketingDeleteResult>(getDeleteMarketingPageUrl(id,params),
   {
     ...options,
-    method: 'DELETE'
-
-
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingPagePreconditions,)
   }
 );}
 
@@ -6205,14 +6214,16 @@ export const getPublishMarketingPageUrl = (id: string,) => {
 /**
  * Requires marketing.content.pages. Generic CMS content remains separate from primary Website manifest publication. Core owns validation, storage and publication.
  */
-export const publishMarketingPage = async (id: string, options?: RequestInit): Promise<MarketingPage> => {
+export const publishMarketingPage = async (id: string,
+    marketingPagePreconditions: MarketingPagePreconditions, options?: RequestInit): Promise<MarketingPage> => {
 
   return customFetch<MarketingPage>(getPublishMarketingPageUrl(id),
   {
     ...options,
-    method: 'POST'
-
-
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingPagePreconditions,)
   }
 );}
 
@@ -6238,14 +6249,16 @@ export const getUnpublishMarketingPageUrl = (id: string,
  * Requires marketing.content.pages. Generic CMS content remains separate from primary Website manifest publication. Core owns validation, storage and publication.
  */
 export const unpublishMarketingPage = async (id: string,
+    marketingPagePreconditions: MarketingPagePreconditions,
     params?: UnpublishMarketingPageParams, options?: RequestInit): Promise<MarketingPage> => {
 
   return customFetch<MarketingPage>(getUnpublishMarketingPageUrl(id,params),
   {
     ...options,
-    method: 'POST'
-
-
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingPagePreconditions,)
   }
 );}
 
@@ -6312,14 +6325,16 @@ export const getRemoveMarketingPageMenuItemsUrl = (id: string,) => {
 /**
  * Requires marketing.content.pages. Generic CMS content remains separate from primary Website manifest publication. Core owns validation, storage and publication. Also requires marketing.content.menus.
  */
-export const removeMarketingPageMenuItems = async (id: string, options?: RequestInit): Promise<MarketingPageMenuCleanup> => {
+export const removeMarketingPageMenuItems = async (id: string,
+    marketingPagePreconditions: MarketingPagePreconditions, options?: RequestInit): Promise<MarketingPageMenuCleanup> => {
 
   return customFetch<MarketingPageMenuCleanup>(getRemoveMarketingPageMenuItemsUrl(id),
   {
     ...options,
-    method: 'POST'
-
-
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingPagePreconditions,)
   }
 );}
 
@@ -6386,14 +6401,16 @@ export const getRestoreMarketingPageRevisionUrl = (pageId: string,
  * Requires marketing.content.pages. Generic CMS content remains separate from primary Website manifest publication. Core owns validation, storage and publication.
  */
 export const restoreMarketingPageRevision = async (pageId: string,
-    revisionId: string, options?: RequestInit): Promise<MarketingPage> => {
+    revisionId: string,
+    marketingPagePreconditions: MarketingPagePreconditions, options?: RequestInit): Promise<MarketingPage> => {
 
   return customFetch<MarketingPage>(getRestoreMarketingPageRevisionUrl(pageId,revisionId),
   {
     ...options,
-    method: 'POST'
-
-
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingPagePreconditions,)
   }
 );}
 
@@ -6432,16 +6449,18 @@ export const getAcquireMarketingPageReservationUrl = (id: string,) => {
 }
 
 /**
- * Requires marketing.content.pages; retained advisory reservation.
+ * Requires marketing.content.pages; editor-instance fenced page lease.
  */
-export const acquireMarketingPageReservation = async (id: string, options?: RequestInit): Promise<WebsiteEditorReservation> => {
+export const acquireMarketingPageReservation = async (id: string,
+    marketingPageLeaseAcquire: MarketingPageLeaseAcquire, options?: RequestInit): Promise<WebsiteEditorReservation> => {
 
   return customFetch<WebsiteEditorReservation>(getAcquireMarketingPageReservationUrl(id),
   {
     ...options,
-    method: 'POST'
-
-
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingPageLeaseAcquire,)
   }
 );}
 
@@ -6456,16 +6475,18 @@ export const getHeartbeatMarketingPageReservationUrl = (id: string,) => {
 }
 
 /**
- * Requires marketing.content.pages; retained advisory reservation.
+ * Requires marketing.content.pages; editor-instance fenced page lease.
  */
-export const heartbeatMarketingPageReservation = async (id: string, options?: RequestInit): Promise<WebsiteEditorReservation> => {
+export const heartbeatMarketingPageReservation = async (id: string,
+    marketingPageLeaseProof: MarketingPageLeaseProof, options?: RequestInit): Promise<WebsiteEditorReservation> => {
 
   return customFetch<WebsiteEditorReservation>(getHeartbeatMarketingPageReservationUrl(id),
   {
     ...options,
-    method: 'POST'
-
-
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingPageLeaseProof,)
   }
 );}
 
@@ -6480,16 +6501,18 @@ export const getReleaseMarketingPageReservationUrl = (id: string,) => {
 }
 
 /**
- * Requires marketing.content.pages; retained advisory reservation.
+ * Requires marketing.content.pages; editor-instance fenced page lease.
  */
-export const releaseMarketingPageReservation = async (id: string, options?: RequestInit): Promise<WebsiteEditorReservation> => {
+export const releaseMarketingPageReservation = async (id: string,
+    marketingPageLeaseProof: MarketingPageLeaseProof, options?: RequestInit): Promise<WebsiteEditorReservation> => {
 
   return customFetch<WebsiteEditorReservation>(getReleaseMarketingPageReservationUrl(id),
   {
     ...options,
-    method: 'POST'
-
-
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingPageLeaseProof,)
   }
 );}
 

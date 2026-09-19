@@ -3,7 +3,18 @@
 import React, { act } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createRoot, type Root } from "react-dom/client";
-import { PageBuilder } from "./page-builder";
+import { PageBuilder as CorePageBuilder } from "./page-builder";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+const testQueryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false, queryFn: async () => [] } },
+});
+function PageBuilder(props: React.ComponentProps<typeof CorePageBuilder>) {
+  return (
+    <QueryClientProvider client={testQueryClient}>
+      <CorePageBuilder {...props} />
+    </QueryClientProvider>
+  );
+}
 import { fixtureWithBrokenPreview, mixedBuilderFixture } from "./page-builder-test-fixtures";
 
 vi.mock("./page-builder-preview", () => ({

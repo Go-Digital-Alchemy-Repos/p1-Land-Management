@@ -1,19 +1,19 @@
 import { ArrowRight, Quote } from "lucide-react";
-import { FormModalButton } from "@/components/forms/form-modal-button";
-import { Card, CardContent } from "@/components/ui/card";
+import { FormModalButton } from "./static-renderer-host";
+import { Card, CardContent } from "./static-renderer-host";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion";
+} from "./static-renderer-host";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/components/ui/carousel";
+} from "./static-renderer-host";
 import { SectionHeading } from "./section-heading";
 import { LucideIcon } from "./block-icons";
 import { arr, getMobileImageStyles, str } from "./block-renderer.shared";

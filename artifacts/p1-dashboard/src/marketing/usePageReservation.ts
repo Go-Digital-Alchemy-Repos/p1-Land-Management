@@ -1,71 +1,24 @@
-import { useEffect, useRef, useState } from "react";
+import { customFetch } from "../../../../lib/api-client-react/src/custom-fetch";
 import {
-  acquireMarketingPageReservation,
-  heartbeatMarketingPageReservation,
-  releaseMarketingPageReservation,
-} from "@workspace/api-client-react/dashboard";
-import type { WebsiteEditorReservation } from "../../../../lib/api-client-react/src/dashboard/models";
+  usePageEditorLease,
+  type PageLeaseTransport,
+  type PageLeaseState,
+} from "../../../../platform/p1-core/client/src/components/shared/use-page-editor-lease";
+export const pageLeaseTransport: PageLeaseTransport = (
+  action,
+  id,
+  payload,
+  options,
+) =>
+  customFetch<PageLeaseState>(
+    `/api/v1/marketing/cms/editor-locks/cms_page/${encodeURIComponent(id)}/${action}`,
+    {
+      ...options,
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    },
+  );
 export function usePageReservation(id: string | null) {
-  const [reservation, setReservation] =
-      useState<WebsiteEditorReservation | null>(null),
-    [error, setError] = useState("");
-  const abort = useRef(new AbortController());
-  async function acquire() {
-    if (!id) return;
-    const signal = abort.current.signal;
-    try {
-      const next = await acquireMarketingPageReservation(id, {
-        signal,
-      });
-      if (signal.aborted) return;
-      setReservation(next);
-      setError("");
-    } catch (e) {
-      if (!signal.aborted) {
-        setReservation(null);
-        setError((e as Error).message);
-      }
-    }
-  }
-  async function verify() {
-    if (!id) return;
-    const signal = abort.current.signal;
-    const next = await heartbeatMarketingPageReservation(id, { signal });
-    if (signal.aborted) throw Error("Editor closed");
-    setReservation(next);
-    if (!next.ownedByCurrentUser)
-      throw Error("Another editor holds this page. Your changes are retained.");
-  }
-  useEffect(() => {
-    const controller = new AbortController();
-    abort.current = controller;
-    setReservation(null);
-    setError("");
-    if (!id) return () => controller.abort();
-    void acquire();
-    const timer = setInterval(
-      () =>
-        void verify().catch((e) => {
-          if (!controller.signal.aborted) {
-            setReservation(null);
-            setError((e as Error).message);
-          }
-        }),
-      30000,
-    );
-    return () => {
-      controller.abort();
-      clearInterval(timer);
-      void releaseMarketingPageReservation(id, { keepalive: true }).catch(
-        () => {},
-      );
-    };
-  }, [id]);
-  return {
-    owned: !id || reservation?.ownedByCurrentUser === true,
-    verify,
-    acquire,
-    error,
-    holder: reservation?.lock?.lockedByName,
-  };
+  return usePageEditorLease(id, pageLeaseTransport);
 }

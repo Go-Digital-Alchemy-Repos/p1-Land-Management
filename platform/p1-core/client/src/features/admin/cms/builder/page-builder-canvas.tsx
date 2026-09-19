@@ -1,7 +1,7 @@
 import type { DragEvent } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Badge } from "./builder-host";
+import { Button } from "./builder-host";
+import { ScrollArea } from "./builder-host";
 import {
   ArrowDown,
   ArrowUp,
@@ -16,15 +16,15 @@ import {
   Trash2,
 } from "lucide-react";
 import { getBlockDef, isDynamicBlock, type BlockInstance } from "./block-registry";
-import { BlockRenderer as AdminBlockRenderer } from "./block-renderer";
+import { AdminBlockRenderer } from "./builder-host";
 import {
   getSectionPaddingClasses,
   getSectionStyleConfig,
   hasSectionStyleConfig,
   SectionStyleWrapper,
 } from "./section-style";
-import { cn } from "@/lib/utils";
-import { ErrorBoundary } from "@/components/shared/error-boundary";
+import { cn } from "./builder-host";
+import { ErrorBoundary } from "./builder-host";
 import { getBlockSummary } from "./page-builder-support";
 import { FULL_WIDTH_BLOCK_TYPES } from "./page-builder-constants";
 import { reportBuilderRenderError } from "./builder-diagnostics";
@@ -160,7 +160,10 @@ function CanvasBlockFrame({
           hasActiveDragPayload && !isSelected && "ring-offset-background",
         )}
       >
-        <div className="pointer-events-none select-none">
+        <div
+          className="pointer-events-none select-none"
+          ref={(node) => node?.setAttribute("inert", "")}
+        >
           <ErrorBoundary
             name={`builder-block-preview:${block.type}`}
             onError={(error, errorInfo) =>

@@ -644,7 +644,10 @@ function MenuEditor({
       if (isNew) {
         return apiRequest("POST", "/api/admin/cms/menus", body);
       }
-      return apiRequest("PUT", `/api/admin/cms/menus/${menu!.id}`, body);
+      return apiRequest("PUT", `/api/admin/cms/menus/${menu!.id}`, {
+        ...body,
+        expectedVersion: (menu as CmsMenu & { version: number }).version,
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/cms/menus"] });
@@ -905,7 +908,9 @@ export default function CmsMenusPage() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      return apiRequest("DELETE", `/api/admin/cms/menus/${id}`);
+      return apiRequest("DELETE", `/api/admin/cms/menus/${id}`, {
+        expectedVersion: (deleteConfirm as (CmsMenu & { version: number }) | null)?.version,
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/cms/menus"] });

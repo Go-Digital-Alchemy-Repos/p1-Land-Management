@@ -1,17 +1,17 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Link } from "wouter";
+import { useBlogPreviewPosts } from "./blog-data-host";
+import { Link } from "./static-renderer-host";
 import { ArrowRight, BookOpen, ExternalLink, Search } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { getImageObjectPositionStyle } from "@/lib/image-focus";
+import { Button } from "./static-renderer-host";
+import { Card, CardContent } from "./static-renderer-host";
+import { Input } from "./static-renderer-host";
+import { getImageObjectPositionStyle } from "../../../../lib/image-focus";
 import {
   getPostCategories,
   getPrimaryPostCategory,
   postMatchesCategory,
-} from "@/lib/blog-post-categories";
+} from "../../../../lib/blog-post-categories";
 
 import { num } from "./block-renderer.shared";
 
@@ -126,7 +126,9 @@ function BlogFeedFilters({
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+              onSearchChange(e.target.value)
+            }
             placeholder="Search articles..."
             className="pl-9"
             data-testid="input-blog-search"
@@ -136,7 +138,9 @@ function BlogFeedFilters({
       {showCategoryFilter && categories.length > 0 && (
         <select
           value={selectedCategory}
-          onChange={(e) => onCategoryChange(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+            onCategoryChange(e.target.value)
+          }
           className="h-10 rounded-md border border-input bg-background px-3 text-sm"
           data-testid="select-blog-category"
         >
@@ -151,7 +155,9 @@ function BlogFeedFilters({
       {showTagFilter && allTags.length > 0 && (
         <select
           value={selectedTag}
-          onChange={(e) => onTagChange(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+            onTagChange(e.target.value)
+          }
           className="h-10 rounded-md border border-input bg-background px-3 text-sm"
           data-testid="select-blog-tag"
         >
@@ -322,9 +328,7 @@ export function BlogPostFeedBlock({ props }: { props: Record<string, unknown> })
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedTag, setSelectedTag] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const { data: posts } = useQuery<BlogPost[]>({
-    queryKey: ["/api/blog"],
-  });
+  const posts = useBlogPreviewPosts() as BlogPost[];
   const postsPerPage = num(props.postsPerPage, 9);
   const gridColumns = String(props.gridColumns ?? "3");
   const feedStyle = String(props.feedStyle ?? "pagination");
@@ -416,9 +420,7 @@ export function BlogPostFeedBlock({ props }: { props: Record<string, unknown> })
 }
 
 export function BlogFeaturedPostBlock({ props }: { props: Record<string, unknown> }) {
-  const { data: posts } = useQuery<BlogPost[]>({
-    queryKey: ["/api/blog"],
-  });
+  const posts = useBlogPreviewPosts() as BlogPost[];
   const featured = (posts ?? []).filter((p) => p.isPublished)[0];
   const layout = String(props.layout ?? "split");
   const enableHoverMotion = props.enableHoverMotion !== false;
@@ -442,9 +444,7 @@ export function StandardBlogPageBlock({ props }: { props: Record<string, unknown
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedTag, setSelectedTag] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const { data: posts } = useQuery<BlogPost[]>({
-    queryKey: ["/api/blog"],
-  });
+  const posts = useBlogPreviewPosts() as BlogPost[];
 
   const featured = (posts ?? []).filter((p) => p.isPublished)[0];
   const layout = String(props.layout ?? "split");

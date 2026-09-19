@@ -31,6 +31,7 @@ export const editorLocks = pgTable(
       .default(sql`gen_random_uuid()`),
     resourceType: text("resource_type").notNull(),
     resourceId: text("resource_id").notNull(),
+    editorInstanceId: text("editor_instance_id"),
     lockedByUserId: text("locked_by_user_id").notNull(),
     lockedByName: text("locked_by_name").notNull(),
     lockedAt: timestamp("locked_at").notNull().defaultNow(),
@@ -61,9 +62,11 @@ export const editorLockResponseSchema = z.object({
   resourceType: editorLockResourceTypeSchema,
   resourceId: z.string().min(1),
   ownedByCurrentUser: z.boolean(),
+  ownedByCurrentEditor: z.boolean().optional(),
   lock: z
     .object({
       id: z.string(),
+      editorInstanceId: z.string().nullable().optional(),
       lockedByUserId: z.string(),
       lockedByName: z.string(),
       lockedAt: z.string(),

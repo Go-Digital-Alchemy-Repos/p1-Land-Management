@@ -15,4 +15,6 @@ export interface WebsiteMenu {
   items: WebsiteMenuItem[];
   createdAt?: string | null;
   updatedAt?: string | null;
+  /** @minimum 1 */
+  version: number;
 }

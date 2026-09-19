@@ -1,6 +1,6 @@
 import type { ReactNode, Ref } from "react";
-import { Button } from "@/components/ui/button";
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
+import { Button } from "./builder-host";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "./builder-host";
 import { ChevronLeft, ChevronRight, ListOrdered, Plus } from "lucide-react";
 import { VisualCanvas, type VisualCanvasProps } from "./page-builder-canvas";
 import { DesktopInspectorPanel } from "./page-builder-inspector";

@@ -207,9 +207,13 @@ export async function ensureSystemCmsMenus() {
   if (legalMenu?.items) {
     const patched = patchLegalItemUrls((legalMenu.items as MenuItem[]) || []);
     if (patched.changed) {
-      await storage.cmsMenus.update(legalMenu.id, {
-        items: patched.items,
-      });
+      await storage.cmsMenus.update(
+        legalMenu.id,
+        {
+          items: patched.items,
+        },
+        legalMenu.version,
+      );
     }
   }
 
@@ -218,9 +222,13 @@ export async function ensureSystemCmsMenus() {
     const withShop = patchShopItem((mainMenu.items as MenuItem[]) || []);
     const patched = patchNeutralMenuLabels(withShop.items);
     if (withShop.changed || patched.changed) {
-      await storage.cmsMenus.update(mainMenu.id, {
-        items: patched.items,
-      });
+      await storage.cmsMenus.update(
+        mainMenu.id,
+        {
+          items: patched.items,
+        },
+        mainMenu.version,
+      );
     }
   }
 
@@ -230,9 +238,13 @@ export async function ensureSystemCmsMenus() {
 
     const patched = patchNeutralMenuLabels((menu.items as MenuItem[]) || []);
     if (patched.changed) {
-      await storage.cmsMenus.update(menu.id, {
-        items: patched.items,
-      });
+      await storage.cmsMenus.update(
+        menu.id,
+        {
+          items: patched.items,
+        },
+        menu.version,
+      );
     }
   }
 }

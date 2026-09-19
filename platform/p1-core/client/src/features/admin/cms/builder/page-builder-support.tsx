@@ -1,24 +1,17 @@
 import {
   cloneSavedSectionBlocks,
   isInsertableSavedSection,
-} from "@shared/cms-builder/section-library";
+} from "../../../../../../shared/cms-builder/section-library";
 import { useState, type DragEvent, type ElementType } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { DialogFooter } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import { useBuilderHost } from "./builder-host";
+import { Badge } from "./builder-host";
+import { Button } from "./builder-host";
+import { DialogFooter } from "./builder-host";
+import { Input } from "./builder-host";
+import { Label } from "./builder-host";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./builder-host";
+import { Textarea } from "./builder-host";
+
 import {
   ArrowRight,
   BadgeCheck,
@@ -62,7 +55,7 @@ import {
   Users,
   Workflow,
 } from "lucide-react";
-import type { CmsSection } from "@shared/schema";
+import type { CmsSection } from "../../../../../../shared/schema/cms-sections";
 import type { BlockCategory, BlockDef, BlockInstance } from "./block-registry";
 import { getBlockDef } from "./block-registry";
 
@@ -198,38 +191,31 @@ interface SaveSectionDialogProps {
 }
 
 export function SaveSectionDialog({ block, onClose }: SaveSectionDialogProps) {
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
+  const host = useBuilderHost();
+  const [isPending, setPending] = useState(false);
+  const [error, setError] = useState("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("general");
 
-  const saveMutation = useMutation({
-    mutationFn: async () => {
-      const response = await apiRequest("POST", "/api/admin/cms/sections", {
-        name,
-        description,
-        category,
-        blocks: [block],
-      });
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/cms/sections"] });
-      toast({ title: "Saved as reusable section" });
+  async function save() {
+    if (!host.canUseSections || isPending) return;
+    setPending(true);
+    setError("");
+    try {
+      await host.saveSection({ name, description, category, blocks: [block] });
+      host.notice("Saved as reusable section");
       onClose();
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Failed to save section",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to save section");
+    } finally {
+      setPending(false);
+    }
+  }
 
   return (
     <div className="space-y-4 pt-2">
+      {error && <p role="alert">{error}</p>}
       <div className="space-y-1.5">
         <Label>Section Name</Label>
         <Input
@@ -272,11 +258,11 @@ export function SaveSectionDialog({ block, onClose }: SaveSectionDialogProps) {
           Cancel
         </Button>
         <Button
-          onClick={() => saveMutation.mutate()}
-          disabled={!name.trim() || saveMutation.isPending}
+          onClick={() => save()}
+          disabled={!name.trim() || isPending}
           data-testid="button-confirm-save-section"
         >
-          {saveMutation.isPending ? "Saving..." : "Save Section"}
+          {isPending ? "Saving..." : "Save Section"}
         </Button>
       </DialogFooter>
     </div>
@@ -299,9 +285,9 @@ export function SectionsLibrary({
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
 
-  const { data: sections = [], isLoading } = useQuery<CmsSection[]>({
-    queryKey: ["/api/admin/cms/sections"],
-  });
+  const host = useBuilderHost();
+  const { sections, isLoading, error } = host.useSections();
+  if (!host.canUseSections) return <p>Reusable sections are unavailable for this account.</p>;
 
   const filteredSections = sections.filter((section) => {
     if (
@@ -331,6 +317,7 @@ export function SectionsLibrary({
 
   return (
     <div className="space-y-3">
+      {error && <p role="alert">{error}</p>}
       <div className="flex gap-2">
         <div className="relative flex-1">
           <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
