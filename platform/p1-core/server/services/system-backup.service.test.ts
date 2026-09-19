@@ -1,3 +1,4 @@
+import { gzipSync } from "node:zlib";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("../db", () => ({ pool: { connect: vi.fn(), query: vi.fn() } }));
@@ -5,6 +6,7 @@ vi.mock("../utils/logger", () => ({
   logger: { backup: { warn: vi.fn(), info: vi.fn(), error: vi.fn() } },
 }));
 vi.mock("./backup-storage.service", () => ({
+  beginBackupStorageOperation: vi.fn(),
   deleteBackupObject: vi.fn(),
   downloadBackupObject: vi.fn(),
   getBackupStorageInfo: vi.fn(),
@@ -16,7 +18,7 @@ vi.mock("./backup-storage.service", () => ({
 import type { PoolClient } from "pg";
 import { pool } from "../db";
 import * as storage from "./backup-storage.service";
-import { runSystemBackup, serializeRestoreValue } from "./system-backup.service";
+import { getBackupStatus, listRecentBackupManifests, runSystemBackup, serializeRestoreValue } from "./system-backup.service";
 
 describe("serializeRestoreValue", () => {
   it("preserves JSON arrays and objects as JSON parameters during restore", () => {
@@ -36,6 +38,13 @@ describe("serializeRestoreValue", () => {
   });
 });
 
+const validManifest = {
+  schemaVersion: 1, key: "db/fixture.json.gz", createdAt: "2026-09-19T00:00:00Z", clientStackId: "p1-land-management",
+  reason: "manual", appVersion: "test", environment: "test", storageSource: "env", bucketName: "test", bucketPrefix: "test",
+  gitCommitSha: null, railwayEnvironment: null, railwayProjectId: null, railwayServiceId: null,
+  tableCount: 0, totalRowCount: 0, mediaAssetCount: 0, restoreOrder: [],
+};
+
 describe("backup session cleanup failures", () => {
   const query = vi.fn();
   const release = vi.fn();
@@ -46,6 +55,7 @@ describe("backup session cleanup failures", () => {
       query,
       release,
     } as unknown as PoolClient);
+    vi.mocked(storage.beginBackupStorageOperation).mockResolvedValue({ source: "env", bucketName: "test", prefix: "test" });
     vi.mocked(storage.isBackupStorageConfigured).mockResolvedValue(true);
     vi.mocked(storage.getBackupStorageInfo).mockResolvedValue({
       source: "env",
@@ -59,6 +69,70 @@ describe("backup session cleanup failures", () => {
       if (sql.includes("pg_advisory_unlock")) return { rows: [{ released: true }] };
       return { rows: [] };
     });
+  });
+
+  it("does not prune a partially enumerated inventory when listing fails", async () => {
+    vi.mocked(storage.listBackupObjects).mockRejectedValueOnce(Error("Malformed backup pagination token"));
+    await expect(runSystemBackup()).rejects.toThrow("pagination token");
+    expect(storage.deleteBackupObject).not.toHaveBeenCalled();
+    expect(release).toHaveBeenCalledExactlyOnceWith(false);
+  });
+
+  it("returns qualified history keys from the actual object rather than its embedded relative key", async () => {
+    const key = "clients/p1.example/backups/db/fixture.json.gz";
+    vi.mocked(storage.listBackupObjects).mockResolvedValue([{ key, size: 1, lastModified: "2026-09-19T00:00:00Z" }]);
+    vi.mocked(storage.downloadBackupObject).mockResolvedValue(gzipSync(JSON.stringify({ manifest: validManifest })));
+    const result = await listRecentBackupManifests(1);
+    expect(result[0].key).toBe(key);
+    expect(result[0].clientStackId).toBe("p1-land-management");
+    expect(storage.downloadBackupObject).toHaveBeenCalledWith(key, expect.objectContaining({ bucketName: "test" }));
+  });
+
+  it("shares one archive read between latest and recent status", async () => {
+    const key = "clients/p1.example/backups/db/fixture.json.gz";
+    vi.mocked(storage.listBackupObjects).mockResolvedValue([{ key, size: 1, lastModified: "2026-09-19T00:00:00Z" }]);
+    vi.mocked(storage.downloadBackupObject).mockResolvedValue(gzipSync(JSON.stringify({ manifest: validManifest })));
+    const result = await getBackupStatus();
+    expect(result.latest).toEqual(result.recent[0]);
+    expect(result.latest?.key).toBe(key);
+    expect(storage.listBackupObjects).toHaveBeenCalledTimes(1);
+    expect(storage.downloadBackupObject).toHaveBeenCalledTimes(1);
+    const operation = vi.mocked(storage.beginBackupStorageOperation).mock.results[0].value;
+    const captured = await operation;
+    expect(storage.beginBackupStorageOperation).toHaveBeenCalledTimes(1);
+    expect(storage.getBackupStorageInfo).toHaveBeenCalledWith(captured);
+    expect(storage.listBackupObjects).toHaveBeenCalledWith("db", 20, captured);
+    expect(storage.downloadBackupObject).toHaveBeenCalledWith(key, captured);
+  });
+
+  it.each([
+    null, Buffer.from("not gzip"), gzipSync("not json"),
+    gzipSync(JSON.stringify({ manifest: { ...validManifest, schemaVersion: 2 } })),
+    gzipSync(JSON.stringify({ manifest: { ...validManifest, createdAt: "invalid" } })),
+    gzipSync(JSON.stringify({ manifest: { ...validManifest, tableCount: -1 } })),
+    gzipSync(JSON.stringify({ manifest: { schemaVersion: 1 } })),
+  ])("fails closed for unreadable or invalid candidate history", async archive => {
+    vi.mocked(storage.listBackupObjects).mockResolvedValue([{ key: "test/db/archive.json.gz", size: 1, lastModified: null }]);
+    vi.mocked(storage.downloadBackupObject).mockResolvedValue(archive);
+    await expect(getBackupStatus()).rejects.toThrow("unreadable or invalid archive");
+  });
+
+  it("sanitizes provider failures instead of silently dropping a candidate", async () => {
+    vi.mocked(storage.listBackupObjects).mockResolvedValue([{ key: "test/db/archive.json.gz", size: 1, lastModified: null }]);
+    vi.mocked(storage.downloadBackupObject).mockRejectedValueOnce(Error("credential-like provider body"));
+    await expect(listRecentBackupManifests()).rejects.toThrow(/^Backup history contains an unreadable or invalid archive$/);
+  });
+
+  it("pins one operation through snapshot, latest manifest, retention listing and deletion", async () => {
+    const operation = { source: "env" as const, bucketName: "original", prefix: "original" };
+    vi.mocked(storage.beginBackupStorageOperation).mockResolvedValueOnce(operation);
+    vi.mocked(storage.listBackupObjects).mockResolvedValue([{ key: "original/db/old.json.gz", size: 1, lastModified: "2000-01-01T00:00:00Z" }]);
+    const manifest = await runSystemBackup();
+    expect(manifest.bucketName).toBe("original");
+    expect(storage.beginBackupStorageOperation).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(storage.uploadBackupObject).mock.calls.every(call => call[4] === operation)).toBe(true);
+    expect(storage.listBackupObjects).toHaveBeenCalledWith("db", 500, operation);
+    expect(storage.deleteBackupObject).toHaveBeenCalledWith("original/db/old.json.gz", operation);
   });
 
   it("discards a session when unlock reports that it did not release the lock", async () => {

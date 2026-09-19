@@ -110,6 +110,31 @@ async function getClient(): Promise<{ client: S3Client; config: BackupStorageCon
   return { client: cachedClient, config };
 }
 
+// A logical backup operation pins its destination without exposing credentials.
+// New operations always resolve authoritative configuration; an already-started
+// operation can finish on its original client without mixing storage boundaries.
+export interface BackupStorageOperation {
+  readonly bucketName: string;
+  readonly prefix: string;
+  readonly source: "env" | "settings";
+}
+const operationClients = new WeakMap<BackupStorageOperation, { client: S3Client; config: BackupStorageConfig }>();
+
+export async function beginBackupStorageOperation(): Promise<BackupStorageOperation | null> {
+  const result = await getClient();
+  if (!result) return null;
+  const operation = Object.freeze({ bucketName: result.config.bucketName, prefix: result.config.prefix, source: result.config.source });
+  operationClients.set(operation, result);
+  return operation;
+}
+
+async function resolveOperation(operation?: BackupStorageOperation) {
+  if (!operation) return getClient();
+  const result = operationClients.get(operation);
+  if (!result) throw new Error("Invalid backup storage operation");
+  return result;
+}
+
 async function streamToBuffer(stream: unknown): Promise<Buffer> {
   if (!stream) {
     return Buffer.alloc(0);
@@ -168,8 +193,8 @@ export async function isBackupStorageConfigured(): Promise<boolean> {
   return (await loadConfig()) !== null;
 }
 
-export async function getBackupStorageInfo() {
-  const result = await getClient();
+export async function getBackupStorageInfo(operation?: BackupStorageOperation) {
+  const result = await resolveOperation(operation);
   if (!result) return null;
 
   return {
@@ -184,8 +209,9 @@ export async function uploadBackupObject(
   body: Buffer,
   contentType: string,
   options?: { contentEncoding?: string; metadata?: Record<string, string> },
+  operation?: BackupStorageOperation,
 ): Promise<{ key: string } | null> {
-  const result = await getClient();
+  const result = await resolveOperation(operation);
   if (!result) return null;
 
   if (!isSafeRelativeKey(key)) {
@@ -209,8 +235,8 @@ export async function uploadBackupObject(
   return { key: qualifiedKey };
 }
 
-export async function downloadBackupObject(key: string): Promise<Buffer | null> {
-  const result = await getClient();
+export async function downloadBackupObject(key: string, operation?: BackupStorageOperation): Promise<Buffer | null> {
+  const result = await resolveOperation(operation);
   if (!result) return null;
 
   if (!isQualifiedKeyForPrefix(key, result.config.prefix)) {
@@ -231,8 +257,9 @@ export async function downloadBackupObject(key: string): Promise<Buffer | null> 
 export async function listBackupObjects(
   relativePrefix = "",
   maxKeys = 100,
+  operation?: BackupStorageOperation,
 ): Promise<BackupObjectSummary[]> {
-  const result = await getClient();
+  const result = await resolveOperation(operation);
   if (!result) return [];
 
   if (relativePrefix && !isSafeRelativeKey(relativePrefix)) {
@@ -244,30 +271,59 @@ export async function listBackupObjects(
     ? qualifyKey(relativePrefix, result.config.prefix)
     : `${normalizePrefix(result.config.prefix)}/`;
 
-  const response = await result.client.send(
-    new ListObjectsV2Command({
+  // maxKeys is a page size, never a total limit: pruning or selecting newest
+  // snapshots from a partial lexicographic listing can delete/report the wrong set.
+  if (!Number.isInteger(maxKeys) || maxKeys < 1 || maxKeys > 1000) {
+    throw new Error("Invalid backup listing page size");
+  }
+  const objects: BackupObjectSummary[] = [];
+  const seenTokens = new Set<string>();
+  const seenKeys = new Set<string>();
+  let continuationToken: string | undefined;
+  for (let page = 0; ; page++) {
+    // Fail before returning any partial list (and therefore before pruning).
+    if (page >= 1000) throw new Error("Backup listing exceeds its safe page limit");
+    const response = await result.client.send(new ListObjectsV2Command({
       Bucket: result.config.bucketName,
       Prefix: prefix,
       MaxKeys: maxKeys,
-    }),
-  );
-
-  return (response.Contents ?? [])
-    .filter((item): item is NonNullable<typeof item> & { Key: string } => Boolean(item?.Key))
-    .map((item) => ({
-      key: item.Key,
-      size: item.Size ?? 0,
-      lastModified: item.LastModified ? item.LastModified.toISOString() : null,
-    }))
-    .sort((a, b) => {
-      const aTime = a.lastModified ? new Date(a.lastModified).getTime() : 0;
-      const bTime = b.lastModified ? new Date(b.lastModified).getTime() : 0;
-      return bTime - aTime;
-    });
+      ...(continuationToken ? { ContinuationToken: continuationToken } : {}),
+    }));
+    if (typeof response.IsTruncated !== "boolean" ||
+        (response.Contents !== undefined && !Array.isArray(response.Contents))) {
+      throw new Error("Malformed backup listing response");
+    }
+    for (const item of response.Contents ?? []) {
+      if (!item || typeof item.Key !== "string" || !item.Key.startsWith(prefix) ||
+          !isQualifiedKeyForPrefix(item.Key, result.config.prefix) || seenKeys.has(item.Key)) {
+        throw new Error("Malformed or duplicate backup listing key");
+      }
+      seenKeys.add(item.Key);
+      if (seenKeys.size > 100000) throw new Error("Backup listing exceeds its safe object limit");
+      objects.push({
+        key: item.Key,
+        size: item.Size ?? 0,
+        lastModified: item.LastModified ? item.LastModified.toISOString() : null,
+      });
+    }
+    if (!response.IsTruncated) break;
+    const token = response.NextContinuationToken;
+    if (typeof token !== "string" || !token.length || token.length > 16384 ||
+        /[\u0000-\u001f]/.test(token) || seenTokens.has(token)) {
+      throw new Error("Malformed or repeated backup pagination token");
+    }
+    seenTokens.add(token);
+    continuationToken = token;
+  }
+  return objects.sort((a, b) => {
+    const aTime = a.lastModified ? new Date(a.lastModified).getTime() : 0;
+    const bTime = b.lastModified ? new Date(b.lastModified).getTime() : 0;
+    return bTime - aTime || a.key.localeCompare(b.key);
+  });
 }
 
-export async function deleteBackupObject(key: string): Promise<void> {
-  const result = await getClient();
+export async function deleteBackupObject(key: string, operation?: BackupStorageOperation): Promise<void> {
+  const result = await resolveOperation(operation);
   if (!result) return;
 
   if (!isQualifiedKeyForPrefix(key, result.config.prefix)) {

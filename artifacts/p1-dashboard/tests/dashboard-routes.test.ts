@@ -175,3 +175,11 @@ test("Website Integrations is distinct from business settings and Owner-only", (
  assert.equal(canAccessRoute(route,"owner"),true);
  for(const role of ["admin","member","client","crew",null]) assert.equal(canAccessRoute(route,role,["marketing.content.pages"]),false);
 });
+
+test("Website Backups is an Owner-only Website System destination", () => {
+ const route=routeFromPath("/marketing/system/backups");
+ assert.equal(route.kind,"page");if(route.kind!=="page")return;
+ assert.equal(route.page.view,"Website Backups");assert.equal(route.page.section,"Website System");
+ assert.equal(canAccessRoute(route,"owner"),true);
+ for(const role of ["admin","member","client","crew",null]) assert.equal(canAccessRoute(route,role,["marketing.content.pages"]),false);
+});

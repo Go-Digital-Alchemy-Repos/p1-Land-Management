@@ -28,6 +28,7 @@ vi.mock("../utils/logger", () => ({
   },
 }));
 vi.mock("./backup-storage.service", () => ({
+  beginBackupStorageOperation: vi.fn(),
   deleteBackupObject: vi.fn(),
   downloadBackupObject: vi.fn(),
   getBackupStorageInfo: vi.fn(),
@@ -92,6 +93,7 @@ describe.skipIf(!testUrl)("system backup disposable PostgreSQL", () => {
     vi.clearAllMocks();
     vi.stubEnv("CLIENT_STACK_ID", "backup-test");
     vi.stubEnv("SYSTEM_BACKUP_EXCLUDED_TABLES", "session,__drizzle_migrations");
+    vi.mocked(storage.beginBackupStorageOperation).mockResolvedValue({ source: "env", bucketName: "test", prefix: "test" });
     vi.mocked(storage.isBackupStorageConfigured).mockResolvedValue(true);
     vi.mocked(storage.getBackupStorageInfo).mockResolvedValue({
       source: "env",

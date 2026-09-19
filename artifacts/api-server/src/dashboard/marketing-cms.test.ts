@@ -559,3 +559,13 @@ test("website integration bridge has only the three Owner operations", () => {
  }
  assert.equal(cmsOperations.filter(op=>op.path.startsWith("/website-system/integrations")).length,3);
 });
+
+ test("backup bridge exposes only Owner status and manual run", () => {
+   for (const [method,path] of [["GET","/website-system/backups/status"],["POST","/website-system/backups/run"]]) {
+     const op=operation(method,path);assert.equal(op.ownerOnly,true);assert.deepEqual(op.capabilities,[]);
+     assert.equal(cmsDestination(op,{},{}),path);
+     assert.throws(()=>cmsDestination(op,{}, {key:"private"}));
+   }
+   assert.equal(cmsOperations.filter(op=>op.path.startsWith("/website-system/backups")).length,2);
+   assert.equal(cmsOperations.some(op=>op.path.includes("backups/restore")),false);
+ });

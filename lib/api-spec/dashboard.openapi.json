@@ -15660,6 +15660,72 @@
           }
         ]
       }
+    },
+    "/marketing/cms/website-system/backups/status": {
+      "get": {
+        "operationId": "getWebsiteBackupStatus",
+        "description": "Active attested Owner only. Core database backups include media inventory, not copied media bytes. Manual run applies configured retention. No automatic retry; inspect status after uncertain execution. No restore operation.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteBackupStatus"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query or body"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Active attested Owner required"
+          },
+          "409": {
+            "description": "Another backup or restore is already running"
+          },
+          "503": {
+            "description": "Status unavailable or execution outcome uncertain; refresh before another run"
+          }
+        }
+      }
+    },
+    "/marketing/cms/website-system/backups/run": {
+      "post": {
+        "operationId": "runWebsiteBackup",
+        "description": "Active attested Owner only. Core database backups include media inventory, not copied media bytes. Manual run applies configured retention. No automatic retry; inspect status after uncertain execution. No restore operation.",
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteBackupSummary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query or body"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Active attested Owner required"
+          },
+          "409": {
+            "description": "Another backup or restore is already running"
+          },
+          "503": {
+            "description": "Status unavailable or execution outcome uncertain; refresh before another run"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -32360,6 +32426,160 @@
           "code",
           "effects"
         ]
+      },
+      "WebsiteBackupSummary": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schemaVersion",
+          "clientStackId",
+          "key",
+          "createdAt",
+          "reason",
+          "appVersion",
+          "gitCommitSha",
+          "environment",
+          "storageSource",
+          "tableCount",
+          "totalRowCount",
+          "mediaAssetCount"
+        ],
+        "properties": {
+          "schemaVersion": {
+            "type": "integer",
+            "enum": [
+              1
+            ]
+          },
+          "clientStackId": {
+            "type": "string",
+            "nullable": true
+          },
+          "key": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "manual",
+              "scheduled",
+              "startup"
+            ]
+          },
+          "appVersion": {
+            "type": "string"
+          },
+          "gitCommitSha": {
+            "type": "string",
+            "nullable": true
+          },
+          "environment": {
+            "type": "string"
+          },
+          "storageSource": {
+            "type": "string",
+            "enum": [
+              "env",
+              "settings"
+            ]
+          },
+          "tableCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "totalRowCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "mediaAssetCount": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "WebsiteBackupStorage": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "bucketName",
+          "prefix",
+          "source"
+        ],
+        "properties": {
+          "bucketName": {
+            "type": "string"
+          },
+          "prefix": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "env",
+              "settings"
+            ]
+          }
+        }
+      },
+      "WebsiteBackupStatus": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "enabled",
+          "configured",
+          "intervalHours",
+          "retentionDays",
+          "maxSnapshots",
+          "storage",
+          "latest",
+          "recent"
+        ],
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "configured": {
+            "type": "boolean"
+          },
+          "intervalHours": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "retentionDays": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "maxSnapshots": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "storage": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/WebsiteBackupStorage"
+              }
+            ],
+            "nullable": true
+          },
+          "latest": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/WebsiteBackupSummary"
+              }
+            ],
+            "nullable": true
+          },
+          "recent": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WebsiteBackupSummary"
+            }
+          }
+        }
       }
     }
   }

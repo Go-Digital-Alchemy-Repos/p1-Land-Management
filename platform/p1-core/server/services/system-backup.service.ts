@@ -5,6 +5,8 @@ import { pool } from "../db";
 import { logger } from "../utils/logger";
 import { recordDomainOutcome } from "../utils/metrics";
 import {
+  beginBackupStorageOperation,
+  type BackupStorageOperation,
   deleteBackupObject,
   downloadBackupObject,
   getBackupStorageInfo,
@@ -241,17 +243,19 @@ async function captureTable(client: PoolClient, tableName: string): Promise<Back
   };
 }
 
-async function writeLatestManifest(manifest: BackupManifest) {
+async function writeLatestManifest(manifest: BackupManifest, operation: BackupStorageOperation) {
   await uploadBackupObject(
     MANIFEST_LATEST_KEY,
     Buffer.from(JSON.stringify(manifest, null, 2), "utf8"),
     "application/json",
+    undefined,
+    operation,
   );
 }
 
-async function pruneExpiredBackups(retentionDays: number, maxSnapshots: number) {
+async function pruneExpiredBackups(retentionDays: number, maxSnapshots: number, operation: BackupStorageOperation) {
   const cutoff = Date.now() - retentionDays * 24 * 60 * 60 * 1000;
-  const objects = await listBackupObjects(SNAPSHOT_PREFIX, 500);
+  const objects = await listBackupObjects(SNAPSHOT_PREFIX, 500, operation);
 
   for (const [index, object] of objects.entries()) {
     const modifiedAt = object.lastModified ? new Date(object.lastModified).getTime() : 0;
@@ -259,7 +263,7 @@ async function pruneExpiredBackups(retentionDays: number, maxSnapshots: number) 
     const overAgeLimit = Boolean(modifiedAt) && modifiedAt < cutoff;
 
     if (!overCountLimit && !overAgeLimit) continue;
-    await deleteBackupObject(object.key);
+    await deleteBackupObject(object.key, operation);
   }
 }
 
@@ -324,14 +328,9 @@ async function withBackupTransaction<T>(
 }
 
 export async function runSystemBackup(reason: BackupRunReason = "manual") {
-  if (!(await isBackupStorageConfigured())) {
-    throw new Error("Backup storage is not configured");
-  }
-
-  const storageInfo = await getBackupStorageInfo();
-  if (!storageInfo) {
-    throw new Error("Backup storage is not available");
-  }
+  const operation = await beginBackupStorageOperation();
+  if (!operation) throw new Error("Backup storage is not configured");
+  const storageInfo = operation;
 
   return withBackupLock(async (client) => {
     try {
@@ -391,15 +390,15 @@ export async function runSystemBackup(reason: BackupRunReason = "manual") {
           reason: manifest.reason,
           appVersion: manifest.appVersion,
         },
-      });
+      }, operation);
 
       if (!uploaded) {
         throw new Error("Backup upload failed");
       }
 
       manifest.key = uploaded.key;
-      await writeLatestManifest(manifest);
-      await pruneExpiredBackups(getRetentionDays(), getMaxSnapshots());
+      await writeLatestManifest(manifest, operation);
+      await pruneExpiredBackups(getRetentionDays(), getMaxSnapshots(), operation);
 
       logger.backup.info("System backup completed", {
         key: manifest.key,
@@ -417,38 +416,52 @@ export async function runSystemBackup(reason: BackupRunReason = "manual") {
   });
 }
 
-export async function listRecentBackupManifests(limit = 10): Promise<BackupManifest[]> {
-  const objects = await listBackupObjects(SNAPSHOT_PREFIX, Math.max(limit, 20));
+function isBackupManifest(value: unknown): value is BackupManifest {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const manifest = value as Record<string, unknown>;
+  return manifest.schemaVersion === 1 &&
+    typeof manifest.createdAt === "string" && Number.isFinite(Date.parse(manifest.createdAt)) &&
+    ["key", "appVersion", "environment", "bucketName", "bucketPrefix"].every(key => typeof manifest[key] === "string" && Boolean(manifest[key])) &&
+    ["scheduled", "manual", "startup"].includes(manifest.reason as string) &&
+    ["env", "settings"].includes(manifest.storageSource as string) &&
+    ["tableCount", "totalRowCount", "mediaAssetCount"].every(key => Number.isSafeInteger(manifest[key]) && (manifest[key] as number) >= 0) &&
+    ["gitCommitSha", "railwayEnvironment", "railwayProjectId", "railwayServiceId"].every(key => manifest[key] === null || typeof manifest[key] === "string") &&
+    (manifest.clientStackId === undefined || manifest.clientStackId === null || typeof manifest.clientStackId === "string") &&
+    Array.isArray(manifest.restoreOrder) && manifest.restoreOrder.every(name => typeof name === "string" && Boolean(name));
+}
+
+export async function listRecentBackupManifests(limit = 10, existingOperation?: BackupStorageOperation): Promise<BackupManifest[]> {
+  const operation = existingOperation ?? await beginBackupStorageOperation();
+  if (!operation) throw new Error("Backup storage is not configured");
+  if (!Number.isInteger(limit) || limit < 1 || limit > 1000) throw new Error("Invalid backup history limit");
+  const objects = await listBackupObjects(SNAPSHOT_PREFIX, Math.max(limit, 20), operation);
   const manifests: BackupManifest[] = [];
 
   for (const object of objects.slice(0, limit)) {
     try {
-      const buffer = await downloadBackupObject(object.key);
-      if (!buffer) continue;
-      const snapshot = JSON.parse(gunzipSync(buffer).toString("utf8")) as DatabaseBackupSnapshot;
-      if (snapshot?.manifest?.schemaVersion === 1) {
-        manifests.push(snapshot.manifest);
-      }
-    } catch (error) {
-      logger.backup.warn("Failed to read backup object while listing manifests", {
-        key: object.key,
-        error: error instanceof Error ? error.message : String(error),
-      });
+      const buffer = await downloadBackupObject(object.key, operation);
+      if (!buffer?.length) throw new Error("Missing backup archive");
+      const snapshot = JSON.parse(gunzipSync(buffer).toString("utf8"));
+      if (!isBackupManifest(snapshot?.manifest)) throw new Error("Invalid backup manifest");
+      // Historical archives embed their relative pre-upload key. Project the
+      // object actually read through the configured-prefix guard.
+      manifests.push({ ...snapshot.manifest, key: object.key });
+    } catch {
+      // Never turn unreadable history into an apparently empty/older history.
+      // Provider errors and archive contents must not leak through this boundary.
+      logger.backup.warn("Failed to read a backup history archive");
+      throw new Error("Backup history contains an unreadable or invalid archive");
     }
   }
-
-  return manifests.sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-  );
+  return manifests.sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
 }
 
 export async function getBackupStatus(): Promise<BackupStatus> {
-  const configured = await isBackupStorageConfigured();
-  const storage = configured ? await getBackupStorageInfo() : null;
-  const latest = configured
-    ? await listRecentBackupManifests(1).then((items) => items[0] ?? null)
-    : null;
-  const recent = configured ? await listRecentBackupManifests(10) : [];
+  const operation = await beginBackupStorageOperation();
+  const configured = operation !== null;
+  const storage = operation ? await getBackupStorageInfo(operation) : null;
+  const recent = operation ? await listRecentBackupManifests(10, operation) : [];
+  const latest = recent[0] ?? null;
 
   return {
     enabled: shouldEnableBackups(),
@@ -462,8 +475,8 @@ export async function getBackupStatus(): Promise<BackupStatus> {
   };
 }
 
-export async function loadBackupSnapshotFromKey(key: string): Promise<DatabaseBackupSnapshot> {
-  const buffer = await downloadBackupObject(key);
+export async function loadBackupSnapshotFromKey(key: string, operation?: BackupStorageOperation): Promise<DatabaseBackupSnapshot> {
+  const buffer = await downloadBackupObject(key, operation);
   if (!buffer) {
     throw new Error(`Backup not found: ${key}`);
   }
@@ -568,8 +581,10 @@ export async function restoreBackupSnapshot(
 }
 
 export async function restoreSystemBackupFromKey(key: string) {
+  const operation = await beginBackupStorageOperation();
+  if (!operation) throw new Error("Backup storage is not configured");
   return withBackupLock(async (client) => {
-    const snapshot = await loadBackupSnapshotFromKey(key);
+    const snapshot = await loadBackupSnapshotFromKey(key, operation);
     await restoreBackupSnapshotWithClient(client, snapshot);
     return snapshot.manifest;
   });

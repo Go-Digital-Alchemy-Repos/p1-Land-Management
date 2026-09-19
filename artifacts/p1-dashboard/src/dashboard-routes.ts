@@ -36,6 +36,7 @@ export type DashboardView =
   | "Website Colors"
   | "Website Features"
   | "Website Onboarding"
+  | "Website Backups"
   | "Website Integrations"
   | "Website Email Templates"
   | "Website Documents"
@@ -133,6 +134,7 @@ export const DASHBOARD_PAGES: readonly DashboardPageRoute[] = [
   { view: "Website Colors", label: "Color palette", path: "/marketing/design/colors", group: "Marketing", section: "Design" },
   { view: "Website Features", label: "Website modules", path: "/marketing/system/features", group: "Marketing", section: "Website System" },
   { view: "Website Onboarding", label: "Client stack onboarding", path: "/marketing/system/onboarding", group: "Marketing", section: "Website System" },
+  { view: "Website Backups", label: "Backups", path: "/marketing/system/backups", group: "Marketing", section: "Website System" },
   { view: "Website Integrations", label: "Integrations", path: "/marketing/system/integrations", group: "Marketing", section: "Website System" },
   { view: "Website Email Templates", label: "Email templates", path: "/marketing/system/email-templates", group: "Marketing", section: "Website System" },
   { view: "Website Documents", label: "Developer resources", path: "/marketing/system/documents", group: "Marketing", section: "Website System" },
@@ -287,7 +289,7 @@ export function canAccessRoute(route: DashboardRoute, role: string | null | unde
   const { view, settingsSection } = route.page;
   if ((route.record?.kind === "client" || route.record?.kind === "property") && !canAccessWorkspaceTab(route.record.kind, route.record.tab, role, capabilities)) return false;
   if (view === "Profile") return true;
-  if (view === "Website Integrations" || view === "Website Email Templates" || view === "Website Onboarding" || view === "Website Documents" || view === "Website Head Tags" || view === "Website Features") return role === "owner";
+  if (view === "Website Backups" || view === "Website Integrations" || view === "Website Email Templates" || view === "Website Onboarding" || view === "Website Documents" || view === "Website Head Tags" || view === "Website Features") return role === "owner";
   // Field and customer portals keep their existing record-scoped routes.
   if (role === "crew") return ["My Day", "Properties"].includes(view);
   if (role === "client") return ["Overview", "Properties", "Schedule", "Sales", "Billing", "Requests", "Inspections"].includes(view);

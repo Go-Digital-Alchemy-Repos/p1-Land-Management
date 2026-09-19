@@ -331,6 +331,8 @@ import type {
   UploadMarketingMediaBody,
   UploadWebsiteIdentityAsset201,
   UploadWebsiteIdentityAssetBody,
+  WebsiteBackupStatus,
+  WebsiteBackupSummary,
   WebsiteColorsInput,
   WebsiteColorsState,
   WebsiteContent,
@@ -8951,6 +8953,54 @@ export const getTestWebsiteIntegrationUrl = (provider: WebsiteIntegrationProvide
 export const testWebsiteIntegration = async (provider: WebsiteIntegrationProvider, options?: RequestInit): Promise<WebsiteIntegrationTestResult> => {
 
   return customFetch<WebsiteIntegrationTestResult>(getTestWebsiteIntegrationUrl(provider),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+export const getGetWebsiteBackupStatusUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/website-system/backups/status`
+}
+
+/**
+ * Active attested Owner only. Core database backups include media inventory, not copied media bytes. Manual run applies configured retention. No automatic retry; inspect status after uncertain execution. No restore operation.
+ */
+export const getWebsiteBackupStatus = async ( options?: RequestInit): Promise<WebsiteBackupStatus> => {
+
+  return customFetch<WebsiteBackupStatus>(getGetWebsiteBackupStatusUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getRunWebsiteBackupUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/website-system/backups/run`
+}
+
+/**
+ * Active attested Owner only. Core database backups include media inventory, not copied media bytes. Manual run applies configured retention. No automatic retry; inspect status after uncertain execution. No restore operation.
+ */
+export const runWebsiteBackup = async ( options?: RequestInit): Promise<WebsiteBackupSummary> => {
+
+  return customFetch<WebsiteBackupSummary>(getRunWebsiteBackupUrl(),
   {
     ...options,
     method: 'POST'
