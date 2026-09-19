@@ -1679,6 +1679,15 @@ td { padding: 16px var(--atlas-surface-inset); }
 .workspace-tabs { display: flex; gap: 2px; overflow-x: auto; overscroll-behavior-x: contain; border-bottom: 1px solid var(--atlas-line); margin-bottom: 28px; scrollbar-width: none; }
 .workspace-tabs::-webkit-scrollbar { display: none; }
 .workspace-tabs button { min-height: 48px; border: 0; border-bottom: 2px solid transparent; border-radius: 0; padding: 12px 14px; white-space: nowrap; background: transparent; color: hsl(var(--muted-foreground)); font-size: 12px; font-weight: 620; }
+/* Shared semantic colors keep client and property navigation consistent. */
+.workspace-tabs button { display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.workspace-tab-icon { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; flex: 0 0 28px; border-radius: 8px; color: var(--tab-icon-color); background: color-mix(in srgb, var(--tab-icon-color) 12%, transparent); }
+.workspace-tab-icon--blue { --tab-icon-color: #3b82f6; }
+.workspace-tab-icon--green { --tab-icon-color: #16a34a; }
+.workspace-tab-icon--violet { --tab-icon-color: #a855f7; }
+.workspace-tab-icon--amber { --tab-icon-color: #d9920b; }
+.workspace-tab-icon--cyan { --tab-icon-color: #089fb5; }
+.workspace-tab-icon--rose { --tab-icon-color: #ec4899; }
 .workspace-tabs button:hover { color: var(--atlas-ink); background: hsl(var(--card) / 0.35); }
 .workspace-tabs button.active { border-bottom-color: hsl(var(--primary)); color: hsl(var(--foreground)); }
 .account-overview,

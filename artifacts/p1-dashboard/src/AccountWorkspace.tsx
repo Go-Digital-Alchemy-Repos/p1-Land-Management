@@ -9,6 +9,10 @@ import {
   CalendarDays,
   ClipboardList,
   FileText,
+  FolderKanban,
+  LayoutDashboard,
+  NotebookPen,
+  type LucideIcon,
   MapPin,
   MessageSquare,
   Plus,
@@ -42,25 +46,32 @@ type WorkspaceProps = {
   referenceProperties?: WorkspaceProperty[];
 };
 
-const clientTabs: { id: ClientWorkspaceTab; label: string }[] = [
-  { id: "overview", label: "Overview" },
-  { id: "properties", label: "Properties" },
-  { id: "contacts", label: "Contacts" },
-  { id: "agreements", label: "Agreements" },
-  { id: "schedule", label: "Schedule" },
-  { id: "requests", label: "Requests" },
-  { id: "projects", label: "Projects" },
-  { id: "notes", label: "Notes & tasks" },
+type WorkspaceTab<T extends string> = {
+  id: T;
+  label: string;
+  icon: LucideIcon;
+  tone: "blue" | "green" | "violet" | "amber" | "cyan" | "rose";
+};
+
+const clientTabs: WorkspaceTab<ClientWorkspaceTab>[] = [
+  { id: "overview", label: "Overview", icon: LayoutDashboard, tone: "blue" },
+  { id: "properties", label: "Properties", icon: MapPin, tone: "green" },
+  { id: "contacts", label: "Contacts", icon: Users, tone: "violet" },
+  { id: "agreements", label: "Agreements", icon: FileText, tone: "amber" },
+  { id: "schedule", label: "Schedule", icon: CalendarDays, tone: "cyan" },
+  { id: "requests", label: "Requests", icon: MessageSquare, tone: "rose" },
+  { id: "projects", label: "Projects", icon: FolderKanban, tone: "violet" },
+  { id: "notes", label: "Notes & tasks", icon: NotebookPen, tone: "amber" },
 ];
 
-const propertyTabs: { id: PropertyWorkspaceTab; label: string }[] = [
-  { id: "overview", label: "Overview" },
-  { id: "schedule", label: "Schedule" },
-  { id: "agreements", label: "Agreements" },
-  { id: "requests", label: "Requests" },
-  { id: "projects", label: "Projects" },
-  { id: "inspections", label: "Inspections" },
-  { id: "notes-files", label: "Notes & files" },
+const propertyTabs: WorkspaceTab<PropertyWorkspaceTab>[] = [
+  { id: "overview", label: "Overview", icon: LayoutDashboard, tone: "blue" },
+  { id: "schedule", label: "Schedule", icon: CalendarDays, tone: "cyan" },
+  { id: "agreements", label: "Agreements", icon: FileText, tone: "amber" },
+  { id: "requests", label: "Requests", icon: MessageSquare, tone: "rose" },
+  { id: "projects", label: "Projects", icon: FolderKanban, tone: "violet" },
+  { id: "inspections", label: "Inspections", icon: ClipboardList, tone: "green" },
+  { id: "notes-files", label: "Notes & files", icon: NotebookPen, tone: "amber" },
 ];
 
 function stamp(value: string | null | undefined) {
@@ -81,12 +92,12 @@ export function WorkspaceTabs<T extends string>({
   active,
   onChange,
 }: {
-  tabs: { id: T; label: string }[];
+  tabs: WorkspaceTab<T>[];
   active: T;
   onChange: (id: T) => void;
 }) {
   return <div className="workspace-tabs" role="tablist" aria-label="Account sections">
-    {tabs.map((item) => <button key={item.id} type="button" role="tab" aria-selected={item.id === active} className={item.id === active ? "active" : ""} onClick={() => onChange(item.id)}>{item.label}</button>)}
+    {tabs.map((item) => <button key={item.id} type="button" role="tab" aria-selected={item.id === active} className={item.id === active ? "active" : ""} onClick={() => onChange(item.id)}><span className={`workspace-tab-icon workspace-tab-icon--${item.tone}`} aria-hidden="true"><item.icon size={17} strokeWidth={1.8} /></span>{item.label}</button>)}
   </div>;
 }
 
