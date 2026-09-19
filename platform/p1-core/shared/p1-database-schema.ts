@@ -2,6 +2,7 @@
 export * from "./schema/activity-logs";
 export * from "./schema/blog-comments";
 export * from "./schema/blog-posts";
+export * from "./schema/blog-publications";
 export * from "./schema/blog-taxonomies";
 export * from "./schema/careers";
 export * from "./schema/client-site-content";

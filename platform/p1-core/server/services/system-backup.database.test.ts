@@ -150,6 +150,23 @@ describe.skipIf(!testUrl)("system backup disposable PostgreSQL", () => {
     await assertLockAvailable();
   });
 
+  it("round trips naive timestamps without timezone conversion or microsecond loss", async () => {
+    await pool.query("ALTER TABLE a_parents ADD COLUMN happened_at timestamp, ADD COLUMN calendar_day date, ADD COLUMN instant timestamptz");
+    await pool.query("UPDATE a_parents SET happened_at='2026-09-19 10:11:12.123456', calendar_day='2026-09-19', instant='2026-09-19 10:11:12.123456-04'");
+    const before = await pool.query("SELECT happened_at::text,calendar_day::text,extract(epoch FROM instant)::text AS instant FROM a_parents");
+    await runSystemBackup();
+    const snapshot = exportedSnapshot();
+    const row = snapshot.tables.find(table => table.name === "a_parents")!.rows[0];
+    expect(row.happened_at).toBe("2026-09-19 10:11:12.123456");
+    expect(row.calendar_day).toBe("2026-09-19");
+    expect(typeof row.instant).toBe("string");
+    expect(row.instant).toContain(".123456");
+    await pool.query("UPDATE a_parents SET happened_at='2020-01-01', calendar_day='2020-01-01', instant='2020-01-01Z'");
+    await restoreBackupSnapshot(snapshot);
+    const restored = await pool.query("SELECT happened_at::text,calendar_day::text,extract(epoch FROM instant)::text AS instant FROM a_parents");
+    expect(restored.rows).toEqual(before.rows);
+  });
+
   it("rolls back identity rows and generators when restore violates a foreign key", async () => {
     await pool.query("DROP TABLE z_children, a_parents");
     await pool.query("CREATE TABLE a_parents (id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY)");

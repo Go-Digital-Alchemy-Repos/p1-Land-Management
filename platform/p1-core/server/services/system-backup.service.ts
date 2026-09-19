@@ -1,6 +1,7 @@
 import { startStoppableWorker, type StoppableWorker } from "../utils/runtime-lifecycle";
 import { gzipSync, gunzipSync } from "zlib";
 import type { PoolClient } from "pg";
+import { types as pgTypes } from "pg";
 import { pool } from "../db";
 import { logger } from "../utils/logger";
 import { recordDomainOutcome } from "../utils/metrics";
@@ -231,10 +232,23 @@ async function querySequenceColumns(client: PoolClient) {
   return result.rows.filter((row) => Boolean(row.sequenceName));
 }
 
+function backupTypeParser<T>(oid: number): (value: string) => T | string;
+function backupTypeParser<T>(oid: number, format: "text"): (value: string) => T | string;
+function backupTypeParser<T>(oid: number, format: "binary"): (value: Buffer) => T | string;
+function backupTypeParser(oid: number, format: "text" | "binary" = "text") {
+  if (format === "binary") return pgTypes.getTypeParser(oid, "binary");
+  if ([1082, 1114, 1184].includes(oid)) return (value: string) => value;
+  return pgTypes.getTypeParser(oid, "text");
+}
+
 async function captureTable(client: PoolClient, tableName: string): Promise<BackupTableSnapshot> {
-  const result = await client.query<Record<string, unknown>>(
-    `SELECT * FROM public.${quoteIdent(tableName)}`,
-  );
+  const result = await client.query<Record<string, unknown>>({
+    text: `SELECT * FROM public.${quoteIdent(tableName)}`,
+    // Date objects infer the process timezone for naive timestamps and discard
+    // PostgreSQL microseconds. Preserve database text in this archive query only;
+    // application-wide parsers and historical archives remain unchanged.
+    types: { getTypeParser: backupTypeParser },
+  });
 
   return {
     name: tableName,
@@ -495,7 +509,22 @@ async function restoreBackupSnapshotWithClient(
   });
   try {
     await withBackupTransaction(client, "BEGIN", async () => {
+      // Publication adoption and restore must not interleave. Historical archives
+      // cannot silently leave newer published content beside restored legacy rows.
+      await client.query("SELECT pg_advisory_xact_lock(hashtextextended('blog-publication-writes', 0))");
       const tableNames = snapshot.tables.map((table) => table.name);
+      const blogSidecars = ["blog_publication_state", "blog_post_revisions", "blog_publication_routes"];
+      if ([...blogSidecars, "blog_posts"].some((name) => !tableNames.includes(name))) {
+        for (const name of blogSidecars) {
+          const exists = await client.query("SELECT to_regclass($1) AS relation", [`public.${name}`]);
+          if (exists.rows[0]?.relation) {
+            const populated = await client.query(`SELECT 1 FROM public.${quoteIdent(name)} LIMIT 1`);
+            if (populated.rowCount) {
+              throw new Error("This archive omits Blog publication history. Restore an archive containing blog_posts and all Blog publication tables, or complete an explicit publication reconciliation before restoring this historical archive.");
+            }
+          }
+        }
+      }
       if (tableNames.length > 0) {
         await client.query(
           `TRUNCATE TABLE ${tableNames.map((table) => `public.${quoteIdent(table)}`).join(", ")} RESTART IDENTITY CASCADE`,

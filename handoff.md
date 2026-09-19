@@ -1,3 +1,22 @@
+## September 19 continuation — Blog recovery and crew browser evidence
+
+Crew offline browser acceptance is committed and pushed at `bfb9336d` to main and
+the consolidation branch. Independent Chrome rerun passed actual offline queue,
+reload, full browser-process restart, lost acknowledgement and retry with stable
+IDs. The receiver is synthetic; physical reboot/photos/reassignment remain open.
+See the acceptance tracker for exact evidence boundaries.
+
+The additive Blog publication foundation is frozen and independently reviewed;
+parent14/14 publication/catalog tests, clean Core typecheck and full production
+build passed. The candidate is accepted for the internal foundation release;
+live deployment verification follows separately.
+Review found and repaired cyclic restore ordering, historical archive omission,
+new-table timestamp ambiguity and incomplete schema declarations. Parent also
+reproduced a preexisting backup capture defect (timezone shift and microsecond
+loss) and added query-local raw timestamp capture plus actual round-trip coverage.
+No production content or accounts have been changed. Blog API/editor/public route
+cutover is still required; this storage work does not complete Blog acceptance.
+
 ## Verified redirect release — September 19
 
 Runtime `e139dba0be1e98ec1b3f794c67c801721515ef44` is pushed to main and

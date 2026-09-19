@@ -53,7 +53,9 @@ suite("actual P1 migration runner on fresh isolated PostgreSQL", () => {
       );
       await runMigrations();
       await runMigrations();
-      expect((await pool.query("SELECT * FROM drizzle.__drizzle_migrations")).rowCount).toBe(4);
+      expect((await pool.query("SELECT * FROM drizzle.__drizzle_migrations")).rowCount).toBe(
+        journal.entries.length,
+      );
       expect(
         (await pool.query("SELECT title,version,content FROM cms_pages WHERE id='legacy-page'"))
           .rows[0],

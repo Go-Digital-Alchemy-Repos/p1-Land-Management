@@ -245,3 +245,27 @@ behavior, not production server idempotency. The separate actual HTTP/PostgreSQL
 agreement/crew test supplies backend evidence. No physical reboot, photo upload,
 reassignment, storage eviction or provider delivery is established by this run.
 Browser/server/profile cleanup completed. Full operational acceptance remains open.
+
+
+## Blog publication storage and recovery candidate — September 19
+
+The additive [Blog foundation](blog-publication-consolidation.md) is independently
+reviewed. It supplies immutable snapshots, draft/current/last-published pointers,
+version and exact-instance lease fences, explicit unpublished adoption, URL
+ownership/tombstones and legacy drift detection. It is not exposed by existing APIs
+and does not change any current public article or editor behavior.
+
+Recovery review repaired cyclic FK restore ordering, historical-archive omission
+and new timestamp storage. New backup capture also preserves scalar date/timestamp
+values without process-timezone conversion or microsecond truncation. Existing
+archives remain unchanged. P1 schema-push is disabled because its installed
+introspector can remove/recreate valid composite constraints and cannot preserve
+SQL-owned deferral semantics. SQL migrations remain authoritative.
+
+Specialist validation passed14 actual publication/catalog tests,5 populated
+backup/restore tests and1 actual migration-runner test. Parent independently passed
+the5 restore tests,29 backup tests in New York and11 database tests in UTC, and
+reviewed the retained-schema compatibility boundaries. Final parent publication
+rerun/build and release evidence are recorded in handoff. API/editor/scheduler
+cutover, private preview, static-article adoption, public SSR/hydration/metadata/
+sitemap/cache integration and full Blog feature acceptance remain open.

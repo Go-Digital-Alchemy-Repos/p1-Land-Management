@@ -9,7 +9,7 @@
     "budget": "tsx script/check-bundle-budget.ts",
     "start": "NODE_ENV=production node dist/index.cjs",
     "check": "tsc",
-    "db:push": "drizzle-kit push",
+    "db:push": "node script/managed-schema-only.mjs",
     "db:verify": "tsx server/scripts/verify-migrations.ts",
     "backup:run": "tsx server/scripts/run-system-backup.ts",
     "backup:restore": "tsx server/scripts/restore-system-backup.ts",
