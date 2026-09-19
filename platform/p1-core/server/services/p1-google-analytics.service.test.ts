@@ -168,3 +168,12 @@ it("uses signed service-account JWT with readonly scope and fixed token endpoint
   ).realtime();
   expect(f).toHaveBeenCalledTimes(4);
 });
+
+it("accepts Google's headerless empty historical report without fabricating rows", () => {
+  const spec = { dimensions: [], metrics: ["sessions"] };
+  const result = normalizeReport({ kind: "analyticsData#runReport", metadata: { timeZone: "America/New_York" } }, spec);
+  expect(result).toMatchObject({ metrics: ["sessions"], rows: [], rowCount: 0, truncated: false, metadata: { timeZone: "America/New_York" } });
+  for (const raw of [{}, { kind: "analyticsData#runReport", rowCount: 1 }, { kind: "analyticsData#runReport", rows: [{ metricValues: [{ value: "1" }] }] }]) {
+    expect(() => normalizeReport(raw, spec)).toThrow();
+  }
+});

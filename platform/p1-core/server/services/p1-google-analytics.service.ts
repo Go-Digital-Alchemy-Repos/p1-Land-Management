@@ -86,12 +86,18 @@ export function normalizeReport(
   raw: any,
   spec: { dimensions: string[]; metrics: string[] },
 ): GAReport {
-  if (
+  // GA omits headers and rows for periods before this property recorded data.
+  // Accept only an explicitly typed, empty provider report; malformed/nonempty
+  // responses must still pass the requested-column validation below.
+  const emptyProviderReport = raw?.kind === "analyticsData#runReport" &&
+    raw.metricHeaders === undefined && raw.dimensionHeaders === undefined &&
+    raw.rows === undefined && (raw.rowCount === undefined || raw.rowCount === 0);
+  if (!emptyProviderReport && (
     !raw ||
     !Array.isArray(raw.metricHeaders) ||
     raw.metricHeaders.map((x: any) => x.name).join() !== spec.metrics.join() ||
     (raw.dimensionHeaders || []).map((x: any) => x.name).join() !== spec.dimensions.join()
-  )
+  ))
     throw new GAError("provider_unavailable");
   const rows = (raw.rows || []).map((row: any) => ({
     dimensions: Object.fromEntries(

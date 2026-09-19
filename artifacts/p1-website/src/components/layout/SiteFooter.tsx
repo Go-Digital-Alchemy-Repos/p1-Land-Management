@@ -92,7 +92,7 @@ export function SiteFooter() {
             <li>Saturday: By Appointment</li>
             <li>Sunday: Closed</li>
             <li className="pt-4">
-              <Button asChild variant="outline" className="h-auto min-h-9 w-full whitespace-normal px-2 text-center bg-transparent border-secondary-foreground/20 hover:bg-secondary-foreground/10 text-white">
+              <Button asChild variant="outline" className="h-auto min-h-14 w-full whitespace-normal px-4 py-3 text-center leading-snug bg-transparent border-secondary-foreground/20 hover:bg-secondary-foreground/10 text-white">
                 <Link href="/contact">Get a Free Site Assessment</Link>
               </Button>
             </li>

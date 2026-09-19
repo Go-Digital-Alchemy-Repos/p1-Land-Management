@@ -1188,35 +1188,35 @@
     ]
   },
   "features/york-county-lakewylie.png": {
-    "sourceBytes": 3099432,
-    "sourceHash": "8521c169f7d7cbb64d7ffa8236c3ba81d376acf1e73b34793ea585ce03ac2159",
-    "width": 1499,
-    "height": 1049,
+    "sourceBytes": 3676097,
+    "sourceHash": "9cc9b96e0f8d641b9de4682a7fd971e433b74c2c6761b4d6fba2744fdcd6a7e4",
+    "width": 1536,
+    "height": 1024,
     "default": "optimized/features/york-county-lakewylie-1280.webp",
     "variants": [
       {
         "path": "optimized/features/york-county-lakewylie-480.webp",
         "format": "webp",
         "width": 480,
-        "height": 336,
-        "bytes": 43324,
+        "height": 320,
+        "bytes": 53736,
         "quality": 78
       },
       {
         "path": "optimized/features/york-county-lakewylie-768.webp",
         "format": "webp",
         "width": 768,
-        "height": 537,
-        "bytes": 92176,
-        "quality": 73
+        "height": 512,
+        "bytes": 99804,
+        "quality": 58
       },
       {
         "path": "optimized/features/york-county-lakewylie-1280.webp",
         "format": "webp",
         "width": 1280,
-        "height": 896,
-        "bytes": 217202,
-        "quality": 73
+        "height": 853,
+        "bytes": 243790,
+        "quality": 63
       }
     ]
   },

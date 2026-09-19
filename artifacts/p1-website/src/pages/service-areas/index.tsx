@@ -207,7 +207,7 @@ export default function ServiceAreasIndex() {
                 <div className="aspect-[16/9] overflow-hidden">
                   <img
                     src={yorkCountyImg}
-                    alt="Commercial lakeside grounds maintenance near Lake Wylie in York County, SC"
+                    alt="Illustrative commercial marina grounds with an orange Kubota zero-turn mower beside the lake"
                     loading="lazy"
                     decoding="async"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"

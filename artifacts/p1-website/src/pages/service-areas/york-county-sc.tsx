@@ -80,7 +80,7 @@ export default function YorkCountySC() {
       <section className="py-24 bg-background">
         <div className="site-shell space-y-16">
 
-          <FeatureRow heading="Your York County Property Partner" image={featureImg} imageAlt="Commercial lakeside property maintenance near Lake Wylie in York County, SC">
+          <FeatureRow heading="Your York County Property Partner" image={featureImg} imageAlt="Illustrative commercial marina grounds with an orange Kubota zero-turn mower beside the lake">
             <p>
               York County includes commercial and industrial grounds along I-77, waterfront properties around Lake Wylie, and farmland near York, Clover, and Sharon. Those different settings call for different plans for drainage, access, and ongoing care.
             </p>

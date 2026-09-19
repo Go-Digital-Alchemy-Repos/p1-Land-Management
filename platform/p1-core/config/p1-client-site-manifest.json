@@ -6,7 +6,7 @@
     "displayName": "P1 Land & Property Management",
     "source": {
       "repository": "https://github.com/Go-Digital-Alchemy-Repos/p1-Land-Management.git",
-      "revision": "b5c6678b2e5934a690d23ff4ca5dfd25de2ce2ba"
+      "revision": "d028c9baf01f2e503e5c2da19f6b9acc0960b5a5"
     },
     "owners": [
       {
@@ -12309,8 +12309,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1pp5e7x",
-            "label": "Text: Your grounds need to look good and work for the people using them. We handle mowing, tree and b",
+            "path": "fhyvatg",
+            "label": "Text: Your grounds need to look good and work well for the people using them. We handle mowing, tree ",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -12685,7 +12685,7 @@
           "f1amwadv": "05",
           "foa1vas": "Land Clearing",
           "f1l5dbf": "Your Commercial Property. Our Full Attention.",
-          "f1pp5e7x": "Your grounds need to look good and work for the people using them. We handle mowing, tree and brush care, ponds, and drainage, with a schedule built around your property.",
+          "fhyvatg": "Your grounds need to look good and work well for the people using them. We handle mowing, tree and brush care, ponds, drainage, and more with a schedule built around your property.",
           "f1bzg89q": "We'll talk through regular upkeep, seasonal work, and any repairs that need separate attention, so you know what's included.",
           "f1rnw6st": "/assets/commercial-attention-1280-Co4nd32i.webp",
           "f16meay5": "Crew maintaining a large commercial property's grounds",
@@ -18119,15 +18119,15 @@
             "maxLength": 2000
           },
           {
-            "path": "f1yxh38o",
-            "label": "Image: /assets/york-county-lakewylie-1280-Cu6Aqgpy.webp",
+            "path": "fqqs6yw",
+            "label": "Image: /assets/york-county-lakewylie-1280-BOIw3mjE.webp",
             "type": "image",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "fq9r0qa",
-            "label": "Image description: Commercial lakeside grounds maintenance near Lake Wylie in York County, SC",
+            "path": "f1tarlal",
+            "label": "Image description: Illustrative commercial marina grounds with an orange Kubota zero-turn mower beside the lake",
             "type": "imageAlt",
             "required": false,
             "maxLength": 2000
@@ -18687,8 +18687,8 @@
           "f52v5tt": "Lancaster County, SC",
           "f5kxmuc": "Commercial landscaping and grounds care, plus clearing, grading, and full property management from the Indian Land panhandle to Kershaw and Heath Springs.",
           "f1si9r1i": "Explore Lancaster County ",
-          "f1yxh38o": "/assets/york-county-lakewylie-1280-Cu6Aqgpy.webp",
-          "fq9r0qa": "Commercial lakeside grounds maintenance near Lake Wylie in York County, SC",
+          "fqqs6yw": "/assets/york-county-lakewylie-1280-BOIw3mjE.webp",
+          "f1tarlal": "Illustrative commercial marina grounds with an orange Kubota zero-turn mower beside the lake",
           "f1n0fsxa": "Charlotte Metro · SC",
           "fhxfs0p": "York County, SC",
           "f1b46pay": "Lake Wylie commercial waterfront sites, I-77 corridor development, and western-county working farms from Rock Hill and Fort Mill to Clover and York.",
@@ -24306,15 +24306,15 @@
             "maxLength": 12000
           },
           {
-            "path": "f1yxh38o",
-            "label": "Image: /assets/york-county-lakewylie-1280-Cu6Aqgpy.webp",
+            "path": "fqqs6yw",
+            "label": "Image: /assets/york-county-lakewylie-1280-BOIw3mjE.webp",
             "type": "image",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "f6udc65",
-            "label": "Image description: Commercial lakeside property maintenance near Lake Wylie in York County, SC",
+            "path": "f1tarlal",
+            "label": "Image description: Illustrative commercial marina grounds with an orange Kubota zero-turn mower beside the lake",
             "type": "imageAlt",
             "required": false,
             "maxLength": 2000
@@ -24851,8 +24851,8 @@
           "f1exwt7z": "Your York County Property Partner",
           "f1qxufdm": "York County includes commercial and industrial grounds along I-77, waterfront properties around Lake Wylie, and farmland near York, Clover, and Sharon. Those different settings call for different plans for drainage, access, and ongoing care.",
           "fil257b": "We help care for commercial sites, development tracts, waterfront grounds, and working farms. We'll walk your property and talk through the work that would make the biggest difference.",
-          "f1yxh38o": "/assets/york-county-lakewylie-1280-Cu6Aqgpy.webp",
-          "f6udc65": "Commercial lakeside property maintenance near Lake Wylie in York County, SC",
+          "fqqs6yw": "/assets/york-county-lakewylie-1280-BOIw3mjE.webp",
+          "f1tarlal": "Illustrative commercial marina grounds with an orange Kubota zero-turn mower beside the lake",
           "ftgf093": "Land & Property Management Services Throughout York County",
           "fubo3m5": "Commercial landscaping and exterior grounds maintenance contracts",
           "f1dcm0y9": "Agricultural property maintenance — pastures, fields, fence lines, and access roads",

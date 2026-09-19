@@ -4,6 +4,7 @@ import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { FaqAccordion } from "@/components/content/FaqAccordion";
+import { LocationSidebar } from "@/components/content/LocationSidebar";
 import { SEO } from "@/components/seo";
 import { breadcrumbSchema, faqSchema, localBusinessSchema, serviceAreaSchema } from "@/lib/structured-data";
 
@@ -53,7 +54,8 @@ export function LocationPage({ page, image }: { page: LocationContent; image: st
       </li>)}</ol></nav>
       <p className="public-supporting-copy mt-8 max-w-4xl text-lg leading-relaxed">We serve commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger in {page.city}, {page.state}.</p>
     </div>
-    <div className="site-shell space-y-14 pb-16">
+    <div className="site-shell grid items-start gap-10 pb-16 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-14">
+      <div className="min-w-0 space-y-14">
       {page.sections.map((section, index) => <section key={section.heading} className="max-w-4xl">
         <h2 className="font-display text-3xl text-secondary">{toTitleCase(section.heading)}</h2>
         <p className="mt-5 text-lg leading-relaxed text-secondary/80">{section.body}</p>
@@ -69,9 +71,11 @@ export function LocationPage({ page, image }: { page: LocationContent; image: st
       </section>
       <section>
         <h2 className="font-display text-2xl">Services and Nearby Communities</h2>
-        <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{page.links.map(link => <li key={link.href}><Link className="public-link font-semibold text-primary underline" href={link.href}>{link.label}</Link></li>)}</ul>
+        <ul className="mt-6 grid gap-4 sm:grid-cols-2">{page.links.map(link => <li key={link.href}><Link className="public-link font-semibold text-primary underline" href={link.href}>{link.label}</Link></li>)}</ul>
         <p className="mt-10 text-lg">Call <a className="public-link text-primary underline" href="tel:+17042218928">(704) 221-8928</a> or <Link className="public-link text-primary underline" href="/contact">request a free site assessment online</Link> to discuss your property.</p>
       </section>
+      </div>
+      <LocationSidebar currentPath={page.path} />
     </div>
     <FinalCTA />
   </Layout>;
