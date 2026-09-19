@@ -116,6 +116,7 @@ import type {
   DeleteMarketingFormSubmission200,
   DeleteMarketingMedia200,
   DeleteMarketingPageParams,
+  DeleteWebsiteDocument200,
   DeleteWebsiteMenu200,
   DuplicateAgreementTemplateBody,
   EditServiceAgreement,
@@ -328,6 +329,12 @@ import type {
   WebsiteContent,
   WebsiteContentEntry,
   WebsiteContentRevision,
+  WebsiteDocument,
+  WebsiteDocumentCollection,
+  WebsiteDocumentInput,
+  WebsiteDocumentSaveInput,
+  WebsiteDocumentSyncResult,
+  WebsiteDocumentVersionInput,
   WebsiteDraftInput,
   WebsiteEditorReservation,
   WebsiteExpectedRevision,
@@ -8371,6 +8378,204 @@ formData.append(`settingKey`, uploadWebsiteIdentityAssetBody.settingKey);
     ,
     body:
       formData,
+  }
+);}
+
+
+
+export const getGetWebsiteDocumentsUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/website-system/docs`
+}
+
+/**
+ * Owner-only private document operation. Preserve drafts on conflicts or uncertain writes; reload authoritative state before retrying.
+ */
+export const getWebsiteDocuments = async ( options?: RequestInit): Promise<WebsiteDocumentCollection> => {
+
+  return customFetch<WebsiteDocumentCollection>(getGetWebsiteDocumentsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateWebsiteDocumentUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/website-system/docs`
+}
+
+/**
+ * Owner-only private document operation. Preserve drafts on conflicts or uncertain writes; reload authoritative state before retrying.
+ */
+export const createWebsiteDocument = async (websiteDocumentInput: WebsiteDocumentInput, options?: RequestInit): Promise<WebsiteDocument> => {
+
+  return customFetch<WebsiteDocument>(getCreateWebsiteDocumentUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      websiteDocumentInput,)
+  }
+);}
+
+
+
+export const getSaveWebsiteDocumentUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/website-system/docs/${id}`
+}
+
+/**
+ * Owner-only private document operation. Preserve drafts on conflicts or uncertain writes; reload authoritative state before retrying.
+ */
+export const saveWebsiteDocument = async (id: string,
+    websiteDocumentSaveInput: WebsiteDocumentSaveInput, options?: RequestInit): Promise<WebsiteDocument> => {
+
+  return customFetch<WebsiteDocument>(getSaveWebsiteDocumentUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      websiteDocumentSaveInput,)
+  }
+);}
+
+
+
+export const getDeleteWebsiteDocumentUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/website-system/docs/${id}`
+}
+
+/**
+ * Owner-only private document operation. Preserve drafts on conflicts or uncertain writes; reload authoritative state before retrying.
+ */
+export const deleteWebsiteDocument = async (id: string,
+    websiteDocumentVersionInput: WebsiteDocumentVersionInput, options?: RequestInit): Promise<DeleteWebsiteDocument200> => {
+
+  return customFetch<DeleteWebsiteDocument200>(getDeleteWebsiteDocumentUrl(id),
+  {
+    ...options,
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      websiteDocumentVersionInput,)
+  }
+);}
+
+
+
+export const getSyncWebsiteDocumentsUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/website-system/docs/sync`
+}
+
+/**
+ * Owner-only private document operation. Preserve drafts on conflicts or uncertain writes; reload authoritative state before retrying.
+ */
+export const syncWebsiteDocuments = async (websiteDocumentVersionInput: WebsiteDocumentVersionInput, options?: RequestInit): Promise<WebsiteDocumentSyncResult> => {
+
+  return customFetch<WebsiteDocumentSyncResult>(getSyncWebsiteDocumentsUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      websiteDocumentVersionInput,)
+  }
+);}
+
+
+
+export const getAcquireWebsiteDocumentReservationUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/editor-locks/doc/${id}/acquire`
+}
+
+/**
+ * Owner-only private document operation. Preserve drafts on conflicts or uncertain writes; reload authoritative state before retrying.
+ */
+export const acquireWebsiteDocumentReservation = async (id: string, options?: RequestInit): Promise<WebsiteEditorReservation> => {
+
+  return customFetch<WebsiteEditorReservation>(getAcquireWebsiteDocumentReservationUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+export const getHeartbeatWebsiteDocumentReservationUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/editor-locks/doc/${id}/heartbeat`
+}
+
+/**
+ * Owner-only private document operation. Preserve drafts on conflicts or uncertain writes; reload authoritative state before retrying.
+ */
+export const heartbeatWebsiteDocumentReservation = async (id: string, options?: RequestInit): Promise<WebsiteEditorReservation> => {
+
+  return customFetch<WebsiteEditorReservation>(getHeartbeatWebsiteDocumentReservationUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+export const getReleaseWebsiteDocumentReservationUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/editor-locks/doc/${id}/release`
+}
+
+/**
+ * Owner-only private document operation. Preserve drafts on conflicts or uncertain writes; reload authoritative state before retrying.
+ */
+export const releaseWebsiteDocumentReservation = async (id: string, options?: RequestInit): Promise<WebsiteEditorReservation> => {
+
+  return customFetch<WebsiteEditorReservation>(getReleaseWebsiteDocumentReservationUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
   }
 );}
 

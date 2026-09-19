@@ -34,6 +34,22 @@ This **does not** make the old `/admin/docs` editor version-aware. An old client
 
 ### Remaining implementation and acceptance
 
-Native reader/editor, generated client contract, category/search, Markdown/heading navigation and safe previews, create/edit/publication/order, delete/sync confirmation, edit reservations, cross-surface version-aware writes, old deep links, mobile/keyboard/error recovery and live authenticated read verification. The backend being implemented is not full Developer Resources parity and does not permit `/admin` retirement.
+Native reader/editor, category/search, Markdown/heading navigation and safe previews, create/edit/publication/order, delete/sync confirmation, edit reservations, cross-surface version-aware writes, old deep links, mobile/keyboard/error recovery and live authenticated read verification. The backend being implemented is not full Developer Resources parity and does not permit `/admin` retirement.
 
 Rollback: revert this additive backend change on reconciled main; retained legacy routes and data remain available. No down-migration is required.
+
+## September 18: generated document client contract
+
+The canonical Dashboard OpenAPI specification now describes all five versioned document operations and the existing Owner-only acquire/heartbeat/release reservation routes. Generated fetch functions and models retain document and collection versions, nullable historical metadata, publication/order fields, bounded editable input and conflict/error responses. The existing bridge allowlist and Core identity checks remain authoritative; this change does not widen access or add routes.
+
+Seventeen focused client/transport tests passed. The generated-client checks exercise actual request serialization, DELETE version bodies, exact allowlisted destinations, reservation release keepalive, cancellation, and surfacing 409/503 without replaying a write. Shared-library and Dashboard TypeScript checks passed. These checks use synthetic responses and do not mutate production documents.
+
+The native editor can now consume the canonical generated client instead of introducing a hand-written fetch contract. Reader/editor UI, draft recovery, legacy cross-surface version-aware writes and full feature acceptance remain open.
+
+Run the cross-package client/bridge regression checks from the repository root with:
+
+```sh
+pnpm --filter @workspace/api-server exec tsx --test ../../scripts/test-website-documents-client.ts src/dashboard/marketing-cms.test.ts
+```
+
+The cross-package check lives in `scripts/`, outside the API server compilation root; API-server TypeScript validation and the Dashboard production build also passed.

@@ -14643,6 +14643,393 @@
           }
         }
       }
+    },
+    "/marketing/cms/website-system/docs": {
+      "get": {
+        "operationId": "getWebsiteDocuments",
+        "description": "Owner-only private document operation. Preserve drafts on conflicts or uncertain writes; reload authoritative state before retrying.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteDocumentCollection"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Active attested Owner required"
+          },
+          "404": {
+            "description": "Document not found"
+          },
+          "409": {
+            "description": "Version conflict; preserve draft and reload"
+          },
+          "503": {
+            "description": "Service unavailable; write outcome may be uncertain"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createWebsiteDocument",
+        "description": "Owner-only private document operation. Preserve drafts on conflicts or uncertain writes; reload authoritative state before retrying.",
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteDocument"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Active attested Owner required"
+          },
+          "404": {
+            "description": "Document not found"
+          },
+          "409": {
+            "description": "Version conflict; preserve draft and reload"
+          },
+          "503": {
+            "description": "Service unavailable; write outcome may be uncertain"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebsiteDocumentInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/marketing/cms/website-system/docs/{id}": {
+      "put": {
+        "operationId": "saveWebsiteDocument",
+        "description": "Owner-only private document operation. Preserve drafts on conflicts or uncertain writes; reload authoritative state before retrying.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteDocument"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Active attested Owner required"
+          },
+          "404": {
+            "description": "Document not found"
+          },
+          "409": {
+            "description": "Version conflict; preserve draft and reload"
+          },
+          "503": {
+            "description": "Service unavailable; write outcome may be uncertain"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebsiteDocumentSaveInput"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "deleteWebsiteDocument",
+        "description": "Owner-only private document operation. Preserve drafts on conflicts or uncertain writes; reload authoritative state before retrying.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "deleted"
+                  ],
+                  "properties": {
+                    "deleted": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Active attested Owner required"
+          },
+          "404": {
+            "description": "Document not found"
+          },
+          "409": {
+            "description": "Version conflict; preserve draft and reload"
+          },
+          "503": {
+            "description": "Service unavailable; write outcome may be uncertain"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebsiteDocumentVersionInput"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/website-system/docs/sync": {
+      "post": {
+        "operationId": "syncWebsiteDocuments",
+        "description": "Owner-only private document operation. Preserve drafts on conflicts or uncertain writes; reload authoritative state before retrying.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteDocumentSyncResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Active attested Owner required"
+          },
+          "404": {
+            "description": "Document not found"
+          },
+          "409": {
+            "description": "Version conflict; preserve draft and reload"
+          },
+          "503": {
+            "description": "Service unavailable; write outcome may be uncertain"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebsiteDocumentVersionInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/marketing/cms/editor-locks/doc/{id}/acquire": {
+      "post": {
+        "operationId": "acquireWebsiteDocumentReservation",
+        "description": "Owner-only private document operation. Preserve drafts on conflicts or uncertain writes; reload authoritative state before retrying.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteEditorReservation"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Active attested Owner required"
+          },
+          "404": {
+            "description": "Document not found"
+          },
+          "409": {
+            "description": "Version conflict; preserve draft and reload"
+          },
+          "503": {
+            "description": "Service unavailable; write outcome may be uncertain"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/editor-locks/doc/{id}/heartbeat": {
+      "post": {
+        "operationId": "heartbeatWebsiteDocumentReservation",
+        "description": "Owner-only private document operation. Preserve drafts on conflicts or uncertain writes; reload authoritative state before retrying.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteEditorReservation"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Active attested Owner required"
+          },
+          "404": {
+            "description": "Document not found"
+          },
+          "409": {
+            "description": "Version conflict; preserve draft and reload"
+          },
+          "503": {
+            "description": "Service unavailable; write outcome may be uncertain"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/editor-locks/doc/{id}/release": {
+      "post": {
+        "operationId": "releaseWebsiteDocumentReservation",
+        "description": "Owner-only private document operation. Preserve drafts on conflicts or uncertain writes; reload authoritative state before retrying.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteEditorReservation"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Active attested Owner required"
+          },
+          "404": {
+            "description": "Document not found"
+          },
+          "409": {
+            "description": "Version conflict; preserve draft and reload"
+          },
+          "503": {
+            "description": "Service unavailable; write outcome may be uncertain"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -30073,6 +30460,204 @@
             "pattern": "^[a-f0-9]{64}$"
           }
         }
+      },
+      "WebsiteDocumentInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "title",
+          "slug",
+          "category",
+          "content",
+          "sortOrder",
+          "isPublished"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "slug": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+            "maxLength": 160
+          },
+          "category": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "content": {
+            "type": "string",
+            "maxLength": 500000
+          },
+          "sortOrder": {
+            "type": "integer",
+            "minimum": -100000,
+            "maximum": 100000
+          },
+          "isPublished": {
+            "type": "boolean"
+          }
+        }
+      },
+      "WebsiteDocument": {
+        "type": "object",
+        "required": [
+          "title",
+          "slug",
+          "category",
+          "content",
+          "sortOrder",
+          "isPublished",
+          "id",
+          "version",
+          "createdBy",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "slug": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+            "maxLength": 160
+          },
+          "category": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "content": {
+            "type": "string",
+            "maxLength": 500000
+          },
+          "sortOrder": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": -100000,
+            "maximum": 100000
+          },
+          "isPublished": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "createdBy": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "createdAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        }
+      },
+      "WebsiteDocumentCollection": {
+        "type": "object",
+        "required": [
+          "version",
+          "docs"
+        ],
+        "properties": {
+          "version": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "docs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WebsiteDocument"
+            }
+          }
+        }
+      },
+      "WebsiteDocumentVersionInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expectedVersion"
+        ],
+        "properties": {
+          "expectedVersion": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      },
+      "WebsiteDocumentSaveInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "document",
+          "expectedVersion"
+        ],
+        "properties": {
+          "document": {
+            "$ref": "#/components/schemas/WebsiteDocumentInput"
+          },
+          "expectedVersion": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      },
+      "WebsiteDocumentSyncResult": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/WebsiteDocumentCollection"
+          },
+          {
+            "type": "object",
+            "required": [
+              "created",
+              "updated",
+              "total"
+            ],
+            "properties": {
+              "created": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "updated": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "total": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        ]
       }
     }
   }
