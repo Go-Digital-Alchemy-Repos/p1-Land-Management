@@ -1,3 +1,5 @@
+import clientStackOnboarding from "./admin/client-stack-onboarding.routes";
+import { requireWebsiteOwner } from "../middleware/website-owner";
 import websiteDocs from "./business-center-docs.routes";
 import websiteIdentity from "./business-center-identity.routes";
 import websiteSocial from "./business-center-social.routes";
@@ -81,6 +83,7 @@ router.get("/notification-forms", async (req, res, next) => {
     next(error);
   }
 });
+router.use("/website-system/onboarding", requireWebsiteOwner, clientStackOnboarding);
 router.use("/website-system/docs", websiteDocs);
 router.use("/website-system", websiteSystem);
 router.use("/design/branding", websiteIdentity);

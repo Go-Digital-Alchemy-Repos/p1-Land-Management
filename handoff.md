@@ -95,7 +95,7 @@ Follow-up evidence commits: `b85a7f3` (recovery deployment), `d0d9c9e` (successf
 Use the acceptance tracker for the full matrix. Prioritized outstanding areas:
 
 1. **Live reporting:** diagnose Google configuration, restore real Analytics/Search Console results, verify Search Console property coverage and report/CSV parity; provide appropriate Website System connection management.
-2. **Missing Website System features:** Integrations, Email Templates, Developer Resources, System Backups and Client Stack Onboarding still need consolidated equivalents or explicit disposition before admin retirement.
+2. **Missing Website System features:** Integrations, Email Templates and System Backups still need consolidated equivalents or explicit disposition before admin retirement. Developer Resources and Client Stack Onboarding now have native destinations; retained admin retirement still requires the complete acceptance tracker.
 3. **Public identity delivery:** Branding editor exists, but public logo/favicon/company identity still need integration with actual website consumers and published contact content. Consider current image CSP and safe media delivery.
 4. **CMS parity:** inventory every legacy operation, nested setting, preview/publication path, shared setting and public consumer. Generic CMS and P1 Website snapshots remain distinct stores/consumers; do not merge them by assumption.
 5. **CRM migration:** finish native field/settings/prospect-context gaps, obtain reviewed real source mappings, handle unmatched parents, rehearse import and independent reconciliation, and define source freeze. A raw archive is not native workflow parity.

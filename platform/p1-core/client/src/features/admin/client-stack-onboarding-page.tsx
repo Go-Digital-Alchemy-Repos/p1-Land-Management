@@ -49,6 +49,7 @@ export default function ClientStackOnboardingPage() {
   const [adminDomain, setAdminDomain] = useState("");
   const [canonicalHost, setCanonicalHost] = useState<"apex" | "www">("www");
   const [publicTarget, setPublicTarget] = useState("");
+  const [wwwTarget, setWwwTarget] = useState("");
   const [adminTarget, setAdminTarget] = useState("");
   const [dnsOperator, setDnsOperator] = useState("");
   const [launchOwner, setLaunchOwner] = useState("");
@@ -95,7 +96,7 @@ export default function ClientStackOnboardingPage() {
           {
             host: "www",
             type: "CNAME",
-            value: publicTarget,
+            value: wwwTarget,
             ttl: 300,
             proxyMode: "provider-managed",
           },
@@ -147,7 +148,7 @@ export default function ClientStackOnboardingPage() {
         "/api/admin/client-stack-onboarding/dns-verification",
         {
           stackId: plan.stackId,
-          records: plan.records,
+          records: plan.records.map(({ fqdn, type, value }) => ({ fqdn, type, value })),
         },
       );
       return response.json() as Promise<NonNullable<typeof dnsVerification>>;
@@ -210,26 +211,27 @@ export default function ClientStackOnboardingPage() {
                 label="Client stack ID"
                 value={stackId}
                 onChange={setStackId}
-                placeholder="better-farms-foundation"
+                placeholder="p1-land-management"
               />
               <Field
                 label="Public apex domain"
                 value={publicDomain}
                 onChange={setPublicDomain}
-                placeholder="betterfarms.org"
+                placeholder="p1landmanagement.com"
               />
               <Field
                 label="Protected admin domain"
                 value={adminDomain}
                 onChange={setAdminDomain}
-                placeholder="admin.betterfarms.org"
+                placeholder="dashboard.p1landmanagement.com"
               />
               <Field
-                label="Public-site target"
+                label="Apex record value (IP address or hostname)"
                 value={publicTarget}
                 onChange={setPublicTarget}
                 placeholder="sites.example-host.com"
               />
+              <Field label="www CNAME target" value={wwwTarget} onChange={setWwwTarget} placeholder="public-site.up.railway.app" />
               <Field
                 label="Admin/backend target"
                 value={adminTarget}

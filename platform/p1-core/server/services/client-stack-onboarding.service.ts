@@ -7,7 +7,7 @@ import {
   getClientStoragePrefix,
 } from "../../shared/client-backup-policy";
 
-export const clientStackIdSchema = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
+export const clientStackIdSchema = z.string().max(120).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
 const hostnameSchema = z
   .string()
   .trim()
@@ -57,7 +57,7 @@ export const clientStackDomainPlanSchema = z
     publicDomain: hostnameSchema,
     adminDomain: hostnameSchema,
     canonicalHost: z.enum(["apex", "www"]),
-    publicRecords: z.array(publicDnsRecordSchema).min(2),
+    publicRecords: z.array(publicDnsRecordSchema).length(2),
     adminRecord: dnsRecordSchema,
     dnsOperator: z.string().trim().min(1).max(160),
     launchOwner: z.string().trim().min(1).max(160),

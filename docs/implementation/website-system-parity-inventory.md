@@ -53,4 +53,14 @@ Email preview substitutes sample variables and wraps the HTML in the existing br
 4. Native desktop/mobile/keyboard browser journey covering every operation above, with legacy deep links accounted for.
 5. Provider and destructive side effects tested against isolated fixtures; real connections checked read-only. Production release requires scoped validation and exact Railway revision evidence.
 
-Next implementation unit: Developer Resources storage/write contract and bridge, followed by the complete native reader/editor. Keep `/admin/docs` available until parity and cross-surface editing checks pass. Then Email Templates, provider configuration ownership, Backups, and Onboarding. This sequence does not retire or waive the other acceptance requirements.
+Next implementation unit: Developer Resources storage/write contract and bridge, followed by the complete native reader/editor. Keep `/admin/docs` available until parity and cross-surface editing checks pass. Then Email Templates, provider configuration ownership, and Backups. Onboarding now has a native Owner-only implementation; release evidence is recorded below. This sequence does not retire or waive the other acceptance requirements.
+
+## Client Stack Onboarding — September 19, 2026
+
+Native `/marketing/system/onboarding` implements the four existing Core operations using the generated dashboard API client. Explicit operation allowlisting and a live, attested Owner check protect the bridge. Existing Core evidence storage and authenticated attribution remain authoritative; no schema or copied evidence store is introduced.
+
+The page stays within the dashboard shell. Saved evidence can be read independently of generating a plan. Plan generation, DNS observation and readiness evaluation append evidence; they do not change provider DNS, hosting, or release authority. ALIAS/ANAME results explicitly require manual verification. Inputs and the last valid plan survive failures, duplicate clicks are guarded, and uncertain writes are never replayed automatically.
+
+Corrected two retained-admin defects alongside migration: DNS requests now project only the strict schema's fields, and apex values and `www` CNAME targets are independent (so an apex IP is never reused as a CNAME hostname). Legacy routes remain available during consolidation.
+
+Validation: Owner/non-owner bridge and attribution tests, exact transport allowlist tests, native UI tests for evidence-only reads, strict DNS projection and uncertain writes, navigation authorization tests, API/Core/dashboard type checks and production builds. Live acceptance uses read-only evidence retrieval; no synthetic production launch evidence is created.

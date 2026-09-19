@@ -2,6 +2,7 @@ import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import express from "express";
 import type { Server } from "node:http";
 const state = vi.hoisted(() => ({
+  onboardingRecord: vi.fn(), onboardingList: vi.fn(),
   careerWebhook:vi.fn(),careerDelete:vi.fn(),careerSave:vi.fn(),careerApplication:vi.fn(),careerResume:vi.fn(),careerReview:vi.fn(),careerJobs:vi.fn(),careerSettings:vi.fn(),careerCreate:vi.fn(),careerGet:vi.fn(),careerUpdate:vi.fn(),careerSlug:vi.fn(),
   headSnapshot: vi.fn(),headSave: vi.fn(),
   authenticate: vi.fn(),
@@ -65,6 +66,7 @@ vi.mock("../services/federation-runtime", () => ({
 }));
 vi.mock("../storage", () => ({
   storage: {
+    clientStackOnboarding: { record: state.onboardingRecord, list: state.onboardingList },
     settings: {getCategorySnapshot:state.headSnapshot,upsertSettings:state.headSave},
     users: { getUser: state.user },
     cmsMedia: { getMedia: state.mediaGet },
@@ -1170,4 +1172,29 @@ it("branding uploads are bounded prepared assets and never apply settings",async
  expect(state.mediaCreate).toHaveBeenCalledWith(expect.objectContaining({directory:"branding",uploadedBy:"linked",title:"Site logo",mimeType:"image/png"}));expect(state.headSave).not.toHaveBeenCalled();
  const calls=state.mediaCreate.mock.calls.length;
  expect((await upload("company_name")).status).toBe(400);expect((await upload("favicon_url","image/svg+xml")).status).toBe(400);expect((await upload("favicon_url","image/png",true)).status).not.toBe(201);expect(state.mediaCreate).toHaveBeenCalledTimes(calls);
+});
+
+it("onboarding is restricted to an active attested Owner on every operation", async () => {
+ for (const blocked of [
+  { active: true, role: "member", capabilities: ["marketing.content.pages"], ownerAttested: false },
+  { active: true, role: "owner", capabilities: [], ownerAttested: false },
+  { active: false, role: "owner", capabilities: [], ownerAttested: true },
+ ]) {
+  identity = blocked;
+  for (const [path,method] of [["domain-plan","POST"],["dns-verification","POST"],["readiness","POST"],["p1/evidence","GET"]])
+   expect((await request(`/website-system/onboarding/${path}`,method)).status).toBe(403);
+ }
+ expect(state.onboardingRecord).not.toHaveBeenCalled();expect(state.onboardingList).not.toHaveBeenCalled();
+});
+it("onboarding retains attributed append-only evidence and strict payloads", async () => {
+ identity = {active:true,role:"owner",ownerAttested:true,capabilities:[]};
+ state.onboardingRecord.mockResolvedValue({id:"evidence",recordedAt:"2026-09-19T00:00:00Z"});
+ state.onboardingList.mockResolvedValue([{id:"evidence",kind:"domain_plan"}]);
+ const payload = {stackId:"p1",records:[{fqdn:"example.com",type:"ALIAS",value:"public.example.com"}]};
+ const response = await request("/website-system/onboarding/dns-verification","POST",{},"/service",payload);
+ expect(response.status).toBe(200);expect((await response.json()).records[0].status).toBe("manual-review");
+ expect(state.onboardingRecord).toHaveBeenCalledWith(expect.objectContaining({stackId:"p1",recordedByUserId:"linked",kind:"dns_verification"}));
+ expect((await request("/website-system/onboarding/dns-verification","POST",{},"/service",{...payload,recordedByUserId:"spoof"})).status).toBe(400);
+ const saved = await request("/website-system/onboarding/p1/evidence");
+ expect(saved.status).toBe(200);expect(saved.headers.get("cache-control")).toBe("private, no-store");expect(state.onboardingList).toHaveBeenCalledWith("p1");
 });

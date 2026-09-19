@@ -531,3 +531,13 @@ test("document deletion retains its optimistic version through the bridge", asyn
     return Response.json({deleted:true});
   });
 });
+
+test("onboarding bridge only permits the four Owner-only operations", () => {
+ for (const [method,path] of [["POST","domain-plan"],["POST","dns-verification"],["POST","readiness"],["GET",":stackId/evidence"]]) {
+  const op=operation(method,`/website-system/onboarding/${path}`);
+  assert.equal(op.ownerOnly,true);assert.deepEqual(op.capabilities,[]);
+  assert.match(cmsDestination(op,{stackId:"p1-land-management"},{}), /website-system\/onboarding/);
+  if (method === "GET") assert.throws(()=>cmsDestination(op,{stackId:"../other"},{}));
+ }
+ assert.equal(cmsOperations.some(op=>op.path.startsWith("/website-system/onboarding")&&op.method==="DELETE"),false);
+});
