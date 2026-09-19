@@ -38,6 +38,11 @@ export class DocsStorage {
       await tx.execute(sql`SET LOCAL lock_timeout = '5s'`);
       await tx.execute(sql`LOCK TABLE docs IN SHARE ROW EXCLUSIVE MODE`);
       return work(tx);
+    }).catch((error: unknown) => {
+      if (error instanceof DocsConflictError) throw error;
+      // Database exceptions may embed SQL parameters, including private document
+      // bodies. The HTTP error logger must receive only a sanitized exception.
+      throw Object.assign(new Error("Document operation failed. Reload saved documents before retrying."), { statusCode: 503 });
     });
   }
 

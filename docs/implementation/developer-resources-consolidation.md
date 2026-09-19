@@ -15,7 +15,7 @@ Core prefix: `/api/integrations/business-center/cms/website-system/docs` (throug
 - DELETE `/:id`: `{ expectedVersion }`; the bridge explicitly forwards this DELETE body.
 - POST `/sync`: `{ expectedVersion }` using the collection version; returns `{ created, updated, total, version, docs }`. Source definitions are loaded before the database transaction.
 
-Unknown fields/queries, missing versions and invalid IDs fail validation. Core requires an active, attested Owner; Dashboard also requires Owner before issuing a grant. Results are private/no-store. Audit actions use fixed names and record only the document identifier/slug or operation description, never document bodies.
+Unknown fields/queries, missing versions and invalid IDs fail validation. Core requires an active, attested Owner; Dashboard also requires Owner before issuing a grant. Results are private/no-store. Unexpected database failures are replaced with a sanitized error before HTTP logging, so SQL parameters/document bodies cannot leak through an exception. Audit actions use fixed names and record only the document identifier/slug or operation description, never document bodies.
 
 ### Concurrency and durability
 

@@ -61,7 +61,7 @@ suite("document mutation atomicity on isolated PostgreSQL", () => {
   it("rolls back save and deletion when audit persistence fails", async () => {
     const doc = await store.createVersionedDoc(data(), audit);
     const invalid = {...audit,userId:"missing-actor"};
-    await expect(store.saveVersionedDoc(doc.id, data("one", "Changed"), doc.version, invalid)).rejects.toThrow();
+    await expect(store.saveVersionedDoc(doc.id, data("one", "Private body marker"), doc.version, invalid)).rejects.toMatchObject({ statusCode:503, message:"Document operation failed. Reload saved documents before retrying." });
     await expect(store.deleteVersionedDoc(doc.id, doc.version, invalid)).rejects.toThrow();
     expect((await store.getVersionedDocs()).docs[0].version).toBe(doc.version);
     await store.deleteVersionedDoc(doc.id, doc.version, audit);
