@@ -1,3 +1,22 @@
+## Verified foundation release — September 19
+
+Runtime `9926fc01fd6d986d7a7247595a1f49162447bdf2` is on main and the
+consolidation branch. Railway SUCCESS:
+- Core `88e0915f-90ca-48cf-8464-5999773adad7`
+- Website `4f3402cd-4477-48a2-b559-9f1bed3f02be`
+- Dashboard `69c6f77d-7eb4-4bb0-be9c-77272864c6d6`
+
+Core logs confirm P1 migrations completed at2026-09-19T22:06:38.106Z.
+Core readiness and dashboard health pass; public Blog SSR retains all5 original
+article links. Authenticated refreshed Blog list shows original tools and its
+existing empty CMS catalog. No records were adopted or published.
+
+A preexisting open tab briefly went blank on navigation because its old bundle
+requested removed `/assets/BlogManager-CAoRQ0DH.css`; hard reload recovered. A bounded
+stale-lazy-asset recovery task is now active, with no automatic draft-discarding
+reload authorized. This deployment finding remains open until that fix is tested.
+Disposable Blog PostgreSQL container was removed after validation. Goal stays active.
+
 ## September 19 continuation — Blog recovery and crew browser evidence
 
 Crew offline browser acceptance is committed and pushed at `bfb9336d` to main and

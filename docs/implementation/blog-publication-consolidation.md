@@ -122,3 +122,33 @@ Rollback for this unexposed increment is the previously verified runtime revisio
 leave additive empty tables in place, do not drop history. Once adoption/publication
 starts, rollback and historical-archive compatibility require the explicit cutover
 and reconciliation acceptance above.
+
+## Concrete cutover touchpoints
+
+The next coordinated change must include both editor controllers
+(`artifacts/p1-dashboard/src/marketing/BlogManager.tsx` and retained
+`client/src/features/admin/cms/cms-blog-editor-page.tsx`), the native
+`useBlogReservation.ts`, retained Blog list deletion, and the Core CRUD router.
+The native bridge is `artifacts/api-server/src/dashboard/marketing-cms.transport.ts`;
+Core capability forwarding is in `business-center-cms.routes.ts`.
+
+The approved implementation direction is a read envelope preserving existing
+editorial field names plus version, revision pointers, visibility, publication
+generation and authoritative timestamps. Mutations must carry expectedVersion,
+editorInstanceId and leaseId, with explicit publication/withdrawal/restore actions.
+A display-only `isPublished` projection must not turn ordinary draft save into an
+implicit publication. New-post creation must create the legacy identity and initial
+publication snapshot atomically rather than leave a partially initialized post.
+
+`storage/blog.storage.ts` also writes posts during taxonomy rename/delete and
+`publishScheduledPosts`; `services/scheduled-publish.service.ts` invokes the latter.
+They cannot be left writing around the new versioned editor. Scheduling should pin
+an exact immutable revision and due instant; later draft edits must not silently
+change scheduled publication. The worker needs its own versioned system transition,
+not a forged editor lease. Schedule cancellation/replacement must be race-tested.
+This requires an explicit additive scheduling contract before implementation.
+
+Public Blog list/detail and comment visibility in `server/routes/blog.routes.ts`
+must use the same publication authority. Existing website articles and index in
+`artifacts/p1-website/src/pages/blog/` remain authoritative until reviewed import,
+URL ownership transfer and crawler/public-render equivalence are accepted.
