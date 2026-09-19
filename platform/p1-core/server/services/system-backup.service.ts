@@ -225,7 +225,7 @@ async function querySequenceColumns(client: PoolClient) {
       pg_get_serial_sequence(format('%I.%I', cols.table_schema, cols.table_name), cols.column_name) AS "sequenceName"
     FROM information_schema.columns cols
     WHERE cols.table_schema = 'public'
-      AND cols.column_default LIKE 'nextval(%'
+      AND (cols.column_default LIKE 'nextval(%' OR cols.is_identity = 'YES')
   `);
 
   return result.rows.filter((row) => Boolean(row.sequenceName));
@@ -537,14 +537,23 @@ async function restoreBackupSnapshotWithClient(
             return `(${rowPlaceholders.join(", ")})`;
           });
 
+          // Archive IDs must survive GENERATED ALWAYS identity columns (and FK links).
+          // PostgreSQL permits this clause for ordinary/BY DEFAULT columns too:
+          // https://www.postgresql.org/docs/18/sql-insert.html
           await client.query(
-            `INSERT INTO public.${quoteIdent(tableName)} (${columns.map(quoteIdent).join(", ")}) VALUES ${placeholders.join(", ")}`,
+            `INSERT INTO public.${quoteIdent(tableName)} (${columns.map(quoteIdent).join(", ")}) OVERRIDING SYSTEM VALUE VALUES ${placeholders.join(", ")}`,
             values,
           );
         }
       }
 
-      for (const sequence of snapshot.sequences) {
+      // Older archives omitted identity sequences because they have no nextval default.
+      // Discover owned sequences for restored tables so their next insert cannot reuse IDs.
+      const restoredNames = new Set(snapshot.tables.map((table) => table.name));
+      const discoveredSequences = (await querySequenceColumns(client)).filter((sequence) => restoredNames.has(sequence.tableName));
+      const sequences = new Map(snapshot.sequences.map((sequence) => [sequence.sequenceName, sequence]));
+      for (const sequence of discoveredSequences) sequences.set(sequence.sequenceName, sequence);
+      for (const sequence of sequences.values()) {
         await client.query(
           `SELECT setval($1::regclass, COALESCE((SELECT MAX(${quoteIdent(sequence.columnName)})::bigint FROM public.${quoteIdent(sequence.tableName)}), 1), COALESCE((SELECT MAX(${quoteIdent(sequence.columnName)}) IS NOT NULL FROM public.${quoteIdent(sequence.tableName)}), false))`,
           [sequence.sequenceName],

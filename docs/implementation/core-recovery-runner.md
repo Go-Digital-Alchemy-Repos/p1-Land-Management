@@ -1,6 +1,6 @@
 # Core recovery runner and remaining retirement gates
 
-September 19, 2026. This checkpoint is a code review and synthetic runner validation, not a completed P1 Core/media restore or permission to retire `/admin`.
+September 19, 2026. The historical P1 archive now passes isolated row/sequence recovery; see [actual evidence](core-recovery-acquisition-2026-09-19.md). Application/media recovery and retirement remain incomplete.
 
 ## Corrected runner
 
@@ -19,9 +19,14 @@ python3 platform/p1-core/script/verify-backup-recovery.py \
 
 The ID above is illustrative: use the independently verified P1 deployment identity matching the snapshot, not a guessed value. For a reviewed historical snapshot genuinely lacking identity, replace `--expected-stack-id ...` with `--allow-legacy-backup`. The two options are mutually exclusive. The older upstream recovery document's command without either option is superseded by these commands.
 
-The runner creates its own temporary PostgreSQL 16 container and loopback-only port, strips inherited provider/application configuration, runs candidate migrations, restores using the actual application function, compares original-column row multisets and reruns migrations/comparisons. It never starts application/worker processes. Only aggregate results are reported; child output is withheld. Cleanup removes the owned container/volumes. The original archive is unchanged. This does not verify application startup or establish that PostgreSQL 16 matches the current production major version; verify that before choosing the final rehearsal fixture.
+The runner now defaults to `postgres:18-alpine` and accepts `--postgres-image` for a reviewed production-compatible image or immutable digest. The parent verified that Core's connection binds to the Railway PostgreSQL 18 service without exposing credentials. Evidence records the resolved PostgreSQL image ID/version, runtime image ID, lockfile hash, source/migration hashes and original archive hash.
 
-Validation: `python3 platform/p1-core/script/test_verify_backup_recovery.py` passed five synthetic offline tests: exact-match byte preservation, mismatch rejection including legacy override attempts, explicit legacy acknowledgement, rejection before any subprocess/database activity, and actual P1 SQL/journal fingerprint coverage. No real archive or database was restored in this checkpoint.
+Before restoration, a dedicated Node 22 Linux runtime image is built using the existing Core `package-lock.json` and `npm ci --ignore-scripts`. This preparation requires registry/network access; it occurs before the isolated rehearsal. Only package manifests, tsconfig, and allowlisted TypeScript/SQL/JSON beneath server/shared/p1-migrations enter the temporary build context. No archive, `.env`, host node_modules, or provider environment enters that image. This avoids macOS native dependencies in Linux. Source symlinks are rejected.
+
+PostgreSQL runs on a dedicated Docker `--internal` network, with no host-published ports and no install/pull at runtime. The child shares that exact PostgreSQL container network namespace (`--network container:<owned fixture>`) and connects through `127.0.0.1` in test mode. This preserves the application’s non-loopback TLS enforcement rather than weakening it or inventing Railway identity. Before starting the child, the runner verifies PostgreSQL has only the owned internal attachment and the child’s NetworkMode matches the exact immutable ID resolved from the owned fixture. A synthetic Docker create/inspect check verified that Docker normalizes the supplied container name to its ID; missing/incorrect IDs fail before child execution. The child has read-only root filesystem, dropped capabilities and only the private archive mounted read-only; synthetic database/session values are supplied explicitly. It never starts HTTP/application/worker processes. Current migrations run first, then the real restore service and row comparisons; sequence values and is_called state are independently checked against restored MAX values. Migrations and comparisons run again. This repeats the current migration ledger created before restore; it does not prove previous-image compatibility or an application startup/rollback. Aggregate output suppresses raw logs and database content. Cleanup verifies removal of the child, database/volumes, internal network and runtime image.
+
+Validation: eleven synthetic offline tests pass, covering provenance, unchanged input bytes, migration fingerprinting, source allowlist/symlinks and Docker isolation command construction. Python compile also passes. The separate genuine-archive rehearsal also passed Linux runtime, row and catalog-sequence checks; see the evidence linked above. Preparation failures remain fail-closed with a stage-only report; no raw logs are published. The original backup is never rewritten.
+
 
 ## Evidence still required
 

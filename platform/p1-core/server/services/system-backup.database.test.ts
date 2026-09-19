@@ -117,6 +117,59 @@ describe.skipIf(!testUrl)("system backup disposable PostgreSQL", () => {
     await pool.end();
   });
 
+  it("restores GENERATED ALWAYS identity IDs, foreign keys and the next generated value", async () => {
+    await pool.query("DROP TABLE z_children, a_parents");
+    await pool.query("CREATE TABLE a_parents (id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY, label text NOT NULL)");
+    await pool.query("CREATE TABLE z_children (id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY, parent_id integer REFERENCES a_parents(id))");
+    await pool.query("INSERT INTO a_parents (id,label) OVERRIDING SYSTEM VALUE VALUES (41,'archived parent')");
+    await pool.query("INSERT INTO z_children (id,parent_id) OVERRIDING SYSTEM VALUE VALUES (73,41)");
+    await runSystemBackup();
+    const snapshot = exportedSnapshot();
+    expect(snapshot.sequences.map(sequence => sequence.tableName).sort()).toEqual(["a_parents", "z_children"]);
+    // Historical archives have the same rows but omitted GENERATED ALWAYS sequences.
+    snapshot.sequences = [];
+    await pool.query("UPDATE a_parents SET label='changed after backup'");
+    await restoreBackupSnapshot(snapshot);
+    expect((await pool.query("SELECT * FROM a_parents")).rows).toEqual([{ id: 41, label: "archived parent" }]);
+    expect((await pool.query("SELECT * FROM z_children")).rows).toEqual([{ id: 73, parent_id: 41 }]);
+    expect((await pool.query("INSERT INTO a_parents(label) VALUES ('next') RETURNING id")).rows).toEqual([{ id: 42 }]);
+    expect((await pool.query("INSERT INTO z_children(parent_id) VALUES (42) RETURNING id,parent_id")).rows).toEqual([{ id: 74, parent_id: 42 }]);
+    await assertLockAvailable();
+  });
+
+  it("restores an empty ALWAYS identity table with next generated value one", async () => {
+    await pool.query("DROP TABLE z_children, a_parents");
+    await pool.query("CREATE TABLE a_parents (id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY)");
+    await runSystemBackup();
+    const snapshot = exportedSnapshot();
+    snapshot.sequences = [];
+    await pool.query("INSERT INTO a_parents DEFAULT VALUES");
+    await restoreBackupSnapshot(snapshot);
+    expect((await pool.query("SELECT * FROM a_parents")).rows).toEqual([]);
+    expect((await pool.query("INSERT INTO a_parents DEFAULT VALUES RETURNING id")).rows).toEqual([{ id: 1 }]);
+    await assertLockAvailable();
+  });
+
+  it("rolls back identity rows and generators when restore violates a foreign key", async () => {
+    await pool.query("DROP TABLE z_children, a_parents");
+    await pool.query("CREATE TABLE a_parents (id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY)");
+    await pool.query("CREATE TABLE z_children (id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY, parent_id integer REFERENCES a_parents(id))");
+    await pool.query("INSERT INTO a_parents DEFAULT VALUES");
+    await pool.query("INSERT INTO z_children(parent_id) VALUES (1)");
+    await runSystemBackup();
+    const snapshot = exportedSnapshot();
+    // Advance the live generators beyond the archived values before the failed restore.
+    await pool.query("INSERT INTO a_parents DEFAULT VALUES");
+    await pool.query("INSERT INTO z_children(parent_id) VALUES (2)");
+    snapshot.tables.find(table => table.name === "z_children")!.rows = [{ id: 73, parent_id: 999 }];
+    await expect(restoreBackupSnapshot(snapshot)).rejects.toThrow("foreign key constraint");
+    expect((await pool.query("SELECT * FROM a_parents ORDER BY id")).rows).toEqual([{ id: 1 }, { id: 2 }]);
+    expect((await pool.query("SELECT * FROM z_children ORDER BY id")).rows).toEqual([{ id: 1, parent_id: 1 }, { id: 2, parent_id: 2 }]);
+    expect((await pool.query("INSERT INTO a_parents DEFAULT VALUES RETURNING id")).rows).toEqual([{ id: 3 }]);
+    expect((await pool.query("INSERT INTO z_children(parent_id) VALUES (3) RETURNING id")).rows).toEqual([{ id: 3 }]);
+    await assertLockAvailable();
+  });
+
   it("exports and restores one snapshot while a parent/child transaction commits between table reads", async () => {
     const writer = await pool.connect();
     let backup: ReturnType<typeof runSystemBackup> | undefined;
