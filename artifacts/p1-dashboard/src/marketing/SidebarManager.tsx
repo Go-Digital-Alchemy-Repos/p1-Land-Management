@@ -1,4 +1,8 @@
-import { useEffect, useState } from "react";
+import { SidebarListPresentation } from "../../../../platform/p1-core/client/src/components/shared/sidebar-list-presentation";
+import { SidebarEditorPresentation } from "../../../../platform/p1-core/client/src/components/shared/sidebar-editor-presentation";
+import type { SidebarWidget } from "../../../../platform/p1-core/shared/schema/cms-sidebars";
+import { sidebarPrimitives } from "./sidebar-primitives";
+import { useEffect, useState, useRef } from "react";
 import {
   listMarketingSidebars,
   getMarketingSidebar,
@@ -26,14 +30,6 @@ const labels: Record<MarketingSidebarWidget["type"], string> = {
   "tag-cloud": "Tag cloud",
   "custom-html": "Custom HTML",
 };
-function formEligible(
-  form: MarketingSidebarReferences["forms"][number],
-  type: MarketingSidebarWidget["type"],
-) {
-  return type === "newsletter"
-    ? form.kind === "newsletter" || form.slug === "newsletter-signup"
-    : form.kind !== "application";
-}
 function newWidget(
   type: MarketingSidebarWidget["type"],
 ): MarketingSidebarWidget {
@@ -87,8 +83,8 @@ function SidebarEditor({
     [forms, setForms] = useState<MarketingSidebarReferences["forms"]>([]),
     [error, setError] = useState(""),
     [notice, setNotice] = useState(""),
-    [busy, setBusy] = useState(false),
-    [type, setType] = useState<MarketingSidebarWidget["type"]>("recent-posts");
+    [busy, setBusy] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
   const lock = useSidebarReservation(id === "new" ? null : id);
   const dirty = JSON.stringify(draft) !== JSON.stringify(saved);
   useCmsUnsavedChanges(dirty);
@@ -153,284 +149,113 @@ function SidebarEditor({
       return { ...current, widgets };
     });
   }
+  async function save() {
+    if (!draft || busy || !lock.owned) return;
+    setBusy(true);
+    setError("");
+    setNotice("");
+    try {
+      await lock.verify();
+      const result =
+        id === "new"
+          ? await createMarketingSidebar(draft)
+          : await updateMarketingSidebar(id, draft);
+      setDraft(result);
+      setSaved(result);
+      setNotice("Sidebar saved.");
+      if (id === "new") onCreated(result.id);
+    } catch (e) {
+      setError(message(e));
+    } finally {
+      setBusy(false);
+    }
+  }
   return (
-    <section className="sidebar-editor">
-      <button disabled={busy} onClick={close}>
-        Back to sidebars
-      </button>
-      <h2>{id === "new" ? "New sidebar" : draft.name}</h2>
+    <section className="sidebar-editor sidebar-presentation">
       {error && <p role="alert">{error}</p>}
       {notice && <p role="status">{notice}</p>}
-      {!lock.owned && (
-        <aside>
-          <p>
-            {lock.error ||
-              `This sidebar is reserved${lock.holder ? ` by ${lock.holder}` : ""}. Your changes remain here.`}
-          </p>
-          <button onClick={() => void lock.acquire()}>Check reservation</button>
-        </aside>
-      )}
       <form
-        onSubmit={async (e) => {
-          e.preventDefault();
-          setBusy(true);
-          setError("");
-          setNotice("");
-          try {
-            await lock.verify();
-            const result =
-              id === "new"
-                ? await createMarketingSidebar(draft)
-                : await updateMarketingSidebar(id, draft);
-            setDraft(result);
-            setSaved(result);
-            setNotice("Sidebar saved.");
-            if (id === "new") onCreated(result.id);
-          } catch (e) {
-            setError(message(e));
-          } finally {
-            setBusy(false);
-          }
+        ref={formRef}
+        onSubmit={(event) => {
+          event.preventDefault();
+          void save();
         }}
       >
-        <fieldset disabled={busy || !lock.owned}>
-          <label>
-            Sidebar name
-            <input
-              required
-              value={draft.name}
-              onChange={(e) => setDraft({ ...draft, name: e.target.value })}
-            />
-          </label>
-          <label>
-            Description
-            <textarea
-              value={draft.description || ""}
-              onChange={(e) =>
-                setDraft({ ...draft, description: e.target.value })
-              }
-            />
-          </label>
-          <label className="sidebar-check">
-            <input
-              type="checkbox"
-              checked={draft.isDefault}
-              onChange={(e) =>
-                setDraft({ ...draft, isDefault: e.target.checked })
-              }
-            />
-            Default sidebar
-          </label>
-          <p>
-            The default is used where no specific sidebar is selected. Saving a
-            new default replaces the previous default.
-          </p>
-          <div className="sidebar-widgets">
-            {draft.widgets.map((widget, index) => (
-              <article key={widget.id}>
-                <h3>
-                  {index + 1}. {labels[widget.type]}
-                </h3>
-                <div className="sidebar-actions">
-                  <button
-                    type="button"
-                    disabled={index === 0}
-                    aria-label={`Move widget ${index + 1} up`}
-                    onClick={() => move(index, -1)}
-                  >
-                    Move up
-                  </button>
-                  <button
-                    type="button"
-                    disabled={index === draft.widgets.length - 1}
-                    aria-label={`Move widget ${index + 1} down`}
-                    onClick={() => move(index, 1)}
-                  >
-                    Move down
-                  </button>
-                  <button
-                    type="button"
-                    aria-label={`Remove widget ${index + 1}`}
-                    onClick={() => {
-                      if (confirm("Remove this widget from the sidebar draft?"))
-                        setDraft({
-                          ...draft,
-                          widgets: draft.widgets.filter((_, i) => i !== index),
-                        });
-                    }}
-                  >
-                    Remove
-                  </button>
-                </div>
-                <label>
-                  Widget title
-                  <input
-                    value={widget.title}
-                    onChange={(e) =>
-                      widgetChange(index, { ...widget, title: e.target.value })
-                    }
-                  />
-                </label>
-                <label>
-                  Widget type
-                  <select
-                    aria-label={`Widget ${index + 1} type`}
-                    value={widget.type}
-                    onChange={(e) => {
-                      const type = e.target
-                        .value as MarketingSidebarWidget["type"];
-                      widgetChange(index, { ...widget, type });
-                    }}
-                  >
-                    {Object.entries(labels).map(([value, label]) => (
-                      <option key={value} value={value}>
-                        {label}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                {widget.type === "recent-posts" && (
-                  <label>
-                    Number of posts
-                    <input
-                      type="number"
-                      required
-                      min={1}
-                      max={10}
-                      step={1}
-                      value={String(widget.settings.limit ?? 5)}
-                      onChange={(e) =>
-                        widgetChange(index, {
-                          ...widget,
-                          settings: {
-                            ...widget.settings,
-                            limit: Number(e.target.value),
-                          },
-                        })
-                      }
-                    />
-                  </label>
-                )}
-                {(widget.type === "form" || widget.type === "newsletter") && (
-                  <label>
-                    Assigned form
-                    <select
-                      aria-label={`Widget ${index + 1} assigned form`}
-                      value={String(widget.settings.formSlug || "")}
-                      onChange={(e) =>
-                        widgetChange(index, {
-                          ...widget,
-                          settings: {
-                            ...widget.settings,
-                            formSlug: e.target.value,
-                          },
-                        })
-                      }
-                    >
-                      <option value="">Choose a form</option>
-                      {forms
-                        .filter((f) => formEligible(f, widget.type))
-                        .map((f) => (
-                          <option key={f.id} value={f.slug}>
-                            {f.name}
-                          </option>
-                        ))}
-                      {Boolean(widget.settings.formSlug) &&
-                        !forms.some(
-                          (f) =>
-                            f.slug === widget.settings.formSlug &&
-                            formEligible(f, widget.type),
-                        ) && (
-                          <option value={String(widget.settings.formSlug)}>
-                            Saved form: {String(widget.settings.formSlug)}
-                          </option>
-                        )}
-                    </select>
-                  </label>
-                )}
-                {(widget.type === "form" || widget.type === "newsletter"
-                  ? ["description", "buttonText"]
-                  : widget.type === "callout"
-                    ? ["body", "buttonText", "buttonUrl"]
-                    : widget.type === "custom-html"
-                      ? ["html"]
-                      : []
-                ).map((key) => (
-                  <label key={key}>
-                    {
-                      (
-                        {
-                          description: "Widget description",
-                          buttonText: "Button text",
-                          body: "Body",
-                          buttonUrl: "Button URL",
-                          html: "HTML",
-                        } as Record<string, string>
-                      )[key]
-                    }
-                    {["description", "body", "html"].includes(key) ? (
-                      <textarea
-                        rows={key === "html" ? 7 : 3}
-                        value={String(widget.settings[key] ?? "")}
-                        onChange={(e) =>
-                          widgetChange(index, {
-                            ...widget,
-                            settings: {
-                              ...widget.settings,
-                              [key]: e.target.value,
-                            },
-                          })
-                        }
-                      />
-                    ) : (
-                      <input
-                        value={String(widget.settings[key] ?? "")}
-                        onChange={(e) =>
-                          widgetChange(index, {
-                            ...widget,
-                            settings: {
-                              ...widget.settings,
-                              [key]: e.target.value,
-                            },
-                          })
-                        }
-                      />
-                    )}
-                  </label>
-                ))}
-              </article>
-            ))}
-          </div>
-          <label>
-            Add widget type
-            <select
-              aria-label="Add widget type"
-              value={type}
-              onChange={(e) =>
-                setType(e.target.value as MarketingSidebarWidget["type"])
-              }
-            >
-              {Object.entries(labels).map(([value, label]) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <button
-            type="button"
-            onClick={() =>
+        <SidebarEditorPresentation
+          ui={sidebarPrimitives}
+          isNew={id === "new"}
+          name={draft.name}
+          description={draft.description || ""}
+          isDefault={draft.isDefault}
+          widgets={draft.widgets as SidebarWidget[]}
+          forms={forms}
+          busy={busy}
+          readOnly={!lock.owned}
+          preserveSettingsOnTypeChange
+          defaultHelp="The default is used where no specific sidebar is selected. Saving a new default replaces the previous default."
+          setName={(name) => setDraft({ ...draft, name })}
+          setDescription={(description) => setDraft({ ...draft, description })}
+          setIsDefault={(isDefault) => setDraft({ ...draft, isDefault })}
+          onSave={() => formRef.current?.requestSubmit()}
+          onClose={close}
+          updateWidget={(widgetId, updates) => {
+            if (busy || !lock.owned) return;
+            const index = draft.widgets.findIndex(
+              (widget) => widget.id === widgetId,
+            );
+            if (index >= 0)
+              widgetChange(index, {
+                ...draft.widgets[index],
+                ...updates,
+              } as MarketingSidebarWidget);
+          }}
+          moveWidget={(widgetId, direction) => {
+            if (!busy && lock.owned)
+              move(
+                draft.widgets.findIndex((widget) => widget.id === widgetId),
+                direction,
+              );
+          }}
+          addWidget={(type) => {
+            if (!busy && lock.owned)
               setDraft({
                 ...draft,
                 widgets: [...draft.widgets, newWidget(type)],
-              })
-            }
-          >
-            Add widget
-          </button>
-          <button type="submit">Save sidebar</button>
-        </fieldset>
+              });
+          }}
+          onRemoveWidget={(widgetId) => {
+            if (
+              !busy &&
+              lock.owned &&
+              confirm("Remove this widget from the sidebar draft?")
+            )
+              setDraft({
+                ...draft,
+                widgets: draft.widgets.filter(
+                  (widget) => widget.id !== widgetId,
+                ),
+              });
+          }}
+          reservation={
+            !lock.owned ? (
+              <aside>
+                <p>
+                  {lock.error ||
+                    `This sidebar is reserved${lock.holder ? ` by ${lock.holder}` : ""}. Your changes remain here.`}
+                </p>
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={() => void lock.acquire()}
+                >
+                  Check reservation
+                </button>
+              </aside>
+            ) : null
+          }
+        />
       </form>
+
       {id !== "new" && (
         <button
           disabled={busy || !lock.owned}
@@ -491,47 +316,29 @@ export default function SidebarManager() {
       />
     );
   return (
-    <section className="sidebar-manager">
-      <p>
-        Reusable widget sidebars for website content. Assign them from the
-        relevant page or Blog editor.
-      </p>
+    <section className="sidebar-manager sidebar-presentation">
       {error && <p role="alert">{error}</p>}
-      <button onClick={() => setEditing("new")}>New sidebar</button>
-      <label>
-        Search sidebars
-        <input
-          type="search"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-      </label>
-      {loading ? (
-        <p role="status">Loading sidebars…</p>
-      ) : (
-        <div className="sidebar-widgets">
-          {rows
-            .filter((r) =>
-              `${r.name} ${r.description}`
-                .toLowerCase()
-                .includes(search.toLowerCase()),
-            )
-            .map((row) => (
-              <article key={row.id}>
-                <h2>{row.name}</h2>
-                <p>{row.description}</p>
-                <p>
-                  {row.widgets?.length || 0} widgets
-                  {row.isDefault ? " · Default" : ""}
-                </p>
-                <button onClick={() => setEditing(row.id)}>
-                  Edit {row.name}
-                </button>
-              </article>
-            ))}
-          {!rows.length && <p>No sidebars yet.</p>}
-        </div>
-      )}
+      <SidebarListPresentation
+        ui={sidebarPrimitives}
+        sidebars={rows.filter((row) =>
+          `${row.name} ${row.description}`
+            .toLowerCase()
+            .includes(search.toLowerCase()),
+        )}
+        isLoading={loading}
+        onCreate={() => setEditing("new")}
+        onEdit={setEditing}
+        tools={
+          <label>
+            Search sidebars
+            <input
+              type="search"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+            />
+          </label>
+        }
+      />
     </section>
   );
 }

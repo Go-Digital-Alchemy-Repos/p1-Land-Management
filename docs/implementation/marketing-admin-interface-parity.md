@@ -70,7 +70,8 @@ not a claim of live functional testing:
 | 1 | Colors | Restored and live at `7733706`: three groups, descriptions and original palette preview. |
 | 1 | Forms | Restored and live at `7ea1fee`: shared Builder/Entries, library, canvas and inspector; native delivery monitoring retained. |
 | 1 | CMS Pages | Restored and live at `872d2bb7`: shared list/templates/builder; exact-instance and version-fenced Page writes. |
-| 2 | Menus | Theme Locations overview and original menu cards/editor (`cms-menus-page.tsx`); existing hierarchy/drag support must survive. |
+| 2 | Menus | Shared Theme Locations/cards/nested editor live at `effa8d77`; generic public consumer remains open. |
+| 2 | Blog | Shared list and Content/Layout/SEO editor live at `effa8d77`; dynamic public delivery and server concurrency remain open. |
 | 2 | Media | Restored and live at `4ee1a90`: shared library, details, upload and crop dialogs; optional multiselect caller parity remains open. |
 | 2 | Galleries | Restored and live at `78fb0e72`: shared list, Details/Images/Display/Preview cards, upload and modal preview. |
 | 2 | SEO | Restored at `7714ccb9`; truthful empty-audit correction live at `78fb0e72`. |
@@ -78,7 +79,7 @@ not a claim of live functional testing:
 | Recovery gate | Backups | Restore control is missing; release only after recovery acceptance, not as an unreviewed cosmetic port. |
 
 Shared Design navigation, Social, Branding, Typography, Colors, Modules, Forms,
-Media, Pages, Sections, SEO, Website, Galleries and Head Tags have verified releases. Remaining gaps above stay open; the retained admin must stay available.
+Media, Pages, Sections, SEO, Website, Galleries, Head Tags, Blog and Menus have verified releases. Remaining gaps above stay open; the retained admin must stay available.
 
 ## Typography increment and Social live verification
 
@@ -344,7 +345,7 @@ Website System tools. This increment does not establish complete Marketing parit
   controls are absent; preserve existing sibling drag and server-fenced edits.
 - Team: restore member dialog/cards and upload/crop; keep dirty-close guards.
 - Sidebars: restore Details/Widgets cards, icons, help and empty states; preserve
-  all seven widget types and unavailable references.
+  all eight widget types (including Form) and unavailable references. Advisory reservations do not provide server CAS.
 - Careers: restore job dialog/table and application list/detail workspace; preserve
   current review/résumé grants and deliberate UTC conversion.
 - Events: restore original tabs/filter/cards, image/focal, speaker bio/photo and tags.
@@ -405,3 +406,45 @@ production publication, upload, or concurrent-editor acceptance evidence.
 
 Remaining tools, dynamic Blog delivery, generic public menu consumption, Blog
 server concurrency and full publication/recovery acceptance remain open.
+
+### Blog/Menus release verification
+
+Revision `effa8d77ed0fc625ba1e142ca1a3ead907f228c7` is on main and the task
+branch. Railway dashboard `270cc051-1560-44e1-800e-1881e1c0fedc`, Core
+`70be8e31-67b4-4a6e-96ff-39f7bff8cb4a` and website
+`5a7b5019-9253-4551-894c-80d8c4823761` reached SUCCESS. Authenticated
+read-only live Blog and Menus controls loaded against empty real catalogs. No
+production post/menu writes were used as evidence. Team and Sidebars are next.
+
+## Team and Sidebars shared presentation — September 19
+
+Both retained and native hosts now consume shared original Team cards/dialog fields
+and Sidebars Details/Widgets cards, list, help and empty-state presentation. Team
+keeps staged photo uploads/picker and dirty/busy handling. Its native modal returns
+focus to the opener; nested media Escape returns to the photo action without
+closing the member editor. A black-on-black library ghost button found in browser
+review was corrected with Team-scoped variant styling.
+
+Sidebars preserves all eight widget types, unknown settings, unavailable/ineligible
+saved form references and existing reservation-protected edit/delete behavior.
+Its native list intentionally retains deletion inside the editor. No schema, auth
+or write-version contract changed. Team and Sidebars still have preexisting
+unversioned/uncertain-create acceptance gaps; these are not closed by UI reuse.
+
+Parent independently ran seven Team and six Sidebar adapter tests successfully.
+Independent review found no new blocker. Synthetic loopback browser checks passed
+Team draft save/readback, nested picker Escape/focus and clean close focus return;
+Sidebar unavailable-reference preservation, add Callout/save/relist and mobile
+390px layout. No production records or files were written. Upload/crop transfer
+and production publication are not covered by these browser checks. Updated the
+existing Team browser script selectors and checked its syntax; it was not run as
+a separate browser suite. Final isolated build evidence is recorded at release.
+
+Public menu integration decisions are captured in
+[the public-menu contract](public-website-menus-plan.md); that consumer remains
+unimplemented and is not implied by the restored Menus editor.
+
+Final Team/Sidebars gate: isolated HEAD `effa8d77` plus 21 exact hashed overlays
+passed both clean typechecks (`--incremental false`), both production builds and
+the restricted dashboard build without Core node_modules. Source hashes matched
+the tested manifest. Existing build chunk-size warnings remain.

@@ -85,7 +85,7 @@ const assert = require("node:assert/strict");
     });
     await page.goto("http://127.0.0.1:4347/marketing/content/team");
     await page
-      .getByRole("button", { name: "Add team member", exact: true })
+      .getByRole("button", { name: "Add Team Member", exact: true })
       .click();
     await page.getByLabel("Name", { exact: true }).fill("Sample member");
     await page.getByLabel("Role / title", { exact: true }).fill("Operations");
@@ -119,7 +119,7 @@ const assert = require("node:assert/strict");
     assert.match(biography,/data-align="right"/);assert.match(biography,/src="\/uploads\/cms\/embedded.png"/);
     await page.getByRole("button",{name:"Visual",exact:true}).click();
     await page
-      .getByRole("button", { name: "Choose team photo", exact: true })
+      .getByRole("button", { name: "Pick from library", exact: true })
       .click();
     await page
       .getByRole("dialog", { name: "Choose team photo" })
@@ -135,18 +135,18 @@ const assert = require("node:assert/strict");
     );
     page.once("dialog", (d) => d.dismiss());
     await page
-      .getByRole("button", { name: "Cancel editing", exact: true })
+      .getByRole("button", { name: "Cancel", exact: true })
       .click();
     assert.equal(
       await page.getByLabel("Name", { exact: true }).inputValue(),
       "Sample member",
     );
     await page
-      .getByLabel("Member status", { exact: true })
+      .getByLabel("Status", { exact: true })
       .selectOption("published");
     page.once("dialog", (d) => d.accept());
     await page
-      .getByRole("button", { name: "Save member", exact: true })
+      .getByRole("button", { name: "Save Member", exact: true })
       .click();
     await page
       .getByRole("button", { name: "Edit Sample member", exact: true })
@@ -161,10 +161,10 @@ const assert = require("node:assert/strict");
       .getByRole("heading", { name: "Field leadership", exact: true })
       .waitFor();
     await page
-      .getByLabel("Member status", { exact: true })
+      .getByLabel("Status", { exact: true })
       .selectOption("archived");
     await page
-      .getByRole("button", { name: "Save member", exact: true })
+      .getByRole("button", { name: "Save Member", exact: true })
       .click();
     await page.getByText("archived", { exact: true }).waitFor();
     assert.equal(saved.status, "archived");
@@ -175,7 +175,7 @@ const assert = require("node:assert/strict");
       .click();
     assert.equal(
       await page
-        .getByRole("button", { name: "Choose team photo", exact: true })
+        .getByRole("button", { name: "Pick from library", exact: true })
         .count(),
       0,
     );

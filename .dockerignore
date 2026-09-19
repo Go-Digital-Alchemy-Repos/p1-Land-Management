@@ -144,3 +144,11 @@ platform/p1-core/client/src/components/ui/*
 !platform/p1-core/client/src/components/shared/menu-locations-presentation.tsx
 !platform/p1-core/client/src/components/shared/menu-card-presentation.tsx
 !platform/p1-core/client/src/components/shared/menu-presentation.utilities.css
+
+!platform/p1-core/client/src/components/shared/team-admin-presentation.tsx
+
+!platform/p1-core/client/src/components/shared/sidebar-list-presentation.tsx
+
+!platform/p1-core/client/src/components/shared/sidebar-editor-presentation.tsx
+
+!platform/p1-core/client/src/components/shared/sidebar-presentation.utilities.css

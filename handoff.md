@@ -1,3 +1,50 @@
+## Team/Sidebars accepted release candidate — September 19
+
+Shared original Team cards/dialog and Sidebar Details/Widgets interfaces passed
+13 adapter tests, independent review, desktop/mobile synthetic browser checks,
+clean Core/dashboard typechecks, both isolated builds and restricted dashboard
+packaging. Runtime sources are frozen and accepted for release; production
+verification follows the commit. Parent corrected Team library-button contrast,
+verified nested dialog Escape/focus and saved a synthetic member draft. Sidebar
+Form reference preservation and Callout add/save/relist passed. No production
+content was modified. Existing unversioned-write/uncertain-create and public
+consumer gaps remain open. See Marketing parity evidence and the approved
+public-menu implementation contract. No agents currently own unfinished edits.
+
+## Current checkpoint — September 19, Blog and Menus released
+
+This checkpoint supersedes historical in-progress ownership and deployment claims
+below. History is retained as evidence, not as the current work queue.
+
+`effa8d77ed0fc625ba1e142ca1a3ead907f228c7` is pushed to main and the
+consolidation branch. Railway SUCCESS: dashboard
+`270cc051-1560-44e1-800e-1881e1c0fedc`, Core
+`70be8e31-67b4-4a6e-96ff-39f7bff8cb4a`, website
+`5a7b5019-9253-4551-894c-80d8c4823761`. Authenticated read-only live Blog
+and Menus screens loaded their restored controls and real empty catalog states.
+No production content was created or published. Twenty-two scoped tests, clean
+Core/dashboard typechecks, both production builds and restricted dashboard
+packaging passed; local synthetic draft and nesting/save flows passed.
+
+Current parallel work: Team shared presentation is owned by social_ui_reuse;
+Sidebars shared presentation by marketing_parity_inventory. Parent owns shell,
+packaging allowlist, documentation and integration. Public-menu consumer design
+is under read-only review. Preserve all in-progress work.
+
+Priority acceptance gaps remain: remaining Marketing tool parity; generic public
+menu delivery; dynamic CMS Blog delivery; server concurrency for Blog, Sidebars
+and Sections; full publication/restore acceptance. Sidebars has eight widget
+types, including Form, and advisory reservations without server version checks.
+Menus has version CAS but not the exact-instance lease implemented for Pages.
+
+Broader goal remains open: Search Console canonical-property access; reviewed
+actual CRM mappings/import/freeze; account/access and notification reconciliation;
+full browser crew/offline acceptance; content/media and original-image recovery;
+final QA and safe retained-admin retirement. Keep `/admin` available.
+QuickBooks and Twilio remain deferred. Live Analytics is already working; do not
+recreate credentials. The actual account/CRM metadata captures are complete but
+are not migration approval or an account transition.
+
 ## September 19 — Website/Galleries/Head Tags now deployed
 
 `78fb0e72` is on main/task branch. Railway dashboard, Core and public website
