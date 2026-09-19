@@ -34,3 +34,7 @@ Attempts `-c`, `-d`, and `-e` failed during restoration; all cleaned up. Attempt
 Validation: 11 runner safety/privacy tests; 18 service unit tests; 10 real disposable PostgreSQL 18 database tests, including original IDs/FKs/next IDs, an empty identity table, and failed-restore row/sequence rollback. Core typecheck and production build passed. Existing build warnings about PostCSS source metadata and large bundles remain. Independent source review found no blocking defect.
 
 This establishes archive-level row/sequence recovery for this historical snapshot, not an application-startup rehearsal, previous-image rollback, provider decryption/delivery, fresh source freeze, full media recovery, real CRM migration or admin retirement. The migration replay repeats the current ledger established before restore; it does not test an older image.
+
+## Release verification
+
+Implementation `a8dbf0cecd5df1bdadb5d3ade7407bec3a7953c6` was pushed to the task branch and GitHub main. Railway reported SUCCESS for Dashboard `b56b9492-92a1-4442-9c1a-1efbf7d8308d`, Core `7d9c41b4-0f32-49c8-a94c-4d65b1820917`, and public website `ed84e2c2-b159-42ab-8707-a26c28657323`. Read-only post-release checks returned HTTP200 for dashboard health, proxied Core readiness and the public homepage; unauthenticated native backup status returned401. No production backup, restore, prune, account migration or real email was triggered for verification.
