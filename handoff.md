@@ -1,3 +1,18 @@
+## Verified Website System release — September 19
+
+Runtime `001ac605a648d83fbefc6cbc49a07915003b3354` is pushed to main and
+`codex/business-center-consolidation`. Railway SUCCESS:
+- Dashboard `902d82fa-4734-4c3e-8db1-095994873b7a`
+- Core `2c997eb8-0963-4c6f-8316-8ed51008991d`
+- Website `c3d5d7df-2f2a-4fb9-b9a8-7a789daa03e6`
+
+Authenticated live reads verified the original-style three-provider Integrations
+library, five saved Email Templates and the empty Developer Resources three-pane
+workspace. Production content/settings were not changed. Full Core production build
+also passed. Inherited template subjects still include Core Platform and an unrelated
+provider registration template; template content reconciliation remains open.
+The release restores interfaces, not full consolidation acceptance; goal stays active.
+
 ## Website System interface restoration — September 19 candidate
 
 Original shared Integrations, Email Templates and Developer Resources presentation

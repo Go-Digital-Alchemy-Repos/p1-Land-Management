@@ -1,6 +1,6 @@
 # Consolidation acceptance tracker
 
-Current assessment: **implementation in progress; not a complete release candidate**. Updated September 19, 2026. The approved scope remains unchanged. Main now contains the consolidated applications and validated public changes; `4b7cf0f6106b40af504f40a7a8e2c5e879a172c6` was verified deployed successfully on Website, Dashboard and Core; release notes are on main at `f806d84e`. Original checkout and Blythe remain outside this worktree's write scope.
+Current assessment: **implementation in progress; not a complete release candidate**. Updated September 19, 2026. The approved scope remains unchanged. Main now contains the consolidated applications and validated public changes; `001ac605a648d83fbefc6cbc49a07915003b3354` was verified deployed successfully on Website, Dashboard and Core. Live Integrations, Email Templates and Developer Resources libraries render the restored original-style interfaces; detailed evidence is in handoff.md. Original checkout and Blythe remain outside this worktree's write scope.
 
 The Owner's identity link and Website Editor work. Live Analytics now works after correcting empty previous-period report normalization. Search Console remains blocked by property coverage/access (configured domain property returns 403; only the apex URL-prefix property appeared in the authorized list). Do not rotate existing Google credentials or equate apex access with canonical `www` coverage.
 
@@ -26,13 +26,13 @@ The September 17 dashboard backup has passed an isolated restore, application of
 | Approval → operations → activation → billing | `composed-estimate-preparation.integration.test.ts` and recorded mixed-billing rehearsal cover preparation, outbox-only send, approval, activation, visit generation and retry-safe billing. | Actual crew execution/review in the complete browser journey, offline behavior, cancellation/successor/change-order regressions and operational acceptance. Crew synchronization and manager review now use real local HTTP calls; browser offline storage and external posting remain unverified. |
 | Preserve public/media/preview/intake/offline compatibility | Existing retained handlers, stable data stores and targeted runtime/route checks. | Full compatibility inventory and cutover tests spanning both applications. No blanket parity claim is supported yet. |
 | Migration, restore, rollback and retirement | `scripts/consolidation/` has identity/CRM analysis, extraction, reviewed import and independent verification tools with synthetic tests. | Dashboard backup restore/migration/round-trip rehearsal passed September 18. P1 recovery runner now validates exact snapshot identity and fingerprints actual p1-migrations. Historical Core archive row/sequence recovery and a source-based retirement route inventory now exist (see September 19 evidence below). Remaining: application/media recovery, application rollback, tested retirement/deep-link behavior, identity+CRM reconciliation, ordering/freeze procedure and final release packet. |
-| Validated release candidate and Owner acceptance | Validated commits reconciled to main and incremental production release verified through 4b7cf0f6; GitHub Actions remain disabled. | Full requirement audit, resolved release blockers, candidate-wide validation, reviewed migration/rollback artifacts and final full-goal acceptance. |
+| Validated release candidate and Owner acceptance | Validated commits reconciled to main and incremental production release verified through 001ac605; GitHub Actions remain disabled. | Full requirement audit, resolved release blockers, candidate-wide validation, reviewed migration/rollback artifacts and final full-goal acceptance. |
 
 
 ## Current interface and recovery checkpoint — September 19
 
-The original shared presentations for Team, Sidebars, Careers and Events are now
-released in addition to the earlier Design and Content restoration. Careers and
+The original shared presentations for Integrations, Email Templates, Developer
+Resources, Team, Sidebars, Careers and Events are now released in addition to the earlier Design and Content restoration. Careers and
 Events remain disabled in P1 production, as required. Events presets, structured
 data diagnostics, upload-dropzone and complete registration management still need
 scope-aware comparison; excluded commerce/membership controls must not be enabled

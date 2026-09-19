@@ -483,7 +483,7 @@ verified. Authenticated Menus notice/catalog and Careers disabled state verified
 Remaining feature gaps above are unchanged; this is not full project acceptance.
 
 
-## Website System restoration — September 19 candidate
+## Website System restoration — September 19 release
 
 Integrations, Email Templates and Developer Resources now reuse shared original
 presentation in both the retained Core hosts and the consolidated dashboard.
@@ -518,3 +518,9 @@ errors. No real email, provider connection check or production configuration wri
 These changes close the identified presentation gaps for the supported controls.
 They do not close active Google configuration management, real provider delivery,
 whole-CMS publication/conflict acceptance, recovery or legacy admin retirement.
+
+Release `001ac605a648d83fbefc6cbc49a07915003b3354` succeeded on all three Railway
+services. Authenticated live library reads passed for Integrations, five saved
+Email Templates and the empty Developer Resources workspace. The full Core
+production build also passed. Inherited email branding/provider-template content
+remains a separate reconciliation item; no templates were changed in production.
