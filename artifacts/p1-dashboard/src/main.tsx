@@ -16,7 +16,6 @@ import { ClientContacts } from "./ClientContacts";
 import { RequestComposer } from "./RequestComposer";
 import { RichTextEditor } from "./RichTextEditor";
 import { ClientWorkspace, PropertyWorkspace } from "./AccountWorkspace";
-import { ThemeControl } from "./ThemePreference";
 import { InspectionReports } from "./InspectionReports";
 import { ServiceRequestTriage } from "./ServiceRequestTriage";
 import { ProjectPhases } from "./ProjectPhases";
@@ -1185,7 +1184,7 @@ function App() {
     <div className="app">
       <aside className={menu ? "sidebar open" : "sidebar"}>
         <div className="brand">
-          <img src="/icon-sidebar-reversed.svg" alt="P1" width="48" height="36" />
+          <img src="/icon.svg" alt="P1" width="48" height="36" />
           <div>
             LAND & PROPERTY<small>OPERATIONS WORKSPACE</small>
           </div>
@@ -1274,7 +1273,6 @@ function App() {
                 : view}
             </strong>
           </div>
-          <ThemeControl />
           <button
             className="user account-menu-trigger"
             onClick={() => navigate("Profile")}

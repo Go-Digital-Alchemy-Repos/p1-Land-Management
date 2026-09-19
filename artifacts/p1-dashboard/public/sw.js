@@ -10,7 +10,7 @@ self.addEventListener("install", (event) =>
       const assets = [
         ...html.matchAll(/(?:src|href)=["'](\/assets\/[^"']+)["']/g),
       ].map((m) => m[1]);
-      await cache.addAll(["/icon.svg", "/icon-maskable.svg", "/icon-192.png", "/icon-512.png", "/apple-touch-icon.png", "/manifest.webmanifest", "/theme-init.js", ...assets]);
+      await cache.addAll(["/icon.svg", "/icon-maskable.svg", "/icon-192.png", "/icon-512.png", "/apple-touch-icon.png", "/manifest.webmanifest", "/theme-init.js", "/fonts/geist-latin-wght-normal.woff2", ...assets]);
     })(),
   ),
 );
@@ -37,7 +37,7 @@ self.addEventListener("fetch", (event) => {
     return;
   if (event.request.mode === "navigate")
     event.respondWith(fetch(event.request).catch(() => caches.match("/")));
-  else if (url.pathname.startsWith("/assets/") || ["/icon.svg", "/icon-maskable.svg", "/icon-192.png", "/icon-512.png", "/apple-touch-icon.png", "/manifest.webmanifest", "/theme-init.js"].includes(url.pathname))
+  else if (url.pathname.startsWith("/assets/") || ["/icon.svg", "/icon-maskable.svg", "/icon-192.png", "/icon-512.png", "/apple-touch-icon.png", "/manifest.webmanifest", "/theme-init.js", "/fonts/geist-latin-wght-normal.woff2"].includes(url.pathname))
     event.respondWith(
       caches.open(CACHE).then(async (cache) => {
         const saved = await cache.match(event.request);
