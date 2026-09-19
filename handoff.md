@@ -2,6 +2,10 @@
 
 Updated September 18, 2026. Read this current-state update before older checkpoint details below.
 
+## Owner correction: Marketing interface fidelity
+
+The Owner rejected the simplified Marketing interfaces as unlike retained `/admin`. Reuse the original page components/layouts/toolbars/icons/features with necessary routing and auth adapters; backend parity alone is insufficient. See `docs/implementation/marketing-admin-interface-parity.md`. Social Media is the first comparison. Keep retained admin available. Current partial menu/redirect changes are preserved but not release-ready.
+
 ## September 19 native CMS continuation
 
 Native editor deep links released at `112f1d1`; all three unsaved creation intents opened in the authenticated browser without saving data. Mobile quick contact now shares the published identity at `74c9534`; all three Railway services reached SUCCESS and live homepage markup was verified. Robots delivery was then connected at `ec899b3`, with live projection/GET/HEAD equality verified at `550534b`. CMS redirects and menu assignments still lack public consumers; see consolidation-acceptance.md. Search Console domain access permission is prepared but awaits the pending action-time confirmation. Do not retire retained admin.

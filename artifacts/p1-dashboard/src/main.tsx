@@ -28,6 +28,18 @@ import { createRoot } from "react-dom/client";
 import { createAuthClient } from "better-auth/react";
 import { twoFactorClient } from "better-auth/client/plugins";
 import {
+  Blocks,
+  BookOpen,
+  BriefcaseBusiness,
+  FileCode,
+  Globe,
+  Image as ImageIcon,
+  Images,
+  Palette,
+  PanelRight,
+  Share2,
+  SquarePen,
+  Type,
   DatabaseBackup,
   LayoutDashboard,
   Mail,
@@ -112,6 +124,29 @@ const PropertyCardMap = lazy(() => import("./PropertyMap").then(({ PropertyLocat
 const PropertyMap = lazy(() =>
   import("./PropertyMap").then(({ PropertyMap }) => ({ default: PropertyMap })),
 );
+// Match the retained admin tool icons; color is decorative, labels remain authoritative.
+const marketingIconColors: Partial<Record<DashboardPageRoute["view"], string>> = {
+  "Website Sidebars": "#10b981",
+  "Website Galleries": "#c026d3",
+  "Website Careers": "#d97706",
+  "Website Events": "#0891b2",
+  "Website Forms": "#8b5cf6",
+  "CMS Pages": "#8b5cf6",
+  "Website Identity": "#ec4899",
+  "Website Social": "#059669",
+  "Website Typography": "#0284c7",
+  "Website Colors": "#f43f5e",
+  "Website Onboarding": "#059669",
+  "Website Sections": "#a78bfa",
+  "Website SEO": "#a78bfa",
+  "Website Blog": "#9333ea",
+  "Website Team": "#0d9488",
+  "Media Library": "#a78bfa",
+  "Website Editor": "#2563eb",
+  "Website Menus": "#8b5cf6",
+  "Website Documents": "#4f46e5",
+  "Website Backups": "#0891b2"
+};
 async function api(path: string, body?: unknown, method: "POST" | "PATCH" | "DELETE" = "POST") {
   const r = await fetch("/api/v1" + path, {
     method: body === undefined ? "GET" : method,
@@ -137,29 +172,29 @@ type NavItem = DashboardPageRoute & {
 };
 const icons: Record<DashboardPageRoute["view"] | "Settings:security" | "Settings:integrations" | "Settings:preferences" | "Settings:term-libraries", typeof LayoutDashboard> = {
   Analytics: BarChart3,
-  "Website Sidebars": Menu,
-  "Website Galleries": Menu,
-  "Website Careers": Menu,
-  "Website Events": Menu,
-  "Website Forms": Menu,
-  "CMS Pages": Menu,
-  "Website Identity": SlidersHorizontal,
-  "Website Social": SlidersHorizontal,
-  "Website Typography": SlidersHorizontal,
-  "Website Colors": SlidersHorizontal,
+  "Website Sidebars": PanelRight,
+  "Website Galleries": Images,
+  "Website Careers": BriefcaseBusiness,
+  "Website Events": CalendarDays,
+  "Website Forms": SquarePen,
+  "CMS Pages": FileCode,
+  "Website Identity": ImageIcon,
+  "Website Social": Share2,
+  "Website Typography": Type,
+  "Website Colors": Palette,
   "Website Features": SlidersHorizontal,
   "Website Head Tags": SlidersHorizontal,
   "Website Documents": FileText,
   "Website Backups": DatabaseBackup,
   "Website Integrations": SlidersHorizontal,
   "Website Email Templates": Mail,
-  "Website Onboarding": FileText,
-  "Website Sections": Menu,
-  "Website SEO": Menu,
-  "Website Blog": Menu,
-  "Website Team": Menu,
-  "Media Library": Menu,
-  "Website Editor": Menu,
+  "Website Onboarding": Globe,
+  "Website Sections": Blocks,
+  "Website SEO": Search,
+  "Website Blog": BookOpen,
+  "Website Team": Users,
+  "Media Library": ImageIcon,
+  "Website Editor": Globe,
   "Website Menus": Menu,
   "Search Console": Search,
   Overview: LayoutDashboard,
@@ -1242,7 +1277,7 @@ function App() {
                           setMenu(false);
                         }}
                       >
-                        <Icon size={19} />
+                        <Icon size={19} aria-hidden="true" style={item.group === "Marketing" ? { color: marketingIconColors[item.view] } : undefined} />
                         {item.label}
                         {item.view === "Requests" && data.requests?.length > 0 && (
                           <b>{data.requests.length}</b>
