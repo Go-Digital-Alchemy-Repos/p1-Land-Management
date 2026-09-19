@@ -1,0 +1,139 @@
+.document-manager {
+  min-width: 0;
+}
+.document-manager h1,
+.doc-toolbar,
+.doc-published {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.doc-toolbar {
+  flex-wrap: wrap;
+  margin: 16px 0;
+}
+.doc-toolbar button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 40px;
+}
+.doc-workspace {
+  display: grid;
+  grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+.doc-library,
+.doc-content {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: 14px;
+  padding: 20px;
+  min-width: 0;
+}
+.document-manager label {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 14px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.doc-library nav {
+  display: grid;
+  gap: 6px;
+  max-height: 65vh;
+  overflow-y: auto;
+}
+.doc-library nav button {
+  display: grid;
+  gap: 6px;
+  text-align: left;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.doc-library small {
+  font-weight: 400;
+  color: hsl(var(--muted-foreground));
+}
+.doc-library [aria-current="page"] {
+  border-color: hsl(var(--primary));
+  background: hsl(var(--accent));
+}
+.doc-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 16px;
+}
+.doc-content fieldset {
+  border: 0;
+  padding: 0;
+  min-width: 0;
+}
+.doc-content textarea {
+  width: 100%;
+  resize: vertical;
+  font:
+    13px/1.65 ui-monospace,
+    monospace;
+}
+.document-manager .doc-published {
+  display: flex;
+}
+.doc-published input {
+  width: auto;
+}
+.doc-message {
+  padding: 14px;
+  border-left: 3px solid hsl(var(--destructive));
+}
+.doc-outline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid hsl(var(--border));
+}
+.doc-markdown {
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+}
+.doc-markdown h1,
+.doc-markdown h2,
+.doc-markdown h3,
+.doc-markdown h4 {
+  scroll-margin-top: 100px;
+  margin-top: 24px;
+}
+.doc-markdown pre {
+  overflow-x: auto;
+  background: hsl(var(--muted));
+  padding: 16px;
+  border-radius: 8px;
+}
+.doc-markdown table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+}
+.doc-markdown td,
+.doc-markdown th {
+  border: 1px solid hsl(var(--border));
+  padding: 8px 12px;
+}
+.doc-markdown blockquote {
+  border-left: 3px solid hsl(var(--primary));
+  padding-left: 16px;
+}
+@media (max-width: 850px) {
+  .doc-workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .doc-library nav {
+    max-height: 220px;
+  }
+  .doc-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

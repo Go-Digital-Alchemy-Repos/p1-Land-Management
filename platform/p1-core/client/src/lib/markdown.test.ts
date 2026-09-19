@@ -47,3 +47,13 @@ describe("markdown utilities", () => {
     expect(html).toContain("<td><code>server/routes/index.ts</code></td>");
   });
 });
+
+it("does not turn code-example headings into document outline entries", () => {
+  const source = "# Guide\n```md\n# Example\n```\n## Real section";
+  expect(extractMarkdownHeadings(source).map(item=>item.id)).toEqual(["guide","real-section"]);
+  expect(markdownToHtml(source)).toContain('<h2 id="real-section">');
+});
+it("rejects unsafe links even when supplied by a link resolver", () => {
+  expect(markdownToHtml('[Unsafe](relative.md)', {resolveLink:()=>({href:'javascript:alert(1)'})})).not.toContain('<a');
+  expect(markdownToHtml('<script>alert(1)</script>')).not.toContain('<script>');
+});

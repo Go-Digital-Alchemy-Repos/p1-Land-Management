@@ -84,6 +84,7 @@ const WebsiteSocial = lazy(() => import("./marketing/WebsiteSocial"));
 const WebsiteTypography = lazy(() => import("./marketing/WebsiteTypography"));
 const WebsiteColors = lazy(() => import("./marketing/WebsiteColors"));
 const WebsiteFeatures = lazy(() => import("./marketing/WebsiteFeatures"));
+const DocumentManager = lazy(() => import("./marketing/DocumentManager"));
 const HeadTagSettings = lazy(() => import("./marketing/HeadTagSettings"));
 const MarketingReports = lazy(() => import("./marketing/MarketingReports").then(module => ({default: module.MarketingReports})));
 const SidebarManager = lazy(() => import("./marketing/SidebarManager"));
@@ -141,6 +142,7 @@ const icons: Record<DashboardPageRoute["view"] | "Settings:security" | "Settings
   "Website Colors": SlidersHorizontal,
   "Website Features": SlidersHorizontal,
   "Website Head Tags": SlidersHorizontal,
+  "Website Documents": FileText,
   "Website Sections": Menu,
   "Website SEO": Menu,
   "Website Blog": Menu,
@@ -1439,6 +1441,7 @@ function App() {
           {view === "Website Typography" && <Suspense fallback={<p role="status">Loading website fonts…</p>}><WebsiteTypography key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Website Colors" && <Suspense fallback={<p role="status">Loading website colors…</p>}><WebsiteColors key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Website Features" && person.role === "owner" && <Suspense fallback={<p role="status">Loading website modules…</p>}><WebsiteFeatures key={person.id}/></Suspense>}
+          {view === "Website Documents" && person.role === "owner" && <Suspense fallback={<p role="status">Loading developer resources…</p>}><DocumentManager key={person.id}/></Suspense>}
           {view === "Website Head Tags" && person.role === "owner" && <Suspense fallback={<p role="status">Loading website settings…</p>}><HeadTagSettings key={person.id}/></Suspense>}
           {(view === "Analytics" || view === "Search Console") && <Suspense fallback={<p role="status">Loading reporting tools…</p>}><MarketingReports key={`${person.id}:${view}:${(person.capabilities || []).join(",")}`} source={view === "Analytics" ? "analytics" : "search-console"}/></Suspense>}
           {view === "Website Editor" && <Suspense fallback={<p role="status">Loading website editor…</p>}><WebsiteEditor canUseMedia={(person.capabilities || []).includes("marketing.content.media")} key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}

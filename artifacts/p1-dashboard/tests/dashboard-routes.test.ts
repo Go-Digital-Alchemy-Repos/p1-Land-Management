@@ -140,3 +140,14 @@ test("agreement drafts have separate Sales write and Agreements read navigation,
   }
   assert.equal(routeFromPath("/agreements/drafts/nope").kind, "not-found");
 });
+
+test("Developer resources is an Owner-only Website System destination", () => {
+  const route=routeFromPath("/marketing/system/documents");
+  assert.equal(route.kind,"page");
+  if(route.kind!=="page")return;
+  assert.equal(route.page.view,"Website Documents");
+  assert.equal(route.page.section,"Website System");
+  assert.equal(canAccessRoute(route,"owner"),true);
+  for(const role of ["admin","member","staff","client","crew",null])
+    assert.equal(canAccessRoute(route,role,["marketing.content.pages"]),false);
+});

@@ -34,7 +34,7 @@ This **does not** make the old `/admin/docs` editor version-aware. An old client
 
 ### Remaining implementation and acceptance
 
-Native reader/editor, category/search, Markdown/heading navigation and safe previews, create/edit/publication/order, delete/sync confirmation, edit reservations, cross-surface version-aware writes, old deep links, mobile/keyboard/error recovery and live authenticated read verification. The backend being implemented is not full Developer Resources parity and does not permit `/admin` retirement.
+The native screen and generated contract are now implemented below. Remaining: cross-surface version-aware writes, old deep-link retirement, full mobile/keyboard/error recovery and live authenticated read verification. Full Developer Resources acceptance and `/admin` retirement remain open.
 
 Rollback: revert this additive backend change on reconciled main; retained legacy routes and data remain available. No down-migration is required.
 
@@ -53,3 +53,15 @@ pnpm --filter @workspace/api-server exec tsx --test ../../scripts/test-website-d
 ```
 
 The cross-package check lives in `scripts/`, outside the API server compilation root; API-server TypeScript validation and the Dashboard production build also passed.
+
+## September 18: native Developer Resources screen
+
+Implemented `/marketing/system/documents` under Marketing → Website System, visible and routable only to the Owner. It uses the existing versioned Core store through the generated client: searchable/category-filtered library, query-string document links, Markdown reading and outline, source editor and preview, title/slug/category/order/publication controls, create/save/delete and confirmed repository refresh. Internal document links target the consolidated reader. Published here means visible in the private documentation library, not a public website page.
+
+Editing acquires the existing `doc` reservation, renews it and releases on close. Reservation loss retains the draft and disables saving. A failed or uncertain write blocks immediate replay; the draft remains editable and can be downloaded as JSON before reloading/comparing saved content or explicitly discarding it. Reloading the library does not replace an open draft. Refresh and delete require explicit UI confirmation. No browser-storage copy of private document content is created.
+
+The Markdown renderer was moved to Core `shared/document-markdown.ts` with a compatibility re-export for the retained reader. Both surfaces use the same rendering rules. Code-fence headings are excluded from outlines, and resolved links pass the URL scheme check. No new runtime dependency or database migration.
+
+Validation: six rendered-component tests cover reading/deep links, save and collection refresh, conflict retention/no repeat, reservation loss, canceled destructive actions, and versioned sync/delete; nine dashboard route tests include Owner-only navigation; twelve Markdown/document-route/editor-lock tests passed; Dashboard and Core type checks and Dashboard production build passed. The separate Core `vitest.dashboard.config.ts` uses the Dashboard React version for the cross-application component tests.
+
+Still required before full acceptance: convert retained legacy document writes to the same versioned contract, validate legacy deep-link retirement, full mobile/keyboard/draft recovery review and post-deployment authenticated reading. Do not retire `/admin/docs` yet. Production document mutation has not been used as a test.
