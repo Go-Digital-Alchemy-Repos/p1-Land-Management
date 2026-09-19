@@ -1,3 +1,13 @@
+## Dashboard stale-asset recovery — September 19 candidate
+
+The live deployment finding is corrected with a local error boundary around the
+existing tool Suspense regions. Seven tests passed independently, with clean
+Dashboard typecheck/build and actual Chrome CSS404/recovery evidence. Manual reload
+honors existing navigation cancellation and explicitly warns about unsaved work;
+no automatic reload occurs. Cross-report key changes reset the failed boundary.
+Existing old bundles require one refresh to receive the fix. See
+`docs/implementation/dashboard-lazy-recovery.md`. Deployment evidence follows.
+
 ## Verified foundation release — September 19
 
 Runtime `9926fc01fd6d986d7a7247595a1f49162447bdf2` is on main and the
