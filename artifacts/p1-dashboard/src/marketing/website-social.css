@@ -1,0 +1,203 @@
+/* Adapter for the shared retained-admin SocialMediaEditor; dashboard theme tokens only. */
+.website-social .social-media-editor {
+  border: 1px solid hsl(var(--card-border));
+  border-radius: 12px;
+  background: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+  box-shadow: var(--shadow-sm);
+}
+.website-social .social-media-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 24px;
+}
+.website-social .social-media-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.025em;
+}
+.website-social .social-media-title svg {
+  width: 16px;
+  height: 16px;
+  color: #db2777;
+}
+.website-social .social-media-description {
+  color: hsl(var(--muted-foreground));
+  font-size: 14px;
+  line-height: 1.5;
+}
+.website-social .social-media-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 0 24px 24px;
+}
+.website-social .social-media-content p {
+  margin: 0;
+}
+.website-social .social-media-fields,
+.website-social .social-media-style-preview {
+  display: grid;
+  gap: 16px;
+}
+.website-social .social-media-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.website-social .social-media-field label {
+  display: block;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+}
+.website-social .social-media-field input,
+.website-social .social-media-field select {
+  width: 100%;
+  min-width: 0;
+  height: 36px;
+  box-sizing: border-box;
+  margin: 0;
+  border: 1px solid hsl(var(--input));
+  border-radius: 6px;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  padding: 8px 12px;
+  font-size: 14px;
+}
+.website-social .social-media-field input::placeholder {
+  color: hsl(var(--muted-foreground));
+}
+.website-social .social-media-field input:disabled,
+.website-social .social-media-field select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.website-social .social-media-help {
+  font-size: 12px;
+  color: hsl(var(--muted-foreground));
+  line-height: 1.5;
+}
+.website-social .social-media-preview {
+  border: 1px solid hsl(var(--border));
+  border-radius: 12px;
+  background: hsl(var(--muted) / 0.1);
+  padding: 16px;
+  min-width: 0;
+}
+.website-social .social-media-preview-title {
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  color: hsl(var(--muted-foreground));
+}
+.website-social .social-media-preview-content {
+  margin-top: 12px;
+}
+.website-social .social-media-empty {
+  font-size: 14px;
+  line-height: 1.5;
+  color: hsl(var(--muted-foreground));
+}
+.website-social .social-media-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.website-social .social-media-toolbar button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+.website-social .social-media-toolbar svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+.website-social button.social-media-save {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border-color: hsl(var(--primary));
+}
+.website-social button.social-media-save:hover {
+  background: hsl(var(--primary) / 0.9);
+}
+.website-social .social-media-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.website-social .social-media-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  box-sizing: border-box;
+  font-size: 18px;
+  border-radius: 6px;
+  transition:
+    color 0.15s,
+    background-color 0.15s;
+}
+.website-social .social-media-link-brand {
+  color: var(--social-color);
+  border-radius: 50%;
+}
+.website-social .social-media-link-brand:hover {
+  color: white;
+  background: var(--social-color);
+}
+.website-social .social-media-link-outline {
+  border: 1px solid hsl(var(--border));
+  color: hsl(var(--muted-foreground));
+}
+.website-social .social-media-link-outline:hover {
+  border-color: hsl(var(--foreground));
+  color: hsl(var(--foreground));
+}
+.website-social .social-media-link-solid {
+  background: hsl(var(--foreground));
+  color: hsl(var(--background));
+}
+.website-social .social-media-link-solid:hover {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+.website-social .social-media-spinner {
+  animation: social-media-spin 1s linear infinite;
+}
+@keyframes social-media-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (min-width: 768px) {
+  .website-social .social-media-fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1024px) {
+  .website-social .social-media-style-preview {
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .website-social .social-media-spinner {
+    animation: none;
+  }
+}

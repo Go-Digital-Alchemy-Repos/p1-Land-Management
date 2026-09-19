@@ -1,3 +1,4 @@
+import { DESIGN_COPY } from "../../../platform/p1-core/shared/design-page-copy";
 import { InquiryList } from "./InquiryList";
 import ComposedEstimateActions from "./agreements/ComposedEstimateActions";
 import { ComposedProposal } from "./ComposedProposal";
@@ -146,6 +147,12 @@ const marketingIconColors: Partial<Record<DashboardPageRoute["view"], string>> =
   "Website Menus": "#8b5cf6",
   "Website Documents": "#4f46e5",
   "Website Backups": "#0891b2"
+};
+const marketingDesignCopy: Partial<Record<DashboardPageRoute["view"], { title: string; description: string }>> = {
+  "Website Identity": DESIGN_COPY.branding,
+  "Website Social": DESIGN_COPY["social-media"],
+  "Website Colors": DESIGN_COPY.colors,
+  "Website Typography": DESIGN_COPY.typography,
 };
 async function api(path: string, body?: unknown, method: "POST" | "PATCH" | "DELETE" = "POST") {
   const r = await fetch("/api/v1" + path, {
@@ -1317,7 +1324,7 @@ function App() {
             <strong>
               {view === "Settings"
                 ? nav.find((item) => item.settingsSection === settingsSection)?.label
-                : view}
+                : marketingDesignCopy[view]?.title ?? view}
             </strong>
           </div>
           <button
@@ -1342,7 +1349,7 @@ function App() {
         <main className="content">
           {!accountWorkspace && view !== "Website Documents" && <div className={view === "Overview" ? "page-heading page-hero" : "page-heading"}>
             <div>
-              <p className="eyebrow">P1 · PROPERTY OPERATIONS</p>
+              {!marketingDesignCopy[view] && <p className="eyebrow">P1 · PROPERTY OPERATIONS</p>}
               <h1>
                 {routeUnavailable
                   ? "Page unavailable"
@@ -1350,7 +1357,7 @@ function App() {
                   ? "A clear view of the day."
                   : view === "Settings"
                     ? nav.find((item) => item.settingsSection === settingsSection)?.label
-                    : view}
+                    : marketingDesignCopy[view]?.title ?? view}
               </h1>
               <p className="muted">
                 {routeUnavailable
@@ -1361,7 +1368,7 @@ function App() {
                     ? "Your assignments and field notes, wherever work takes you."
                     : view === "Settings"
                       ? "Control access, account security, connections and workspace defaults."
-                      : view === "Agreement Drafts" ? "Prepare client-specific terms, scope and costs from your agreement templates." : view === "Agreement Templates" ? "Manage reusable terms, scope, cost breakdowns, and published agreement packages." : view === "CMS Pages" ? "Manage CMS page content, publication, and revision history." : "Keep the details connected to the work."}
+                      : view === "Agreement Drafts" ? "Prepare client-specific terms, scope and costs from your agreement templates." : view === "Agreement Templates" ? "Manage reusable terms, scope, cost breakdowns, and published agreement packages." : view === "CMS Pages" ? "Manage CMS page content, publication, and revision history." : marketingDesignCopy[view]?.description ?? "Keep the details connected to the work."}
               </p>
             </div>
             {!routeUnavailable && <div className="heading-actions">
@@ -1421,6 +1428,13 @@ function App() {
               {notice}
             </div>
           )}
+          {!routeUnavailable && marketingDesignCopy[view] && <nav className="marketing-design-tabs" aria-label="Design tools">
+            {(["Website Identity", "Website Social", "Website Colors", "Website Typography"] as const).map(designView => {
+              const page = allowedNav.find(item => item.view === designView);
+              if (!page) return null;
+              return <button key={designView} type="button" aria-current={view === designView ? "page" : undefined} onClick={() => navigate(designView)}>{marketingDesignCopy[designView]?.title}</button>;
+            })}
+          </nav>}
           {!routeUnavailable && recordRoute?.kind === "client" ? (
             <ClientWorkspace
               id={recordRoute.id}

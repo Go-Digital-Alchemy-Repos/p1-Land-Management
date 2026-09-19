@@ -6,7 +6,7 @@ Owner correction, September 19, 2026: Marketing must preserve the existing `/adm
 
 Reuse retained page components and presentation, extracting shared components where required. Adapt routing, authenticated capability-aware transport and dashboard shell without recreating reduced forms. Preserve draft protection, reservations, version conflicts and confirmed-save behavior already added during consolidation. Do not embed a second independent login or weaken server authorization. Keep the unified dashboard's established system theme and colorful standalone icons.
 
-Social Media is the first reference: `platform/p1-core/client/src/features/admin/settings/branding-tab.tsx` lines around785–876 contain its card, two-column profile fields, URL input behavior, adjacent style/preview layout and save toolbar. `design-page.tsx` supplies the title/description. The current `WebsiteSocial.tsx` retains safer versioned transport but replaces this interface with a long form; it requires correction, not a claim of parity.
+Social Media is the first reference: `platform/p1-core/client/src/features/admin/settings/branding-tab.tsx` lines around785–876 contain its card, two-column profile fields, URL input behavior, adjacent style/preview layout and save toolbar. `design-page.tsx` supplies the title/description. The simplified `WebsiteSocial.tsx` retained safer versioned transport but replaced this interface with a long form. The shared extraction below corrects that first surface; it does not establish complete Marketing parity.
 
 ## Acceptance sequence
 
@@ -17,3 +17,65 @@ Social Media is the first reference: `platform/p1-core/client/src/features/admin
 5. Keep retained admin available until every page-family comparison is accepted. No redirect or retirement is authorized by a cosmetic improvement alone.
 
 The initial icon correction restores distinct retained-admin Lucide symbols and associated colors in Marketing. It does not establish page/layout/feature parity. Menu and redirect delivery work already in progress remains preserved and uncommitted pending validation; interface restoration takes priority.
+
+## Social Media presentation extraction
+
+`SocialMediaEditor` in Core's shared client components now owns the retained Social
+Media card structure and copy, ten profile labels and order, two-column field grid,
+adjacent style/preview grid, empty-preview message and save toolbar placement.
+Both `BrandingTab` and dashboard `WebsiteSocial` render that component. Core keeps
+its Card/Input/Select/Button primitives through presentation slots. The dashboard
+adapter supplies native controls and scoped CSS using the existing dashboard theme.
+The original empty-input focus behavior inserts `https://` and leaves the caret at
+the end; existing input values are not rewritten on focus. A full HTTP(S) URL
+pasted after that focus prefix replaces the prefix, preventing doubled protocols. Preview icons match the retained
+36px targets, 18px symbols, colors, outlines, solid style and hover treatment.
+
+The dashboard still uses versioned changed-field saves, disables edits on uncertain
+saves/conflicts, retains drafts until confirmed reload, and guards navigation. Its
+reload recovery button and inline status/errors are intentional additions. Empty
+and unsupported stored styles remain selectable without silently rewriting them.
+The native style select has the same three choices but uses the browser's popup
+and keyboard interaction rather than Core's Radix popup. Dashboard theme colors,
+fonts and the colorful title icon intentionally follow the unified shell. These
+adapter differences must remain explicit during visual acceptance; extraction is
+not a claim that every Marketing page has achieved parity.
+
+Focused integration coverage mounts the dashboard editor with controlled API
+responses: empty URL prefix, safe preview, changed-field/version payload, confirmed
+save, conflict retention and discard confirmation, style preview, failed post-save
+reload and unload protection. The Core test uses its React runtime consistently
+across this source boundary, mirroring dashboard Vite's existing React deduplication.
+
+### Parent visual and interaction verification
+
+The retained production `/admin/design/social-media` was read without changing settings.
+The corrected dashboard was rendered with an isolated, in-memory loopback fixture:
+ten fields in two columns on desktop, one column at 390px, and document width 390px
+(no horizontal overflow). A full-URL entry and confirmed save passed after fixing a
+focus-prefix duplication discovered in browser review. No production social settings
+were changed. Shared Design headings/descriptions and capability-filtered Design
+navigation now use the existing guarded route transition; unsaved-change protection
+continues to apply. The existing unified dashboard shell/theme remains intentional.
+
+## Source inventory: remaining corrections
+
+Read-only source comparison on September 19 confirms these concrete gaps; this is
+not a claim of live functional testing:
+
+| Priority | Tool | Retained interface to restore |
+| --- | --- | --- |
+| 1 | Branding | Separate logo/favicon cards, media-library picker, company-information layout (`branding-tab.tsx`, `cms-image-upload.tsx`). |
+| 1 | Typography | Heading/body visual font option cards and serif/sans groups (`branding-tab.tsx`). |
+| 1 | Colors | Core, Typography and Text on Color Surfaces groups, descriptions and original palette preview (`branding-tab.tsx`). |
+| 1 | Forms | Builder/Entries tabs, Form Library, draggable canvas and inspector (`forms-page.tsx`); retain delivery monitoring. |
+| 1 | CMS Pages | Shared builder canvas, structure panel, inspector and responsive preview (`cms/builder/page-builder*.tsx`); retain reservations, templates and revisions. |
+| 2 | Menus | Theme Locations overview and original menu cards/editor (`cms-menus-page.tsx`); existing hierarchy/drag support must survive. |
+| 2 | Media | Details dialog, usage badges and shared cropper (`cms-media-page.tsx`, `image-cropper-sheet.tsx`). |
+| 2 | Galleries | Details/Images/Display/Preview cards and preview dialog (`cms-gallery-editor-page.tsx`). |
+| 2 | SEO | Icon tabs, settings cards and omitted Roadmap/SEO Architecture material (`cms-seo-page.tsx`). |
+| 2 | Modules / Integrations | Original switch rows and provider cards/sheets; retain P1 module restrictions. |
+| Recovery gate | Backups | Restore control is missing; release only after recovery acceptance, not as an unreviewed cosmetic port. |
+
+The shared Design navigation and Social correction are the first accepted code
+increment. Remaining rows are open; the retained admin must stay available.

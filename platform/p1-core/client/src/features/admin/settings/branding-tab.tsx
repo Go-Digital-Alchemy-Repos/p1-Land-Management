@@ -3,6 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { Check, ImageIcon, Link2, Loader2, MapPin, Palette, Save, Type } from "lucide-react";
 
 import { CmsImageUpload } from "@/features/admin/cms/components/cms-image-upload";
+import { SocialMediaEditor, normalizePrefilledSocialUrl } from "@/components/shared/social-media-editor";
 import { SocialMediaLinks } from "@/components/shared/social-media-links";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -783,93 +784,36 @@ export function BrandingTab({
         </TabsContent>
 
         <TabsContent value="social-media" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base">
-                <Link2 className="h-4 w-4 text-primary" />
-                Social Media
-              </CardTitle>
-              <CardDescription>
-                Add social profile URLs for the public footer and the company contact information
-                card. Empty fields stay hidden on the website.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-5">
-              <div className="grid gap-4 md:grid-cols-2">
-                {SOCIAL_MEDIA_PLATFORMS.map((platform) => (
-                  <div key={platform.key} className="space-y-1.5">
-                    <Label htmlFor={`social-${platform.key}`}>{platform.label}</Label>
-                    <Input
-                      id={`social-${platform.key}`}
-                      value={socialUrls[platform.settingKey]}
-                      onChange={(event) =>
-                        setSocialUrls((current) => ({
-                          ...current,
-                          [platform.settingKey]: event.target.value,
-                        }))
-                      }
-                      placeholder={`https://${platform.key === "x" ? "x.com" : `${platform.key}.com`}/your-profile`}
-                      autoPrependHttps
-                      data-testid={`input-social-${platform.key}`}
-                    />
-                  </div>
-                ))}
-              </div>
-
-              <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(280px,360px)]">
-                <div className="space-y-1.5">
-                  <Label>Icon Style</Label>
-                  <Select
-                    value={socialIconStyle}
-                    onValueChange={(value) => setSocialIconStyle(normalizeSocialIconStyle(value))}
-                  >
-                    <SelectTrigger data-testid="select-social-icon-style">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="brand">Brand Color</SelectItem>
-                      <SelectItem value="outline">Outline</SelectItem>
-                      <SelectItem value="solid">Solid</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <p className="text-xs text-muted-foreground">
-                    Choose how icons should appear in the footer and contact card.
-                  </p>
-                </div>
-
-                <div className="rounded-xl border bg-muted/10 p-4">
-                  <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                    Preview
-                  </p>
-                  <div className="mt-3">
-                    {socialPreviewLinks.length > 0 ? (
-                      <SocialMediaLinks links={socialPreviewLinks} iconStyle={socialIconStyle} />
-                    ) : (
-                      <p className="text-sm text-muted-foreground">
-                        Add at least one social URL to preview the icon style.
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex gap-2">
-                <Button
-                  type="button"
-                  onClick={() => saveSocialMutation.mutate()}
-                  disabled={!hasSocialChanges || saveSocialMutation.isPending}
-                  data-testid="button-save-social-media"
-                >
-                  {saveSocialMutation.isPending ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : (
-                    <Save className="mr-2 h-4 w-4" />
-                  )}
-                  Save Social Media
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          <SocialMediaEditor
+            components={{ Card, CardHeader, CardTitle, CardDescription, CardContent }}
+            renderInput={(platform) => (
+              <Input
+                id={`social-${platform.key}`}
+                value={socialUrls[platform.settingKey]}
+                onChange={(event) => setSocialUrls((current) => ({ ...current, [platform.settingKey]: normalizePrefilledSocialUrl(event.target.value) }))}
+                placeholder={`https://${platform.key === "x" ? "x.com" : `${platform.key}.com`}/your-profile`}
+                autoPrependHttps
+                data-testid={`input-social-${platform.key}`}
+              />
+            )}
+            styleControl={
+              <Select value={socialIconStyle} onValueChange={(value) => setSocialIconStyle(normalizeSocialIconStyle(value))}>
+                <SelectTrigger id="social-icon-style" data-testid="select-social-icon-style"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="brand">Brand Color</SelectItem>
+                  <SelectItem value="outline">Outline</SelectItem>
+                  <SelectItem value="solid">Solid</SelectItem>
+                </SelectContent>
+              </Select>
+            }
+            preview={socialPreviewLinks.length > 0 ? <SocialMediaLinks links={socialPreviewLinks} iconStyle={socialIconStyle} /> : null}
+            toolbar={
+              <Button type="button" onClick={() => saveSocialMutation.mutate()} disabled={!hasSocialChanges || saveSocialMutation.isPending} data-testid="button-save-social-media">
+                {saveSocialMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                Save Social Media
+              </Button>
+            }
+          />
         </TabsContent>
 
         <TabsContent value="colors" className="space-y-6">

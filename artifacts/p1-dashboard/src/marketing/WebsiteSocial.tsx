@@ -1,5 +1,10 @@
+import { Loader2, Save, RefreshCw } from "lucide-react";
 import {
-  SOCIAL_MEDIA_PLATFORMS,
+  SocialMediaEditor,
+  normalizePrefilledSocialUrl,
+} from "../../../../platform/p1-core/client/src/components/shared/social-media-editor";
+import "./website-social.css";
+import {
   SOCIAL_SETTING_KEYS,
   SOCIAL_ICON_STYLES,
   getSocialMediaLinks,
@@ -139,142 +144,134 @@ export default function WebsiteSocial() {
   const links = values ? getSocialMediaLinks(values) : [];
   const iconStyle = normalizeSocialIconStyle(values?.social_icon_style);
   return (
-    <section className="panel" aria-label="Website social media">
-      <h2>Website social media</h2>
-      <p>
-        Manage your website’s social profiles and icon style. Saved links appear
-        in the public footer on new page loads, usually within 30 seconds.
-      </p>
-      <p>
-        Use full HTTP or HTTPS profile addresses without sign-in credentials.
-        Leave an address blank to remove that link. Only changed fields are
-        saved.
-      </p>
-      {error && <p role="alert">{error}</p>}
-      {message && <p role="status">{message}</p>}
-      {busy && <p role="status">Working…</p>}
-      <button type="button" disabled={busy} onClick={() => void load(true)}>
-        Reload saved social settings
-      </button>
-      {saved && values && (
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (valid) void save();
-          }}
-        >
-          <fieldset
-            disabled={busy || blocked}
-            style={{
-              minWidth: 0,
-              marginBlock: "1rem",
-              display: "grid",
-              gap: "1rem",
-            }}
-          >
-            <legend>Social profiles</legend>
-            {SOCIAL_MEDIA_PLATFORMS.map((platform) => (
-              <div key={platform.key}>
-                <label htmlFor={platform.settingKey}>
-                  {platform.label} URL
-                </label>
-                <input
-                  id={platform.settingKey}
-                  inputMode="url"
-                  autoComplete="off"
-                  value={values[platform.settingKey]}
-                  onChange={(e) =>
-                    setValues({
-                      ...values,
-                      [platform.settingKey]: e.target.value,
-                    })
-                  }
-                  style={{ width: "100%", minWidth: 0 }}
-                />
-              </div>
-            ))}
-            <div>
-              <label htmlFor="social-icon-style">Icon style</label>
-              <select
-                id="social-icon-style"
-                value={values.social_icon_style}
-                onChange={(e) =>
-                  setValues({ ...values, social_icon_style: e.target.value })
+    <section className="website-social" aria-label="Website social media">
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          if (valid) void save();
+        }}
+      >
+        <SocialMediaEditor
+          notices={
+            <>
+              {error && <p role="alert">{error}</p>}
+              {message && <p role="status">{message}</p>}
+              {busy && <p role="status">Working…</p>}
+              {!valid && (
+                <p role="alert">
+                  Correct the changed addresses or icon style before saving. Use
+                  full HTTP or HTTPS links without credentials.
+                </p>
+              )}
+            </>
+          }
+          renderInput={(platform) => (
+            <input
+              id={`social-${platform.key}`}
+              inputMode="url"
+              autoComplete="off"
+              disabled={!values || busy || blocked}
+              value={values?.[platform.settingKey] ?? ""}
+              placeholder={`https://${platform.key === "x" ? "x.com" : `${platform.key}.com`}/your-profile`}
+              data-testid={`input-social-${platform.key}`}
+              onFocus={(event) => {
+                if (values && event.currentTarget.value === "") {
+                  const input = event.currentTarget;
+                  setValues({ ...values, [platform.settingKey]: "https://" });
+                  requestAnimationFrame(() => input.setSelectionRange(8, 8));
                 }
-              >
-                <option value="">Default (brand colors)</option>
-                {values.social_icon_style &&
-                  !SOCIAL_ICON_STYLES.some(
-                    (style) => style === values.social_icon_style,
-                  ) && (
-                    <option value={values.social_icon_style}>
-                      Existing custom style: {values.social_icon_style}
-                    </option>
-                  )}
-                <option value="brand">Brand colors</option>
-                <option value="outline">Outline</option>
-                <option value="solid">Solid</option>
-              </select>
-            </div>
-          </fieldset>
-          {!valid && (
-            <p role="alert">
-              Correct the changed addresses or icon style before saving. Use
-              full HTTP or HTTPS links without credentials.
-            </p>
+              }}
+              onChange={(event) =>
+                values &&
+                setValues({
+                  ...values,
+                  [platform.settingKey]: normalizePrefilledSocialUrl(
+                    event.target.value,
+                  ),
+                })
+              }
+            />
           )}
-          <button type="submit" disabled={busy || blocked || !dirty || !valid}>
-            Save social settings
-          </button>
-        </form>
-      )}
-      {values && (
-        <section aria-label="Social icon preview">
-          <h3>Draft icon preview</h3>
-          <p>
-            Only usable addresses appear here. Existing unsupported values
-            remain stored until you replace them.
-          </p>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: ".5rem" }}>
-            {links.map((link) => (
-              <a
-                key={link.platform}
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={link.label}
-                title={link.label}
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  width: 44,
-                  height: 44,
-                  fontSize: 20,
-                  borderRadius: iconStyle === "brand" ? "50%" : ".35rem",
-                  border:
-                    iconStyle === "outline"
-                      ? "1px solid currentColor"
-                      : "1px solid transparent",
-                  background:
-                    iconStyle === "solid"
-                      ? "hsl(var(--foreground))"
-                      : "transparent",
-                  color:
-                    iconStyle === "brand"
-                      ? link.brandColor
-                      : iconStyle === "solid"
-                        ? "hsl(var(--background))"
-                        : "hsl(var(--foreground))",
-                }}
+          styleControl={
+            <select
+              id="social-icon-style"
+              data-testid="select-social-icon-style"
+              disabled={!values || busy || blocked}
+              value={values?.social_icon_style ?? ""}
+              onChange={(event) =>
+                values &&
+                setValues({ ...values, social_icon_style: event.target.value })
+              }
+            >
+              <option value="">Default (Brand Color)</option>
+              {values?.social_icon_style &&
+                !SOCIAL_ICON_STYLES.some(
+                  (style) => style === values.social_icon_style,
+                ) && (
+                  <option value={values.social_icon_style}>
+                    Existing custom style: {values.social_icon_style}
+                  </option>
+                )}
+              <option value="brand">Brand Color</option>
+              <option value="outline">Outline</option>
+              <option value="solid">Solid</option>
+            </select>
+          }
+          preview={
+            links.length ? (
+              <div className="social-media-links">
+                {links.map((link) => (
+                  <a
+                    key={link.platform}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={link.label}
+                    title={link.label}
+                    data-testid={`link-social-${link.platform}`}
+                    className={`social-media-link social-media-link-${iconStyle}`}
+                    style={
+                      {
+                        "--social-color": link.brandColor,
+                      } as import("react").CSSProperties
+                    }
+                  >
+                    <SocialPlatformIcon platform={link.platform} />
+                  </a>
+                ))}
+              </div>
+            ) : null
+          }
+          toolbar={
+            <>
+              <button
+                className="social-media-save"
+                type="submit"
+                data-testid="button-save-social-media"
+                disabled={!saved || busy || blocked || !dirty || !valid}
               >
-                <SocialPlatformIcon platform={link.platform} />
-              </a>
-            ))}
-          </div>
-          {links.length === 0 && <p>No usable profile links selected.</p>}
-        </section>
-      )}
+                {busy ? (
+                  <Loader2
+                    className="social-media-spinner"
+                    aria-hidden="true"
+                  />
+                ) : (
+                  <Save aria-hidden="true" />
+                )}
+                Save Social Media
+              </button>
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => void load(true)}
+              >
+                <RefreshCw aria-hidden="true" />
+                Reload saved social settings
+              </button>
+            </>
+          }
+        />
+      </form>
     </section>
   );
 }

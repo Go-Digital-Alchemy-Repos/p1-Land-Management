@@ -1,3 +1,16 @@
+## September 19 — Marketing interface correction, Social increment
+
+Owner identified the simplified Marketing pages as a regression from retained `/admin`.
+Social now uses one shared presentation component in both apps, original fields and
+preview layout, guarded Design navigation, original titles/descriptions and distinct
+colorful icons. Dashboard/Core typechecks and builds pass; five focused tests pass.
+Parent browser review verified desktop/mobile and local save without production writes.
+A URL focus-prefix duplication found during review was fixed and covered.
+Remaining page-by-page gaps are recorded in
+`docs/implementation/marketing-admin-interface-parity.md`; this increment does not
+close Marketing parity or authorize admin retirement. Menu/redirect work remains
+uncommitted and must not be included in this UI release. Typography is next.
+
 # Business Center consolidation handoff
 
 Updated September 18, 2026. Read this current-state update before older checkpoint details below.
