@@ -1,0 +1,106 @@
+@import "./seo-presentation.utilities.css";
+.seo-presentation {
+  min-width: 0;
+  color: hsl(var(--foreground));
+  font-size: 14px;
+}
+.seo-presentation :where(*) {
+  box-sizing: border-box;
+  border-style: solid;
+  border-width: 0;
+  border-color: hsl(var(--border));
+}
+.seo-card {
+  border: 1px solid hsl(var(--border));
+  border-radius: 12px;
+  background: hsl(var(--card));
+  box-shadow: 0 1px 2px #17203308;
+  min-width: 0;
+}
+.seo-card-header {
+  padding: 24px;
+  display: grid;
+  gap: 6px;
+}
+.seo-card-content {
+  padding: 0 24px 24px;
+  min-width: 0;
+}
+.seo-card-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+.seo-card-description {
+  color: hsl(var(--muted-foreground));
+  margin: 0;
+  font-size: 12px;
+}
+.seo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+.seo-button,
+.seo-edit-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border: 1px solid hsl(var(--border));
+  border-radius: 6px;
+  background: hsl(var(--background));
+  color: inherit;
+  text-decoration: none;
+  font-size: 12px;
+}
+.seo-tabs {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  padding: 4px;
+  background: hsl(var(--muted));
+  border-radius: 8px;
+  width: fit-content;
+  max-width: 100%;
+}
+.seo-tabs button {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: inherit;
+}
+.seo-tabs button[aria-current="page"] {
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  box-shadow: 0 1px 3px #1420381a;
+}
+.seo-skeleton {
+  background: hsl(var(--muted));
+}
+.seo-presentation code {
+  overflow-wrap: anywhere;
+}
+.seo-presentation a:focus-visible,
+.seo-presentation button:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+@media (max-width: 640px) {
+  .seo-card-header {
+    padding: 16px;
+  }
+  .seo-card-content {
+    padding: 0 16px 16px;
+  }
+  .seo-presentation [data-testid^="audit-row-"] {
+    flex-wrap: wrap;
+  }
+}

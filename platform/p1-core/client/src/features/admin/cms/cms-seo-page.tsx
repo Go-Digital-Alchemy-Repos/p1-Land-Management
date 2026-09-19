@@ -1,8 +1,9 @@
+import { SeoTabNavigation, SeoSettingsCard } from "@/components/shared/seo-workspace-presentation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { AdminSidebar } from "@/features/admin/admin-sidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -131,6 +132,13 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 export default function CmsSeoPage() {
+  const [seoTab, setSeoTab] = useState("settings");
+  const tabMap: Record<string, string> = {
+    Defaults: "settings",
+    Audit: "audit",
+    Redirects: "redirects",
+    "Sitemap and robots": "sitemap",
+  };
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -220,29 +228,19 @@ export default function CmsSeoPage() {
           )}
         </div>
 
-        <Tabs defaultValue="settings">
-          <TabsList className="flex-wrap h-auto gap-1">
-            <TabsTrigger value="settings" data-testid="tab-seo-settings">
-              <Globe className="mr-1.5 h-4 w-4 text-blue-600" />
-              Global Settings
-            </TabsTrigger>
-            <TabsTrigger value="audit" data-testid="tab-seo-audit">
-              <BarChart2 className="mr-1.5 h-4 w-4 text-emerald-600" />
-              SEO Audit
-            </TabsTrigger>
-            <TabsTrigger value="redirects" data-testid="tab-seo-redirects">
-              <ArrowUpRight className="mr-1.5 h-4 w-4 text-amber-600" />
-              Redirects
-            </TabsTrigger>
-            <TabsTrigger value="sitemap" data-testid="tab-seo-sitemap">
-              <Map className="mr-1.5 h-4 w-4 text-cyan-600" />
-              Sitemap
-            </TabsTrigger>
-            <TabsTrigger value="roadmap" data-testid="tab-seo-roadmap">
-              <Code2 className="mr-1.5 h-4 w-4 text-violet-600" />
-              Architecture & Roadmap
-            </TabsTrigger>
-          </TabsList>
+        <Tabs value={seoTab} onValueChange={setSeoTab}>
+          <div className="seo-presentation">
+            <SeoTabNavigation
+              value={Object.keys(tabMap).find((key) => tabMap[key] === seoTab) || ""}
+              onChange={(key) => setSeoTab(tabMap[key])}
+            />
+            <TabsList>
+              <TabsTrigger value="roadmap" data-testid="tab-seo-roadmap">
+                <Code2 className="mr-1.5 h-4 w-4 text-violet-600" />
+                Architecture &amp; Roadmap
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="settings" className="space-y-5 mt-5">
             {isLoading ? (
@@ -254,327 +252,295 @@ export default function CmsSeoPage() {
             ) : (
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-                  <Card>
-                    <CardHeader className="pb-3">
-                      <div className="flex items-center gap-2">
-                        <Building2 className="h-4 w-4 text-violet-500" />
-                        <CardTitle className="text-base">Site Identity</CardTitle>
-                      </div>
-                      <CardDescription className="text-xs">
-                        Core identity values used across SEO tags and structured data
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <FormField
-                        control={form.control}
-                        name="siteName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Site Name</FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                placeholder="Core Platform"
-                                data-testid="input-site-name"
-                              />
-                            </FormControl>
-                            <FormDescription className="text-xs">
-                              Used in title patterns and structured data
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="organizationName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Organization Name</FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                value={field.value ?? ""}
-                                placeholder="Core Platform"
-                                data-testid="input-org-name"
-                              />
-                            </FormControl>
-                            <FormDescription className="text-xs">
-                              Used in Organization structured data (JSON-LD)
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="siteUrl"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Canonical Site URL</FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                value={field.value ?? ""}
-                                placeholder="https://coreplatform.com"
-                                autoPrependHttps
-                                data-testid="input-site-url"
-                              />
-                            </FormControl>
-                            <FormDescription className="text-xs">
-                              Base URL used for canonical tags and sitemap generation
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </CardContent>
-                  </Card>
+                  <SeoSettingsCard
+                    title="Site Identity"
+                    description="Core identity values used across SEO tags and structured data"
+                    Icon={Building2}
+                    color="text-violet-500"
+                  >
+                    <FormField
+                      control={form.control}
+                      name="siteName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Site Name</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              placeholder="Core Platform"
+                              data-testid="input-site-name"
+                            />
+                          </FormControl>
+                          <FormDescription className="text-xs">
+                            Used in title patterns and structured data
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="organizationName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Organization Name</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              value={field.value ?? ""}
+                              placeholder="Core Platform"
+                              data-testid="input-org-name"
+                            />
+                          </FormControl>
+                          <FormDescription className="text-xs">
+                            Used in Organization structured data (JSON-LD)
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="siteUrl"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Canonical Site URL</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              value={field.value ?? ""}
+                              placeholder="https://coreplatform.com"
+                              autoPrependHttps
+                              data-testid="input-site-url"
+                            />
+                          </FormControl>
+                          <FormDescription className="text-xs">
+                            Base URL used for canonical tags and sitemap generation
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </SeoSettingsCard>
 
-                  <Card>
-                    <CardHeader className="pb-3">
-                      <div className="flex items-center gap-2">
-                        <SearchIcon className="h-4 w-4 text-violet-500" />
-                        <CardTitle className="text-base">Default SEO Meta</CardTitle>
-                      </div>
-                      <CardDescription className="text-xs">
-                        Fallback meta tags used when a page has no custom SEO settings
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <FormField
-                        control={form.control}
-                        name="titleSuffix"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Title Suffix / Pattern</FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                placeholder=" | Core Platform"
-                                data-testid="input-title-suffix"
-                              />
-                            </FormControl>
-                            <FormDescription className="text-xs">
-                              Appended to page titles — e.g. "Find a Provider | Core Platform"
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="defaultMetaDescription"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>
-                              Default Meta Description
-                              <span
-                                className={`ml-2 text-xs font-normal ${descValue.length > 160 ? "text-amber-500" : "text-muted-foreground"}`}
-                              >
-                                {descValue.length}/160 recommended
-                              </span>
-                            </FormLabel>
-                            <FormControl>
-                              <Textarea
-                                {...field}
-                                value={field.value ?? ""}
-                                placeholder="Describe your site in 1-2 sentences for search engines…"
-                                className="resize-none"
-                                rows={3}
-                                data-testid="input-default-description"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="defaultRobotsNoindex"
-                        render={({ field }) => (
-                          <FormItem>
-                            <div className="flex items-center justify-between rounded-lg border px-4 py-3">
-                              <div>
-                                <FormLabel className="text-sm font-medium cursor-pointer">
-                                  Disable Indexing Globally
-                                </FormLabel>
-                                <p className="text-xs text-muted-foreground mt-0.5">
-                                  Sets noindex,nofollow on all pages. Use only during development.
-                                </p>
-                              </div>
-                              <FormControl>
-                                <Switch
-                                  checked={field.value}
-                                  onCheckedChange={field.onChange}
-                                  data-testid="switch-noindex"
-                                />
-                              </FormControl>
+                  <SeoSettingsCard
+                    title="Default SEO Meta"
+                    description="Fallback meta tags used when a page has no custom SEO settings"
+                    Icon={SearchIcon}
+                    color="text-violet-500"
+                  >
+                    <FormField
+                      control={form.control}
+                      name="titleSuffix"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Title Suffix / Pattern</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              placeholder=" | Core Platform"
+                              data-testid="input-title-suffix"
+                            />
+                          </FormControl>
+                          <FormDescription className="text-xs">
+                            Appended to page titles — e.g. "Find a Provider | Core Platform"
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="defaultMetaDescription"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Default Meta Description
+                            <span
+                              className={`ml-2 text-xs font-normal ${descValue.length > 160 ? "text-amber-500" : "text-muted-foreground"}`}
+                            >
+                              {descValue.length}/160 recommended
+                            </span>
+                          </FormLabel>
+                          <FormControl>
+                            <Textarea
+                              {...field}
+                              value={field.value ?? ""}
+                              placeholder="Describe your site in 1-2 sentences for search engines…"
+                              className="resize-none"
+                              rows={3}
+                              data-testid="input-default-description"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="defaultRobotsNoindex"
+                      render={({ field }) => (
+                        <FormItem>
+                          <div className="flex items-center justify-between rounded-lg border px-4 py-3">
+                            <div>
+                              <FormLabel className="text-sm font-medium cursor-pointer">
+                                Disable Indexing Globally
+                              </FormLabel>
+                              <p className="text-xs text-muted-foreground mt-0.5">
+                                Sets noindex,nofollow on all pages. Use only during development.
+                              </p>
                             </div>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </CardContent>
-                  </Card>
+                            <FormControl>
+                              <Switch
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                data-testid="switch-noindex"
+                              />
+                            </FormControl>
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </SeoSettingsCard>
 
-                  <Card>
-                    <CardHeader className="pb-3">
-                      <div className="flex items-center gap-2">
-                        <Share2 className="h-4 w-4 text-violet-500" />
-                        <CardTitle className="text-base">Default Open Graph Image</CardTitle>
-                      </div>
-                      <CardDescription className="text-xs">
-                        Fallback image for social sharing when a page has no custom OG image.
-                        Recommended: 1200×630 px.
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
+                  <SeoSettingsCard
+                    title="Default Open Graph Image"
+                    description="Fallback image for social sharing when a page has no custom OG image. Recommended: 1200×630 px."
+                    Icon={Share2}
+                    color="text-violet-500"
+                  >
+                    <FormField
+                      control={form.control}
+                      name="defaultOgImageUrl"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <CmsImageUpload
+                              value={field.value ?? ""}
+                              onChange={field.onChange}
+                              helpText="Upload via R2 or pick from media library. Recommended 1200×630 px."
+                              data-testid="upload-og-image"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </SeoSettingsCard>
+
+                  <SeoSettingsCard
+                    title="Organization Logo"
+                    description="Used in Organization structured data and as a fallback brand image. Recommended: square PNG or SVG."
+                    Icon={Building2}
+                    color="text-violet-500"
+                  >
+                    <FormField
+                      control={form.control}
+                      name="organizationLogoUrl"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <CmsImageUpload
+                              value={field.value ?? ""}
+                              onChange={field.onChange}
+                              helpText="Upload via R2 or pick from media library. Recommended square format."
+                              data-testid="upload-org-logo"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </SeoSettingsCard>
+
+                  <SeoSettingsCard
+                    title="Social Profiles"
+                    description="Linked in Organization structured data and used for social meta tags"
+                    Icon={Globe}
+                    color="text-violet-500"
+                  >
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <FormField
                         control={form.control}
-                        name="defaultOgImageUrl"
+                        name="facebookUrl"
                         render={({ field }) => (
                           <FormItem>
+                            <FormLabel>Facebook URL</FormLabel>
                             <FormControl>
-                              <CmsImageUpload
+                              <Input
+                                {...field}
                                 value={field.value ?? ""}
-                                onChange={field.onChange}
-                                helpText="Upload via R2 or pick from media library. Recommended 1200×630 px."
-                                data-testid="upload-og-image"
+                                placeholder="https://facebook.com/coreplatform"
+                                autoPrependHttps
+                                data-testid="input-facebook-url"
                               />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader className="pb-3">
-                      <div className="flex items-center gap-2">
-                        <Building2 className="h-4 w-4 text-violet-500" />
-                        <CardTitle className="text-base">Organization Logo</CardTitle>
-                      </div>
-                      <CardDescription className="text-xs">
-                        Used in Organization structured data and as a fallback brand image.
-                        Recommended: square PNG or SVG.
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
                       <FormField
                         control={form.control}
-                        name="organizationLogoUrl"
+                        name="twitterHandle"
                         render={({ field }) => (
                           <FormItem>
+                            <FormLabel>Twitter / X Handle</FormLabel>
                             <FormControl>
-                              <CmsImageUpload
+                              <Input
+                                {...field}
                                 value={field.value ?? ""}
-                                onChange={field.onChange}
-                                helpText="Upload via R2 or pick from media library. Recommended square format."
-                                data-testid="upload-org-logo"
+                                placeholder="@coreplatform"
+                                data-testid="input-twitter-handle"
+                              />
+                            </FormControl>
+                            <FormDescription className="text-xs">
+                              Used for twitter:site meta tag
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="linkedinUrl"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>LinkedIn URL</FormLabel>
+                            <FormControl>
+                              <Input
+                                {...field}
+                                value={field.value ?? ""}
+                                placeholder="https://linkedin.com/company/coreplatform"
+                                autoPrependHttps
+                                data-testid="input-linkedin-url"
                               />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader className="pb-3">
-                      <div className="flex items-center gap-2">
-                        <Globe className="h-4 w-4 text-violet-500" />
-                        <CardTitle className="text-base">Social Profiles</CardTitle>
-                      </div>
-                      <CardDescription className="text-xs">
-                        Linked in Organization structured data and used for social meta tags
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <FormField
-                          control={form.control}
-                          name="facebookUrl"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Facebook URL</FormLabel>
-                              <FormControl>
-                                <Input
-                                  {...field}
-                                  value={field.value ?? ""}
-                                  placeholder="https://facebook.com/coreplatform"
-                                  autoPrependHttps
-                                  data-testid="input-facebook-url"
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={form.control}
-                          name="twitterHandle"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Twitter / X Handle</FormLabel>
-                              <FormControl>
-                                <Input
-                                  {...field}
-                                  value={field.value ?? ""}
-                                  placeholder="@coreplatform"
-                                  data-testid="input-twitter-handle"
-                                />
-                              </FormControl>
-                              <FormDescription className="text-xs">
-                                Used for twitter:site meta tag
-                              </FormDescription>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={form.control}
-                          name="linkedinUrl"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>LinkedIn URL</FormLabel>
-                              <FormControl>
-                                <Input
-                                  {...field}
-                                  value={field.value ?? ""}
-                                  placeholder="https://linkedin.com/company/coreplatform"
-                                  autoPrependHttps
-                                  data-testid="input-linkedin-url"
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={form.control}
-                          name="instagramUrl"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Instagram URL</FormLabel>
-                              <FormControl>
-                                <Input
-                                  {...field}
-                                  value={field.value ?? ""}
-                                  placeholder="https://instagram.com/coreplatform"
-                                  autoPrependHttps
-                                  data-testid="input-instagram-url"
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                    </CardContent>
-                  </Card>
+                      <FormField
+                        control={form.control}
+                        name="instagramUrl"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Instagram URL</FormLabel>
+                            <FormControl>
+                              <Input
+                                {...field}
+                                value={field.value ?? ""}
+                                placeholder="https://instagram.com/coreplatform"
+                                autoPrependHttps
+                                data-testid="input-instagram-url"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </SeoSettingsCard>
 
                   <div className="flex justify-end">
                     <Button

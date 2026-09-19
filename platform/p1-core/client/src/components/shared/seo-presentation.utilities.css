@@ -1,0 +1,366 @@
+/* Generated from shared CMS page JSX using retained Core Tailwind; scoped adapter. */
+.seo-presentation.seo-presentation .visible {
+    visibility: visible
+}
+.seo-presentation.seo-presentation .mx-auto {
+    margin-left: auto;
+    margin-right: auto
+}
+.seo-presentation.seo-presentation .mb-1 {
+    margin-bottom: 0.25rem
+}
+.seo-presentation.seo-presentation .mb-2 {
+    margin-bottom: 0.5rem
+}
+.seo-presentation.seo-presentation .mb-3 {
+    margin-bottom: 0.75rem
+}
+.seo-presentation.seo-presentation .mb-4 {
+    margin-bottom: 1rem
+}
+.seo-presentation.seo-presentation .ml-auto {
+    margin-left: auto
+}
+.seo-presentation.seo-presentation .mt-0\.5 {
+    margin-top: 0.125rem
+}
+.seo-presentation.seo-presentation .mt-1 {
+    margin-top: 0.25rem
+}
+.seo-presentation.seo-presentation .mt-5 {
+    margin-top: 1.25rem
+}
+.seo-presentation.seo-presentation .flex {
+    display: flex
+}
+.seo-presentation.seo-presentation .inline-flex {
+    display: inline-flex
+}
+.seo-presentation.seo-presentation .grid {
+    display: grid
+}
+.seo-presentation.seo-presentation .h-20 {
+    height: 5rem
+}
+.seo-presentation.seo-presentation .h-3 {
+    height: 0.75rem
+}
+.seo-presentation.seo-presentation .h-3\.5 {
+    height: 0.875rem
+}
+.seo-presentation.seo-presentation .h-4 {
+    height: 1rem
+}
+.seo-presentation.seo-presentation .h-64 {
+    height: 16rem
+}
+.seo-presentation.seo-presentation .h-7 {
+    height: 1.75rem
+}
+.seo-presentation.seo-presentation .h-8 {
+    height: 2rem
+}
+.seo-presentation.seo-presentation .w-3 {
+    width: 0.75rem
+}
+.seo-presentation.seo-presentation .w-3\.5 {
+    width: 0.875rem
+}
+.seo-presentation.seo-presentation .w-4 {
+    width: 1rem
+}
+.seo-presentation.seo-presentation .w-8 {
+    width: 2rem
+}
+.seo-presentation.seo-presentation .min-w-0 {
+    min-width: 0px
+}
+.seo-presentation.seo-presentation .flex-1 {
+    flex: 1 1 0%
+}
+.seo-presentation.seo-presentation .flex-shrink-0 {
+    flex-shrink: 0
+}
+.seo-presentation.seo-presentation .grid-cols-1 {
+    grid-template-columns: repeat(1, minmax(0, 1fr))
+}
+.seo-presentation.seo-presentation .grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr))
+}
+.seo-presentation.seo-presentation .flex-wrap {
+    flex-wrap: wrap
+}
+.seo-presentation.seo-presentation .items-start {
+    align-items: flex-start
+}
+.seo-presentation.seo-presentation .items-center {
+    align-items: center
+}
+.seo-presentation.seo-presentation .justify-between {
+    justify-content: space-between
+}
+.seo-presentation.seo-presentation .gap-1 {
+    gap: 0.25rem
+}
+.seo-presentation.seo-presentation .gap-1\.5 {
+    gap: 0.375rem
+}
+.seo-presentation.seo-presentation .gap-2 {
+    gap: 0.5rem
+}
+.seo-presentation.seo-presentation .gap-3 {
+    gap: 0.75rem
+}
+.seo-presentation.seo-presentation .gap-4 {
+    gap: 1rem
+}
+.seo-presentation.seo-presentation :is(.space-y-4 > :not([hidden]) ~ :not([hidden])) {
+    --tw-space-y-reverse: 0;
+    margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse)));
+    margin-bottom: calc(1rem * var(--tw-space-y-reverse))
+}
+.seo-presentation.seo-presentation :is(.space-y-5 > :not([hidden]) ~ :not([hidden])) {
+    --tw-space-y-reverse: 0;
+    margin-top: calc(1.25rem * calc(1 - var(--tw-space-y-reverse)));
+    margin-bottom: calc(1.25rem * var(--tw-space-y-reverse))
+}
+.seo-presentation.seo-presentation .truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap
+}
+.seo-presentation.seo-presentation .rounded {
+    border-radius: 0.25rem
+}
+.seo-presentation.seo-presentation .rounded-lg {
+    border-radius: 0.5rem
+}
+.seo-presentation.seo-presentation .rounded-md {
+    border-radius: 0.375rem
+}
+.seo-presentation.seo-presentation .border-b {
+    border-bottom-width: 1px
+}
+.seo-presentation.seo-presentation .bg-amber-100 {
+    --tw-bg-opacity: 1;
+    background-color: rgb(254 243 199 / var(--tw-bg-opacity, 1))
+}
+.seo-presentation.seo-presentation .bg-emerald-100 {
+    --tw-bg-opacity: 1;
+    background-color: rgb(209 250 229 / var(--tw-bg-opacity, 1))
+}
+.seo-presentation.seo-presentation .bg-indigo-500 {
+    --tw-bg-opacity: 1;
+    background-color: rgb(99 102 241 / var(--tw-bg-opacity, 1))
+}
+.seo-presentation.seo-presentation .bg-muted {
+    --tw-bg-opacity: 1;
+    background-color: hsl(var(--muted) / var(--tw-bg-opacity, 1))
+}
+.seo-presentation.seo-presentation .bg-purple-500 {
+    --tw-bg-opacity: 1;
+    background-color: rgb(168 85 247 / var(--tw-bg-opacity, 1))
+}
+.seo-presentation.seo-presentation .bg-red-100 {
+    --tw-bg-opacity: 1;
+    background-color: rgb(254 226 226 / var(--tw-bg-opacity, 1))
+}
+.seo-presentation.seo-presentation .bg-slate-100 {
+    --tw-bg-opacity: 1;
+    background-color: rgb(241 245 249 / var(--tw-bg-opacity, 1))
+}
+.seo-presentation.seo-presentation .bg-violet-500 {
+    --tw-bg-opacity: 1;
+    background-color: rgb(139 92 246 / var(--tw-bg-opacity, 1))
+}
+.seo-presentation.seo-presentation .bg-opacity-10 {
+    --tw-bg-opacity: 0.1
+}
+.seo-presentation.seo-presentation .p-2 {
+    padding: 0.5rem
+}
+.seo-presentation.seo-presentation .px-1\.5 {
+    padding-left: 0.375rem;
+    padding-right: 0.375rem
+}
+.seo-presentation.seo-presentation .px-2 {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem
+}
+.seo-presentation.seo-presentation .py-0 {
+    padding-top: 0px;
+    padding-bottom: 0px
+}
+.seo-presentation.seo-presentation .py-0\.5 {
+    padding-top: 0.125rem;
+    padding-bottom: 0.125rem
+}
+.seo-presentation.seo-presentation .py-3 {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem
+}
+.seo-presentation.seo-presentation .pb-2 {
+    padding-bottom: 0.5rem
+}
+.seo-presentation.seo-presentation .pb-3 {
+    padding-bottom: 0.75rem
+}
+.seo-presentation.seo-presentation .pb-4 {
+    padding-bottom: 1rem
+}
+.seo-presentation.seo-presentation .pb-8 {
+    padding-bottom: 2rem
+}
+.seo-presentation.seo-presentation .pt-0 {
+    padding-top: 0px
+}
+.seo-presentation.seo-presentation .pt-4 {
+    padding-top: 1rem
+}
+.seo-presentation.seo-presentation .pt-6 {
+    padding-top: 1.5rem
+}
+.seo-presentation.seo-presentation .pt-8 {
+    padding-top: 2rem
+}
+.seo-presentation.seo-presentation .text-center {
+    text-align: center
+}
+.seo-presentation.seo-presentation .font-mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace
+}
+.seo-presentation.seo-presentation .text-base {
+    font-size: 1rem;
+    line-height: 1.5rem
+}
+.seo-presentation.seo-presentation .text-lg {
+    font-size: 1.125rem;
+    line-height: 1.75rem
+}
+.seo-presentation.seo-presentation .text-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem
+}
+.seo-presentation.seo-presentation .text-xs {
+    font-size: 0.75rem;
+    line-height: 1rem
+}
+.seo-presentation.seo-presentation .font-medium {
+    font-weight: 500
+}
+.seo-presentation.seo-presentation .font-semibold {
+    font-weight: 600
+}
+.seo-presentation.seo-presentation .uppercase {
+    text-transform: uppercase
+}
+.seo-presentation.seo-presentation .leading-tight {
+    line-height: 1.25
+}
+.seo-presentation.seo-presentation .tracking-wide {
+    letter-spacing: 0.025em
+}
+.seo-presentation.seo-presentation .text-amber-500 {
+    --tw-text-opacity: 1;
+    color: rgb(245 158 11 / var(--tw-text-opacity, 1))
+}
+.seo-presentation.seo-presentation .text-amber-600 {
+    --tw-text-opacity: 1;
+    color: rgb(217 119 6 / var(--tw-text-opacity, 1))
+}
+.seo-presentation.seo-presentation .text-amber-700 {
+    --tw-text-opacity: 1;
+    color: rgb(180 83 9 / var(--tw-text-opacity, 1))
+}
+.seo-presentation.seo-presentation .text-blue-500 {
+    --tw-text-opacity: 1;
+    color: rgb(59 130 246 / var(--tw-text-opacity, 1))
+}
+.seo-presentation.seo-presentation .text-blue-600 {
+    --tw-text-opacity: 1;
+    color: rgb(37 99 235 / var(--tw-text-opacity, 1))
+}
+.seo-presentation.seo-presentation .text-cyan-600 {
+    --tw-text-opacity: 1;
+    color: rgb(8 145 178 / var(--tw-text-opacity, 1))
+}
+.seo-presentation.seo-presentation .text-emerald-500 {
+    --tw-text-opacity: 1;
+    color: rgb(16 185 129 / var(--tw-text-opacity, 1))
+}
+.seo-presentation.seo-presentation .text-emerald-600 {
+    --tw-text-opacity: 1;
+    color: rgb(5 150 105 / var(--tw-text-opacity, 1))
+}
+.seo-presentation.seo-presentation .text-emerald-700 {
+    --tw-text-opacity: 1;
+    color: rgb(4 120 87 / var(--tw-text-opacity, 1))
+}
+.seo-presentation.seo-presentation .text-indigo-500 {
+    --tw-text-opacity: 1;
+    color: rgb(99 102 241 / var(--tw-text-opacity, 1))
+}
+.seo-presentation.seo-presentation .text-muted-foreground {
+    --tw-text-opacity: 1;
+    color: hsl(var(--muted-foreground) / var(--tw-text-opacity, 1))
+}
+.seo-presentation.seo-presentation .text-red-700 {
+    --tw-text-opacity: 1;
+    color: rgb(185 28 28 / var(--tw-text-opacity, 1))
+}
+.seo-presentation.seo-presentation .text-slate-600 {
+    --tw-text-opacity: 1;
+    color: rgb(71 85 105 / var(--tw-text-opacity, 1))
+}
+.seo-presentation.seo-presentation .text-violet-500 {
+    --tw-text-opacity: 1;
+    color: rgb(139 92 246 / var(--tw-text-opacity, 1))
+}
+.seo-presentation.seo-presentation .opacity-50 {
+    opacity: 0.5
+}
+.seo-presentation.seo-presentation .filter {
+    filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)
+}
+.seo-presentation.seo-presentation .last\:border-0:last-child {
+    border-width: 0px
+}
+@media (min-width: 640px) {
+    .seo-presentation.seo-presentation .sm\:grid-cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr))
+    }
+    .seo-presentation.seo-presentation .sm\:grid-cols-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr))
+    }
+}
+@media (prefers-color-scheme: dark) {
+    .seo-presentation.seo-presentation .dark\:bg-amber-900\/30 {
+        background-color: rgb(120 53 15 / 0.3)
+    }
+    .seo-presentation.seo-presentation .dark\:bg-emerald-900\/30 {
+        background-color: rgb(6 78 59 / 0.3)
+    }
+    .seo-presentation.seo-presentation .dark\:bg-red-900\/30 {
+        background-color: rgb(127 29 29 / 0.3)
+    }
+    .seo-presentation.seo-presentation .dark\:bg-slate-800 {
+        --tw-bg-opacity: 1;
+        background-color: rgb(30 41 59 / var(--tw-bg-opacity, 1))
+    }
+    .seo-presentation.seo-presentation .dark\:text-amber-400 {
+        --tw-text-opacity: 1;
+        color: rgb(251 191 36 / var(--tw-text-opacity, 1))
+    }
+    .seo-presentation.seo-presentation .dark\:text-emerald-400 {
+        --tw-text-opacity: 1;
+        color: rgb(52 211 153 / var(--tw-text-opacity, 1))
+    }
+    .seo-presentation.seo-presentation .dark\:text-red-400 {
+        --tw-text-opacity: 1;
+        color: rgb(248 113 113 / var(--tw-text-opacity, 1))
+    }
+    .seo-presentation.seo-presentation .dark\:text-slate-400 {
+        --tw-text-opacity: 1;
+        color: rgb(148 163 184 / var(--tw-text-opacity, 1))
+    }
+}

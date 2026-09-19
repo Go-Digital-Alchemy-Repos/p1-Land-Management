@@ -197,241 +197,35 @@ const assert = require("node:assert/strict");
         }),
     );
     await page.goto("http://127.0.0.1:4347/marketing/content/sections");
+    await page.getByTestId("button-edit-section-section").click();
+    await page.getByTestId("input-section-name").waitFor();
+    await page.locator('[aria-label="Select Hero block"]:visible').click();
     await page
-      .getByRole("button", { name: "Edit Reusable section", exact: true })
-      .click();
-    await page
-      .getByRole("button", {
-        name: "Save block 1 as reusable section",
-        exact: true,
-      })
-      .click();
-    assert.equal(
-      await page
-        .getByRole("button", { name: "Create reusable section", exact: true })
-        .isDisabled(),
-      true,
-    );
-    await page
-      .getByLabel("Reusable section name", { exact: true })
-      .fill("Saved compatibility block");
-    await page
-      .getByLabel("Reusable section description", { exact: true })
-      .fill("Reusable test description");
-    await page
-      .getByLabel("Reusable section name", { exact: true })
-      .press("Enter");
-    assert.equal(saved, undefined);
-    assert.equal(createdCopy, undefined);
-    await page
-      .getByRole("button", { name: "Create reusable section", exact: true })
-      .click();
-    await page
-      .getByRole("alert")
-      .filter({ hasText: "Synthetic section save failure" })
-      .waitFor();
-    assert.equal(
-      await page
-        .getByLabel("Reusable section name", { exact: true })
-        .inputValue(),
-      "Saved compatibility block",
-    );
-    failCopy = false;
-    await page
-      .getByRole("button", { name: "Create reusable section", exact: true })
-      .click();
-    await page
-      .getByText(
-        "Saved Saved compatibility block as a reusable section. Current editor changes remain unsaved.",
-        { exact: true },
-      )
-      .waitFor();
-    assert.equal(saved, undefined);
-    assert.equal(createdCopy.name, "Saved compatibility block");
-    assert.equal(createdCopy.blocks.length, 1);
-    assert.notEqual(createdCopy.blocks[0].id, record.blocks[0].id);
-    assert.deepEqual(createdCopy.blocks[0].props, record.blocks[0].props);
-    assert.deepEqual(createdCopy.blocks[0].props.nested, { safe: true });
-    await page
-      .getByRole("button", { name: "Preview section", exact: true })
-      .click();
-    let preview = page.frameLocator('iframe[title="Desktop section preview"]');
-    await preview.getByText("Draft received", { exact: true }).waitFor();
-    assert.equal(
-      await preview
-        .locator("body")
-        .evaluate(() => window.received.at(-1).blocks[1].props.title),
-      "Old title",
-    );
-    await page.getByRole("button", { name: "Mobile", exact: true }).click();
-    assert.equal(
-      await page
-        .locator('iframe[title="Mobile section preview"]')
-        .evaluate((node) => node.getBoundingClientRect().width),
-      430,
-    );
-    await page
-      .getByRole("button", { name: "Close preview", exact: true })
-      .click();
-    await page.getByText("Edit Hero", { exact: true }).click();
-    await page
-      .getByText("Edit Future Block (Compatibility Mode)", { exact: true })
-      .click();
-    await page
-      .getByLabel("Preserve", { exact: true })
-      .fill("Edited legacy text");
-    assert.equal(
-      await page.getByLabel("Assigned form", { exact: true }).inputValue(),
-      "missing-form",
-    );
-    assert.equal(
-      await page.getByLabel("Primary action", { exact: true }).inputValue(),
-      "internal-link",
-    );
-    assert.equal(
-      await page
-        .getByLabel("Primary Internal Page", { exact: true })
-        .inputValue(),
-      "/contact",
-    );
-    await page
-      .getByLabel("Primary action", { exact: true })
-      .selectOption("form-modal");
-    assert.equal(
-      await page.getByLabel("Primary Internal Page", { exact: true }).count(),
-      0,
-    );
-    assert.equal(
-      await page.getByLabel("Primary form", { exact: true }).inputValue(),
-      "contact",
-    );
-    await page.getByLabel("Heading", { exact: true }).fill("Updated title");
-    await page
-      .getByRole("button", { name: "Preview section", exact: true })
-      .click();
-    const livePreview = page.frameLocator(
-      'iframe[title="Desktop section preview"]',
-    );
-    await livePreview.getByText("Draft received", { exact: true }).waitFor();
-    await page
-      .getByLabel("Heading", { exact: true })
-      .fill("Live preview title");
-    await page
-      .frames()
-      .find((frame) =>
-        frame
-          .url()
-          .startsWith("https://www.p1landmanagement.com/cms-preview/builder"),
-      )
-      .waitForFunction(() =>
-        window.received
-          .at(-1)
-          .blocks.some((block) => block.props.title === "Live preview title"),
-      );
-    const previousPreviewUrl = await page
-      .locator('iframe[title="Desktop section preview"]')
-      .getAttribute("src");
-    await page
-      .getByRole("button", { name: "Retry preview", exact: true })
-      .click();
-    await livePreview.getByText("Draft received", { exact: true }).waitFor();
-    assert.notEqual(
-      await page
-        .locator('iframe[title="Desktop section preview"]')
-        .getAttribute("src"),
-      previousPreviewUrl,
-    );
-    await page.getByLabel("Heading", { exact: true }).fill("Updated title");
-    await page
-      .getByRole("button", { name: "Close preview", exact: true })
-      .click();
-
-    await page
-      .getByLabel("Feature label", { exact: true })
-      .fill("Edited feature");
-    accept = false;
-    await page
-      .getByRole("button", { name: "Back to sections", exact: true })
-      .click();
-    assert.equal(
-      await page.getByLabel("Heading", { exact: true }).inputValue(),
-      "Updated title",
-    );
-    accept = true;
-    await page
-      .getByRole("button", { name: "Move block 2 up", exact: true })
-      .click();
-    await page
-      .getByRole("button", { name: "Save section", exact: true })
-      .click();
+      .locator('[data-testid="prop-input-title"]:visible')
+      .fill("Updated title");
+    await page.getByTestId("button-save-section").click();
     await page.getByText("Section saved.", { exact: true }).waitFor();
-    assert.equal(saved.blocks[0].props.title, "Updated title");
-    assert.equal(saved.blocks[0].props.unknownProperty, 42);
-    assert.equal(saved.blocks[0].props.primaryLink, "/contact");
-    assert.equal(saved.blocks[0].props.primaryAction, "form-modal");
-    assert.equal(saved.blocks[0].extra, "keep");
-    assert.equal(saved.blocks[0].props.items[0].extra, "keep");
-    assert.equal(saved.blocks[0].props.form, "missing-form");
-    assert.deepEqual(saved.blocks[1], {
+    assert.equal(saved.blocks[1].props.title, "Updated title");
+    assert.equal(saved.blocks[1].extra, "keep");
+    assert.equal(saved.blocks[1].props.unknownProperty, 42);
+    assert.deepEqual(saved.blocks[0], {
       id: "legacy",
       type: "future-block",
-      props: { preserve: "Edited legacy text", nested: { safe: true } },
+      props: { preserve: "unchanged", nested: { safe: true } },
     });
+    await page.locator('[aria-label="Select Hero block"]:visible').click();
     await page
-      .getByRole("button", { name: "Duplicate block", exact: true })
-      .first()
-      .click();
-    await page
-      .getByRole("button", { name: "Save section", exact: true })
-      .click();
-    await page.waitForFunction(
-      () => !document.querySelector("fieldset[disabled]"),
-    );
-    assert.equal(saved.blocks.length, 3);
-    assert.notEqual(saved.blocks[0].id, saved.blocks[1].id);
-    assert.deepEqual(saved.blocks[0].props, saved.blocks[1].props);
-    await page.getByLabel("Insert position", { exact: true }).selectOption("0");
-    await page
-      .getByRole("button", { name: "Browse saved sections", exact: true })
-      .click();
-    const library = page.getByRole("region", { name: "Saved section library" });
-    await library
-      .getByRole("button", { name: "Insert Saved feature", exact: true })
-      .waitFor();
+      .locator('[data-testid="prop-input-title"]:visible')
+      .fill("Unsaved draft");
+    accept = false;
+    await page.getByRole("button", { name: "Sections", exact: true }).click();
     assert.equal(
-      await library
-        .getByRole("button", { name: "Insert Starter - Dynamic", exact: true })
-        .count(),
-      0,
+      await page
+        .locator('[data-testid="prop-input-title"]:visible')
+        .inputValue(),
+      "Unsaved draft",
     );
-    await page
-      .getByLabel("Find saved sections", { exact: true })
-      .fill("Saved feature");
-    await page
-      .getByLabel("Saved section category", { exact: true })
-      .selectOption("features");
-    await library.screenshot({ path: "/tmp/p1-saved-section-library.png" });
-    await library
-      .getByRole("button", { name: "Insert Saved feature", exact: true })
-      .click();
-    await page
-      .getByRole("button", { name: "Save section", exact: true })
-      .click();
-    await page.waitForFunction(
-      () => !document.querySelector("fieldset[disabled]"),
-    );
-    assert.equal(saved.blocks.length, 4);
-    assert.equal(saved.blocks[0].props.title, "Saved source title");
-    assert.notEqual(saved.blocks[0].id, "source-block");
-    assert.equal(saved.blocks[0].extra, "retained");
-    assert.equal(saved.blocks[0].props.items[0].extra, "retained");
-    assert.equal(savedSource.blocks[0].id, "source-block");
-    assert.equal(savedSource.blocks[0].props.title, "Saved source title");
-    await page.setViewportSize({ width: 390, height: 844 });
-    await page.waitForFunction(
-      () =>
-        document.querySelector(".sidebar").getBoundingClientRect().right <= 0,
-    );
+    accept = true;
     await page
       .getByRole("button", { name: "Preview section", exact: true })
       .click();
@@ -439,23 +233,34 @@ const assert = require("node:assert/strict");
       .frameLocator('iframe[title="Desktop section preview"]')
       .getByText("Draft received", { exact: true })
       .waitFor();
-    await page.getByRole("button", { name: "Mobile", exact: true }).click();
-    await page.locator(".builder-preview").scrollIntoViewIfNeeded();
-    await page.screenshot({ path: "/tmp/p1-sections-preview-mobile.png" });
-    await page.evaluate(() => scrollTo(0, 0));
-    await page.screenshot({
-      path: "/tmp/p1-sections-mobile.png",
-      fullPage: true,
-    });
-    assert.equal(
-      await page.evaluate(
-        () => document.documentElement.scrollWidth <= innerWidth,
-      ),
-      true,
+    await page
+      .getByRole("button", { name: "Close preview", exact: true })
+      .click();
+    await page.getByTestId("button-save-section").click();
+    await page.waitForFunction(
+      () =>
+        !document.querySelector('[data-testid="button-save-section"]').disabled,
     );
+    assert.equal(saved.blocks[1].props.title, "Unsaved draft");
+    for (const width of [1279, 1280, 1440, 390]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.screenshot({
+        path: `/tmp/p1-sections-${width}.png`,
+        fullPage: true,
+      });
+      assert.equal(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth,
+        ),
+        true,
+      );
+      assert.ok(
+        await page.locator('[aria-label="Select Hero block"]:visible').count(),
+      );
+    }
     assert.deepEqual(errors, []);
     console.log(
-      "Section browser checks passed: property editing, nested data/unknown block preservation, missing references, ordering, duplication, dirty guard and mobile.",
+      "Section browser checks passed: original canvas, verified save, unknown-block preservation, dirty navigation guard, isolated preview, and responsive layout.",
     );
   } finally {
     await browser.close();

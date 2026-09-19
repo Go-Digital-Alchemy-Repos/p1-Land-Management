@@ -53,3 +53,26 @@
   max-height: 90vh;
   overflow: auto;
 }
+/* Keep original SEO card composition inside the dashboard's scoped host. */
+.seo-manager fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+.seo-manager .seo-card-content {
+  display: grid;
+  gap: 16px;
+}
+.seo-manager .seo-tabs [aria-current="page"] {
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+.seo-manager .seo-card input:not([type="checkbox"]),
+.seo-manager .seo-card textarea {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--background));
+  border-radius: 6px;
+  padding: 9px 12px;
+}

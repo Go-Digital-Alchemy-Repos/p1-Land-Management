@@ -1,3 +1,4 @@
+import { SectionEditorPresentation } from "@/components/shared/cms-section-editor-presentation";
 import { useState, useEffect } from "react";
 import { useParams, useLocation } from "wouter";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -29,12 +30,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Layers } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import type { CmsSection } from "@shared/schema";
 import { PageBuilder } from "./builder/page-builder";
 import type { BlockInstance, BuilderContent } from "./builder/block-registry";
-import { cn } from "@/lib/utils";
 import { useEditorLock } from "@/hooks/use-editor-lock";
 import { useLockConflictGuard } from "@/hooks/use-lock-conflict-guard";
 import { useEditorSaveState } from "@/hooks/use-editor-save-state";
@@ -170,6 +169,7 @@ export default function CmsSectionEditorPage() {
   });
 
   const onSave = () => {
+    if (createMutation.isPending || updateMutation.isPending || editorLock.isReadOnly) return;
     form.handleSubmit((data) => {
       const payload = {
         ...data,
@@ -209,153 +209,27 @@ export default function CmsSectionEditorPage() {
 
   return (
     <AdminSidebar>
-      <div className="admin-has-mobile-action-bar p-4 sm:p-6 max-w-5xl mx-auto space-y-6">
-        {editorLock.summary ? (
-          <EditorLockBanner
-            variant={editorLock.summary.variant}
-            title={editorLock.summary.title}
-            description={editorLock.summary.description}
-            isLoading={editorLock.isLoading}
-            onRefresh={editorLock.acquire}
-          />
-        ) : null}
-
-        <div className="flex items-center justify-between flex-wrap gap-3">
-          <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="gap-1.5"
-              onClick={() =>
-                unsavedChangesGuard.confirmDiscardChanges(() => navigate("/admin/cms/sections"))
-              }
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Sections
-            </Button>
-            <div className="flex items-center gap-2">
-              <Layers className="h-5 w-5 text-violet-500" />
-              <h1
-                className="text-xl font-heading font-semibold"
-                data-testid="text-section-editor-title"
-              >
-                {isNew ? "New Section" : form.watch("name") || "Edit Section"}
-              </h1>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <AdminSaveBar
-              state={saveState.state}
-              type="button"
-              onSave={onSave}
-              primaryLabel="Save Section"
-              disabled={isSaving || editorLock.isReadOnly}
-              className="w-auto"
-              buttonTestId="button-save-section"
+      <SectionEditorPresentation
+        isNew={isNew}
+        name={form.watch("name")}
+        onBack={() =>
+          unsavedChangesGuard.confirmDiscardChanges(() => navigate("/admin/cms/sections"))
+        }
+        disabled={isSaving || editorLock.isReadOnly}
+        navigationDisabled={isSaving}
+        ui={{ Button, Card, CardHeader, CardTitle, CardContent }}
+        banner={
+          editorLock.summary ? (
+            <EditorLockBanner
+              variant={editorLock.summary.variant}
+              title={editorLock.summary.title}
+              description={editorLock.summary.description}
+              isLoading={editorLock.isLoading}
+              onRefresh={editorLock.acquire}
             />
-          </div>
-        </div>
-
-        <Card
-          className={cn(
-            editorLock.hasLocking &&
-              editorLock.isReadOnly &&
-              "pointer-events-none select-none opacity-70",
-          )}
-        >
-          <CardHeader>
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Section Details
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Name</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="e.g. Homepage Hero"
-                            {...field}
-                            data-testid="input-section-name"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="category"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Category</FormLabel>
-                        <Select value={field.value} onValueChange={field.onChange}>
-                          <FormControl>
-                            <SelectTrigger data-testid="select-section-category">
-                              <SelectValue />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {CATEGORIES.map((c) => (
-                              <SelectItem key={c} value={c} className="capitalize">
-                                {c}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        Description{" "}
-                        <span className="text-muted-foreground font-normal">(optional)</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Brief description of when to use this section…"
-                          rows={2}
-                          {...field}
-                          data-testid="input-section-description"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
-
-        <div className="space-y-2">
-          <h2 className="text-sm font-medium text-muted-foreground">Blocks</h2>
-          <Card
-            className={cn(
-              editorLock.hasLocking &&
-                editorLock.isReadOnly &&
-                "pointer-events-none select-none opacity-70",
-            )}
-          >
-            <CardContent className="pt-4">
-              <PageBuilder content={builderContent} onChange={setBuilderContent} />
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="flex justify-end">
+          ) : null
+        }
+        saveControl={(position) => (
           <AdminSaveBar
             state={saveState.state}
             type="button"
@@ -363,10 +237,87 @@ export default function CmsSectionEditorPage() {
             primaryLabel="Save Section"
             disabled={isSaving || editorLock.isReadOnly}
             className="w-auto"
-            buttonTestId="button-save-section-bottom"
+            buttonTestId={position === "top" ? "button-save-section" : "button-save-section-bottom"}
           />
-        </div>
-      </div>
+        )}
+        details={
+          <Form {...form}>
+            <form className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Name</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="e.g. Homepage Hero"
+                          {...field}
+                          data-testid="input-section-name"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="category"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Category</FormLabel>
+                      <Select value={field.value} onValueChange={field.onChange}>
+                        <FormControl>
+                          <SelectTrigger data-testid="select-section-category">
+                            <SelectValue />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {CATEGORIES.map((c) => (
+                            <SelectItem key={c} value={c} className="capitalize">
+                              {c}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Description{" "}
+                      <span className="text-muted-foreground font-normal">(optional)</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Brief description of when to use this section…"
+                        rows={2}
+                        {...field}
+                        data-testid="input-section-description"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </form>
+          </Form>
+        }
+        builder={
+          <PageBuilder
+            content={builderContent}
+            onChange={setBuilderContent}
+            disabled={isSaving || editorLock.isReadOnly}
+          />
+        }
+      />
       <AdminMobileActionBar>
         <Button
           type="button"

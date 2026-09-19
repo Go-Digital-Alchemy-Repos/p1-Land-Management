@@ -1,6 +1,7 @@
 import {
   useBuilderPreviewData,
   previewResourceKey,
+  type BuilderPreviewKind,
 } from "./builder-preview-data";
 import React, {
   createContext,
@@ -110,7 +111,7 @@ export function NativePageBuilder({
   canUseSections?: boolean;
   disabled: boolean;
   canPreviewData?: (
-    kind: "forms" | "blog" | "galleries" | "team" | "events" | "careers",
+    kind: BuilderPreviewKind,
   ) => boolean;
   onNotice: (message: string) => void;
 }) {

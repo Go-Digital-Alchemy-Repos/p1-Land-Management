@@ -117,3 +117,11 @@ platform/p1-core/client/src/features/admin/cms/builder/*
 !platform/p1-core/client/src/components/ui/
 platform/p1-core/client/src/components/ui/*
 !platform/p1-core/client/src/components/ui/resizable.tsx
+
+!platform/p1-core/client/src/components/shared/seo-audit-presentation.tsx
+!platform/p1-core/client/src/components/shared/seo-workspace-presentation.tsx
+!platform/p1-core/client/src/components/shared/seo-primitives.tsx
+!platform/p1-core/client/src/components/shared/seo-presentation.css
+!platform/p1-core/client/src/components/shared/seo-presentation.utilities.css
+!platform/p1-core/client/src/components/shared/cms-section-editor-presentation.tsx
+!platform/p1-core/client/src/components/shared/cms-section-list-presentation.tsx

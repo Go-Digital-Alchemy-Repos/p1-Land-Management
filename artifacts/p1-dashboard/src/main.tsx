@@ -156,6 +156,7 @@ const marketingDesignCopy: Partial<Record<DashboardPageRoute["view"], { title: s
 };
 const marketingPageCopy = {
   ...marketingDesignCopy,
+  "Website SEO": { title: "SEO", description: "Manage search metadata, audit content, and maintain redirects and crawler settings." },
   "Website Features": { title: "System Configuration", description: "Control which website apps are active while preserving their stored data." },
 };
 async function api(path: string, body?: unknown, method: "POST" | "PATCH" | "DELETE" = "POST") {
@@ -1351,7 +1352,7 @@ function App() {
           </button>
         </header>
         <main className="content">
-          {!accountWorkspace && view !== "Website Documents" && (routeUnavailable || !["Website Forms", "Media Library", "CMS Pages"].includes(view)) && <div className={view === "Overview" ? "page-heading page-hero" : "page-heading"}>
+          {!accountWorkspace && view !== "Website Documents" && (routeUnavailable || !["Website Forms", "Media Library", "CMS Pages", "Website Sections"].includes(view)) && <div className={view === "Overview" ? "page-heading page-hero" : "page-heading"}>
             <div>
               {!marketingPageCopy[view] && <p className="eyebrow">P1 · PROPERTY OPERATIONS</p>}
               <h1>
@@ -1519,8 +1520,8 @@ function App() {
           {view === "Website Events" && <Suspense fallback={<p role="status">Loading events…</p>}><EventManager canUseMedia={can("marketing.content.media")} key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Website Forms" && <Suspense fallback={<p role="status">Loading forms…</p>}><FormManager canUseMedia={can("marketing.content.media")} key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "CMS Pages" && <Suspense fallback={<p role="status">Loading CMS pages…</p>}><PageManager canPreviewData={(kind) => can(kind === "branding" ? "marketing.design.branding" : kind === "social" ? "marketing.design.social-media" : `marketing.content.${kind}`)} canUseMedia={can("marketing.content.media")} canUseSections={can("marketing.content.sections")} canUseMenus={can("marketing.content.menus")} key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
-          {view === "Website Sections" && <Suspense fallback={<p role="status">Loading sections…</p>}><SectionManager canUseMedia={can("marketing.content.media")} key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
-          {view === "Website SEO" && <Suspense fallback={<p role="status">Loading SEO…</p>}><SeoManager canUseMedia={can("marketing.content.media")} key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
+          {view === "Website Sections" && <Suspense fallback={<p role="status">Loading sections…</p>}><SectionManager canPreviewData={(kind) => can(kind === "branding" ? "marketing.design.branding" : kind === "social" ? "marketing.design.social-media" : `marketing.content.${kind}`)} canUseMedia={can("marketing.content.media")} key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
+          {view === "Website SEO" && <Suspense fallback={<p role="status">Loading SEO…</p>}><SeoManager canEditContent={(kind) => can(`marketing.content.${kind}`)} canUseMedia={can("marketing.content.media")} key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Website Blog" && <Suspense fallback={<p role="status">Loading blog…</p>}><BlogManager canUseMedia={can("marketing.content.media")} key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Website Team" && <Suspense fallback={<p role="status">Loading team…</p>}><TeamManager canUseMedia={can("marketing.content.media")} key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Website Menus" && <Suspense fallback={<p role="status">Loading website menus…</p>}><CmsMenus key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}

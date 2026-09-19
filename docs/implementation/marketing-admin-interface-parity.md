@@ -254,3 +254,43 @@ Pre-release backup observation: the live Backups tool lists the September19 08:5
 Release872d2bb verified successful on Railway dashboard7340a4fd-56bf-4e7a-9874-ffebcff8e5ea and Core40c4e535-b5a5-435b-8d1b-b8a9428e536a. Core runtime migration completion was observed. The live authenticated Pages list renders the original controls and genuine empty state. No production page/lease mutation was used for acceptance. Sections and SEO are the next bounded restorations; wider parity is still incomplete.
 
 Live direct new-page route also rendered Builder/Page Settings/SEO/Quality tabs, original structure/canvas/inspector and template actions with no error. No save/publish was submitted.
+
+## Sections and SEO — September 19 candidate verification
+
+Both hosts now share the original Sections list/editor presentation and SEO audit,
+settings-group/tab and redirect-row presentation. Native Sections uses the same
+visual builder as CMS Pages, including structure/canvas/inspector, saved-section
+insertion and mobile save controls. Its existing reservation checks, custom/unknown
+block data, thumbnail settings, dirty guards and failed-save retention remain.
+Sections inherits the unified dashboard theme. Generic duplicate Sections heading
+was removed. This does not fix the pre-existing server-side section concurrency gap:
+user reservations are not version/session-fenced like CMS Pages.
+
+SEO restores the retained audit summary cards, issue rows/counts and Issue Reference,
+colored tabs and grouped settings. Content edit links require the corresponding
+content capability; Events honestly says “Open Events” because native direct-event
+selection is not implemented. Existing same-site redirect restrictions and draft/error
+handling remain. Core's existing Architecture tab is retained there, not represented
+as a completed native feature.
+
+Parent reran six Sections and seven SEO native adapter tests and both TypeScript checks. Isolated
+HEAD plus this scoped candidate builds successfully for Core and dashboard; the
+separate allowlisted dashboard runtime build without Core node_modules also passed.
+A concurrent whole-tree Core build initially saw an incomplete Galleries import;
+it is excluded from this release and the isolated candidate build passed. Existing
+PostCSS/chunk warnings remain. The updated legacy browser test script was syntax
+checked, not launched; interactive verification used the approved browser tool.
+
+Browser verification used loopback synthetic data only: original Sections list/new
+editor, block palette, Hero inspector and 390px mobile save toolbar; SEO settings,
+audit cards/issue links/reference and mobile tabs. Both measured document width390
+at viewport390. No production content, SEO settings or sections were saved. Backend
+save-error/unknown-data handling is covered by controlled adapter tests, not a claim
+of a complete production editing acceptance journey. Galleries, structured Website,
+and remaining system-tool parity are still open. Release verification is recorded
+separately after deployment; this entry alone is not a live-deployment claim.
+
+Independent review caught fabricated public preview URLs built from retained CMS
+slugs. Those links are omitted in native SEO until an authoritative destination is
+available; editors remain the supported signed-preview path. A regression test uses
+published page/post audit records to ensure no invented public link is rendered.

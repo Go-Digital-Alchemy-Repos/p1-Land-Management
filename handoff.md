@@ -1,3 +1,26 @@
+## September 19 — CMS Pages live; Sections and SEO release candidate
+
+Latest pushed revision `1f37c36d` is SUCCESS on the production dashboard, Core and
+public website. Runtime code `872d2bb7` restores the original CMS Pages list,
+templates, landing wizard and visual builder, with server-fenced page/menu edits.
+Core startup verified the additive `p1-migrations/0003_cms_page_concurrency.sql`.
+Live CMS Pages list and new-draft controls were read without saving production data.
+
+Social, Branding, Colors, Typography, Modules, Forms and Media shared presentation
+work is released. Full Marketing parity remains incomplete. Sections and SEO shared
+presentation passed scoped review, 13 adapter tests, both typechecks, isolated
+Core/dashboard builds and local desktop/mobile browser checks. Deployment verification
+for this next release is pending. Galleries
+is the next bounded restoration task. Preserve all concurrent work; do not stage
+unrelated candidates together. Sections still has the pre-existing user-reservation
+concurrency limitation, unlike fenced CMS Pages; presentation restoration does not
+close that server contract gap. See `docs/implementation/marketing-admin-interface-parity.md`.
+
+Private account/access capture tooling is committed, but no actual production
+capture/reconciliation has run. Search Console domain access, account/CRM migration,
+full crew offline acceptance, content/media recovery and original-image rollback,
+and safe admin retirement remain open. Keep `/admin` available.
+
 ## September 19 — Forms live; Media candidate accepted for release
 
 Forms7ea1fee dashboard/Core SUCCESS; liveheading/tabs/palette/no-alerts verified.

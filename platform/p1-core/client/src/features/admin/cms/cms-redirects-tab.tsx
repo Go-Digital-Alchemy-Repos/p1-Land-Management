@@ -1,3 +1,4 @@
+import { SeoRedirectRow } from "@/components/shared/seo-workspace-presentation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -221,62 +222,37 @@ function RedirectRow({ redirect }: { redirect: Redirect }) {
 
   return (
     <>
-      <div
-        className={`flex items-center gap-3 py-3 border-b last:border-0 ${!redirect.isActive ? "opacity-50" : ""}`}
-        data-testid={`redirect-row-${redirect.id}`}
-      >
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <code className="text-xs bg-muted px-1.5 py-0.5 rounded text-muted-foreground">
-              {redirect.fromPath}
-            </code>
-            <ArrowRight className="h-3 w-3 text-muted-foreground flex-shrink-0" />
-            <code className="text-xs bg-muted px-1.5 py-0.5 rounded">{redirect.toPath}</code>
-            <Badge
-              variant="secondary"
-              className="text-xs px-1.5 py-0"
-              data-testid={`redirect-code-${redirect.id}`}
+      <SeoRedirectRow
+        redirect={redirect}
+        actions={
+          <>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-7 w-7 p-0"
+              onClick={() => toggleMutation.mutate()}
+              disabled={toggleMutation.isPending}
+              title={redirect.isActive ? "Deactivate" : "Activate"}
+              data-testid={`button-toggle-redirect-${redirect.id}`}
             >
-              {redirect.statusCode}
-            </Badge>
-            {!redirect.isActive && (
-              <Badge
-                variant="secondary"
-                className="text-xs px-1.5 py-0 bg-slate-100 text-slate-500"
-              >
-                Inactive
-              </Badge>
-            )}
-          </div>
-          {redirect.note && <p className="text-xs text-muted-foreground mt-1">{redirect.note}</p>}
-        </div>
-        <div className="flex items-center gap-1.5 flex-shrink-0">
-          <Button
-            size="sm"
-            variant="ghost"
-            className="h-7 w-7 p-0"
-            onClick={() => toggleMutation.mutate()}
-            disabled={toggleMutation.isPending}
-            title={redirect.isActive ? "Deactivate" : "Activate"}
-            data-testid={`button-toggle-redirect-${redirect.id}`}
-          >
-            {redirect.isActive ? (
-              <ToggleRight className="h-4 w-4 text-emerald-500" />
-            ) : (
-              <ToggleLeft className="h-4 w-4 text-muted-foreground" />
-            )}
-          </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            className="h-7 w-7 p-0 text-destructive hover:text-destructive"
-            onClick={() => setConfirmDelete(true)}
-            data-testid={`button-delete-redirect-${redirect.id}`}
-          >
-            <Trash2 className="h-3.5 w-3.5" />
-          </Button>
-        </div>
-      </div>
+              {redirect.isActive ? (
+                <ToggleRight className="h-4 w-4 text-emerald-500" />
+              ) : (
+                <ToggleLeft className="h-4 w-4 text-muted-foreground" />
+              )}
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-7 w-7 p-0 text-destructive hover:text-destructive"
+              onClick={() => setConfirmDelete(true)}
+              data-testid={`button-delete-redirect-${redirect.id}`}
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </Button>
+          </>
+        }
+      />
 
       <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
         <AlertDialogContent>

@@ -1,3 +1,10 @@
+import { SeoAuditPresentation } from "../../../../platform/p1-core/client/src/components/shared/seo-audit-presentation";
+import {
+  SeoTabNavigation,
+  SeoSettingsCard,
+  SeoRedirectRow,
+  SEO_SETTINGS_GROUPS,
+} from "../../../../platform/p1-core/client/src/components/shared/seo-workspace-presentation";
 import { useEffect, useRef, useState } from "react";
 import {
   getMarketingSeo,
@@ -116,47 +123,56 @@ function Defaults({ canUseMedia }: { canUseMedia: boolean }) {
           }}
         >
           <fieldset disabled={busy}>
-            {fields.map(([key, label]) => (
-              <label key={key}>
-                {label}
-                {key === "defaultMetaDescription" ? (
-                  <textarea
-                    maxLength={320}
-                    value={String(draft[key] ?? "")}
-                    onChange={(e) =>
-                      setDraft({ ...draft, [key]: e.target.value })
-                    }
-                  />
-                ) : (
-                  <input
-                    required={key === "siteName"}
-                    type={
-                      [
-                        "siteUrl",
-                        "facebookUrl",
-                        "linkedinUrl",
-                        "instagramUrl",
-                      ].includes(key)
-                        ? "url"
-                        : "text"
-                    }
-                    value={String(draft[key] ?? "")}
-                    onChange={(e) =>
-                      setDraft({ ...draft, [key]: e.target.value })
-                    }
-                  />
-                )}
-                {canUseMedia &&
-                  (key === "defaultOgImageUrl" ||
-                    key === "organizationLogoUrl") && (
-                    <button type="button" onClick={() => setImageField(key)}>
-                      Choose{" "}
-                      {key === "defaultOgImageUrl"
-                        ? "social image"
-                        : "organization logo"}
-                    </button>
-                  )}
-              </label>
+            {SEO_SETTINGS_GROUPS.map((group) => (
+              <SeoSettingsCard key={group.title} {...group}>
+                {fields
+                  .filter(([key]) => group.keys.includes(key))
+                  .map(([key, label]) => (
+                    <label key={key}>
+                      {label}
+                      {key === "defaultMetaDescription" ? (
+                        <textarea
+                          maxLength={320}
+                          value={String(draft[key] ?? "")}
+                          onChange={(e) =>
+                            setDraft({ ...draft, [key]: e.target.value })
+                          }
+                        />
+                      ) : (
+                        <input
+                          required={key === "siteName"}
+                          type={
+                            [
+                              "siteUrl",
+                              "facebookUrl",
+                              "linkedinUrl",
+                              "instagramUrl",
+                            ].includes(key)
+                              ? "url"
+                              : "text"
+                          }
+                          value={String(draft[key] ?? "")}
+                          onChange={(e) =>
+                            setDraft({ ...draft, [key]: e.target.value })
+                          }
+                        />
+                      )}
+                      {canUseMedia &&
+                        (key === "defaultOgImageUrl" ||
+                          key === "organizationLogoUrl") && (
+                          <button
+                            type="button"
+                            onClick={() => setImageField(key)}
+                          >
+                            Choose{" "}
+                            {key === "defaultOgImageUrl"
+                              ? "social image"
+                              : "organization logo"}
+                          </button>
+                        )}
+                    </label>
+                  ))}
+              </SeoSettingsCard>
             ))}
             <label className="seo-check">
               <input
@@ -347,8 +363,14 @@ function Redirects() {
     setError("");
   }
   return (
-    <section>
-      <h2>Redirects</h2>
+    <SeoSettingsCard
+      title="Redirect Manager"
+      description="Manage 301/302 redirects for slug changes, retired pages, and URL migrations."
+    >
+      <p>
+        Use 301 for permanent URL changes and 302 for temporary redirects.
+        Inactive redirects are saved but not applied.
+      </p>
       {error && <p role="alert">{error}</p>}
       <label>
         Search redirects
@@ -369,17 +391,15 @@ function Redirects() {
               .includes(search.toLowerCase()),
           )
           .map((row) => (
-            <article key={row.id}>
-              <p>
-                {row.fromPath} → {row.toPath}
-              </p>
-              <p>
-                {row.statusCode} · {row.isActive ? "Active" : "Inactive"}
-              </p>
-              <button disabled={busy} onClick={() => select(row)}>
-                Edit {row.fromPath}
-              </button>
-            </article>
+            <SeoRedirectRow
+              key={row.id}
+              redirect={row}
+              actions={
+                <button disabled={busy} onClick={() => select(row)}>
+                  Edit {row.fromPath}
+                </button>
+              }
+            />
           ))}
       </div>
       <form
@@ -408,6 +428,13 @@ function Redirects() {
       >
         <fieldset disabled={busy}>
           <legend>{id ? "Edit redirect" : "New redirect"}</legend>
+          <p>
+            Active redirects use canonical same-site paths such as /contact,
+            without queries, fragments, encoded characters or trailing slashes.
+            External destinations, reserved routes and cycles are not supported.
+            Incoming query parameters are preserved. Changes reach the public
+            site after its next refresh (up to 30 seconds).
+          </p>
           <label>
             From path
             <input
@@ -483,10 +510,15 @@ function Redirects() {
           )}
         </fieldset>
       </form>
-    </section>
+    </SeoSettingsCard>
   );
 }
-function Audit() {
+type EditKind = "pages" | "blog" | "events";
+function Audit({
+  canEditContent,
+}: {
+  canEditContent: (kind: EditKind) => boolean;
+}) {
   const [data, setData] = useState<MarketingSeoAudit | null>(null),
     [error, setError] = useState(""),
     [version, setVersion] = useState(0);
@@ -511,75 +543,49 @@ function Audit() {
       </p>
       <button onClick={() => setVersion((v) => v + 1)}>Run audit again</button>
       {error && <p role="alert">{error}</p>}
-      {data
-        ? (["pages", "posts", "events"] as const).map((group) => (
-            <section key={group}>
-              <h3>{group}</h3>
-              <div className="seo-list">
-                {data[group].map((row) => (
-                  <article key={row.id}>
-                    <h4>{row.title}</h4>
-                    <p>{row.slug}</p>
-                    <p>
-                      {row.issues.length
-                        ? row.issues
-                            .map((issue) => issue.replaceAll("_", " "))
-                            .join(" · ")
-                        : "No metadata issues found"}
-                    </p>
-                    <dl>
-                      {[
-                        ["SEO title", row.seoTitle],
-                        ["Description", row.seoDescription],
-                        ["Canonical URL", row.canonicalUrl],
-                        [
-                          "Social image",
-                          row.ogImageUrl || row.coverImageUrl || row.imageUrl,
-                        ],
-                      ]
-                        .filter(([, value]) => value)
-                        .map(([label, value]) => (
-                          <div key={label}>
-                            <dt>{label}</dt>
-                            <dd>{value}</dd>
-                          </div>
-                        ))}
-                    </dl>
-                  </article>
-                ))}
-              </div>
-              {!data[group].length && <p>No records.</p>}
-            </section>
-          ))
-        : !error && <p role="status">Running audit…</p>}
+      <SeoAuditPresentation
+        data={data ?? undefined}
+        isLoading={!data && !error}
+        error={error}
+        routes={{
+          edit: (kind, item) => {
+            const capability =
+              kind === "page" ? "pages" : kind === "post" ? "blog" : "events";
+            return canEditContent(capability)
+              ? `/marketing/content/${capability}${kind === "page" ? `?page=${encodeURIComponent(item.id)}` : kind === "post" ? `?post=${encodeURIComponent(item.id)}` : ""}`
+              : null;
+          },
+          editLabel: (kind) => (kind === "event" ? "Open Events" : "Edit"),
+          // Retained CMS slugs are not authoritative public website routes.
+          // Editors provide signed previews; do not invent public destinations.
+          preview: () => undefined,
+        }}
+      />
     </section>
   );
 }
-export default function SeoManager({ canUseMedia }: { canUseMedia: boolean }) {
+export default function SeoManager({
+  canUseMedia,
+  canEditContent = () => false,
+}: {
+  canUseMedia: boolean;
+  canEditContent?: (kind: EditKind) => boolean;
+}) {
   const [tab, setTab] = useState("Defaults");
   return (
-    <div className="seo-manager">
-      <nav aria-label="SEO tools">
-        {["Defaults", "Sitemap and robots", "Redirects", "Audit"].map(
-          (name) => (
-            <button
-              key={name}
-              aria-current={name === tab ? "page" : undefined}
-              onClick={() => {
-                if (
-                  tab !== name &&
-                  window.dispatchEvent(
-                    new Event("p1:before-navigation", { cancelable: true }),
-                  )
-                )
-                  setTab(name);
-              }}
-            >
-              {name}
-            </button>
-          ),
-        )}
-      </nav>
+    <div className="seo-manager seo-presentation">
+      <SeoTabNavigation
+        value={tab}
+        onChange={(name) => {
+          if (
+            tab !== name &&
+            window.dispatchEvent(
+              new Event("p1:before-navigation", { cancelable: true }),
+            )
+          )
+            setTab(name);
+        }}
+      />
       {tab === "Defaults" ? (
         <Defaults canUseMedia={canUseMedia} />
       ) : tab === "Sitemap and robots" ? (
@@ -587,7 +593,7 @@ export default function SeoManager({ canUseMedia }: { canUseMedia: boolean }) {
       ) : tab === "Redirects" ? (
         <Redirects />
       ) : (
-        <Audit />
+        <Audit canEditContent={canEditContent} />
       )}
     </div>
   );
