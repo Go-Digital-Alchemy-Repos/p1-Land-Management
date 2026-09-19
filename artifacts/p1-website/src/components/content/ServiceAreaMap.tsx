@@ -118,11 +118,20 @@ export function ServiceAreaMap() {
   }
 
   return (
-    <section aria-labelledby="service-map-heading" className="overflow-hidden rounded-xl border border-border bg-card shadow-lg">
-      <div className="flex flex-col gap-6 p-6 sm:p-8 lg:flex-row lg:items-end lg:justify-between">
+    <section aria-labelledby="service-map-heading" className="w-full overflow-hidden bg-card">
+      <div className="relative border-y border-border bg-[#e9efed]">
+        <div ref={container} className="service-area-map h-[440px] w-full sm:h-[560px]" aria-describedby="service-map-help" />
+        {status !== "ready" && <p role="status" className="absolute bottom-12 left-4 right-14 rounded bg-white/95 p-3 text-sm text-secondary shadow sm:left-6 sm:right-auto">
+          {status === "loading" ? "Loading service locations…" : "Map unavailable? Browse all service locations below."}
+        </p>}
+        <button type="button" onClick={() => changeRegion("all")} disabled={status === "loading"} className="absolute left-4 top-4 inline-flex min-h-11 items-center gap-2 rounded bg-white px-4 text-sm font-semibold text-secondary shadow hover:bg-muted disabled:opacity-60">
+          <LocateFixed aria-hidden="true" className="h-4 w-4" /> Show all locations
+        </button>
+      </div>
+      <div className="site-shell flex flex-col gap-6 py-6 sm:py-8 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-primary">Across the Carolinas</p>
-          <h2 id="service-map-heading" className="font-display text-3xl text-secondary sm:text-4xl">Find your service area</h2>
+          <h1 id="service-map-heading" className="font-display text-3xl text-secondary sm:text-4xl">Find Your Service Area</h1>
           <p id="service-map-help" className="mt-3 text-secondary/75">Select a pin to explore local services. Zoom in for nearby communities.</p>
         </div>
         <div className="flex flex-wrap gap-2" role="group" aria-label="Filter map by state">
@@ -134,16 +143,7 @@ export function ServiceAreaMap() {
           ))}
         </div>
       </div>
-      <div className="relative border-y border-border bg-[#e9efed]">
-        <div ref={container} className="service-area-map h-[440px] w-full sm:h-[560px]" aria-describedby="service-map-help" />
-        {status !== "ready" && <p role="status" className="absolute bottom-12 left-4 right-14 rounded bg-white/95 p-3 text-sm text-secondary shadow sm:left-6 sm:right-auto">
-          {status === "loading" ? "Loading service locations…" : "Map unavailable? Browse all service locations below."}
-        </p>}
-        <button type="button" onClick={() => changeRegion("all")} disabled={status === "loading"} className="absolute left-4 top-4 inline-flex min-h-11 items-center gap-2 rounded bg-white px-4 text-sm font-semibold text-secondary shadow hover:bg-muted disabled:opacity-60">
-          <LocateFixed aria-hidden="true" className="h-4 w-4" /> Show all locations
-        </button>
-      </div>
-      <div className="flex flex-col gap-5 p-6 sm:p-8 lg:flex-row lg:items-center lg:justify-between">
+      <div className="site-shell flex flex-col gap-5 pb-6 sm:pb-8 lg:flex-row lg:items-center lg:justify-between">
         <div className="space-y-2">
           <p className="flex flex-wrap gap-x-5 gap-y-2 text-sm font-semibold text-secondary">
             <span className="inline-flex items-center gap-2"><MapPin aria-hidden="true" className="h-4 w-4 text-primary" /> North Carolina</span>
@@ -162,7 +162,7 @@ export function ServiceAreaMap() {
       {selected && <div className="border-t border-border bg-primary/5 px-6 py-4 sm:px-8" aria-live="polite">
         <Link href={selected.path} className="inline-flex min-h-11 items-center gap-2 font-semibold text-primary underline underline-offset-4">Explore {selected.name}, {selected.state} <ArrowUpRight aria-hidden="true" className="h-4 w-4" /></Link>
       </div>}
-      <details className="border-t border-border px-6 py-4 sm:px-8" open={status === "error" ? true : undefined}>
+      <details className="site-shell border-t border-border py-4" open={status === "error" ? true : undefined}>
         <summary className="w-fit cursor-pointer py-2 text-sm font-semibold text-primary">Browse all {locations.length} service locations</summary>
         <ul className="grid gap-x-6 gap-y-1 py-4 sm:grid-cols-2 lg:grid-cols-3">
           {locations.map(location => <li key={location.path}><Link href={location.path} className="inline-flex min-h-11 items-center text-sm text-secondary underline-offset-4 hover:text-primary hover:underline">{location.name}, {location.state}</Link></li>)}

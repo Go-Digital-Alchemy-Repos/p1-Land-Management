@@ -1,10 +1,8 @@
 import { Layout } from "@/components/layout/Layout";
 import { FinalCTA } from "@/components/layout/FinalCTA";
-import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
 import { breadcrumbSchema, faqSchema } from "@/lib/structured-data";
 import { Link } from "wouter";
-import heroImg from "@/assets/hero-service-areas.png";
 import unionCountyImg from "@/assets/features/union-county-agriculture.png";
 import lancasterCountyImg from "@/assets/features/lancaster-sitework.png";
 import yorkCountyImg from "@/assets/features/york-county-lakewylie.png";
@@ -51,27 +49,11 @@ export default function ServiceAreasIndex() {
         ]}
       />
       
-      {/* PAGE HERO */}
-      <PageHero
-        eyebrow="Where We Work"
-        title={
-          <>
-            Serving Two of the Carolinas'{" "}
-            <em className="font-semibold not-italic text-tan" style={{ fontStyle: "italic" }}>
-              Fastest-Growing Markets
-            </em>
-          </>
-        }
-        subtitle="We provide commercial landscaping, grounds maintenance, and land care for properties 1 acre and larger across Upstate South Carolina and greater Charlotte."
-        image={heroImg}
-        imageAlt="Heavy equipment clearing land in the Carolinas"
-      />
+      <ServiceAreaMap />
 
       {/* MARKETS */}
       <section className="py-24 bg-background">
         <div className="site-shell space-y-16">
-          <ServiceAreaMap />
-          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             {/* Upstate SC Market */}
             <div className="bg-card border border-card-border rounded-xl shadow-lg overflow-hidden flex flex-col group">
