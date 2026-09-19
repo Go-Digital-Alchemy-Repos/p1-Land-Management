@@ -68,17 +68,17 @@ not a claim of live functional testing:
 | 1 | Branding | Restored and live at `f2335f4`: separate logo/favicon cards, media picker and company layout; adapter differences documented below. |
 | 1 | Typography | Restored and live at `fb2d322`: heading/body visual font cards and serif/sans groups. |
 | 1 | Colors | Restored and live at `7733706`: three groups, descriptions and original palette preview. |
-| 1 | Forms | Builder/Entries tabs, Form Library, draggable canvas and inspector (`forms-page.tsx`); retain delivery monitoring. |
+| 1 | Forms | Restored and live at `7ea1fee`: shared Builder/Entries, library, canvas and inspector; native delivery monitoring retained. |
 | 1 | CMS Pages | Shared builder canvas, structure panel, inspector and responsive preview (`cms/builder/page-builder*.tsx`); retain reservations, templates and revisions. |
 | 2 | Menus | Theme Locations overview and original menu cards/editor (`cms-menus-page.tsx`); existing hierarchy/drag support must survive. |
-| 2 | Media | Details dialog, usage badges and shared cropper (`cms-media-page.tsx`, `image-cropper-sheet.tsx`). |
+| 2 | Media | Restored and live at `4ee1a90`: shared library, details, upload and crop dialogs; optional multiselect caller parity remains open. |
 | 2 | Galleries | Details/Images/Display/Preview cards and preview dialog (`cms-gallery-editor-page.tsx`). |
 | 2 | SEO | Icon tabs, settings cards and omitted Roadmap/SEO Architecture material (`cms-seo-page.tsx`). |
 | 2 | Modules / Integrations | Modules restored and live at `2afc0d3`; Integrations provider cards/sheets remain open. P1 module restrictions preserved. |
 | Recovery gate | Backups | Restore control is missing; release only after recovery acceptance, not as an unreviewed cosmetic port. |
 
-Shared Design navigation, Social, Branding, Typography, Colors and Modules have
-verified releases. Other rows remain open; the retained admin must stay available.
+Shared Design navigation, Social, Branding, Typography, Colors, Modules, Forms and
+Media have verified releases. Remaining gaps above stay open; the retained admin must stay available.
 
 ## Typography increment and Social live verification
 
@@ -203,3 +203,25 @@ checks confirmed metadata save, usage path, authenticated download link, crop wi
 adjustment/preview, upload dialog and390pxdialogcontainment. Browser destructive crop
 replacement was not submitted; codec/dimension/failure coverage is automated. No
 production media/metadata/files were modified during verification.
+
+Media `4ee1a90154c04b2cf9cf91156b9209a052fbf6dc` deployed successfully:
+- Dashboard: `6e7ab84d-ce4b-49ff-a1e3-0f8c29b21c2d`.
+- Core: `a788aeeb-5b07-4e53-85bb-9a35e9fe3d57`.
+Authenticated live read-only verification confirmed the single Media Library heading,
+upload controls, search/type/usage/sort toolbar and genuine empty state (zero media).
+Production has no media fixture, so grid/details/crop interactions were verified with
+synthetic local assets as recorded above, not represented as live production data.
+
+## Next shared extraction: CMS Pages
+
+Preserve the original structure/canvas/inspector and Builder/Settings/SEO/Quality
+editor tabs, templates, responsive preview and revision presentation. Native transport
+already supports CRUD, scheduling, revision restore, reservations and catalogs.
+Share presentation while injecting host UI primitives, media/rich text, catalog and
+section-library access, notifications and block-preview rendering. The original
+renderer imports Core public forms/router/query modules; audit and isolate those
+dependencies before reuse rather than connecting the dashboard to Core auth paths.
+The existing isolated preview protocol does not alone reproduce an interactive canvas.
+Additional renderer data endpoints require an explicit contract review if necessary.
+Sections should reuse this builder afterward. Website's structured route-content
+editor is a separate contract and must not be replaced with generic block content.
