@@ -1,3 +1,16 @@
+## September 19 — Website/Galleries/Head Tags now deployed
+
+`78fb0e72` is on main/task branch. Railway dashboard, Core and public website
+SUCCESS. Shared original editors, Gallery keyboard/modal fixes, Website delayed
+response fencing and truthful empty SEO audit are released. Parent33 editor tests
+plus8 SEO tests passed; both typechecks and isolated builds passed. Live Website
+inventory/home editor and real iframe preview, plus Gallery empty list, verified
+read-only. Production publication/save mutations were not performed.
+
+Blog is owned by social_ui_reuse; Menus by marketing_parity_inventory. Their
+uncommitted files are NOT part of78fb0e72; preserve them. Parent owns shared shell,
+runtime allowlist, docs and integration. Keep original admin available.
+
 ## September 19 — Website/Galleries/Head Tags restoration candidate
 
 Original shared editors replace simplified native screens. Parent verified 33

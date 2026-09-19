@@ -168,3 +168,20 @@ links were removed during review; editor preview remains authoritative. See the
 CMS Pages version/session fence. Galleries and structured Website restoration are
 in progress; remaining system-tool parity and all unrelated consolidation gates
 remain open. This release does not authorize admin retirement.
+
+## Website, Gallery and Head Tags release — September 19
+
+`78fb0e72` is live on dashboard/Core/website (Railway SUCCESS), with shared retained
+editor presentation. Parent verification:33 editor regression tests,8 SEO tests,
+both typechecks, isolated Core and restricted-context dashboard builds, desktop/
+390px synthetic browser checks, and authenticated production read-only checks.
+Website's actual homepage preview renders; Gallery has no saved records; Head Tags
+shows unchanged Save disabled. No production save/publication occurred. Blog and
+Menus restoration are in progress; all remaining parity and retirement gates stay
+open. See Marketing parity document for deployment IDs and evidence limits.
+
+Production account/CRM metadata was captured privately with verified read-only
+transactions. The CRM report proposes one receipt-backed existing lead and two
+unmapped leads with zero conflicts. It is not an approved mapping/import. Owner
+account/MFA disposition and all source-freeze, content-preserving migration, session/
+notification, recovery and operational acceptance remain open.

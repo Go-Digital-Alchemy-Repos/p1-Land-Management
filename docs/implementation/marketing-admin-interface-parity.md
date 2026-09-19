@@ -353,3 +353,17 @@ Website System tools. This increment does not establish complete Marketing parit
 
 These findings are source inventory, not live acceptance. Blog's retained generic
 preview route must be adapted to P1's actual public route before release.
+
+### Release verification
+
+`78fb0e72f0fb7a7a255592cb13050ccfffe9d9da` is pushed to main and the task branch.
+Railway SUCCESS: dashboard `89cf26e5-9730-4503-bdc9-6fd83493b676`, Core
+`047fb6ae-fbcc-4d3c-a392-75efeb1dfe96`, public
+`df5116a5-ddb3-4ab8-9822-47db4b0b7de7`. Authenticated live read-only Website
+inventory and home editor loaded with the actual public homepage inside its preview
+iframe. Gallery list shows the restored controls and real empty state. The homepage
+entry currently reports draft0/published never; rendered defaults are not evidence
+of a completed save/publish/restore lifecycle. No production content was written.
+Head Tags also loaded its original cards/guidance with unchanged Save disabled.
+Social Media was rechecked live: two-column profile fields, Design tabs and colorful
+standalone Marketing icons. No production settings were saved.
