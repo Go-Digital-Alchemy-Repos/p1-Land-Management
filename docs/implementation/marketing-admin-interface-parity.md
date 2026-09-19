@@ -98,3 +98,17 @@ controls. Parent local browser review confirmed 40 cards, selection options and
 (native dashboard select versus retained Radix select) remain explicit. The P1 sample
 heading replaces unrelated inherited Core business copy. No public fonts were changed.
 Typography's shared component is explicitly included in the restricted Docker context.
+
+## Colors presentation restoration
+
+Both hosts now use `ColorEditor` for the retained Core Colors, Typography Colors,
+and Text on Color Surfaces sections, all 18 picker/hex control pairs, descriptions,
+and full Palette Preview. Dashboard keeps its existing changed-field/version save
+contract, invalid-value rejection, unknown stored-value preservation and recovery
+controls. Parent browser verification used only synthetic loopback state: 18 pairs,
+three groups, draft-to-preview color update, confirmed save, and document containment
+at 390px. No production colors were saved. Five focused Colors integration cases
+cover validation, safe preview fallbacks, changed-only payloads and conflict/reload.
+The original selected-typography preview remains in Core; dashboard currently uses
+its own font family in the color sample, an explicit remaining presentation difference.
+The new shared runtime component is allowlisted in the dashboard Docker build context.

@@ -1,0 +1,238 @@
+/* Shared retained ColorEditor, scoped to the unified dashboard theme. */
+.website-colors .color-editor {
+  border: 1px solid hsl(var(--card-border));
+  border-radius: 12px;
+  background: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+  box-shadow: var(--shadow-sm);
+}
+.website-colors .color-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 24px;
+}
+.website-colors .color-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.025em;
+}
+.website-colors .color-title svg {
+  width: 16px;
+  height: 16px;
+  color: #d97706;
+}
+.website-colors .color-description {
+  font-size: 14px;
+  line-height: 1.5;
+  color: hsl(var(--muted-foreground));
+}
+.website-colors .color-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 0 24px 24px;
+}
+.website-colors .color-content p,
+.website-colors .color-content h4 {
+  margin: 0;
+}
+.website-colors .color-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.website-colors .color-group-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+.website-colors p.color-help {
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: hsl(var(--muted-foreground));
+}
+.website-colors .color-fields {
+  display: grid;
+  gap: 16px;
+}
+.website-colors .color-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid hsl(var(--border));
+  border-radius: 12px;
+}
+.website-colors .color-label {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+}
+.website-colors .color-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.website-colors .color-controls input {
+  min-width: 0;
+  margin: 0;
+  border: 1px solid hsl(var(--input));
+  border-radius: 6px;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-size: 14px;
+}
+.website-colors .color-controls input[type="color"] {
+  width: 48px;
+  height: 40px;
+  flex: 0 0 48px;
+  padding: 4px;
+  cursor: pointer;
+}
+.website-colors .color-controls input:not([type="color"]) {
+  width: 100%;
+  height: 36px;
+  padding: 8px 12px;
+}
+.website-colors .color-controls input::placeholder {
+  color: hsl(var(--muted-foreground));
+}
+.website-colors .color-controls input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.website-colors .color-preview {
+  padding: 20px;
+  border: 1px solid hsl(var(--border));
+  border-radius: 12px;
+  background: hsl(var(--muted) / 0.1);
+}
+.website-colors .color-preview-title {
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  color: hsl(var(--muted-foreground));
+}
+.website-colors .color-preview-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+.website-colors .color-action {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.website-colors .color-preview-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid hsl(var(--border));
+  border-radius: 12px;
+  background: hsl(var(--background));
+}
+.website-colors .color-preview-h1 {
+  font-size: 30px;
+  line-height: 1.2;
+  font-weight: 600;
+}
+.website-colors .color-preview-h2 {
+  font-size: 24px;
+  line-height: 1.3;
+  font-weight: 600;
+}
+.website-colors .color-preview-h3 {
+  font-size: 18px;
+  line-height: 1.5;
+  font-weight: 600;
+}
+.website-colors .color-preview-text {
+  font-size: 14px;
+  line-height: 1.5;
+}
+.website-colors .color-preview-meta {
+  font-size: 12px;
+  line-height: 1.5;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+.website-colors .color-preview-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  font-size: 14px;
+}
+.website-colors .color-preview-links > * {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.website-colors .color-preview-inverse {
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.website-colors .color-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.website-colors .color-toolbar button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+.website-colors .color-toolbar svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+.website-colors button.color-save {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border-color: hsl(var(--primary));
+}
+.website-colors button.color-save:hover {
+  background: hsl(var(--primary) / 0.9);
+}
+.website-colors .color-save-help {
+  color: hsl(var(--muted-foreground));
+  font-size: 12px;
+  line-height: 1.5;
+}
+.website-colors .color-spinner {
+  animation: color-spin 1s linear infinite;
+}
+@keyframes color-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (min-width: 768px) {
+  .website-colors .color-fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .website-colors .color-spinner {
+    animation: none;
+  }
+}

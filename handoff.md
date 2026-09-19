@@ -1,3 +1,23 @@
+## September 19 — Colors shared presentation increment
+
+Colors now shares the retained editor with three original sections, 18 paired
+controls and complete Palette Preview. Parent browser validation passed on local
+synthetic state, including confirmed save and 390px containment; no production
+settings changed. Fourteen focused Social/Typography/Colors tests passed. Full
+Marketing parity remains open. Forms original-workspace restoration is delegated
+to marketing_parity_inventory; Branding follows Colors. Do not include unrelated
+menu/redirect draft files in the UI release.
+
+## September 19 — latest verified release fb2d322
+
+Dashboard deployment 8a021ce9-9a76-4dd5-b298-2e2a21265e6a and Core deployment
+555c280d-7661-4f1f-ab90-a1a5fa5571c2 both SUCCESS at fb2d322. Authenticated live
+Typography verified with Heading/Body Font Pickers, 40 loaded font cards and Save
+disabled on unchanged data. Social live verification recorded below. No production
+settings changed. Colors shared extraction is running under social_ui_reuse; add
+its color-editor.tsx explicitly to root .dockerignore before releasing. This
+checkpoint can be included with that next scoped commit.
+
 ## September 19 — Social live; Typography restoration increment
 
 Social restoration is verified live at a9a7d79 after correcting the dashboard build

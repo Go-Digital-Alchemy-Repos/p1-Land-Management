@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { ImageIcon, Link2, Loader2, MapPin, Palette, Save, Type } from "lucide-react";
 
+import { ColorEditor, BRANDING_COLOR_FIELDS, type BrandingColorSettingKey } from "@/components/shared/color-editor";
 import { TypographyEditor } from "@/components/shared/typography-editor";
 import { CmsImageUpload } from "@/features/admin/cms/components/cms-image-upload";
 import { SocialMediaEditor, normalizePrefilledSocialUrl } from "@/components/shared/social-media-editor";
@@ -26,7 +27,6 @@ import {
   normalizeHexColor,
 } from "@/lib/branding";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { cn } from "@/lib/utils";
 import {
   getSocialMediaLinks,
   normalizeSocialIconStyle,
@@ -43,139 +43,6 @@ type BrandingCompanyInfoSettingKey =
   | "company_phone_numbers"
   | "company_google_business_url";
 type BrandingSocialSettingKey = (typeof SOCIAL_MEDIA_PLATFORMS)[number]["settingKey"];
-
-type BrandingColorSettingKey =
-  | "brand_primary_color"
-  | "brand_secondary_color"
-  | "brand_tertiary_color"
-  | "brand_quaternary_color"
-  | "text_h1_color"
-  | "text_h2_color"
-  | "text_h3_h6_color"
-  | "text_body_color"
-  | "text_heading_subtext_color"
-  | "text_supporting_copy_color"
-  | "text_helper_text_color"
-  | "text_meta_color"
-  | "text_link_color"
-  | "text_link_hover_color"
-  | "text_inverse_color"
-  | "text_primary_foreground_color"
-  | "text_secondary_foreground_color"
-  | "text_tertiary_foreground_color";
-
-const BRANDING_CORE_COLOR_FIELDS: Array<{
-  key: BrandingColorSettingKey;
-  label: string;
-  description: string;
-}> = [
-  {
-    key: "brand_primary_color",
-    label: "Primary Color",
-    description: "Main brand and button color.",
-  },
-  {
-    key: "brand_secondary_color",
-    label: "Secondary Color",
-    description: "Support color for secondary UI states.",
-  },
-  {
-    key: "brand_tertiary_color",
-    label: "Tertiary Color",
-    description: "Accent color used across highlights and links.",
-  },
-  {
-    key: "brand_quaternary_color",
-    label: "Quaternary Color",
-    description: "Fourth core brand color for additional featured accents and visual variety.",
-  },
-];
-
-const BRANDING_TYPOGRAPHY_COLOR_FIELDS: Array<{
-  key: BrandingColorSettingKey;
-  label: string;
-  description: string;
-}> = [
-  { key: "text_h1_color", label: "H1 Color", description: "Primary color for main page headings." },
-  {
-    key: "text_h2_color",
-    label: "H2 Color",
-    description: "Color for section-level headings and major titles.",
-  },
-  {
-    key: "text_h3_h6_color",
-    label: "H3-H6 Color",
-    description: "Color for smaller heading levels and card titles.",
-  },
-  {
-    key: "text_body_color",
-    label: "Paragraph Text",
-    description: "Default reading color for paragraphs, excerpts, and body copy.",
-  },
-  {
-    key: "text_heading_subtext_color",
-    label: "Heading Sub-Text",
-    description: "Color for subtitle lines directly beneath major headings.",
-  },
-  {
-    key: "text_supporting_copy_color",
-    label: "Supporting Copy",
-    description: "Use for section introductions, lead-in copy, and supporting editorial text.",
-  },
-  {
-    key: "text_helper_text_color",
-    label: "Helper Messaging",
-    description: "Use for empty states, helper notes, and guidance text around UI and content.",
-  },
-  {
-    key: "text_meta_color",
-    label: "Meta Text",
-    description: "Use for dates, authors, categories, labels, and small metadata.",
-  },
-  {
-    key: "text_link_color",
-    label: "Link Color",
-    description: "Default color for editorial links and linked text actions.",
-  },
-  {
-    key: "text_link_hover_color",
-    label: "Link Hover Color",
-    description: "Hover color for links and lightweight text actions.",
-  },
-  {
-    key: "text_inverse_color",
-    label: "Inverse Text",
-    description: "Text shown on dark surfaces, image overlays, and high-contrast areas.",
-  },
-];
-
-const BRANDING_UI_TEXT_COLOR_FIELDS: Array<{
-  key: BrandingColorSettingKey;
-  label: string;
-  description: string;
-}> = [
-  {
-    key: "text_primary_foreground_color",
-    label: "Primary Text on Color",
-    description: "Text shown on primary-colored buttons and badges.",
-  },
-  {
-    key: "text_secondary_foreground_color",
-    label: "Secondary Text on Color",
-    description: "Text shown on secondary-colored UI surfaces.",
-  },
-  {
-    key: "text_tertiary_foreground_color",
-    label: "Tertiary Text on Color",
-    description: "Text shown on tertiary/accent-colored UI surfaces.",
-  },
-];
-
-const BRANDING_COLOR_FIELDS = [
-  ...BRANDING_CORE_COLOR_FIELDS,
-  ...BRANDING_TYPOGRAPHY_COLOR_FIELDS,
-  ...BRANDING_UI_TEXT_COLOR_FIELDS,
-] as const;
 
 function BrandingImageCard({
   settingKey,
@@ -574,17 +441,6 @@ export function BrandingTab({
       fontFamilyForBrandingOption(headingFont === "__default__" ? null : headingFont) ?? undefined,
   };
 
-  const previewPaletteStyle = {
-    backgroundColor: colorValues.brand_primary_color || undefined,
-    color: colorValues.text_primary_foreground_color || undefined,
-  };
-  const previewLinkStyle = {
-    color: colorValues.text_link_color || undefined,
-  };
-  const previewLinkHoverStyle = {
-    color: colorValues.text_link_hover_color || colorValues.text_link_color || undefined,
-  };
-
   const updateColorValue = (key: BrandingColorSettingKey, value: string) => {
     setColorValues((current) => ({ ...current, [key]: value }));
   };
@@ -767,242 +623,24 @@ export function BrandingTab({
         </TabsContent>
 
         <TabsContent value="colors" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base">
-                <Palette className="h-4 w-4 text-primary" />
-                Color Palette
-              </CardTitle>
-              <CardDescription>
-                Set the core frontend brand colors, typography colors, and UI foreground colors.
-                This keeps headings, body copy, supporting text, metadata, and links distinct
-                without needing one-off overrides.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-5">
-              {[
-                {
-                  title: "Core Colors",
-                  description:
-                    "These power the main brand accents, buttons, and highlighted interface states on the public site.",
-                  fields: BRANDING_CORE_COLOR_FIELDS,
-                },
-                {
-                  title: "Typography Colors",
-                  description:
-                    "Use these to separate major headings, paragraph copy, section subtext, metadata, and editorial links.",
-                  fields: BRANDING_TYPOGRAPHY_COLOR_FIELDS,
-                },
-                {
-                  title: "Text on Color Surfaces",
-                  description:
-                    "These colors are used when text appears on branded buttons, badges, and other colored UI surfaces.",
-                  fields: BRANDING_UI_TEXT_COLOR_FIELDS,
-                },
-              ].map((group) => (
-                <div key={group.title} className="space-y-4">
-                  <div>
-                    <h4 className="text-sm font-semibold">{group.title}</h4>
-                    <p className="mt-1 text-xs text-muted-foreground">{group.description}</p>
-                  </div>
-                  <div className="grid gap-4 md:grid-cols-2">
-                    {group.fields.map((field) => (
-                      <div key={field.key} className="space-y-1.5 rounded-xl border p-4">
-                        <div>
-                          <Label>{field.label}</Label>
-                          <p className="mt-1 text-xs text-muted-foreground">{field.description}</p>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <input
-                            type="color"
-                            value={normalizeHexColor(colorValues[field.key]) || "#000000"}
-                            onChange={(event) =>
-                              updateColorValue(field.key, event.target.value.toUpperCase())
-                            }
-                            className="h-10 w-12 cursor-pointer rounded-md border bg-background p-1"
-                            data-testid={`input-color-${field.key}`}
-                          />
-                          <Input
-                            value={colorValues[field.key]}
-                            onChange={(event) => updateColorValue(field.key, event.target.value)}
-                            placeholder="#000000"
-                            data-testid={`input-hex-${field.key}`}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-
-              <div className="rounded-xl border bg-muted/10 p-5">
-                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                  Palette Preview
-                </p>
-                <div className="mt-4 flex flex-wrap gap-3">
-                  <div
-                    className="rounded-lg px-4 py-2 text-sm font-medium"
-                    style={previewPaletteStyle}
-                  >
-                    Primary Action
-                  </div>
-                  <div
-                    className="rounded-lg px-4 py-2 text-sm font-medium"
-                    style={{
-                      backgroundColor: colorValues.brand_secondary_color || undefined,
-                      color: colorValues.text_secondary_foreground_color || undefined,
-                    }}
-                  >
-                    Secondary Action
-                  </div>
-                  <div
-                    className="rounded-lg px-4 py-2 text-sm font-medium"
-                    style={{
-                      backgroundColor: colorValues.brand_tertiary_color || undefined,
-                      color: colorValues.text_tertiary_foreground_color || undefined,
-                    }}
-                  >
-                    Tertiary Action
-                  </div>
-                  <div
-                    className="rounded-lg px-4 py-2 text-sm font-medium"
-                    style={{
-                      backgroundColor: colorValues.brand_quaternary_color || "#A8623A",
-                      color:
-                        colorValues.text_inverse_color ||
-                        colorValues.text_primary_foreground_color ||
-                        undefined,
-                    }}
-                  >
-                    Quaternary Action
-                  </div>
-                </div>
-                <div className="mt-5 rounded-xl border bg-background p-5 space-y-3">
-                  <p
-                    className="text-3xl font-semibold"
-                    style={{
-                      ...previewHeadingStyle,
-                      color: colorValues.text_h1_color || colorValues.text_body_color || undefined,
-                    }}
-                  >
-                    H1 headline preview
-                  </p>
-                  <p
-                    className="text-2xl font-semibold"
-                    style={{
-                      ...previewHeadingStyle,
-                      color:
-                        colorValues.text_h2_color ||
-                        colorValues.text_h1_color ||
-                        colorValues.text_body_color ||
-                        undefined,
-                    }}
-                  >
-                    H2 section heading preview
-                  </p>
-                  <p
-                    className="text-lg font-semibold"
-                    style={{
-                      ...previewHeadingStyle,
-                      color:
-                        colorValues.text_h3_h6_color ||
-                        colorValues.text_h2_color ||
-                        colorValues.text_body_color ||
-                        undefined,
-                    }}
-                  >
-                    H3-H6 card and supporting heading preview
-                  </p>
-                  <p
-                    className="text-sm"
-                    style={{
-                      ...previewBodyStyle,
-                      color: colorValues.text_heading_subtext_color || undefined,
-                    }}
-                  >
-                    Heading sub-text preview directly beneath a hero or section heading.
-                  </p>
-                  <p
-                    className="text-sm"
-                    style={{
-                      ...previewBodyStyle,
-                      color: colorValues.text_supporting_copy_color || undefined,
-                    }}
-                  >
-                    Supporting copy preview for section introductions, lead-ins, and editorial
-                    setup.
-                  </p>
-                  <p
-                    className="text-sm"
-                    style={{
-                      ...previewBodyStyle,
-                      color: colorValues.text_helper_text_color || undefined,
-                    }}
-                  >
-                    Helper messaging preview for empty states, guidance text, and interface hints.
-                  </p>
-                  <p
-                    className="text-sm"
-                    style={{ ...previewBodyStyle, color: colorValues.text_body_color || undefined }}
-                  >
-                    Paragraph text preview for reading content, blog excerpts, and general body copy
-                    throughout the site.
-                  </p>
-                  <p
-                    className="text-xs uppercase tracking-wide"
-                    style={{
-                      color:
-                        colorValues.text_meta_color ||
-                        colorValues.text_helper_text_color ||
-                        undefined,
-                    }}
-                  >
-                    Meta text preview for dates, authors, categories, and labels
-                  </p>
-                  <div className="flex flex-wrap items-center gap-4 text-sm">
-                    <a
-                      href="#branding-preview-link"
-                      className="underline underline-offset-4"
-                      style={previewLinkStyle}
-                    >
-                      Link color preview
-                    </a>
-                    <span className="underline underline-offset-4" style={previewLinkHoverStyle}>
-                      Link hover preview
-                    </span>
-                  </div>
-                  <div
-                    className="rounded-lg px-4 py-3 text-sm font-medium"
-                    style={{
-                      backgroundColor: colorValues.brand_primary_color || "#1F2A44",
-                      color:
-                        colorValues.text_inverse_color ||
-                        colorValues.text_primary_foreground_color ||
-                        undefined,
-                    }}
-                  >
-                    Inverse text preview on dark or branded surfaces
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex gap-2">
-                <Button
-                  type="button"
-                  onClick={() => saveColorsMutation.mutate()}
-                  disabled={!hasColorChanges || saveColorsMutation.isPending}
-                  data-testid="button-save-branding-colors"
-                >
-                  {saveColorsMutation.isPending ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : (
-                    <Save className="mr-2 h-4 w-4" />
-                  )}
-                  Save Color Palette
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          <ColorEditor
+            components={{ Card, CardHeader, CardTitle, CardDescription, CardContent }}
+            previewValues={colorValues}
+            previewHeadingStyle={previewHeadingStyle}
+            previewBodyStyle={previewBodyStyle}
+            renderControls={(field) => <>
+              <input type="color" value={normalizeHexColor(colorValues[field.key]) || "#000000"}
+                onChange={(event) => updateColorValue(field.key, event.target.value.toUpperCase())}
+                aria-label={`${field.label} picker`} className="h-10 w-12 cursor-pointer rounded-md border bg-background p-1"
+                data-testid={`input-color-${field.key}`} />
+              <Input id={field.key} value={colorValues[field.key]} onChange={(event) => updateColorValue(field.key, event.target.value)}
+                aria-describedby={`${field.key}-description`} placeholder="#000000" data-testid={`input-hex-${field.key}`} />
+            </>}
+            toolbar={<Button type="button" onClick={() => saveColorsMutation.mutate()} disabled={!hasColorChanges || saveColorsMutation.isPending} data-testid="button-save-branding-colors">
+              {saveColorsMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+              Save Color Palette
+            </Button>}
+          />
         </TabsContent>
 
         <TabsContent value="typography" className="space-y-6">

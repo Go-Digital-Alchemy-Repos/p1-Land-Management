@@ -1,3 +1,9 @@
+import { Loader2, RefreshCw, Save } from "lucide-react";
+import {
+  ColorEditor,
+  BRANDING_COLOR_FIELDS,
+} from "../../../../platform/p1-core/client/src/components/shared/color-editor";
+import "./website-colors.css";
 import { useEffect, useRef, useState } from "react";
 import {
   getWebsiteColors,
@@ -6,26 +12,7 @@ import {
 import { useCmsUnsavedChanges } from "./useCmsUnsavedChanges";
 type Snapshot = Awaited<ReturnType<typeof getWebsiteColors>>;
 type Colors = Snapshot["colors"];
-const controls: Array<{ key: keyof Colors; label: string }> = [
-  { key: "brand_primary_color", label: "Primary" },
-  { key: "brand_secondary_color", label: "Secondary" },
-  { key: "brand_tertiary_color", label: "Tertiary" },
-  { key: "brand_quaternary_color", label: "Quaternary" },
-  { key: "text_h1_color", label: "H1 text" },
-  { key: "text_h2_color", label: "H2 text" },
-  { key: "text_h3_h6_color", label: "H3\u2013H6 text" },
-  { key: "text_body_color", label: "Body text" },
-  { key: "text_heading_subtext_color", label: "Heading subtext" },
-  { key: "text_supporting_copy_color", label: "Supporting copy" },
-  { key: "text_helper_text_color", label: "Helper text" },
-  { key: "text_meta_color", label: "Metadata" },
-  { key: "text_link_color", label: "Link" },
-  { key: "text_link_hover_color", label: "Link hover" },
-  { key: "text_inverse_color", label: "Inverse text" },
-  { key: "text_primary_foreground_color", label: "Text on primary" },
-  { key: "text_secondary_foreground_color", label: "Text on secondary" },
-  { key: "text_tertiary_foreground_color", label: "Text on tertiary" },
-];
+const controls = BRANDING_COLOR_FIELDS;
 export default function WebsiteColors() {
   const [saved, setSaved] = useState<Snapshot | null>(null),
     [values, setValues] = useState<Colors | null>(null),
@@ -144,197 +131,99 @@ export default function WebsiteColors() {
   );
   const swatch = (key: keyof Colors) =>
     values && /^#[0-9a-fA-F]{6}$/.test(values[key]) ? values[key] : undefined;
+  const previewValues = Object.fromEntries(
+    controls.map(({ key }) => [key, swatch(key)]),
+  );
   return (
-    <section className="panel" aria-label="Website color palette">
-      <h2>Website color palette</h2>
-      <p>
-        Manage the retained website branding colors. These settings are
+    <section className="website-colors" aria-label="Website color palette">
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          if (valid) void save();
+        }}
+      >
+        <ColorEditor
+          previewValues={previewValues}
+          notices={
+            <>
+              {error && <p role="alert">{error}</p>}
+              {message && <p role="status">{message}</p>}
+              {busy && <p role="status">Working…</p>}
+              {!valid && (
+                <p role="alert">
+                  Changed colors must be blank or a # followed by six
+                  hexadecimal digits.
+                </p>
+              )}
+            </>
+          }
+          renderControls={(field) => (
+            <>
+              <input
+                type="color"
+                aria-label={`${field.label} picker`}
+                data-testid={`input-color-${field.key}`}
+                disabled={!values || busy || blocked}
+                value={swatch(field.key) ?? "#000000"}
+                onChange={(event) =>
+                  values &&
+                  setValues({
+                    ...values,
+                    [field.key]: event.target.value.toUpperCase(),
+                  })
+                }
+              />
+              <input
+                id={field.key}
+                value={values?.[field.key] ?? ""}
+                placeholder="#000000"
+                data-testid={`input-hex-${field.key}`}
+                disabled={!values || busy || blocked}
+                aria-describedby={`${field.key}-description`}
+                aria-invalid={
+                  changed.some(({ key }) => key === field.key) &&
+                  !/^(?:#[0-9a-fA-F]{6})?$/.test(values?.[field.key] ?? "")
+                }
+                onChange={(event) =>
+                  values &&
+                  setValues({ ...values, [field.key]: event.target.value })
+                }
+              />
+            </>
+          )}
+          toolbar={
+            <>
+              <button
+                className="color-save"
+                type="submit"
+                data-testid="button-save-branding-colors"
+                disabled={!saved || busy || blocked || !dirty || !valid}
+              >
+                {busy ? (
+                  <Loader2 className="color-spinner" aria-hidden="true" />
+                ) : (
+                  <Save aria-hidden="true" />
+                )}
+                Save Color Palette
+              </button>
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => void load(true)}
+              >
+                <RefreshCw aria-hidden="true" />
+                Reload saved colors
+              </button>
+            </>
+          }
+        />
+      </form>
+      <p className="color-save-help">
+        Use a six-digit hex color such as #1F2A44, or leave a field blank to use
+        its website fallback. Only changed fields are saved. Existing custom
+        values remain untouched unless you edit them. These settings are
         independent of the Business Center theme.
       </p>
-      <p>
-        Saved colors apply to new public-page loads and website previews within
-        about 30 seconds. Clear a field to restore its website fallback. Some
-        page-specific styling can override global colors.
-      </p>
-      <p>
-        Use a six-digit hex color such as #1F2A44, or leave a field blank to use
-        its existing website fallback. Only changed fields are saved. Existing
-        custom values remain untouched unless you edit them.
-      </p>
-      {error && <p role="alert">{error}</p>}
-      {message && <p role="status">{message}</p>}
-      {busy && <p role="status">Working…</p>}
-      <button type="button" disabled={busy} onClick={() => void load(true)}>
-        Reload saved colors
-      </button>
-      {saved && values && (
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (valid) void save();
-          }}
-        >
-          <fieldset
-            disabled={busy || blocked}
-            style={{ minWidth: 0, marginBlock: "1rem" }}
-          >
-            <legend>Website colors</legend>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns:
-                  "repeat(auto-fit,minmax(min(100%,240px),1fr))",
-                gap: "1rem",
-              }}
-            >
-              {controls.map(({ key, label }) => (
-                <div key={key}>
-                  <label htmlFor={key}>{label}</label>
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: ".5rem",
-                      alignItems: "center",
-                    }}
-                  >
-                    <input
-                      id={key}
-                      value={values[key]}
-                      placeholder="Website fallback"
-                      style={{ minWidth: 0, width: "100%" }}
-                      aria-invalid={
-                        changed.some((field) => field.key === key) &&
-                        !/^(?:#[0-9a-fA-F]{6})?$/.test(values[key])
-                      }
-                      onChange={(e) =>
-                        setValues({ ...values, [key]: e.target.value })
-                      }
-                    />
-                    <input
-                      type="color"
-                      aria-label={`${label} picker`}
-                      style={{
-                        width: "44px",
-                        minHeight: "44px",
-                        flex: "0 0 44px",
-                      }}
-                      value={
-                        /^#[0-9a-fA-F]{6}$/.test(values[key])
-                          ? values[key]
-                          : "#000000"
-                      }
-                      onChange={(e) =>
-                        setValues({ ...values, [key]: e.target.value })
-                      }
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </fieldset>
-          <aside
-            aria-label="Draft color preview"
-            style={{
-              padding: "1rem",
-              border: "1px solid hsl(var(--border))",
-              borderRadius: ".5rem",
-              marginBlock: "1rem",
-            }}
-          >
-            <h3>Draft color preview</h3>
-            <p>
-              This sample uses your valid draft colors. Blank or custom values
-              use the sample’s default styling.
-            </p>
-            <div style={{ color: swatch("text_body_color") }}>
-              <h1 style={{ color: swatch("text_h1_color") }}>Main heading</h1>
-              <h2 style={{ color: swatch("text_h2_color") }}>
-                Section heading
-              </h2>
-              <h3 style={{ color: swatch("text_h3_h6_color") }}>
-                Supporting heading
-              </h3>
-              <p style={{ color: swatch("text_heading_subtext_color") }}>
-                Heading subtext
-              </p>
-              <p style={{ color: swatch("text_supporting_copy_color") }}>
-                Supporting copy
-              </p>
-              <p>Body copy</p>
-              <p style={{ color: swatch("text_helper_text_color") }}>
-                Helper message
-              </p>
-              <p style={{ color: swatch("text_meta_color") }}>Metadata</p>
-              <p>
-                <span
-                  style={{
-                    color: swatch("text_link_color"),
-                    textDecoration: "underline",
-                  }}
-                >
-                  Link sample
-                </span>
-                {" · "}
-                <span
-                  style={{
-                    color: swatch("text_link_hover_color"),
-                    textDecoration: "underline",
-                  }}
-                >
-                  Hover sample
-                </span>
-              </p>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: ".5rem" }}>
-                {(
-                  [
-                    [
-                      "brand_primary_color",
-                      "text_primary_foreground_color",
-                      "Primary",
-                    ],
-                    [
-                      "brand_secondary_color",
-                      "text_secondary_foreground_color",
-                      "Secondary",
-                    ],
-                    [
-                      "brand_tertiary_color",
-                      "text_tertiary_foreground_color",
-                      "Tertiary",
-                    ],
-                    [
-                      "brand_quaternary_color",
-                      "text_inverse_color",
-                      "Quaternary / inverse",
-                    ],
-                  ] as const
-                ).map(([background, foreground, label]) => (
-                  <span
-                    key={background}
-                    style={{
-                      padding: ".75rem",
-                      border: "1px solid hsl(var(--border))",
-                      backgroundColor: swatch(background),
-                      color: swatch(foreground),
-                    }}
-                  >
-                    {label}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </aside>
-          {!valid && (
-            <p role="alert">
-              Changed colors must be blank or a # followed by six hexadecimal
-              digits.
-            </p>
-          )}
-          <button type="submit" disabled={busy || blocked || !dirty || !valid}>
-            Save website colors
-          </button>
-        </form>
-      )}
     </section>
   );
 }
