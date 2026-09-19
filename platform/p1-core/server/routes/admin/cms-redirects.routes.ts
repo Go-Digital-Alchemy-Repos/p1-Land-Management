@@ -1,3 +1,4 @@
+import { RedirectPolicyError } from "../../../shared/public-redirects";
 import { requireBusinessCapability as p1Authorize } from "../../middleware/auth";
 import { Router } from "express";
 import { storage } from "../../storage/index";
@@ -27,6 +28,8 @@ router.post("/redirects", p1Authorize("marketing.content.seo"), async (req, res)
     const created = await storage.redirects.create(parsed.data);
     res.status(201).json(created);
   } catch (err) {
+    if (err instanceof RedirectPolicyError)
+      return res.status(err.status).json({ error: err.message });
     if (hasPostgresCode(err, "23505")) {
       return res.status(409).json({ error: "A redirect for this path already exists" });
     }
@@ -43,7 +46,9 @@ router.put("/redirects/:id", p1Authorize("marketing.content.seo"), async (req, r
     const updated = await storage.redirects.update(String(req.params.id), parsed.data);
     if (!updated) return res.status(404).json({ error: "Redirect not found" });
     res.json(updated);
-  } catch {
+  } catch (err) {
+    if (err instanceof RedirectPolicyError)
+      return res.status(err.status).json({ error: err.message });
     res.status(500).json({ error: "Failed to update redirect" });
   }
 });

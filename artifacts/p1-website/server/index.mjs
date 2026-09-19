@@ -1,3 +1,4 @@
+import { createWebsiteRedirectStore, resolveWebsiteRedirect } from "./website-redirects.mjs";
 import { createWebsiteRobotsStore, publicRobotsContent } from "./website-robots.mjs";
 import { createWebsiteIdentityStore, identityIconHead } from "./website-identity.mjs";
 import { createWebsiteSocialStore } from "./website-social.mjs";
@@ -29,6 +30,7 @@ async function pageSnapshot(routePath) {
   return page ? {...page, identity} : null;
 }
 const websiteRobots = createWebsiteRobotsStore({ origin, cacheDir: process.env.P1_CONTENT_CACHE_DIR ?? "/tmp/p1-public-content" });
+const websiteRedirects = createWebsiteRedirectStore({ origin, cacheDir: process.env.P1_CONTENT_CACHE_DIR ?? "/tmp/p1-public-content" });
 const googleReviews = createGoogleReviewsStore();
 const headTags = createHeadTagStore({ origin });
 const websiteColors = createWebsiteColorStore({ origin });
@@ -150,8 +152,15 @@ const server=http.createServer(async(req,res)=>{
         return send(req,res,unavailable?503:502,JSON.stringify({ error: 'Reviews are temporarily unavailable.' }),'application/json','no-store');
       }
     }
+    if(pathname==='/api/p1/website-redirects') {
+      if(!['GET','HEAD'].includes(req.method))return send(req,res,405,'Method not allowed','text/plain; charset=utf-8','no-store');
+      if(url.search)return send(req,res,400,'Unsupported query','text/plain; charset=utf-8','no-store');
+      return send(req,res,200,JSON.stringify(await websiteRedirects.snapshot()),'application/json; charset=utf-8','no-store');
+    }
     if(backendPath)return proxy(req,res);
     if(!['GET','HEAD'].includes(req.method))return send(req,res,405,'Method not allowed');
+    const cmsRedirect=await resolveWebsiteRedirect(websiteRedirects, pathname, url.search, req.method);
+    if(cmsRedirect){res.writeHead(cmsRedirect.status,{Location:cmsRedirect.location,'Cache-Control':'no-cache'});return res.end();}
     res.setHeader('Content-Security-Policy',"default-src 'self'; script-src 'self' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://tiles.openfreemap.org https://www.google-analytics.com https://region1.google-analytics.com; frame-ancestors 'self'; base-uri 'self'; object-src 'none'; form-action 'self'");
     if(pathname==='/cms-preview/typography') {
       res.setHeader('X-Robots-Tag','noindex, nofollow');
@@ -171,7 +180,8 @@ const server=http.createServer(async(req,res)=>{
       }
     }
     if(pathname==='/sitemap.xml') {
-      const snapshots=await Promise.all([...content.routes.keys()].filter(p=>!retiredRoutes.has(p)).map(p=>content.snapshot(p)));
+      const redirectSources = new Set((await websiteRedirects.snapshot()).redirects.map(rule => rule.fromPath));
+      const snapshots=await Promise.all([...content.routes.keys()].filter(p=>!retiredRoutes.has(p) && !redirectSources.has(p)).map(p=>content.snapshot(p)));
       const body=`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${snapshots.map(s=>`<url><loc>${canonical}${escape(s.route)}</loc>${s.publishedAt?`<lastmod>${escape(new Date(s.publishedAt).toISOString())}</lastmod>`:''}</url>`).join('')}</urlset>`;
       return send(req,res,200,body,'application/xml');
     }

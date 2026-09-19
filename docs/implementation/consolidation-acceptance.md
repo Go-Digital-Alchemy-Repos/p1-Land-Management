@@ -107,3 +107,24 @@ This proves composed proposal → recurring job → crew synchronization/retry �
 review → charge preparation through actual application handlers. It does not prove
 browser IndexedDB/offline recovery, photos, device restart, reassignment recovery,
 all cancellation/successor cases, provider delivery, or full operational acceptance.
+
+## Public CMS redirects — release candidate September 19
+
+Redirect rules now have a validated public projection consumed by the website
+gateway and subsequent client-side navigation. Only canonical same-site paths and
+301/302 are accepted; reserved infrastructure routes, duplicate active sources and
+cycles are denied. Advisory transaction locks prevent conflicting concurrent edits.
+Invalid historical rows can be disabled independently to repair the collection.
+The gateway retains the last valid snapshot on upstream failure (30-second refresh),
+preserves incoming query parameters and removes active source routes from sitemap.
+Client checks abort on navigation and fail open after2.2seconds instead of stranding
+visitors if the projection is unavailable. Normal document requests remain authoritative.
+
+Parent isolated HEAD-plus-redirect release copy passed Core typecheck/build, website
+typecheck/Vite build/prerender/manifest generation,22 HTTP/runtime/store tests and
+6 policy/client resolver tests. Archive builds require explicit P1_SOURCE_REVISION;
+the manifest step passed after supplying the actual base revision. Specialist ran
+5 isolated PostgreSQL concurrency/policy tests and reported browser navigation,
+query, stale-response and failure checks. No production redirect records were created
+or changed. Full CRUD authorization runtime coverage and live nonempty-rule acceptance
+remain separate from these checks. Menus are still an unfinished public consumer.

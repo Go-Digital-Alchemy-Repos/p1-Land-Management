@@ -25,6 +25,14 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
   const upstreamRequests = [];
   const upstream = http.createServer((req, res) => {
     upstreamRequests.push({ path: req.url, headers: req.headers });
+    if (req.url === '/api/p1/website-redirects') {
+      const redirects = [
+        {fromPath:'/old-cms-page',toPath:'/contact',statusCode:301},
+        {fromPath:'/about',toPath:'/contact',statusCode:302},
+      ];
+      res.setHeader('Content-Type','application/json');
+      return res.end(JSON.stringify({schemaVersion:1,stackId:'p1-land-management',version:createHash('sha256').update(JSON.stringify(redirects)).digest('hex'),redirects}));
+    }
     if (req.url === '/api/p1/website-robots') {
       const content='User-agent: FixtureBot\nDisallow: /fixture-only\n';
       res.setHeader('Content-Type','application/json');
@@ -157,6 +165,30 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
   await t.test('unknown public and CMS routes return genuine 404', async () => {
     const missing = await request(port, '/not-a-p1-page'); assert.equal(missing.status, 404); assert.equal(missing.headers['x-robots-tag'], 'noindex');
     assert.equal((await request(port, '/api/p1/page-content?path=%2Fmissing')).status, 404);
+  });
+  await t.test('CMS redirects govern GET/HEAD, preserve queries, and stay out of the sitemap', async () => {
+    for (const method of ['GET','HEAD']) {
+      const response = await request(port, '/old-cms-page?utm_source=qa&x=%2F&x=2', {}, method);
+      assert.equal(response.status, 301);
+      assert.equal(response.headers.location, '/contact?utm_source=qa&x=%2F&x=2');
+      if(method==='HEAD')assert.equal(response.body,'');
+    }
+    assert.equal((await request(port,'/old-cms-page',{},'POST')).status,405);
+    assert.equal((await request(port,'/about')).status,302);
+    const sitemap=await request(port,'/sitemap.xml');
+    assert.equal(sitemap.status,200);
+    assert(!sitemap.body.includes('<loc>https://www.p1landmanagement.com/about</loc>'));
+    assert(sitemap.body.includes('<loc>https://www.p1landmanagement.com/contact</loc>'));
+    const projection=await request(port,'/api/p1/website-redirects',{Cookie:'private',Authorization:'Bearer private'});
+    assert.equal(projection.status,200);
+    assert.equal(projection.headers['cache-control'],'no-store');
+    assert.equal(JSON.parse(projection.body).redirects.length,2);
+    assert.equal((await request(port,'/api/p1/website-redirects?path=/about')).status,400);
+    assert.equal((await request(port,'/api/p1/website-redirects',{},'POST')).status,405);
+    const reads=upstreamRequests.filter(r=>r.path==='/api/p1/website-redirects');
+    assert.equal(reads.length,1);
+    assert.equal(reads[0].headers.cookie,undefined);
+    assert.equal(reads[0].headers.authorization,undefined);
   });
   await t.test('canonical redirects preserve query strings', async () => {
     for (const pathname of ['/contact/', '/contact.html', '/contact/index.html']) {
@@ -291,6 +323,7 @@ test('staging manifest blocks indexing across public and proxied responses regar
   await copyFile(resolve(root, 'server/public-settings.mjs'), resolve(temporary, 'server/public-settings.mjs'));
   await copyFile(resolve(root, 'server/website-identity.mjs'), resolve(temporary, 'server/website-identity.mjs'));
   await copyFile(resolve(root, 'server/website-robots.mjs'), resolve(temporary, 'server/website-robots.mjs'));
+  await copyFile(resolve(root, 'server/website-redirects.mjs'), resolve(temporary, 'server/website-redirects.mjs'));
   await copyFile(resolve(root, 'server/website-social.mjs'), resolve(temporary, 'server/website-social.mjs'));
   await copyFile(resolve(root, 'server/typography-preview.mjs'), resolve(temporary, 'server/typography-preview.mjs'));
   await copyFile(resolve(root, 'server/content.mjs'), resolve(temporary, 'server/content.mjs'));

@@ -6,10 +6,15 @@ import {
   type ReactNode,
   Suspense,
   useEffect,
+  useRef,
+  useState,
 } from "react";
-import { Router as WouterRouter, useLocation } from "wouter";
+import { Router as WouterRouter, useLocation, useSearch } from "wouter";
+import { checkClientRedirect } from "@/lib/website-redirects";
 
-const trackGooglePage = createGoogleAnalytics(import.meta.env.VITE_GA_MEASUREMENT_ID);
+const trackGooglePage = createGoogleAnalytics(
+  import.meta.env.VITE_GA_MEASUREMENT_ID,
+);
 
 class RouteErrorBoundary extends Component<
   { children: ReactNode },
@@ -42,7 +47,11 @@ function ScrollToTop() {
   useEffect(() => {
     window.scrollTo(0, 0);
     trackAcquisition("page_view");
-    try { trackGooglePage(); } catch { /* Optional analytics must not break navigation. */ }
+    try {
+      trackGooglePage();
+    } catch {
+      /* Optional analytics must not break navigation. */
+    }
   }, [location]);
   useEffect(() => {
     const trackLink = (event: MouseEvent) => {
@@ -59,6 +68,50 @@ function ScrollToTop() {
   return null;
 }
 
+/** Initial HTML already passed the server redirect check; guard subsequent SPA routes. */
+function WebsiteRedirectBoundary({ children }: { children: ReactNode }) {
+  const [pathname] = useLocation();
+  const search = useSearch();
+  const first = useRef(true);
+  const [readyPath, setReadyPath] = useState(pathname);
+  useEffect(() => {
+    if (first.current) {
+      first.current = false;
+      return;
+    }
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 2200);
+    let active = true;
+    // Use the actual browser query verbatim (Wouter omits the leading question mark).
+    void checkClientRedirect(
+      pathname,
+      window.location.search,
+      controller.signal,
+    )
+      .then((destination) => {
+        if (!active) return;
+        if (destination) {
+          window.location.replace(destination);
+        } else {
+          setReadyPath(pathname);
+        }
+      })
+      .finally(() => clearTimeout(timer));
+    return () => {
+      active = false;
+      controller.abort();
+      clearTimeout(timer);
+    };
+  }, [pathname, search]);
+  return readyPath === pathname ? (
+    children
+  ) : (
+    <main className="p-12" role="status">
+      Loading page…
+    </main>
+  );
+}
+
 export function AppShell({
   Routes,
   ssrPath,
@@ -71,18 +124,20 @@ export function AppShell({
       base={import.meta.env.BASE_URL.replace(/\/$/, "")}
       ssrPath={ssrPath}
     >
-      <ScrollToTop />
-      <RouteErrorBoundary>
-        <Suspense
-          fallback={
-            <main className="p-12" role="status">
-              Loading page…
-            </main>
-          }
-        >
-          <Routes />
-        </Suspense>
-      </RouteErrorBoundary>
+      <WebsiteRedirectBoundary>
+        <ScrollToTop />
+        <RouteErrorBoundary>
+          <Suspense
+            fallback={
+              <main className="p-12" role="status">
+                Loading page…
+              </main>
+            }
+          >
+            <Routes />
+          </Suspense>
+        </RouteErrorBoundary>
+      </WebsiteRedirectBoundary>
     </WouterRouter>
   );
 }
