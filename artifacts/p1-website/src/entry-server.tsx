@@ -26,3 +26,13 @@ export function render(
   );
   return { html, head: finishHeadCollection(), fields };
 }
+
+/** Build-time source collection only. HTTP rendering always supplies live ownership. */
+export function renderStaticDefaults(path: string): RenderResult {
+  return render(path, {
+    route: path,
+    content: {},
+    global: {},
+    blog: { revision: null, staticRoutes: [], posts: [], listing: [] },
+  });
+}

@@ -7,11 +7,18 @@ export default function PublishedBlog() {
   const { snapshot } = useCms();
   const slug = snapshot.route.split("/")[2];
   const post = snapshot.blog?.posts.find((post) => post.snapshot.slug === slug);
-  if (!snapshot.blog)
+  if (!snapshot.blog?.staticRoutes)
     return (
       <Layout>
+        <SEO
+          title="Article temporarily unavailable | P1"
+          description="Please try again shortly."
+          noindex
+        />
         <main className="site-shell py-20" role="status">
-          Loading article…
+          {snapshot.blog
+            ? "Articles are temporarily unavailable. Please try again shortly."
+            : "Loading article…"}
         </main>
       </Layout>
     );

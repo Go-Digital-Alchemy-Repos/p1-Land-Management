@@ -6,7 +6,8 @@ import { once } from "node:events";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 const fixture = () => ({
-  schemaVersion: 1,
+  schemaVersion: 2,
+  staticRoutes: [],
   stackId: "p1-land-management",
   revision: "a".repeat(64),
   posts: [
@@ -55,7 +56,7 @@ test(
   "published Blog SSR, navigation, metadata, sitemap, rename and withdrawal share authoritative snapshots",
   { timeout: 20000 },
   async (t) => {
-    let data = fixture(),
+    let data = { ...fixture(), schemaVersion: 1 },
       offline = false;
     const requests = [];
     const upstream = http.createServer((req, res) => {
@@ -119,6 +120,47 @@ test(
       fetch(`http://127.0.0.1:${port}/api/blog/fixture/publish`, {
         method: "POST",
       });
+    const staticSlugs = [
+      "land-clearing-cost-per-acre-south-carolina",
+      "how-to-manage-retention-pond-south-carolina",
+      "best-grass-large-acreage-carolinas",
+      "signs-property-drainage-problem",
+      "preparing-land-agricultural-use-carolinas",
+    ];
+    for (const slug of staticSlugs) {
+      const unavailable = await get(`/blog/${slug}`);
+      assert.equal(unavailable.status, 503);
+      assert.equal(
+        unavailable.headers.get("x-robots-tag"),
+        "noindex, nofollow",
+      );
+      const unknown = hydration(await unavailable.text());
+      assert.equal(unknown.blog.staticRoutes, null);
+      assert.deepEqual(unknown.content, {});
+    }
+    const unavailableIndex = await get("/blog");
+    assert.equal(unavailableIndex.status, 503);
+    const unavailableHtml = await unavailableIndex.text();
+    assert.deepEqual(hydration(unavailableHtml).blog.listing, []);
+    assert.doesNotMatch(
+      unavailableHtml.split('<script type="application/json"')[0],
+      /Read Article/,
+    );
+    const unknownSitemap = await (await get("/sitemap.xml")).text();
+    for (const slug of staticSlugs)
+      assert(!unknownSitemap.includes("/blog/" + slug));
+    const unavailableHead = await fetch(
+      `http://127.0.0.1:${port}/blog/${staticSlugs[0]}`,
+      { method: "HEAD" },
+    );
+    assert.equal(unavailableHead.status, 503);
+    assert.equal(await unavailableHead.text(), "");
+    offline = true;
+    await invalidate();
+    assert.equal((await get(`/blog/${staticSlugs[0]}`)).status, 503);
+    data = fixture();
+    offline = false;
+    await invalidate();
     const response = await get("/blog/fixture-article");
     assert.equal(response.status, 200);
     const html = await response.text();
@@ -169,7 +211,7 @@ test(
     const projectionRequests = requests.filter(
       (r) => r.url === "/api/website/blog-publication",
     );
-    assert.equal(projectionRequests.length, 1);
+    assert.equal(projectionRequests.length, 3);
     assert.equal(projectionRequests[0].headers.cookie, undefined);
     assert.equal(projectionRequests[0].headers.authorization, undefined);
     data.posts[0].snapshot.noindex = true;
@@ -234,5 +276,59 @@ test(
     });
     assert.equal(head.status, 404);
     assert.equal(await head.text(), "");
+    // Receipt ownership persists even without a published revision at that URL.
+    const sourceSlug = "signs-property-drainage-problem";
+    data = fixture();
+    data.posts[0].snapshot.slug = sourceSlug;
+    data.staticRoutes = [{ slug: sourceSlug, postId: data.posts[0].id }];
+    await invalidate();
+    const imported = await get(`/blog/${sourceSlug}`);
+    assert.equal(imported.status, 200);
+    const importedHtml = await imported.text();
+    assert.match(importedHtml, /Published body/);
+    assert.doesNotMatch(importedHtml, /5 Signs Your Property/);
+    assert.deepEqual(hydration(importedHtml).content, {});
+    assert.deepEqual(
+      (
+        await (
+          await get(`/api/p1/page-content?path=/blog/${sourceSlug}`)
+        ).json()
+      ).blog,
+      hydration(importedHtml).blog,
+    );
+    const ownedSitemap = await (await get("/sitemap.xml")).text();
+    assert.equal(
+      ownedSitemap.split(
+        `<loc>https://www.p1landmanagement.com/blog/${sourceSlug}</loc>`,
+      ).length - 1,
+      1,
+    );
+    data.posts[0].snapshot.slug = "imported-renamed";
+    await invalidate();
+    assert.equal((await get(`/blog/${sourceSlug}`)).status, 404);
+    assert.equal((await get("/blog/imported-renamed")).status, 200);
+    assert.doesNotMatch(
+      await (await get("/sitemap.xml")).text(),
+      new RegExp("/blog/" + sourceSlug),
+    );
+    data = { ...data, posts: [] };
+    await invalidate();
+    assert.equal((await get(`/blog/${sourceSlug}`)).status, 404);
+    assert.equal((await get("/blog/imported-renamed")).status, 404);
+    const withdrawnIndex = await (await get("/blog")).text();
+    assert(!withdrawnIndex.includes(`href="/blog/${sourceSlug}"`));
+    assert.match(
+      withdrawnIndex,
+      /href="\/blog\/best-grass-large-acreage-carolinas"/,
+    );
+    for (const bad of [
+      { ...data, staticRoutes: [] },
+      { ...data, staticRoutes: [{ slug: sourceSlug, postId: "other" }] },
+      { ...data, schemaVersion: 1 },
+    ]) {
+      data = bad;
+      await invalidate();
+      assert.equal((await get(`/blog/${sourceSlug}`)).status, 404);
+    }
   },
 );

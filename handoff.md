@@ -1,3 +1,29 @@
+## Permanent Blog ownership foundation — September 19
+
+Core implementation `20a3ac313be6676c14820b752425b25e237606fe` is pushed to main
+and the task branch. It adds migration0006 immutable import receipts, reserved-route
+ownership checks, public schema v2 and full-identity restore protection, including
+PostgreSQL microsecond timestamps. No import endpoint or real article transfer exists.
+
+Website consumer preserves existing static pages only after confirmed unowned v2
+state; it suppresses owned source pages after rename/withdrawal and fails closed
+with503/noindex when ownership is unknown. SSR, hydration, listings and sitemap share
+ownership decisions. Build-time default extraction retains all six Blog CMS field sets.
+34 website tests, typecheck, build/prerender54 passed; parent independently reran11
+Blog/ownership tests. Core21 projection/media/route and14 original actualPG publication
+tests passed; receipt6, backup8 and migration replay passed. Core typecheck/build passed.
+Independent review caught full-receipt restore protection; the corrected tests also
+reject altered provenance/hashes and a one-microsecond timestamp change beforeTRUNCATE.
+
+Release must be Core v2 first, then website v2. Check terminal statuses and live v2
+before the website push. Do not import the five articles until hero/author/date/media
+preservation and reviewed atomic importer acceptance are complete. Keep additive
+schema during application rollback; after any imports, website rollback must remain
+ownership-aware. No blanket Marketing/CMS acceptance or admin retirement is implied.
+Fresh private read-only backup pointer: `/tmp/p1-ownership-db-private-path`; hashes
+and bounded capture evidence are in `docs/implementation/blog-static-import-plan.md`.
+No production restore or content write occurred.
+
 ## Static Blog import review bundle — September 19
 
 Read-only review tooling now lives in `scripts/consolidation/prepare-blog-import.mjs`

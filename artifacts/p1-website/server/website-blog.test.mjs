@@ -9,7 +9,8 @@ import {
 } from "../../../platform/p1-core/shared/public-blog.ts";
 import { parsePublicBlog, createWebsiteBlogStore } from "./website-blog.mjs";
 export const fixture = () => ({
-  schemaVersion: 1,
+  schemaVersion: 2,
+  staticRoutes: [],
   stackId: "p1-land-management",
   revision: "a".repeat(64),
   posts: [
@@ -185,4 +186,84 @@ test("oversized UTF8 transport and redirect responses cannot replace last-valid"
     store.invalidate();
     assert.equal((await store.snapshot()).posts.length, 1);
   }
+});
+
+test("v2 ownership is allowlisted, unique, and required for reserved published slugs", () => {
+  const slug = "signs-property-drainage-problem";
+  const owned = fixture();
+  owned.staticRoutes = [{ slug, postId: owned.posts[0].id }];
+  owned.posts[0].snapshot.slug = slug;
+  assert.equal(parse(owned).posts.length, 1);
+  for (const transform of [
+    (data) => (data.schemaVersion = 1),
+    (data) => delete data.staticRoutes,
+    (data) => (data.staticRoutes[0].slug = "invented"),
+    (data) => data.staticRoutes.push(data.staticRoutes[0]),
+    (data) => (data.staticRoutes[0].postId = "other"),
+    (data) => (data.staticRoutes[0].secret = "private"),
+    (data) =>
+      data.staticRoutes.push({
+        slug: "best-grass-large-acreage-carolinas",
+        postId: data.posts[0].id,
+      }),
+  ]) {
+    const changed = structuredClone(owned);
+    transform(changed);
+    assert.throws(() => parse(changed));
+  }
+});
+test("cold cache outages and stale v1 cache never mean unowned", async (t) => {
+  const dir = await mkdtemp(join(tmpdir(), "p1-blog-ownership-"));
+  t.after(() => rm(dir, { recursive: true, force: true }));
+  const { writeFile } = await import("node:fs/promises");
+  const old = fixture();
+  old.schemaVersion = 1;
+  delete old.staticRoutes;
+  await writeFile(join(dir, "website-blog-v1.json"), JSON.stringify(old));
+  await writeFile(join(dir, "website-blog-v2.json"), JSON.stringify(old));
+  const store = createWebsiteBlogStore({
+    origin: "https://core.test",
+    cacheDir: dir,
+    validateHtml: safePublishedHtml,
+    projectListing: publicBlogListing,
+    fetcher: async () => {
+      throw Error("outage");
+    },
+  });
+  assert.equal(await store.snapshot(), null);
+  store.invalidate();
+  assert.equal(await store.snapshot(), null);
+});
+test("observed permanent ownership survives withdrawals, downgrades, remaps and restart", async (t) => {
+  const dir = await mkdtemp(join(tmpdir(), "p1-blog-permanent-"));
+  t.after(() => rm(dir, { recursive: true, force: true }));
+  const ownership = [
+    { slug: "signs-property-drainage-problem", postId: "test-post" },
+  ];
+  let next = { ...fixture(), staticRoutes: ownership };
+  const opts = {
+    origin: "https://core.test",
+    cacheDir: dir,
+    validateHtml: safePublishedHtml,
+    projectListing: publicBlogListing,
+    fetcher: async () => response(next),
+  };
+  const store = createWebsiteBlogStore(opts);
+  await store.snapshot();
+  next = { ...next, posts: [] };
+  store.invalidate();
+  assert.equal((await store.snapshot()).posts.length, 0);
+  for (const invalid of [
+    { ...next, staticRoutes: [] },
+    { ...next, staticRoutes: [{ ...ownership[0], postId: "other" }] },
+    { ...next, schemaVersion: 1 },
+  ]) {
+    next = invalid;
+    store.invalidate();
+    assert.deepEqual((await store.snapshot()).staticRoutes, ownership);
+  }
+  next = fixture();
+  const restarted = createWebsiteBlogStore(opts);
+  assert.deepEqual((await restarted.snapshot()).staticRoutes, ownership);
+  assert.equal((await restarted.snapshot()).posts.length, 0);
 });

@@ -4,7 +4,7 @@ import { pathToFileURL } from "node:url";
 import { configureP1Manifest } from "../../../platform/p1-core/script/p1-manifest-config.mjs";
 const root = resolve(import.meta.dirname, "..");
 process.env.NODE_ENV = "production";
-const { render } = await import(
+const { renderStaticDefaults: render } = await import(
   pathToFileURL(resolve(root, "dist/server/entry-server.js"))
 );
 const app = readFileSync(resolve(root, "src/app-routes.tsx"), "utf8");

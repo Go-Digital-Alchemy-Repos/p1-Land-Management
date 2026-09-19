@@ -57,6 +57,10 @@ const BLOG_POSTS = [
 export default function BlogIndex() {
   const { snapshot } = useCms();
   const [visibleCount, setVisibleCount] = useState(24);
+  const ownedSlugs = new Set(snapshot.blog?.staticRoutes?.map(entry => entry.slug));
+  const staticPosts = snapshot.blog?.staticRoutes
+    ? BLOG_POSTS.filter(post => !ownedSlugs.has(post.slug))
+    : [];
   const posts = [
     ...(snapshot.blog?.listing || []).map((post) => ({
       title: post.title,
@@ -64,12 +68,13 @@ export default function BlogIndex() {
       image: post.coverImageUrl,
       slug: post.slug,
     })),
-    ...BLOG_POSTS,
+    ...staticPosts,
   ];
   return (
     <Layout>
       <SEO
         title="Blog & Insights | P1 Land & Property Management"
+        noindex={!snapshot.blog?.staticRoutes}
         description="Insights, guides, and expertise on large-acreage land clearing, grading, drainage, and property management in Upstate South Carolina and Charlotte, NC."
         jsonLd={breadcrumbSchema([
           { name: "Home", path: "/" },
@@ -97,6 +102,7 @@ export default function BlogIndex() {
       {/* BLOG LISTING */}
       <section className="py-24 bg-background">
         <div className="site-shell">
+          {!snapshot.blog?.staticRoutes && <p role="status">Articles are temporarily unavailable. Please try again shortly.</p>}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {posts.slice(0, visibleCount).map((post, i) => (
               <Link

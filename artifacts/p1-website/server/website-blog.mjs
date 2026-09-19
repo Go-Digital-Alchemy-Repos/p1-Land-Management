@@ -41,8 +41,14 @@ function safeUrl(value, image = false) {
 }
 export function parsePublicBlog(data, validateHtml, projectListing) {
   if (
-    !exact(data, ["schemaVersion", "stackId", "revision", "posts"]) ||
-    data.schemaVersion !== 1 ||
+    !exact(data, [
+      "schemaVersion",
+      "stackId",
+      "revision",
+      "posts",
+      "staticRoutes",
+    ]) ||
+    data.schemaVersion !== 2 ||
     data.stackId !== "p1-land-management" ||
     !/^[a-f0-9]{64}$/.test(data.revision) ||
     !Array.isArray(data.posts) ||
@@ -50,6 +56,23 @@ export function parsePublicBlog(data, validateHtml, projectListing) {
     Buffer.byteLength(JSON.stringify(data)) > MAX_PUBLIC_BLOG_BYTES
   )
     throw Error("Invalid public Blog projection");
+  if (!Array.isArray(data.staticRoutes) || data.staticRoutes.length > 5)
+    throw Error("Invalid static Blog ownership");
+  const owners = new Map(),
+    ownerIds = new Set();
+  for (const entry of data.staticRoutes) {
+    if (
+      !exact(entry, ["slug", "postId"]) ||
+      !staticBlogSlugs.has(entry.slug) ||
+      !text(entry.postId, 200) ||
+      !entry.postId ||
+      owners.has(entry.slug) ||
+      ownerIds.has(entry.postId)
+    )
+      throw Error("Invalid static Blog ownership");
+    owners.set(entry.slug, entry.postId);
+    ownerIds.add(entry.postId);
+  }
   const ids = new Set(),
     slugs = new Set();
   for (const post of data.posts) {
@@ -103,7 +126,7 @@ export function parsePublicBlog(data, validateHtml, projectListing) {
       !s.title.trim() ||
       !text(s.slug, 255) ||
       !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(s.slug) ||
-      staticBlogSlugs.has(s.slug) ||
+      (staticBlogSlugs.has(s.slug) && owners.get(s.slug) !== post.id) ||
       slugs.has(s.slug) ||
       !text(s.authorName, 2000) ||
       !optional(s.excerpt, 12000) ||
@@ -148,20 +171,27 @@ export function createWebsiteBlogStore({
   projectListing,
   ...options
 } = {}) {
+  const observed = new Map();
+  function parse(data) {
+    const next = parsePublicBlog(data, validateHtml, projectListing);
+    const ownership = new Map(
+      next.staticRoutes.map((entry) => [entry.slug, entry.postId]),
+    );
+    for (const [slug, postId] of observed)
+      if (ownership.get(slug) !== postId)
+        throw Error("Static Blog ownership cannot disappear or change");
+    for (const [slug, postId] of ownership) observed.set(slug, postId);
+    return next;
+  }
   return createPublicSettingsStore({
     origin,
     path: "/api/website/blog-publication",
-    parse: (data) => parsePublicBlog(data, validateHtml, projectListing),
-    fallback: () => ({
-      schemaVersion: 1,
-      stackId: "p1-land-management",
-      revision: "0".repeat(64),
-      posts: [],
-    }),
+    parse,
+    fallback: () => null,
     preserveLastValid: true,
     maxBytes: MAX_PUBLIC_BLOG_BYTES,
     cacheFile: cacheDir
-      ? path.join(cacheDir, "website-blog-v1.json")
+      ? path.join(cacheDir, "website-blog-v2.json")
       : undefined,
     ...options,
   });
@@ -169,13 +199,26 @@ export function createWebsiteBlogStore({
 
 /** Route-specific views never hydrate unrelated article bodies. */
 export function blogForRoute(publication, route, projectListing) {
+  if (!publication)
+    return {
+      revision: null,
+      staticRoutes: null,
+      posts: [],
+      ...(route === "/blog" ? { listing: [] } : {}),
+    };
+  const owner = publication.staticRoutes.find(
+    (entry) => `/blog/${entry.slug}` === route,
+  );
   return {
     revision: publication.revision,
+    staticRoutes: publication.staticRoutes,
     posts:
       route === "/blog"
         ? []
         : publication.posts.filter(
-            (post) => route === `/blog/${post.snapshot.slug}`,
+            (post) =>
+              route === `/blog/${post.snapshot.slug}` &&
+              (!owner || owner.postId === post.id),
           ),
     ...(route === "/blog"
       ? { listing: projectListing(publication.posts) }

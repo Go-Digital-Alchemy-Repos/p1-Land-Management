@@ -1,3 +1,8 @@
+import { useCms } from "./lib/cms";
+import {
+  staticBlogSlugs,
+  staticBlogDisposition,
+} from "./lib/blog-route-ownership";
 import type { ComponentType } from "react";
 import { Route, Switch } from "wouter";
 
@@ -8,6 +13,18 @@ export type ResolvePage = (path: string) => ComponentType;
 // Route declarations stay in one shared module so the browser's lazy loader
 // and the server's eager prerenderer cannot drift apart.
 export function createSiteRoutes(page: ResolvePage): ComponentType {
+  const PublishedBlog = page("./pages/blog/published.tsx");
+  const originalPage = page;
+  page = (path) => {
+    const Original = originalPage(path);
+    const slug = path.replace("./pages/blog/", "").replace(/\.tsx$/, "");
+    if (!staticBlogSlugs.has(slug)) return Original;
+    return function StaticBlogDispatch() {
+      const { snapshot } = useCms();
+      const mode = staticBlogDisposition(slug, snapshot.blog?.staticRoutes);
+      return mode === "unowned" ? <Original /> : <PublishedBlog />;
+    };
+  };
   const NotFound = page("./pages/not-found.tsx"),
     Home = page("./pages/home.tsx"),
     About = page("./pages/about.tsx"),
@@ -58,7 +75,6 @@ export function createSiteRoutes(page: ResolvePage): ComponentType {
     UnionCountyNc = page("./pages/service-areas/union-county-nc.tsx"),
     LancasterCountySc = page("./pages/service-areas/lancaster-county-sc.tsx"),
     YorkCountySc = page("./pages/service-areas/york-county-sc.tsx");
-  const PublishedBlog = page("./pages/blog/published.tsx");
   const BlogIndex = page("./pages/blog/index.tsx"),
     BlogLandClearingCost = page(
       "./pages/blog/land-clearing-cost-per-acre-south-carolina.tsx",

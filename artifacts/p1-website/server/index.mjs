@@ -61,22 +61,28 @@ const websiteBlog = createWebsiteBlogStore({
   projectListing: publicBlogListing,
   cacheDir: process.env.P1_CONTENT_CACHE_DIR ?? "/tmp/p1-public-content",
 });
-const dynamicBlogPath = (route) =>
-  /^\/blog\/[a-z0-9]+(?:-[a-z0-9]+)*$/.test(route) &&
-  !staticBlogSlugs.has(route.slice(6));
+const blogArticlePath = (route) =>
+  /^\/blog\/[a-z0-9]+(?:-[a-z0-9]+)*$/.test(route);
 async function pageSnapshot(routePath) {
   const [page, identity, menus] = await Promise.all([
     content.snapshot(routePath),
     websiteIdentity.snapshot(),
     websiteMenus.snapshot(),
   ]);
-  if (routePath === "/blog" || dynamicBlogPath(routePath)) {
+  if (routePath === "/blog" || blogArticlePath(routePath)) {
     const blog = await websiteBlog.snapshot();
     const base = page || (await content.snapshot("/"));
     return {
       ...base,
       route: routePath,
-      content: page?.content || {},
+      content:
+        staticBlogSlugs.has(routePath.slice(6)) &&
+        (!blog ||
+          blog.staticRoutes.some(
+            (entry) => `/blog/${entry.slug}` === routePath,
+          ))
+          ? {}
+          : page?.content || {},
       identity,
       menus,
       blog: blogForRoute(blog, routePath, publicBlogListing),
@@ -538,14 +544,23 @@ const server = http.createServer(async (req, res) => {
           (rule) => rule.fromPath,
         ),
       );
+      const blog = await websiteBlog.snapshot();
       const snapshots = await Promise.all(
         [...content.routes.keys()]
-          .filter((p) => !retiredRoutes.has(p) && !redirectSources.has(p))
+          .filter(
+            (p) =>
+              !retiredRoutes.has(p) &&
+              !redirectSources.has(p) &&
+              (!staticBlogSlugs.has(p.slice(6)) ||
+                (blog &&
+                  !blog.staticRoutes.some(
+                    (entry) => p === `/blog/${entry.slug}`,
+                  ))),
+          )
           .map((p) => content.snapshot(p)),
       );
-      const blog = await websiteBlog.snapshot();
       snapshots.push(
-        ...blog.posts
+        ...(blog?.posts || [])
           .filter(
             (post) =>
               !post.snapshot.noindex &&
@@ -559,15 +574,26 @@ const server = http.createServer(async (req, res) => {
       const body = `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${snapshots.map((s) => `<url><loc>${canonical}${escape(s.route)}</loc>${s.publishedAt ? `<lastmod>${escape(new Date(s.publishedAt).toISOString())}</lastmod>` : ""}</url>`).join("")}</urlset>`;
       return send(req, res, 200, body, "application/xml");
     }
-    if (content.routes.has(pathname) || dynamicBlogPath(pathname)) {
+    if (content.routes.has(pathname) || blogArticlePath(pathname)) {
       const snapshot = await pageSnapshot(pathname);
       const result = render(pathname, snapshot);
+      const blogDocument = pathname === "/blog" || blogArticlePath(pathname);
+      const unavailable = blogDocument && snapshot.blog.staticRoutes === null;
+      const managed =
+        blogArticlePath(pathname) &&
+        (!staticBlogSlugs.has(pathname.slice(6)) ||
+          snapshot.blog.staticRoutes?.some(
+            (entry) => pathname === `/blog/${entry.slug}`,
+          ));
       const missing =
-        dynamicBlogPath(pathname) &&
+        !unavailable &&
+        managed &&
         !snapshot.blog.posts.some(
           (post) => pathname === `/blog/${post.snapshot.slug}`,
         );
-      if (missing) res.setHeader("X-Robots-Tag", "noindex, nofollow");
+      if (missing || unavailable)
+        res.setHeader("X-Robots-Tag", "noindex, nofollow");
+      if (unavailable) res.setHeader("Retry-After", "30");
       const state = JSON.stringify(snapshot).replaceAll("<", "\\u003c");
       const html = template
         .replace(
@@ -586,7 +612,7 @@ const server = http.createServer(async (req, res) => {
       return send(
         req,
         res,
-        missing ? 404 : 200,
+        unavailable ? 503 : missing ? 404 : 200,
         insertHeadTags(
           identityIconHead(html, snapshot.identity),
           palette + fonts + markup,

@@ -32,7 +32,9 @@ export type CmsIdentity = {
   googleBusinessUrl: string | null;
 };
 export type CmsSnapshot = {
-  blog?: Pick<PublicBlogPublication, "revision" | "posts"> & {
+  blog?: Pick<PublicBlogPublication, "posts"> & {
+    revision: string | null;
+    staticRoutes: Array<{ slug: string; postId: string }> | null;
     listing?: PublicBlogSummary[];
   };
   menus?: PublicWebsiteMenus | null;

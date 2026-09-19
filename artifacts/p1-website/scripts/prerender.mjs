@@ -55,7 +55,7 @@ const entryPath = resolve(root, "dist/server/entry-server.js");
 if (!existsSync(entryPath)) {
   throw new Error(`SSR bundle not found at ${entryPath}`);
 }
-const { render } = await import(pathToFileURL(entryPath).href);
+const { renderStaticDefaults: render } = await import(pathToFileURL(entryPath).href);
 
 const templatePath = resolve(root, "dist/public/index.html");
 if (!existsSync(templatePath)) {

@@ -1,14 +1,21 @@
 import {
+  observeBlogOwnership,
+  type StaticBlogOwnership,
+} from "./blog-route-ownership";
+import {
   snapshotForRoute,
   retainPublishedIdentity,
 } from "./cms-route-snapshot";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useBrowserLocation } from "wouter/use-browser-location";
 import App from "../App";
 import { CmsProvider, type CmsSnapshot } from "./cms";
 
 export function ClientCmsApp({ initial }: { initial: CmsSnapshot }) {
   const [path] = useBrowserLocation();
+  const ownership = useRef<StaticBlogOwnership>(
+    initial.blog?.staticRoutes || [],
+  );
   const [snapshot, setSnapshot] = useState(initial);
   const [failedPath, setFailedPath] = useState<string | null>(null);
   useEffect(() => {
@@ -28,9 +35,14 @@ export function ClientCmsApp({ initial }: { initial: CmsSnapshot }) {
           data?.route === path &&
           data?.content &&
           data?.global
-        )
+        ) {
+          if (data.blog)
+            ownership.current = observeBlogOwnership(
+              ownership.current,
+              data.blog.staticRoutes,
+            );
           setSnapshot((previous) => retainPublishedIdentity(previous, data));
-        else if (!controller.signal.aborted)
+        } else if (!controller.signal.aborted)
           throw new Error("Page snapshot unavailable");
       })
       .catch(() => {
