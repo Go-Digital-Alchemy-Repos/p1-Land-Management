@@ -1,0 +1,151 @@
+.head-tag-presentation {
+  min-width: 0;
+  color: hsl(var(--foreground));
+  display: grid;
+  gap: 24px;
+}
+.head-tag-presentation :where(*) {
+  box-sizing: border-box;
+}
+.head-tag-presentation h1,
+.head-tag-presentation h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+.head-tag-presentation header > p {
+  margin: 6px 0 0;
+  font-size: 14px;
+  color: hsl(var(--muted-foreground));
+}
+.head-tag-presentation .head-tag-card {
+  min-width: 0;
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius, 12px);
+  background: hsl(var(--card));
+  box-shadow: 0 1px 2px hsl(var(--foreground) / 0.04);
+}
+.head-tag-presentation .head-tag-card-header {
+  padding: 24px 24px 0;
+}
+.head-tag-presentation h3 {
+  margin: 0;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 600;
+}
+.head-tag-presentation .head-tag-icon {
+  color: #7c3aed;
+  flex-shrink: 0;
+}
+.head-tag-presentation .head-tag-card-content {
+  padding: 24px;
+  display: grid;
+  gap: 16px;
+}
+.head-tag-presentation .head-tag-analytics {
+  border: 1px solid hsl(38 92% 50% / 0.35);
+  border-radius: 12px;
+  background: hsl(38 92% 50% / 0.09);
+  padding: 16px;
+  font-size: 14px;
+}
+.head-tag-presentation h4 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+.head-tag-presentation .head-tag-analytics p {
+  margin: 8px 0 0;
+  line-height: 1.6;
+}
+.head-tag-presentation .head-tag-publication {
+  font-size: 14px;
+  color: hsl(var(--muted-foreground));
+  line-height: 1.6;
+}
+.head-tag-presentation .head-tag-error {
+  color: hsl(var(--destructive));
+}
+.head-tag-presentation form {
+  min-width: 0;
+}
+.head-tag-presentation label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.head-tag-presentation textarea {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 280px;
+  resize: vertical;
+  padding: 12px;
+  border: 1px solid hsl(var(--input));
+  border-radius: var(--radius, 8px);
+  background: hsl(var(--background));
+  color: inherit;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.head-tag-presentation .head-tag-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 16px;
+}
+.head-tag-presentation button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 8px 14px;
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius, 8px);
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+.head-tag-presentation .head-tag-save {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border-color: hsl(var(--primary));
+}
+.head-tag-presentation :where(button, textarea):disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.head-tag-presentation :where(button, textarea):focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+.head-tag-presentation .head-tag-spinner {
+  animation: head-tag-spin 1s linear infinite;
+}
+@keyframes head-tag-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .head-tag-presentation .head-tag-spinner {
+    animation: none;
+  }
+}
+@media (max-width: 640px) {
+  .head-tag-presentation .head-tag-card-header {
+    padding: 16px 16px 0;
+  }
+  .head-tag-presentation .head-tag-card-content {
+    padding: 16px;
+  }
+}

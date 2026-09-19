@@ -1,17 +1,8 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { GalleryEditorPresentation } from "@/components/shared/cms-gallery-editor-presentation";
+import { useEffect, useMemo, useState } from "react";
 import { useLocation, useParams } from "wouter";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import {
-  ArrowDown,
-  ArrowLeft,
-  ArrowUp,
-  Eye,
-  EyeOff,
-  ImagePlus,
-  Loader2,
-  Monitor,
-  Trash2,
-} from "lucide-react";
+
 import { AdminSidebar } from "@/features/admin/admin-sidebar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -89,7 +80,6 @@ export default function CmsGalleryEditorPage() {
   const isNew = !id || id === "new";
   const [, navigate] = useLocation();
   const { toast } = useToast();
-  const slugEdited = useRef(false);
 
   const { data: gallery, isLoading } = useQuery<CmsGalleryWithItems>({
     queryKey: ["/api/admin/cms/galleries", id],
@@ -109,11 +99,6 @@ export default function CmsGalleryEditorPage() {
   const [settings, setSettings] = useState<CmsGallerySettings>(DEFAULT_SETTINGS);
   const [items, setItems] = useState<GalleryItemForm[]>([]);
   const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const usesGridSettings = layout === "grid" || layout === "masonry" || layout === "carousel";
-  const usesSlideSettings = layout === "carousel" || layout === "slider" || layout === "featured";
-  const showsControlColors = usesSlideSettings || settings.lightbox;
-
   useEffect(() => {
     if (!gallery) return;
     setTitle(gallery.title);
@@ -135,7 +120,6 @@ export default function CmsGalleryEditorPage() {
         tags: item.tags ?? [],
       })),
     );
-    slugEdited.current = true;
   }, [gallery]);
 
   const previewGallery = useMemo<CmsGalleryWithItems>(
@@ -218,10 +202,6 @@ export default function CmsGalleryEditorPage() {
       }),
   });
 
-  const setSetting = <K extends keyof CmsGallerySettings>(key: K, value: CmsGallerySettings[K]) => {
-    setSettings((current) => ({ ...current, [key]: value }));
-  };
-
   const updateItem = (index: number, patch: Partial<GalleryItemForm>) => {
     setItems((current) => current.map((item, i) => (i === index ? { ...item, ...patch } : item)));
   };
@@ -243,17 +223,6 @@ export default function CmsGalleryEditorPage() {
     ]);
   };
 
-  const moveItem = (index: number, direction: -1 | 1) => {
-    setItems((current) => {
-      const nextIndex = index + direction;
-      if (nextIndex < 0 || nextIndex >= current.length) return current;
-      const next = [...current];
-      const [item] = next.splice(index, 1);
-      next.splice(nextIndex, 0, item);
-      return next;
-    });
-  };
-
   if (!isNew && isLoading) {
     return (
       <AdminSidebar>
@@ -267,527 +236,74 @@ export default function CmsGalleryEditorPage() {
 
   return (
     <AdminSidebar>
-      <div className="mx-auto max-w-6xl space-y-6 p-4 sm:p-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" onClick={() => navigate("/admin/cms/galleries")}>
-              <ArrowLeft className="mr-1.5 h-4 w-4" />
-              Galleries
-            </Button>
-            <div>
-              <h1 className="text-xl font-heading font-semibold">
-                {isNew ? "New Gallery" : title || "Edit Gallery"}
-              </h1>
-              <Badge variant={status === "published" ? "default" : "outline"} className="mt-1">
-                {status === "published" ? (
-                  <Eye className="mr-1 h-3 w-3" />
-                ) : (
-                  <EyeOff className="mr-1 h-3 w-3" />
-                )}
-                {status}
-              </Badge>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setPreviewOpen(true)}
-              disabled={previewGallery.items.length === 0}
-              data-testid="button-preview-gallery"
-            >
-              <Monitor className="mr-2 h-4 w-4" />
-              Preview Gallery
-            </Button>
-            <Button
-              onClick={() => saveMutation.mutate()}
-              disabled={saveMutation.isPending || !title.trim()}
-            >
-              {saveMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-              Save Gallery
-            </Button>
-          </div>
-        </div>
-
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-sm">Gallery Details</CardTitle>
-              </CardHeader>
-              <CardContent className="grid gap-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="gallery-title">Title</Label>
-                  <Input
-                    id="gallery-title"
-                    value={title}
-                    onChange={(event) => {
-                      setTitle(event.target.value);
-                      if (!slugEdited.current) setSlug(slugify(event.target.value));
-                    }}
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="gallery-slug">Slug</Label>
-                  <Input
-                    id="gallery-slug"
-                    value={slug}
-                    onChange={(event) => {
-                      slugEdited.current = true;
-                      setSlug(slugify(event.target.value));
-                    }}
-                    className="font-mono text-sm"
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="gallery-description">Description</Label>
-                  <Textarea
-                    id="gallery-description"
-                    value={description}
-                    onChange={(event) => setDescription(event.target.value)}
-                    rows={3}
-                  />
-                </div>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="grid gap-2">
-                    <Label>Status</Label>
-                    <Select value={status} onValueChange={setStatus}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="draft">Draft</SelectItem>
-                        <SelectItem value="published">Published</SelectItem>
-                        <SelectItem value="archived">Archived</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>Layout</Label>
-                    <Select value={layout} onValueChange={setLayout}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="grid">Grid</SelectItem>
-                        <SelectItem value="masonry">Masonry</SelectItem>
-                        <SelectItem value="carousel">Carousel</SelectItem>
-                        <SelectItem value="slider">Slider</SelectItem>
-                        <SelectItem value="featured">Featured + thumbnails</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="text-sm">Images</CardTitle>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setMediaPickerOpen(true)}
-                >
-                  <ImagePlus className="mr-2 h-4 w-4" />
-                  Add Images
-                </Button>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <CmsImageUpload
-                  value=""
-                  onChange={() => undefined}
-                  onChangeMany={appendMediaAssets}
-                  multiple
-                  data-testid="gallery-bulk-image-upload"
-                />
-                {items.length === 0 ? (
-                  <div className="rounded-md border border-dashed p-8 text-center text-sm text-muted-foreground">
-                    Add images to build this gallery.
-                  </div>
-                ) : (
-                  items.map((item, index) => (
-                    <div key={item.id ?? index} className="rounded-md border p-4">
-                      <div className="grid gap-4 xl:grid-cols-[minmax(220px,320px)_minmax(360px,1fr)]">
-                        <CmsImageUpload
-                          value={item.imageUrl}
-                          onChange={(url) => updateItem(index, { imageUrl: url })}
-                          data-testid={`gallery-image-${index}`}
-                        />
-                        <div className="grid min-w-0 gap-3">
-                          <div className="grid gap-3 sm:grid-cols-2">
-                            <div className="grid gap-1.5">
-                              <Label>Title</Label>
-                              <Input
-                                value={item.title}
-                                onChange={(event) =>
-                                  updateItem(index, { title: event.target.value })
-                                }
-                              />
-                            </div>
-                            <div className="grid gap-1.5">
-                              <Label>Alt text</Label>
-                              <Input
-                                value={item.alt}
-                                onChange={(event) => updateItem(index, { alt: event.target.value })}
-                              />
-                            </div>
-                          </div>
-                          <div className="grid gap-1.5">
-                            <Label>Caption</Label>
-                            <Textarea
-                              value={item.caption}
-                              onChange={(event) =>
-                                updateItem(index, { caption: event.target.value })
-                              }
-                              rows={2}
-                            />
-                          </div>
-                          <div className="grid gap-3 sm:grid-cols-2">
-                            <div className="grid gap-1.5">
-                              <Label>Link URL</Label>
-                              <Input
-                                value={item.linkUrl}
-                                onChange={(event) =>
-                                  updateItem(index, { linkUrl: event.target.value })
-                                }
-                              />
-                            </div>
-                            <div className="grid gap-1.5">
-                              <Label>CTA text</Label>
-                              <Input
-                                value={item.ctaText}
-                                onChange={(event) =>
-                                  updateItem(index, { ctaText: event.target.value })
-                                }
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="mt-3 flex justify-end gap-1">
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => moveItem(index, -1)}
-                          disabled={index === 0}
-                        >
-                          <ArrowUp className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => moveItem(index, 1)}
-                          disabled={index === items.length - 1}
-                        >
-                          <ArrowDown className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          onClick={() =>
-                            setItems((current) => current.filter((_, i) => i !== index))
-                          }
-                        >
-                          <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-sm">Display Settings</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {usesGridSettings ? (
-                  <>
-                    <div className="grid grid-cols-3 gap-2">
-                      <div className="grid gap-1.5">
-                        <Label>{layout === "carousel" ? "Desktop shown" : "Desktop"}</Label>
-                        <Input
-                          type="number"
-                          min={1}
-                          max={6}
-                          value={settings.columnsDesktop}
-                          onChange={(event) =>
-                            setSetting("columnsDesktop", Number(event.target.value))
-                          }
-                        />
-                      </div>
-                      <div className="grid gap-1.5">
-                        <Label>{layout === "carousel" ? "Tablet shown" : "Tablet"}</Label>
-                        <Input
-                          type="number"
-                          min={1}
-                          max={4}
-                          value={settings.columnsTablet}
-                          onChange={(event) =>
-                            setSetting("columnsTablet", Number(event.target.value))
-                          }
-                        />
-                      </div>
-                      <div className="grid gap-1.5">
-                        <Label>{layout === "carousel" ? "Mobile shown" : "Mobile"}</Label>
-                        <Input
-                          type="number"
-                          min={1}
-                          max={2}
-                          value={settings.columnsMobile}
-                          onChange={(event) =>
-                            setSetting("columnsMobile", Number(event.target.value))
-                          }
-                        />
-                      </div>
-                    </div>
-                    <div className="grid gap-2">
-                      <Label>Spacing</Label>
-                      <Select
-                        value={settings.spacing}
-                        onValueChange={(value) =>
-                          setSetting("spacing", value as CmsGallerySettings["spacing"])
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="none">None</SelectItem>
-                          <SelectItem value="sm">Small</SelectItem>
-                          <SelectItem value="md">Medium</SelectItem>
-                          <SelectItem value="lg">Large</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </>
-                ) : null}
-                <div className="grid gap-2">
-                  <Label>Image ratio</Label>
-                  <Select
-                    value={settings.imageRatio}
-                    onValueChange={(value) =>
-                      setSetting("imageRatio", value as CmsGallerySettings["imageRatio"])
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="auto">Natural</SelectItem>
-                      <SelectItem value="1/1">Square</SelectItem>
-                      <SelectItem value="4/3">4:3</SelectItem>
-                      <SelectItem value="3/2">3:2</SelectItem>
-                      <SelectItem value="16/9">16:9</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid gap-2">
-                  <Label>Image fit</Label>
-                  <Select
-                    value={settings.cropMode}
-                    onValueChange={(value) =>
-                      setSetting("cropMode", value as CmsGallerySettings["cropMode"])
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="cover">Crop to fill</SelectItem>
-                      <SelectItem value="contain">Fit full image</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid gap-2">
-                  <Label>Corner radius</Label>
-                  <Select
-                    value={settings.borderRadius}
-                    onValueChange={(value) =>
-                      setSetting("borderRadius", value as CmsGallerySettings["borderRadius"])
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">None</SelectItem>
-                      <SelectItem value="sm">Small</SelectItem>
-                      <SelectItem value="md">Medium</SelectItem>
-                      <SelectItem value="lg">Large</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid gap-2">
-                  <Label>Hover effect</Label>
-                  <Select
-                    value={settings.hoverEffect}
-                    onValueChange={(value) =>
-                      setSetting("hoverEffect", value as CmsGallerySettings["hoverEffect"])
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">None</SelectItem>
-                      <SelectItem value="zoom">Zoom</SelectItem>
-                      <SelectItem value="fade">Fade</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid gap-2">
-                  <Label>Image limit</Label>
-                  <Input
-                    type="number"
-                    min={0}
-                    max={200}
-                    value={settings.maxImages}
-                    onChange={(event) => setSetting("maxImages", Number(event.target.value))}
-                  />
-                </div>
-                {usesSlideSettings ? (
-                  <div className="grid gap-2">
-                    <Label>Transition effect</Label>
-                    <Select
-                      value={settings.transitionEffect}
-                      onValueChange={(value) =>
-                        setSetting(
-                          "transitionEffect",
-                          value as CmsGallerySettings["transitionEffect"],
-                        )
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="none">No transition effect</SelectItem>
-                        <SelectItem value="fade">Fade</SelectItem>
-                        <SelectItem value="slide">Slide left/right</SelectItem>
-                        <SelectItem value="zoom">Zoom</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                ) : null}
-                {showsControlColors ? (
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="grid gap-2">
-                      <Label>Arrow color</Label>
-                      <Input
-                        type="color"
-                        value={settings.arrowIconColor}
-                        onChange={(event) => setSetting("arrowIconColor", event.target.value)}
-                        className="h-10 w-full cursor-pointer p-1"
-                      />
-                    </div>
-                    <div className="grid gap-2">
-                      <Label>Arrow background</Label>
-                      <Input
-                        type="color"
-                        value={settings.arrowBackgroundColor}
-                        onChange={(event) => setSetting("arrowBackgroundColor", event.target.value)}
-                        className="h-10 w-full cursor-pointer p-1"
-                      />
-                    </div>
-                  </div>
-                ) : null}
-                <div className="grid gap-2">
-                  <Label>Caption position</Label>
-                  <Select
-                    value={settings.captionPosition}
-                    onValueChange={(value) =>
-                      setSetting("captionPosition", value as CmsGallerySettings["captionPosition"])
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="below">Below image</SelectItem>
-                      <SelectItem value="overlay">Overlay</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="flex items-center justify-between rounded-md border p-3">
-                  <Label>Show title</Label>
-                  <Switch
-                    checked={settings.showTitle}
-                    onCheckedChange={(value) => setSetting("showTitle", value)}
-                  />
-                </div>
-                <div className="flex items-center justify-between rounded-md border p-3">
-                  <Label>Show captions</Label>
-                  <Switch
-                    checked={settings.showCaptions}
-                    onCheckedChange={(value) => setSetting("showCaptions", value)}
-                  />
-                </div>
-                <div className="flex items-center justify-between rounded-md border p-3">
-                  <Label>Lightbox</Label>
-                  <Switch
-                    checked={settings.lightbox}
-                    onCheckedChange={(value) => setSetting("lightbox", value)}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-sm">Preview</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <GalleryRenderer gallery={previewGallery} preview />
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-        <MediaPickerDialog
-          open={mediaPickerOpen}
-          onOpenChange={setMediaPickerOpen}
-          onSelect={(_, asset) => appendMediaAssets([asset])}
-          onSelectMany={appendMediaAssets}
-          multiple
-          typeFilter="images"
-        />
-        <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
-          <DialogContent className="flex h-[calc(100vh-2rem)] w-[min(1180px,calc(100vw-2rem))] max-w-[calc(100vw-2rem)] flex-col overflow-hidden p-0">
-            <DialogHeader className="border-b px-6 py-4">
-              <DialogTitle>Gallery Preview</DialogTitle>
-              <DialogDescription>
-                Previewing the current gallery draft as it would appear inside page or post content.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="flex-1 overflow-y-auto bg-muted/30 px-4 py-6 sm:px-8">
-              <article className="mx-auto max-w-4xl rounded-lg border bg-background px-5 py-6 shadow-sm sm:px-8 sm:py-8">
-                <header className="mb-6 border-b pb-5">
-                  <p className="mb-2 text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground">
-                    Content Preview
-                  </p>
-                  <h2 className="text-2xl font-heading font-semibold text-foreground">
-                    {title || "Gallery preview"}
-                  </h2>
-                  {description ? (
-                    <p className="mt-3 max-w-3xl text-sm leading-6 text-muted-foreground">
-                      {description}
-                    </p>
-                  ) : null}
-                </header>
-                <GalleryRenderer gallery={previewGallery} preview />
-              </article>
-            </div>
-          </DialogContent>
-        </Dialog>
-      </div>
+      <GalleryEditorPresentation
+        draft={{ title, slug, description, status, layout, settings, items }}
+        setDraft={(update) => {
+          const next = update({ title, slug, description, status, layout, settings, items });
+          setTitle(next.title);
+          setSlug(next.slug);
+          setDescription(next.description || "");
+          setStatus(next.status);
+          setLayout(next.layout);
+          setSettings(next.settings);
+          setItems(next.items as GalleryItemForm[]);
+        }}
+        isNew={isNew}
+        busy={saveMutation.isPending}
+        canUseMedia={true}
+        onBack={() => navigate("/admin/cms/galleries")}
+        onSave={() => saveMutation.mutate()}
+        onChooseMedia={() => setMediaPickerOpen(true)}
+        primitives={{
+          Button,
+          Card,
+          CardHeader,
+          CardContent,
+          CardTitle,
+          Badge,
+          Input,
+          Textarea,
+          Label,
+          Switch,
+          Select,
+          SelectTrigger,
+          SelectContent,
+          SelectItem,
+          SelectValue,
+          Dialog,
+          DialogContent,
+          DialogHeader,
+          DialogTitle,
+          DialogDescription,
+        }}
+        uploadControl={
+          <CmsImageUpload
+            value=""
+            onChange={() => undefined}
+            onChangeMany={appendMediaAssets}
+            multiple
+            data-testid="gallery-bulk-image-upload"
+          />
+        }
+        mediaPicker={
+          <MediaPickerDialog
+            open={mediaPickerOpen}
+            onOpenChange={setMediaPickerOpen}
+            onSelect={(_, asset) => appendMediaAssets([asset])}
+            onSelectMany={appendMediaAssets}
+            multiple
+            typeFilter="images"
+          />
+        }
+        renderImageInput={(index, item) => (
+          <CmsImageUpload
+            value={item.imageUrl}
+            onChange={(url) => updateItem(index, { imageUrl: url })}
+            data-testid={`gallery-image-${index}`}
+          />
+        )}
+        renderPreview={() => <GalleryRenderer gallery={previewGallery} preview inertActions />}
+      />
     </AdminSidebar>
   );
 }

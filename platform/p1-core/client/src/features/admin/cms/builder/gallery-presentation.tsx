@@ -1,4 +1,11 @@
-import { type CSSProperties, useEffect, useMemo, useState } from "react";
+import {
+  type CSSProperties,
+  type ComponentType,
+  type ReactNode,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { cn } from "./builder-host";
@@ -95,7 +102,14 @@ export interface GalleryRendererProps {
   isLoading?: boolean;
   overrides?: Partial<CmsGallerySettings> & { layout?: string };
   preview?: boolean;
+  /** Disable draft CTA navigation without changing public gallery behavior. */
+  inertActions?: boolean;
+  lightboxHost?: ComponentType<{ children: ReactNode; onClose: () => void }>;
   className?: string;
+}
+
+function DefaultLightboxHost({ children }: { children: ReactNode; onClose: () => void }) {
+  return <>{children}</>;
 }
 
 export function GalleryPresentation({
@@ -104,6 +118,8 @@ export function GalleryPresentation({
   galleryId,
   overrides,
   preview = false,
+  inertActions = false,
+  lightboxHost: LightboxHost = DefaultLightboxHost,
   className,
 }: GalleryRendererProps) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
@@ -159,6 +175,27 @@ export function GalleryPresentation({
   const hasAction = (item: (typeof items)[number]) => item.linkUrl && item.ctaText;
   const showInlineMeta =
     settings.captionPosition === "below" && (settings.showTitle || settings.showCaptions);
+  const renderAction = (item: (typeof items)[number], className: string) =>
+    inertActions ? (
+      <span
+        className={className}
+        data-gallery-inert-action="true"
+        onClick={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+        }}
+      >
+        {item.ctaText}
+      </span>
+    ) : (
+      <a
+        href={item.linkUrl ?? undefined}
+        className={className}
+        onClick={(event) => event.stopPropagation()}
+      >
+        {item.ctaText}
+      </a>
+    );
   const renderCaptionContent = (item: (typeof items)[number], renderActionLink = true) => (
     <>
       {settings.showTitle && item.title ? <span className="font-medium">{item.title}</span> : null}
@@ -172,13 +209,7 @@ export function GalleryPresentation({
             <span> </span>
           ) : null}
           {renderActionLink ? (
-            <a
-              href={item.linkUrl ?? undefined}
-              className="font-medium underline underline-offset-2"
-              onClick={(event) => event.stopPropagation()}
-            >
-              {item.ctaText}
-            </a>
+            renderAction(item, "font-medium underline underline-offset-2")
           ) : (
             <span className="font-medium underline underline-offset-2">{item.ctaText}</span>
           )}
@@ -201,12 +232,7 @@ export function GalleryPresentation({
             {(settings.showTitle && item.title) || (settings.showCaptions && item.caption) ? (
               <span> </span>
             ) : null}
-            <a
-              href={item.linkUrl ?? undefined}
-              className="font-medium text-primary underline underline-offset-2"
-            >
-              {item.ctaText}
-            </a>
+            {renderAction(item, "font-medium text-primary underline underline-offset-2")}
           </>
         ) : null}
       </figcaption>
@@ -485,46 +511,48 @@ export function GalleryPresentation({
       )}
 
       {activeLightboxItem ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4">
-          <div className="relative inline-flex max-h-[90vh] max-w-[94vw] items-center justify-center">
-            <img
-              src={activeLightboxItem.imageUrl}
-              alt={activeLightboxItem.alt || activeLightboxItem.title || gallery.title}
-              className="block max-h-[85vh] max-w-[92vw] object-contain"
-            />
-            <button
-              type="button"
-              className="absolute right-3 top-3 z-30 flex h-10 w-10 items-center justify-center rounded-full border border-white/70 shadow-xl ring-1 ring-black/10 transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-ring"
-              style={controlStyle}
-              onClick={() => setActiveIndex(null)}
-              aria-label="Close gallery lightbox"
-            >
-              <X className="h-5 w-5" />
-            </button>
-            {items.length > 1 ? (
-              <>
-                <button
-                  type="button"
-                  className={cn(lightboxControlButtonClass, "left-3")}
-                  style={controlStyle}
-                  onClick={previousLightboxImage}
-                  aria-label="Previous image"
-                >
-                  <ChevronLeft className="h-6 w-6" />
-                </button>
-                <button
-                  type="button"
-                  className={cn(lightboxControlButtonClass, "right-3")}
-                  style={controlStyle}
-                  onClick={nextLightboxImage}
-                  aria-label="Next image"
-                >
-                  <ChevronRight className="h-6 w-6" />
-                </button>
-              </>
-            ) : null}
+        <LightboxHost onClose={() => setActiveIndex(null)}>
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4">
+            <div className="relative inline-flex max-h-[90vh] max-w-[94vw] items-center justify-center">
+              <img
+                src={activeLightboxItem.imageUrl}
+                alt={activeLightboxItem.alt || activeLightboxItem.title || gallery.title}
+                className="block max-h-[85vh] max-w-[92vw] object-contain"
+              />
+              <button
+                type="button"
+                className="absolute right-3 top-3 z-30 flex h-10 w-10 items-center justify-center rounded-full border border-white/70 shadow-xl ring-1 ring-black/10 transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-ring"
+                style={controlStyle}
+                onClick={() => setActiveIndex(null)}
+                aria-label="Close gallery lightbox"
+              >
+                <X className="h-5 w-5" />
+              </button>
+              {items.length > 1 ? (
+                <>
+                  <button
+                    type="button"
+                    className={cn(lightboxControlButtonClass, "left-3")}
+                    style={controlStyle}
+                    onClick={previousLightboxImage}
+                    aria-label="Previous image"
+                  >
+                    <ChevronLeft className="h-6 w-6" />
+                  </button>
+                  <button
+                    type="button"
+                    className={cn(lightboxControlButtonClass, "right-3")}
+                    style={controlStyle}
+                    onClick={nextLightboxImage}
+                    aria-label="Next image"
+                  >
+                    <ChevronRight className="h-6 w-6" />
+                  </button>
+                </>
+              ) : null}
+            </div>
           </div>
-        </div>
+        </LightboxHost>
       ) : null}
     </section>
   );

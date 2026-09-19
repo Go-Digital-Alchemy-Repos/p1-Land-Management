@@ -1,3 +1,4 @@
+import { HeadTagPresentation } from "../../../../platform/p1-core/client/src/components/shared/head-tag-presentation";
 import { useEffect, useRef, useState } from "react";
 import {
   getWebsiteHeadTags,
@@ -106,63 +107,34 @@ export default function HeadTagSettings() {
     }
   }
   return (
-    <section className="panel" aria-label="Website head tag settings">
-      <h2>Head tag additions</h2>
-      <p>
-        Store custom verification tags, meta tags or vendor scripts for the
-        public website’s head. These settings belong to the website.
-      </p>
-      <p role="status">
-        Saved markup appears on normal public page loads after a refresh of up
-        to 30 seconds. Admin pages and editor previews are excluded. Inline
-        scripts and unapproved script sources remain blocked by website security
-        policy.
-      </p>
-      <p>
-        Use the structured Google Analytics integration for GA4 configuration.
-        Raw tags entered here are not automatically gated by cookie-consent
-        preferences.
-      </p>
-      {error && <p role="alert">{error}</p>}
-      {message && <p role="status">{message}</p>}
-      <button type="button" disabled={busy} onClick={() => void load(true)}>
-        Reload saved tags
-      </button>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          void save();
-        }}
-      >
-        <label style={{ display: "grid", gap: ".5rem", marginBlock: "1rem" }}>
-          Public website head markup
-          <textarea
-            rows={14}
-            value={html}
-            disabled={busy || !saved}
-            onChange={(e) => setHtml(e.target.value)}
-            spellCheck={false}
-            style={{
-              width: "100%",
-              boxSizing: "border-box",
-              fontFamily: "monospace",
-              overflowWrap: "anywhere",
-            }}
-          />
-        </label>
-        {html.length > 100000 && (
-          <p role="alert">
+    <HeadTagPresentation
+      headingLevel={1}
+      html={html}
+      onChange={setHtml}
+      onSave={() => void save()}
+      busy={busy}
+      editorDisabled={busy || !saved}
+      saveDisabled={busy || blocked || !dirty || html.length > 100000}
+      saveLabel="Save website head tags"
+      onReload={() => void load(true)}
+      error={error}
+      message={message}
+      publicationNotice={
+        <>
+          Saved markup appears on normal public page loads after a refresh of up
+          to 30 seconds. Admin pages and editor previews are excluded. Inline
+          scripts and unapproved script sources remain blocked by website
+          security policy.
+        </>
+      }
+      limitNotice={
+        html.length > 100000 ? (
+          <>
             The editor can save up to 100,000 characters. Existing longer markup
             is retained until you explicitly shorten it.
-          </p>
-        )}
-        <button
-          type="submit"
-          disabled={busy || blocked || !dirty || html.length > 100000}
-        >
-          {busy ? "Working…" : "Save website head tags"}
-        </button>
-      </form>
-    </section>
+          </>
+        ) : undefined
+      }
+    />
   );
 }

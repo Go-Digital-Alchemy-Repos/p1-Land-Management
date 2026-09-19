@@ -172,3 +172,12 @@ it("does not invent public preview URLs for retained CMS slugs", async () => {
   expect(container.querySelectorAll('[data-testid^="audit-preview-"]')).toHaveLength(0);
   expect(container.querySelector('[data-testid="audit-edit-p1"]')).not.toBeNull();
 });
+
+it("distinguishes an empty CMS catalog from a successful website SEO assessment", async () => {
+  api.getMarketingSeoAudit.mockResolvedValue({pages: [], posts: [], events: []});
+  await render();
+  await tab("SEO Audit");
+  expect(container.textContent).toContain("No CMS content to audit");
+  expect(container.textContent).toContain("This does not assess the public website.");
+  expect(container.textContent).not.toContain("No SEO issues found");
+});

@@ -1,3 +1,17 @@
+## September 19 — Website/Galleries/Head Tags restoration candidate
+
+Original shared editors replace simplified native screens. Parent verified 33
+focused tests, both typechecks, dashboard build and synthetic browser interactions
+at desktop/mobile. Packaging and independent review passed. Production verification is the
+remaining release gate. No production content/settings changed. Prior live
+revision remains `a717f748` (feature `7714ccb9`). See Marketing parity document.
+
+Actual private read-only account and CRM metadata captures are now complete. Owner
+MFA/inactive-account disposition remains pending; CRM reconciliation has one
+receipt-backed existing-record proposal and two unmapped leads, zero conflicts.
+Neither capture is frozen or approved migration evidence. Raw content export/import,
+account review, delivery/session assurance and retirement gates remain open.
+
 ## September 19 — Sections and SEO now live
 
 `7714ccb9` is on main/task branch. Railway dashboard, Core and website SUCCESS;

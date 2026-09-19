@@ -1,5 +1,5 @@
 .gallery-manager,
-.gallery-manager fieldset,
+.gallery-manager > fieldset,
 .gallery-items,
 .gallery-items article {
   display: grid;
@@ -10,7 +10,7 @@
   display: grid;
   gap: 6px;
 }
-.gallery-manager fieldset,
+.gallery-manager > fieldset,
 .gallery-items article {
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -56,4 +56,53 @@
   .gallery-settings {
     grid-template-columns: 1fr;
   }
+}
+
+.gallery-manager .cms-gallery-presentation fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+.cms-gallery-dialog {
+  padding: 0;
+  border: 1px solid hsl(var(--border));
+  border-radius: 12px;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 32px);
+  width: min(1180px, calc(100vw - 32px));
+}
+.cms-gallery-dialog::backdrop {
+  background: #17203370;
+}
+.cms-gallery-close {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  z-index: 5;
+}
+.cms-gallery-presentation .forms-switch {
+  width: 36px;
+  height: 20px;
+  padding: 2px;
+  border-radius: 20px;
+  background: hsl(var(--muted));
+  justify-content: flex-start;
+}
+.cms-gallery-presentation .forms-switch span {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: hsl(var(--foreground));
+}
+.cms-gallery-presentation .forms-switch[aria-checked="true"] {
+  background: #2563eb;
+  justify-content: flex-end;
+}
+.cms-gallery-presentation .forms-switch[aria-checked="true"] span {
+  background: white;
+}
+
+/* The shared gallery controls own their spacing through their layout utilities. */
+.gallery-manager .cms-gallery-presentation :is(label, input, textarea, select) {
+  margin: 0;
 }

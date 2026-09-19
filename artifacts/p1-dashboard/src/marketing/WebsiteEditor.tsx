@@ -1,3 +1,8 @@
+import {
+  StructuredWebsiteEditorPresentation,
+  type StructuredWebsitePrimitives,
+} from "../../../../platform/p1-core/client/src/components/shared/structured-website-editor-presentation";
+import { formPrimitives } from "./forms-primitives";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   listWebsiteContent,
@@ -195,8 +200,12 @@ function ContentEditor({
       abort.current.abort();
     };
   }, []);
+  const working = useRef(false);
   const perform = async (work: () => Promise<void>) => {
+    if (working.current) return;
+    working.current = true;
     setBusy(true);
+    setImageField(null);
     setError("");
     setNotice("");
     try {
@@ -204,6 +213,7 @@ function ContentEditor({
     } catch (e) {
       if (alive.current) setError(message(e));
     } finally {
+      working.current = false;
       if (alive.current) setBusy(false);
     }
   };
@@ -215,7 +225,20 @@ function ContentEditor({
       await history();
     }
   };
-  if (loading) return <p role="status">Loading website editor…</p>;
+  if (loading)
+    return (
+      <section>
+        <h1>Website Content</h1>
+        <p role="status">Loading website editor…</p>
+      </section>
+    );
+  const reload = () => {
+    if (
+      !dirty ||
+      window.confirm("Discard local edits and reload the latest revision?")
+    )
+      void perform(load);
+  };
   return (
     <section
       className="website-content-editor"
@@ -263,201 +286,134 @@ function ContentEditor({
           />
         )}
       </dialog>
-      {error && <p role="alert">{error} Your unsaved content is retained.</p>}
-      {notice && <p role="status">{notice}</p>}
-      <button
-        disabled={busy}
-        onClick={() => {
-          if (
-            !dirty ||
-            window.confirm(
-              "Discard local edits and reload the latest revision?",
-            )
-          )
-            void perform(load);
-        }}
-      >
-        Reload latest revision
-      </button>
-      {data && (
-        <>
-          <header>
-            <h2>{entry.label}</h2>
-            <p>
-              Draft r{data.draftRevision} · Published{" "}
-              {data.publishedRevision === null
-                ? "never"
-                : `r${data.publishedRevision}`}
-              {dirty ? " · Unsaved changes" : ""}
+      {data ? (
+        <StructuredWebsiteEditorPresentation
+          ui={formPrimitives as unknown as StructuredWebsitePrimitives}
+          draftRevision={data.draftRevision}
+          publishedRevision={data.publishedRevision}
+          dirty={dirty}
+          context={
+            <p className="text-sm text-muted-foreground">
+              {entry.label} · {entry.path}
             </p>
-          </header>
-          <div className="website-editor-columns">
-            <div>
-              <form
-                onSubmit={(event) => {
-                  event.preventDefault();
-                  void perform(async () =>
-                    apply(
-                      await saveWebsiteContentDraft(
-                        entry.routeId,
-                        entry.componentKey,
-                        { content, expectedRevision: data.draftRevision },
-                        { signal: abort.current.signal },
-                      ),
-                      "Draft saved. Publish when it is ready for the website.",
-                    ),
-                  );
-                }}
-              >
-                <fieldset disabled={busy}>
-                  <legend>Editable content</legend>
-                  <label>
-                    Find a field
-                    <input
-                      type="search"
-                      value={search}
-                      onChange={(event) => setSearch(event.target.value)}
-                      placeholder="Title, image, link…"
-                    />
-                  </label>
-                  {data.component.fields
-                    .filter((field) =>
-                      `${field.label} ${field.path}`
-                        .toLowerCase()
-                        .includes(search.toLowerCase()),
-                    )
-                    .map((field) => {
-                      const value = valueAt(content, field.path),
-                        id = `website-field-${field.path.replaceAll(".", "-")}`;
-                      const common = {
-                        id,
-                        value,
-                        maxLength: field.maxLength,
-                        required: field.required,
-                        onChange: (
-                          event: React.ChangeEvent<
-                            HTMLInputElement | HTMLTextAreaElement
-                          >,
-                        ) =>
-                          setContent(
-                            setValue(content, field.path, event.target.value),
-                          ),
-                      };
-                      return (
-                        <div className="website-field" key={field.path}>
-                          <label htmlFor={id}>{field.label}</label>
-                          {field.type === "textarea" ? (
-                            <textarea {...common} rows={4} />
-                          ) : (
-                            <input {...common} />
-                          )}
-                          {field.type === "image" && canUseMedia && (
-                            <button
-                              type="button"
-                              onClick={() => setImageField(field.path)}
-                            >
-                              Choose image for {field.label}
-                            </button>
-                          )}
-                          {field.maxLength && (
-                            <small>
-                              {value.length}/{field.maxLength}
-                            </small>
-                          )}
-                        </div>
-                      );
-                    })}
-                  <div className="website-editor-actions">
-                    <button
-                      type="submit"
-                      disabled={!dirty && data.draftRevision > 0}
-                    >
-                      Save draft
-                    </button>
-                    <button
-                      type="button"
-                      disabled={
-                        dirty ||
-                        data.draftRevision === 0 ||
-                        data.publishedRevision === data.draftRevision
-                      }
-                      onClick={() => {
-                        if (
-                          window.confirm(
-                            "Publish this saved revision to the P1 website?",
-                          )
-                        )
-                          void perform(async () =>
-                            apply(
-                              await publishWebsiteContent(
-                                entry.routeId,
-                                entry.componentKey,
-                                { expectedRevision: data.draftRevision },
-                                { signal: abort.current.signal },
-                              ),
-                              "Website content published.",
-                            ),
-                          );
-                      }}
-                    >
-                      Publish
-                    </button>
-                  </div>
-                </fieldset>
-              </form>
-              <section
-                className="website-revisions"
-                aria-label="Revision history"
-              >
-                <h3>Revision history</h3>
-                {!revisions.length && <p>No saved revisions yet.</p>}
-                {revisions.map((row) => (
-                  <div key={row.id}>
-                    <span>
-                      r{row.revision} · {row.kind}
-                    </span>
-                    <button
-                      disabled={busy}
-                      onClick={() => {
-                        if (
-                          !dirty ||
-                          window.confirm(
-                            "Discard local changes and restore this revision as a draft?",
-                          )
-                        )
-                          void perform(async () =>
-                            apply(
-                              await restoreWebsiteContentRevision(
-                                entry.routeId,
-                                entry.componentKey,
-                                row.revision,
-                                { expectedRevision: data.draftRevision },
-                                { signal: abort.current.signal },
-                              ),
-                              "Revision restored as a new draft. The published website is unchanged.",
-                            ),
-                          );
-                      }}
-                    >
-                      Restore r{row.revision}
-                    </button>
-                  </div>
-                ))}
-              </section>
-            </div>
-            <section className="website-preview" aria-label="Live preview">
-              <h3>Live preview</h3>
-              <p className="muted">
+          }
+          alerts={
+            <>
+              {error && (
+                <p role="alert">{error} Your unsaved content is retained.</p>
+              )}
+              {notice && <p role="status">{notice}</p>}
+            </>
+          }
+          toolbar={
+            <button disabled={busy} onClick={reload}>
+              Reload latest revision
+            </button>
+          }
+          fields={data.component.fields.filter((field) =>
+            `${field.label} ${field.path}`
+              .toLowerCase()
+              .includes(search.toLowerCase()),
+          )}
+          revisions={revisions}
+          valueAt={(path) => valueAt(content, path)}
+          onChange={(path, value) => setContent(setValue(content, path, value))}
+          fieldTools={
+            <label>
+              Find a field
+              <input
+                type="search"
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="Title, image, link…"
+              />
+            </label>
+          }
+          fieldAction={(field) =>
+            field.type === "image" && canUseMedia ? (
+              <button type="button" onClick={() => setImageField(field.path)}>
+                Choose image for {field.label}
+              </button>
+            ) : null
+          }
+          busy={busy}
+          saveDisabled={!dirty && data.draftRevision > 0}
+          publishDisabled={
+            dirty ||
+            data.draftRevision === 0 ||
+            data.publishedRevision === data.draftRevision
+          }
+          onSave={() =>
+            void perform(async () =>
+              apply(
+                await saveWebsiteContentDraft(
+                  entry.routeId,
+                  entry.componentKey,
+                  { content, expectedRevision: data.draftRevision },
+                  { signal: abort.current.signal },
+                ),
+                "Draft saved. Publish when it is ready for the website.",
+              ),
+            )
+          }
+          onPublish={() => {
+            if (
+              window.confirm("Publish this saved revision to the P1 website?")
+            )
+              void perform(async () =>
+                apply(
+                  await publishWebsiteContent(
+                    entry.routeId,
+                    entry.componentKey,
+                    { expectedRevision: data.draftRevision },
+                    { signal: abort.current.signal },
+                  ),
+                  "Website content published.",
+                ),
+              );
+          }}
+          onRestore={(revision) => {
+            if (
+              !dirty ||
+              window.confirm(
+                "Discard local changes and restore this revision as a draft?",
+              )
+            )
+              void perform(async () =>
+                apply(
+                  await restoreWebsiteContentRevision(
+                    entry.routeId,
+                    entry.componentKey,
+                    revision,
+                    { expectedRevision: data.draftRevision },
+                    { signal: abort.current.signal },
+                  ),
+                  "Revision restored as a new draft. The published website is unchanged.",
+                ),
+              );
+          }}
+          preview={
+            <>
+              <p className="text-sm text-muted-foreground">
                 Draft changes appear here. Publishing is a separate action.
               </p>
               <Preview data={data} content={content} />
-            </section>
-          </div>
+            </>
+          }
+        />
+      ) : (
+        <>
+          <h1>Website Content</h1>
+          {error && <p role="alert">{error}</p>}
+          <button disabled={busy} onClick={reload}>
+            Reload latest revision
+          </button>
         </>
       )}
     </section>
   );
 }
+
 export default function WebsiteEditor({
   canUseMedia = false,
 }: {
@@ -510,7 +466,8 @@ export default function WebsiteEditor({
     history.replaceState(null, "", url.pathname + url.search);
   };
   return (
-    <div className="website-editor">
+    <div className="website-editor structured-website-presentation">
+      {!selected && <h1>Website Content</h1>}
       <p className="muted">
         Edit P1 page content, page SEO, shared navigation and business details.
         Drafts and published revisions remain separate.

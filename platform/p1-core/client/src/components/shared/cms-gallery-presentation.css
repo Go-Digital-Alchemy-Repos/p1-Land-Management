@@ -1,0 +1,76 @@
+@import "./cms-gallery-presentation.utilities.css";
+.cms-gallery-presentation {
+  width: 100%;
+  min-width: 0;
+  color: hsl(var(--foreground));
+  font-size: 14px;
+}
+.cms-gallery-presentation :where(*) {
+  box-sizing: border-box;
+  border-style: solid;
+  border-width: 0;
+  border-color: hsl(var(--border));
+}
+.cms-gallery-presentation :where(fieldset) {
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+}
+.cms-gallery-presentation .forms-card {
+  border: 1px solid hsl(var(--border));
+  border-radius: 10px;
+  background: hsl(var(--card));
+}
+.cms-gallery-presentation .forms-card-header {
+  padding: 20px 24px;
+}
+.cms-gallery-presentation .forms-card-content {
+  padding: 0 24px 24px;
+}
+.cms-gallery-presentation :where(button) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid hsl(var(--border));
+  border-radius: 6px;
+  padding: 8px 12px;
+  background: hsl(var(--background));
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.cms-gallery-presentation :where(button:disabled) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.cms-gallery-presentation :where(input, textarea, select) {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid hsl(var(--border));
+  border-radius: 6px;
+  padding: 8px 12px;
+  background: hsl(var(--background));
+  color: inherit;
+  font: inherit;
+}
+.cms-gallery-presentation :where(input[type="checkbox"]) {
+  width: 18px;
+  height: 18px;
+}
+.cms-gallery-presentation :where(label) {
+  font-size: 13px;
+  font-weight: 500;
+}
+.cms-gallery-presentation :where(h1, h2, h3, p) {
+  margin: 0;
+}
+.cms-gallery-presentation .builder-dialog {
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+}
+.cms-gallery-presentation :where(button:focus-visible, input:focus-visible, select:focus-visible) {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}

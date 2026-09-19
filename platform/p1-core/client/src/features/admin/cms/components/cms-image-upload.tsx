@@ -1,9 +1,9 @@
+import { CmsUploadDropzone } from "@/components/shared/cms-upload-dropzone";
 import { useRef, useState, useCallback } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
-import { UploadCloud, X, RefreshCw, Image, Library, FileText } from "lucide-react";
+import { X, RefreshCw, Library, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MediaPickerDialog } from "./media-picker-dialog";
 import type { CmsMediaAsset, CmsMediaLibraryAsset } from "@shared/schema";
@@ -91,7 +91,6 @@ export function CmsImageUpload({
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<CmsMediaLibraryAsset | null>(null);
@@ -200,22 +199,6 @@ export function CmsImageUpload({
     [multiple, uploadMutation],
   );
 
-  const handleDrop = useCallback(
-    (e: React.DragEvent) => {
-      e.preventDefault();
-      setIsDragging(false);
-      handleFiles(e.dataTransfer.files);
-    },
-    [handleFiles],
-  );
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = () => setIsDragging(false);
-
   const isUploading = uploadMutation.isPending;
   const displayAssetKind = value
     ? selectedAsset?.url === value
@@ -294,75 +277,19 @@ export function CmsImageUpload({
           </div>
         </div>
       ) : (
-        <div
-          className={cn(
-            "relative border-2 border-dashed rounded-lg transition-colors cursor-pointer",
-            isDragging
-              ? "border-violet-400 bg-violet-50 dark:bg-violet-950/20"
-              : "border-muted-foreground/25 hover:border-violet-300 bg-muted/10 hover:bg-muted/20",
-          )}
-          role="button"
-          tabIndex={isUploading ? -1 : 0}
-          aria-label={label ? `Upload ${label.toLowerCase()}` : "Upload image"}
-          onKeyDown={(event) => {
-            if (event.target !== event.currentTarget) return;
-            if (!isUploading && (event.key === "Enter" || event.key === " ")) {
-              event.preventDefault();
-              fileInputRef.current?.click();
-            }
-          }}
-          onDrop={handleDrop}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onClick={() => !isUploading && fileInputRef.current?.click()}
-          data-testid={testId ? `${testId}-dropzone` : "cms-image-dropzone"}
-        >
-          {isUploading ? (
-            <div className="flex flex-col items-center justify-center gap-3 py-8 px-4">
-              <div className="h-10 w-10 rounded-full bg-violet-100 dark:bg-violet-900/40 flex items-center justify-center">
-                <UploadCloud className="h-5 w-5 text-violet-500 animate-bounce" />
-              </div>
-              <p className="text-sm font-medium text-muted-foreground">Uploading…</p>
-              <Progress value={uploadProgress} className="w-full max-w-[200px] h-1.5" />
-              <p className="text-xs text-muted-foreground">{uploadProgress}%</p>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center gap-2 py-7 px-4 text-center select-none">
-              <div className="h-11 w-11 rounded-full bg-muted/60 flex items-center justify-center mb-1">
-                <Image className="h-5 w-5 text-muted-foreground/60" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-foreground/80">
-                  Drop {multiple ? "files" : acceptedMode === "all" ? "file" : "image"} here or{" "}
-                  <span className="text-violet-500 hover:text-violet-600 underline underline-offset-2">
-                    browse
-                  </span>
-                </p>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  {acceptedMode === "all"
-                    ? "Images, PDF, Word, Excel, PowerPoint, CSV, TXT, RTF, OpenDocument · Max 10 MB"
-                    : "PNG, JPG, WebP, GIF · Max 10 MB"}
-                </p>
-              </div>
-              {showLibraryButton && (
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="ghost"
-                  className="mt-1 h-7 text-xs gap-1.5 text-muted-foreground hover:text-foreground"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setPickerOpen(true);
-                  }}
-                  data-testid={testId ? `${testId}-pick-library` : "cms-image-pick-library"}
-                >
-                  <Library className="h-3.5 w-3.5" />
-                  Pick from library
-                </Button>
-              )}
-            </div>
-          )}
-        </div>
+        <CmsUploadDropzone
+          Button={Button}
+          multiple={multiple}
+          acceptedMode={acceptedMode}
+          label={label}
+          testId={testId}
+          isUploading={isUploading}
+          uploadProgress={uploadProgress}
+          showLibraryButton={showLibraryButton}
+          onChooseLibrary={() => setPickerOpen(true)}
+          onFiles={handleFiles}
+          onBrowse={() => fileInputRef.current?.click()}
+        />
       )}
 
       <input

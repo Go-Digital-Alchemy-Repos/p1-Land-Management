@@ -125,3 +125,13 @@ platform/p1-core/client/src/components/ui/*
 !platform/p1-core/client/src/components/shared/seo-presentation.utilities.css
 !platform/p1-core/client/src/components/shared/cms-section-editor-presentation.tsx
 !platform/p1-core/client/src/components/shared/cms-section-list-presentation.tsx
+
+!platform/p1-core/client/src/components/shared/head-tag-presentation.tsx
+!platform/p1-core/client/src/components/shared/head-tag-presentation.css
+!platform/p1-core/client/src/components/shared/structured-website-editor-presentation.tsx
+!platform/p1-core/client/src/components/shared/cms-gallery-editor-presentation.tsx
+!platform/p1-core/client/src/components/shared/cms-gallery-list-presentation.tsx
+!platform/p1-core/client/src/components/shared/cms-gallery-presentation.css
+!platform/p1-core/client/src/components/shared/cms-gallery-presentation.utilities.css
+
+!platform/p1-core/client/src/components/shared/cms-upload-dropzone.tsx

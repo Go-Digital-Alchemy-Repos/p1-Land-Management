@@ -1,6 +1,9 @@
+@import "./website-editor.utilities.css";
+/* Original structured editor layout; colors inherit the dashboard theme. */
 .website-editor,
 .website-content-editor {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 18px;
   min-width: 0;
 }
@@ -22,81 +25,96 @@
 .website-content-list span {
   font-weight: 400;
 }
-.website-content-editor header h2 {
+.structured-website-presentation :where(*) {
+  box-sizing: border-box;
+  border-style: solid;
+  border-width: 0;
+  border-color: hsl(var(--border));
+  --tw-ring-offset-shadow: 0 0 #0000;
+  --tw-ring-shadow: 0 0 #0000;
+  --tw-shadow: 0 0 #0000;
+}
+.structured-website-presentation :where(h1, h2, h3, h4, p) {
   margin: 0;
 }
-.website-editor-columns {
-  display: grid;
-  grid-template-columns: minmax(300px, 420px) minmax(0, 1fr);
-  gap: 20px;
-  min-width: 0;
+.structured-website-presentation {
+  color: hsl(var(--foreground));
+  font-size: 14px;
+  line-height: 1.5;
 }
-.website-editor-columns form,
-.website-preview,
-.website-revisions {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 18px;
-  min-width: 0;
-}
-.website-editor-columns fieldset {
-  border: 0;
-  padding: 0;
-  min-width: 0;
-}
-.website-editor-columns legend {
-  font-weight: 600;
-  margin-bottom: 16px;
-}
-.website-editor label {
-  display: grid;
-  gap: 6px;
-}
-.website-field {
-  display: grid;
-  gap: 6px;
-  margin-top: 18px;
-}
-.website-editor input,
-.website-editor textarea {
+.structured-website-presentation .structured-website-workspace {
   width: 100%;
   min-width: 0;
 }
-.website-field small {
-  color: hsl(var(--muted-foreground));
+.structured-website-presentation .structured-website-columns > * {
+  min-width: 0;
 }
-.website-editor-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 20px;
+.structured-website-presentation fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
 }
-.website-revisions {
-  margin-top: 18px;
+.structured-website-presentation label {
+  display: block;
+  font-weight: 500;
 }
-.website-revisions > div {
-  display: flex;
-  justify-content: space-between;
+.structured-website-presentation input,
+.structured-website-presentation textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 8px 12px;
+  border: 1px solid hsl(var(--border));
+  border-radius: 6px;
+  background: hsl(var(--background));
+  color: inherit;
+  font: inherit;
+}
+.structured-website-presentation .forms-button {
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 0;
+  justify-content: center;
+  min-height: 36px;
+  padding: 8px 16px;
+  border: 1px solid transparent;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
 }
-.website-preview iframe {
+.structured-website-presentation .forms-button-outline {
+  background: hsl(var(--background));
+  color: inherit;
+  border-color: hsl(var(--border));
+}
+.structured-website-presentation .forms-button-ghost {
+  background: transparent;
+  color: inherit;
+}
+.structured-website-presentation .forms-button-sm {
+  min-height: 32px;
+  padding: 6px 12px;
+}
+.structured-website-presentation .forms-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.structured-website-presentation iframe {
   display: block;
   width: 100%;
   height: 820px;
-  border: 1px solid var(--line);
-  background: white;
+  border: 1px solid hsl(var(--border));
+  border-radius: 6px;
+  background: hsl(var(--background));
 }
-.website-preview h3 {
-  margin-top: 0;
+.structured-website-presentation .media-picker {
+  width: min(1120px, calc(100vw - 32px));
+  max-height: 90vh;
+  overflow: auto;
+  background: hsl(var(--background));
+  color: inherit;
+  border: 1px solid hsl(var(--border));
+  border-radius: 12px;
+  padding: 20px;
 }
-@media (max-width: 1000px) {
-  .website-editor-columns {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  .website-preview iframe {
-    height: 650px;
-  }
+.structured-website-presentation .media-picker::backdrop {
+  background: #0008;
 }

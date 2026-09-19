@@ -1,0 +1,210 @@
+/* Generated from shared CMS page JSX using retained Core Tailwind; scoped adapter. */
+.structured-website-presentation .m-0 {
+    margin: 0px
+}
+.structured-website-presentation .mx-auto {
+    margin-left: auto;
+    margin-right: auto
+}
+.structured-website-presentation .mt-1 {
+    margin-top: 0.25rem
+}
+.structured-website-presentation .flex {
+    display: flex
+}
+.structured-website-presentation .inline-flex {
+    display: inline-flex
+}
+.structured-website-presentation .grid {
+    display: grid
+}
+.structured-website-presentation .h-9 {
+    height: 2.25rem
+}
+.structured-website-presentation .min-h-20 {
+    min-height: 5rem
+}
+.structured-website-presentation .w-full {
+    width: 100%
+}
+.structured-website-presentation .min-w-0 {
+    min-width: 0px
+}
+.structured-website-presentation .max-w-7xl {
+    max-width: 80rem
+}
+.structured-website-presentation .flex-col {
+    flex-direction: column
+}
+.structured-website-presentation .flex-wrap {
+    flex-wrap: wrap
+}
+.structured-website-presentation .items-center {
+    align-items: center
+}
+.structured-website-presentation .justify-center {
+    justify-content: center
+}
+.structured-website-presentation .justify-between {
+    justify-content: space-between
+}
+.structured-website-presentation .gap-1 {
+    gap: 0.25rem
+}
+.structured-website-presentation .gap-2 {
+    gap: 0.5rem
+}
+.structured-website-presentation .gap-3 {
+    gap: 0.75rem
+}
+.structured-website-presentation .gap-6 {
+    gap: 1.5rem
+}
+.structured-website-presentation :is(.space-y-1\.5 > :not([hidden]) ~ :not([hidden])) {
+    --tw-space-y-reverse: 0;
+    margin-top: calc(0.375rem * calc(1 - var(--tw-space-y-reverse)));
+    margin-bottom: calc(0.375rem * var(--tw-space-y-reverse))
+}
+.structured-website-presentation :is(.space-y-2 > :not([hidden]) ~ :not([hidden])) {
+    --tw-space-y-reverse: 0;
+    margin-top: calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));
+    margin-bottom: calc(0.5rem * var(--tw-space-y-reverse))
+}
+.structured-website-presentation :is(.space-y-4 > :not([hidden]) ~ :not([hidden])) {
+    --tw-space-y-reverse: 0;
+    margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse)));
+    margin-bottom: calc(1rem * var(--tw-space-y-reverse))
+}
+.structured-website-presentation :is(.space-y-6 > :not([hidden]) ~ :not([hidden])) {
+    --tw-space-y-reverse: 0;
+    margin-top: calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));
+    margin-bottom: calc(1.5rem * var(--tw-space-y-reverse))
+}
+.structured-website-presentation .overflow-hidden {
+    overflow: hidden
+}
+.structured-website-presentation .rounded {
+    border-radius: 0.25rem
+}
+.structured-website-presentation .rounded-full {
+    border-radius: 9999px
+}
+.structured-website-presentation .rounded-md {
+    border-radius: 0.375rem
+}
+.structured-website-presentation .rounded-xl {
+    border-radius: 0.75rem
+}
+.structured-website-presentation .border {
+    border-width: 1px
+}
+.structured-website-presentation .border-0 {
+    border-width: 0px
+}
+.structured-website-presentation .border-card-border {
+    --tw-border-opacity: 1;
+    border-color: hsl(var(--card-border) / var(--tw-border-opacity, 1))
+}
+.structured-website-presentation .border-input {
+    --tw-border-opacity: 1;
+    border-color: hsl(var(--input) / var(--tw-border-opacity, 1))
+}
+.structured-website-presentation .bg-background {
+    --tw-bg-opacity: 1;
+    background-color: hsl(var(--background) / var(--tw-bg-opacity, 1))
+}
+.structured-website-presentation .bg-card {
+    --tw-bg-opacity: 1;
+    background-color: hsl(var(--card) / var(--tw-bg-opacity, 1))
+}
+.structured-website-presentation .bg-muted {
+    --tw-bg-opacity: 1;
+    background-color: hsl(var(--muted) / var(--tw-bg-opacity, 1))
+}
+.structured-website-presentation .p-0 {
+    padding: 0px
+}
+.structured-website-presentation .p-1 {
+    padding: 0.25rem
+}
+.structured-website-presentation .p-2 {
+    padding: 0.5rem
+}
+.structured-website-presentation .p-4 {
+    padding: 1rem
+}
+.structured-website-presentation .p-6 {
+    padding: 1.5rem
+}
+.structured-website-presentation .px-2\.5 {
+    padding-left: 0.625rem;
+    padding-right: 0.625rem
+}
+.structured-website-presentation .px-3 {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem
+}
+.structured-website-presentation .py-0\.5 {
+    padding-top: 0.125rem;
+    padding-bottom: 0.125rem
+}
+.structured-website-presentation .py-2 {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem
+}
+.structured-website-presentation .pt-0 {
+    padding-top: 0px
+}
+.structured-website-presentation .text-2xl {
+    font-size: 1.5rem;
+    line-height: 2rem
+}
+.structured-website-presentation .text-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem
+}
+.structured-website-presentation .text-xs {
+    font-size: 0.75rem;
+    line-height: 1rem
+}
+.structured-website-presentation .font-medium {
+    font-weight: 500
+}
+.structured-website-presentation .font-semibold {
+    font-weight: 600
+}
+.structured-website-presentation .leading-none {
+    line-height: 1
+}
+.structured-website-presentation .tracking-tight {
+    letter-spacing: -0.025em
+}
+.structured-website-presentation .text-card-foreground {
+    --tw-text-opacity: 1;
+    color: hsl(var(--card-foreground) / var(--tw-text-opacity, 1))
+}
+.structured-website-presentation .text-muted-foreground {
+    --tw-text-opacity: 1;
+    color: hsl(var(--muted-foreground) / var(--tw-text-opacity, 1))
+}
+.structured-website-presentation .shadow-sm {
+    --tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)
+}
+.structured-website-presentation .outline {
+    outline-style: solid
+}
+.structured-website-presentation .filter {
+    filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)
+}
+@media (min-width: 640px) {
+    .structured-website-presentation .sm\:p-6 {
+        padding: 1.5rem
+    }
+}
+@media (min-width: 1024px) {
+    .structured-website-presentation .lg\:grid-cols-\[minmax\(320px\2c 420px\)_1fr\] {
+        grid-template-columns: minmax(320px,420px) 1fr
+    }
+}

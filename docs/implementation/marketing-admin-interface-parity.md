@@ -307,3 +307,49 @@ catalogs currently contain zero audited records/sections; no synthetic productio
 records were added. Inherited audit empty-success copy (“All content has …”) should
 be made explicit for zero records in the next polish pass; it is not a complete
 public website SEO certification. No settings, publications or starter refresh ran.
+
+## Website, Galleries and Head Tags restoration — September 19
+
+Both hosts now share the original structured Website editor presentation, Gallery
+list/editor/dropzone/renderer and Head Tags cards. The unified dashboard keeps its
+existing permissions, transport, version checks and recovery guards; the retained
+admin remains available. Website restores the field/revision sidebar and live-preview
+workspace. Galleries restores all five layouts, image/settings controls and preview
+dialog. Head Tags restores the original markup guidance and GA4 warning.
+
+Review fixed stale Website readback adoption, inert gallery preview links, nested
+upload buttons and native lightbox modal keyboard behavior. Public gallery links
+retain their original behavior. The SEO empty audit no longer claims that an empty
+CMS catalog proves the public website has complete metadata.
+
+Parent validation: 15 Gallery, four Website, six Head Tags and eight retained Website
+regression tests passed; both typechecks and dashboard production build passed.
+Local browser checks used synthetic loopback data only: Website draft save advanced
+revision without publishing, Head Tags save/readback completed, gallery lightbox
+trapped focus and Escape restored the trigger. All three editors fit a 390px
+document without horizontal overflow. The local Website preview iframe was blank;
+this does not establish live draft preview acceptance. No production content or
+settings were changed. Isolated Core and Docker-allowlisted dashboard builds passed; independent review
+passed after endpoint-generation fencing fixed delayed responses across page switches.
+Production verification is pending.
+
+Remaining comparison work includes Blog, Team, Menus, Sidebars, Careers, Events and
+Website System tools. This increment does not establish complete Marketing parity.
+
+### Remaining feature gaps confirmed by source comparison
+
+- Blog: restore Content/Layout/SEO tabs, cover/focal controls, complete SEO/social
+  preview and published-post actions. Work started; keep native scheduling guards.
+- Menus: Theme Locations and indent-under-previous-sibling/outdent-one-level
+  controls are absent; preserve existing sibling drag and server-fenced edits.
+- Team: restore member dialog/cards and upload/crop; keep dirty-close guards.
+- Sidebars: restore Details/Widgets cards, icons, help and empty states; preserve
+  all seven widget types and unavailable references.
+- Careers: restore job dialog/table and application list/detail workspace; preserve
+  current review/résumé grants and deliberate UTC conversion.
+- Events: restore original tabs/filter/cards, image/focal, speaker bio/photo and tags.
+  Recurrence fields exist in the client model but server behavior needs verification
+  before enabling generation. Payments/accounts/entitlements remain excluded.
+
+These findings are source inventory, not live acceptance. Blog's retained generic
+preview route must be adapted to P1's actual public route before release.

@@ -304,10 +304,12 @@ function AuditContent({
       {totalIssues === 0 ? (
         <Card>
           <CardContent className="pt-8 pb-8 text-center">
-            <CheckCircle2 className="h-8 w-8 text-emerald-500 mx-auto mb-3" />
-            <p className="font-medium text-sm">No SEO issues found</p>
+            {allItems.length > 0 && <CheckCircle2 className="h-8 w-8 text-emerald-500 mx-auto mb-3" />}
+            <p className="font-medium text-sm">{allItems.length === 0 ? "No CMS content to audit" : "No SEO issues found"}</p>
             <p className="text-xs text-muted-foreground mt-1">
-              All content has SEO titles, descriptions, and images.
+              {allItems.length === 0
+                ? "There are no retained CMS pages, blog posts, or events in this audit. This does not assess the public website."
+                : "No configured SEO signals were found in the returned CMS records. This is not a complete website SEO assessment."}
             </p>
           </CardContent>
         </Card>

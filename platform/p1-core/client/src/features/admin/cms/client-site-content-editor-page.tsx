@@ -1,5 +1,6 @@
+import { StructuredWebsiteEditorPresentation } from "@/components/shared/structured-website-editor-presentation";
 import { useRoute } from "wouter";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AdminSidebar } from "@/features/admin/admin-sidebar";
 import { Button } from "@/components/ui/button";
@@ -59,16 +60,50 @@ export default function ClientSiteContentEditorPage(): JSX.Element {
   const componentKey = params?.componentKey ?? "home-content";
   const endpoint = `/api/admin/client-site-content/${routeId}/${componentKey}`;
   const { toast } = useToast();
+  const ownership = useRef({ endpoint });
+  if (ownership.current.endpoint !== endpoint) ownership.current = { endpoint };
+  const mounted = useRef(true);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+  const owns = (owner: { endpoint: string }) => mounted.current && ownership.current === owner;
   const [content, setContent] = useState<Record<string, unknown>>({});
-  const { data, isLoading, error } = useQuery<EditorPayload>({ queryKey: [endpoint] });
+  const [reloading, setReloading] = useState(false);
+  const {
+    data: incomingData,
+    isLoading,
+    error,
+  } = useQuery<EditorPayload>({ queryKey: [endpoint] });
+  const [data, setData] = useState<EditorPayload | null>(null);
+  const contentRef = useRef(content);
+  contentRef.current = content;
   const { data: revisions = [] } = useQuery<ClientSiteContentRevision[]>({
     queryKey: [`${endpoint}/revisions`],
     enabled: Boolean(data),
   });
 
+  const initializedEndpoint = useRef(endpoint);
   useEffect(() => {
-    if (data) setContent(data.draftContent);
-  }, [data]);
+    const changedEndpoint = initializedEndpoint.current !== endpoint;
+    if (changedEndpoint) {
+      initializedEndpoint.current = endpoint;
+      setReloading(false);
+      setData(null);
+      setContent({});
+    }
+    if (!incomingData) return;
+    if (
+      !changedEndpoint &&
+      data &&
+      JSON.stringify(contentRef.current) !== JSON.stringify(data.draftContent)
+    )
+      return;
+    setData(incomingData);
+    setContent(incomingData.draftContent);
+  }, [incomingData, endpoint]);
   const isDirty = Boolean(data && JSON.stringify(content) !== JSON.stringify(data.draftContent));
   const unsavedChanges = useUnsavedChangesGuard({ isDirty });
 
@@ -88,20 +123,39 @@ export default function ClientSiteContentEditorPage(): JSX.Element {
     [content, data],
   );
 
-  const refresh = async () => {
-    await Promise.all([
-      queryClient.invalidateQueries({ queryKey: [endpoint] }),
-      queryClient.invalidateQueries({ queryKey: [`${endpoint}/revisions`] }),
+  const refresh = async (owner = ownership.current) => {
+    if (!owns(owner)) return false;
+    // fetchQuery rejects failed reads; cached data alone is never a reload confirmation.
+    const [latest] = await Promise.all([
+      queryClient.fetchQuery<EditorPayload>({ queryKey: [owner.endpoint], staleTime: 0 }),
+      queryClient.fetchQuery({ queryKey: [`${owner.endpoint}/revisions`], staleTime: 0 }),
     ]);
+    if (!owns(owner)) return false;
+    setData(latest);
+    setContent(latest.draftContent);
+    return true;
+  };
+  const refreshAfterMutation = async (successTitle: string, owner: { endpoint: string }) => {
+    try {
+      if (await refresh(owner)) toast({ title: successTitle });
+    } catch (cause) {
+      if (!owns(owner)) return;
+      toast({
+        title: "Content changed, but the latest revision could not be reloaded",
+        description: `${(cause as Error).message}. Local content is retained. Reload the latest revision before continuing.`,
+        variant: "destructive",
+      });
+    }
   };
   const save = useMutation({
+    onMutate: () => ({ owner: ownership.current }),
     mutationFn: () =>
       apiRequest("PUT", `${endpoint}/draft`, { content, expectedRevision: data!.draftRevision }),
-    onSuccess: async () => {
-      await refresh();
-      toast({ title: "Draft saved" });
-    },
-    onError: (cause: Error) =>
+    onSuccess: (_result, _variables, context) =>
+      context && refreshAfterMutation("Draft saved", context.owner),
+    onError: (cause: Error, _variables, context) =>
+      context &&
+      owns(context.owner) &&
       toast({
         title: "Draft could not be saved",
         description: cause.message,
@@ -109,13 +163,14 @@ export default function ClientSiteContentEditorPage(): JSX.Element {
       }),
   });
   const publish = useMutation({
+    onMutate: () => ({ owner: ownership.current }),
     mutationFn: () =>
       apiRequest("POST", `${endpoint}/publish`, { expectedRevision: data!.draftRevision }),
-    onSuccess: async () => {
-      await refresh();
-      toast({ title: "Content published" });
-    },
-    onError: (cause: Error) =>
+    onSuccess: (_result, _variables, context) =>
+      context && refreshAfterMutation("Content published", context.owner),
+    onError: (cause: Error, _variables, context) =>
+      context &&
+      owns(context.owner) &&
       toast({
         title: "Content could not be published",
         description: cause.message,
@@ -123,15 +178,16 @@ export default function ClientSiteContentEditorPage(): JSX.Element {
       }),
   });
   const restore = useMutation({
+    onMutate: () => ({ owner: ownership.current }),
     mutationFn: (revision: number) =>
       apiRequest("POST", `${endpoint}/revisions/${revision}/restore`, {
         expectedRevision: data!.draftRevision,
       }),
-    onSuccess: async () => {
-      await refresh();
-      toast({ title: "Revision restored as a new draft" });
-    },
-    onError: (cause: Error) =>
+    onSuccess: (_result, _variables, context) =>
+      context && refreshAfterMutation("Revision restored as a new draft", context.owner),
+    onError: (cause: Error, _variables, context) =>
+      context &&
+      owns(context.owner) &&
       toast({
         title: "Revision could not be restored",
         description: cause.message,
@@ -141,133 +197,77 @@ export default function ClientSiteContentEditorPage(): JSX.Element {
 
   return (
     <AdminSidebar>
-      <div className="mx-auto max-w-7xl space-y-6 p-4 sm:p-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h1 className="text-2xl font-heading font-semibold">P1 website editor</h1>
-            <p className="mt-1 text-muted-foreground">
-              Edit bounded content while site behavior stays locked.
-            </p>
-          </div>
-          {data ? (
-            <div className="text-sm text-muted-foreground">
-              Draft r{data.draftRevision} · Published{" "}
-              {data.publishedRevision ? `r${data.publishedRevision}` : "never"}
-            </div>
-          ) : null}
-        </div>
-        {isLoading ? (
-          <p>Loading editor…</p>
-        ) : error ? (
-          <p className="text-destructive">{(error as Error).message}</p>
-        ) : data && previewMessage ? (
-          <div className="grid gap-6 lg:grid-cols-[minmax(320px,420px)_1fr]">
-            <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Editable content</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {data.component.fields.map((field) => {
-                    const value = getPath(content, field.path);
-                    const id = `field-${field.path.replaceAll(".", "-")}`;
-                    const common = {
-                      id,
-                      value,
-                      maxLength: field.maxLength,
-                      onChange: (
-                        event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-                      ) => setContent(setPath(content, field.path, event.target.value)),
-                    };
-                    return (
-                      <div className="space-y-2" key={field.path}>
-                        <Label htmlFor={id}>{field.label}</Label>
-                        {field.type === "textarea" ? (
-                          <Textarea {...common} rows={4} />
-                        ) : (
-                          <Input {...common} />
-                        )}
-                        {field.maxLength ? (
-                          <p className="text-xs text-muted-foreground">
-                            {value.length}/{field.maxLength}
-                          </p>
-                        ) : null}
-                      </div>
-                    );
-                  })}
-                  <div className="flex gap-2">
-                    <Button
-                      onClick={() => save.mutate()}
-                      disabled={save.isPending || publish.isPending}
-                    >
-                      Save draft
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => publish.mutate()}
-                      disabled={
-                        save.isPending ||
-                        publish.isPending ||
-                        isDirty ||
-                        data.draftRevision === 0 ||
-                        data.publishedRevision === data.draftRevision
-                      }
-                    >
-                      Publish
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Revision history</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  {revisions.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">No saved revisions yet.</p>
-                  ) : (
-                    revisions.map((revision) => (
-                      <div
-                        key={revision.id}
-                        className="flex items-center justify-between rounded border p-2 text-sm"
-                      >
-                        <span>
-                          r{revision.revision} · {revision.kind}
-                        </span>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() =>
-                            unsavedChanges.confirmDiscardChanges(() =>
-                              restore.mutate(revision.revision),
-                            )
-                          }
-                          disabled={restore.isPending}
-                        >
-                          Restore
-                        </Button>
-                      </div>
-                    ))
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-            <Card className="overflow-hidden">
-              <CardHeader>
-                <CardTitle>Live preview</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ClientSitePreviewFrame
-                  src={data.previewUrl}
-                  title="P1 website preview"
-                  message={previewMessage}
-                  className="h-[820px] w-full rounded border"
-                />
-              </CardContent>
-            </Card>
-          </div>
-        ) : null}
-      </div>
+      {isLoading ? (
+        <p role="status">Loading editor…</p>
+      ) : error && !data ? (
+        <p role="alert">{(error as Error).message}</p>
+      ) : data && previewMessage ? (
+        <StructuredWebsiteEditorPresentation
+          ui={{ Button, Card, CardContent, CardHeader, CardTitle, Input, Label, Textarea }}
+          draftRevision={data.draftRevision}
+          publishedRevision={data.publishedRevision}
+          fields={data.component.fields}
+          revisions={revisions}
+          valueAt={(path) => getPath(content, path)}
+          onChange={(path, value) => setContent(setPath(content, path, value))}
+          dirty={isDirty}
+          busy={save.isPending || publish.isPending || restore.isPending || reloading}
+          alerts={
+            error ? (
+              <p role="alert">{(error as Error).message}. Local content is retained.</p>
+            ) : null
+          }
+          toolbar={
+            <Button
+              variant="outline"
+              disabled={save.isPending || publish.isPending || restore.isPending || reloading}
+              onClick={() =>
+                unsavedChanges.confirmDiscardChanges(() => {
+                  const owner = ownership.current;
+                  setReloading(true);
+                  void refresh(owner)
+                    .catch(
+                      (cause: Error) =>
+                        owns(owner) &&
+                        toast({
+                          title: "Could not reload content",
+                          description: cause.message,
+                          variant: "destructive",
+                        }),
+                    )
+                    .finally(() => {
+                      if (owns(owner)) setReloading(false);
+                    });
+                })
+              }
+            >
+              Reload latest revision
+            </Button>
+          }
+          publishDisabled={
+            isDirty || data.draftRevision === 0 || data.publishedRevision === data.draftRevision
+          }
+          onSave={() => {
+            if (!save.isPending && !publish.isPending && !restore.isPending) save.mutate();
+          }}
+          onPublish={() => {
+            if (!save.isPending && !publish.isPending && !restore.isPending && !isDirty)
+              publish.mutate();
+          }}
+          onRestore={(revision) =>
+            unsavedChanges.confirmDiscardChanges(() => restore.mutate(revision))
+          }
+          preview={
+            <ClientSitePreviewFrame
+              src={data.previewUrl}
+              title="P1 website preview"
+              message={previewMessage}
+              className="h-[820px] w-full rounded border"
+            />
+          }
+        />
+      ) : null}
+
       {unsavedChanges.dialog}
     </AdminSidebar>
   );
