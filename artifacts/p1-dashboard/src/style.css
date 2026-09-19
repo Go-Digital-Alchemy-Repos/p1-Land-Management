@@ -1636,7 +1636,7 @@ td { padding: 16px var(--atlas-surface-inset); }
 .data-surface-body > :where(div, section):not(.atlas-table-wrap, .activity-list, .context-list, .note-list, .atlas-empty) {
   padding: var(--atlas-surface-inset);
 }
-.data-surface-body > .property-location-map { padding: 0; }
+.data-surface-body > .property-location-map, .data-surface-body > .client-property-map { padding: 0; }
 .data-surface-body > .context-list > .muted {
   margin: 0;
   padding: 18px 16px;
