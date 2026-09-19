@@ -1,3 +1,4 @@
+vi.mock("../db", () => ({ db: { select: () => ({ from: () => ({ where: () => ({ limit: async () => [] }) }) }) } }));
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import express from "express";
 import type { Server } from "node:http";
@@ -1157,6 +1158,8 @@ it("identity editor requires its leaf grant and saves only versioned changes",as
  identity.capabilities=["marketing.design.colors"];expect((await request("/design/branding")).status).toBe(403);
  identity.capabilities=["marketing.design.branding"];state.enabled.mockResolvedValue(false);state.headSnapshot.mockResolvedValue({values:{frontend_logo_url:"legacy relative logo",company_name:"Retained",social_icon_style:"not included"},version});
  const read=await request("/design/branding");expect(read.status).toBe(200);const data=await read.json();expect(Object.keys(data.settings)).toHaveLength(6);expect(data.settings.frontend_logo_url).toBe("legacy relative logo");expect(data.settings.social_icon_style).toBeUndefined();
+ expect((await request("/design/branding","PUT",{},"/service",body)).status).toBe(400);
+ state.headSnapshot.mockResolvedValue({values:{company_name:"Retained",social_icon_style:"not included"},version});
  expect((await request("/design/branding","PUT",{},"/service",body)).status).toBe(200);
  expect(state.headSave).toHaveBeenCalledWith([{key:"company_name",value:"Test Co",category:"branding",isSecret:false},{key:"company_address",value:"Line 1\nLine 2",category:"branding",isSecret:false}],{category:"branding",version,publicOnly:true},{userId:"linked",action:"website_identity_updated",details:'["company_address","company_name"]'});
  for(const settings of [{},{unknown:"x"},{favicon_url:"javascript:bad()"},{frontend_logo_url:"https://user:secret@example.test/logo.png"},{company_google_business_url:"/relative"},{company_name:"x".repeat(256)},{company_address:null}])expect((await request("/design/branding","PUT",{},"/service",{...body,settings})).status).toBe(400);

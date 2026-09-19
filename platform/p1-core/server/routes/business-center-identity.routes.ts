@@ -1,3 +1,4 @@
+import { projectPublicWebsiteIdentity } from "../services/public-website-identity.service";
 import multer from "multer";
 import { BRANDING_OPTIONS, isImageMime } from "../services/image-optimizer";
 import { createCmsMediaAssetFromUpload } from "../services/cms-media-upload.service";
@@ -59,6 +60,20 @@ router.put(
   asyncHandler(async (req, res) => {
     z.object({}).strict().parse(req.query);
     const body = input.parse(req.body);
+    const current = await storage.settings.getCategorySnapshot("branding", true);
+    try {
+      await projectPublicWebsiteIdentity({
+        version: current.version,
+        values: { ...current.values, ...body.settings } as Record<string, string>,
+      });
+    } catch {
+      return res
+        .status(400)
+        .json({
+          message:
+            "Company details could not be published. Use valid phone numbers, a Google Business URL and an uploaded public logo or favicon.",
+        });
+    }
     const entries = Object.entries(body.settings).map(([key, value]) => ({
       key,
       value: value!,

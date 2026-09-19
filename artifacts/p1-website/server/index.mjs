@@ -1,3 +1,4 @@
+import { createWebsiteIdentityStore, identityIconHead } from "./website-identity.mjs";
 import { createWebsiteSocialStore } from "./website-social.mjs";
 import { typographyPreview } from "./typography-preview.mjs";
 import { createWebsiteFontStore } from "./website-fonts.mjs";
@@ -21,6 +22,11 @@ const template = await readFile(path.join(publicDir,'index.html'),'utf8');
 const { render } = await import(pathToFileURL(path.join(root,'dist/server/entry-server.js')).href);
 const origin = process.env.P1_CORE_ORIGIN?.replace(/\/$/,'');
 const content = createContentStore({ manifest, origin, cacheDir: process.env.P1_CONTENT_CACHE_DIR });
+const websiteIdentity = createWebsiteIdentityStore({ origin, cacheDir: process.env.P1_CONTENT_CACHE_DIR ?? '/tmp/p1-public-content' });
+async function pageSnapshot(routePath) {
+  const [page, identity] = await Promise.all([content.snapshot(routePath), websiteIdentity.snapshot()]);
+  return page ? {...page, identity} : null;
+}
 const googleReviews = createGoogleReviewsStore();
 const headTags = createHeadTagStore({ origin });
 const websiteColors = createWebsiteColorStore({ origin });
@@ -81,7 +87,7 @@ function proxy(req,res) {
 function headHtml(head,route) {
   const url=canonical+route; const img=head?.image?.startsWith('http')?head.image:canonical+(head?.image || '/opengraph.jpg');
   let text=`<title>${escape(head?.title || 'P1 Land & Property Management')}</title><meta name="description" content="${escape(head?.description || '')}"><meta name="robots" content="${!indexableDeployment?'noindex, nofollow':head?.noindex?'noindex, follow':'index, follow'}"><link rel="canonical" href="${url}">`;
-  for(const [k,v]of Object.entries({'og:title':head?.title,'og:description':head?.description,'og:url':url,'og:image':img,'og:type':route.startsWith('/blog/')?'article':'website','og:site_name':'P1 Land & Property Management','og:locale':'en_US'}))text+=`<meta property="${k}" content="${escape(v || '')}">`;
+  for(const [k,v]of Object.entries({'og:title':head?.title,'og:description':head?.description,'og:url':url,'og:image':img,'og:type':route.startsWith('/blog/')?'article':'website','og:site_name':head?.siteName || 'P1 Land & Property Management','og:locale':'en_US'}))text+=`<meta property="${k}" content="${escape(v || '')}">`;
   for(const [k,v]of Object.entries({'twitter:card':'summary_large_image','twitter:title':head?.title,'twitter:description':head?.description,'twitter:image':img}))text+=`<meta name="${k}" content="${escape(v || '')}">`;
   for(const item of (Array.isArray(head?.jsonLd)?head.jsonLd:head?.jsonLd?[head.jsonLd]:[]))text+=`<script type="application/ld+json" data-seo-jsonld>${JSON.stringify(item).replaceAll('<','\\u003c')}</script>`;
   return text;
@@ -127,7 +133,7 @@ const server=http.createServer(async(req,res)=>{
     const legacyDestination = legacyPublicRoutes.get(normalized);
     if (legacyDestination) {res.writeHead(301,{Location:`${redirectToCanonicalHost?canonical:''}${legacyDestination}${url.search}`});return res.end();}
     if(redirectToCanonicalHost || normalized!==pathname) {res.writeHead(308,{Location:`${redirectToCanonicalHost?canonical:''}${normalized}${url.search}`});return res.end();}
-    if(pathname==='/api/p1/page-content' && ['GET','HEAD'].includes(req.method)) {const snapshot=await content.snapshot(url.searchParams.get('path')||'/');return send(req,res,snapshot?200:404,JSON.stringify(snapshot||{error:'Not found'}),'application/json','no-store');}
+    if(pathname==='/api/p1/page-content' && ['GET','HEAD'].includes(req.method)) {const snapshot=await pageSnapshot(url.searchParams.get('path')||'/');return send(req,res,snapshot?200:404,JSON.stringify(snapshot||{error:'Not found'}),'application/json','no-store');}
     if(pathname==='/api/p1/social-links') {
       if(!['GET','HEAD'].includes(req.method))return send(req,res,405,'Method not allowed','text/plain; charset=utf-8','no-store');
       if(url.search)return send(req,res,400,'Unsupported query','text/plain; charset=utf-8','no-store');
@@ -168,11 +174,11 @@ const server=http.createServer(async(req,res)=>{
       return send(req,res,200,body,'application/xml');
     }
     if(content.routes.has(pathname)) {
-      const snapshot=await content.snapshot(pathname); const result=render(pathname,snapshot);
+      const snapshot=await pageSnapshot(pathname); const result=render(pathname,snapshot);
       const state=JSON.stringify(snapshot).replaceAll('<','\\u003c');
       const html=template.replace(/<!--seo-head-start-->[\s\S]*?<!--seo-head-end-->/,`<!--seo-head-start-->${headHtml(result.head,pathname)}<!--seo-head-end-->`).replace(/<div id="root">[\s\S]*<\/div>/,`<div id="root">${result.html}</div><script type="application/json" id="p1-published-content">${state}</script>`);
       const [palette, fonts, markup] = await Promise.all([websiteColors.snapshot(), websiteFonts.snapshot(), url.searchParams.has('cmsPreview') ? '' : headTags.snapshot()]);
-      return send(req,res,200,insertHeadTags(html, palette + fonts + markup),'text/html; charset=utf-8',url.searchParams.has('cmsPreview')?'private, no-store':'no-cache');
+      return send(req,res,200,insertHeadTags(identityIconHead(html, snapshot.identity), palette + fonts + markup),'text/html; charset=utf-8',url.searchParams.has('cmsPreview')?'private, no-store':'no-cache');
     }
     const file=path.resolve(publicDir,'.'+pathname);
     if(!file.startsWith(publicDir+path.sep)||pathname.split('/').some(p=>p.startsWith('.')) )return send(req,res,404,'Not found');

@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { createElement, useRef, useState } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
@@ -9,9 +9,10 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
-import logo from "@assets/Asset_1_1782329698014.svg";
+import { useSiteIdentity } from "@/lib/use-site-identity";
 
 export function SiteHeader({ assessmentCta = false }: { assessmentCta?: boolean }) {
+  const identity = useSiteIdentity();
   const [isOpen, setIsOpen] = useState(false);
   const focusAssessmentAfterClose = useRef(false);
   const focusAssessment = () => {
@@ -41,7 +42,7 @@ export function SiteHeader({ assessmentCta = false }: { assessmentCta?: boolean 
     <header className="sticky top-0 z-50 w-full border-b border-border/60 shadow-md shadow-black/5 bg-background">
       <div className="site-shell flex h-20 items-center justify-between">
         <Link href="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
-          <img src={logo} alt="P1 Land & Property Management" className="h-10 md:h-12 w-auto" />
+          {createElement("img", { src: identity.logoUrl, alt: identity.companyName, className: "h-10 md:h-12 w-auto" })}
         </Link>
         
         {/* Desktop Nav */}
@@ -83,10 +84,7 @@ export function SiteHeader({ assessmentCta = false }: { assessmentCta?: boolean 
         </nav>
 
         <div className="flex items-center gap-4">
-          <a href="tel:7042218928" className="hidden lg:flex items-center gap-2 text-sm font-bold text-secondary hover:text-primary transition-colors">
-            <Phone className="h-4 w-4" />
-            (704) 221-8928
-          </a>
+          {createElement("a", { href: identity.phoneHref, className: "hidden lg:flex items-center gap-2 text-sm font-bold text-secondary hover:text-primary transition-colors" }, createElement(Phone, { className: "h-4 w-4" }), identity.phoneDisplay)}
           <Button asChild className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-6 hidden sm:inline-flex">
             {assessmentCta ? <a href="#assessment-request" onClick={(event) => { event.preventDefault(); focusAssessment(); }}>Get a Free Site Assessment</a> : <Link href="/contact">Get a Free Site Assessment</Link>}
           </Button>
@@ -108,7 +106,7 @@ export function SiteHeader({ assessmentCta = false }: { assessmentCta?: boolean 
               <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
               <div className="flex flex-col gap-6 py-6">
                 <Link href="/" onClick={() => setIsOpen(false)}>
-                  <img src={logo} alt="P1 Land & Property Management" className="h-8 w-auto mb-4" />
+                  {createElement("img", { src: identity.logoUrl, alt: identity.companyName, className: "h-8 w-auto mb-4" })}
                 </Link>
                 <div className="flex flex-col gap-4">
                   <Link href="/" onClick={() => setIsOpen(false)} className="text-lg font-medium text-secondary">Home</Link>
@@ -132,10 +130,7 @@ export function SiteHeader({ assessmentCta = false }: { assessmentCta?: boolean 
                 </div>
 
                 <div className="mt-6 flex flex-col gap-4 border-t border-border pt-6">
-                  <a href="tel:7042218928" className="flex items-center gap-2 text-lg font-bold text-secondary">
-                    <Phone className="h-5 w-5 text-primary" />
-                    (704) 221-8928
-                  </a>
+                  {createElement("a", { href: identity.phoneHref, className: "flex items-center gap-2 text-lg font-bold text-secondary" }, createElement(Phone, { className: "h-5 w-5 text-primary" }), identity.phoneDisplay)}
                   <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold">
                     {assessmentCta ? <a href="#assessment-request" onClick={(event) => { event.preventDefault(); focusAssessmentAfterClose.current = true; setIsOpen(false); }}>Get a Free Site Assessment</a> : <Link href="/contact" onClick={() => setIsOpen(false)}>Get a Free Site Assessment</Link>}
                   </Button>

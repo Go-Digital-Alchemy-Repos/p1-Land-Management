@@ -16,7 +16,7 @@ export function validWebsiteIdentityValue(key: WebsiteIdentityKey, value: string
   if (value.length > field.max || /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(value))
     return false;
   if (!key.endsWith("_url") || value === "") return true;
-  if (key !== "company_google_business_url" && /^\/uploads\/cms\/[a-zA-Z0-9_./-]+$/.test(value)) {
+  if (key !== "company_google_business_url" && /^\/(?:uploads|r2)\/cms\/[a-zA-Z0-9_./-]+$/.test(value)) {
     return value
       .slice(1)
       .split("/")

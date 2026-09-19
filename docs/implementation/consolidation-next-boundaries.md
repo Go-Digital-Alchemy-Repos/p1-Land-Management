@@ -2,11 +2,7 @@
 
 ## Public identity delivery
 
-Header/footer literals and image imports already pass through `cms-layout-jsx-runtime.ts` and published `site-chrome`; the separate Design Branding settings do not drive those values. Favicon links in public `index.html` and identity in `site.ts`/`structured-data.ts` remain separate.
-
-Next implementation should project only validated public identity into the existing content snapshot before SSR and serialize that same identity/revision for hydration and navigation. Explicit precedence must preserve configured Design identity, then published chrome, then bundled P1 defaults. Do not silently delete existing chrome values. Derive visible phone and tel links together; retain service-area-only address semantics. Use revisioned same-origin assets via known media/storage references, never an arbitrary URL-fetch proxy or widened image CSP. Preserve last-valid identity across outages/restarts; existing public-settings cache drops expired overrides on failures and cannot be reused unchanged.
-
-Evidence needed: published edit updates HTML, header/footer/contact/JSON-LD/favicon without deployment; hydration revision matches; existing defaults survive; invalid assets/private objects/traversal are rejected; outage recovery preserves last-valid content; desktop/mobile rendering.
+Implemented public identity delivery now projects validated Design Branding into the same SSR/hydration/navigation snapshot. All 3,259 existing CMS field identities are preserved. See [public identity delivery](public-website-identity.md). Final release and live read-only verification remain pending; actual Owner edit acceptance remains distinct from synthetic tests. The default disk cache survives process restarts only when its filesystem survives; it does not guarantee recovery across replaced containers.
 
 ## Native Backups and recovery
 

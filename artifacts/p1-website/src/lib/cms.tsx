@@ -1,10 +1,12 @@
+import { applyKnownPhoneReference } from "./site-identity";
 import { applyPreviewOverlay, type CmsPreviewOverlay } from "./cms-preview";
 import { acceptsPreviewParent, BUSINESS_CENTER_ORIGIN } from '../../config/preview-origins.mjs';
 import { fieldId, legacyCmsFieldKey } from "./cms-field-identity";
 import React, { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 
 export type CmsValues = Record<string, string>;
-export type CmsSnapshot = { route: string; content: CmsValues; global: CmsValues; revision?: number; publishedAt?: string; globalRevision?: number };
+export type CmsIdentity = { schemaVersion?: 1; stackId?: 'p1-land-management'; version: string; companyName: string | null; companyAddress: string | null; phoneDisplay: string | null; phoneHref: string | null; logoUrl: string | null; faviconUrl: string | null; googleBusinessUrl: string | null };
+export type CmsSnapshot = { identity?: CmsIdentity | null; route: string; content: CmsValues; global: CmsValues; revision?: number; publishedAt?: string; globalRevision?: number };
 export type CmsField = { path: string; label: string; type: 'text' | 'textarea' | 'image' | 'imageAlt' | 'ctaTarget'; required: boolean; maxLength: number };
 export type CmsCollection = { page: Record<string, { field: CmsField; value: string }>; global: Record<string, { field: CmsField; value: string }> };
 export function routeId(path: string) { return path === '/' ? 'home' : path.replace(/^\/+|\/+$/g, '').replace(/[^a-z0-9]+/g, '-'); }
@@ -29,7 +31,7 @@ export function cmsValue(context: ReturnType<typeof useCms>, original: string, k
   // Prefer the canonical (possibly preserved) key; the fallback lets a
   // preview created by a newer manifest remain visible during a rollout.
   const value = values[key] ?? values[derivedKey];
-  return safeValue(value, kind) ? value : original;
+  return applyKnownPhoneReference(original, safeValue(value, kind) ? value : original, kind, context.snapshot.identity);
 }
 export function CmsProvider({ snapshot, collect, children }: { snapshot: CmsSnapshot; collect?: CmsCollection; children: ReactNode }) {
   const [preview, setPreview] = useState<CmsPreviewOverlay | null>(null);

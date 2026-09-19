@@ -1,8 +1,11 @@
+import { useSiteIdentity } from "@/lib/use-site-identity";
+import { applyBusinessIdentity, applyKnownPhoneReference } from "@/lib/site-identity";
+import { updateIdentityIcons } from "@/lib/identity-icons";
 import { toTitleCase } from "@/lib/title-case";
 import { cmsValue, safeValue, useCms } from "@/lib/cms";
 import { cmsFieldKey } from "@/lib/cms-field-identity";
 import { useEffect } from "react";
-import { SITE_URL, BUSINESS_NAME } from "@/lib/site";
+import { SITE_URL } from "@/lib/site";
 import { collectHead } from "@/lib/ssr-head";
 
 interface SEOProps {
@@ -25,6 +28,7 @@ function upsertMeta(attr: "name" | "property", key: string, content: string) {
 
 export function SEO(props: SEOProps) {
   const context = useCms();
+  const identity = useSiteIdentity();
   const title = toTitleCase(cmsValue(context, props.title, "text", false, "seoTitle"));
   const description = cmsValue(context, props.description, "textarea", false, "seoDescription");
   const image = cmsValue(context, props.image || "/opengraph.jpg", "image", false, "seoImage");
@@ -34,19 +38,20 @@ export function SEO(props: SEOProps) {
     if (typeof value === "string") {
       const key = cmsFieldKey(value, "text");
       const replacement = context.snapshot.content[key] ?? context.snapshot.global[key];
-      return safeValue(replacement, "text") ? replacement : value;
+      return applyKnownPhoneReference(value, safeValue(replacement, "text") ? replacement : value, "text", context.snapshot.identity);
     }
     if (Array.isArray(value)) return value.map(translate);
     if (value && typeof value === "object") return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, translate(item)]));
     return value;
   };
-  const jsonLd = translate(props.jsonLd) as SEOProps["jsonLd"];
+  const jsonLd = applyBusinessIdentity(translate(props.jsonLd), identity) as SEOProps["jsonLd"];
   if (import.meta.env.SSR) {
-    collectHead({ title, description, image, jsonLd, noindex });
+    collectHead({ title, description, image, jsonLd, noindex, siteName: identity.companyName });
   }
 
   useEffect(() => {
     document.title = title;
+    updateIdentityIcons(document, identity.faviconUrl);
 
     upsertMeta(
       "name",
@@ -68,7 +73,7 @@ export function SEO(props: SEOProps) {
     upsertMeta("property", "og:locale", "en_US");
     upsertMeta("property", "og:url", url);
     upsertMeta("property", "og:image", img);
-    upsertMeta("property", "og:site_name", BUSINESS_NAME);
+    upsertMeta("property", "og:site_name", identity.companyName);
     upsertMeta("name", "twitter:card", "summary_large_image");
     upsertMeta("name", "twitter:title", title);
     upsertMeta("name", "twitter:description", description);
@@ -101,7 +106,7 @@ export function SEO(props: SEOProps) {
       });
     }
     return () => { document.head.querySelectorAll("script[data-seo-jsonld]").forEach(node => node.remove()); };
-  }, [title, description, image, noindex, JSON.stringify(jsonLd)]);
+  }, [title, description, image, noindex, identity.companyName, identity.faviconUrl, JSON.stringify(jsonLd)]);
 
   return null;
 }

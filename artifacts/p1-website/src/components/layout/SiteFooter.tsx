@@ -1,36 +1,32 @@
+import { createElement } from "react";
+import { useSiteIdentity } from "@/lib/use-site-identity";
+import { cmsValue, useCms } from "@/lib/cms";
 import { SiteSocialLinks } from "./SiteSocialLinks";
 import { Link } from "wouter";
-import logo from "@assets/Asset_1_1782329698014.svg";
+
 import { Button } from "@/components/ui/button";
 import { Phone } from "lucide-react";
-import { GOOGLE_BUSINESS_URL } from "@/lib/site";
+
 
 export function SiteFooter() {
+  const identity = useSiteIdentity();
+  const context = useCms();
   return (
     <footer className="bg-secondary text-secondary-foreground py-16 border-t border-border">
       <div className="site-shell grid grid-cols-2 gap-10 [overflow-wrap:anywhere] md:grid-cols-3 lg:grid-cols-6">
         {/* Brand + contact */}
         <div className="col-span-2 space-y-6">
           <Link href="/">
-            <img src={logo} alt="P1 Land & Property Management" className="h-12 w-auto brightness-0 invert" />
+            {createElement("img", { src: identity.logoUrl, alt: identity.companyName, className: "h-12 w-auto brightness-0 invert" })}
           </Link>
           <p className="text-secondary-foreground/70 text-sm leading-relaxed max-w-xs">
             Full-service land and property management for commercial, agricultural, industrial, municipal, and institutional properties 1 acre and larger across Upstate SC and the Charlotte, NC region.
           </p>
           <SiteSocialLinks />
           <div className="space-y-2 pt-2">
-            <a href="tel:7042218928" className="flex items-center gap-2 text-xl font-sans font-bold hover:text-primary transition-colors">
-              <Phone className="h-5 w-5 text-primary" />
-              (704) 221-8928
-            </a>
-            <a
-              href={GOOGLE_BUSINESS_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block w-fit text-sm font-semibold text-secondary-foreground/70 transition-colors hover:text-primary"
-            >
-              Find us on Google
-            </a>
+            {createElement("a", { href: identity.phoneHref, className: "flex items-center gap-2 text-xl font-sans font-bold hover:text-primary transition-colors" }, createElement(Phone, { className: "h-5 w-5 text-primary" }), identity.phoneDisplay)}
+            {createElement("a", { href: identity.googleBusinessUrl, target: "_blank", rel: "noopener noreferrer", className: "block w-fit text-sm font-semibold text-secondary-foreground/70 transition-colors hover:text-primary" }, cmsValue(context, "Find us on Google", "text", true))}
+            {identity.companyAddress && createElement("p", { className: "text-sm text-secondary-foreground/70 whitespace-pre-line" }, identity.companyAddress)}
             <Link href="/contact" className="inline-block text-sm font-semibold text-secondary-foreground/70 hover:text-primary transition-colors">Send a secure inquiry</Link>
           </div>
         </div>
@@ -101,7 +97,7 @@ export function SiteFooter() {
       </div>
 
       <div className="site-shell mt-16 border-t border-secondary-foreground/10 pt-8 text-center text-sm text-secondary-foreground/50">
-        © {new Date().getFullYear()} P1 Land & Property Management. Serving Upstate South Carolina & the Charlotte, NC region. All rights reserved.
+        {createElement("span", null, cmsValue(context, "© ", "text", true), new Date().getFullYear(), (() => { const original = " P1 Land & Property Management. Serving Upstate South Carolina & the Charlotte, NC region. All rights reserved."; const published = cmsValue(context, original, "text", true); return context.snapshot.identity?.companyName ? published.replace("P1 Land & Property Management", identity.companyName) : published; })())}
       </div>
     </footer>
   );

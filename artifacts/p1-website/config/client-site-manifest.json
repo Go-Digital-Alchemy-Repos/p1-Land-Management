@@ -6,7 +6,7 @@
     "displayName": "P1 Land & Property Management",
     "source": {
       "repository": "https://github.com/Go-Digital-Alchemy-Repos/p1-Land-Management.git",
-      "revision": "fe69fc3fadb75037355a8181a130fbb810f09e10"
+      "revision": "c01547a750d24dc2afce10237d47d44b8b8c0416"
     },
     "owners": [
       {
@@ -27748,13 +27748,6 @@
         ],
         "fields": [
           {
-            "path": "fc41l53",
-            "label": "Link: /",
-            "type": "ctaTarget",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
             "path": "fes5mhs",
             "label": "Image: /assets/Asset_1_1782329698014-CKM543-C.svg",
             "type": "image",
@@ -27765,6 +27758,34 @@
             "path": "ffl0jxc",
             "label": "Image description: P1 Land & Property Management",
             "type": "imageAlt",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f15oz4jr",
+            "label": "Text: (704) 221-8928",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f9spy6u",
+            "label": "Link: tel:7042218928",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f1jhcqx9",
+            "label": "Link: https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4",
+            "type": "ctaTarget",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fc41l53",
+            "label": "Link: /",
+            "type": "ctaTarget",
             "required": false,
             "maxLength": 2000
           },
@@ -27811,20 +27832,6 @@
             "maxLength": 2000
           },
           {
-            "path": "f15oz4jr",
-            "label": "Text: (704) 221-8928",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f9spy6u",
-            "label": "Link: tel:7042218928",
-            "type": "ctaTarget",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
             "path": "f179vaag",
             "label": "Text: Get a Free Site Assessment",
             "type": "text",
@@ -27839,13 +27846,6 @@
             "maxLength": 2000
           },
           {
-            "path": "f12qgro7",
-            "label": "Text: Full-service land and property management for commercial, agricultural, industrial, municipal, ",
-            "type": "textarea",
-            "required": false,
-            "maxLength": 12000
-          },
-          {
             "path": "fosntup",
             "label": "Text: Find us on Google",
             "type": "text",
@@ -27853,11 +27853,25 @@
             "maxLength": 2000
           },
           {
-            "path": "f1jhcqx9",
-            "label": "Link: https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4",
-            "type": "ctaTarget",
+            "path": "fms1a4t",
+            "label": "Text: ©",
+            "type": "text",
             "required": false,
             "maxLength": 2000
+          },
+          {
+            "path": "fmifnt8",
+            "label": "Text: P1 Land & Property Management. Serving Upstate South Carolina & the Charlotte, NC region. All r",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f12qgro7",
+            "label": "Text: Full-service land and property management for commercial, agricultural, industrial, municipal, ",
+            "type": "textarea",
+            "required": false,
+            "maxLength": 12000
           },
           {
             "path": "fmme39j",
@@ -28278,39 +28292,27 @@
             "type": "text",
             "required": false,
             "maxLength": 2000
-          },
-          {
-            "path": "fms1a4t",
-            "label": "Text: ©",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "fmifnt8",
-            "label": "Text: P1 Land & Property Management. Serving Upstate South Carolina & the Charlotte, NC region. All r",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
           }
         ],
         "defaultContent": {
-          "fc41l53": "/",
           "fes5mhs": "/assets/Asset_1_1782329698014-CKM543-C.svg",
           "ffl0jxc": "P1 Land & Property Management",
+          "f15oz4jr": "(704) 221-8928",
+          "f9spy6u": "tel:7042218928",
+          "f1jhcqx9": "https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4m6!3m5!1s0x8855cd2b88976525:0x49c378cdfdecac9a!8m2!3d34.8311381!4d-80.6194367!16s%2Fg%2F11nw0vxpb_?entry=ttu&g_ep=EgoyMDI2MDkxMy4wIKXMDSoASAFQAw%3D%3D",
+          "fc41l53": "/",
           "f1i5g1yz": "Home",
           "fqd1hep": "About",
           "f13gcn04": "/about",
           "f15gaxfw": "Services ",
           "fwi7akw": "Contact",
           "fmggb4x": "/contact",
-          "f15oz4jr": "(704) 221-8928",
-          "f9spy6u": "tel:7042218928",
           "f179vaag": "Get a Free Site Assessment",
           "ft83pm7": "Toggle Menu",
-          "f12qgro7": "Full-service land and property management for commercial, agricultural, industrial, municipal, and institutional properties 1 acre and larger across Upstate SC and the Charlotte, NC region.",
           "fosntup": "Find us on Google",
-          "f1jhcqx9": "https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4m6!3m5!1s0x8855cd2b88976525:0x49c378cdfdecac9a!8m2!3d34.8311381!4d-80.6194367!16s%2Fg%2F11nw0vxpb_?entry=ttu&g_ep=EgoyMDI2MDkxMy4wIKXMDSoASAFQAw%3D%3D",
+          "fms1a4t": "© ",
+          "fmifnt8": " P1 Land & Property Management. Serving Upstate South Carolina & the Charlotte, NC region. All rights reserved.",
+          "f12qgro7": "Full-service land and property management for commercial, agricultural, industrial, municipal, and institutional properties 1 acre and larger across Upstate SC and the Charlotte, NC region.",
           "fmme39j": "Send a secure inquiry",
           "f1hf0vxg": "Services",
           "ffzg0ag": "Commercial Landscaping",
@@ -28370,9 +28372,7 @@
           "fl6vzc3": "Hours",
           "f16olgaf": "Mon – Fri: 7 AM – 6 PM",
           "fypfwdp": "Saturday: By Appointment",
-          "f1lfba2e": "Sunday: Closed",
-          "fms1a4t": "© ",
-          "fmifnt8": " P1 Land & Property Management. Serving Upstate South Carolina & the Charlotte, NC region. All rights reserved."
+          "f1lfba2e": "Sunday: Closed"
         },
         "lockedBehaviors": [
           "routing",

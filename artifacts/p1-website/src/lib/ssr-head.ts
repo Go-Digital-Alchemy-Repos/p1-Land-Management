@@ -1,5 +1,6 @@
 export interface CollectedHead {
   title: string;
+  siteName?: string;
   description: string;
   image?: string;
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];

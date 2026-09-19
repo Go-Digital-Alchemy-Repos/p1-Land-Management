@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, ExternalLink, Star } from "lucide-react";
-import { GOOGLE_BUSINESS_URL } from "@/lib/site";
+import { useSiteIdentity } from "@/lib/use-site-identity";
 
 type Review = {
   id: string;
@@ -38,6 +38,7 @@ function reviewDate(value: string | null) {
 }
 
 export function GoogleReviewShowcase() {
+  const identity = useSiteIdentity();
   const [data, setData] = useState<ReviewResponse | null>(null);
   const [failed, setFailed] = useState(false);
   const track = useRef<HTMLDivElement>(null);
@@ -88,7 +89,7 @@ export function GoogleReviewShowcase() {
               <p className="mt-4 text-sm text-secondary/70">Rating on Google</p>
               {data?.totalReviewCount != null && <p className="mt-1 text-sm font-semibold text-secondary">Based on {data.totalReviewCount} reviews</p>}
             </div>
-            <a href={GOOGLE_BUSINESS_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm font-bold text-primary hover:underline">
+            <a href={identity.googleBusinessUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm font-bold text-primary hover:underline">
               View our Google profile <ExternalLink className="h-4 w-4" aria-hidden="true" />
             </a>
           </article>
@@ -107,7 +108,7 @@ export function GoogleReviewShowcase() {
               </div>
               <div className="mt-5"><ReviewStars /></div>
               <blockquote className="mt-5 line-clamp-6 flex-1 text-[15px] leading-relaxed text-secondary/75">“{review.comment}”</blockquote>
-              <a href={GOOGLE_BUSINESS_URL} target="_blank" rel="noopener noreferrer" className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-primary hover:underline">
+              <a href={identity.googleBusinessUrl} target="_blank" rel="noopener noreferrer" className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-primary hover:underline">
                 View on Google <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
               </a>
             </article>
@@ -121,6 +122,7 @@ export function GoogleReviewShowcase() {
 
 /** Manually verified on the public Google profile; never presented as a live feed. */
 function VerifiedGoogleRating() {
+  const identity = useSiteIdentity();
   return (
     <section className="border-y border-border bg-white py-10" aria-labelledby="google-rating-heading">
       <div className="site-shell flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
@@ -130,7 +132,7 @@ function VerifiedGoogleRating() {
           <div className="mt-3 flex flex-wrap items-center gap-3"><ReviewStars /><span className="text-sm font-semibold text-secondary">7 five-star reviews</span></div>
           <p className="mt-3 text-xs text-secondary/65">Google profile rating as of September 17, 2026.</p>
         </div>
-        <a href={GOOGLE_BUSINESS_URL} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center gap-2 border border-primary px-5 py-3 text-sm font-bold text-primary transition-colors hover:bg-primary/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Read all reviews on Google <ExternalLink className="h-4 w-4" aria-hidden="true" /></a>
+        <a href={identity.googleBusinessUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center gap-2 border border-primary px-5 py-3 text-sm font-bold text-primary transition-colors hover:bg-primary/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary">Read all reviews on Google <ExternalLink className="h-4 w-4" aria-hidden="true" /></a>
       </div>
     </section>
   );

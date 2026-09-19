@@ -24,7 +24,9 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
   const upstreamRequests = [];
   const upstream = http.createServer((req, res) => {
     upstreamRequests.push({ path: req.url, headers: req.headers });
-    if (req.url === '/api/p1/website-social') {
+    if (req.url === '/api/p1/website-identity') {
+      res.setHeader('Content-Type','application/json');res.end(JSON.stringify({schemaVersion:1,stackId:'p1-land-management',version:'a'.repeat(64),companyName:'QA Identity Company',companyAddress:null,phoneDisplay:'(704) 555-1234',phoneHref:'tel:+17045551234',logoUrl:'/r2/cms/branding/qa.webp',faviconUrl:'/r2/cms/branding/icon.webp',googleBusinessUrl:'https://www.google.com/maps/place/QA'}));
+    } else if (req.url === '/api/p1/website-social') {
       res.setHeader('Content-Type','application/json');res.end(JSON.stringify({schemaVersion:1,stackId:'p1-land-management',iconStyle:'outline',links:[{platform:'facebook',url:'https://example.test/profile'}]}));
     } else if (req.url === '/api/p1/website-fonts') {
       res.setHeader('Content-Type','application/json');res.end(JSON.stringify({schemaVersion:1,stackId:'p1-land-management',body:{name:'Inter',fallback:'sans-serif'},heading:{name:'Lora',fallback:'serif'}}));
@@ -66,6 +68,21 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
     child.stdout.on('data', chunk => { if (String(chunk).includes('P1 website listening')) { clearTimeout(timer); resolveReady(); } });
   });
 
+  await t.test('one identity revision drives SSR, serialized hydration and navigation without credential forwarding',async()=>{
+    const page=await request(port,'/',{Cookie:'private',Authorization:'Bearer private'});
+    assert.equal(page.status,200);
+    assert(page.body.includes('QA Identity Company'));
+    assert(page.body.includes('tel:+17045551234'));
+    const telephoneLinks=[...page.body.matchAll(/<a[^>]*href="(tel:[^"]+)"/g)].map(match=>match[1]);
+    assert(telephoneLinks.length>=3);assert(telephoneLinks.every(href=>href==='tel:+17045551234'));
+    assert(page.body.includes('/r2/cms/branding/qa.webp'));
+    assert(page.body.includes('/r2/cms/branding/icon.webp?v='+'a'.repeat(64)));
+    const serialized=JSON.parse(page.body.match(/<script type="application\/json" id="p1-published-content">([\s\S]*?)<\/script>/)[1]);
+    const navigation=JSON.parse((await request(port,'/api/p1/page-content?path=/contact')).body);
+    assert.deepEqual(navigation.identity,serialized.identity);
+    assert.equal(serialized.identity.version,'a'.repeat(64));
+    const reads=upstreamRequests.filter(r=>r.path==='/api/p1/website-identity');assert.equal(reads.length,1);assert.equal(reads[0].headers.cookie,undefined);assert.equal(reads[0].headers.authorization,undefined);
+  });
   await t.test('global head markup appears only on public documents without expanding CSP',async()=>{
     const page=await request(port,'/');
     assert.equal(page.status,200);assert(page.body.includes('<meta name="p1-head-fixture" content="literal $&">'));
@@ -117,7 +134,7 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
     }
     const directory = await request(port, '/service-areas');
     const html = directory.body.replace(/<!--.*?-->/g, '');
-    const mapHeading = html.indexOf('Find your service area');
+    const mapHeading = html.indexOf('Find Your Service Area');
     assert(mapHeading >= 0 && mapHeading < html.indexOf('Upstate South Carolina</h2>'));
     assert(html.includes('Browse all 30 service locations'));
     const locations = JSON.parse(await readFile(resolve(root, 'src/lib/service-locations.json'), 'utf8'));
@@ -263,6 +280,7 @@ test('staging manifest blocks indexing across public and proxied responses regar
   await copyFile(resolve(root, 'server/website-colors.mjs'), resolve(temporary, 'server/website-colors.mjs'));
   await copyFile(resolve(root, 'server/website-fonts.mjs'), resolve(temporary, 'server/website-fonts.mjs'));
   await copyFile(resolve(root, 'server/public-settings.mjs'), resolve(temporary, 'server/public-settings.mjs'));
+  await copyFile(resolve(root, 'server/website-identity.mjs'), resolve(temporary, 'server/website-identity.mjs'));
   await copyFile(resolve(root, 'server/website-social.mjs'), resolve(temporary, 'server/website-social.mjs'));
   await copyFile(resolve(root, 'server/typography-preview.mjs'), resolve(temporary, 'server/typography-preview.mjs'));
   await copyFile(resolve(root, 'server/content.mjs'), resolve(temporary, 'server/content.mjs'));
