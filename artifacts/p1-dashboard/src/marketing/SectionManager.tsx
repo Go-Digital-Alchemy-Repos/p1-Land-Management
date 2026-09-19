@@ -237,13 +237,24 @@ function Editor({
     </section>
   );
 }
+// Opaque CMS IDs are varchar keys; do not assume every retained record is UUID-only.
+export function readSectionIntent(search: string): { id: string | null; error: string } {
+  const values = new URLSearchParams(search).getAll("section");
+  if (!values.length) return { id: null, error: "" };
+  if (values.length !== 1 || !/^[A-Za-z0-9_-]{1,200}$/.test(values[0]))
+    return { id: null, error: "Invalid section editor link. Choose a record from the list." };
+  return { id: values[0], error: "" };
+}
+
 export default function SectionManager({
   canUseMedia,
 }: {
   canUseMedia: boolean;
 }) {
+  const [initialIntent] = useState(() => readSectionIntent(location.search));
+  const [intentError, setIntentError] = useState(initialIntent.error);
   const [rows, setRows] = useState<MarketingSection[]>([]),
-    [editing, setEditing] = useState<string | null>(null),
+    [editing, setEditing] = useState<string | null>(initialIntent.id),
     [search, setSearch] = useState(""),
     [category, setCategory] = useState(""),
     [error, setError] = useState(""),
@@ -260,13 +271,25 @@ export default function SectionManager({
       });
     return () => c.abort();
   }, [editing, version]);
+  const select = (id: string | null) => {
+    if (id !== null && !/^[A-Za-z0-9_-]{1,200}$/.test(id)) {
+      setIntentError("Invalid section editor link. Choose a record from the list.");
+      return;
+    }
+    const url = new URL(location.href);
+    if (id) url.searchParams.set("section", id);
+    else url.searchParams.delete("section");
+    history.replaceState(history.state, "", url.pathname + url.search + url.hash);
+    setIntentError("");
+    setEditing(id);
+  };
   if (editing)
     return (
       <Editor
         key={editing}
         id={editing}
-        onClose={() => setEditing(null)}
-        onCreated={setEditing}
+        onClose={() => select(null)}
+        onCreated={select}
         canUseMedia={canUseMedia}
       />
     );
@@ -276,9 +299,10 @@ export default function SectionManager({
         Reusable content blocks for CMS pages. Saving a section does not publish
         a page.
       </p>
+      {intentError && <p role="alert">{intentError}</p>}
       {error && <p role="alert">{error}</p>}
       {notice && <p role="status">{notice}</p>}
-      <button disabled={busy} onClick={() => setEditing("new")}>
+      <button disabled={busy} onClick={() => select("new")}>
         New section
       </button>
       <button
@@ -345,7 +369,7 @@ export default function SectionManager({
             <p>
               {row.category} · {row.blocks.length} blocks
             </p>
-            <button disabled={busy} onClick={() => setEditing(row.id)}>
+            <button disabled={busy} onClick={() => select(row.id)}>
               Edit {row.name}
             </button>
           </article>

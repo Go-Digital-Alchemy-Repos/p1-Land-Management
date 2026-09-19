@@ -624,13 +624,24 @@ function Editor({
     </section>
   );
 }
+// Opaque CMS IDs are varchar keys; do not assume every retained record is UUID-only.
+export function readGalleryIntent(search: string): { id: string | null; error: string } {
+  const values = new URLSearchParams(search).getAll("gallery");
+  if (!values.length) return { id: null, error: "" };
+  if (values.length !== 1 || !/^[A-Za-z0-9_-]{1,200}$/.test(values[0]))
+    return { id: null, error: "Invalid gallery editor link. Choose a record from the list." };
+  return { id: values[0], error: "" };
+}
+
 export default function GalleryManager({
   canUseMedia,
 }: {
   canUseMedia: boolean;
 }) {
+  const [initialIntent] = useState(() => readGalleryIntent(location.search));
+  const [intentError, setIntentError] = useState(initialIntent.error);
   const [rows, setRows] = useState<MarketingGallery[]>([]),
-    [editing, setEditing] = useState<string | null>(null),
+    [editing, setEditing] = useState<string | null>(initialIntent.id),
     [filters, setFilters] = useState<ListMarketingGalleriesParams>({
       sort: "updated",
     }),
@@ -651,13 +662,25 @@ export default function GalleryManager({
       });
     return () => c.abort();
   }, [editing, filters]);
+  const select = (id: string | null) => {
+    if (id !== null && !/^[A-Za-z0-9_-]{1,200}$/.test(id)) {
+      setIntentError("Invalid gallery editor link. Choose a record from the list.");
+      return;
+    }
+    const url = new URL(location.href);
+    if (id) url.searchParams.set("gallery", id);
+    else url.searchParams.delete("gallery");
+    history.replaceState(history.state, "", url.pathname + url.search + url.hash);
+    setIntentError("");
+    setEditing(id);
+  };
   if (editing)
     return (
       <Editor
         key={editing}
         id={editing}
-        onClose={() => setEditing(null)}
-        onCreated={setEditing}
+        onClose={() => select(null)}
+        onCreated={select}
         canUseMedia={canUseMedia}
       />
     );
@@ -667,8 +690,9 @@ export default function GalleryManager({
         Create reusable image galleries for website content and Blog gallery
         shortcodes.
       </p>
+      {intentError && <p role="alert">{intentError}</p>}
       {error && <p role="alert">{error}</p>}
-      <button onClick={() => setEditing("new")}>New gallery</button>
+      <button onClick={() => select("new")}>New gallery</button>
       <div className="gallery-settings">
         <label>
           Search galleries
@@ -727,7 +751,7 @@ export default function GalleryManager({
                 {row.status} · {row.imageCount} images · {row.layout}
               </p>
               <code>{`[gallery id="${row.id}"]`}</code>
-              <button onClick={() => setEditing(row.id)}>
+              <button onClick={() => select(row.id)}>
                 Edit {row.title}
               </button>
             </article>

@@ -670,9 +670,20 @@ function Editor({
   );
 }
 
+// Opaque CMS IDs are varchar keys; do not assume every retained record is UUID-only.
+export function readPageIntent(search: string): { id: string | null; error: string } {
+  const values = new URLSearchParams(search).getAll("page");
+  if (!values.length) return { id: null, error: "" };
+  if (values.length !== 1 || !/^[A-Za-z0-9_-]{1,200}$/.test(values[0]))
+    return { id: null, error: "Invalid page editor link. Choose a record from the list." };
+  return { id: values[0], error: "" };
+}
+
 export default function PageManager(access: Access) {
+  const [initialIntent] = useState(() => readPageIntent(location.search));
+  const [intentError, setIntentError] = useState(initialIntent.error);
   const [rows, setRows] = useState<MarketingPage[] | null>(null);
-  const [editing, setEditing] = useState<string | null>(null);
+  const [editing, setEditing] = useState<string | null>(initialIntent.id);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
@@ -689,13 +700,25 @@ export default function PageManager(access: Access) {
       });
     return () => controller.abort();
   }, [editing]);
+  const select = (id: string | null) => {
+    if (id !== null && !/^[A-Za-z0-9_-]{1,200}$/.test(id)) {
+      setIntentError("Invalid page editor link. Choose a record from the list.");
+      return;
+    }
+    const url = new URL(location.href);
+    if (id) url.searchParams.set("page", id);
+    else url.searchParams.delete("page");
+    history.replaceState(history.state, "", url.pathname + url.search + url.hash);
+    setIntentError("");
+    setEditing(id);
+  };
   if (editing)
     return (
       <Editor
         key={editing}
         id={editing}
-        onClose={() => setEditing(null)}
-        onCreated={setEditing}
+        onClose={() => select(null)}
+        onCreated={select}
         {...access}
       />
     );
@@ -705,9 +728,10 @@ export default function PageManager(access: Access) {
         Generic CMS pages and publication history. Use Website for primary P1
         site content.
       </p>
+      {intentError && <p role="alert">{intentError}</p>}
       {error && <p role="alert">{error}</p>}
       {!rows && !error && <p role="status">Loading CMS pages…</p>}
-      <button onClick={() => setEditing("new")}>New CMS page</button>
+      <button onClick={() => select("new")}>New CMS page</button>
       <label>
         Find CMS pages
         <input
@@ -743,7 +767,7 @@ export default function PageManager(access: Access) {
             <p>
               /{row.slug} · {row.status} · {row.pageType}
             </p>
-            <button onClick={() => setEditing(row.id)}>Edit {row.title}</button>
+            <button onClick={() => select(row.id)}>Edit {row.title}</button>
           </article>
         ))}
     </section>
