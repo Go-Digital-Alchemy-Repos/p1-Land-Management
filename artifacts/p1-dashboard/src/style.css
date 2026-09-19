@@ -732,7 +732,7 @@ small {
 .property-art {
   height: 180px;
   position: relative;
-  background: var(--paper);
+  background: var(--surface);
 }
 .property-art .property-acreage {
   position: absolute;
@@ -742,7 +742,7 @@ small {
   pointer-events: none;
   font-size: 9px;
   letter-spacing: 1.2px;
-  background: var(--paper);
+  background: var(--surface);
   padding: 5px 8px;
   border-radius: 4px;
 }
