@@ -297,3 +297,17 @@ both typechecks/builds and 54-route prerender passed. Local browser at390px prov
 page width390, code block width342, internal scrolling for a12890px code line, one
 H1 and a rendered divider. Synthetic preview server was stopped after inspection.
 This is formatting evidence, not full CMS or production-content acceptance.
+
+## Permanent Blog source ownership release — September 19
+
+`20a3ac31` backend followed by `9d39eb5d` website is deployed successfully on
+Core, Website and Dashboard. Immutable receipt migration and public v2 ownership
+prevent retired static routes from reappearing after future CMS withdrawal/rename.
+Backup preflight preserves full receipt identity, provenance and microsecond time.
+21 Core pipeline/route,14 original actualPG publication,6 receipt,8 backup and
+migration tests passed;34 website tests and source/build checks passed. Parent
+independently reran11 website Blog/ownership tests. All five live article URLs and
+the Blog index return200; each original route occurs once in sitemap. No real
+article import occurred. Source media/date/author/hero preservation and complete
+CMS workflow acceptance remain open. Exact deployments/backup evidence: handoff.md
+and blog-static-import-plan.md. `/admin` retirement remains gated.

@@ -1,3 +1,20 @@
+## Verified ownership foundation release — September 19
+
+Runtime `9d39eb5df5a4a4b182b21211b4260a5bf0514aa6` is on main and the task branch.
+Core v2 was deployed and verified first at20a3ac31; website followed only after
+its live upstream returned200/schemaVersion2. Final Railway SUCCESS:
+- Core `97654fb2-f5de-4d46-8bff-0567375f1394`
+- Website `7b189ff7-bfd5-4cc8-922d-55d6e054cca6`
+- Dashboard `635e96c9-a125-49ea-8a76-ca044d7f458a`
+
+Live readiness/dashboard health returned200. Blog index and all five original
+articles returned200 with oneH1 and expected titles; sitemap contains each once.
+Hydration confirms known empty ownership. No post has been imported or rewritten.
+Authenticated Social Media read/visual review confirms restored two-column fields,
+Design navigation, icon styling/preview and colorful navigation icons.
+Next: preserve source hero/author/date/media identity and implement/review the atomic
+five-article importer. Remaining broader acceptance gates remain unchanged.
+
 ## Permanent Blog ownership foundation — September 19
 
 Core implementation `20a3ac313be6676c14820b752425b25e237606fe` is pushed to main
