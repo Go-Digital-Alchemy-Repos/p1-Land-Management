@@ -128,3 +128,22 @@ the manifest step passed after supplying the actual base revision. Specialist ra
 query, stale-response and failure checks. No production redirect records were created
 or changed. Full CRUD authorization runtime coverage and live nonempty-rule acceptance
 remain separate from these checks. Menus are still an unfinished public consumer.
+
+Redirect release `8068e29` reached SUCCESS on Website
+`b835bc61-4c68-49f0-a5c3-8993e709f66d` and Core
+`7262d353-0e3c-45e5-9dbb-4d50505546b9`. Portable test-only follow-up
+`31d0c4b` also reached SUCCESS (Website `a21b5d5a-9988-4ca4-b86f-5675d001f8fc`,
+Core `a1fa0075-8b76-42d1-b81a-bfa5d518d518`). Live read-only checks returned200
+for the valid public redirect projection, sitemap and About document. The projection
+has zero rules; this is not evidence of a nonempty production redirect execution.
+
+Owner-aware Marketing editor controls were released at `d1b7a60` (dashboard
+`2649cfcb-6a5d-4c4b-a209-cb0d44bb7b34` SUCCESS). The shared policy still denies
+crew/client and unknown capabilities, and requires explicit staff grants.
+
+The full shared CMS builder/editor restoration remains under implementation. Review
+found an existing concurrency defect: page writes have no atomic stale-version or
+server-enforced editor-lease check, and user-only leases allow same-user tabs to
+overwrite/release each other. Orchestrator approved additive page/menu versions and
+instance-specific leases with transactional mutations, coordinated across both
+editors before release. This is required conflict protection, not completed work.
