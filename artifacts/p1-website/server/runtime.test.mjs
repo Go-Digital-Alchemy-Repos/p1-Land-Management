@@ -337,6 +337,7 @@ test('staging manifest blocks indexing across public and proxied responses regar
   await copyFile(resolve(root, 'server/website-fonts.mjs'), resolve(temporary, 'server/website-fonts.mjs'));
   await copyFile(resolve(root, 'server/public-settings.mjs'), resolve(temporary, 'server/public-settings.mjs'));
   await copyFile(resolve(root, 'server/website-identity.mjs'), resolve(temporary, 'server/website-identity.mjs'));
+  await copyFile(resolve(root, 'server/website-blog.mjs'), resolve(temporary, 'server/website-blog.mjs'));
   await copyFile(resolve(root, 'server/website-menus.mjs'), resolve(temporary, 'server/website-menus.mjs'));
   await copyFile(resolve(root, 'server/website-robots.mjs'), resolve(temporary, 'server/website-robots.mjs'));
   await copyFile(resolve(root, 'server/website-redirects.mjs'), resolve(temporary, 'server/website-redirects.mjs'));

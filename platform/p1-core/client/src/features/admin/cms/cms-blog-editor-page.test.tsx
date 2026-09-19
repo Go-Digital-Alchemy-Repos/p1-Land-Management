@@ -15,12 +15,19 @@ const editorLockState = {
   isReadOnly: true,
   isLoading: false,
   acquire: vi.fn(),
+  editorInstanceId: "instance-1",
+  preconditions: vi.fn(async (version: number) => ({
+    expectedVersion: version,
+    editorInstanceId: "instance-1",
+    leaseId: "lease-1",
+  })),
   summary: {
     variant: "warning" as const,
     title: "Post already checked out",
     description: "Jamie Editor is already editing this post.",
   },
 };
+let mutationOptions: any[] = [];
 let mutationStates: Array<{
   mutate: ReturnType<typeof vi.fn>;
   mutateAsync: ReturnType<typeof vi.fn>;
@@ -155,6 +162,7 @@ describe("CmsBlogEditorPage", () => {
     lockGuardMock.mockReset();
     editorLockState.isReadOnly = true;
     mutationStates = [];
+    mutationOptions = [];
     useQueryMock.mockImplementation(({ queryKey }: { queryKey: unknown[] }) => {
       if (queryKey[0] === "/api/admin/cms/sidebars") {
         return { data: [], isLoading: false };
@@ -164,9 +172,20 @@ describe("CmsBlogEditorPage", () => {
         return { data: [], isLoading: false };
       }
 
-      if (queryKey[0] === "/api/admin/blog") {
+      if (queryKey[0] === "/api/admin/blog/publications") {
         return {
           data: {
+            publication: {
+              requiresAdoption: false,
+              version: 3,
+              legacyFingerprint: "a".repeat(64),
+              visibility: "unpublished",
+              schedule: null,
+              draftRevisionId: "rev3",
+              publishedRevisionId: null,
+              lastPublishedRevisionId: null,
+              publicationGeneration: 0,
+            },
             id: "post-1",
             title: "Latest Insights",
             slug: "latest-insights",
@@ -183,6 +202,10 @@ describe("CmsBlogEditorPage", () => {
             externalUrl: "",
             sidebarId: "",
             isPublished: false,
+            scheduledAt: null,
+            publishedAt: null,
+            createdAt: "2026-09-19T12:00:00.000Z",
+            updatedAt: "2026-09-19T12:00:00.000Z",
             seoTitle: "",
             seoDescription: "",
             ogImageUrl: "",
@@ -194,7 +217,8 @@ describe("CmsBlogEditorPage", () => {
 
       return { data: undefined, isLoading: false };
     });
-    useMutationMock.mockImplementation(() => {
+    useMutationMock.mockImplementation((options: any) => {
+      mutationOptions.push(options);
       const state = {
         mutate: vi.fn(),
         mutateAsync: vi.fn(),
@@ -241,33 +265,20 @@ describe("CmsBlogEditorPage", () => {
     document.body.innerHTML = "";
   });
 
-  it("wires lock conflicts back to the blog list and disables saving in read-only mode", async () => {
+  it("retains the editor instead of navigating away on lock conflicts and disables saving in read-only mode", async () => {
     root = createRoot(container);
 
     await act(async () => {
       root!.render(React.createElement(CmsBlogEditorPage));
     });
 
-    expect(lockGuardMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        resourceId: "post-1",
-        resourceLabel: "post",
-        editorLock: editorLockState,
-      }),
-    );
-
-    const guardArgs = lockGuardMock.mock.calls.at(-1)?.[0] as { onConflict: () => void };
-
-    await act(async () => {
-      guardArgs.onConflict();
-    });
-
+    expect(lockGuardMock).not.toHaveBeenCalled();
     const saveButton = container.querySelector(
       '[data-testid="button-save-post"]',
     ) as HTMLButtonElement | null;
     expect(saveButton).not.toBeNull();
     expect(saveButton?.disabled).toBe(true);
-    expect(navigateMock).toHaveBeenCalledWith("/admin/cms/blog");
+    expect(navigateMock).not.toHaveBeenCalled();
   });
 
   it("submits the existing post through the update mutation", async () => {
@@ -290,76 +301,88 @@ describe("CmsBlogEditorPage", () => {
     const calledPayload = mutationStates.flatMap((state) => state.mutate.mock.calls).at(-1)?.[0];
     expect(calledPayload).toEqual(
       expect.objectContaining({
-        title: "Latest Insights",
-        slug: "latest-insights",
-        authorName: "Admin",
+        action: "save",
+        data: expect.objectContaining({
+          title: "Latest Insights",
+          slug: "latest-insights",
+          authorName: "Admin",
+        }),
       }),
     );
   });
 
-  it("prompts before scheduling when the post has unsaved edits", async () => {
+  it("confirms the saved-revision schedule and does not submit when declined", async () => {
     editorLockState.isReadOnly = false;
     const confirmSpy = vi.spyOn(window, "confirm").mockReturnValue(false);
     root = createRoot(container);
-
+    await act(async () => root!.render(React.createElement(CmsBlogEditorPage)));
+    const input = container.querySelector<HTMLInputElement>('input[type="datetime-local"]')!;
     await act(async () => {
-      root!.render(React.createElement(CmsBlogEditorPage));
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(
+        input,
+        "2099-05-01T10:30",
+      );
+      input.dispatchEvent(new Event("input", { bubbles: true }));
     });
-
-    const titleInput = container.querySelector(
-      '[data-testid="input-post-title"]',
-    ) as HTMLInputElement | null;
-    expect(titleInput).not.toBeNull();
-
-    await act(async () => {
-      const setValue = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
-      setValue?.call(titleInput, "Updated Insights");
-      titleInput!.dispatchEvent(new Event("input", { bubbles: true }));
-      titleInput!.dispatchEvent(new Event("change", { bubbles: true }));
-    });
-
-    const openScheduleButton = container.querySelector(
-      '[data-testid="button-open-blog-schedule"]',
-    ) as HTMLButtonElement | null;
-    expect(openScheduleButton).not.toBeNull();
-
-    await act(async () => {
-      openScheduleButton?.click();
-    });
-
-    const scheduleInput = document.body.querySelector(
-      '[data-testid="input-blog-schedule-date"]',
-    ) as HTMLInputElement | null;
-    expect(scheduleInput).not.toBeNull();
-
-    await act(async () => {
-      const setValue = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
-      setValue?.call(scheduleInput, "2026-05-01T10:30");
-      scheduleInput!.dispatchEvent(new Event("input", { bubbles: true }));
-      scheduleInput!.dispatchEvent(new Event("change", { bubbles: true }));
-    });
-
-    const confirmScheduleButton = document.body.querySelector(
-      '[data-testid="button-confirm-blog-schedule"]',
-    ) as HTMLButtonElement | null;
-    expect(confirmScheduleButton).not.toBeNull();
-    expect(confirmScheduleButton?.disabled).toBe(false);
-
-    await act(async () => {
-      confirmScheduleButton?.click();
-    });
-
-    expect(confirmSpy).not.toHaveBeenCalled();
-    expect(document.body.textContent).toContain(
-      "You have unsaved changes to this post. Scheduling this post will use the last saved version, not your in-progress edits. Continue?",
+    const button = [...container.querySelectorAll("button")].find(
+      (b) => b.textContent === "Schedule saved revision",
+    )!;
+    await act(async () => button.click());
+    expect(confirmSpy).toHaveBeenCalledWith(
+      expect.stringContaining("later draft saves do not change"),
     );
-    const keepEditingButton = [...document.body.querySelectorAll("button")].find((button) =>
-      button.textContent?.includes("Keep editing"),
-    ) as HTMLButtonElement | undefined;
-    expect(keepEditingButton).toBeDefined();
-    await act(async () => {
-      keepEditingButton?.click();
+    expect(mutationStates.flatMap((s) => s.mutate.mock.calls)).toHaveLength(0);
+  });
+  it("sends only editorial fields and exact version lease proof for ordinary save", async () => {
+    editorLockState.isReadOnly = false;
+    root = createRoot(container);
+    await act(async () => root!.render(React.createElement(CmsBlogEditorPage)));
+    await act(async () =>
+      container.querySelector<HTMLButtonElement>('[data-testid="button-save-post"]')!.click(),
+    );
+    const variables = mutationStates.flatMap((s) => s.mutate.mock.calls).at(-1)![0];
+    const publication = mutationOptions.filter((o) => o.onSuccess && o.onError).at(-2);
+    const currentPost = useQueryMock({ queryKey: ["/api/admin/blog/publications"] }).data;
+    const response = { ...currentPost, publication: { ...currentPost.publication, version: 4 } };
+    vi.mocked(fetch).mockResolvedValueOnce(new Response(JSON.stringify(response), { status: 200 }));
+    await act(async () => publication.mutationFn(variables));
+    const call = vi.mocked(fetch).mock.calls.at(-1)!;
+    expect(call[0]).toBe("/api/admin/blog/publications/post-1/actions");
+    const body = JSON.parse(call[1]!.body as string);
+    expect(body).toMatchObject({
+      action: "save",
+      expectedVersion: 3,
+      editorInstanceId: "instance-1",
+      leaseId: "lease-1",
     });
-    expect(fetch).not.toHaveBeenCalled();
+    expect(body.data).not.toHaveProperty("isPublished");
+    expect(body.data).not.toHaveProperty("scheduledAt");
+  });
+  it("preserves entered title after a conflict and permits correction after validation failure", async () => {
+    editorLockState.isReadOnly = false;
+    root = createRoot(container);
+    await act(async () => root!.render(React.createElement(CmsBlogEditorPage)));
+    const input = container.querySelector<HTMLInputElement>('[data-testid="input-post-title"]')!;
+    await act(async () => {
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(
+        input,
+        "Keep entered title",
+      );
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    await act(async () =>
+      mutationOptions[0].onError(Object.assign(Error("Conflict"), { status: 409 })),
+    );
+    expect(input.value).toBe("Keep entered title");
+    expect(
+      container.querySelector<HTMLButtonElement>('[data-testid="button-save-post"]')!.disabled,
+    ).toBe(true);
+    await act(async () =>
+      mutationOptions[0].onError(Object.assign(Error("Invalid title"), { status: 400 })),
+    );
+    expect(
+      container.querySelector<HTMLButtonElement>('[data-testid="button-save-post"]')!.disabled,
+    ).toBe(false);
+    expect(input.value).toBe("Keep entered title");
   });
 });

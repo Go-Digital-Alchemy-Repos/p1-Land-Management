@@ -169,6 +169,13 @@ cmsOperations.push({
 });
 
 for (const method of ["GET", "POST"] as const) add("blog", method, "/blog");
+for (const method of ["GET", "POST"] as const)
+  add("blog", method, "/blog/publications");
+add("blog", "GET", "/blog/publications/:id");
+for (const action of ["adopt", "actions"])
+  add("blog", "POST", `/blog/publications/:id/${action}`);
+for (const action of ["revisions", "preview"])
+  add("blog", "GET", `/blog/publications/:id/${action}`);
 add("blog", "GET", "/blog/references");
 for (const method of ["GET", "POST"] as const)
   add("blog", method, "/blog/settings/taxonomies");
@@ -253,6 +260,15 @@ export function cmsDestination(
       throw new HttpError(400, "Invalid CMS record identifier");
     return value;
   });
+  if (operation.method === "GET" && operation.path === "/blog/publications/:id/preview") {
+    if (
+      Object.keys(query).some((key) => key !== "revisionId") ||
+      (query.revisionId !== undefined &&
+        (typeof query.revisionId !== "string" ||
+          !/^[A-Za-z0-9_-]{1,160}$/.test(query.revisionId)))
+    ) throw new HttpError(400, "Invalid Blog preview query");
+    return path + (query.revisionId === undefined ? "" : `?revisionId=${query.revisionId}`);
+  }
   if (operation.method === "GET" && operation.path === "/blog/comments") {
     if (
       Object.keys(query).some((key) => key !== "status") ||

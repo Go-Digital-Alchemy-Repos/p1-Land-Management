@@ -68,20 +68,7 @@ export default function CmsBlogPage() {
   }, [locationTab, activeTab]);
 
   const { data: posts = [], isLoading } = useQuery<BlogPost[]>({
-    queryKey: ["/api/admin/blog"],
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      await apiRequest("DELETE", `/api/admin/blog/${id}`);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/blog"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/blog"] });
-      toast({ title: "Post deleted" });
-      setDeletingId(null);
-    },
-    onError: () => toast({ title: "Failed to delete post", variant: "destructive" }),
+    queryKey: ["/api/admin/blog/publications"],
   });
 
   const filtered = posts.filter((p) => {
@@ -219,7 +206,7 @@ export default function CmsBlogPage() {
                     displayPath={`/insights/${post.slug}`}
                     liveUrl={`/insights/${post.slug}`}
                     onEdit={() => navigate(`/admin/cms/blog/${post.id}`)}
-                    onDelete={() => setDeletingId(post.id)}
+                    onDelete={() => navigate(`/admin/cms/blog/${post.id}`)}
                     formatDate={(value) => format(new Date(value), "MMM d, yyyy h:mm a")}
                   />
                 ))}
@@ -236,28 +223,6 @@ export default function CmsBlogPage() {
           </TabsContent>
         </Tabs>
       </div>
-
-      <AlertDialog open={!!deletingId} onOpenChange={(open) => !open && setDeletingId(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete this post?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This permanently deletes the blog post. Published posts will immediately disappear
-              from the public site. This cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => deletingId && deleteMutation.mutate(deletingId)}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              data-testid="button-confirm-delete-post"
-            >
-              Delete Post
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </AdminSidebar>
   );
 }

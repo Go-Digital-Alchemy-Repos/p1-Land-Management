@@ -1,3 +1,6 @@
+import { eq } from "drizzle-orm";
+import { blogPublicationState, blogPublicationRoutes } from "@shared/schema/blog-publications";
+import { lockBlogPublication } from "../services/blog-publication.service";
 import { db } from "../db";
 import { blogPosts } from "@shared/schema";
 
@@ -152,21 +155,51 @@ export async function seedBlogPosts(
   options: { refreshExisting?: boolean } = { refreshExisting: true },
 ) {
   const updatedAt = new Date();
-  for (const post of posts) {
-    const insert = db.insert(blogPosts).values(post);
+  await db.transaction(async (tx) => {
+    await lockBlogPublication(tx);
+    for (const post of posts) {
+      if (
+        (
+          await tx
+            .select()
+            .from(blogPublicationRoutes)
+            .where(eq(blogPublicationRoutes.slug, post.slug))
+        ).length
+      )
+        throw new Error("Seed aborted: a URL belongs to immutable Blog publication history.");
+      if (options.refreshExisting) {
+        const [existing] = await tx
+          .select({ id: blogPosts.id })
+          .from(blogPosts)
+          .where(eq(blogPosts.slug, post.slug));
+        if (
+          existing &&
+          (
+            await tx
+              .select()
+              .from(blogPublicationState)
+              .where(eq(blogPublicationState.postId, existing.id))
+          ).length
+        )
+          throw new Error(
+            "Seed update aborted: an adopted Blog post must be edited through publication revisions.",
+          );
+      }
+      const insert = tx.insert(blogPosts).values(post);
 
-    if (options.refreshExisting) {
-      await insert.onConflictDoUpdate({
-        target: blogPosts.slug,
-        set: {
-          ...post,
-          updatedAt,
-        },
-      });
-    } else {
-      await insert.onConflictDoNothing({ target: blogPosts.slug });
+      if (options.refreshExisting) {
+        await insert.onConflictDoUpdate({
+          target: blogPosts.slug,
+          set: {
+            ...post,
+            updatedAt,
+          },
+        });
+      } else {
+        await insert.onConflictDoNothing({ target: blogPosts.slug });
+      }
     }
-  }
+  });
   console.log(
     options.refreshExisting
       ? `Seeded or updated ${posts.length} blog posts.`

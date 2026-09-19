@@ -329,30 +329,51 @@ export const pageLeaseTransport: PageLeaseTransport = async (action, id, payload
   }
   return response.json() as Promise<PageLeaseState>;
 };
+export const blogLeaseTransport: PageLeaseTransport = async (action, id, payload, options) => {
+  const response = await fetch(
+    `/api/admin/editor-locks/blog_post/${encodeURIComponent(id)}/${action}`,
+    {
+      ...options,
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    },
+  );
+  if (!response.ok) {
+    const detail = await response.json().catch(() => ({}));
+    throw Error(
+      detail.error || detail.message || "Blog reservation failed. Your draft is retained.",
+    );
+  }
+  return response.json();
+};
 export function useEditorLock(options: UseEditorLockOptions) {
   const { user } = useAuth();
-  const isPage = options.resourceType === "cms_page";
+  const isPage = options.resourceType === "cms_page" || options.resourceType === "blog_post";
   const enabled = options.enabled !== false;
   const legacy = useLegacyEditorLock({ ...options, enabled: enabled && !isPage });
   const lease = usePageEditorLease(
     isPage && enabled && user ? options.resourceId || null : null,
-    pageLeaseTransport,
+    options.resourceType === "blog_post" ? blogLeaseTransport : pageLeaseTransport,
   );
   if (!isPage)
     return {
       ...legacy,
+      editorInstanceId: lease.editorInstanceId,
       preconditions: async (_version: number) => {
         throw Error("Page preconditions are only available for CMS pages");
       },
     };
   const hasLocking = Boolean(enabled && user && options.resourceId);
+  const label = options.resourceType === "blog_post" ? "post" : "page";
   const summary = !hasLocking
     ? null
     : lease.owned
       ? {
           variant: "active-owned" as const,
-          title: "You’re editing this page",
-          description: "This browser editor holds the page reservation.",
+          title: `You’re editing this ${label}`,
+          description: `This browser editor holds the ${label} reservation.`,
         }
       : {
           variant: "locked-by-other" as const,
@@ -363,7 +384,7 @@ export function useEditorLock(options: UseEditorLockOptions) {
               : "Checking edit access",
           description:
             lease.error ||
-            "Another browser editor may be editing this page. Your draft is retained.",
+            `Another browser editor may be editing this ${label}. Your draft is retained.`,
         };
   return {
     hasLocking,
@@ -378,5 +399,6 @@ export function useEditorLock(options: UseEditorLockOptions) {
     acquire: lease.acquire,
     refresh: lease.acquire,
     preconditions: lease.preconditions,
+    editorInstanceId: lease.editorInstanceId,
   };
 }

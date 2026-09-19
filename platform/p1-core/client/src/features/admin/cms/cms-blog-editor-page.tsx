@@ -1,3 +1,9 @@
+import type {
+  MarketingBlogPublicationPost,
+  MarketingBlogPublicationActionAction,
+  MarketingBlogRevision,
+  MarketingBlogPreview,
+} from "../../../../../../../lib/api-client-react/src/dashboard/models";
 import {
   BlogEditorTabs,
   BlogEditorCard,
@@ -67,9 +73,26 @@ import { ImagePositionPicker } from "./components/image-position-picker";
 import type { BlogPost, BlogTaxonomy, CmsSidebar } from "@shared/schema";
 import { cn } from "@/lib/utils";
 import { useEditorLock } from "@/hooks/use-editor-lock";
-import { useLockConflictGuard } from "@/hooks/use-lock-conflict-guard";
+
 import { useEditorSaveState } from "@/hooks/use-editor-save-state";
 import { useUnsavedChangesGuard } from "@/hooks/use-unsaved-changes-guard";
+
+async function publicationRequest(method: string, url: string, data?: unknown): Promise<Response> {
+  const response = await fetch(url, {
+    method,
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    ...(data === undefined ? {} : { body: JSON.stringify(data) }),
+  });
+  if (!response.ok) {
+    const detail = await response.json().catch(() => ({}));
+    throw Object.assign(
+      Error(detail.error || detail.message || "Blog publication request failed"),
+      { status: response.status },
+    );
+  }
+  return response;
+}
 
 function generateSlug(title: string): string {
   return title
@@ -133,6 +156,11 @@ type PostForm = z.infer<typeof postFormSchema>;
 
 export default function CmsBlogEditorPage() {
   const { id } = useParams<{ id: string }>();
+  return <CmsBlogEditor key={id || "new"} />;
+}
+
+function CmsBlogEditor() {
+  const { id } = useParams<{ id: string }>();
   const [, navigate] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -140,10 +168,28 @@ export default function CmsBlogEditorPage() {
   const slugManuallyEdited = useRef(false);
   const [initialized, setInitialized] = useState(false);
 
-  const { data: post, isLoading } = useQuery<BlogPost>({
-    queryKey: ["/api/admin/blog", id],
+  const [snapshot, setSnapshot] = useState<MarketingBlogPublicationPost | null>(null);
+  const [blocked, setBlocked] = useState(false);
+  const [reading, setReading] = useState(false);
+  const [publicationError, setPublicationError] = useState("");
+  const [adoptionReason, setAdoptionReason] = useState("");
+  const [revisions, setRevisions] = useState<MarketingBlogRevision[]>([]);
+  const [preview, setPreview] = useState<MarketingBlogPreview | null>(null);
+  const mounted = useRef(true);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+  const {
+    data: post,
+    isLoading,
+    error: loadError,
+  } = useQuery<MarketingBlogPublicationPost>({
+    queryKey: ["/api/admin/blog/publications", id],
     queryFn: async () => {
-      const res = await fetch(`/api/admin/blog/${id}`, { credentials: "include" });
+      const res = await fetch(`/api/admin/blog/publications/${id}`, { credentials: "include" });
       if (!res.ok) throw new Error("Post not found");
       return res.json();
     },
@@ -160,7 +206,7 @@ export default function CmsBlogEditorPage() {
   const editorLock = useEditorLock({
     resourceType: "blog_post",
     resourceId: isNew ? null : (post?.id ?? id ?? null),
-    enabled: !isNew,
+    enabled: !isNew && !!snapshot && !snapshot.publication.requiresAdoption,
   });
 
   const form = useForm<PostForm>({
@@ -188,45 +234,35 @@ export default function CmsBlogEditorPage() {
     },
   });
 
+  const adoptSnapshot = (post: MarketingBlogPublicationPost) => {
+    setSnapshot(post);
+    form.reset({
+      title: post.title,
+      slug: post.slug,
+      authorName: post.authorName,
+      categories: post.categories?.length ? post.categories : post.category ? [post.category] : [],
+      tags: post.tags ?? [],
+      excerpt: post.excerpt ?? "",
+      content: post.content,
+      coverImageUrl: post.coverImageUrl ?? "",
+      coverImagePositionX: post.coverImagePositionX ?? 50,
+      coverImagePositionY: post.coverImagePositionY ?? 50,
+      postType: (post.postType as "article" | "podcast" | "external") ?? "article",
+      podcastUrl: post.podcastUrl ?? "",
+      externalUrl: post.externalUrl ?? "",
+      sidebarId: post.sidebarId ?? "",
+      isPublished: post.isPublished ?? false,
+      seoTitle: post.seoTitle ?? "",
+      seoDescription: post.seoDescription ?? "",
+      ogImageUrl: post.ogImageUrl ?? "",
+      noindex: post.noindex ?? false,
+    });
+    slugManuallyEdited.current = true;
+    setInitialized(true);
+  };
   useEffect(() => {
-    if (post && !initialized) {
-      form.reset({
-        title: post.title,
-        slug: post.slug,
-        authorName: post.authorName,
-        categories: post.categories?.length
-          ? post.categories
-          : post.category
-            ? [post.category]
-            : [],
-        tags: post.tags ?? [],
-        excerpt: post.excerpt ?? "",
-        content: post.content,
-        coverImageUrl: post.coverImageUrl ?? "",
-        coverImagePositionX: post.coverImagePositionX ?? 50,
-        coverImagePositionY: post.coverImagePositionY ?? 50,
-        postType: (post.postType as "article" | "podcast" | "external") ?? "article",
-        podcastUrl: post.podcastUrl ?? "",
-        externalUrl: post.externalUrl ?? "",
-        sidebarId: post.sidebarId ?? "",
-        isPublished: post.isPublished ?? false,
-        seoTitle: post.seoTitle ?? "",
-        seoDescription: post.seoDescription ?? "",
-        ogImageUrl: post.ogImageUrl ?? "",
-        noindex: post.noindex ?? false,
-      });
-      slugManuallyEdited.current = true;
-      setInitialized(true);
-    }
-  }, [post, initialized, form]);
-
-  useLockConflictGuard({
-    active: !isNew,
-    resourceId: isNew ? null : (post?.id ?? id ?? null),
-    resourceLabel: "post",
-    editorLock,
-    onConflict: () => navigate("/admin/cms/blog"),
-  });
+    if (post && !initialized) adoptSnapshot(post);
+  }, [post, initialized]);
 
   const watchTitle = form.watch("title");
   useEffect(() => {
@@ -236,7 +272,6 @@ export default function CmsBlogEditorPage() {
   }, [watchTitle, isNew, form]);
 
   const [blogScheduleDate, setBlogScheduleDate] = useState("");
-  const [blogScheduleOpen, setBlogScheduleOpen] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [newTagName, setNewTagName] = useState("");
 
@@ -268,9 +303,6 @@ export default function CmsBlogEditorPage() {
       category: nextCategories[0] || null,
       categories: nextCategories.length > 0 ? nextCategories : null,
       tags: nextTags.length > 0 ? nextTags : null,
-      isPublished: data.isPublished,
-      publishedAt: data.isPublished ? new Date() : null,
-      scheduledAt: data.isPublished ? null : undefined,
       seoTitle: data.seoTitle || null,
       seoDescription: data.seoDescription || null,
       ogImageUrl: data.ogImageUrl || null,
@@ -278,54 +310,150 @@ export default function CmsBlogEditorPage() {
     };
   };
 
-  const createMutation = useMutation({
-    mutationFn: async (data: PostForm) => {
-      const res = await apiRequest("POST", "/api/admin/blog", buildPayload(data));
-      return res.json();
-    },
-    onSuccess: (created: BlogPost, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/blog"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/blog"] });
-      toast({ title: "Post created" });
-      form.reset(variables);
-      saveState.markSaved();
-      navigate(`/admin/cms/blog/${created.id}`);
-    },
-    onError: () => {
-      toast({ title: "Failed to create post", variant: "destructive" });
-      saveState.markError();
-    },
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: async (data: PostForm) => {
-      const res = await apiRequest("PUT", `/api/admin/blog/${id}`, buildPayload(data));
-      return res.json();
-    },
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/blog"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/blog", id] });
-      queryClient.invalidateQueries({ queryKey: ["/api/blog"] });
-      toast({ title: "Post saved" });
-      form.reset(variables);
-      saveState.markSaved();
-    },
-    onError: () => {
-      toast({ title: "Failed to save post", variant: "destructive" });
-      saveState.markError();
-    },
-  });
-
-  const onSave = () => {
-    form.handleSubmit((data) => {
+  const publicationMutation = useMutation({
+    mutationFn: async ({
+      action,
+      data,
+      revisionId,
+    }: {
+      action: MarketingBlogPublicationActionAction | "adopt";
+      data?: PostForm;
+      revisionId?: string;
+    }) => {
+      if (blocked)
+        throw Error("Verify the saved state before another write. Your draft is retained.");
+      const path = "/api/admin/blog/publications";
+      let response: Response;
       if (isNew) {
-        createMutation.mutate(data);
+        response = await publicationRequest("POST", path, {
+          data: buildPayload(data!),
+          editorInstanceId: editorLock.editorInstanceId,
+        });
+      } else if (action === "adopt") {
+        response = await publicationRequest("POST", `${path}/${id}/adopt`, {
+          expectedLegacyFingerprint: snapshot!.publication.legacyFingerprint,
+          reason: adoptionReason.trim(),
+          editorInstanceId: editorLock.editorInstanceId,
+        });
       } else {
-        updateMutation.mutate(data);
+        if (!snapshot?.publication.version)
+          throw Error("Explicit adoption is required before editing.");
+        const proof = await editorLock.preconditions(snapshot.publication.version);
+        if (
+          action === "schedule" &&
+          (!blogScheduleDate || Date.parse(blogScheduleDate) <= Date.now())
+        )
+          throw Object.assign(Error("Choose a future publication date."), { status: 400 });
+        response = await publicationRequest("POST", `${path}/${id}/actions`, {
+          ...proof,
+          action,
+          ...(data ? { data: buildPayload(data) } : {}),
+          ...(revisionId ? { revisionId } : {}),
+          ...(action === "schedule"
+            ? { scheduledAt: new Date(blogScheduleDate).toISOString() }
+            : {}),
+        });
       }
-    })();
+      const result: MarketingBlogPublicationPost = await response.json();
+      if (result.lease?.ownedByCurrentEditor && result.lease.lock) {
+        await publicationRequest("POST", `/api/admin/editor-locks/blog_post/${result.id}/release`, {
+          editorInstanceId: editorLock.editorInstanceId,
+          leaseId: result.lease.lock.id,
+        });
+      }
+      return result;
+    },
+    onSuccess: (result, variables) => {
+      if (!mounted.current) return;
+      setSnapshot(result);
+      setBlocked(false);
+      setPublicationError("");
+      setRevisions([]);
+      setPreview(null);
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/blog/publications"] });
+      if (variables.action === "delete") {
+        navigate("/admin/cms/blog");
+        return;
+      }
+      if (variables.data) form.reset(variables.data);
+      else if (["restore", "adopt"].includes(variables.action)) {
+        // Explicit adoption/restore replaces the draft; background reads never do.
+        queryClient.setQueryData(["/api/admin/blog/publications", id], result);
+        adoptSnapshot(result);
+      }
+      saveState.markSaved();
+      toast({
+        title:
+          variables.action === "save"
+            ? "Draft saved; public content unchanged"
+            : "Publication action completed",
+      });
+      if (isNew) navigate(`/admin/cms/blog/${result.id}`);
+    },
+    onError: (error: Error) => {
+      if (!mounted.current) return;
+      setBlocked(![400, 413, 422].includes(Number((error as Error & { status?: number }).status)));
+      setPublicationError(error.message);
+      saveState.markError();
+      toast({ title: error.message, variant: "destructive" });
+    },
+  });
+  const onSave = () => {
+    if (
+      publicationMutation.isPending ||
+      blocked ||
+      snapshot?.publication.requiresAdoption ||
+      editorLock.isReadOnly
+    )
+      return;
+    form.handleSubmit((data) => publicationMutation.mutate({ action: "save", data }))();
   };
-
+  const action = (action: MarketingBlogPublicationActionAction, revisionId?: string) => {
+    if (publicationMutation.isPending || blocked || editorLock.isReadOnly) return;
+    if (
+      !window.confirm(
+        action === "schedule"
+          ? "Schedule the saved revision? Unsaved edits are excluded and later draft saves do not change the pinned revision."
+          : action === "restore"
+            ? "Discard unsaved changes and restore this revision to the draft? Public content is unchanged."
+            : action === "delete"
+              ? "Delete this post and discard unsaved changes?"
+              : `${action === "publish" ? "Save and publish the entered content" : action + " this post"}?`,
+      )
+    )
+      return;
+    if (action === "publish")
+      form.handleSubmit((data) => publicationMutation.mutate({ action, data }))();
+    else publicationMutation.mutate({ action, revisionId });
+  };
+  const reload = async () => {
+    if (
+      publicationMutation.isPending ||
+      (form.formState.isDirty &&
+        !window.confirm("Discard entered changes and load the latest saved draft?"))
+    )
+      return;
+    if (isNew) {
+      setPublicationError(
+        "Creation may have succeeded. Return to the list to verify before creating again.",
+      );
+      return;
+    }
+    setReading(true);
+    try {
+      const response = await publicationRequest("GET", `/api/admin/blog/publications/${id}`);
+      const result = await response.json();
+      if (!mounted.current) return;
+      queryClient.setQueryData(["/api/admin/blog/publications", id], result);
+      adoptSnapshot(result);
+      setBlocked(false);
+      setPublicationError("");
+    } catch (e) {
+      if (mounted.current) setPublicationError((e as Error).message);
+    } finally {
+      if (mounted.current) setReading(false);
+    }
+  };
   const createTaxonomyMutation = useMutation({
     mutationFn: async (payload: { name: string; type: "category" | "tag" }) => {
       const response = await apiRequest("POST", "/api/admin/blog/settings/taxonomies", payload);
@@ -352,22 +480,23 @@ export default function CmsBlogEditorPage() {
       toast({ title: error.message || "Failed to add taxonomy", variant: "destructive" }),
   });
 
-  const isSaving = createMutation.isPending || updateMutation.isPending;
+  const isSaving = publicationMutation.isPending || reading;
+  const unavailable =
+    isSaving ||
+    blocked ||
+    (!isNew && !snapshot) ||
+    !!snapshot?.publication.requiresAdoption ||
+    editorLock.isReadOnly;
   const isDirty = form.formState.isDirty;
   const saveState = useEditorSaveState({
     isDirty,
     isSaving,
   });
   const unsavedChangesGuard = useUnsavedChangesGuard({
-    isDirty,
+    isDirty: isDirty || isSaving,
     message: "You have unsaved changes to this post. Leave without saving?",
   });
-  const confirmSavedPostAction = (actionLabel: string, onProceed: () => void) =>
-    unsavedChangesGuard.confirmIfDirty(
-      onProceed,
-      `You have unsaved changes to this post. ${actionLabel} will use the last saved version, not your in-progress edits. Continue?`,
-    );
-  const isPublished = form.watch("isPublished");
+  const isPublished = snapshot?.publication.visibility === "published";
   const watchPostType = form.watch("postType");
   const currentSlug = form.watch("slug");
   const watchSeoTitle = form.watch("seoTitle");
@@ -413,6 +542,7 @@ export default function CmsBlogEditorPage() {
                 size="sm"
                 className="gap-1.5"
                 onClick={() =>
+                  !isSaving &&
                   unsavedChangesGuard.confirmDiscardChanges(() => navigate("/admin/cms/blog"))
                 }
               >
@@ -434,13 +564,13 @@ export default function CmsBlogEditorPage() {
                     <Eye className="h-3 w-3 mr-1" />
                     Published
                   </Badge>
-                ) : post?.scheduledAt ? (
+                ) : snapshot?.scheduledAt ? (
                   <Badge
                     className="bg-blue-600 text-white"
                     data-testid="badge-post-scheduled-header"
                   >
                     <CalendarClock className="h-3 w-3 mr-1" />
-                    Scheduled — {format(new Date(post.scheduledAt), "MMM d, h:mm a")}
+                    Scheduled — {format(new Date(snapshot.scheduledAt), "MMM d, h:mm a")}
                   </Badge>
                 ) : (
                   <Badge variant="outline" data-testid="badge-post-draft">
@@ -452,39 +582,12 @@ export default function CmsBlogEditorPage() {
           }
           actions={
             <>
-              {!isNew &&
-                isPublished &&
-                (watchPostType === "external" && form.watch("externalUrl") ? (
-                  <Button variant="outline" size="sm" asChild>
-                    <a
-                      href={form.watch("externalUrl")}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      data-testid="button-view-live"
-                    >
-                      <Link2 className="h-4 w-4 mr-1.5" />
-                      View External
-                    </a>
-                  </Button>
-                ) : (
-                  <Button variant="outline" size="sm" asChild>
-                    <a
-                      href={`/insights/${currentSlug}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      data-testid="button-view-live"
-                    >
-                      <ExternalLink className="h-4 w-4 mr-1.5" />
-                      View Live
-                    </a>
-                  </Button>
-                ))}
               <AdminSaveBar
                 state={saveState.state}
                 type="button"
                 onSave={onSave}
                 primaryLabel="Save Post"
-                disabled={isSaving || editorLock.isReadOnly}
+                disabled={unavailable}
                 className="w-auto"
                 buttonTestId="button-save-post"
               />
@@ -492,6 +595,9 @@ export default function CmsBlogEditorPage() {
           }
         />
         <div
+          ref={(node) => {
+            if (node) node.inert = unavailable;
+          }}
           className={cn(
             editorLock.hasLocking &&
               editorLock.isReadOnly &&
@@ -912,179 +1018,10 @@ export default function CmsBlogEditorPage() {
 
                     <Card>
                       <CardContent className="pt-5 space-y-4">
-                        <FormField
-                          control={form.control}
-                          name="isPublished"
-                          render={({ field }) => (
-                            <FormItem>
-                              <div className="flex items-center gap-3">
-                                <FormControl>
-                                  <Switch
-                                    checked={field.value}
-                                    onCheckedChange={(checked) => {
-                                      field.onChange(checked);
-                                      if (checked) {
-                                        setBlogScheduleDate("");
-                                      }
-                                    }}
-                                    data-testid="switch-post-published"
-                                  />
-                                </FormControl>
-                                <div>
-                                  <FormLabel className="cursor-pointer">
-                                    Publish this post
-                                  </FormLabel>
-                                  <p className="text-xs text-muted-foreground mt-0.5">
-                                    {field.value
-                                      ? "Post is visible to the public at /insights/"
-                                      : "Post is saved as a draft and not visible publicly"}
-                                  </p>
-                                </div>
-                              </div>
-                            </FormItem>
-                          )}
-                        />
-                        {!isPublished && (
-                          <div className="border-t pt-4">
-                            {post?.scheduledAt ? (
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                  <Badge
-                                    className="bg-blue-600 text-white"
-                                    data-testid="badge-post-scheduled"
-                                  >
-                                    <CalendarClock className="h-3 w-3 mr-1" />
-                                    Scheduled
-                                  </Badge>
-                                  <span className="text-xs text-muted-foreground">
-                                    {format(new Date(post.scheduledAt), "MMM d, yyyy 'at' h:mm a")}
-                                  </span>
-                                </div>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() =>
-                                    confirmSavedPostAction("Canceling this schedule", async () => {
-                                      try {
-                                        await apiRequest("PUT", `/api/admin/blog/${id}`, {
-                                          scheduledAt: null,
-                                        });
-                                        queryClient.invalidateQueries({
-                                          queryKey: ["/api/admin/blog", id],
-                                        });
-                                        toast({ title: "Schedule cancelled" });
-                                      } catch {
-                                        toast({
-                                          title: "Failed to cancel schedule",
-                                          variant: "destructive",
-                                        });
-                                      }
-                                    })
-                                  }
-                                  data-testid="button-cancel-blog-schedule"
-                                >
-                                  Cancel Schedule
-                                </Button>
-                              </div>
-                            ) : (
-                              <Popover open={blogScheduleOpen} onOpenChange={setBlogScheduleOpen}>
-                                <PopoverTrigger asChild>
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    data-testid="button-open-blog-schedule"
-                                  >
-                                    <CalendarClock className="h-4 w-4 mr-1.5" />
-                                    Schedule Publishing
-                                  </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-72" align="start">
-                                  <div className="space-y-3">
-                                    <p className="text-sm font-medium">Schedule Publishing</p>
-                                    <p className="text-xs text-muted-foreground">
-                                      Choose a future date and time for this post to go live
-                                      automatically.
-                                    </p>
-                                    <input
-                                      type="datetime-local"
-                                      value={blogScheduleDate}
-                                      onChange={(e) => setBlogScheduleDate(e.target.value)}
-                                      min={new Date().toISOString().slice(0, 16)}
-                                      className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                                      data-testid="input-blog-schedule-date"
-                                    />
-                                    <Button
-                                      className="w-full"
-                                      size="sm"
-                                      disabled={
-                                        !blogScheduleDate ||
-                                        updateMutation.isPending ||
-                                        createMutation.isPending
-                                      }
-                                      onClick={() =>
-                                        confirmSavedPostAction("Scheduling this post", async () => {
-                                          const scheduledIso = new Date(
-                                            blogScheduleDate,
-                                          ).toISOString();
-                                          if (isNew) {
-                                            form.handleSubmit(async (data) => {
-                                              try {
-                                                const res = await apiRequest(
-                                                  "POST",
-                                                  "/api/admin/blog",
-                                                  buildPayload(data),
-                                                );
-                                                const created: BlogPost = await res.json();
-                                                await apiRequest(
-                                                  "PUT",
-                                                  `/api/admin/blog/${created.id}`,
-                                                  { scheduledAt: scheduledIso },
-                                                );
-                                                queryClient.invalidateQueries({
-                                                  queryKey: ["/api/admin/blog"],
-                                                });
-                                                setBlogScheduleOpen(false);
-                                                setBlogScheduleDate("");
-                                                toast({ title: "Post created and scheduled" });
-                                                navigate(`/admin/cms/blog/${created.id}`);
-                                              } catch {
-                                                toast({
-                                                  title: "Failed to schedule post",
-                                                  variant: "destructive",
-                                                });
-                                              }
-                                            })();
-                                          } else {
-                                            try {
-                                              await apiRequest("PUT", `/api/admin/blog/${id}`, {
-                                                scheduledAt: scheduledIso,
-                                              });
-                                              queryClient.invalidateQueries({
-                                                queryKey: ["/api/admin/blog", id],
-                                              });
-                                              setBlogScheduleOpen(false);
-                                              setBlogScheduleDate("");
-                                              toast({ title: "Post scheduled for publishing" });
-                                            } catch {
-                                              toast({
-                                                title: "Failed to schedule post",
-                                                variant: "destructive",
-                                              });
-                                            }
-                                          }
-                                        })
-                                      }
-                                      data-testid="button-confirm-blog-schedule"
-                                    >
-                                      <CalendarClock className="h-4 w-4 mr-1.5" />
-                                      Confirm Schedule
-                                    </Button>
-                                  </div>
-                                </PopoverContent>
-                              </Popover>
-                            )}
-                          </div>
-                        )}
+                        <p>
+                          Save keeps editorial changes in a draft. Publication actions below control
+                          the public version.
+                        </p>
                       </CardContent>
                     </Card>
                   </>
@@ -1098,7 +1035,8 @@ export default function CmsBlogEditorPage() {
                       <CardContent className="space-y-4">
                         <div className="rounded-lg border px-4 py-3 bg-muted/20">
                           <p className="text-sm font-medium">
-                            Blog posts always include a right sidebar.
+                            Saved sidebar layout selection is retained. Public rendering depends on
+                            the site renderer.
                           </p>
                           <p className="text-xs text-muted-foreground mt-1">
                             Leave this on the default option to use the system-wide default blog
@@ -1306,32 +1244,204 @@ export default function CmsBlogEditorPage() {
           </Form>
         </div>
 
+        <Card>
+          <CardHeader>
+            <CardTitle>Publication</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {loadError && <p role="alert">Unable to load this post. Reload before editing.</p>}
+            {publicationError && (
+              <p role="alert">
+                {publicationError} Your entered changes are retained. Verify the saved state before
+                another write.
+              </p>
+            )}
+            <Button
+              type="button"
+              variant="outline"
+              disabled={isSaving}
+              onClick={() => void reload()}
+            >
+              Reload saved draft
+            </Button>
+            {snapshot?.publication.requiresAdoption ? (
+              <>
+                <p>
+                  This legacy post requires explicit adoption as an unpublished draft before
+                  editing.
+                </p>
+                <label>
+                  Adoption reason
+                  <Input
+                    value={adoptionReason}
+                    disabled={isSaving}
+                    onChange={(e) => setAdoptionReason(e.target.value)}
+                  />
+                </label>
+                <Button
+                  type="button"
+                  disabled={isSaving || blocked || !adoptionReason.trim()}
+                  onClick={() => {
+                    if (window.confirm("Adopt this legacy post as an unpublished draft?"))
+                      publicationMutation.mutate({ action: "adopt" });
+                  }}
+                >
+                  Adopt legacy post
+                </Button>
+              </>
+            ) : (
+              !isNew && (
+                <>
+                  <p>
+                    Visibility: {snapshot?.publication.visibility}. Version:{" "}
+                    {snapshot?.publication.version}.
+                  </p>
+                  <Button type="button" disabled={unavailable} onClick={() => action("publish")}>
+                    Save &amp; Publish
+                  </Button>{" "}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={unavailable}
+                    onClick={() => action("unpublish")}
+                  >
+                    Unpublish
+                  </Button>
+                  <label>
+                    Scheduled publication (your local time)
+                    <Input
+                      type="datetime-local"
+                      value={blogScheduleDate}
+                      disabled={unavailable}
+                      onChange={(e) => setBlogScheduleDate(e.target.value)}
+                    />
+                  </label>
+                  <Button
+                    type="button"
+                    disabled={unavailable || !blogScheduleDate}
+                    onClick={() => action("schedule")}
+                  >
+                    Schedule saved revision
+                  </Button>{" "}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={unavailable}
+                    onClick={() => action("cancel_schedule")}
+                  >
+                    Cancel schedule
+                  </Button>
+                  {snapshot?.publication.schedule && (
+                    <p>
+                      Schedule: {snapshot.publication.schedule.status} —{" "}
+                      {new Date(snapshot.publication.schedule.scheduledAt).toLocaleString()}{" "}
+                      (revision {snapshot.publication.schedule.revisionId}). Later saves do not
+                      change the pinned revision.{" "}
+                      {snapshot.publication.schedule.failureCode && (
+                        <>
+                          Failure: {snapshot.publication.schedule.failureCode}. Review the draft and
+                          explicitly reschedule.
+                        </>
+                      )}
+                    </p>
+                  )}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={isSaving}
+                    onClick={async () => {
+                      try {
+                        const response = await apiRequest(
+                          "GET",
+                          `/api/admin/blog/publications/${id}/revisions`,
+                        );
+                        const rows = await response.json();
+                        if (mounted.current) setRevisions(rows);
+                      } catch (e) {
+                        if (mounted.current) setPublicationError((e as Error).message);
+                      }
+                    }}
+                  >
+                    Revision history
+                  </Button>{" "}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={isSaving}
+                    onClick={async () => {
+                      try {
+                        const response = await apiRequest(
+                          "GET",
+                          `/api/admin/blog/publications/${id}/preview`,
+                        );
+                        const result = await response.json();
+                        if (mounted.current) setPreview(result);
+                      } catch (e) {
+                        if (mounted.current) setPublicationError((e as Error).message);
+                      }
+                    }}
+                  >
+                    Preview saved draft
+                  </Button>
+                  {preview && (
+                    <section aria-label="Private saved preview">
+                      <h2>{preview.snapshot.title}</h2>
+                      <p>Saved revision {preview.revisionId}; unsaved changes are not included.</p>
+                      <iframe
+                        className="w-full min-h-[320px] rounded-lg border bg-white"
+                        title="Private blog preview"
+                        sandbox=""
+                        srcDoc={preview.snapshot.content}
+                      />
+                    </section>
+                  )}
+                  {revisions.map((revision) => (
+                    <p
+                      className="flex flex-wrap items-center justify-between gap-3 border-t pt-3"
+                      key={revision.id}
+                    >
+                      Version {revision.version}: {revision.action}{" "}
+                      <Button
+                        type="button"
+                        variant="outline"
+                        disabled={unavailable}
+                        onClick={() => action("restore", revision.id)}
+                      >
+                        Restore revision {revision.version} to draft
+                      </Button>
+                    </p>
+                  ))}
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    disabled={unavailable}
+                    onClick={() => action("delete")}
+                  >
+                    Delete post
+                  </Button>
+                </>
+              )
+            )}
+          </CardContent>
+        </Card>
         <div className="flex justify-end pb-8">
           <AdminSaveBar
             state={saveState.state}
             type="button"
             onSave={onSave}
             primaryLabel="Save Post"
-            disabled={isSaving || editorLock.isReadOnly}
+            disabled={unavailable}
             className="w-auto"
             buttonTestId="button-save-post-bottom"
           />
         </div>
       </div>
       <AdminMobileActionBar>
-        {!isNew && isPublished && watchPostType !== "external" && (
-          <Button variant="outline" size="sm" asChild>
-            <a href={`/insights/${currentSlug}`} target="_blank" rel="noopener noreferrer">
-              <ExternalLink className="mr-2 h-4 w-4" />
-              Preview
-            </a>
-          </Button>
-        )}
         <Button
           type="button"
           size="sm"
           onClick={onSave}
-          disabled={isSaving || editorLock.isReadOnly}
+          disabled={unavailable}
           data-testid="button-save-post-mobile"
         >
           Save Post

@@ -47,10 +47,7 @@ vi.mock("../storage/index", async () => import("../storage"));
 
 import { pool } from "../db";
 import * as storage from "./backup-storage.service";
-import {
-  restoreBackupSnapshot,
-  runSystemBackup,
-} from "./system-backup.service";
+import { restoreBackupSnapshot, runSystemBackup } from "./system-backup.service";
 
 type Snapshot = Parameters<typeof restoreBackupSnapshot>[0];
 
@@ -90,6 +87,12 @@ describe.skipIf(!testUrl)("Blog publication system backup recovery on PostgreSQL
         "utf8",
       ),
     );
+    await pool.query(
+      readFileSync(
+        new URL("../../p1-migrations/0005_blog_publication_cutover.sql", import.meta.url),
+        "utf8",
+      ),
+    );
     const c = await pool.connect();
     try {
       await c.query("BEGIN");
@@ -101,6 +104,9 @@ describe.skipIf(!testUrl)("Blog publication system backup recovery on PostgreSQL
       );
       await c.query(
         "INSERT INTO blog_publication_routes(slug,post_id,generation,revision_id,state) VALUES ('active','published',1,'r2','published'),('removed','withdrawn',2,NULL,'withdrawn')",
+      );
+      await c.query(
+        "INSERT INTO blog_publication_schedules(id,post_id,revision_id,scheduled_at,status,created_version,actor_id) VALUES ('job','published','r1','2030-01-01T15:00:00Z','pending',2,'actor')",
       );
       await c.query("COMMIT");
     } catch (e) {
@@ -136,6 +142,9 @@ describe.skipIf(!testUrl)("Blog publication system backup recovery on PostgreSQL
       (await pool.query("SELECT snapshot,provenance FROM blog_post_revisions WHERE id='r1'"))
         .rows[0],
     ).toEqual({ snapshot: { title: "Retained draft" }, provenance: { source: "fixture" } });
+    expect(
+      (await pool.query("SELECT id,revision_id,status FROM blog_publication_schedules")).rows,
+    ).toEqual([{ id: "job", revision_id: "r1", status: "pending" }]);
     await expect(pool.query("UPDATE blog_post_revisions SET action='save'")).rejects.toThrow(
       "immutable",
     );
@@ -203,8 +212,22 @@ describe.skipIf(!testUrl)("Blog publication system backup recovery on PostgreSQL
       await restoring;
     }
   });
+  it("rejects an archive omitting only schedules when publication data exists", async () => {
+    const snapshot = structuredClone(exportedSnapshot());
+    snapshot.tables = snapshot.tables.filter((t) => t.name !== "blog_publication_schedules");
+    snapshot.manifest.restoreOrder = snapshot.manifest.restoreOrder.filter(
+      (name) => name !== "blog_publication_schedules",
+    );
+    await expect(restoreBackupSnapshot(snapshot)).rejects.toThrow("omits Blog publication history");
+    expect(
+      (await pool.query("SELECT count(*)::int count FROM blog_publication_schedules")).rows[0]
+        .count,
+    ).toBe(1);
+  });
   it("allows historical restore when all sidecars are empty", async () => {
-    await pool.query("TRUNCATE blog_publication_routes,blog_post_revisions,blog_publication_state");
+    await pool.query(
+      "TRUNCATE blog_publication_schedules,blog_publication_routes,blog_post_revisions,blog_publication_state",
+    );
     const historical = structuredClone(exportedSnapshot());
     historical.tables = historical.tables.filter((t) => t.name === "blog_posts");
     historical.manifest.restoreOrder = ["blog_posts"];

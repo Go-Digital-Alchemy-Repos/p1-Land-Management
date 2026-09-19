@@ -17,8 +17,10 @@ import {
   saveBlogCommentSettings,
 } from "../../services/blog-comments.service";
 
+import publicationsRouter from "./blog-publications.routes";
 const router = Router();
 router.use(requireBusinessCapability("marketing.content.blog"));
+router.use("/publications", publicationsRouter);
 
 const blogPostSchemaWithCoercedDate = insertBlogPostSchema.extend({
   publishedAt: z.coerce.date().optional().nullable(),
@@ -144,10 +146,21 @@ async function normalizePostImages(post: BlogPost): Promise<BlogPost> {
   };
 }
 
-router.get("/references", asyncHandler(async (_req,res)=>{
-  const [sidebars,galleries]=await Promise.all([storage.cmsSidebars.getAll(),storage.cmsGalleries.getAll()]);
-  res.json({sidebars:sidebars.map(sidebar=>({id:sidebar.id,name:sidebar.name})),galleries:galleries.filter(gallery=>gallery.status==="published").map(gallery=>({id:gallery.id,title:gallery.title}))});
-}));
+router.get(
+  "/references",
+  asyncHandler(async (_req, res) => {
+    const [sidebars, galleries] = await Promise.all([
+      storage.cmsSidebars.getAll(),
+      storage.cmsGalleries.getAll(),
+    ]);
+    res.json({
+      sidebars: sidebars.map((sidebar) => ({ id: sidebar.id, name: sidebar.name })),
+      galleries: galleries
+        .filter((gallery) => gallery.status === "published")
+        .map((gallery) => ({ id: gallery.id, title: gallery.title })),
+    });
+  }),
+);
 
 router.get(
   "/settings/taxonomies",
@@ -327,7 +340,9 @@ router.put(
       type: nextType,
       parentId:
         nextType === "category"
-          ? (data.parentId === undefined ? existingTaxonomy.parentId ?? null : data.parentId)
+          ? data.parentId === undefined
+            ? (existingTaxonomy.parentId ?? null)
+            : data.parentId
           : null,
       sortOrder: data.sortOrder ?? existingTaxonomy.sortOrder,
     });

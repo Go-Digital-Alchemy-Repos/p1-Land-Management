@@ -8918,7 +8918,7 @@
     "/marketing/cms/editor-locks/blog_post/{id}/acquire": {
       "post": {
         "operationId": "acquireMarketingBlogReservation",
-        "description": "Requires marketing.content.blog. Retained advisory editor reservation.",
+        "description": "Requires marketing.content.blog. Exact editor-instance lease for adopted Blog publications.",
         "responses": {
           "200": {
             "description": "Website menu result",
@@ -8958,13 +8958,23 @@
               "type": "string"
             }
           }
-        ]
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketingPageLeaseAcquire"
+              }
+            }
+          }
+        }
       }
     },
     "/marketing/cms/editor-locks/blog_post/{id}/heartbeat": {
       "post": {
         "operationId": "heartbeatMarketingBlogReservation",
-        "description": "Requires marketing.content.blog. Retained advisory editor reservation.",
+        "description": "Requires marketing.content.blog. Exact editor-instance lease for adopted Blog publications.",
         "responses": {
           "200": {
             "description": "Website menu result",
@@ -9004,13 +9014,23 @@
               "type": "string"
             }
           }
-        ]
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketingPageLeaseProof"
+              }
+            }
+          }
+        }
       }
     },
     "/marketing/cms/editor-locks/blog_post/{id}/release": {
       "post": {
         "operationId": "releaseMarketingBlogReservation",
-        "description": "Requires marketing.content.blog. Retained advisory editor reservation.",
+        "description": "Requires marketing.content.blog. Exact editor-instance lease for adopted Blog publications.",
         "responses": {
           "200": {
             "description": "Website menu result",
@@ -9050,7 +9070,17 @@
               "type": "string"
             }
           }
-        ]
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketingPageLeaseProof"
+              }
+            }
+          }
+        }
       }
     },
     "/marketing/cms/seo": {
@@ -15815,6 +15845,371 @@
             "description": "Status unavailable or execution outcome uncertain; refresh before another run"
           }
         }
+      }
+    },
+    "/marketing/cms/blog/publications": {
+      "get": {
+        "operationId": "listMarketingBlogPublications",
+        "tags": [
+          "Marketing"
+        ],
+        "description": "Requires marketing.content.blog. Private versioned Blog publication operations; explicit publication actions and exact editor-instance leases.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MarketingBlogPublicationPost"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Blog access required"
+          },
+          "404": {
+            "description": "Post or revision not found"
+          },
+          "409": {
+            "description": "Version, lease, adoption or URL ownership conflict"
+          },
+          "503": {
+            "description": "Website unavailable; reconcile before retrying mutation"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createMarketingBlogPublication",
+        "tags": [
+          "Marketing"
+        ],
+        "description": "Requires marketing.content.blog. Private versioned Blog publication operations; explicit publication actions and exact editor-instance leases.",
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingBlogPublicationPost"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Blog access required"
+          },
+          "404": {
+            "description": "Post or revision not found"
+          },
+          "409": {
+            "description": "Version, lease, adoption or URL ownership conflict"
+          },
+          "503": {
+            "description": "Website unavailable; reconcile before retrying mutation"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketingBlogPublicationCreate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/marketing/cms/blog/publications/{id}": {
+      "get": {
+        "operationId": "getMarketingBlogPublication",
+        "tags": [
+          "Marketing"
+        ],
+        "description": "Requires marketing.content.blog. Private versioned Blog publication operations; explicit publication actions and exact editor-instance leases.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingBlogPublicationPost"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Blog access required"
+          },
+          "404": {
+            "description": "Post or revision not found"
+          },
+          "409": {
+            "description": "Version, lease, adoption or URL ownership conflict"
+          },
+          "503": {
+            "description": "Website unavailable; reconcile before retrying mutation"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/blog/publications/{id}/adopt": {
+      "post": {
+        "operationId": "adoptMarketingBlogPublication",
+        "tags": [
+          "Marketing"
+        ],
+        "description": "Requires marketing.content.blog. Private versioned Blog publication operations; explicit publication actions and exact editor-instance leases.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingBlogPublicationPost"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Blog access required"
+          },
+          "404": {
+            "description": "Post or revision not found"
+          },
+          "409": {
+            "description": "Version, lease, adoption or URL ownership conflict"
+          },
+          "503": {
+            "description": "Website unavailable; reconcile before retrying mutation"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketingBlogPublicationAdopt"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/blog/publications/{id}/actions": {
+      "post": {
+        "operationId": "mutateMarketingBlogPublication",
+        "tags": [
+          "Marketing"
+        ],
+        "description": "Requires marketing.content.blog. Private versioned Blog publication operations; explicit publication actions and exact editor-instance leases.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingBlogPublicationPost"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Blog access required"
+          },
+          "404": {
+            "description": "Post or revision not found"
+          },
+          "409": {
+            "description": "Version, lease, adoption or URL ownership conflict"
+          },
+          "503": {
+            "description": "Website unavailable; reconcile before retrying mutation"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketingBlogPublicationAction"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/blog/publications/{id}/revisions": {
+      "get": {
+        "operationId": "listMarketingBlogRevisions",
+        "tags": [
+          "Marketing"
+        ],
+        "description": "Requires marketing.content.blog. Private versioned Blog publication operations; explicit publication actions and exact editor-instance leases.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MarketingBlogRevision"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Blog access required"
+          },
+          "404": {
+            "description": "Post or revision not found"
+          },
+          "409": {
+            "description": "Version, lease, adoption or URL ownership conflict"
+          },
+          "503": {
+            "description": "Website unavailable; reconcile before retrying mutation"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/blog/publications/{id}/preview": {
+      "get": {
+        "operationId": "getMarketingBlogPreview",
+        "tags": [
+          "Marketing"
+        ],
+        "description": "Requires marketing.content.blog. Private versioned Blog publication operations; explicit publication actions and exact editor-instance leases.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketingBlogPreview"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Blog access required"
+          },
+          "404": {
+            "description": "Post or revision not found"
+          },
+          "409": {
+            "description": "Version, lease, adoption or URL ownership conflict"
+          },
+          "503": {
+            "description": "Website unavailable; reconcile before retrying mutation"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "revisionId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
       }
     }
   },
@@ -32812,6 +33207,371 @@
           "editorInstanceId",
           "leaseId"
         ]
+      },
+      "MarketingBlogEditorial": {
+        "type": "object",
+        "required": [
+          "title",
+          "slug",
+          "content",
+          "authorName",
+          "excerpt",
+          "coverImageUrl",
+          "category",
+          "postType",
+          "podcastUrl",
+          "externalUrl",
+          "sidebarId",
+          "seoTitle",
+          "seoDescription",
+          "ogImageUrl",
+          "categories",
+          "tags",
+          "coverImagePositionX",
+          "coverImagePositionY",
+          "noindex"
+        ],
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "authorName": {
+            "type": "string"
+          },
+          "excerpt": {
+            "type": "string",
+            "nullable": true
+          },
+          "coverImageUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "category": {
+            "type": "string",
+            "nullable": true
+          },
+          "postType": {
+            "type": "string",
+            "nullable": true
+          },
+          "podcastUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "externalUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "sidebarId": {
+            "type": "string",
+            "nullable": true
+          },
+          "seoTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "seoDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "ogImageUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "coverImagePositionX": {
+            "type": "integer",
+            "nullable": true
+          },
+          "coverImagePositionY": {
+            "type": "integer",
+            "nullable": true
+          },
+          "noindex": {
+            "type": "boolean",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "MarketingBlogPublicationSchedule": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "revisionId",
+          "scheduledAt",
+          "status",
+          "failureCode"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "revisionId": {
+            "type": "string"
+          },
+          "scheduledAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "published",
+              "cancelled",
+              "failed"
+            ]
+          },
+          "failureCode": {
+            "type": "string",
+            "nullable": true,
+            "description": "Safe failure classification; no provider response or private details."
+          }
+        }
+      },
+      "MarketingBlogPublicationState": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "requiresAdoption",
+          "version",
+          "legacyFingerprint",
+          "visibility",
+          "draftRevisionId",
+          "publishedRevisionId",
+          "lastPublishedRevisionId",
+          "publicationGeneration",
+          "schedule"
+        ],
+        "properties": {
+          "requiresAdoption": {
+            "type": "boolean"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "nullable": true
+          },
+          "legacyFingerprint": {
+            "type": "string"
+          },
+          "visibility": {
+            "type": "string",
+            "enum": [
+              "legacy",
+              "unpublished",
+              "published",
+              "deleted"
+            ]
+          },
+          "draftRevisionId": {
+            "type": "string",
+            "nullable": true
+          },
+          "publishedRevisionId": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastPublishedRevisionId": {
+            "type": "string",
+            "nullable": true
+          },
+          "publicationGeneration": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "schedule": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MarketingBlogPublicationSchedule"
+              }
+            ],
+            "nullable": true
+          }
+        }
+      },
+      "MarketingBlogPublicationPost": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MarketingBlogPost"
+          },
+          {
+            "type": "object",
+            "required": [
+              "publication"
+            ],
+            "properties": {
+              "publication": {
+                "$ref": "#/components/schemas/MarketingBlogPublicationState"
+              },
+              "lease": {
+                "$ref": "#/components/schemas/WebsiteEditorReservation"
+              }
+            }
+          }
+        ]
+      },
+      "MarketingBlogPublicationCreate": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "data",
+          "editorInstanceId"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/MarketingBlogEditorial"
+          },
+          "editorInstanceId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "MarketingBlogPublicationAdopt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expectedLegacyFingerprint",
+          "editorInstanceId",
+          "reason"
+        ],
+        "properties": {
+          "expectedLegacyFingerprint": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "editorInstanceId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          }
+        }
+      },
+      "MarketingBlogPublicationAction": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "action",
+          "expectedVersion",
+          "editorInstanceId",
+          "leaseId"
+        ],
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "save",
+              "publish",
+              "unpublish",
+              "restore",
+              "delete",
+              "schedule",
+              "cancel_schedule"
+            ]
+          },
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "editorInstanceId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "leaseId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "data": {
+            "$ref": "#/components/schemas/MarketingBlogEditorial"
+          },
+          "revisionId": {
+            "type": "string"
+          },
+          "scheduledAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "MarketingBlogRevision": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "version",
+          "action",
+          "createdAt",
+          "actorId",
+          "sourceRevisionId"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer"
+          },
+          "action": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "actorId": {
+            "type": "string"
+          },
+          "sourceRevisionId": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "MarketingBlogPreview": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "revisionId",
+          "snapshot"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "revisionId": {
+            "type": "string"
+          },
+          "snapshot": {
+            "$ref": "#/components/schemas/MarketingBlogEditorial"
+          }
+        }
       }
     }
   }

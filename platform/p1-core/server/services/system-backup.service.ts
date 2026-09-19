@@ -513,7 +513,7 @@ async function restoreBackupSnapshotWithClient(
       // cannot silently leave newer published content beside restored legacy rows.
       await client.query("SELECT pg_advisory_xact_lock(hashtextextended('blog-publication-writes', 0))");
       const tableNames = snapshot.tables.map((table) => table.name);
-      const blogSidecars = ["blog_publication_state", "blog_post_revisions", "blog_publication_routes"];
+      const blogSidecars = ["blog_publication_state", "blog_post_revisions", "blog_publication_routes", "blog_publication_schedules"];
       if ([...blogSidecars, "blog_posts"].some((name) => !tableNames.includes(name))) {
         for (const name of blogSidecars) {
           const exists = await client.query("SELECT to_regclass($1) AS relation", [`public.${name}`]);

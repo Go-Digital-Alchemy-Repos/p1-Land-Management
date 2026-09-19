@@ -1,3 +1,4 @@
+import { protectBlogRevisionMedia } from "../../services/blog-media-protection.service";
 import { requireBusinessCapability as p1Authorize } from "../../middleware/auth";
 import { assertUploadMutationsAllowed } from "../../services/upload-mutation-policy";
 import { Router } from "express";
@@ -11,7 +12,11 @@ import * as r2Service from "../../services/r2.service";
 import { paramString } from "../../utils/params";
 import { optimizeImage, CMS_OPTIONS, isImageMime } from "../../services/image-optimizer";
 import { buildCmsMediaLibraryAssets } from "../../services/cms-media-usage.service";
-import { createCmsMediaAssetFromUpload, isCompatibleMediaUpload, validateMediaUpload } from "../../services/cms-media-upload.service";
+import {
+  createCmsMediaAssetFromUpload,
+  isCompatibleMediaUpload,
+  validateMediaUpload,
+} from "../../services/cms-media-upload.service";
 
 const router = Router();
 
@@ -90,7 +95,8 @@ function buildUniqueDisplayName(
 }
 
 router.post(
-  "/upload", p1Authorize("marketing.content.media"),
+  "/upload",
+  p1Authorize("marketing.content.media"),
   cmsUpload.single("file"),
   asyncHandler(async (req, res) => {
     if (!req.file) {
@@ -112,7 +118,8 @@ router.post(
 );
 
 router.get(
-  "/media", p1Authorize("marketing.content.media"),
+  "/media",
+  p1Authorize("marketing.content.media"),
   asyncHandler(async (_req, res) => {
     const assets = await storage.cmsMedia.getAllMedia();
     const normalizedAssets = await Promise.all(
@@ -126,7 +133,8 @@ router.get(
 );
 
 router.get(
-  "/media/:id/source", p1Authorize("marketing.content.media"),
+  "/media/:id/source",
+  p1Authorize("marketing.content.media"),
   asyncHandler(async (req, res) => {
     const id = paramString(req.params.id);
     const asset = await storage.cmsMedia.getMedia(id);
@@ -161,7 +169,8 @@ router.get(
 );
 
 router.patch(
-  "/media/:id", p1Authorize("marketing.content.media"),
+  "/media/:id",
+  p1Authorize("marketing.content.media"),
   asyncHandler(async (req, res) => {
     const id = paramString(req.params.id);
     const asset = await storage.cmsMedia.getMedia(id);
@@ -207,7 +216,8 @@ router.patch(
 );
 
 router.post(
-  "/media/:id/replace", p1Authorize("marketing.content.media"),
+  "/media/:id/replace",
+  p1Authorize("marketing.content.media"),
   cmsUpload.single("file"),
   asyncHandler(async (req, res) => {
     assertUploadMutationsAllowed();
@@ -223,35 +233,42 @@ router.post(
 
     await validateMediaUpload(req.file.buffer, req.file.originalname, req.file.mimetype);
     const optimized = await optimizeImage(req.file.buffer, req.file.mimetype, CMS_OPTIONS);
-    let publicUrl = asset.url;
+    const updated = await protectBlogRevisionMedia(
+      asset,
+      await r2Service.normalizePublicUrl(asset.url),
+      async () => {
+        let publicUrl = asset.url;
 
-    if (asset.r2Key) {
-      const uploadedUrl = await r2Service.uploadFile(
-        asset.r2Key,
-        optimized.buffer,
-        optimized.mimeType,
-      );
-      if (!uploadedUrl) {
-        return res.status(500).json({ error: "Failed to replace image in Cloudflare R2" });
-      }
-      publicUrl = uploadedUrl;
-    } else if (asset.url.startsWith("/uploads/cms/")) {
-      const localPath = path.resolve(process.cwd(), asset.url.slice(1));
-      ensureParentDir(localPath);
-      fs.writeFileSync(localPath, optimized.buffer);
-      publicUrl = asset.url;
-    } else {
-      return res.status(400).json({ error: "This media asset cannot be replaced in place" });
-    }
+        if (asset.r2Key) {
+          const uploadedUrl = await r2Service.uploadFile(
+            asset.r2Key,
+            optimized.buffer,
+            optimized.mimeType,
+          );
+          if (!uploadedUrl) {
+            throw new AppError("Failed to replace image in Cloudflare R2", 500);
+          }
+          publicUrl = uploadedUrl;
+        } else if (asset.url.startsWith("/uploads/cms/")) {
+          const localPath = path.resolve(process.cwd(), asset.url.slice(1));
+          ensureParentDir(localPath);
+          fs.writeFileSync(localPath, optimized.buffer);
+          publicUrl = asset.url;
+        } else {
+          throw new AppError("This media asset cannot be replaced in place", 400);
+        }
 
-    const updated = await storage.cmsMedia.updateFile(id, {
-      mimeType: optimized.mimeType,
-      fileSize: optimized.optimizedSize,
-      url: publicUrl,
-      r2Key: asset.r2Key,
-    });
+        const updated = await storage.cmsMedia.updateFile(id, {
+          mimeType: optimized.mimeType,
+          fileSize: optimized.optimizedSize,
+          url: publicUrl,
+          r2Key: asset.r2Key,
+        });
 
-    if (!updated) return res.status(404).json({ error: "Media not found" });
+        if (!updated) throw new AppError("Media not found", 404);
+        return updated;
+      },
+    );
     res.json({
       ...updated,
       url: (await r2Service.normalizePublicUrl(updated.url)) ?? updated.url,
@@ -260,7 +277,8 @@ router.post(
 );
 
 router.patch(
-  "/media/:id/alt", p1Authorize("marketing.content.media"),
+  "/media/:id/alt",
+  p1Authorize("marketing.content.media"),
   asyncHandler(async (req, res) => {
     const id = paramString(req.params.id);
     const { alt } = req.body;
@@ -277,21 +295,28 @@ router.patch(
 );
 
 router.delete(
-  "/media/:id", p1Authorize("marketing.content.media"),
+  "/media/:id",
+  p1Authorize("marketing.content.media"),
   asyncHandler(async (req, res) => {
     assertUploadMutationsAllowed();
     const id = paramString(req.params.id);
     const asset = await storage.cmsMedia.getMedia(id);
     if (!asset) return res.status(404).json({ error: "Media not found" });
 
-    if (asset.r2Key) {
-      await r2Service.deleteFile(asset.r2Key);
-    } else if (asset.url.startsWith("/uploads/cms/")) {
-      const localPath = path.resolve(process.cwd(), asset.url.slice(1));
-      if (fs.existsSync(localPath)) fs.unlinkSync(localPath);
-    }
+    await protectBlogRevisionMedia(
+      asset,
+      await r2Service.normalizePublicUrl(asset.url),
+      async () => {
+        if (asset.r2Key) {
+          await r2Service.deleteFile(asset.r2Key);
+        } else if (asset.url.startsWith("/uploads/cms/")) {
+          const localPath = path.resolve(process.cwd(), asset.url.slice(1));
+          if (fs.existsSync(localPath)) fs.unlinkSync(localPath);
+        }
 
-    await storage.cmsMedia.deleteMedia(id);
+        await storage.cmsMedia.deleteMedia(id);
+      },
+    );
     res.json({ success: true });
   }),
 );

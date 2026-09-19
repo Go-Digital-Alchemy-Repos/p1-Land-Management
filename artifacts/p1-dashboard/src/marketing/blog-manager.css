@@ -180,3 +180,55 @@
   display: grid;
   gap: 12px;
 }
+
+.blog-publication-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+.blog-publication-actions > p,
+.blog-publication-actions > label,
+.blog-publication-actions > section {
+  flex-basis: 100%;
+}
+.blog-publication-actions > label {
+  display: grid;
+  gap: 6px;
+}
+.blog-private-preview iframe {
+  display: block;
+  width: 100%;
+  min-height: 320px;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.blog-revision-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+
+.blog-publication-panel .forms-button {
+  padding: 9px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  min-height: 38px;
+}
+.blog-publication-panel .forms-button-outline {
+  background: var(--card, white);
+  color: var(--ink);
+}
+.blog-publication-panel .forms-button-default {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+.blog-publication-panel .forms-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

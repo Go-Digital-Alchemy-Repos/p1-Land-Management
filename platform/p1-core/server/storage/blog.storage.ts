@@ -1,7 +1,20 @@
-import { eq, desc, and, sql } from "drizzle-orm";
+import { eq, desc, and, sql, notExists } from "drizzle-orm";
 import { db } from "../db";
 import { blogPosts, type BlogPost, type InsertBlogPost } from "@shared/schema";
 
+import {
+  blogPublicationState as states,
+  blogPublicationRoutes as routes,
+} from "@shared/schema/blog-publications";
+import { CmsMutationError } from "../services/cms-concurrency";
+import {
+  lockBlogPublication,
+  listPublishedBlogSnapshots,
+} from "../services/blog-publication.service";
+import {
+  sanitizedBlogSnapshot,
+  listBlogPublications,
+} from "../services/blog-publication-editor.service";
 export class BlogStorage {
   async getPost(id: string): Promise<BlogPost | undefined> {
     const [post] = await db.select().from(blogPosts).where(eq(blogPosts.id, id));
@@ -9,39 +22,97 @@ export class BlogStorage {
   }
 
   async getPostBySlug(slug: string): Promise<BlogPost | undefined> {
-    const [post] = await db.select().from(blogPosts).where(eq(blogPosts.slug, slug));
-    return post;
+    return (await this.getPublishedPosts()).find((post) => post.slug === slug);
   }
-
   async getPublishedPosts(): Promise<BlogPost[]> {
-    return db
+    const legacy = await db
       .select()
       .from(blogPosts)
-      .where(eq(blogPosts.isPublished, true))
-      .orderBy(desc(blogPosts.publishedAt));
+      .where(
+        and(
+          eq(blogPosts.isPublished, true),
+          notExists(db.select().from(states).where(eq(states.postId, blogPosts.id))),
+        ),
+      );
+    const published = await listPublishedBlogSnapshots();
+    const adapted = published.map(
+      (row) =>
+        ({
+          ...sanitizedBlogSnapshot(row.snapshot),
+          id: row.id,
+          isPublished: true,
+          publishedAt: row.publishedAt,
+          scheduledAt: null,
+          createdAt: row.publishedAt,
+          updatedAt: row.modifiedAt,
+        }) as BlogPost,
+    );
+    return [...legacy, ...adapted].sort(
+      (a, b) => (b.publishedAt?.getTime() ?? 0) - (a.publishedAt?.getTime() ?? 0),
+    );
   }
 
   async getAllPosts(): Promise<BlogPost[]> {
-    return db.select().from(blogPosts).orderBy(desc(blogPosts.createdAt));
+    return (await listBlogPublications()).map(
+      ({ publication: _publication, ...post }) => post as BlogPost,
+    );
   }
 
   async createPost(data: InsertBlogPost): Promise<BlogPost> {
-    const [post] = await db.insert(blogPosts).values(data).returning();
-    return post;
+    return db.transaction(async (tx) => {
+      await lockBlogPublication(tx);
+      if ((await tx.select().from(routes).where(eq(routes.slug, data.slug))).length)
+        throw new CmsMutationError(
+          409,
+          "BLOG_SLUG_OWNED",
+          "This URL is owned by publication history.",
+        );
+      const [post] = await tx.insert(blogPosts).values(data).returning();
+      return post;
+    });
   }
 
-  async updatePost(id: string, data: Partial<InsertBlogPost>): Promise<BlogPost | undefined> {
-    const [post] = await db
-      .update(blogPosts)
-      .set({ ...data, updatedAt: new Date() })
-      .where(eq(blogPosts.id, id))
-      .returning();
-    return post;
+  async updatePost(
+    id: string,
+    data: Partial<InsertBlogPost>,
+    skipAdopted = false,
+  ): Promise<BlogPost | undefined> {
+    return db.transaction(async (tx) => {
+      await lockBlogPublication(tx);
+      if ((await tx.select().from(states).where(eq(states.postId, id))).length) {
+        if (skipAdopted) return undefined;
+        throw new CmsMutationError(
+          409,
+          "BLOG_PUBLICATION_REQUIRED",
+          "This post uses publication revisions. Reload the publication editor.",
+        );
+      }
+      if (data.slug && (await tx.select().from(routes).where(eq(routes.slug, data.slug))).length)
+        throw new CmsMutationError(
+          409,
+          "BLOG_SLUG_OWNED",
+          "This URL is owned by publication history.",
+        );
+      const [post] = await tx
+        .update(blogPosts)
+        .set({ ...data, updatedAt: new Date() })
+        .where(eq(blogPosts.id, id))
+        .returning();
+      return post;
+    });
   }
-
   async deletePost(id: string): Promise<boolean> {
-    await db.delete(blogPosts).where(eq(blogPosts.id, id));
-    return true;
+    return db.transaction(async (tx) => {
+      await lockBlogPublication(tx);
+      if ((await tx.select().from(states).where(eq(states.postId, id))).length)
+        throw new CmsMutationError(
+          409,
+          "BLOG_PUBLICATION_REQUIRED",
+          "Use the publication editor to delete this post.",
+        );
+      await tx.delete(blogPosts).where(eq(blogPosts.id, id));
+      return true;
+    });
   }
 
   async renameCategoryReferences(previousName: string, nextName: string | null): Promise<void> {
@@ -73,11 +144,15 @@ export class BlogStorage {
               ? nextName
               : (post.category ?? nextCategories[0] ?? null);
 
-          return this.updatePost(post.id, {
-            category: nextPrimaryCategory || nextCategories[0] || null,
-            categories: nextCategories.length > 0 ? nextCategories : null,
-            updatedAt: new Date(),
-          } as Partial<InsertBlogPost>);
+          return this.updatePost(
+            post.id,
+            {
+              category: nextPrimaryCategory || nextCategories[0] || null,
+              categories: nextCategories.length > 0 ? nextCategories : null,
+              updatedAt: new Date(),
+            } as Partial<InsertBlogPost>,
+            true,
+          );
         }),
     );
   }
@@ -99,10 +174,14 @@ export class BlogStorage {
                 index,
             );
 
-          return this.updatePost(post.id, {
-            tags: nextTags.length > 0 ? nextTags : null,
-            updatedAt: new Date(),
-          } as Partial<InsertBlogPost>);
+          return this.updatePost(
+            post.id,
+            {
+              tags: nextTags.length > 0 ? nextTags : null,
+              updatedAt: new Date(),
+            } as Partial<InsertBlogPost>,
+            true,
+          );
         }),
     );
   }
@@ -113,34 +192,40 @@ export class BlogStorage {
   }
 
   async countPublished(): Promise<number> {
-    const result = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(blogPosts)
-      .where(eq(blogPosts.isPublished, true));
-    return Number(result[0].count);
+    return (await this.getPublishedPosts()).length;
   }
 
   async publishScheduledPosts(): Promise<number> {
-    const now = new Date();
-    const result = await db
-      .update(blogPosts)
-      .set({ isPublished: true, publishedAt: now, scheduledAt: null, updatedAt: now })
-      .where(
-        and(
-          eq(blogPosts.isPublished, false),
-          sql`${blogPosts.scheduledAt} IS NOT NULL`,
-          sql`${blogPosts.scheduledAt} <= ${now}`,
-        ),
-      )
-      .returning();
-    return result.length;
+    return db.transaction(async (tx) => {
+      await lockBlogPublication(tx);
+      const now = new Date();
+      const result = await tx
+        .update(blogPosts)
+        .set({ isPublished: true, publishedAt: now, scheduledAt: null, updatedAt: now })
+        .where(
+          and(
+            eq(blogPosts.isPublished, false),
+            notExists(tx.select().from(states).where(eq(states.postId, blogPosts.id))),
+            sql`${blogPosts.scheduledAt} IS NOT NULL`,
+            sql`${blogPosts.scheduledAt} <= ${now}`,
+          ),
+        )
+        .returning();
+      return result.length;
+    });
   }
 
   async getNextScheduledTime(): Promise<Date | null> {
     const [row] = await db
       .select({ scheduledAt: blogPosts.scheduledAt })
       .from(blogPosts)
-      .where(and(eq(blogPosts.isPublished, false), sql`${blogPosts.scheduledAt} IS NOT NULL`))
+      .where(
+        and(
+          eq(blogPosts.isPublished, false),
+          sql`${blogPosts.scheduledAt} IS NOT NULL`,
+          notExists(db.select().from(states).where(eq(states.postId, blogPosts.id))),
+        ),
+      )
       .orderBy(sql`${blogPosts.scheduledAt} ASC`)
       .limit(1);
     return row?.scheduledAt ?? null;

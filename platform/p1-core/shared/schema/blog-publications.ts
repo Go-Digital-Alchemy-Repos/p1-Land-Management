@@ -6,6 +6,7 @@ import {
   timestamp,
   jsonb,
   unique,
+  uniqueIndex,
   foreignKey,
   check,
   type PgTableExtraConfigValue,
@@ -15,7 +16,7 @@ import { z } from "zod";
 // Publication state is deliberately separate from legacy mutable blog_posts.
 export const blogEditorialSchema = z
   .object({
-    title: z.string().min(1),
+    title: z.string().refine((value) => value.trim().length > 0, "Title is required"),
     slug: z
       .string()
       .min(1)
@@ -23,7 +24,7 @@ export const blogEditorialSchema = z
       .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
     excerpt: z.string().nullable(),
     content: z.string(),
-    authorName: z.string().min(1),
+    authorName: z.string().refine((value) => value.trim().length > 0, "Author name is required"),
     coverImageUrl: z.string().nullable(),
     coverImagePositionX: z.number().int().min(0).max(100).nullable(),
     coverImagePositionY: z.number().int().min(0).max(100).nullable(),
@@ -129,7 +130,7 @@ export const blogPostRevisions = pgTable(
     check("blog_post_revisions_snapshot_check", sql`jsonb_typeof(${table.snapshot})='object'`),
     check(
       "blog_post_revisions_action_check",
-      sql`${table.action} IN ('initialize','save','publish','unpublish','restore','delete')`,
+      sql`${table.action} IN ('initialize','save','publish','unpublish','restore','delete','schedule','cancel_schedule','scheduled_publish','schedule_failed')`,
     ),
     check("blog_post_revisions_actor_id_check", sql`length(${table.actorId})>0`),
     check("blog_post_revisions_provenance_check", sql`jsonb_typeof(${table.provenance})='object'`),
@@ -162,5 +163,43 @@ export const blogPublicationRoutes = pgTable(
       "blog_publication_routes_check",
       sql`(${table.state}='published') = (${table.revisionId} IS NOT NULL)`,
     ),
+  ],
+);
+
+export const blogPublicationSchedules = pgTable(
+  "blog_publication_schedules",
+  {
+    id: text("id")
+      .primaryKey()
+      .default(sql`gen_random_uuid()::text`),
+    postId: text("post_id").notNull(),
+    revisionId: text("revision_id").notNull(),
+    scheduledAt: timestamp("scheduled_at", { withTimezone: true }).notNull(),
+    status: text("status").notNull().default("pending"),
+    createdVersion: integer("created_version").notNull(),
+    actorId: text("actor_id").notNull(),
+    failureCode: text("failure_code"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    completedAt: timestamp("completed_at", { withTimezone: true }),
+  },
+  (table): PgTableExtraConfigValue[] => [
+    foreignKey({
+      name: "blog_schedule_post_fk",
+      columns: [table.postId],
+      foreignColumns: [blogPublicationState.postId],
+    }),
+    foreignKey({
+      name: "blog_schedule_revision_fk",
+      columns: [table.postId, table.revisionId],
+      foreignColumns: [blogPostRevisions.postId, blogPostRevisions.id],
+    }),
+    check(
+      "blog_schedule_status_check",
+      sql`${table.status} IN ('pending','published','cancelled','failed')`,
+    ),
+    check("blog_schedule_version_check", sql`${table.createdVersion}>0`),
+    uniqueIndex("blog_schedule_one_pending")
+      .on(table.postId)
+      .where(sql`${table.status}='pending'`),
   ],
 );

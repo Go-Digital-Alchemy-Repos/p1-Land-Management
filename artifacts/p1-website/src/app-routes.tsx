@@ -58,6 +58,7 @@ export function createSiteRoutes(page: ResolvePage): ComponentType {
     UnionCountyNc = page("./pages/service-areas/union-county-nc.tsx"),
     LancasterCountySc = page("./pages/service-areas/lancaster-county-sc.tsx"),
     YorkCountySc = page("./pages/service-areas/york-county-sc.tsx");
+  const PublishedBlog = page("./pages/blog/published.tsx");
   const BlogIndex = page("./pages/blog/index.tsx"),
     BlogLandClearingCost = page(
       "./pages/blog/land-clearing-cost-per-acre-south-carolina.tsx",
@@ -203,6 +204,7 @@ export function createSiteRoutes(page: ResolvePage): ComponentType {
           path="/blog/preparing-land-agricultural-use-carolinas"
           component={BlogPreparingLand}
         />
+        <Route path="/blog/:slug" component={PublishedBlog} />
         <Route component={NotFound} />
       </Switch>
     );

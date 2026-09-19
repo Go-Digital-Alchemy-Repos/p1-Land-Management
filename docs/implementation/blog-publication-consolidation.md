@@ -7,12 +7,41 @@ Core admin and the consolidated dashboard. Presentation reuse does not complete
 the accepted requirement for private drafts, revision restore, concurrent editing,
 or dynamically published crawler-visible articles.
 
-The September 19 publication foundation is an additive internal service candidate.
-It has no routed callers, does not initialize existing posts automatically, and
-has not replaced legacy writers, scheduling or the five existing public articles.
-Do not treat its presence as a public Blog cutover.
+The September 19 foundation initially shipped as an internal service. The
+coordinated cutover below adds routed editors and public delivery. Existing posts
+are never adopted automatically; the five website-owned articles remain separate
+pending their reviewed import. Release evidence is recorded below.
 
 ## Approved storage contract
+
+### Coordinated editor/public delivery candidate
+
+The next cutover is in progress, not deployed or accepted. Both editor hosts must
+use the same publication APIs before release. The private `/blog/publications`
+collection returns explicit legacy-adoption state or a versioned draft envelope.
+New creation and reviewed adoption return an exact editor-instance lease. Actions
+require version and lease proofs: Save changes only the draft; Save & Publish is
+explicit; Restore creates a draft; scheduling pins an immutable revision rather
+than publishing whatever happens to be in the editor later. Failed schedules must
+remain visible to staff. Existing mutable writers must reject adopted records.
+
+The public `/api/website/blog-publication` projection is a complete,
+sanitized published collection. A successful empty collection removes dynamic
+articles, while the five reserved website-owned articles remain. Missing dynamic
+slugs return genuine 404 responses. Public snapshots omit draft, history, actor,
+lease and adoption details. SSR, hydration, metadata and sitemap must consume the
+same version. Temporary provider failure may retain the last valid published
+collection; withdrawal during an outage is therefore not an immediate guarantee.
+
+Publication capacity checks and the public endpoint share one serializer:
+at most 1,000 published entries, 262,144 UTF-8 bytes of sanitized content per entry,
+and 4,194,304 bytes for the whole envelope. Reject over-capacity publication with
+an actionable error rather than truncate content or silently retain an older
+public version. Private draft storage is not reduced by these public limits.
+
+Release requires both editors, writer fences, scheduling, public delivery and
+recovery checks together. Generating client types or exposing a bridge route alone
+does not establish a working publication workflow.
 
 - `blog_publication_state` owns a monotonically increasing mutation version,
   draft/current-published/last-published pointers and a publication generation.
@@ -152,3 +181,52 @@ Public Blog list/detail and comment visibility in `server/routes/blog.routes.ts`
 must use the same publication authority. Existing website articles and index in
 `artifacts/p1-website/src/pages/blog/` remain authoritative until reviewed import,
 URL ownership transfer and crawler/public-render equivalence are accepted.
+
+## Coordinated cutover validation — September 19
+
+Implemented together: both editors and generated client contract, exact-instance
+leases, explicit legacy adoption, draft-only saves, publish/withdraw/restore,
+pinned schedules and visible failure codes, legacy CRUD/seed/taxonomy/scheduler
+fences, private sanitized preview, and the published website consumer. The public
+consumer resolves registered CMS images through existing public same-origin paths;
+unknown/private images reject publication rather than disappear silently. Original
+publication dates and latest publication modification dates remain distinct.
+
+The server keeps the full published collection. Unrelated pages receive no Blog
+payload; the index receives bounded card metadata, initially displays 24 entries,
+and supports Load more; article routes receive only their matching revision.
+Listing metadata has its own 262,144-byte limit. Public route HTML, navigation
+snapshots and sitemap use the same collection revision. Existing static CMS field
+identities, including the Read Article label, are preserved.
+
+Independent parent validation completed before release:
+
+- 32 actual PostgreSQL publication tests and 11 private-route/lease tests.
+- Six populated backup/recovery tests and one actual migration-runner test.
+- 15 native editor tests and seven retained-editor/lease-hook tests.
+- 13 public projection/media/route tests and 26 website cache/HTTP tests.
+- 20 dashboard bridge tests, API typecheck, final Core production build, and
+  public layout/navigation checks.
+
+Specialist validation also passed dashboard/website builds and typechecks, Core
+clean typecheck, and synthetic Chrome desktop/mobile interaction. Browser evidence
+uses a mocked local API, not a production mutation or a complete real-backend
+editor acceptance. No existing article was adopted or published during validation.
+The separately invoked live-access suite skipped without its disposable HTTP
+fixture; it is not counted as passing. The backup suite initially rejected a
+noncanonical fixture database name; it passed after using its required isolated
+`core_backup_test` database. The original synthetic database was preserved.
+
+Independent review found an encoded-image reference bypass in deletion protection.
+The fix parses HTML image attributes and canonical/percent-decoded URL aliases;
+its isolated PostgreSQL regression prevents the destructive callback for each
+spelling. Delete and replace protect all stored immutable revision references,
+including restorable history. This does not guarantee validity of arbitrary new
+URLs supplied after an asset was already deleted.
+
+Remaining acceptance: actual Owner editing/publication, full public sidebar and
+comment presentation, explicit import of the five existing articles, application
+and media recovery/rollback, and the broader CMS/admin-retirement gates. A saved
+private preview displays sanitized article content; it is not a full website-theme
+or sidebar preview. Production release identifiers and read-only live verification
+must be recorded separately before describing this candidate as deployed.

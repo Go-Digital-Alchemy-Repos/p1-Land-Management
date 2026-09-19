@@ -14,6 +14,28 @@ const connection = {
 const operation = (method: string, path: string) =>
   cmsOperations.find((item) => item.method === method && item.path === path)!;
 
+test("Blog publication transport restricts revision previews and publication actions to Blog grants", () => {
+  const paths = [
+    ["GET", "/blog/publications"], ["POST", "/blog/publications"],
+    ["GET", "/blog/publications/:id"], ["POST", "/blog/publications/:id/adopt"],
+    ["POST", "/blog/publications/:id/actions"], ["GET", "/blog/publications/:id/revisions"],
+    ["GET", "/blog/publications/:id/preview"],
+  ];
+  for (const [method, path] of paths) {
+    assert.deepEqual(operation(method, path).capabilities, ["marketing.content.blog"]);
+  }
+  const preview = operation("GET", "/blog/publications/:id/preview");
+  assert.equal(cmsDestination(preview, { id: "post-1" }, { revisionId: "revision-2" }),
+    "/blog/publications/post-1/preview?revisionId=revision-2");
+  assert.equal(cmsDestination(preview, { id: "post-1" }, {}), "/blog/publications/post-1/preview");
+  for (const query of [{ revisionId: ["revision-2"] }, { revisionId: "../secret" },
+    { revisionId: "" }, { revisionId: "x".repeat(161) }, { token: "unexpected" }]) {
+    assert.throws(() => cmsDestination(preview, { id: "post-1" }, query), /preview query/);
+  }
+  assert.throws(() => cmsDestination(operation("POST", "/blog/publications/:id/actions"),
+    { id: "post-1" }, { force: "true" }), /query/);
+});
+
 test("CMS allowlist uses current leaf grants, exact paths and bounded query parameters", () => {
   assert(cmsOperations.length > 40);
   for (const method of ["GET","PUT"]) assert.deepEqual(operation(method,"/design/branding").capabilities,["marketing.design.branding"]);

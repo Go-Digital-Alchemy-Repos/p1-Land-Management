@@ -1,14 +1,16 @@
 import { z } from "zod";
 import { and, eq, sql } from "drizzle-orm";
 import { db } from "../db";
-import { editorLocks, type User, type EditorLock } from "@shared/schema";
-import { CmsMutationError, databaseNow } from "./cms-concurrency";
+import { blogPosts, editorLocks, type User, type EditorLock } from "@shared/schema";
+import { CmsMutationError, databaseNow, type CmsTransaction } from "./cms-concurrency";
 import { blogPublicationState as states } from "@shared/schema/blog-publications";
 import { lockBlogPublication } from "./blog-publication.service";
-const inputSchema = z.object({
-  editorInstanceId: z.string().uuid(),
-  leaseId: z.string().uuid().optional(),
-});
+const inputSchema = z
+  .object({
+    editorInstanceId: z.string().uuid(),
+    leaseId: z.string().uuid().optional(),
+  })
+  .strict();
 function response(resourceId: string, user: User, lock: EditorLock | null, instance?: string) {
   const ownedByCurrentUser = lock?.lockedByUserId === user.id;
   const ownedByCurrentEditor = Boolean(
@@ -42,11 +44,32 @@ export async function blogPublicationLease(
   identifier: string,
   user: User | undefined,
   body: unknown = {},
+  allowLegacy = false,
+) {
+  return db.transaction((tx) =>
+    blogLeaseInTransaction(tx, action, identifier, user, body, allowLegacy),
+  );
+}
+export async function blogLeaseInTransaction(
+  tx: CmsTransaction,
+  action: "status" | "acquire" | "heartbeat" | "release",
+  identifier: string,
+  user: User | undefined,
+  body: unknown = {},
+  allowLegacy = false,
 ) {
   if (!user || (user.role !== "admin" && user.role !== "editor"))
     throw new CmsMutationError(400, "BLOG_LEASE_LOST", "Sign in again.");
+  await lockBlogPublication(tx);
+  const [state] = await tx.select().from(states).where(eq(states.postId, identifier));
+  const [legacy] = await tx
+    .select({ id: blogPosts.id })
+    .from(blogPosts)
+    .where(eq(blogPosts.id, identifier));
+  if (!legacy || state?.visibility === "deleted" || (!state && !allowLegacy))
+    throw new CmsMutationError(404, "BLOG_NOT_INITIALIZED", "Explicit adoption is required.");
   let input: z.infer<typeof inputSchema> | undefined;
-  if (action !== "status") {
+  if (action !== "status" && state) {
     const parsed = inputSchema.safeParse(body);
     if (!parsed.success || (action !== "acquire" && !parsed.data.leaseId))
       throw new CmsMutationError(
@@ -56,65 +79,60 @@ export async function blogPublicationLease(
       );
     input = parsed.data;
   }
-  return db.transaction(async (tx) => {
-    const [page] = await tx
-      .select({ id: states.postId })
-      .from(states)
-      .where(eq(states.postId, identifier))
-      .limit(1);
-    if (!page) throw new CmsMutationError(404, "BLOG_NOT_FOUND", "Initialized post not found");
-    await lockBlogPublication(tx);
-    // Deletion also uses the resource lock; recheck after acquiring it.
-    const [exists] = await tx
-      .select({ id: states.postId })
-      .from(states)
-      .where(and(eq(states.postId, page.id), sql`${states.visibility} <> 'deleted'`));
-    if (!exists) throw new CmsMutationError(404, "BLOG_NOT_FOUND", "Initialized post not found");
-    const rows = await tx
-      .select()
-      .from(editorLocks)
-      .where(and(eq(editorLocks.resourceType, "blog_post"), eq(editorLocks.resourceId, page.id)))
-      .for("update");
-    let lock: EditorLock | undefined = rows[0];
-    const now = await databaseNow(tx);
-    if (lock && lock.expiresAt <= now) {
-      await tx.delete(editorLocks).where(eq(editorLocks.id, lock.id));
-      lock = undefined;
-    }
-    if (action === "status") return response(page.id, user, lock ?? null);
-    if (action === "acquire" && !lock) {
-      [lock] = await tx
-        .insert(editorLocks)
-        .values({
-          resourceType: "blog_post",
-          resourceId: page.id,
-          editorInstanceId: input!.editorInstanceId,
-          lockedByUserId: user.id,
-          lockedByName:
-            [user.firstName, user.lastName].filter(Boolean).join(" ").trim() || user.email,
-          lockedAt: now,
-          lastHeartbeatAt: now,
-          expiresAt: new Date(now.getTime() + 300000),
-        })
-        .returning();
-      return response(page.id, user, lock, input!.editorInstanceId);
-    }
-    const owned = Boolean(
-      lock &&
-      lock.lockedByUserId === user.id &&
-      lock.editorInstanceId === input!.editorInstanceId &&
-      (action === "acquire" || lock.id === input!.leaseId),
-    );
-    if (!owned || !lock) return response(page.id, user, lock ?? null); // Never echo ownership for a stale generation.
-    if (action === "release") {
-      await tx.delete(editorLocks).where(eq(editorLocks.id, lock.id));
-      return response(page.id, user, null);
-    }
+  let [lock] = await tx
+    .select()
+    .from(editorLocks)
+    .where(and(eq(editorLocks.resourceType, "blog_post"), eq(editorLocks.resourceId, identifier)))
+    .for("update");
+  const now = await databaseNow(tx);
+  if (lock && lock.expiresAt <= now) {
+    await tx.delete(editorLocks).where(eq(editorLocks.id, lock.id));
+    lock = undefined!;
+  }
+  if (action === "status") {
+    const result = response(identifier, user, lock ?? null);
+    return !state && lock?.lockedByUserId === user.id && lock.editorInstanceId === null
+      ? { ...result, status: "acquired" as const }
+      : result;
+  }
+  if (action === "acquire" && !lock) {
     [lock] = await tx
-      .update(editorLocks)
-      .set({ lastHeartbeatAt: now, expiresAt: new Date(now.getTime() + 300000), updatedAt: now })
-      .where(eq(editorLocks.id, lock.id))
+      .insert(editorLocks)
+      .values({
+        resourceType: "blog_post",
+        resourceId: identifier,
+        editorInstanceId: input?.editorInstanceId ?? null,
+        lockedByUserId: user.id,
+        lockedByName: [user.firstName, user.lastName].filter(Boolean).join(" ") || user.email,
+        lockedAt: now,
+        lastHeartbeatAt: now,
+        expiresAt: new Date(now.getTime() + 300000),
+        updatedAt: now,
+      })
       .returning();
-    return response(page.id, user, lock, input!.editorInstanceId);
-  });
+    return state
+      ? response(identifier, user, lock, input?.editorInstanceId)
+      : { ...response(identifier, user, lock), status: "acquired" as const };
+  }
+  const owned = Boolean(
+    lock &&
+    lock.lockedByUserId === user.id &&
+    (state
+      ? lock.editorInstanceId === input!.editorInstanceId &&
+        (action === "acquire" || lock.id === input!.leaseId)
+      : lock.editorInstanceId === null),
+  );
+  if (!owned || !lock) return response(identifier, user, lock ?? null);
+  if (action === "release") {
+    await tx.delete(editorLocks).where(eq(editorLocks.id, lock.id));
+    return response(identifier, user, null);
+  }
+  [lock] = await tx
+    .update(editorLocks)
+    .set({ lastHeartbeatAt: now, expiresAt: new Date(now.getTime() + 300000), updatedAt: now })
+    .where(eq(editorLocks.id, lock.id))
+    .returning();
+  return state
+    ? response(identifier, user, lock, input?.editorInstanceId)
+    : { ...response(identifier, user, lock), status: "acquired" as const };
 }

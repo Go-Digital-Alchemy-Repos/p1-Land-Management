@@ -1,3 +1,4 @@
+import { publishDueBlogPublications, nextBlogPublicationTime } from "./blog-publication.service";
 import { storage } from "../storage";
 import { logger } from "../utils/logger";
 import { startStoppableWorker } from "../utils/runtime-lifecycle";
@@ -10,15 +11,19 @@ export function startScheduledPublishService() {
     run: async (isStopping) => {
       const pages = await storage.cmsPages.publishScheduledPages();
       if (isStopping()) return;
-      const posts = await storage.blog.publishScheduledPosts();
+      const posts =
+        (await storage.blog.publishScheduledPosts()) + (await publishDueBlogPublications());
       if (pages > 0 || posts > 0)
         logger.app.info(`[scheduler] Auto-published ${pages} page(s) and ${posts} post(s)`);
       if (isStopping()) return;
-      const [pageTime, postTime] = await Promise.all([
+      const [pageTime, postTime, publicationTime] = await Promise.all([
         storage.cmsPages.getNextScheduledTime(),
         storage.blog.getNextScheduledTime(),
+        nextBlogPublicationTime(),
       ]);
-      const times = [pageTime, postTime].filter((value): value is Date => value !== null);
+      const times = [pageTime, postTime, publicationTime].filter(
+        (value): value is Date => value !== null,
+      );
       if (!times.length) return HEARTBEAT_MS;
       return Math.min(
         Math.max(Math.min(...times.map((time) => time.getTime())) - Date.now(), 1000),

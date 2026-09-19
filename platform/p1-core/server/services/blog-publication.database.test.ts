@@ -274,10 +274,17 @@ suite("Blog publication actual PostgreSQL", () => {
     await pool.query("UPDATE blog_posts SET title='Legacy changed' WHERE id=$1", [x.legacy.id]);
     for (const action of ["save", "publish", "unpublish", "restore", "delete"] as const)
       await expect(
-        mutate(x.legacy.id, user.id, x.proof, action, {
-          data: x.snapshot,
-          revisionId: x.state.draftRevisionId,
-        }),
+        mutate(
+          x.legacy.id,
+          user.id,
+          x.proof,
+          action,
+          action === "save"
+            ? { data: x.snapshot }
+            : action === "restore"
+              ? { revisionId: x.state.draftRevisionId }
+              : {},
+        ),
       ).rejects.toMatchObject({ code: "BLOG_LEGACY_DRIFT" });
     expect(await db.select().from(revisions)).toHaveLength(1);
   });

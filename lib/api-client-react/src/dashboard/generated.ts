@@ -135,6 +135,7 @@ import type {
   GetLeadDetailHistoryParams,
   GetLeadTaskHistoryParams,
   GetMarketingAnalyticsParams,
+  GetMarketingBlogPreviewParams,
   GetMarketingEventAnalytics200,
   GetMarketingFormBuilder200,
   GetMarketingSearchConsoleParams,
@@ -188,7 +189,13 @@ import type {
   MarketingBlogInput,
   MarketingBlogPatch,
   MarketingBlogPost,
+  MarketingBlogPreview,
+  MarketingBlogPublicationAction,
+  MarketingBlogPublicationAdopt,
+  MarketingBlogPublicationCreate,
+  MarketingBlogPublicationPost,
   MarketingBlogReferences,
+  MarketingBlogRevision,
   MarketingBlogTaxonomy,
   MarketingBlogTaxonomyInput,
   MarketingBlogTaxonomyPatch,
@@ -5097,16 +5104,18 @@ export const getAcquireMarketingBlogReservationUrl = (id: string,) => {
 }
 
 /**
- * Requires marketing.content.blog. Retained advisory editor reservation.
+ * Requires marketing.content.blog. Exact editor-instance lease for adopted Blog publications.
  */
-export const acquireMarketingBlogReservation = async (id: string, options?: RequestInit): Promise<WebsiteEditorReservation> => {
+export const acquireMarketingBlogReservation = async (id: string,
+    marketingPageLeaseAcquire: MarketingPageLeaseAcquire, options?: RequestInit): Promise<WebsiteEditorReservation> => {
 
   return customFetch<WebsiteEditorReservation>(getAcquireMarketingBlogReservationUrl(id),
   {
     ...options,
-    method: 'POST'
-
-
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingPageLeaseAcquire,)
   }
 );}
 
@@ -5121,16 +5130,18 @@ export const getHeartbeatMarketingBlogReservationUrl = (id: string,) => {
 }
 
 /**
- * Requires marketing.content.blog. Retained advisory editor reservation.
+ * Requires marketing.content.blog. Exact editor-instance lease for adopted Blog publications.
  */
-export const heartbeatMarketingBlogReservation = async (id: string, options?: RequestInit): Promise<WebsiteEditorReservation> => {
+export const heartbeatMarketingBlogReservation = async (id: string,
+    marketingPageLeaseProof: MarketingPageLeaseProof, options?: RequestInit): Promise<WebsiteEditorReservation> => {
 
   return customFetch<WebsiteEditorReservation>(getHeartbeatMarketingBlogReservationUrl(id),
   {
     ...options,
-    method: 'POST'
-
-
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingPageLeaseProof,)
   }
 );}
 
@@ -5145,16 +5156,18 @@ export const getReleaseMarketingBlogReservationUrl = (id: string,) => {
 }
 
 /**
- * Requires marketing.content.blog. Retained advisory editor reservation.
+ * Requires marketing.content.blog. Exact editor-instance lease for adopted Blog publications.
  */
-export const releaseMarketingBlogReservation = async (id: string, options?: RequestInit): Promise<WebsiteEditorReservation> => {
+export const releaseMarketingBlogReservation = async (id: string,
+    marketingPageLeaseProof: MarketingPageLeaseProof, options?: RequestInit): Promise<WebsiteEditorReservation> => {
 
   return customFetch<WebsiteEditorReservation>(getReleaseMarketingBlogReservationUrl(id),
   {
     ...options,
-    method: 'POST'
-
-
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingPageLeaseProof,)
   }
 );}
 
@@ -9027,6 +9040,188 @@ export const runWebsiteBackup = async ( options?: RequestInit): Promise<WebsiteB
   {
     ...options,
     method: 'POST'
+
+
+  }
+);}
+
+
+
+export const getListMarketingBlogPublicationsUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/blog/publications`
+}
+
+/**
+ * Requires marketing.content.blog. Private versioned Blog publication operations; explicit publication actions and exact editor-instance leases.
+ */
+export const listMarketingBlogPublications = async ( options?: RequestInit): Promise<MarketingBlogPublicationPost[]> => {
+
+  return customFetch<MarketingBlogPublicationPost[]>(getListMarketingBlogPublicationsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateMarketingBlogPublicationUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/blog/publications`
+}
+
+/**
+ * Requires marketing.content.blog. Private versioned Blog publication operations; explicit publication actions and exact editor-instance leases.
+ */
+export const createMarketingBlogPublication = async (marketingBlogPublicationCreate: MarketingBlogPublicationCreate, options?: RequestInit): Promise<MarketingBlogPublicationPost> => {
+
+  return customFetch<MarketingBlogPublicationPost>(getCreateMarketingBlogPublicationUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingBlogPublicationCreate,)
+  }
+);}
+
+
+
+export const getGetMarketingBlogPublicationUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/blog/publications/${id}`
+}
+
+/**
+ * Requires marketing.content.blog. Private versioned Blog publication operations; explicit publication actions and exact editor-instance leases.
+ */
+export const getMarketingBlogPublication = async (id: string, options?: RequestInit): Promise<MarketingBlogPublicationPost> => {
+
+  return customFetch<MarketingBlogPublicationPost>(getGetMarketingBlogPublicationUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getAdoptMarketingBlogPublicationUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/blog/publications/${id}/adopt`
+}
+
+/**
+ * Requires marketing.content.blog. Private versioned Blog publication operations; explicit publication actions and exact editor-instance leases.
+ */
+export const adoptMarketingBlogPublication = async (id: string,
+    marketingBlogPublicationAdopt: MarketingBlogPublicationAdopt, options?: RequestInit): Promise<MarketingBlogPublicationPost> => {
+
+  return customFetch<MarketingBlogPublicationPost>(getAdoptMarketingBlogPublicationUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingBlogPublicationAdopt,)
+  }
+);}
+
+
+
+export const getMutateMarketingBlogPublicationUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/blog/publications/${id}/actions`
+}
+
+/**
+ * Requires marketing.content.blog. Private versioned Blog publication operations; explicit publication actions and exact editor-instance leases.
+ */
+export const mutateMarketingBlogPublication = async (id: string,
+    marketingBlogPublicationAction: MarketingBlogPublicationAction, options?: RequestInit): Promise<MarketingBlogPublicationPost> => {
+
+  return customFetch<MarketingBlogPublicationPost>(getMutateMarketingBlogPublicationUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingBlogPublicationAction,)
+  }
+);}
+
+
+
+export const getListMarketingBlogRevisionsUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/blog/publications/${id}/revisions`
+}
+
+/**
+ * Requires marketing.content.blog. Private versioned Blog publication operations; explicit publication actions and exact editor-instance leases.
+ */
+export const listMarketingBlogRevisions = async (id: string, options?: RequestInit): Promise<MarketingBlogRevision[]> => {
+
+  return customFetch<MarketingBlogRevision[]>(getListMarketingBlogRevisionsUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getGetMarketingBlogPreviewUrl = (id: string,
+    params?: GetMarketingBlogPreviewParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/marketing/cms/blog/publications/${id}/preview?${stringifiedParams}` : `/api/v1/marketing/cms/blog/publications/${id}/preview`
+}
+
+/**
+ * Requires marketing.content.blog. Private versioned Blog publication operations; explicit publication actions and exact editor-instance leases.
+ */
+export const getMarketingBlogPreview = async (id: string,
+    params?: GetMarketingBlogPreviewParams, options?: RequestInit): Promise<MarketingBlogPreview> => {
+
+  return customFetch<MarketingBlogPreview>(getGetMarketingBlogPreviewUrl(id,params),
+  {
+    ...options,
+    method: 'GET'
 
 
   }

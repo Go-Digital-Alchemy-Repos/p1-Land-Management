@@ -1,3 +1,4 @@
+import { blogPublicationLease } from "../../services/blog-publication-leases.service";
 import { pageLease } from "../../services/cms-page-leases.service";
 import { CmsMutationError } from "../../services/cms-concurrency";
 import { Router } from "express";
@@ -13,6 +14,10 @@ import {
   releaseEditorLock,
 } from "../../services/editor-locks.service";
 
+function blogLeaseBody(body: Record<string, unknown> = {}) {
+  const { resourceType: _type, resourceId: _id, ...proof } = body;
+  return proof;
+}
 const router = Router();
 router.use((_req, res, next) => {
   res.set("Cache-Control", "private, no-store");
@@ -41,7 +46,15 @@ router.get(
     res.json(
       resourceType === "cms_page"
         ? await pageLease("status", resourceId, req.user)
-        : await getEditorLock(resourceType, resourceId, req.user),
+        : resourceType === "blog_post"
+          ? await blogPublicationLease(
+              "status",
+              resourceId,
+              req.user,
+              blogLeaseBody(req.body),
+              true,
+            )
+          : await getEditorLock(resourceType, resourceId, req.user),
     );
   }),
 );
@@ -54,7 +67,15 @@ router.post(
     res.json(
       resourceType === "cms_page"
         ? await pageLease("acquire", resourceId, req.user, req.body)
-        : await acquireEditorLock(resourceType, resourceId, req.user),
+        : resourceType === "blog_post"
+          ? await blogPublicationLease(
+              "acquire",
+              resourceId,
+              req.user,
+              blogLeaseBody(req.body),
+              true,
+            )
+          : await acquireEditorLock(resourceType, resourceId, req.user),
     );
   }),
 );
@@ -67,7 +88,15 @@ router.post(
     res.json(
       resourceType === "cms_page"
         ? await pageLease("heartbeat", resourceId, req.user, req.body)
-        : await heartbeatEditorLock(resourceType, resourceId, req.user),
+        : resourceType === "blog_post"
+          ? await blogPublicationLease(
+              "heartbeat",
+              resourceId,
+              req.user,
+              blogLeaseBody(req.body),
+              true,
+            )
+          : await heartbeatEditorLock(resourceType, resourceId, req.user),
     );
   }),
 );
@@ -80,7 +109,15 @@ router.post(
     res.json(
       resourceType === "cms_page"
         ? await pageLease("release", resourceId, req.user, req.body)
-        : await releaseEditorLock(resourceType, resourceId, req.user),
+        : resourceType === "blog_post"
+          ? await blogPublicationLease(
+              "release",
+              resourceId,
+              req.user,
+              blogLeaseBody(req.body),
+              true,
+            )
+          : await releaseEditorLock(resourceType, resourceId, req.user),
     );
   }),
 );
@@ -104,7 +141,15 @@ for (const [action, operation] of Object.entries({
               req.user,
               req.body,
             )
-          : await operation(resourceType, resourceId, req.user),
+          : resourceType === "blog_post"
+            ? await blogPublicationLease(
+                action as "acquire" | "heartbeat" | "release",
+                resourceId,
+                req.user,
+                req.body,
+                true,
+              )
+            : await operation(resourceType, resourceId, req.user),
       );
     }),
   );
