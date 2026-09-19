@@ -294,3 +294,16 @@ Independent review caught fabricated public preview URLs built from retained CMS
 slugs. Those links are omitted in native SEO until an authoritative destination is
 available; editors remain the supported signed-preview path. A regression test uses
 published page/post audit records to ensure no invented public link is rendered.
+
+### Sections and SEO live release
+
+Commit `7714ccb997eb65f043d2d4892ba99fd680b7ebd2` is pushed to the task branch and
+main. Railway production SUCCESS: dashboard `5589269e-8c82-4827-b985-b67a64637eac`,
+Core `70723ab1-517c-46fc-9bbc-50214706a7ff`, public website
+`77ddd6c3-4664-4daf-a871-3b122158a04c`. Authenticated read-only production checks
+confirmed grouped SEO defaults, colored tabs, live audit counts/reference and the
+original Reusable Sections list/filter/empty state with no alerts. The retained
+catalogs currently contain zero audited records/sections; no synthetic production
+records were added. Inherited audit empty-success copy (“All content has …”) should
+be made explicit for zero records in the next polish pass; it is not a complete
+public website SEO certification. No settings, publications or starter refresh ran.

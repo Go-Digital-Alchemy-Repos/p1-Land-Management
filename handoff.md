@@ -1,3 +1,12 @@
+## September 19 — Sections and SEO now live
+
+`7714ccb9` is on main/task branch. Railway dashboard, Core and website SUCCESS;
+authenticated production read-only SEO tabs/audit/reference and Reusable Sections
+list verified. No production data written. See acceptance/parity docs for exact IDs.
+Galleries is owned by marketing_parity_inventory; structured Website by
+social_ui_reuse. Parent owns main/runtime allowlist/docs/integration. System tools
+read-only inventory from redirect_review is ready. Preserve all in-progress work.
+
 ## September 19 — CMS Pages live; Sections and SEO release candidate
 
 Latest pushed revision `1f37c36d` is SUCCESS on the production dashboard, Core and

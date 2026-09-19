@@ -155,3 +155,16 @@ The preceding page-concurrency gap is repaired in release `872d2bb749adbded8297c
 Railway SUCCESS: dashboard `7340a4fd-56bf-4e7a-9874-ffebcff8e5ea`, Core `40c4e535-b5a5-435b-8d1b-b8a9428e536a`. Core runtime logs report P1 migrations completed at2026-09-19T19:08:28.720Z. Authenticated live Pages list shows the restored controls and real empty state, with no loading/error alert; no production page was created or edited. The public structured Website content remains a separate contract.
 
 Remaining Marketing interface restoration proceeds with Sections and SEO, then Galleries, structured Website presentation, Backups/onboarding/head tags and remaining integrations/documents/email tools. Existing Sections reservations are not yet server-fenced like Pages; this is a separate concurrency gap and must not be marked accepted merely by sharing the builder. Admin retirement, full content parity, actual account/CRM reconciliation and final operational/recovery acceptance remain open.
+
+## Marketing Sections and SEO release — September 19
+
+Original shared Sections list/editor/visual builder and SEO cards/audit/reference/
+tabs shipped at `7714ccb9`. Production dashboard/Core/website deployments reached
+SUCCESS; authenticated read-only checks confirmed the new tools and actual empty
+catalog state. Thirteen adapter tests, both typechecks, isolated builds, independent
+review and desktop/mobile browser checks passed. Native fabricated public preview
+links were removed during review; editor preview remains authoritative. See the
+[parity evidence](marketing-admin-interface-parity.md). Sections still lacks the
+CMS Pages version/session fence. Galleries and structured Website restoration are
+in progress; remaining system-tool parity and all unrelated consolidation gates
+remain open. This release does not authorize admin retirement.
