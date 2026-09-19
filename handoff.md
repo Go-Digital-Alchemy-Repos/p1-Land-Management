@@ -1,3 +1,20 @@
+## Verified Blog formatting release — September 19
+
+Code `4c74f67a0f4ea6d5c2e77735232c13ddaf0ce86f` is pushed to main and the
+consolidation branch. Railway SUCCESS: Core `08e1081b-6c02-4ef1-ac5e-e708e92b2589`,
+Website `60e8796c-0962-49f0-bf9d-d3365247ccfe`, Dashboard
+`3e780b72-c332-4806-9522-6e2e1f504b1b`. Core readiness, Dashboard health and public
+Blog returned200 after rollout. Source/typecheck/build, pipeline/security and
+390px browser evidence is in the acceptance tracker. No production post was edited.
+
+The five live static articles were captured read-only, including resolved hydration
+snapshots, into a local review bundle. `/tmp/p1-blog-public-review-path` points to
+it; capture-index contains individual HTML hashes. All five contain snapshots.
+The next slice is a reproducible review bundle/dry-run importer following
+`docs/implementation/blog-static-import-plan.md`; route ownership, dates, author
+schema and presentation preservation must be resolved before production import.
+The full consolidation goal remains active.
+
 ## Verified Blog editor and public delivery release — September 19
 
 Runtime `e6125fb9c76732ada9b1fae60a857f281197a986` is on main and the
