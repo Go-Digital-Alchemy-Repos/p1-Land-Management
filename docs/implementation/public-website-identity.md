@@ -82,3 +82,7 @@ The live projection returned HTTP 200 with identity version `7e28bb3d3e207a1c30f
 Authenticated Branding loaded the retained company name, seed logo URL and favicon with Save disabled; no fields were edited, saved or uploaded. This exposed outdated integration-pending help text, corrected in the subsequent guidance patch. Actual live custom-branding writes, outage experiments and asset replacement were not performed; their current evidence is isolated automated validation, not Owner edit acceptance.
 
 Guidance follow-up `06acff2f7901be42e7ea88d247e5cb6cd59e4c81` also reached SUCCESS: Dashboard `4bbfe749-b86f-4817-9fb1-86b16e65e72b`, Core `4f605b64-e82b-4f69-b172-521adef14240`, public `d0800905-887a-43e8-9c63-952be447f3a5`. Reloaded authenticated Branding shows the new 30-second propagation/upload guidance; unchanged fields and disabled Save were preserved. Dashboard typecheck/build passed for this text correction.
+
+### Mobile quick-contact consistency — September 19
+
+The sticky mobile Call P1 link now consumes the same resolved published identity as the header, including an accessible label with its matching display number. Existing styling and visible label are preserved. Two component checks plus nine identity checks and website type checking passed; the production build prerendered all 54 routes (existing source-map/large-chunk warnings remain). No production identity fields were changed. Live changed-number acceptance remains separate from synthetic revision/fallback checks.
