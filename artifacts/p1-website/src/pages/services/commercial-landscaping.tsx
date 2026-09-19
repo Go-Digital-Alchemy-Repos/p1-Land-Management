@@ -75,7 +75,7 @@ export default function CommercialLandscaping() {
           
           <FeatureRow heading="Your Commercial Property. Our Full Attention." image={attentionImg} imageAlt="Crew maintaining a large commercial property's grounds">
             <p>
-              Your grounds need to look good and work for the people using them. We handle mowing, tree and brush care, ponds, and drainage, with a schedule built around your property.
+              Your grounds need to look good and work well for the people using them. We handle mowing, tree and brush care, ponds, drainage, and more with a schedule built around your property.
             </p>
             <p>
               We'll talk through regular upkeep, seasonal work, and any repairs that need separate attention, so you know what's included.
