@@ -137,7 +137,7 @@ async function getR2Config(): Promise<R2Config | null> {
   if (environment !== undefined) return environment;
   try {
     const { storage } = await import("../storage/index");
-    const settings = await storage.settings.getDecryptedCategory("cloudflare_r2");
+    const { values: settings } = await storage.settings.getCategorySnapshot("cloudflare_r2");
     const accountId = settings["r2_account_id"];
     const accessKeyId = settings["r2_access_key_id"];
     const secretAccessKey = settings["r2_secret_access_key"];
@@ -155,9 +155,7 @@ async function getR2Config(): Promise<R2Config | null> {
       };
     }
   } catch (err) {
-    logger.r2.warn("Failed to load R2 configuration", {
-      error: err instanceof Error ? err.message : String(err),
-    });
+    logger.r2.warn("Failed to read current R2 configuration");
   }
   return null;
 }
@@ -168,17 +166,13 @@ async function getClient(): Promise<{
   publicUrl: string;
   prefix: string;
 } | null> {
-  if (cachedClient && cachedConfig) {
-    return {
-      client: cachedClient,
-      bucketName: cachedConfig.bucketName,
-      publicUrl: cachedConfig.publicUrl,
-      prefix: cachedConfig.prefix,
-    };
-  }
-
+  // Bypass process-local settings caches before every operation. A failed read
+  // must never fall back to a client with revoked credentials.
   const config = await getR2Config();
-  if (!config) return null;
+  if (!config) { cachedClient = null; cachedConfig = null; return null; }
+  if (cachedClient && cachedConfig && JSON.stringify(cachedConfig) === JSON.stringify(config)) {
+    return { client: cachedClient, bucketName: config.bucketName, publicUrl: config.publicUrl, prefix: config.prefix };
+  }
 
   cachedConfig = config;
   cachedClient = new S3Client({
@@ -200,7 +194,6 @@ async function getClient(): Promise<{
 }
 
 export async function isConfigured(): Promise<boolean> {
-  if (cachedClient && cachedConfig) return true;
   const config = await getR2Config();
   return config !== null;
 }

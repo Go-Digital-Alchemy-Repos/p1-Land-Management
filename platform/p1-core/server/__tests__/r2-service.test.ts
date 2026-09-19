@@ -24,11 +24,12 @@ vi.mock("../utils/retry", () => ({
   retryOnce: vi.fn((fn: () => Promise<unknown>) => fn()),
 }));
 
-const mockGetDecryptedCategory = vi.fn();
+const mockConfigValues = vi.fn();
+const mockGetCategorySnapshot = vi.fn(async (category: string) => ({ values: await mockConfigValues(category), version: "test-version" }));
 vi.mock("../storage/index", () => ({
   storage: {
     settings: {
-      getDecryptedCategory: mockGetDecryptedCategory,
+      getCategorySnapshot: mockGetCategorySnapshot,
     },
   },
 }));
@@ -42,7 +43,7 @@ describe("R2 service", () => {
       mod.uploadFile("test.png", Buffer.from("data"), "image/png"),
     ).rejects.toMatchObject({ statusCode: 503 });
     await expect(mod.deleteFile("test.png")).rejects.toMatchObject({ statusCode: 503 });
-    expect(mockGetDecryptedCategory).not.toHaveBeenCalled();
+    expect(mockGetCategorySnapshot).not.toHaveBeenCalled();
     expect(mockSend).not.toHaveBeenCalled();
   });
   beforeEach(async () => {
@@ -54,8 +55,8 @@ describe("R2 service", () => {
     mod.resetClient();
   });
 
-  it("skips DB config fetch when client is already cached", async () => {
-    mockGetDecryptedCategory.mockResolvedValue({
+  it("reads fresh config for each upload while reusing the unchanged client", async () => {
+    mockConfigValues.mockResolvedValue({
       r2_account_id: "acct",
       r2_access_key_id: "key",
       r2_secret_access_key: "secret",
@@ -66,14 +67,15 @@ describe("R2 service", () => {
 
     const mod = await import("../services/r2.service");
     await mod.uploadFile("test.png", Buffer.from("data"), "image/png");
-    expect(mockGetDecryptedCategory).toHaveBeenCalledTimes(1);
+    expect(mockGetCategorySnapshot).toHaveBeenCalledTimes(1);
 
     await mod.uploadFile("test2.png", Buffer.from("data2"), "image/png");
-    expect(mockGetDecryptedCategory).toHaveBeenCalledTimes(1);
+    expect(mockGetCategorySnapshot).toHaveBeenCalledTimes(2);
+    expect(MockS3Client).toHaveBeenCalledTimes(1);
   });
 
   it("re-fetches config after resetClient is called", async () => {
-    mockGetDecryptedCategory.mockResolvedValue({
+    mockConfigValues.mockResolvedValue({
       r2_account_id: "acct",
       r2_access_key_id: "key",
       r2_secret_access_key: "secret",
@@ -87,11 +89,11 @@ describe("R2 service", () => {
     mod.resetClient();
     await mod.uploadFile("b.png", Buffer.from("b"), "image/png");
 
-    expect(mockGetDecryptedCategory).toHaveBeenCalledTimes(2);
+    expect(mockGetCategorySnapshot).toHaveBeenCalledTimes(2);
   });
 
   it("uses an app-served URL when no public URL is configured", async () => {
-    mockGetDecryptedCategory.mockResolvedValue({
+    mockConfigValues.mockResolvedValue({
       r2_account_id: "acct",
       r2_access_key_id: "key",
       r2_secret_access_key: "secret",
@@ -106,7 +108,7 @@ describe("R2 service", () => {
   });
 
   it("uses an app-served URL when the configured public URL is the private R2 API host", async () => {
-    mockGetDecryptedCategory.mockResolvedValue({
+    mockConfigValues.mockResolvedValue({
       r2_account_id: "acct",
       r2_access_key_id: "key",
       r2_secret_access_key: "secret",
@@ -121,7 +123,7 @@ describe("R2 service", () => {
   });
 
   it("returns null when R2 is not configured", async () => {
-    mockGetDecryptedCategory.mockResolvedValue({});
+    mockConfigValues.mockResolvedValue({});
 
     const mod = await import("../services/r2.service");
     const result = await mod.uploadFile("test.png", Buffer.from("data"), "image/png");
@@ -129,7 +131,7 @@ describe("R2 service", () => {
   });
 
   it("returns correct public URL on upload", async () => {
-    mockGetDecryptedCategory.mockResolvedValue({
+    mockConfigValues.mockResolvedValue({
       r2_account_id: "acct",
       r2_access_key_id: "key",
       r2_secret_access_key: "secret",
@@ -146,7 +148,7 @@ describe("R2 service", () => {
   it("stores uploads under the activated client domain namespace", async () => {
     process.env.CLIENT_STACK_ID = "better-farms-foundation";
     process.env.PUBLIC_SITE_ORIGIN = "https://www.better-farms.org";
-    mockGetDecryptedCategory.mockResolvedValue({
+    mockConfigValues.mockResolvedValue({
       r2_account_id: "acct",
       r2_access_key_id: "key",
       r2_secret_access_key: "secret",

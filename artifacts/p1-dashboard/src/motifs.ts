@@ -10,6 +10,7 @@ const pageIllustrations: Record<Exclude<DashboardView, "Settings">, string> = {
   "Website Colors": "none",
   "Website Features": "none",
   "Website Head Tags": "none",
+  "Website Email Templates": "none",
   "Website Documents": "none",
   "Website Onboarding": "none",
   "Website Sidebars": "none",

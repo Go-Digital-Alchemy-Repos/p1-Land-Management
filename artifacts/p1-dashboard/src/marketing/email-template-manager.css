@@ -1,0 +1,100 @@
+.email-template-manager {
+  min-width: 0;
+}
+.email-template-manager h1,
+.email-template-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.email-template-toolbar {
+  flex-wrap: wrap;
+  margin: 18px 0;
+}
+.email-template-toolbar button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 40px;
+}
+.email-template-workspace {
+  display: grid;
+  grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+.email-template-panel {
+  background: var(--paper, #fff);
+  border: 1px solid var(--line, #e5e5e5);
+  border-radius: 24px;
+  padding: 24px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.email-template-manager label {
+  display: grid;
+  gap: 7px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.email-template-panel nav {
+  display: grid;
+  gap: 8px;
+  max-height: 65vh;
+  overflow-y: auto;
+}
+.email-template-panel nav button {
+  display: grid;
+  gap: 6px;
+  text-align: left;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.email-template-panel small,
+.email-template-caption {
+  font-size: 12px;
+  color: var(--muted, #737373);
+}
+.email-template-panel [aria-current="page"] {
+  border-color: #171717;
+  background: #f5f5f5;
+}
+.email-template-panel fieldset {
+  border: 0;
+  padding: 0;
+  min-width: 0;
+}
+.email-template-panel textarea {
+  width: 100%;
+  resize: vertical;
+  font:
+    13px/1.65 ui-monospace,
+    monospace;
+}
+.email-template-manager .email-template-check {
+  display: flex;
+  align-items: center;
+}
+.email-template-check input {
+  width: auto;
+}
+.email-template-error {
+  padding: 14px;
+  border-left: 3px solid #b42318;
+}
+.email-template-panel iframe {
+  width: 100%;
+  min-height: 440px;
+  border: 1px solid #e5e5e5;
+  border-radius: 18px;
+  background: white;
+}
+@media (max-width: 850px) {
+  .email-template-workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .email-template-panel nav {
+    max-height: 220px;
+  }
+}

@@ -12,11 +12,13 @@ vi.mock("../utils/metrics", () => ({
 }));
 
 const mockGetDecryptedCategory = vi.fn();
+const mockGetCategorySnapshot = vi.fn(async (category: string) => ({ values: await mockGetDecryptedCategory(category), version: "test-version" }));
 const mockGetTemplate = vi.fn();
 vi.mock("../storage/index", () => ({
   storage: {
     settings: {
       getDecryptedCategory: mockGetDecryptedCategory,
+      getCategorySnapshot: mockGetCategorySnapshot,
     },
     emailTemplates: {
       getTemplate: mockGetTemplate,
@@ -92,7 +94,7 @@ describe("Email service", () => {
     expect(mockClient).toHaveBeenCalledWith(expect.objectContaining({ timeout: 30_000 }));
   });
 
-  it("caches Mailgun config after first fetch", async () => {
+  it("reads fresh Mailgun configuration before every send", async () => {
     mockGetDecryptedCategory.mockResolvedValue({
       mailgun_api_key: "key-123",
       mailgun_domain: "mg.example.com",
@@ -103,7 +105,9 @@ describe("Email service", () => {
     await mod.sendEmail("a@b.com", "S1", "<p>1</p>");
     await mod.sendEmail("c@d.com", "S2", "<p>2</p>");
 
-    expect(mockGetDecryptedCategory).toHaveBeenCalledTimes(1);
+    expect(mockGetCategorySnapshot).toHaveBeenCalledTimes(2);
+    expect(mockGetCategorySnapshot).toHaveBeenNthCalledWith(1, "mailgun");
+    expect(mockGetCategorySnapshot).toHaveBeenNthCalledWith(2, "mailgun");
   });
 
   it("re-fetches config after resetMailgunConfig", async () => {
@@ -118,7 +122,7 @@ describe("Email service", () => {
     mod.resetMailgunConfig();
     await mod.sendEmail("c@d.com", "S2", "<p>2</p>");
 
-    expect(mockGetDecryptedCategory).toHaveBeenCalledTimes(2);
+    expect(mockGetCategorySnapshot).toHaveBeenCalledTimes(2);
   });
 
   it("returns false when no email provider is configured", async () => {

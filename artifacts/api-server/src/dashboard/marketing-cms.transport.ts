@@ -15,6 +15,11 @@ export interface CmsOperation {
 /** Explicit method/path pairs. Adding a Core route never exposes it automatically. */
 export const cmsOperations: CmsOperation[] = [];
 for (const [method, path] of [
+  ["GET", "/website-system/email-templates"],
+  ["PUT", "/website-system/email-templates/:slug"],
+  ["POST", "/website-system/email-templates/restore"],
+  ["POST", "/website-system/email-templates/:slug/preview"],
+  ["POST", "/website-system/email-templates/:slug/test"],
   ["POST", "/website-system/onboarding/domain-plan"],
   ["POST", "/website-system/onboarding/dns-verification"],
   ["POST", "/website-system/onboarding/readiness"],

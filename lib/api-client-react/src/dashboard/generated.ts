@@ -344,6 +344,13 @@ import type {
   WebsiteDocumentVersionInput,
   WebsiteDraftInput,
   WebsiteEditorReservation,
+  WebsiteEmailTemplate,
+  WebsiteEmailTemplateCollection,
+  WebsiteEmailTemplatePreview,
+  WebsiteEmailTemplatePreviewInput,
+  WebsiteEmailTemplateRestore,
+  WebsiteEmailTemplateSave,
+  WebsiteEmailTemplateTestResult,
   WebsiteExpectedRevision,
   WebsiteFeaturesInput,
   WebsiteFeaturesState,
@@ -8680,6 +8687,203 @@ export const getOnboardingEvidence = async (stackId: string, options?: RequestIn
   {
     ...options,
     method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getGetWebsiteEmailTemplatesUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/website-system/email-templates`
+}
+
+/**
+ * Owner-only email template operation. Tests send saved content only to the authenticated user; never replay writes automatically.
+ */
+export const getWebsiteEmailTemplates = async ( options?: RequestInit): Promise<WebsiteEmailTemplateCollection> => {
+
+  return customFetch<WebsiteEmailTemplateCollection>(getGetWebsiteEmailTemplatesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getSaveWebsiteEmailTemplateUrl = (slug: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/website-system/email-templates/${slug}`
+}
+
+/**
+ * Owner-only email template operation. Tests send saved content only to the authenticated user; never replay writes automatically.
+ */
+export const saveWebsiteEmailTemplate = async (slug: string,
+    websiteEmailTemplateSave: WebsiteEmailTemplateSave, options?: RequestInit): Promise<WebsiteEmailTemplate> => {
+
+  return customFetch<WebsiteEmailTemplate>(getSaveWebsiteEmailTemplateUrl(slug),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      websiteEmailTemplateSave,)
+  }
+);}
+
+
+
+export const getRestoreWebsiteEmailTemplatesUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/website-system/email-templates/restore`
+}
+
+/**
+ * Owner-only email template operation. Tests send saved content only to the authenticated user; never replay writes automatically.
+ */
+export const restoreWebsiteEmailTemplates = async (websiteEmailTemplateRestore: WebsiteEmailTemplateRestore, options?: RequestInit): Promise<WebsiteEmailTemplateCollection> => {
+
+  return customFetch<WebsiteEmailTemplateCollection>(getRestoreWebsiteEmailTemplatesUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      websiteEmailTemplateRestore,)
+  }
+);}
+
+
+
+export const getPreviewWebsiteEmailTemplateUrl = (slug: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/website-system/email-templates/${slug}/preview`
+}
+
+/**
+ * Owner-only email template operation. Tests send saved content only to the authenticated user; never replay writes automatically.
+ */
+export const previewWebsiteEmailTemplate = async (slug: string,
+    websiteEmailTemplatePreviewInput: WebsiteEmailTemplatePreviewInput, options?: RequestInit): Promise<WebsiteEmailTemplatePreview> => {
+
+  return customFetch<WebsiteEmailTemplatePreview>(getPreviewWebsiteEmailTemplateUrl(slug),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      websiteEmailTemplatePreviewInput,)
+  }
+);}
+
+
+
+export const getTestWebsiteEmailTemplateUrl = (slug: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/website-system/email-templates/${slug}/test`
+}
+
+/**
+ * Owner-only email template operation. Tests send saved content only to the authenticated user; never replay writes automatically.
+ */
+export const testWebsiteEmailTemplate = async (slug: string, options?: RequestInit): Promise<WebsiteEmailTemplateTestResult> => {
+
+  return customFetch<WebsiteEmailTemplateTestResult>(getTestWebsiteEmailTemplateUrl(slug),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+export const getAcquireWebsiteEmailTemplateReservationUrl = (slug: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/editor-locks/email_template/${slug}/acquire`
+}
+
+/**
+ * Owner-only private document operation. Preserve drafts on conflicts or uncertain writes; reload authoritative state before retrying.
+ */
+export const acquireWebsiteEmailTemplateReservation = async (slug: string, options?: RequestInit): Promise<WebsiteEditorReservation> => {
+
+  return customFetch<WebsiteEditorReservation>(getAcquireWebsiteEmailTemplateReservationUrl(slug),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+export const getHeartbeatWebsiteEmailTemplateReservationUrl = (slug: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/editor-locks/email_template/${slug}/heartbeat`
+}
+
+/**
+ * Owner-only private document operation. Preserve drafts on conflicts or uncertain writes; reload authoritative state before retrying.
+ */
+export const heartbeatWebsiteEmailTemplateReservation = async (slug: string, options?: RequestInit): Promise<WebsiteEditorReservation> => {
+
+  return customFetch<WebsiteEditorReservation>(getHeartbeatWebsiteEmailTemplateReservationUrl(slug),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+export const getReleaseWebsiteEmailTemplateReservationUrl = (slug: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/editor-locks/email_template/${slug}/release`
+}
+
+/**
+ * Owner-only private document operation. Preserve drafts on conflicts or uncertain writes; reload authoritative state before retrying.
+ */
+export const releaseWebsiteEmailTemplateReservation = async (slug: string, options?: RequestInit): Promise<WebsiteEditorReservation> => {
+
+  return customFetch<WebsiteEditorReservation>(getReleaseWebsiteEmailTemplateReservationUrl(slug),
+  {
+    ...options,
+    method: 'POST'
 
 
   }

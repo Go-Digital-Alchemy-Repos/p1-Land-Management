@@ -118,6 +118,7 @@ vi.mock("../storage", () => ({
     editorLocks: { listActiveByResourceType: state.list },
   },
 }));
+vi.mock("../services/system-email-templates.service", () => ({ SYSTEM_EMAIL_TEMPLATE_DEFAULTS: [] }));
 vi.mock("../services/email.service", () => ({resetEmailBrandingCache:vi.fn(),sendEventCanceledEmail:state.eventMail,sendEventReminderEmail:state.eventMail,sendRecordingAvailableEmail:state.eventMail}));
 vi.mock("../services/commercial-backfill.service", () => ({ backfillCommercialInquiries: vi.fn() }));
 vi.mock("../storage/index", async () => await import("../storage"));

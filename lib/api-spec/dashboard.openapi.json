@@ -15195,6 +15195,390 @@
           }
         ]
       }
+    },
+    "/marketing/cms/website-system/email-templates": {
+      "get": {
+        "operationId": "getWebsiteEmailTemplates",
+        "description": "Owner-only email template operation. Tests send saved content only to the authenticated user; never replay writes automatically.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteEmailTemplateCollection"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Active attested Owner required"
+          },
+          "404": {
+            "description": "Document not found"
+          },
+          "409": {
+            "description": "Version conflict; preserve draft and reload"
+          },
+          "503": {
+            "description": "Service unavailable; write outcome may be uncertain"
+          }
+        }
+      }
+    },
+    "/marketing/cms/website-system/email-templates/{slug}": {
+      "put": {
+        "operationId": "saveWebsiteEmailTemplate",
+        "description": "Owner-only email template operation. Tests send saved content only to the authenticated user; never replay writes automatically.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteEmailTemplate"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Active attested Owner required"
+          },
+          "404": {
+            "description": "Document not found"
+          },
+          "409": {
+            "description": "Version conflict; preserve draft and reload"
+          },
+          "503": {
+            "description": "Service unavailable; write outcome may be uncertain"
+          }
+        },
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 120,
+              "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebsiteEmailTemplateSave"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/marketing/cms/website-system/email-templates/restore": {
+      "post": {
+        "operationId": "restoreWebsiteEmailTemplates",
+        "description": "Owner-only email template operation. Tests send saved content only to the authenticated user; never replay writes automatically.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteEmailTemplateCollection"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Active attested Owner required"
+          },
+          "404": {
+            "description": "Document not found"
+          },
+          "409": {
+            "description": "Version conflict; preserve draft and reload"
+          },
+          "503": {
+            "description": "Service unavailable; write outcome may be uncertain"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebsiteEmailTemplateRestore"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/marketing/cms/website-system/email-templates/{slug}/preview": {
+      "post": {
+        "operationId": "previewWebsiteEmailTemplate",
+        "description": "Owner-only email template operation. Tests send saved content only to the authenticated user; never replay writes automatically.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteEmailTemplatePreview"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Active attested Owner required"
+          },
+          "404": {
+            "description": "Document not found"
+          },
+          "409": {
+            "description": "Version conflict; preserve draft and reload"
+          },
+          "503": {
+            "description": "Service unavailable; write outcome may be uncertain"
+          }
+        },
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 120,
+              "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebsiteEmailTemplatePreviewInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/marketing/cms/website-system/email-templates/{slug}/test": {
+      "post": {
+        "operationId": "testWebsiteEmailTemplate",
+        "description": "Owner-only email template operation. Tests send saved content only to the authenticated user; never replay writes automatically.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteEmailTemplateTestResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Active attested Owner required"
+          },
+          "404": {
+            "description": "Document not found"
+          },
+          "409": {
+            "description": "Version conflict; preserve draft and reload"
+          },
+          "503": {
+            "description": "Service unavailable; write outcome may be uncertain"
+          }
+        },
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 120,
+              "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/editor-locks/email_template/{slug}/acquire": {
+      "post": {
+        "operationId": "acquireWebsiteEmailTemplateReservation",
+        "description": "Owner-only private document operation. Preserve drafts on conflicts or uncertain writes; reload authoritative state before retrying.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteEditorReservation"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Active attested Owner required"
+          },
+          "404": {
+            "description": "Document not found"
+          },
+          "409": {
+            "description": "Version conflict; preserve draft and reload"
+          },
+          "503": {
+            "description": "Service unavailable; write outcome may be uncertain"
+          }
+        },
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/editor-locks/email_template/{slug}/heartbeat": {
+      "post": {
+        "operationId": "heartbeatWebsiteEmailTemplateReservation",
+        "description": "Owner-only private document operation. Preserve drafts on conflicts or uncertain writes; reload authoritative state before retrying.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteEditorReservation"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Active attested Owner required"
+          },
+          "404": {
+            "description": "Document not found"
+          },
+          "409": {
+            "description": "Version conflict; preserve draft and reload"
+          },
+          "503": {
+            "description": "Service unavailable; write outcome may be uncertain"
+          }
+        },
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/editor-locks/email_template/{slug}/release": {
+      "post": {
+        "operationId": "releaseWebsiteEmailTemplateReservation",
+        "description": "Owner-only private document operation. Preserve drafts on conflicts or uncertain writes; reload authoritative state before retrying.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteEditorReservation"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Active attested Owner required"
+          },
+          "404": {
+            "description": "Document not found"
+          },
+          "409": {
+            "description": "Version conflict; preserve draft and reload"
+          },
+          "503": {
+            "description": "Service unavailable; write outcome may be uncertain"
+          }
+        },
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -31344,6 +31728,173 @@
           "recordedByUserId"
         ],
         "additionalProperties": false
+      },
+      "WebsiteEmailTemplate": {
+        "type": "object",
+        "required": [
+          "id",
+          "slug",
+          "name",
+          "module",
+          "subject",
+          "htmlBody",
+          "description",
+          "version",
+          "variables",
+          "isActive",
+          "updatedAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "module": {
+            "type": "string"
+          },
+          "subject": {
+            "type": "string"
+          },
+          "htmlBody": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "variables": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "updatedAt": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "WebsiteEmailTemplateCollection": {
+        "type": "object",
+        "required": [
+          "version",
+          "templates"
+        ],
+        "properties": {
+          "version": {
+            "type": "string"
+          },
+          "templates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WebsiteEmailTemplate"
+            }
+          }
+        }
+      },
+      "WebsiteEmailTemplateInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "minProperties": 1,
+        "properties": {
+          "subject": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          },
+          "htmlBody": {
+            "type": "string",
+            "maxLength": 500000
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        }
+      },
+      "WebsiteEmailTemplateSave": {
+        "type": "object",
+        "required": [
+          "template",
+          "expectedVersion"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "template": {
+            "$ref": "#/components/schemas/WebsiteEmailTemplateInput"
+          },
+          "expectedVersion": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      },
+      "WebsiteEmailTemplateRestore": {
+        "type": "object",
+        "required": [
+          "expectedVersion"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "expectedVersion": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      },
+      "WebsiteEmailTemplatePreviewInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "subject": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          },
+          "htmlBody": {
+            "type": "string",
+            "maxLength": 500000
+          }
+        }
+      },
+      "WebsiteEmailTemplatePreview": {
+        "type": "object",
+        "required": [
+          "subject",
+          "html"
+        ],
+        "properties": {
+          "subject": {
+            "type": "string"
+          },
+          "html": {
+            "type": "string"
+          }
+        }
+      },
+      "WebsiteEmailTemplateTestResult": {
+        "type": "object",
+        "required": [
+          "success",
+          "message"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
       }
     }
   }

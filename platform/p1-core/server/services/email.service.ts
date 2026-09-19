@@ -33,15 +33,12 @@ interface MailgunConfig {
   fromAddress: string;
 }
 
-let cachedMailgunConfig: MailgunConfig | null = null;
-let mailgunConfigFetched = false;
 let cachedEmailLogoUrl: string | null = null;
 let cachedEmailCompanyName = DEFAULT_EMAIL_COMPANY_NAME;
 let emailBrandingFetched = false;
 
 export function resetMailgunConfig(): void {
-  cachedMailgunConfig = null;
-  mailgunConfigFetched = false;
+  // Configuration is read fresh before every operation; retained for callers.
 }
 
 export function resetEmailBrandingCache(): void {
@@ -51,24 +48,19 @@ export function resetEmailBrandingCache(): void {
 }
 
 async function getMailgunConfig(): Promise<MailgunConfig | null> {
-  if (mailgunConfigFetched) return cachedMailgunConfig;
-
   try {
     const { storage } = await import("../storage/index");
-    const settings = await storage.settings.getDecryptedCategory("mailgun");
+    const { values: settings } = await storage.settings.getCategorySnapshot("mailgun");
     const apiKey = settings["mailgun_api_key"];
     const domain = settings["mailgun_domain"];
     const fromAddress = settings["mailgun_from_address"] || SMTP_FROM;
     if (apiKey && domain) {
-      cachedMailgunConfig = { apiKey, domain, fromAddress };
+      return { apiKey, domain, fromAddress };
     }
-    mailgunConfigFetched = true;
   } catch (err) {
-    logger.email.warn("Failed to load Mailgun configuration", {
-      error: err instanceof Error ? err.message : String(err),
-    });
+    logger.email.warn("Failed to read current Mailgun configuration");
   }
-  return cachedMailgunConfig;
+  return null;
 }
 
 function resolveAbsoluteAssetUrl(url: string | null | undefined) {

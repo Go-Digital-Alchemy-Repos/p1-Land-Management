@@ -41,7 +41,7 @@ function normalizePrefix(prefix: string | undefined): string {
 async function loadConfigFromSettings(): Promise<BackupStorageConfig | null> {
   try {
     const { storage } = await import("../storage");
-    const settings = await storage.settings.getDecryptedCategory("cloudflare_r2");
+    const { values: settings } = await storage.settings.getCategorySnapshot("cloudflare_r2");
     const accountId = settings["r2_account_id"];
     const accessKeyId = settings["r2_access_key_id"];
     const secretAccessKey = settings["r2_secret_access_key"];
@@ -58,9 +58,7 @@ async function loadConfigFromSettings(): Promise<BackupStorageConfig | null> {
       };
     }
   } catch (error) {
-    logger.backup.warn("Failed to load backup storage config from app settings", {
-      error: error instanceof Error ? error.message : String(error),
-    });
+    logger.backup.warn("Failed to read current backup storage configuration");
   }
 
   return null;
@@ -90,13 +88,12 @@ async function loadConfig(): Promise<BackupStorageConfig | null> {
 }
 
 async function getClient(): Promise<{ client: S3Client; config: BackupStorageConfig } | null> {
-  if (cachedClient && cachedConfig) {
-    return { client: cachedClient, config: cachedConfig };
-  }
-
+  // Bypass process-local settings caches before every operation. A failed read
+  // must never fall back to a client with revoked credentials.
   const config = await loadConfig();
-  if (!config) {
-    return null;
+  if (!config) { cachedClient = null; cachedConfig = null; return null; }
+  if (cachedClient && cachedConfig && JSON.stringify(cachedConfig) === JSON.stringify(config)) {
+    return { client: cachedClient, config };
   }
 
   cachedConfig = config;

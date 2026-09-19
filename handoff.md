@@ -103,13 +103,7 @@ Use the acceptance tracker for the full matrix. Prioritized outstanding areas:
 7. **Agreement acceptance:** complete integrated long-document/multi-client/historical-document tests and real browser journey through crew execution/review, offline behavior, activation and billing, including cancellation/successor/change orders. Prior mixed-billing fixture simulated crew completion and did not exercise external posting.
 8. **Retirement/release acceptance:** execute isolated restore/rollback and migration rehearsals, finish redirect/deep-link inventory, verify media/intake/preview/public compatibility, then safely retire `/admin/`. It remains needed today.
 
-Email Templates was investigated but implementation has **not** started. Existing sources:
-
-- `platform/p1-core/server/routes/settings.routes.ts`: list, restore, edit, preview and test-send operations; the full router has legacy authentication and cannot simply be mounted under the service bridge.
-- `platform/p1-core/server/storage/email-template.storage.ts`: CRUD without an existing optimistic version contract.
-- `platform/p1-core/client/src/features/admin/settings/email-templates-tab.tsx`: editor locks.
-
-Preserve operations and locking/stale-write protection, enforce Owner access at both boundaries, and separate website templates from dashboard transaction mail. Adding a sidebar link alone is insufficient. Do not send test mail to real recipients during acceptance without authorization.
+Email Templates now has versioned transactional storage, coordinated retained/startup writers, a native Owner-only API and dashboard editor at `/marketing/system/email-templates`. See `docs/implementation/email-template-concurrency.md` for implemented operations and validation. Native live browser acceptance is pending the current release. Website Integrations has an unmounted contract/backend foundation; its UI, effective configuration management and legacy-writer coordination remain incomplete. Do not retire retained admin or send test emails as part of unattended validation.
 
 ## Deployment state and operations
 

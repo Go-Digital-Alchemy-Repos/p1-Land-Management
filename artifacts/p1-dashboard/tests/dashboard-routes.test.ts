@@ -159,3 +159,11 @@ test("Onboarding stays under Website System with Owner-only navigation", () => {
   assert.equal(canAccessRoute(route,"owner"),true);
   for(const role of ["admin","member","client","crew",null]) assert.equal(canAccessRoute(route,role,["marketing.content.pages"]),false);
 });
+
+test("Email Templates is an Owner-only Website System destination", () => {
+ const route=routeFromPath("/marketing/system/email-templates");
+ assert.equal(route.kind,"page");if(route.kind!=="page")return;
+ assert.equal(route.page.view,"Website Email Templates");assert.equal(route.page.section,"Website System");
+ assert.equal(canAccessRoute(route,"owner"),true);
+ for(const role of ["admin","member","client","crew",null]) assert.equal(canAccessRoute(route,role,["marketing.content.pages"]),false);
+});

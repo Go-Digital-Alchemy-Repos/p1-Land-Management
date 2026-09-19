@@ -541,3 +541,12 @@ test("onboarding bridge only permits the four Owner-only operations", () => {
  }
  assert.equal(cmsOperations.some(op=>op.path.startsWith("/website-system/onboarding")&&op.method==="DELETE"),false);
 });
+
+test("email template bridge permits only exact Owner operations", () => {
+ for (const [method,suffix] of [["GET",""],["PUT","/:slug"],["POST","/restore"],["POST","/:slug/preview"],["POST","/:slug/test"]]) {
+  const op=operation(method,`/website-system/email-templates${suffix}`);
+  assert.equal(op.ownerOnly,true);assert.deepEqual(op.capabilities,[]);
+  if(suffix.includes(":slug")) assert.throws(()=>cmsDestination(op,{slug:"../other"},{}));
+ }
+ assert.equal(cmsOperations.some(op=>op.path.startsWith("/website-system/email-templates")&&op.method==="DELETE"),false);
+});
