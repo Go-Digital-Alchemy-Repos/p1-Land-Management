@@ -106,6 +106,31 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
     }
     assert.equal(unexpectedRequests, 0); assert.equal(upstreamRequests.length, before);
   });
+  await t.test('map requests are allowed after direct and client-side directory navigation', async () => {
+    for (const pathname of ['/', '/service-areas']) {
+      const response = await request(port, pathname);
+      assert.equal(response.status, 200);
+      const policy = response.headers['content-security-policy'];
+      assert.match(policy, /connect-src 'self' https:\/\/tiles\.openfreemap\.org(?: |;)/);
+      assert.match(policy, /script-src 'self' https:\/\/www\.googletagmanager\.com;/);
+      assert.doesNotMatch(policy, /unsafe-eval|https:\/\/\*/);
+    }
+    const directory = await request(port, '/service-areas');
+    const html = directory.body.replace(/<!--.*?-->/g, '');
+    const mapHeading = html.indexOf('Find your service area');
+    assert(mapHeading >= 0 && mapHeading < html.indexOf('Upstate South Carolina</h2>'));
+    assert(html.includes('Browse all 30 service locations'));
+    const locations = JSON.parse(await readFile(resolve(root, 'src/lib/service-locations.json'), 'utf8'));
+    const routes = await readFile(resolve(root, 'src/app-routes.tsx'), 'utf8');
+    const expected = [...routes.matchAll(/<Route\s+path="(\/service-areas\/[^"]+)"/g)].map(match => match[1]);
+    assert.deepEqual(locations.map(location => location.path).sort(), expected.sort());
+    for (const location of locations) {
+      assert(html.includes(`href="${location.path}"`));
+      const [longitude, latitude] = location.coordinates;
+      assert(Number.isFinite(longitude) && longitude > -84 && longitude < -79);
+      assert(Number.isFinite(latitude) && latitude > 34 && latitude < 37);
+    }
+  });
   await t.test('unknown public and CMS routes return genuine 404', async () => {
     const missing = await request(port, '/not-a-p1-page'); assert.equal(missing.status, 404); assert.equal(missing.headers['x-robots-tag'], 'noindex');
     assert.equal((await request(port, '/api/p1/page-content?path=%2Fmissing')).status, 404);

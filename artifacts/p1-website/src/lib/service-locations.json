@@ -1,0 +1,302 @@
+[
+  {
+    "name": "Anderson",
+    "state": "SC",
+    "path": "/service-areas/anderson-sc",
+    "kind": "community",
+    "coordinates": [
+      -82.643517,
+      34.521487
+    ]
+  },
+  {
+    "name": "Belmont",
+    "state": "NC",
+    "path": "/service-areas/belmont-nc",
+    "kind": "community",
+    "coordinates": [
+      -81.041089,
+      35.221284
+    ]
+  },
+  {
+    "name": "Boiling Springs",
+    "state": "SC",
+    "path": "/service-areas/boiling-springs-sc",
+    "kind": "community",
+    "coordinates": [
+      -81.977929,
+      35.04501
+    ]
+  },
+  {
+    "name": "Charlotte",
+    "state": "NC",
+    "path": "/service-areas/charlotte-north-carolina",
+    "kind": "community",
+    "coordinates": [
+      -80.83099,
+      35.209045
+    ]
+  },
+  {
+    "name": "Concord",
+    "state": "NC",
+    "path": "/service-areas/concord-nc",
+    "kind": "community",
+    "coordinates": [
+      -80.63551,
+      35.392094
+    ]
+  },
+  {
+    "name": "Cornelius",
+    "state": "NC",
+    "path": "/service-areas/cornelius-nc",
+    "kind": "community",
+    "coordinates": [
+      -80.881329,
+      35.473234
+    ]
+  },
+  {
+    "name": "Duncan",
+    "state": "SC",
+    "path": "/service-areas/duncan-sc",
+    "kind": "community",
+    "coordinates": [
+      -82.143754,
+      34.930707
+    ]
+  },
+  {
+    "name": "Easley",
+    "state": "SC",
+    "path": "/service-areas/easley-sc",
+    "kind": "community",
+    "coordinates": [
+      -82.586196,
+      34.818457
+    ]
+  },
+  {
+    "name": "Fort Mill",
+    "state": "SC",
+    "path": "/service-areas/fort-mill-sc",
+    "kind": "community",
+    "coordinates": [
+      -80.94,
+      35.005997
+    ]
+  },
+  {
+    "name": "Gaffney",
+    "state": "SC",
+    "path": "/service-areas/gaffney-sc",
+    "kind": "community",
+    "coordinates": [
+      -81.661532,
+      35.073558
+    ]
+  },
+  {
+    "name": "Gastonia",
+    "state": "NC",
+    "path": "/service-areas/gastonia-nc",
+    "kind": "community",
+    "coordinates": [
+      -81.184834,
+      35.248999
+    ]
+  },
+  {
+    "name": "Greenville",
+    "state": "SC",
+    "path": "/service-areas/greenville-sc",
+    "kind": "community",
+    "coordinates": [
+      -82.362997,
+      34.836902
+    ]
+  },
+  {
+    "name": "Greer",
+    "state": "SC",
+    "path": "/service-areas/greer-sc",
+    "kind": "community",
+    "coordinates": [
+      -82.229115,
+      34.931799
+    ]
+  },
+  {
+    "name": "Huntersville",
+    "state": "NC",
+    "path": "/service-areas/huntersville-nc",
+    "kind": "community",
+    "coordinates": [
+      -80.86868,
+      35.40681
+    ]
+  },
+  {
+    "name": "Indian Land",
+    "state": "SC",
+    "path": "/service-areas/indian-land-sc",
+    "kind": "community",
+    "coordinates": [
+      -80.8556,
+      35.0018
+    ]
+  },
+  {
+    "name": "Indian Trail",
+    "state": "NC",
+    "path": "/service-areas/indian-trail-nc",
+    "kind": "community",
+    "coordinates": [
+      -80.651152,
+      35.068638
+    ]
+  },
+  {
+    "name": "Inman",
+    "state": "SC",
+    "path": "/service-areas/inman-sc",
+    "kind": "community",
+    "coordinates": [
+      -82.089808,
+      35.046134
+    ]
+  },
+  {
+    "name": "Kannapolis",
+    "state": "NC",
+    "path": "/service-areas/kannapolis-nc",
+    "kind": "community",
+    "coordinates": [
+      -80.647499,
+      35.479904
+    ]
+  },
+  {
+    "name": "Lancaster County",
+    "state": "SC",
+    "path": "/service-areas/lancaster-county-sc",
+    "kind": "county",
+    "coordinates": [
+      -80.703688,
+      34.686818
+    ]
+  },
+  {
+    "name": "Matthews",
+    "state": "NC",
+    "path": "/service-areas/matthews-nc",
+    "kind": "community",
+    "coordinates": [
+      -80.709693,
+      35.119788
+    ]
+  },
+  {
+    "name": "Monroe",
+    "state": "NC",
+    "path": "/service-areas/monroe-nc",
+    "kind": "community",
+    "coordinates": [
+      -80.561277,
+      35.001591
+    ]
+  },
+  {
+    "name": "Mooresville & Lake Norman",
+    "state": "NC",
+    "path": "/service-areas/mooresville-lake-norman-nc",
+    "kind": "community",
+    "coordinates": [
+      -80.827755,
+      35.583717
+    ]
+  },
+  {
+    "name": "Mount Holly",
+    "state": "NC",
+    "path": "/service-areas/mount-holly-nc",
+    "kind": "community",
+    "coordinates": [
+      -81.006609,
+      35.314404
+    ]
+  },
+  {
+    "name": "Rock Hill",
+    "state": "SC",
+    "path": "/service-areas/rock-hill-sc",
+    "kind": "community",
+    "coordinates": [
+      -81.019177,
+      34.938216
+    ]
+  },
+  {
+    "name": "Simpsonville",
+    "state": "SC",
+    "path": "/service-areas/simpsonville-sc",
+    "kind": "community",
+    "coordinates": [
+      -82.256377,
+      34.728538
+    ]
+  },
+  {
+    "name": "Spartanburg",
+    "state": "SC",
+    "path": "/service-areas/spartanburg-sc",
+    "kind": "community",
+    "coordinates": [
+      -81.925944,
+      34.945627
+    ]
+  },
+  {
+    "name": "Union County",
+    "state": "NC",
+    "path": "/service-areas/union-county-nc",
+    "kind": "county",
+    "coordinates": [
+      -80.530426,
+      34.99182
+    ]
+  },
+  {
+    "name": "Upstate South Carolina",
+    "state": "SC",
+    "path": "/service-areas/upstate-south-carolina",
+    "kind": "region",
+    "coordinates": [
+      -82.12,
+      34.79
+    ]
+  },
+  {
+    "name": "Waxhaw",
+    "state": "NC",
+    "path": "/service-areas/waxhaw-nc",
+    "kind": "community",
+    "coordinates": [
+      -80.739968,
+      34.937472
+    ]
+  },
+  {
+    "name": "York County",
+    "state": "SC",
+    "path": "/service-areas/york-county-sc",
+    "kind": "county",
+    "coordinates": [
+      -81.183187,
+      34.970187
+    ]
+  }
+]
