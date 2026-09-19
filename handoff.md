@@ -1,3 +1,18 @@
+## Verified release — September 19, Careers/Events and public menus
+
+`4b7cf0f6106b40af504f40a7a8e2c5e879a172c6` is pushed to main and the
+consolidation branch. Railway SUCCESS for dashboard
+`79f2bfa5-56a1-4813-ae1d-5820b4847222`, Core
+`f0a32e3e-d5e3-4bc9-ac1e-e540953fa92f`, and website
+`5af2d952-739d-40f9-846d-4cd7cd3ebb66`.
+
+Live public menu endpoint returns 200 and the four unassigned slots. Homepage
+SSR and contact-route JSON contain the same menu revision; existing navigation
+remains visible. Authenticated Menus shows the publication notice and empty
+catalog. Careers correctly displays its disabled-module state with creation
+unavailable. No production writes or module enablement were performed.
+The candidate evidence below records scope and limitations; goal remains active.
+
 ## Careers/Events and public menus — September 19 release candidate
 
 This checkpoint supersedes the historical entries below. Team/Sidebars revision

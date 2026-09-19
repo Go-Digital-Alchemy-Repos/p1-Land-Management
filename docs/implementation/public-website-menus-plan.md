@@ -1,6 +1,6 @@
 # Public website menu delivery — implementation contract
 
-Status: implemented release candidate, September 19; deployment verification pending.
+Status: released and live-verified at `4b7cf0f6106b40af504f40a7a8e2c5e879a172c6`, September 19.
 Four P1 menu slots now have a bounded public projection, persisted last-valid
 cache, server rendering and matching browser snapshot. Live menu catalog was
 read-only checked and has no assignments; existing navigation remains fallback.
@@ -100,3 +100,8 @@ menu projections. No production test forms were submitted.
 Rollback: redeploy the preceding three service revisions together if necessary;
 no database schema or stored menu migration is involved. Existing assignments are
 preserved and old consumers ignore them. Retain `/admin` throughout acceptance.
+
+Live closeout: all three Railway services SUCCESS at the above revision. Public
+projection returns 200 with four null assignments; homepage SSR and contact-route
+JSON carry identical menu revision. Existing fallback navigation remains visible.
+Authenticated editor shows the publication notice and empty saved catalog.

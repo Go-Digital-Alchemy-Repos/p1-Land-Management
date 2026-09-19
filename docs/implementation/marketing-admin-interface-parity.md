@@ -70,7 +70,7 @@ not a claim of live functional testing:
 | 1 | Colors | Restored and live at `7733706`: three groups, descriptions and original palette preview. |
 | 1 | Forms | Restored and live at `7ea1fee`: shared Builder/Entries, library, canvas and inspector; native delivery monitoring retained. |
 | 1 | CMS Pages | Restored and live at `872d2bb7`: shared list/templates/builder; exact-instance and version-fenced Page writes. |
-| 2 | Menus | Shared Theme Locations/cards/nested editor live at `effa8d77`; generic public consumer remains open. |
+| 2 | Menus | Shared Theme Locations/cards/nested editor live at `effa8d77`; generic public consumer released at `4b7cf0f6` (four P1 slots, SSR/hydration, cached delivery and managed form dialogs). |
 | 2 | Blog | Shared list and Content/Layout/SEO editor live at `effa8d77`; dynamic public delivery and server concurrency remain open. |
 | 2 | Media | Restored and live at `4ee1a90`: shared library, details, upload and crop dialogs; optional multiselect caller parity remains open. |
 | 2 | Galleries | Restored and live at `78fb0e72`: shared list, Details/Images/Display/Preview cards, upload and modal preview. |
@@ -476,3 +476,8 @@ last-valid cache and lazy managed-form dialogs. Live catalog is empty; existing
 navigation remains unchanged until a supported location is assigned. This closes
 the generic menu consumer implementation gap, subject to deployment verification;
 it does not close unrelated Blog, Sidebars or CMS publication/conflict gates.
+
+Release accepted at `4b7cf0f6106b40af504f40a7a8e2c5e879a172c6`: all three Railway
+services SUCCESS; live public menu endpoint and matching SSR/navigation snapshots
+verified. Authenticated Menus notice/catalog and Careers disabled state verified.
+Remaining feature gaps above are unchanged; this is not full project acceptance.
