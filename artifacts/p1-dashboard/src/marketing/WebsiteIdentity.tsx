@@ -175,15 +175,16 @@ export default function WebsiteIdentity() {
         settings are separate from the business dashboard identity.
       </p>
       <p>
-        The current public P1 header, footer and contact page still use their
-        published website content. Connecting these identity overrides to those
-        pages is pending. Retained CMS and email consumers may use these
-        settings.
+        Saved identity overrides update the public website without a deployment.
+        Allow about 30 seconds, then reload the website to see changes. Blank
+        fields and inherited P1 defaults keep existing published website content
+        and P1 assets. Retained CMS and email consumers may also use these settings.
       </p>
       <p>
-        Use complete HTTP or HTTPS image addresses or uploaded /uploads/cms/
-        paths. Leave a field blank to clear its override. Only changed fields
-        are saved; unsupported existing values remain unchanged.
+        Upload a logo or favicon, or use an existing public CMS image. External
+        image addresses must belong to an image already registered in the media
+        library. Leave a field blank to clear its override. All identity values
+        must be valid before saving; repair or clear any unsupported old values.
       </p>
       {error && <p role="alert">{error}</p>}
       {message && <p role="status">{message}</p>}

@@ -1,6 +1,6 @@
 # Public website identity delivery
 
-Status: implemented and locally validated; **live release verification pending**. This completes the public consumer connection for the existing Design → Branding identity settings, not the whole Business Center consolidation or legacy-admin retirement.
+Status: implemented, locally validated and released at `4d85894689ad9f9e63597fc8823f675968458f4d` on September 19. This completes the public consumer connection for the existing Design → Branding identity settings, not the whole Business Center consolidation or legacy-admin retirement.
 
 ## Source and public contract
 
@@ -67,4 +67,16 @@ For release closeout, record the actual Git revision and successful Railway serv
 4. Confirm inherited P1 assets and existing published chrome remain unchanged where no custom identity override exists.
 5. Read the authenticated Branding screen to confirm retained configured values and usable controls; do not save fabricated branding or mutate production records merely to demonstrate the integration.
 
-Keep outage, invalid-media, cache-restart and concurrent-write experiments in isolated fixtures. Live release verification remains pending until these checks and the deployed revision are recorded in the acceptance tracker.
+Keep outage, invalid-media, cache-restart and concurrent-write experiments in isolated fixtures. The recorded live checks below establish the scoped release; they do not close full CMS parity or Owner edit acceptance.
+
+## Live release evidence — September 19
+
+Railway reported SUCCESS on the exact implementation revision above:
+
+- Core: `4e2ee406-2a38-417b-824a-9d53450a5193`.
+- Dashboard: `ca8fa4e1-79bf-49b2-b122-598683eb173a`.
+- Public website: `1ce67d00-4514-482c-a897-2b0b67bb74e1`.
+
+The live projection returned HTTP 200 with identity version `7e28bb3d3e207a1c30f18749d224dd8336007dd2de8b7ab4f001d3d962530c67`. All overrides were null, consistent with inherited P1 settings. Raw homepage and contact HTML serialized that same version. Existing P1 logo, Google profile and bundled icons remained intact; phone links dial the existing P1 number. Homepage-to-contact browser navigation passed with no captured console errors. The contact page at 390px had document width 390px and retained the mobile call/assessment controls. All three public health endpoints returned 200.
+
+Authenticated Branding loaded the retained company name, seed logo URL and favicon with Save disabled; no fields were edited, saved or uploaded. This exposed outdated integration-pending help text, corrected in the subsequent guidance patch. Actual live custom-branding writes, outage experiments and asset replacement were not performed; their current evidence is isolated automated validation, not Owner edit acceptance.

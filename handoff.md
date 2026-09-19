@@ -2,6 +2,10 @@
 
 Updated September 18, 2026. Read this current-state update before older checkpoint details below.
 
+## September 19 public identity checkpoint
+
+Public identity delivery is released at `4d85894` on main and the consolidation branch. Core, dashboard and website Railway deployments reached SUCCESS; homepage/contact SSR identity revisions match the live projection, and desktop/mobile read-only checks preserve current P1 branding. See `docs/implementation/public-website-identity.md` for exact release evidence and remaining live-edit/cache limits. Native Integrations and Email Templates were released earlier; their contract documents retain the scoped evidence. The full consolidation remains incomplete. Native backup status/run and history correctness are the next active implementation slice; restore, CRM/account reconciliation and crew/offline acceptance remain open.
+
 ## September 18 reconciliation and current state
 
 - All completed consolidation code was normally merged to `main`; both `main` and `codex/business-center-consolidation` reached `140a412`. Do not selectively deploy an older public-only main: that previously regressed Dashboard and Core and has been corrected. See `docs/implementation/reconciliation-2026-09-18.md` and `main-release-policy.md` in that directory.

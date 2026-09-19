@@ -2,7 +2,7 @@
 
 ## Public identity delivery
 
-Implemented public identity delivery now projects validated Design Branding into the same SSR/hydration/navigation snapshot. All 3,259 existing CMS field identities are preserved. See [public identity delivery](public-website-identity.md). Final release and live read-only verification remain pending; actual Owner edit acceptance remains distinct from synthetic tests. The default disk cache survives process restarts only when its filesystem survives; it does not guarantee recovery across replaced containers.
+Implemented public identity delivery now projects validated Design Branding into the same SSR/hydration/navigation snapshot. All 3,259 existing CMS field identities are preserved. See [public identity delivery](public-website-identity.md). Release and live read-only verification passed at `4d85894`; actual Owner edit acceptance remains distinct from synthetic tests. The default disk cache survives process restarts only when its filesystem survives; it does not guarantee recovery across replaced containers.
 
 ## Native Backups and recovery
 
