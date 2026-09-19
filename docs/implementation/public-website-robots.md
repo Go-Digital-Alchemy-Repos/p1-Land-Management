@@ -1,6 +1,6 @@
 # Public website robots delivery
 
-Implemented locally; release and live verification pending.
+Released at code revision `ec899b3`, followed by evidence revision `550534b`. Canonical live GET/HEAD and projection equality verified read-only.
 
 GET `/api/p1/website-robots` exposes exactly schemaVersion 1, stackId `p1-land-management`, SHA-256 version of effective UTF-8 content, and content. It reads existing SEO settings without exposing generic settings. Queries, invalid Unicode/control characters and text over 32 KiB UTF-8 fail closed; unavailable data returns a fixed 503. Headers are no-store/nosniff.
 
@@ -13,3 +13,7 @@ Public GET/HEAD `/robots.txt` now consumes this projection. Non-indexable deploy
 Timeouts/invalid responses retain last-valid content. The validated `website-robots.json` cache resides under `P1_CONTENT_CACHE_DIR`, default `/tmp/p1-public-content`. Restart recovery requires the same filesystem; replacement containers without durable storage may lose this cache. Cold failure uses generated P1 defaults with reserved-path disallows and canonical sitemap. Visitor cookies/authorization are never forwarded; upstream redirects are rejected.
 
 Focused validation covers defaults/custom/reset/noindex, deterministic version, Unicode/byte limits, sanitized errors, canonical GET/HEAD, staging disallow, refresh/outage/restart behavior. No production SEO mutation is part of testing. Release verification should compare Core projection to canonical robots after refresh, check HEAD/content type/cache headers, and verify staging disallow. This does not certify crawler indexing behavior or complete SEO parity.
+
+## Live release evidence
+
+At `550534b`, website deployment `1c3e3855-60e3-4059-9f58-89f7c73952fc` and Core deployment `d270146b-9aab-4333-bddb-3282802aacbb` reached SUCCESS. Canonical projection and `/robots.txt` returned200 with identical effective text after rollout/refresh; projection hash matched content. HEAD returned200 and zero body bytes with text/plain UTF-8 and no-cache. An earlier during-rollout sample still returned the old static robots; the later equality check is the acceptance result. Current saved default allows public indexing while disallowing admin/api. No SEO setting was modified. Non-indexable behavior passed isolated HTTP tests; no separate live staging website was verified.

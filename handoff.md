@@ -4,7 +4,7 @@ Updated September 18, 2026. Read this current-state update before older checkpoi
 
 ## September 19 native CMS continuation
 
-Native editor deep links released at `112f1d1`; all three unsaved creation intents opened in the authenticated browser without saving data. Mobile quick contact now shares the published identity at `74c9534`; all three Railway services reached SUCCESS and live homepage markup was verified. Robots settings, CMS redirects and menu assignments have source-confirmed missing public consumers; see consolidation-acceptance.md. Search Console domain access permission is prepared but awaits the pending action-time confirmation. Do not retire retained admin.
+Native editor deep links released at `112f1d1`; all three unsaved creation intents opened in the authenticated browser without saving data. Mobile quick contact now shares the published identity at `74c9534`; all three Railway services reached SUCCESS and live homepage markup was verified. Robots delivery was then connected at `ec899b3`, with live projection/GET/HEAD equality verified at `550534b`. CMS redirects and menu assignments still lack public consumers; see consolidation-acceptance.md. Search Console domain access permission is prepared but awaits the pending action-time confirmation. Do not retire retained admin.
 
 ## September 19 recovery and reconciliation checkpoint
 
@@ -12,7 +12,7 @@ Completed work is on both `main` and `codex/business-center-consolidation` throu
 
 Synthetic CRM import/replay/restore passed, including preservation of a later native task edit. The separate read-only account-access metadata reconciler now covers explicit suspension, verification/MFA representation, grants, notification settings and relationship scopes. These are tools and synthetic evidence, not actual account/CRM migration or authenticated Owner mapping approval. See `synthetic-crm-restore-rehearsal.md` and `account-access-reconciliation.md` in the implementation docs.
 
-The retained admin route inventory now identifies native destinations, missing edit/create links, restore parity and backend dependencies. Application startup/previous-image rollback, complete media recovery, real source/account reconciliation, agreement/crew/offline acceptance, Search Console domain/www access and safe retirement remain open. Use `consolidation-acceptance.md` as the requirement-level tracker; do not treat source-matched local images as actual deployed Railway image digests.
+The retained admin route inventory now identifies native destinations, missing edit/create links, restore parity and backend dependencies. Isolated source-rebuilt application startup/previous-image rollback now has partial evidence04 (empty content prevents published recovery proof); complete media recovery, real source/account reconciliation, agreement/crew/offline acceptance, Search Console domain/www access and safe retirement remain open. Use `consolidation-acceptance.md` as the requirement-level tracker; do not treat source-matched local images as actual deployed Railway image digests.
 
 ## September 19 public identity checkpoint
 
