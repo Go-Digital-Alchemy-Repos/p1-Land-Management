@@ -1,0 +1,34 @@
+# Website Integrations contract foundation
+
+September 19, 2026. Implemented but deliberately **unmounted** pending retained-route coordination and native UI integration. This is not full integration-management acceptance.
+
+`shared/website-integrations.ts` defines the exact Mailgun, Mailchimp and Cloudflare R2 provider keys. `server/routes/business-center-integrations.routes.ts` is an Owner-only router intended for `/website-system/integrations` inside the existing federated CMS bridge. It must never be mounted outside that authenticated boundary.
+
+## Operations
+
+- GET `/`: redacted per-provider settings snapshots and versions; effective upload and backup configuration sources; deployment-backed Google presence/property status. Provider credential values are never returned. Google credential presence is not provider verification, and reporting configuration management remains explicitly incomplete. Public tracking comes from the separate website's build-time measurement ID.
+- PUT `/:provider`: strict `{ expectedVersion, fields }`, with all provider fields required. Public values are bounded provider-specific strings. Secret fields use `{ operation: "keep" }`, `{ operation: "clear" }` or `{ operation: "replace", value }`. Clear writes an encrypted empty value in the same atomic/versioned settings batch; it does not delete the settings row. Current consumers treat empty credentials as absent. Audit contains actor, provider and changed key names only.
+- POST `/:provider/test`: exact empty body, saved configuration only, no caller-provided target URL. Mailgun domain read, Mailchimp audience read or upload-storage HeadBucket. No messages, subscriptions or object writes. Stable response codes replace raw provider errors; audit contains provider and boolean outcome only. An invalid stored configuration prevents the call. Tests do not prove email delivery, storage write permission, backup access or Google property coverage.
+
+The response identifies deployment configuration separately from the editable database fallback. Saving R2 database settings does not migrate stored objects, change deployment overrides, or validate backup recovery. When backup storage falls back to that same category, edits can affect its destination too. SMTP remains a separate deployment fallback after Mailgun.
+
+## Required integration before exposure
+
+1. Coordinate legacy generic settings PUT/DELETE with the same versioned contract or reject those provider writes with a destination message. The current legacy route can otherwise overwrite a later native edit.
+2. Add exact bridge operation allowlisting and generated contracts, then native Owner UI with draft preservation and explicit secret keep/replace/clear controls. No automatic mutation replay.
+3. Account for process-local Mailgun/R2 caches in other processes, including workers. This router resets the current process only; reliable cross-process refresh needs a bounded reload/revision strategy.
+4. Decide and implement active Google configuration management without rotating existing credentials or treating legacy DB Google fields as active. Current foundation reports deployment source only.
+5. Review environment-source R2 endpoints under existing deployment governance. The UI never accepts arbitrary provider endpoints. Complete configuration/access status still needs provider evidence; presence alone is insufficient.
+6. Verify existing stored non-secret provider values and desired storage changes, including rollback and backup implications, before mutations. No production fixtures or connection requests were executed during this implementation.
+
+Validation: ten mocked HTTP tests cover redaction/no-store, Owner denial, atomic versioned keep/clear, arbitrary input rejection, sanitized connection result/audit, conflict behavior, exact storage source precedence, sanitized storage failures, and Search Console site validation. Core type checking passed. These tests do not replace existing SettingsStorage transaction tests or live integration acceptance. QuickBooks, Twilio, filtered commerce integrations and existing credential stores are unchanged.
+
+## Source selector follow-up
+
+Verified against `r2.service.ts::getEnvironmentS3Config` and `backup-storage.service.ts::loadConfig`: S3 source presence uses exactly ENDPOINT, ACCESS_KEY_ID, SECRET_ACCESS_KEY, BUCKET, REGION and FORCE_PATH_STYLE (defined, including an empty value). S3_PUBLIC_URL does not trigger it. Any partial BACKUP_S3 configuration blocks fallback, then any partial S3 configuration blocks fallback. Legacy BACKUP_R2 requires all four truthy ACCOUNT_ID, ACCESS_KEY_ID, SECRET_ACCESS_KEY and BUCKET_NAME values. The selector matches these rules but does not label presence as valid configuration. Search Console has no default; the router accepts only the same three P1 property forms as the report service and returns null for unrelated values. Its configured flag indicates a valid selector, not verified access.
+
+The router now handles its own errors with fixed status/code responses. Raw database exceptions can contain SQL parameters, so they are not passed to the generic error logger/handler, even in development. The GET path can still fail closed if its snapshot read fails. Existing SettingsStorage decryption behavior (warning plus raw-value fallback) is outside this foundation and must be considered when establishing stronger credential validity diagnostics.
+
+For legacy coordination, resolve both the requested key and any existing stored row/category before write/delete. Block all registry keys and registry categories from generic mutation, including attempts to move a known key to another category. Route retained UI saves through the new category-version contract; do not make a check-then-write legacy adapter. Reads should use the new fixed redacted projection and secret presence rather than mutable stored isSecret flags. No arbitrary-key generic bridge should be added.
+
+For cache convergence, all service processes need a fresh settings revision check or a bounded reload strategy, not only SettingsStorage TTL: Mailgun caches configured and absent state indefinitely; upload R2 and backup storage cache clients indefinitely. Backup storage also needs invalidation when its fallback cloudflare_r2 category changes. A fresh category snapshot with revision comparison before each operation is the simplest correctness-first design; rebuild/reset only on revision change and preserve in-flight operations on their original client. If using TTL instead, define and display the maximum propagation delay and add generation fencing for concurrent reloads. Test two simulated service instances, credential clear, absent-to-configured transition, changing bucket, and rotation during a request. Keep deployment variables managed by deployment/restart, with existing precedence unchanged.
