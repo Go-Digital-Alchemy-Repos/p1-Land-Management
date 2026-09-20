@@ -528,6 +528,17 @@ Additive receiver `519c10b8` verified SUCCESS before enabling Core producer. Dur
 
 Authenticated production Analytics rendered actual property554712298 results (8 active users,22 sessions,170 page views at observation). Daily search narrowed four rows to September17, then showed the explicit no-match state with CSV disabled for an unmatched value. These are provider observations, not fixture data. The daily date column exposed Google's compact YYYYMMDD strings; dashboard date dimensions now render MM/DD/YYYY without timezone shifts, and search accepts either representation. CSV and sort retain original provider values. Four report tests, dashboard typecheck and production build passed. Release `781d37e3` reached Railway SUCCESS on all three applications. Authenticated production browser showed 09/17/2026 through 09/19/2026; searching 09/17/2026 returned exactly one matching row. Search Console access and complete report/export parity remain open.
 
+On September 20, the active production OAuth grant minted a token and the GA4
+realtime API for property `554712298` returned200 with an active `page_view`
+after a normal public page visit. This is provider-side collection evidence; it
+does not infer attribution or deduplication. The same grant remains unable to
+read the configured Search Console domain property `sc-domain:p1landmanagement.com`:
+its site listing excludes that property and the report request returns403. The
+configured target is correct for the canonical `www` site; the remaining action
+is to grant the reporting principal access or replace the production grant with
+one held by an account authorized for that domain property. No OAuth credential,
+Google access grant, or reporting configuration was changed for this check.
+
 ## Native pipeline presentation — September 20
 
 Released `b7a56cc0` reached SUCCESS on all three services. Fresh source inspection found no legacy override. After a verified backup and additive migration 0048, the live Owner Sales editor and default stage consumers loaded successfully. Five UI and three PostgreSQL tests cover validation, revision conflicts, first-write races, audit rollback, permissions, client isolation and draft retention. Browser mutation checks used only the disposable fixture. See `sales-pipeline-settings.md`. The existing New/Contacted/Qualified/Proposal/Won/Lost lifecycle and onboarding semantics remain unchanged. This closes presentation-settings parity, not permanent CRM write ownership or retirement.
