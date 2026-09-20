@@ -62,6 +62,25 @@ Parent review ran 10 Core verification/boundary tests, nine client lifecycle/ret
 tests and 21 production gateway tests successfully. Core production build passed;
 frontend typecheck and production build passed with existing bundler warnings.
 The domain-specific Cloudflare widget is provisioned and all four Core variables
-are staged, with enforcement still disabled pending coordinated deployment.
+are configured, with enforcement enabled after coordinated deployment.
 Career partner placeholders now return unavailable rather than falsely acknowledging
 applications they do not store. They are not browser-CAPTCHA integrations.
+
+## Production closeout — September 19, 2026
+
+Implementation `f19a17beba62b2e7d49b956299d028998c4a9345` deployed successfully:
+website `b45b7ca4-5633-40f6-9dc8-7d5e6bc49c90`, Core
+`c9654c65-71f6-4f0a-aa11-d977b62e4724`, followed by enabled Core configuration
+release `59920e0a-e2cf-4d3a-bdd1-e2eb5b0e6d94`. Runtime public configuration
+reports enabled with the dedicated P1 site key. Contact and Commercial browser
+widgets loaded and their submit buttons became ready without entering or sending
+lead data. The live menu contains no configured modal form; shared renderer
+coverage is established by source and focused tests.
+
+Origin-valid empty requests without a token to estimate, commercial assessment
+and newsletter managed endpoints each returned403 with the verification-required
+message. Initial requests without Origin were denied earlier by the existing
+origin guard; these were not counted as Turnstile proof. No fabricated customer
+records or notification jobs were created. A successful real customer submission
+was not manufactured for verification; server success/retry behavior is covered
+by the recorded focused tests.
