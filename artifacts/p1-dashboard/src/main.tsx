@@ -1,3 +1,4 @@
+import { isTransientRefreshFailure, refreshEntries } from "./my-day-recovery";
 import { DESIGN_COPY } from "../../../platform/p1-core/shared/design-page-copy";
 import { InquiryList } from "./InquiryList";
 import ComposedEstimateActions from "./agreements/ComposedEstimateActions";
@@ -194,7 +195,7 @@ async function api(path: string, body?: unknown, method: "POST" | "PATCH" | "DEL
     body: body === undefined ? undefined : JSON.stringify(body),
   });
   const data = await r.json();
-  if (!r.ok) throw new Error(data.error || "Request failed");
+  if (!r.ok) throw Object.assign(new Error(data.error || "Request failed"), { status: r.status });
   return data;
 }
 type Person = {
@@ -490,7 +491,7 @@ function App() {
       }
       const { paths, references } = dataLoadPlan(person);
       const referenceData = references ? await getWorkspaceReferences() : {};
-      const values = await Promise.all(
+      const values = await refreshEntries(
         [...new Set(paths)].map(async (p) => [
           p,
           p === "work-orders"
@@ -498,9 +499,9 @@ function App() {
             : p === "account-mfa-policies"
               ? await listAccountMfaPolicies()
               : await api("/" + p),
-        ]),
+        ] as const),
       );
-      const d = { ...referenceData, ...Object.fromEntries(values) };
+      const d: Record<string, any> = { ...referenceData, ...Object.fromEntries(values) };
       let work = d["work-orders"] || [];
       if (focusedWorkId.current) {
         try {
@@ -516,7 +517,13 @@ function App() {
       if (generation === refreshGeneration.current) setData({ ...d, work });
     } catch (e) {
       if (generation !== refreshGeneration.current) return;
-      setData({});
+      if (view === "My Day" && person.role !== "client" && dataLoadPlan(person).paths.includes("work-orders") && isTransientRefreshFailure(e)) {
+        // Re-read after the failed requests: revocation may have cleared this cache.
+        const day = await offline.readDay(person.id);
+        if (generation !== refreshGeneration.current) return;
+        setData(day ? { work: day.data, savedAt: day.savedAt } : {});
+        if (day) setNotice("Using downloaded assignments while the server is unavailable. Pending entries remain on this device.");
+      } else setData({});
       setError((e as Error).message);
     }
   }
