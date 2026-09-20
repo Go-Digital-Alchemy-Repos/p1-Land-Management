@@ -19,8 +19,8 @@ async function owner(c: PoolClient, actorId: string) {
   const row = await c.query("SELECT 1 FROM staff_profile WHERE user_id=$1 AND active=true AND role='owner' FOR SHARE",[actorId]);
   if (!row.rowCount) throw new HttpError(403,"Active Owner access required");
 }
-async function audit(c: PoolClient, actorId: string, id: string, action: string) {
-  await c.query("INSERT INTO audit_event(id,user_id,action,entity_id,details) VALUES($1,$2,$3,$4,'{}')",[randomUUID(),actorId,action,id]);
+async function audit(c: PoolClient, actorId: string, id: string, action: string, originalActorId?: string) {
+  await c.query("INSERT INTO audit_event(id,user_id,action,entity_id,details) VALUES($1,$2,$3,$4,$5)",[randomUUID(),actorId,action,id,originalActorId?{originalActorId}:{}]);
 }
 /** Input is a server-validated Core review, never a browser-supplied archive. */
 export async function recordWebsiteRestoreReview(actorId: string, input: unknown) {
@@ -70,12 +70,23 @@ export async function recordWebsiteRestoreOutcome(actorId: string, id: string, s
   });
 }
 
-/** Status is available only to the active Owner who initiated this review. */
+// Recovery visibility never exposes another active Owner's operations or executable reviews.
+const visibleRestore = `(
+  actor_id=$2
+  OR (status IN ('running','uncertain') AND NOT EXISTS (
+    SELECT 1 FROM staff_profile WHERE user_id=actor_id AND active=true AND role='owner'
+  ))
+  OR (status IN ('completed','not_applied') AND EXISTS (
+    SELECT 1 FROM audit_event WHERE entity_id=website_restore_operation.id::text AND user_id=$2
+    AND action IN ('website.restore_reconciled_completed','website.restore_reconciled_not_applied')
+  ))
+)`;
+/** An active Owner can also inspect unresolved operations of unavailable initiators. */
 export async function readWebsiteRestoreOperation(actorId: string, id: string) {
   z.string().uuid().parse(id);
   return transaction(async c => {
     await owner(c, actorId);
-    const row = (await c.query("SELECT * FROM website_restore_operation WHERE id=$1 AND actor_id=$2", [id, actorId])).rows[0];
+    const row = (await c.query(`SELECT * FROM website_restore_operation WHERE id=$1 AND ${visibleRestore}`, [id, actorId])).rows[0];
     if (!row) throw new HttpError(404, "Restore operation not found");
     return row;
   });
@@ -86,13 +97,18 @@ export async function reconcileWebsiteRestore(actorId:string,id:string,sourceBin
   z.string().uuid().parse(id);hash.parse(sourceBinding);z.enum(["completed","not_applied","unknown"]).parse(outcome);
   return transaction(async c=>{
     await owner(c,actorId);
-    const row=(await c.query("SELECT * FROM website_restore_operation WHERE id=$1 AND actor_id=$2 FOR UPDATE",[id,actorId])).rows[0];
+    const row=(await c.query(`SELECT * FROM website_restore_operation WHERE id=$1 AND ${visibleRestore} FOR UPDATE`,[id,actorId])).rows[0];
     if(!row) throw new HttpError(404,"Restore operation not found");
     if(row.source_binding!==sourceBinding) throw new HttpError(409,"Website connection changed; operator verification required");
+    if(row.actor_id!==actorId){
+      const original=(await c.query("SELECT active,role FROM staff_profile WHERE user_id=$1 FOR SHARE",[row.actor_id])).rows[0];
+      if(original?.active && original.role==="owner") throw new HttpError(404,"Restore operation not found");
+      await audit(c,actorId,id,"website.restore_recovery_verified",row.actor_id);
+    }
     if(outcome==="unknown" || row.status===outcome) return row;
     if(!["running","uncertain"].includes(row.status)) throw new HttpError(409,"Restore state does not permit this reconciliation");
     const next=(await c.query("UPDATE website_restore_operation SET status=$2,updated_at=now() WHERE id=$1 RETURNING *",[id,outcome])).rows[0];
-    await audit(c,actorId,id,"website.restore_reconciled_"+outcome);
+    await audit(c,actorId,id,"website.restore_reconciled_"+outcome,row.actor_id!==actorId?row.actor_id:undefined);
     return next;
   });
 }
@@ -100,7 +116,7 @@ export async function reconcileWebsiteRestore(actorId:string,id:string,sourceBin
 export async function listWebsiteRestoreOperations(actorId:string){
   return transaction(async c=>{
     await owner(c,actorId);
-    return (await c.query(`SELECT * FROM website_restore_operation WHERE actor_id=$1
+    return (await c.query(`SELECT * FROM website_restore_operation WHERE ${visibleRestore.replaceAll("$2","$1")}
       ORDER BY CASE WHEN status IN ('running','uncertain') THEN 0 ELSE 1 END,created_at DESC,id DESC LIMIT 50`,[actorId])).rows;
   });
 }

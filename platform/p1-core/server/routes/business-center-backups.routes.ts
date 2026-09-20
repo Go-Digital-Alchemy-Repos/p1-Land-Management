@@ -112,6 +112,18 @@ router.post("/restore-outcome", asyncHandler(async (req,res)=>{
   const outcome = await getReviewedRestoreOutcome({...b,actorId});
   res.json({operationId:b.operationId,outcome});
 }));
+// Trusted Dashboard transport only: Dashboard verifies abandoned-initiator eligibility
+// against its own ledger. This endpoint can reconcile evidence, never execute a restore.
+router.post("/restore-recovery-outcome", asyncHandler(async (req,res)=>{
+  const {originalActorId,...receipt} = restoreIdentityBody.extend({originalActorId:z.string().min(1).max(255)}).parse(req.body);
+  const actingOwnerId = z.string().min(1).max(255).parse(req.dashboardIdentity!.subject);
+  const details={actingOwnerId,originalActorId,operationId:receipt.operationId};
+  await storage.activity.log(req.user!.id,"website_restore_recovery_requested",JSON.stringify(details));
+  const outcome=await getReviewedRestoreOutcome({...receipt,actorId:originalActorId});
+  await storage.activity.log(req.user!.id,"website_restore_recovery_checked",JSON.stringify({...details,outcome}));
+  res.json({operationId:receipt.operationId,outcome});
+}));
+
 router.post(
   "/run",
   asyncHandler(async (req, res) => {

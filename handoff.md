@@ -6,7 +6,7 @@ receipt-based reconciliation workflow. It is **not deployed**: main remains at
 PostgreSQL and authenticated Dashboard HTTP tests pass; the HTTP test uses a
 controlled Core transport fixture, not a complete two-service deployment.
 Independent review found missing-receipt recovery and archive sequence scope
-blockers. Sequence scope is fixed and independently re-reviewed;17 PostgreSQL tests pass. Receipt reservation at review is now implemented with exact cross-service identity/deadline and terminal no-commit evidence; candidate validation is recorded in the contract. Inactive-Owner recovery, complete two-service/restart acceptance, browser
+blockers. Sequence scope is fixed and independently re-reviewed;17 PostgreSQL tests pass. Receipt reservation at review is now implemented with exact cross-service identity/deadline and terminal no-commit evidence; candidate validation is recorded in the contract. Inactive-Owner outcome-only recovery is implemented with audited server-derived identity and terminal-result refresh. Complete two-service/restart acceptance, browser
 and mobile checks, and migration/recovery rehearsals remain. `/admin` stays active.
 See `docs/implementation/website-backups-contract.md`; use
 `python3 scripts/consolidation/test-website-restore.py` for the isolated Dashboard

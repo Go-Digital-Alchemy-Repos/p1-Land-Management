@@ -22,6 +22,9 @@ export const restoreExecuteOperation: CmsOperation = Object.freeze({
 export const restoreOutcomeOperation: CmsOperation = Object.freeze({
   method:"POST",path:"/website-system/backups/restore-outcome",capabilities:[],ownerOnly:true,
 });
+export const restoreRecoveryOutcomeOperation: CmsOperation = Object.freeze({
+  method:"POST",path:"/website-system/backups/restore-recovery-outcome",capabilities:[],ownerOnly:true,
+});
 /** Explicit method/path pairs. Adding a Core route never exposes it automatically. */
 export const cmsOperations: CmsOperation[] = [];
 for (const [method, path] of [
@@ -261,7 +264,7 @@ export function cmsDestination(
   params: Record<string, unknown>,
   query: Record<string, unknown>,
 ) {
-  if (!cmsOperations.includes(operation) && operation !== restoreReviewOperation && operation !== restoreExecuteOperation && operation !== restoreOutcomeOperation)
+  if (!cmsOperations.includes(operation) && operation !== restoreReviewOperation && operation !== restoreExecuteOperation && operation !== restoreOutcomeOperation && operation !== restoreRecoveryOutcomeOperation)
     throw new HttpError(404, "CMS operation not found");
   const path = operation.path.replace(/:([A-Za-z]+)/g, (_match, key) => {
     const value = params[key];

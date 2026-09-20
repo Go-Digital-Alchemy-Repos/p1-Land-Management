@@ -420,3 +420,33 @@ closes the ordinary pre-admission missing-receipt gap only. Inactive-initiator
 recovery, genuine two-service authenticated failure acceptance, browser/mobile
 checks, and production migration/rollback evidence remain required. No production
 restore, migration, deployment or `/admin` retirement occurred.
+
+### Inactive-initiator outcome recovery — candidate, September20
+
+An active Owner can now inspect and reconcile running/uncertain operations whose
+initiator is inactive, missing a staff profile, or no longer an Owner. The stored
+ledger supplies originalActorId to a dedicated internal Core recovery-outcome
+transport; browser requests cannot supply it and generic CMS forwarding excludes
+that operation. Core requires the existing service authentication and active
+attested Owner and records intent/completion audit with both identities. It only
+verifies/seals outcome receipts, never executes restores. Dashboard rechecks the
+original account under a staff-row lock before recording reconciliation. Account
+reactivation races fail closed. Execution remains limited to the original actor.
+
+The recovery actor retains read-only access to the terminal operation through its
+operation-specific reconciliation audit event. Refresh and repeated reconciliation
+can therefore confirm a lost terminal response without another Core request;
+unrelated Owners do not gain that historical access. OpenAPI descriptions and
+regenerated clients document the visibility; native UI explains it.
+
+Validation:16 Core route tests (parent rerun), five Dashboard contract tests,
+11 rendered backup/restore tests, and two isolated PostgreSQL/authenticated HTTP
+suites pass without skips. Core/API/Dashboard typechecks and Dashboard production
+build pass (existing chunk-size warning). The history extension initially exposed
+SQL grouping and text/UUID comparison errors; both were corrected and the final
+PostgreSQL suites passed with disposable-container removal confirmed. Independent
+review found no remaining authority/predicate blocker. No production changes.
+
+Remaining restore release gates: genuine authenticated two-service acceptance,
+restart/response-loss boundaries, browser/mobile accessibility and error checks,
+current populated migration/recovery rehearsal and deployment/rollback evidence.

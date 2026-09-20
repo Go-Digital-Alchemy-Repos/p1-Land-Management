@@ -9393,6 +9393,9 @@ export const getListWebsiteRestoreOperationsUrl = () => {
   return `/api/v1/marketing/cms/website-system/backups/restore-operations`
 }
 
+/**
+ * Active Owner only. Includes the acting Owner’s operations and unresolved operations whose initiator no longer has active Owner access. Recovery verifies outcomes only; it never transfers execution authority. Original receipt identity is resolved server-side and recovery is audited. Terminal results remain visible to the recorded recovery actor so lost responses can be confirmed after refresh.
+ */
 export const listWebsiteRestoreOperations = async ( options?: RequestInit): Promise<WebsiteRestoreOperation[]> => {
 
   return customFetch<WebsiteRestoreOperation[]>(getListWebsiteRestoreOperationsUrl(),
@@ -9436,6 +9439,9 @@ export const getGetWebsiteRestoreOperationUrl = (id: string,) => {
   return `/api/v1/marketing/cms/website-system/backups/restore-operations/${id}`
 }
 
+/**
+ * Active Owner only. Includes the acting Owner’s operations and unresolved operations whose initiator no longer has active Owner access. Recovery verifies outcomes only; it never transfers execution authority. Original receipt identity is resolved server-side and recovery is audited. Terminal results remain visible to the recorded recovery actor so lost responses can be confirmed after refresh.
+ */
 export const getWebsiteRestoreOperation = async (id: string, options?: RequestInit): Promise<WebsiteRestoreOperation> => {
 
   return customFetch<WebsiteRestoreOperation>(getGetWebsiteRestoreOperationUrl(id),
@@ -9480,6 +9486,9 @@ export const getReconcileWebsiteRestoreUrl = (id: string,) => {
   return `/api/v1/marketing/cms/website-system/backups/restore-operations/${id}/reconcile`
 }
 
+/**
+ * Active Owner only. Includes the acting Owner’s operations and unresolved operations whose initiator no longer has active Owner access. Recovery verifies outcomes only; it never transfers execution authority. Original receipt identity is resolved server-side and recovery is audited. Terminal results remain visible to the recorded recovery actor so lost responses can be confirmed after refresh.
+ */
 export const reconcileWebsiteRestore = async (id: string,
     reconcileWebsiteRestoreBody: ReconcileWebsiteRestoreBody, options?: RequestInit): Promise<WebsiteRestoreOperation> => {
 

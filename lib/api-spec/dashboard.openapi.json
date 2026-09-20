@@ -16448,7 +16448,8 @@
               }
             }
           }
-        }
+        },
+        "description": "Active Owner only. Includes the acting Owner\u2019s operations and unresolved operations whose initiator no longer has active Owner access. Recovery verifies outcomes only; it never transfers execution authority. Original receipt identity is resolved server-side and recovery is audited. Terminal results remain visible to the recorded recovery actor so lost responses can be confirmed after refresh."
       },
       "post": {
         "operationId": "reviewWebsiteRestore",
@@ -16516,7 +16517,8 @@
               "format": "uuid"
             }
           }
-        ]
+        ],
+        "description": "Active Owner only. Includes the acting Owner\u2019s operations and unresolved operations whose initiator no longer has active Owner access. Recovery verifies outcomes only; it never transfers execution authority. Original receipt identity is resolved server-side and recovery is audited. Terminal results remain visible to the recorded recovery actor so lost responses can be confirmed after refresh."
       }
     },
     "/marketing/cms/website-system/backups/restore-operations/{id}/execute": {
@@ -16621,7 +16623,8 @@
               }
             }
           }
-        }
+        },
+        "description": "Active Owner only. Includes the acting Owner\u2019s operations and unresolved operations whose initiator no longer has active Owner access. Recovery verifies outcomes only; it never transfers execution authority. Original receipt identity is resolved server-side and recovery is audited. Terminal results remain visible to the recorded recovery actor so lost responses can be confirmed after refresh."
       }
     }
   },

@@ -67,10 +67,11 @@ export default function WebsiteRestore({backups,disabled=false}:{backups:{key:st
       {["running","uncertain"].includes(selected.status)&&<p>Check the recorded outcome before taking further action. An unknown outcome does not mean the restore failed.</p>}
       {selected.status==="not_applied"&&<p>No restore committed for this operation. Select an archive for a new review if another attempt is needed.</p>}
     </div>}
-    <h4>Your recent restore operations</h4>
+    <h4>Restore operations</h4>
+    <p>Your recent operations appear here, along with unresolved operations from owners who no longer have active Owner access. You can verify their outcome, but cannot repeat their restore. Results you resolve remain available here.</p>
     {history.length?<ul className="restore-history">{history.map(row=><li key={row.id}>
       <div><strong>{labels[row.status]}</strong><p>{scheduleDateTime(row.createdAt)} Eastern · Archive {scheduleDateTime(row.summary.createdAt)}</p><small>Operation {row.id}</small></div>
       {["running","uncertain"].includes(row.status)?<button disabled={busy} onClick={()=>void reconcile(row)}>Check outcome</button>:row.status==="reviewed"?<button disabled={busy||!ready||unresolved} onClick={()=>{setSelected(row);setConfirmation("");}}>Open review</button>:null}
-    </li>)}</ul>:ready?<p>No restore operations have been recorded for your account.</p>:<p>Restore history has not loaded.</p>}
+    </li>)}</ul>:ready?<p>No restore operations are available.</p>:<p>Restore history has not loaded.</p>}
   </section>;
 }

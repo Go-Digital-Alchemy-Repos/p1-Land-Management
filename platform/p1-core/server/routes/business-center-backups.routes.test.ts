@@ -96,6 +96,7 @@ it("gates all operations before service or audit access", async () => {
     expect((await req("/restore-review", "POST", { key: manifest.key, operationId:receiptBody.operationId })).status).toBe(403);
     expect((await req("/restore-execute", "POST", {})).status).toBe(403);
     expect((await req("/restore-outcome", "POST", {})).status).toBe(403);
+    expect((await req("/restore-recovery-outcome", "POST", {})).status).toBe(403);
   }
   expect(state.status).not.toHaveBeenCalled();
   expect(state.review).not.toHaveBeenCalled();
@@ -228,4 +229,46 @@ it("checks outcomes without replaying and never accepts a supplied actor",async(
   for(const path of ["/restore-execute","/restore-outcome"]){
     expect((await req(path,"POST",{...receiptBody,...(path.endsWith("execute")?{key:manifest.key}:{}),actorId:"injected"})).status).toBe(400);
   }
+});
+
+it("reconciles abandoned-owner evidence with an audited canonical acting owner and never executes",async()=>{
+  state.outcome.mockResolvedValue("not_applied");
+  const response=await req("/restore-recovery-outcome","POST",{...receiptBody,originalActorId:"former-owner"});
+  expect(response.status).toBe(200);
+  expect(response.headers.get("cache-control")).toBe("private, no-store");
+  expect(await response.json()).toEqual({operationId:receiptBody.operationId,outcome:"not_applied"});
+  expect(state.outcome).toHaveBeenCalledExactlyOnceWith({...receiptBody,actorId:"former-owner"});
+  expect(state.execute).not.toHaveBeenCalled();
+  const details={actingOwnerId:"canonical-owner",originalActorId:"former-owner",operationId:receiptBody.operationId};
+  expect(state.log.mock.calls).toEqual([
+    ["owner","website_restore_recovery_requested",JSON.stringify(details)],
+    ["owner","website_restore_recovery_checked",JSON.stringify({...details,outcome:"not_applied"})],
+  ]);
+  expect(state.log.mock.invocationCallOrder[0]).toBeLessThan(state.outcome.mock.invocationCallOrder[0]);
+  expect(state.log.mock.invocationCallOrder[1]).toBeGreaterThan(state.outcome.mock.invocationCallOrder[0]);
+  expect(JSON.stringify(state.log.mock.calls)).not.toContain(receiptBody.fingerprint);
+});
+it("rejects recovery actor spoofing on normal endpoints and malformed recovery bodies",async()=>{
+  for(const path of ["/restore-execute","/restore-outcome"]){
+    expect((await req(path,"POST",{...receiptBody,...(path.endsWith("execute")?{key:manifest.key}:{}),originalActorId:"former-owner"})).status).toBe(400);
+  }
+  for(const body of [receiptBody,{...receiptBody,originalActorId:""},{...receiptBody,originalActorId:"x".repeat(256)},{...receiptBody,originalActorId:"former-owner",actorId:"injected"}]){
+    expect((await req("/restore-recovery-outcome","POST",body)).status).toBe(400);
+  }
+  expect((await req("/restore-recovery-outcome?execute=true","POST",{...receiptBody,originalActorId:"former-owner"})).status).toBe(400);
+  expect(state.outcome).not.toHaveBeenCalled();
+  expect(state.execute).not.toHaveBeenCalled();
+  expect(state.log).not.toHaveBeenCalled();
+});
+it("fails recovery closed on intent or completion audit failure without replaying execution",async()=>{
+  const body={...receiptBody,originalActorId:"former-owner"};
+  state.log.mockRejectedValueOnce(Error("private intent failure"));
+  expect((await req("/restore-recovery-outcome","POST",body)).status).toBe(503);
+  expect(state.outcome).not.toHaveBeenCalled();
+  state.log.mockResolvedValueOnce(undefined).mockRejectedValueOnce(Error("private completion failure"));
+  const response=await req("/restore-recovery-outcome","POST",body);
+  expect(response.status).toBe(503);
+  expect(await response.text()).not.toContain("private");
+  expect(state.outcome).toHaveBeenCalledTimes(1);
+  expect(state.execute).not.toHaveBeenCalled();
 });

@@ -5,7 +5,7 @@ import { actor, identity } from "./access";
 import { pool } from "./database";
 import { HttpError } from "./policy";
 import { marketingConnection } from "./marketing-reporting.transport";
-import { callCms, restoreReviewOperation, restoreExecuteOperation, restoreOutcomeOperation, type CmsOperation } from "./marketing-cms.transport";
+import { callCms, restoreReviewOperation, restoreExecuteOperation, restoreOutcomeOperation, restoreRecoveryOutcomeOperation, type CmsOperation } from "./marketing-cms.transport";
 import { coreRestoreReview, restoreReviewRequest, restoreSourceBinding, restoreOperationView, verifiedRestoreOutcome, restoreExecutionRequest } from "./website-restore.contract";
 import { recordWebsiteRestoreReview, readWebsiteRestoreOperation, listWebsiteRestoreOperations, claimWebsiteRestore, recordWebsiteRestoreOutcome, reconcileWebsiteRestore } from "./website-restore.service";
 export const websiteRestoreApi = Router();
@@ -87,7 +87,7 @@ websiteRestoreApi.post(root+"/:id/reconcile",async(req,res)=>{
   if(row.source_binding!==binding) throw new HttpError(409,"Website connection changed; operator verification required");
   if(!["running","uncertain"].includes(row.status)){res.json(restoreOperationView(row));return;}
   let outcome;
-  try { outcome=verifiedRestoreOutcome(await callRestoreCore(req,a.id,connection,restoreOutcomeOperation,receiptBody(row)),row.id); }
+  try { outcome=verifiedRestoreOutcome(await callRestoreCore(req,a.id,connection,row.actor_id===a.id?restoreOutcomeOperation:restoreRecoveryOutcomeOperation,row.actor_id===a.id?receiptBody(row):{...receiptBody(row),originalActorId:row.actor_id}),row.id); }
   catch {throw new HttpError(503,"Restore outcome unavailable; the operation remains blocked pending verification");}
   res.json(restoreOperationView(await reconcileWebsiteRestore(a.id,row.id,binding,outcome)));
 });

@@ -12,6 +12,7 @@ after(()=>pool.end());
 test("authenticated restore HTTP claims, grants, outcomes and retries preserve the ledger",{skip:!database},async()=>{
  const originalFetch=globalThis.fetch,oldOrigin=process.env.CORE_MARKETING_ORIGIN,oldKey=process.env.CORE_MARKETING_SERVICE_KEY;
  process.env.CORE_MARKETING_ORIGIN="https://restore-core.example.test";process.env.CORE_MARKETING_SERVICE_KEY="x".repeat(43);
+ let recoveryCalls=0;
  let reservationMode="valid",mode="lost",outcome="unknown",executions=0,providerCalls=0;
  globalThis.fetch=async(input,options)=>{
   const url=String(input);
@@ -24,14 +25,18 @@ test("authenticated restore HTTP claims, grants, outcomes and retries preserve t
   const b=JSON.parse(String(options?.body));
   if(url.endsWith("/restore-review"))return Response.json({operationId:reservationMode==="mismatch"?randomUUID():b.operationId,expiresAt:new Date(Date.now()+(reservationMode==="expired"?-1000:60000)).toISOString(),manifest:{key:b.key,createdAt:"2026-09-20T00:00:00Z",clientStackId:"p1-land-management",tableCount:2,totalRowCount:3,mediaAssetCount:0},fingerprint:"a".repeat(64)});
   const row=(await pool.query("SELECT * FROM website_restore_operation WHERE id=$1",[b.operationId])).rows[0];
-  assert.equal(row.actor_id,g.canonical_user_id);assert.equal(b.fingerprint,row.archive_fingerprint);
+  if(url.endsWith("/restore-recovery-outcome")){
+   recoveryCalls++;assert.notEqual(row.actor_id,g.canonical_user_id);assert.equal(b.originalActorId,row.actor_id);
+   assert.equal((await pool.query("SELECT active FROM staff_profile WHERE user_id=$1",[row.actor_id])).rows[0].active,false);
+  }else{assert.equal(row.actor_id,g.canonical_user_id);assert.equal(b.originalActorId,undefined);}
+  assert.equal(b.fingerprint,row.archive_fingerprint);
   assert.equal(b.expiresAt,new Date(row.expires_at).toISOString());
   if(url.endsWith("/restore-execute")){
    executions++;assert.equal(row.status,"running");assert.equal(b.key,row.archive_key);
    if(mode==="lost")throw Error("Synthetic lost Core response");
    return Response.json({operationId:b.operationId,outcome:"completed"});
   }
-  assert.ok(url.endsWith("/restore-outcome"));
+  assert.ok(url.endsWith("/restore-outcome")||url.endsWith("/restore-recovery-outcome"));
   return Response.json({operationId:outcome==="mismatch"?randomUUID():b.operationId,outcome:outcome==="mismatch"?"completed":outcome});
  };
  const app=express();app.use(express.json(),websiteRestoreApi);
@@ -78,6 +83,20 @@ test("authenticated restore HTTP claims, grants, outcomes and retries preserve t
   const raced=await Promise.all([req(owner,"/"+next.id+"/execute",confirm),req(owner,"/"+next.id+"/execute",confirm)]);
   assert.ok(raced.every(r=>r.status===200));assert.equal(executions,2);
   assert.equal((await req(owner,"/"+next.id)).body.status,"completed");
+  const orphan=(await req(owner,"",{key:"db/fixture"})).body;
+  mode="lost";assert.equal((await req(owner,"/"+orphan.id+"/execute",confirm)).status,202);
+  const beforeExecutions=executions;
+  const originalId=(await pool.query("SELECT actor_id FROM website_restore_operation WHERE id=$1",[orphan.id])).rows[0].actor_id;
+  await pool.query("UPDATE staff_profile SET active=false WHERE user_id=$1",[originalId]);
+  assert.ok((await req(other)).body.some((row:any)=>row.id===orphan.id));
+  assert.equal((await req(other,"/"+orphan.id+"/execute",confirm)).status,404);
+  assert.equal((await req(other,"/"+orphan.id+"/reconcile",{originalActorId:"spoof"})).status,400);
+  outcome="unknown";assert.equal((await req(other,"/"+orphan.id+"/reconcile",{})).body.status,"uncertain");
+  outcome="not_applied";assert.equal((await req(other,"/"+orphan.id+"/reconcile",{})).body.status,"not_applied");
+  assert.equal((await req(other,"/"+orphan.id)).body.status,"not_applied");
+  assert.equal((await req(other,"/"+orphan.id+"/reconcile",{})).body.status,"not_applied");
+  assert.equal(executions,beforeExecutions);assert.equal(recoveryCalls,2);
+  assert.equal((await req(inactive,"/"+orphan.id+"/reconcile",{})).status,403);
   assert.equal((await pool.query("SELECT count(*)::int n FROM core_federation_grant")).rows[0].n,0);
  }finally{
   globalThis.fetch=originalFetch;

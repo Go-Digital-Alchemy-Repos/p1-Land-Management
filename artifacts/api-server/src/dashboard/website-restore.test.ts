@@ -86,7 +86,25 @@ test("restore claims expire, serialize concurrent submissions, preserve audit an
     await assert.rejects(claimWebsiteRestore(owner,atomic.id,"1".repeat(64),confirmation),/Synthetic audit rejection/);
     assert.equal((await pool.query("SELECT status FROM website_restore_operation WHERE id=$1",[atomic.id])).rows[0].status,"reviewed");
   } finally { await pool.query("DROP TRIGGER reject_restore_audit_test ON audit_event; DROP FUNCTION reject_restore_audit_test()"); }
+  const recovery=await recordWebsiteRestoreReview(owner,{...review,sourceBinding:"8".repeat(64)});
+  await claimWebsiteRestore(owner,recovery.id,"8".repeat(64),confirmation);
+  await recordWebsiteRestoreOutcome(owner,recovery.id,"uncertain");
+  await assert.rejects(readWebsiteRestoreOperation(other,recovery.id),/not found/);
   await pool.query("UPDATE staff_profile SET active=false WHERE user_id=$1",[owner]);
+  assert.ok((await listWebsiteRestoreOperations(other)).some(row=>row.id===recovery.id));
+  assert.equal((await readWebsiteRestoreOperation(other,recovery.id)).actor_id,owner);
+  await assert.rejects(readWebsiteRestoreOperation(other,atomic.id),/not found/);
+  await assert.rejects(claimWebsiteRestore(other,recovery.id,"8".repeat(64),confirmation),/not found/);
+  assert.equal((await reconcileWebsiteRestore(other,recovery.id,"8".repeat(64),"unknown")).status,"uncertain");
+  await pool.query("UPDATE staff_profile SET active=true WHERE user_id=$1",[owner]);
+  await assert.rejects(reconcileWebsiteRestore(other,recovery.id,"8".repeat(64),"completed"),/not found/);
+  await pool.query("UPDATE staff_profile SET active=false WHERE user_id=$1",[owner]);
+  assert.equal((await reconcileWebsiteRestore(other,recovery.id,"8".repeat(64),"not_applied")).status,"not_applied");
+  assert.equal((await listWebsiteRestoreOperations(other)).some(row=>row.id===recovery.id),true);
+  assert.equal((await readWebsiteRestoreOperation(other,recovery.id)).status,"not_applied");
+  await assert.rejects(readWebsiteRestoreOperation(await person("owner"),recovery.id),/not found/);
+  const audit=(await pool.query("SELECT user_id,details FROM audit_event WHERE entity_id=$1 AND action='website.restore_reconciled_not_applied'",[recovery.id])).rows[0];
+  assert.equal(audit.user_id,other);assert.deepEqual(audit.details,{originalActorId:owner});
   await recordWebsiteRestoreOutcome(owner,success.id,"completed");
   assert.equal((await pool.query("SELECT status FROM website_restore_operation WHERE id=$1",[success.id])).rows[0].status,"completed");
   await assert.rejects(claimWebsiteRestore(owner,success.id,"e".repeat(64),confirmation),/Active Owner/);
