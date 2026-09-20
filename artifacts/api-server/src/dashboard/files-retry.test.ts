@@ -151,6 +151,50 @@ test("mounted image upload limits and immutable retry metadata with real databas
       assert.equal(writes, count + 1);
       assert.equal((await pool.query("SELECT count(*)::int AS count FROM file_record WHERE id=$1", [raceId])).rows[0].count, 1);
     });
+    for (const change of ["reassigned", "cancelled"] as const) {
+      await t.test(`assignment ${change} during decode rejects before registration or storage`, async () => {
+        const workId = randomUUID(), photoId = randomUUID(), count = writes;
+        await pool.query(
+          "INSERT INTO work_order(id,property_id,title,assigned_to,status) VALUES($1,$2,'Decode race',$3,'scheduled')",
+          [workId, property, crew],
+        );
+        let decoded!: () => void, resume!: () => void;
+        const reachedDecode = new Promise<void>(resolve => { decoded = resolve; });
+        const continueDecode = new Promise<void>(resolve => { resume = resolve; });
+        const originalToBuffer = sharp.prototype.toBuffer;
+        // Pause the real decoder result at its async boundary, not a timing sleep.
+        sharp.prototype.toBuffer = (async function (this: ReturnType<typeof sharp>, ...args: unknown[]) {
+          const result = await (originalToBuffer as any).apply(this, args);
+          decoded();
+          await continueDecode;
+          return result;
+        }) as typeof originalToBuffer;
+        let request: Promise<Response> | undefined;
+        try {
+          request = upload(photoId, { "x-test-user": crew, "x-p1-work": workId });
+          await Promise.race([
+            reachedDecode,
+            request.then(() => { throw Error("Upload completed before decoder barrier"); }),
+          ]);
+          // The office mutation must commit before the decoder can return.
+          await pool.query(
+            change === "reassigned"
+              ? "UPDATE work_order SET assigned_to=$2,version=version+1 WHERE id=$1"
+              : "UPDATE work_order SET status='cancelled',version=version+1 WHERE id=$1",
+            change === "reassigned" ? [workId, other] : [workId],
+          );
+          resume();
+          const response = await request;
+          assert.equal(response.status, 403);
+          assert.equal(writes, count);
+          assert.equal((await pool.query("SELECT id FROM file_record WHERE id=$1", [photoId])).rowCount, 0);
+        } finally {
+          resume();
+          if (request) await request;
+          sharp.prototype.toBuffer = originalToBuffer;
+        }
+      });
+    }
     await t.test("decoder, assignment, and authenticated private reads remain enforced", async () => {
       const count = writes;
       assert.equal((await upload(randomUUID(), {}, Buffer.from("not an image"))).status, 400);

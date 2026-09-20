@@ -166,12 +166,21 @@ async function processUpload(req: Request, res: Response) {
         existing.classification !== classification)
     )
       throw new HttpError(409, "Photo operation ID conflict");
-    if (existing?.status === "ready") {
-      res.json({ id: key, status: "accepted" });
-      return;
-    }
-    await transaction(async (c) => {
-      await requireOperationalProperty(c,propertyId);
+    const alreadyReady = await transaction(async (c) => {
+      // Match work synchronization/rescheduling: property, then work, then file.
+      // Decoding above may yield while the office reassigns or cancels this job.
+      await requireOperationalChild(c, "work_order", workId);
+      const currentWork = (
+        await c.query(
+          "SELECT property_id,assigned_to,status FROM work_order WHERE id=$1 FOR UPDATE",
+          [workId],
+        )
+      ).rows[0];
+      if (
+        !currentWork || currentWork.property_id !== propertyId ||
+        (assignedWorkOnly(a) && (currentWork.assigned_to !== a.id ||
+          ["cancelled", "skipped", "reviewed"].includes(currentWork.status)))
+      ) throw new HttpError(403, "Work assignment is not accessible");
       await c.query(
         "INSERT INTO file_record(id,property_id,work_order_id,user_id,object_key,name,mime,bytes,classification) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT(id) DO NOTHING",
         [
@@ -188,7 +197,7 @@ async function processUpload(req: Request, res: Response) {
       );
       const stored = (
         await c.query(
-          "SELECT object_key,user_id,property_id,work_order_id,classification FROM file_record WHERE id=$1 FOR UPDATE",
+          "SELECT object_key,user_id,property_id,work_order_id,classification,status FROM file_record WHERE id=$1 FOR UPDATE",
           [key],
         )
       ).rows[0];
@@ -196,7 +205,12 @@ async function processUpload(req: Request, res: Response) {
         stored.property_id !== propertyId || stored.work_order_id !== workId ||
         stored.classification !== classification)
         throw new HttpError(409, "Photo operation ID conflict");
+      return stored.status === "ready";
     });
+    if (alreadyReady) {
+      res.json({ id: key, status: "accepted" });
+      return;
+    }
     await storage().send(
       new PutObjectCommand({
         Bucket: process.env.S3_BUCKET,

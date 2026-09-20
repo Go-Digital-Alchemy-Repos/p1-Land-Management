@@ -25,6 +25,17 @@ The live private draft test excerpt was restored and persisted as version4; publ
 content stayed unchanged. Evidence: core-application-rollback-runner.md and private
 /private/tmp/p1-blog-app-images-aar7h839/populated-blog-application-recovery-03.json.
 
+## Crew photo assignment race — September 19
+
+Field-photo registration now rechecks current work assignment/status after image
+decode, under the existing property→work→file lock order. Ready retries use the
+same check. Deterministic mounted PostgreSQL tests commit reassignment/cancellation
+while decoding is paused and then assert403, no file row and no storage write.
+Parent independently reran all10 file tests successfully; author API types passed.
+No decoding or external storage calls occur while transaction locks are held.
+This closes the observed decode interleaving, not the entire offline acceptance
+matrix. Changed-content field-event replay remains under review.
+
 ## Requirement-level status
 
 “Implemented” below means source exists with recorded validation, not release acceptance. Every row remains open until its stated acceptance evidence is complete.
