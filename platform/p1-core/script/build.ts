@@ -34,6 +34,16 @@ async function buildAll() {
 
   await buildUploadVerifier();
   await buildUploadApply();
+  await esbuild({
+    entryPoints: ["server/scripts/apply-static-blog-import.ts"],
+    platform: "node",
+    target: "node20",
+    bundle: true,
+    format: "esm",
+    packages: "external",
+    outfile: "dist/operations/apply-static-blog-import.mjs",
+    logLevel: "info",
+  });
 
   console.log("copying migrations...");
   await cp("p1-migrations", "dist/p1-migrations", { recursive: true });

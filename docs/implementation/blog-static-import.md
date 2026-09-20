@@ -1,8 +1,9 @@
 # Reviewed static article import
 
 The five original public articles remain Website-owned until their permanent Blog
-receipts commit. This implementation is an internal service, not a public API or
-an executable production migration. It does not itself transfer production data.
+receipts commit. The importer has a bounded operational command and no public API.
+Production transfer is an explicit operator action; building or deploying it does
+not import content.
 
 ## Admission and transaction
 
@@ -43,12 +44,40 @@ It has no database or network access. Full manifest and Core field validation ar
 repeated by the server service.
 
 The internal importer cannot establish that a caller's artifact hash represents
-the raw reviewed file. A future privileged apply entry point must verify those
-files and construct the plan from their contents; passing a matching hash string
-alone is insufficient. Before production transfer, also complete fresh capture and
-deployment correlation, explicit historical-date policy, populated backup/restore
-rehearsal, browser publication/preview acceptance and rollback verification. Current
-source dates are declarations, not verified historical publication evidence.
+the raw reviewed file. The privileged local builder now verifies raw captures,
+listing summaries, reviewed manifest/source rows, original images and served image
+variants and constructs the plan. Its output is still canApply:false. The operator
+must separately review the resulting expectedPlanSha256 before running the command.
+A matching hash supplied by an unreviewed caller is not approval.
+
+`prepare-blog-apply-plan.mjs` takes an explicit options JSON and exclusive output
+file. Required options: captureDirectory, listingHtmlPath, reviewBundlePath,
+mediaReviewPath, reviewedManifestPath, sourceRowsPath, assetsRoot, builtPublicRoot,
+actorId, datePolicy, sourceRevision, deploymentId. Excerpts come from the actual
+listing. Case-only card-title differences are recorded and use the article title.
+The existing Blog chronological sort replaces the static array's card ordering.
+
+Core packages `dist/operations/apply-static-blog-import.mjs`. Arguments, in order:
+`--apply --plan PATH --expected-plan-sha SHA --files-root ROOT --expected-bucket BUCKET --ledger NEW_PATH`.
+It only runs in the exact P1 Core production project/environment/service, requires
+an unsuspended current local administrator, matches the dedicated upload bucket,
+uses the exact P1 uploads prefix and honors upload freezes. Safe bounded file reads
+and a private exclusive ledger precede dispatch. Logical cms/blog-static keys map
+to physical clients/p1landmanagement.com/uploads/cms/blog-static keys. After import
+or replay every object is read back and verified before success is reported.
+Errors preserve possible-object/database-write flags even if ledger writes fail.
+No object deletion, overwrite, provider creation or general permission grant exists.
+
+The command does not independently verify the Website deployment identity. The
+operator must recheck it immediately before and after dispatch, using fresh source
+admission and an unchanged reviewed release. Preserve the plan, files and ledger
+for exact replay and recovery. Do not rerun a changed plan after an uncertain result.
+
+The chosen date policy is clear-unverified: actual CMS publication dates replace
+unverified historical declarations. Populated database backup/restore and actual
+article render rehearsals now pass. This does not prove recovery of lost provider
+objects. Source files and original/variant hashes must remain recoverable outside
+the database. Production transfer and live editor mutation acceptance remain open.
 
 ## One editor after transfer
 
@@ -69,3 +98,18 @@ cover-ledger and staging tests plus16 read-only review-tool tests, all passing.
 Core, dashboard and API-package typechecks and Core/dashboard production builds
 passed. These checks are scoped; production import and overall Marketing parity
 are not complete.
+
+## September19 rehearsal evidence
+
+Parent independently reran5 populated backup/restore checks,7 artifact-builder
+checks and19 operational-command checks. Actual local import used all five captured
+articles and20 repository images, with5 receipts and exact replay. Website SSR
+comparisons preserve title emphasis, body/aside text, headings and links; listing
+excerpts match. Managed image URLs, genuine publication dates, title capitalization
+and chronological listing order are intentional differences.
+
+Browser checks on the exact local projected data covered desktop and390px mobile,
+loaded responsive images, oneH1, no horizontal overflow, client navigation from
+listing to another article, correct updated canonical metadata and no console
+errors. These are representative browser checks plus all-five SSR comparisons,
+not a claim of full Marketing or production editor acceptance.

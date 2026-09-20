@@ -1,3 +1,23 @@
+## Reviewed apply tooling and actual article rehearsal — September19
+
+Builder verifies rawcaptured articles plus actuallisting summaries, manifest/source
+rows and20 images; operationalCore command rechecks approvedhash, activeadmin,
+exactruntime/bucket/prefix, safe files, uploadfreeze and all20 post-import objects.
+See docs/implementation/blog-static-import.md. Parent reran backup5, builder7,
+runner19 tests; actualdata localimport/SSR matches5articles and excerpts. Browser
+representatives at desktop/390px mobile loadmanagedimages, have oneH1/nooverflow,
+correct clientnavigation canonical and no consoleerrors. No realobjects importedyet.
+Use clear-unverified datepolicy (actualCMSdates); titlecapitalization unified and
+existingBlog chronologicalsort applies. Preserve allcurrent broadergoal gates.
+
+Fresh readonly evidence currently /private/tmp/p1-blog-source-20260919-fmetg9td
+matches Website aaf3fcd97cd3b2745f51adb9670852285baa027f / deployment
+2be5b1bc-fd2e-4516-bd75-2fac18bea8a5; MUST recapture after toolingdeployment.
+Actualpayload/rehearsalreport at /private/tmp/p1-blog-actual-rehearsal-WUwsuJ.
+Localbrowserfixture servers have been stopped. Next verifytoolingrelease, fresh
+privatebackup/sourcecapture/planreview, actualtransfer and livepublic/editacceptance.
+Do not mark broadergoal or Marketingparity complete. Retainedadmin staysavailable.
+
 ## Verified atomic import foundation release — September 19
 
 Runtime `139d5f528e31e95bb26e2f816b891f3e026154fa` pushed to main/task branch.
