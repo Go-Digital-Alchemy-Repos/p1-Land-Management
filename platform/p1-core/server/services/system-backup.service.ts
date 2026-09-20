@@ -1,3 +1,4 @@
+import { admitRestoreReceipt, completeRestoreReceipt } from "./restore-receipt";
 import { validateBackupRestoreReview } from "./backup-restore-review";
 import { createHash } from "node:crypto";
 import { isDeepStrictEqual } from "node:util";
@@ -506,6 +507,7 @@ async function restoreBackupSnapshotWithClient(
   snapshot: DatabaseBackupSnapshot,
   options: RestoreBackupSnapshotOptions = {},
   validateReviewedDeadline?: () => void,
+  beforeCommit?: () => Promise<void>,
 ) {
   const identity = assertBackupRestoreIdentity(snapshot.manifest, {
     targetStackId: process.env.CLIENT_STACK_ID,
@@ -628,6 +630,7 @@ async function restoreBackupSnapshotWithClient(
           [sequence.sequenceName],
         );
       }
+      await beforeCommit?.();
     });
     // A same-process admin restore must not keep serving pre-restore settings.
     // Invalidate only after the transaction commits; rollback retains its cache.
@@ -684,7 +687,7 @@ function backupRestoreFingerprint(snapshot: DatabaseBackupSnapshot) {
 }
 
 /** Separate reviewed entry point; retained callers keep their existing contract. */
-export async function restoreReviewedSystemBackup(key: string, expectedFingerprint: string, expiresAt: string) {
+export async function restoreReviewedSystemBackup(key: string, expectedFingerprint: string, expiresAt: string, operationIdentity: { operationId: string; actorId: string }) {
   if (!/^[a-f0-9]{64}$/.test(expectedFingerprint)) throw new Error("Backup review is required");
   const deadline = Date.parse(expiresAt);
   const assertFresh = () => {
@@ -701,7 +704,9 @@ export async function restoreReviewedSystemBackup(key: string, expectedFingerpri
     if (snapshot.manifest.key !== key || backupRestoreFingerprint(snapshot) !== expectedFingerprint)
       throw new Error("Backup changed after review; review it again before restoring");
     assertFresh();
-    await restoreBackupSnapshotWithClient(client, snapshot, {}, assertFresh);
+    const receipt = { ...operationIdentity, fingerprint: expectedFingerprint, expiresAt };
+    await admitRestoreReceipt(client, receipt);
+    await restoreBackupSnapshotWithClient(client, snapshot, {}, assertFresh, () => completeRestoreReceipt(client, receipt));
     return snapshot.manifest;
   });
 }

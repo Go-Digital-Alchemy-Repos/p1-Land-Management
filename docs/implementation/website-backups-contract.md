@@ -219,3 +219,30 @@ when that new table was excluded. Its rows and current parent rows survived both
 rejections; the advisory lock was released. The temporary container was removed.
 Core typechecking passed. Production was not touched; native execution remains
 unexposed pending operation receipt/reconciliation and full HTTP/UI acceptance.
+
+### Durable Core receipts candidate (Core migration0008, not deployed)
+
+Native reviewed restores now require a canonical actor and UUID operation ID.
+Core records admission under its existing backup advisory lock, before the restore
+transaction. IDs cannot be admitted twice, including after a rollback. Completion
+is written in the same transaction as restored rows, so failure to write the
+receipt also rolls back restored content. Receipts live in `p1_operations`, outside
+the public tables captured/replaced by website snapshots, and have no foreign keys
+into restorable users. This additive operational schema is paired with the
+independent Dashboard ledger; neither is authorization by itself.
+
+Apply Core0008 before exposing execution. Retain this schema during application
+rollback. Public JSON archives intentionally omit it; full PostgreSQL disaster
+recovery/backup evidence must include it. A `started` receipt alone proves neither
+failure nor completion. Reconciliation must acquire the same advisory lock and
+check the execution deadline before declaring no commit; loss of the receipt
+schema/database must fail closed and require operator recovery. No automatic
+retry is authorized by missing/started receipts.
+
+Validation:52 focused tests and14 disposable PostgreSQL tests pass without skips.
+These include replay rejection preserving intervening rows, receipts surviving a
+retained public-data restore, and a forced completion-receipt failure rolling back
+restored content while retaining the started admission. Core typechecking passed;
+the test database container was removed. No production migration/restore occurred.
+Pending: authenticated receipt-status/reconciliation routes, Dashboard resolution,
+full composed HTTP/UI tests, independent review and release acceptance.

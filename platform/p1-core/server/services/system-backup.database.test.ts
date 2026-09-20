@@ -1,3 +1,4 @@
+const reviewedIdentity={operationId:"11111111-1111-4111-8111-111111111111",actorId:"synthetic-owner"};
 import { gunzipSync, gzipSync } from "zlib";
 import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -92,6 +93,10 @@ async function assertLockAvailable() {
 
 describe.skipIf(!testUrl)("system backup disposable PostgreSQL", () => {
   beforeEach(async () => {
+    await pool.query("CREATE SCHEMA IF NOT EXISTS p1_operations");
+    await pool.query("DROP TABLE IF EXISTS p1_operations.restore_receipts");
+    const { readFile } = await import("node:fs/promises");
+    await pool.query(await readFile(new URL("../../p1-migrations/0008_restore_operation_receipts.sql",import.meta.url),"utf8"));
     vi.clearAllMocks();
     vi.stubEnv("CLIENT_STACK_ID", "backup-test");
     vi.stubEnv("SYSTEM_BACKUP_EXCLUDED_TABLES", "session,__drizzle_migrations");
@@ -125,10 +130,33 @@ describe.skipIf(!testUrl)("system backup disposable PostgreSQL", () => {
     vi.mocked(storage.downloadBackupObject).mockResolvedValue(gzipSync(JSON.stringify(snapshot)));
     const review=await getSystemBackupRestoreReview(snapshot.manifest.key);
     await pool.query("INSERT INTO a_parents VALUES (2)");
-    await restoreReviewedSystemBackup(snapshot.manifest.key,review.fingerprint,new Date(Date.now()+60_000).toISOString());
+    await restoreReviewedSystemBackup(snapshot.manifest.key,review.fingerprint,new Date(Date.now()+60_000).toISOString(),reviewedIdentity);
+    expect((await pool.query("SELECT status FROM p1_operations.restore_receipts")).rows).toEqual([{status:"completed"}]);
+    await pool.query("INSERT INTO a_parents VALUES (3)");
+    await expect(restoreReviewedSystemBackup(snapshot.manifest.key,review.fingerprint,new Date(Date.now()+60_000).toISOString(),reviewedIdentity)).rejects.toThrow("already admitted");
+    expect((await pool.query("SELECT id FROM a_parents WHERE id=3")).rowCount).toBe(1);
+    // A retained public-data restore cannot overwrite operational receipts either.
+    await restoreBackupSnapshot(snapshot);
+    expect((await pool.query("SELECT status FROM p1_operations.restore_receipts")).rows).toEqual([{status:"completed"}]);
     expect((await pool.query("SELECT * FROM a_parents")).rows).toEqual([{id:1}]);
     expect((await pool.query("SELECT * FROM z_children")).rows).toEqual([{id:1,parent_id:1}]);
     await assertLockAvailable();
+  });
+
+  it("rolls restored data back if its completion receipt cannot commit", async () => {
+    await runSystemBackup();
+    const snapshot=exportedSnapshot();
+    vi.mocked(storage.downloadBackupObject).mockResolvedValue(gzipSync(JSON.stringify(snapshot)));
+    const review=await getSystemBackupRestoreReview(snapshot.manifest.key);
+    await pool.query("INSERT INTO a_parents VALUES (2)");
+    await pool.query(`CREATE FUNCTION p1_operations.reject_completion() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'Synthetic receipt failure'; END $$;
+      CREATE TRIGGER reject_completion BEFORE UPDATE ON p1_operations.restore_receipts FOR EACH ROW EXECUTE FUNCTION p1_operations.reject_completion()`);
+    try {
+      await expect(restoreReviewedSystemBackup(snapshot.manifest.key,review.fingerprint,new Date(Date.now()+60_000).toISOString(),reviewedIdentity)).rejects.toThrow("Synthetic receipt failure");
+      expect((await pool.query("SELECT * FROM a_parents ORDER BY id")).rows).toEqual([{id:1},{id:2}]);
+      expect((await pool.query("SELECT status FROM p1_operations.restore_receipts")).rows).toEqual([{status:"started"}]);
+      await assertLockAvailable();
+    } finally { await pool.query("DROP TRIGGER reject_completion ON p1_operations.restore_receipts; DROP FUNCTION p1_operations.reject_completion()"); }
   });
 
   it("preserves newly introduced and excluded referencing tables during reviewed rejection", async () => {
@@ -140,10 +168,11 @@ describe.skipIf(!testUrl)("system backup disposable PostgreSQL", () => {
     try {
       await pool.query("INSERT INTO newer_customer_data VALUES (7,1)");
       await pool.query("INSERT INTO a_parents VALUES (2)");
-      const execute=()=>restoreReviewedSystemBackup(snapshot.manifest.key,review.fingerprint,new Date(Date.now()+60_000).toISOString());
+      const execute=(operationId=reviewedIdentity.operationId)=>restoreReviewedSystemBackup(snapshot.manifest.key,review.fingerprint,new Date(Date.now()+60_000).toISOString(),{...reviewedIdentity,operationId});
       await expect(execute()).rejects.toThrow("table inventory differs");
       vi.stubEnv("SYSTEM_BACKUP_EXCLUDED_TABLES","session,__drizzle_migrations,newer_customer_data");
-      await expect(execute()).rejects.toThrow("foreign key constraint");
+      await expect(execute("22222222-2222-4222-8222-222222222222")).rejects.toThrow("foreign key constraint");
+      expect((await pool.query("SELECT status FROM p1_operations.restore_receipts")).rows).toEqual([{status:"started"},{status:"started"}]);
       expect((await pool.query("SELECT * FROM newer_customer_data")).rows).toEqual([{id:7,parent_id:1}]);
       expect((await pool.query("SELECT * FROM a_parents ORDER BY id")).rows).toEqual([{id:1},{id:2}]);
       await assertLockAvailable();

@@ -57,6 +57,13 @@
       "when": 1789833600004,
       "tag": "0007_cms_section_concurrency",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1789833600005,
+      "tag": "0008_restore_operation_receipts",
+      "breakpoints": true
     }
   ]
 }

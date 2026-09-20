@@ -1,3 +1,4 @@
+const reviewedIdentity={operationId:"11111111-1111-4111-8111-111111111111",actorId:"synthetic-owner"};
 import { gzipSync } from "node:zlib";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -209,14 +210,14 @@ describe("reviewed backup restore admission", () => {
       vi.mocked(storage.downloadBackupObject).mockResolvedValue(gzipSync(JSON.stringify({manifest:{...validManifest,tableCount:1,restoreOrder:["example"]},tables:[{name:"example",rowCount:0,rows:[]}],sequences:[]})));
       const review = await getSystemBackupRestoreReview(validManifest.key);
       vi.mocked(storage.downloadBackupObject).mockResolvedValue(gzipSync(JSON.stringify({manifest:{...validManifest,tableCount:1,totalRowCount:1,restoreOrder:["example"]},tables:[{name:"example",rowCount:1,rows:[{id:1}]}],sequences:[]})));
-      await expect(restoreReviewedSystemBackup(validManifest.key,review.fingerprint,new Date(Date.now()+60_000).toISOString())).rejects.toThrow("changed after review");
+      await expect(restoreReviewedSystemBackup(validManifest.key,review.fingerprint,new Date(Date.now()+60_000).toISOString(),reviewedIdentity)).rejects.toThrow("changed after review");
       expect(query).toHaveBeenCalledTimes(2);
       expect(release).toHaveBeenCalledWith(false);
     } finally { if(previous === undefined) delete process.env.CLIENT_STACK_ID; else process.env.CLIENT_STACK_ID=previous; }
   });
   it("rejects missing review before storage or database access", async () => {
     vi.clearAllMocks();
-    await expect(restoreReviewedSystemBackup(validManifest.key, "",new Date(Date.now()+60_000).toISOString())).rejects.toThrow("review is required");
+    await expect(restoreReviewedSystemBackup(validManifest.key, "",new Date(Date.now()+60_000).toISOString(),reviewedIdentity)).rejects.toThrow("review is required");
     expect(storage.beginBackupStorageOperation).not.toHaveBeenCalled();
     expect(pool.connect).not.toHaveBeenCalled();
   });
@@ -225,7 +226,7 @@ describe("reviewed backup restore admission", () => {
 it("rejects expired, missing and excessive reviewed execution deadlines before storage", async () => {
   vi.clearAllMocks();
   for (const deadline of ["", "invalid", new Date(Date.now()-1).toISOString(),new Date(Date.now()+600_000).toISOString()])
-    await expect(restoreReviewedSystemBackup(validManifest.key,"a".repeat(64),deadline)).rejects.toThrow("review expired or invalid");
+    await expect(restoreReviewedSystemBackup(validManifest.key,"a".repeat(64),deadline,reviewedIdentity)).rejects.toThrow("review expired or invalid");
   expect(storage.beginBackupStorageOperation).not.toHaveBeenCalled();
   expect(pool.connect).not.toHaveBeenCalled();
 });
@@ -242,7 +243,8 @@ it("rechecks expiry after archive download and after transaction lock waits, bef
       vi.mocked(storage.downloadBackupObject).mockResolvedValue(gzipSync(JSON.stringify(snapshot)));
       const review=await getSystemBackupRestoreReview(validManifest.key);
       const query=vi.fn(async(sql:string)=>{
-        if(sql.includes("pg_try_advisory_lock")) return {rows:[{acquired:true}]};
+        if(sql.includes("INSERT INTO p1_operations.restore_receipts")) return {rows:[{operation_id:reviewedIdentity.operationId}]};
+    if(sql.includes("pg_try_advisory_lock")) return {rows:[{acquired:true}]};
         if(sql.includes("pg_advisory_unlock")) return {rows:[{released:true}]};
         if(delayed==="transaction-lock" && sql.includes("blog-publication-writes")) clock.mockReturnValue(instant+61_000);
         return {rows:[]};
@@ -252,8 +254,8 @@ it("rechecks expiry after archive download and after transaction lock waits, bef
         if(delayed==="download") clock.mockReturnValue(instant+61_000);
         return gzipSync(JSON.stringify(snapshot));
       });
-      await expect(restoreReviewedSystemBackup(validManifest.key,review.fingerprint,new Date(instant+60_000).toISOString())).rejects.toThrow("review expired or invalid");
-      expect(query.mock.calls.some(([sql])=>/TRUNCATE|INSERT INTO/.test(sql))).toBe(false);
+      await expect(restoreReviewedSystemBackup(validManifest.key,review.fingerprint,new Date(instant+60_000).toISOString(),reviewedIdentity)).rejects.toThrow("review expired or invalid");
+      expect(query.mock.calls.some(([sql])=>/TRUNCATE|INSERT INTO public/.test(sql))).toBe(false);
       if(delayed==="transaction-lock") expect(query.mock.calls.some(([sql])=>sql==="ROLLBACK")).toBe(true);
     }
   } finally { clock.mockRestore();if(previous===undefined) delete process.env.CLIENT_STACK_ID;else process.env.CLIENT_STACK_ID=previous; }
@@ -263,6 +265,7 @@ it("rejects reviewed archives missing current tables before truncation", async (
   const previous=process.env.CLIENT_STACK_ID;
   process.env.CLIENT_STACK_ID="p1-land-management";
   const query=vi.fn(async(sql:string)=>{
+    if(sql.includes("INSERT INTO p1_operations.restore_receipts")) return {rows:[{operation_id:reviewedIdentity.operationId}]};
     if(sql.includes("pg_try_advisory_lock")) return {rows:[{acquired:true}]};
     if(sql.includes("pg_advisory_unlock")) return {rows:[{released:true}]};
     if(sql.includes("FROM pg_tables")) return {rows:[{table_name:"example"},{table_name:"newer_customer_data"}]};
@@ -273,7 +276,7 @@ it("rejects reviewed archives missing current tables before truncation", async (
   vi.mocked(storage.downloadBackupObject).mockResolvedValue(gzipSync(JSON.stringify({manifest:{...validManifest,tableCount:1,restoreOrder:["example"]},tables:[{name:"example",rowCount:0,rows:[]}],sequences:[]})));
   try {
     const review=await getSystemBackupRestoreReview(validManifest.key);
-    await expect(restoreReviewedSystemBackup(validManifest.key,review.fingerprint,new Date(Date.now()+60_000).toISOString())).rejects.toThrow("table inventory differs");
+    await expect(restoreReviewedSystemBackup(validManifest.key,review.fingerprint,new Date(Date.now()+60_000).toISOString(),reviewedIdentity)).rejects.toThrow("table inventory differs");
     expect(query.mock.calls.some(([sql])=>sql.startsWith("TRUNCATE"))).toBe(false);
     expect(query.mock.calls.some(([sql])=>sql==="ROLLBACK")).toBe(true);
   } finally { if(previous===undefined) delete process.env.CLIENT_STACK_ID;else process.env.CLIENT_STACK_ID=previous; }
@@ -283,6 +286,7 @@ it("never cascades reviewed truncation into excluded or new relations", async ()
   const previous=process.env.CLIENT_STACK_ID;
   process.env.CLIENT_STACK_ID="p1-land-management";
   const query=vi.fn(async(sql:string)=>{
+    if(sql.includes("INSERT INTO p1_operations.restore_receipts")) return {rows:[{operation_id:reviewedIdentity.operationId}]};
     if(sql.includes("pg_try_advisory_lock")) return {rows:[{acquired:true}]};
     if(sql.includes("pg_advisory_unlock")) return {rows:[{released:true}]};
     if(sql.includes("FROM pg_tables")) return {rows:[{table_name:"example"},{table_name:"session"}]};
@@ -294,7 +298,7 @@ it("never cascades reviewed truncation into excluded or new relations", async ()
   vi.mocked(storage.downloadBackupObject).mockResolvedValue(gzipSync(JSON.stringify({manifest:{...validManifest,tableCount:1,restoreOrder:["example"]},tables:[{name:"example",rowCount:0,rows:[]}],sequences:[]})));
   try {
     const review=await getSystemBackupRestoreReview(validManifest.key);
-    await expect(restoreReviewedSystemBackup(validManifest.key,review.fingerprint,new Date(Date.now()+60_000).toISOString())).rejects.toThrow("referencing relation denial");
+    await expect(restoreReviewedSystemBackup(validManifest.key,review.fingerprint,new Date(Date.now()+60_000).toISOString(),reviewedIdentity)).rejects.toThrow("referencing relation denial");
     const sql=query.mock.calls.find(([sql])=>sql.startsWith("TRUNCATE"))?.[0];
     expect(sql).toBe('TRUNCATE TABLE public."example" RESTART IDENTITY');
     expect(query.mock.calls.some(([sql])=>sql==="ROLLBACK")).toBe(true);
