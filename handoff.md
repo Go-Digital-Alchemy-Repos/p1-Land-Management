@@ -1,3 +1,33 @@
+## Production Blog transfer verified — September 19
+
+Applied the reviewed five-article transfer on Core deployment
+`10b881c3-fea3-40bf-af25-215c8144d56d`, revision
+`b3dca73283edfa75c85470f8146b26631aa36cb5`. Website deployment
+`e24ed79f-84e8-4837-a7b0-884a11308a2e` stayed on the same revision before/after;
+dashboard deployment `9b27272c-577f-48eb-ac0a-c423d4e9da3a` also SUCCESS.
+Main and task branch contain that revision. Health endpoints return 200.
+
+Fresh private 57-table snapshot, exact source observations, reviewed plan, media
+and copied 62-event apply ledger are retained under the path referenced by
+`/private/tmp/p1-blog-release-evidence-current-path`. No secrets or records belong
+in Git. Snapshot SHA256:
+`c376ce15bfd152e8bba4cc09c4acd559e980031d8acedc0c5f683422df29fc99`.
+Reviewed plan SHA256:
+`a870773d18764c7b289434645ac01c8bc9025f05b4be8a291ce5609419e5c271`.
+Command completed with replay=false, five articles and all 20 objects verified.
+Public contract now returns five posts and five permanently owned static routes.
+
+All five live article URLs return 200 with one H1, preserved normalized title/body/
+aside, correct canonical and managed cover. All fifteen public WebP variants
+return 200 and match reviewed hashes. Historical dates were cleared as documented;
+actual CMS publication dates apply. No production restore occurred. Do not rerun
+an altered plan or roll back to a website version unaware of permanent ownership.
+
+Next: live Blog editor preview/publish/revision acceptance and post-transfer
+backup/recovery evidence. Overall consolidation remains active; retained admin
+stays available. Analytics Overview shared-presentation restoration is assigned
+to marketing_parity_inventory; its files are concurrent work, not yet accepted.
+
 ## Reviewed apply tooling and actual article rehearsal — September19
 
 Builder verifies rawcaptured articles plus actuallisting summaries, manifest/source

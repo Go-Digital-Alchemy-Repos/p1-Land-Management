@@ -113,3 +113,14 @@ loaded responsive images, oneH1, no horizontal overflow, client navigation from
 listing to another article, correct updated canonical metadata and no console
 errors. These are representative browser checks plus all-five SSR comparisons,
 not a claim of full Marketing or production editor acceptance.
+
+## Verified production transfer
+
+On September 19 the packaged operator completed against `b3dca732`, using a fresh
+57-table private snapshot and the reviewed plan recorded in handoff.md. All five
+articles were published atomically; the retained ledger verifies 20 objects. The
+public contract reports five posts and five owned routes. All five live HTML pages
+preserve normalized title/body/aside and correct canonical/one-H1 structure. All
+15 responsive WebP URLs return exact reviewed bytes. Website deployment identity
+was unchanged before and after dispatch. This closes the actual transfer gate,
+not live editor mutation/revision acceptance or the wider consolidation goal.
