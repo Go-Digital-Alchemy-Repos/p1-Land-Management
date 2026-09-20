@@ -17,7 +17,8 @@
     "check:media": "node scripts/check-image-loading.mjs",
     "optimize:images": "node scripts/optimize-images.mjs",
     "check:images": "node scripts/image-budget.mjs",
-    "check:server": "node --test server/*.test.mjs"
+    "check:server": "node --test server/*.test.mjs",
+    "check:route-recovery": "node --experimental-strip-types --test src/lib/route-recovery.test.ts"
   },
   "devDependencies": {
     "sharp": "0.35.4",

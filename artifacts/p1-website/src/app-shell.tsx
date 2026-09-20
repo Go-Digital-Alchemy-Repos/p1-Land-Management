@@ -1,3 +1,4 @@
+import { recoverStaleRoute } from "@/lib/route-recovery";
 import { createGoogleAnalytics } from "@/lib/google-analytics";
 import { trackAcquisition } from "@/lib/acquisition";
 import {
@@ -21,6 +22,13 @@ class RouteErrorBoundary extends Component<
   state = { failed: false };
   static getDerivedStateFromError() {
     return { failed: true };
+  }
+  componentDidCatch(error: Error) {
+    recoverStaleRoute(error, {
+      storage: { getItem: (key) => window.sessionStorage.getItem(key), setItem: (key, value) => window.sessionStorage.setItem(key, value) },
+      reload: () => window.location.reload(),
+      now: Date.now,
+    });
   }
   render() {
     if (this.state.failed)
