@@ -2070,3 +2070,23 @@ export const salesPipelineSettings = pgTable("sales_pipeline_settings", {
   check("sales_pipeline_settings_revision_check", sql`${table.revision} > 0`),
   check("sales_pipeline_settings_config_check", sql`jsonb_typeof(${table.config}) = 'object'`),
 ]);
+
+export const websiteRestoreOperation = pgTable("website_restore_operation", {
+  id: uuid("id").primaryKey(),
+  actorId: text("actor_id").notNull().references(() => user.id),
+  sourceBinding: text("source_binding").notNull(),
+  archiveKey: text("archive_key").notNull(),
+  archiveFingerprint: text("archive_fingerprint").notNull(),
+  summary: jsonb("summary").notNull(),
+  status: text("status").default("reviewed").notNull(),
+  expiresAt: timestamp("expires_at", {withTimezone:true,mode:"string"}).notNull(),
+  createdAt: timestamp("created_at", {withTimezone:true,mode:"string"}).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", {withTimezone:true,mode:"string"}).defaultNow().notNull(),
+}, t => [
+  check("website_restore_operation_source_binding_check", sql`${t.sourceBinding} ~ '^[a-f0-9]{64}$'`),
+  check("website_restore_operation_archive_key_check", sql`length(${t.archiveKey}) BETWEEN 1 AND 2048`),
+  check("website_restore_operation_archive_fingerprint_check", sql`${t.archiveFingerprint} ~ '^[a-f0-9]{64}$'`),
+  check("website_restore_operation_summary_check", sql`jsonb_typeof(${t.summary}) = 'object'`),
+  check("website_restore_operation_status_check", sql`${t.status} IN ('reviewed','running','completed','uncertain')`),
+  uniqueIndex("website_restore_one_unresolved_source").on(t.sourceBinding).where(sql`${t.status} IN ('running','uncertain')`),
+]);

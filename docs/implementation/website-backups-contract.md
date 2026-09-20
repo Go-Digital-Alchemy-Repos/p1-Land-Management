@@ -122,3 +122,25 @@ bytes were not altered. Thirty-seven focused tests and Core typecheck pass.
 This is read-only compatibility evidence, not a successful native restore or
 permission to restore production. The expiring confirmation and independent audit
 workflow remain unimplemented and must precede route exposure.
+
+## Independent operation ledger candidate (0049, not deployed)
+
+Dashboard migration0049 and matching Drizzle model keep restore review/request/
+outcome outside the Core database being restored. The active Owner is rechecked
+when reviewing and claiming; reviews expire after5minutes by database time. A
+server-derived source-binding hash and exact archive fingerprint bind the claim.
+The claim and audit commit atomically before contacting Core. Same-ID retries
+return the existing operation without another execution; different IDs targeting
+the same backend serialize, with a partial unique index allowing only one running
+or uncertain operation. Uncertain operations are never silently released or
+replayed. Completion audit can persist after in-flight account deactivation because
+it records the already-authorized operation, not another restore.
+
+Fresh disposable PostgreSQL test passed without skips: role/activation denial,
+owner isolation, source change, expiration, same/different-ID races, audit failure
+rollback, uncertain replay denial, and completion after access change. Migration
+replay, API typechecking and resource cleanup passed. No production migration or
+endpoint exposure occurred. Remaining: bridge review/execute/status contracts,
+explicit confirmation, source binding derivation, reconciliation of uncertain
+outcomes, Core-operation receipt correlation, UI, independent review and isolated
+successful end-to-end restore. Do not promote0049 to production as a complete tool.
