@@ -34,7 +34,7 @@ while decoding is paused and then assert403, no file row and no storage write.
 Parent independently reran all10 file tests successfully; author API types passed.
 No decoding or external storage calls occur while transaction locks are held.
 This closes the observed decode interleaving, not the entire offline acceptance
-matrix. Changed-content field-event replay remains under review.
+matrix. Changed-content field-event replay now rejects changed kind/payload/version/time or actor/work with409. Exact JSONB/equivalent-time retries preserve original accepted/conflict status; parent independently passed4 mounted PostgreSQL replay tests with unchanged side-effect snapshots.
 
 ## Requirement-level status
 

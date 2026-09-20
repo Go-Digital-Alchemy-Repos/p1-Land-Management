@@ -730,12 +730,16 @@ api.post("/field/sync", async (req, res) => {
         );
       const old = (
         await c.query(
-          "SELECT user_id,conflict,work_order_id FROM field_event WHERE id=$1",
-          [e.id],
+          // Compare database-normalized values: JSON object key order and equivalent
+          // timestamp spellings must not turn an exact retry into a conflict.
+          `SELECT user_id,conflict,work_order_id,
+            (kind=$2 AND payload=$3::jsonb AND base_version=$4 AND captured_at=$5::timestamptz) AS matches
+           FROM field_event WHERE id=$1`,
+          [e.id, e.kind, JSON.stringify(e.payload), e.baseVersion, e.capturedAt],
         )
       ).rows[0];
       if (old) {
-        if (old.user_id !== a.id || old.work_order_id !== w.id)
+        if (old.user_id !== a.id || old.work_order_id !== w.id || !old.matches)
           throw new HttpError(409, "Operation ID conflict");
         return { id: e.id, status: old.conflict ? "conflict" : "accepted" };
       }
