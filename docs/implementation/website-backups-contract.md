@@ -144,3 +144,19 @@ endpoint exposure occurred. Remaining: bridge review/execute/status contracts,
 explicit confirmation, source binding derivation, reconciliation of uncertain
 outcomes, Core-operation receipt correlation, UI, independent review and isolated
 successful end-to-end restore. Do not promote0049 to production as a complete tool.
+
+### Core archive-review bridge candidate
+
+`POST /website-system/backups/restore-review` now accepts only a bounded archive
+`key`, behind the existing attested active-Owner bridge middleware. It invokes
+strict archive admission and returns only the existing projected manifest fields
+and validated SHA-256 fingerprint. No archive rows, restoration order, private
+capture metadata or deployment identifiers are returned. Unknown body/query
+fields are rejected before storage access. This read-only operation neither
+captures a backup nor executes a restore. The Dashboard transport allowlist and
+UI do not expose it yet; `/restore` remains absent from this bridge.
+
+Validation: 48 focused Core tests passed (11 route,16 archive-validation,21 backup
+service). Review authorization, input injection, private metadata suppression and
+provider failure sanitization are covered. This candidate remains on the task
+branch pending the complete ledger-backed workflow and its release gates above.

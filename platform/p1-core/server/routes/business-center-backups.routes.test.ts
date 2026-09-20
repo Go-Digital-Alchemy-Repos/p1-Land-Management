@@ -5,11 +5,13 @@ const state = vi.hoisted(() => ({
   identity: null as any,
   status: vi.fn(),
   run: vi.fn(),
+  review: vi.fn(),
   log: vi.fn(),
 }));
 vi.mock("../services/system-backup.service", () => ({
   getBackupStatus: state.status,
   runSystemBackup: state.run,
+  getSystemBackupRestoreReview: state.review,
 }));
 vi.mock("../storage", () => ({ storage: { activity: { log: state.log } } }));
 vi.mock("../utils/logger", () => ({ logger: { app: { warn: vi.fn(), error: vi.fn() } } }));
@@ -37,6 +39,7 @@ beforeEach(async () => {
   state.identity = { active: true, role: "owner", ownerAttested: true };
   state.log.mockResolvedValue(undefined);
   state.run.mockResolvedValue(manifest);
+  state.review.mockResolvedValue({ manifest, fingerprint: "a".repeat(64) });
   state.status.mockResolvedValue({
     enabled: false,
     configured: true,
@@ -74,7 +77,7 @@ const req = (path: string, method = "GET", body?: unknown) =>
     headers: { "content-type": "application/json" },
     body: body === undefined ? undefined : JSON.stringify(body),
   });
-it("gates both operations before service or audit access", async () => {
+it("gates all operations before service or audit access", async () => {
   for (const identity of [
     null,
     { active: false, role: "owner", ownerAttested: true },
@@ -84,8 +87,10 @@ it("gates both operations before service or audit access", async () => {
     state.identity = identity;
     expect((await req("/status")).status).toBe(403);
     expect((await req("/run", "POST")).status).toBe(403);
+    expect((await req("/restore-review", "POST", { key: manifest.key })).status).toBe(403);
   }
   expect(state.status).not.toHaveBeenCalled();
+  expect(state.review).not.toHaveBeenCalled();
   expect(state.run).not.toHaveBeenCalled();
   expect(state.log).not.toHaveBeenCalled();
 });
@@ -162,4 +167,32 @@ it("fails before backup when intent audit fails and reports uncertain completion
 it("treats malformed stored manifests as service failures instead of client validation errors", async () => {
   state.run.mockResolvedValue({ ...manifest, createdAt: "invalid" });
   expect((await req("/run", "POST")).status).toBe(503);
+});
+
+it("reviews an archive without exposing rows, storage internals or starting a backup", async () => {
+  const res = await req("/restore-review", "POST", { key: manifest.key });
+  expect(res.status).toBe(200);
+  expect(res.headers.get("cache-control")).toBe("private, no-store");
+  const body = await res.json();
+  expect(body.fingerprint).toBe("a".repeat(64));
+  expect(body.manifest.key).toBe(manifest.key);
+  expect(JSON.stringify(body)).not.toContain("private");
+  expect(state.review).toHaveBeenCalledExactlyOnceWith(manifest.key);
+  expect(state.run).not.toHaveBeenCalled();
+  expect(state.log).not.toHaveBeenCalled();
+});
+it("rejects malformed or injected review requests before archive access", async () => {
+  for (const body of [{}, { key: " " }, { key: "x".repeat(2049) }, { key: manifest.key, fingerprint: "a".repeat(64) }, { key: manifest.key, allowLegacy: true }]) {
+    expect((await req("/restore-review", "POST", body)).status).toBe(400);
+  }
+  expect((await req("/restore-review?allowLegacy=true", "POST", { key: manifest.key })).status).toBe(400);
+  expect(state.review).not.toHaveBeenCalled();
+});
+it("sanitizes archive admission failures and malformed provider fingerprints", async () => {
+  state.review.mockRejectedValueOnce(Error("private archive contents"));
+  const res = await req("/restore-review", "POST", { key: manifest.key });
+  expect(res.status).toBe(503);
+  expect(await res.text()).not.toContain("private");
+  state.review.mockResolvedValueOnce({ manifest, fingerprint: "invalid" });
+  expect((await req("/restore-review", "POST", { key: manifest.key })).status).toBe(503);
 });

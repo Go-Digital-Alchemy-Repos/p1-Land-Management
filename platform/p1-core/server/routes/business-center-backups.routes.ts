@@ -3,7 +3,7 @@ import { z, ZodError } from "zod";
 import { requireWebsiteOwner } from "../middleware/website-owner";
 import { asyncHandler } from "../middleware/error-handler";
 import { storage } from "../storage";
-import { getBackupStatus, runSystemBackup } from "../services/system-backup.service";
+import { getBackupStatus, getSystemBackupRestoreReview, runSystemBackup } from "../services/system-backup.service";
 const router = Router();
 const empty = z.object({}).strict();
 const summarySchema = z.object({
@@ -81,6 +81,17 @@ router.get(
       latest: status.latest ? summary(status.latest) : null,
       recent: status.recent.map(summary),
     });
+  }),
+);
+// Read-only archive admission. Execution remains a separate, ledger-backed workflow.
+router.post(
+  "/restore-review",
+  asyncHandler(async (req, res) => {
+    const { key } = z.object({ key: z.string().trim().min(1).max(2048) }).strict().parse(req.body);
+    const review = await getSystemBackupRestoreReview(key);
+    const fingerprint = z.string().regex(/^[a-f0-9]{64}$/).safeParse(review.fingerprint);
+    if (!fingerprint.success) throw Error("Invalid backup fingerprint");
+    res.json({ manifest: summary(review.manifest), fingerprint: fingerprint.data });
   }),
 );
 router.post(
