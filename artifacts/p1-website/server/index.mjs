@@ -43,6 +43,7 @@ const {
   safePublishedHtml,
   publicBlogListing,
   validateBlogPresentation,
+  validateBlogResponsiveCover,
 } = await import(
   pathToFileURL(path.join(root, "dist/server/entry-server.js")).href
 );
@@ -65,6 +66,7 @@ const websiteBlog = createWebsiteBlogStore({
   validateHtml: safePublishedHtml,
   projectListing: publicBlogListing,
   validatePresentation: validateBlogPresentation,
+  validateResponsiveCover: validateBlogResponsiveCover,
   cacheDir: process.env.P1_CONTENT_CACHE_DIR ?? "/tmp/p1-public-content",
 });
 const blogArticlePath = (route) =>

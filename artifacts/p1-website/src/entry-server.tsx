@@ -1,3 +1,4 @@
+export { validateBlogResponsiveCover } from "../../../platform/p1-core/shared/blog-cover-image-set";
 export { validateBlogPresentation } from "../../../platform/p1-core/shared/blog-presentation";
 export {
   safePublishedHtml,

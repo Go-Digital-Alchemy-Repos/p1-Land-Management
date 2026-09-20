@@ -1,3 +1,4 @@
+import { assertBlogCoverSetLedger } from "./blog-cover-image-set.service";
 import { createHash } from "node:crypto";
 import { and, asc, eq, or, sql } from "drizzle-orm";
 import { z } from "zod";
@@ -77,6 +78,11 @@ export async function recordStaticBlogImportReceipt(
       "BLOG_STATIC_RECEIPT_IDENTITY",
       "The imported revision, source slug and reviewed editorial hash must match.",
     );
+  await assertBlogCoverSetLedger(
+    blogEditorialSchema.parse(revision.snapshot),
+    input.sourceManifest.coverImageSet,
+    tx,
+  );
   // JSON roundtrip rejects non-JSON provenance before it reaches the JSONB boundary.
   if (
     canonical(JSON.parse(JSON.stringify(input.sourceManifest))) !== canonical(input.sourceManifest)

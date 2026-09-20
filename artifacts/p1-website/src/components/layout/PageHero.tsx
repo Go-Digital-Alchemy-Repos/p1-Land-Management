@@ -1,7 +1,8 @@
+import type { PublicBlogResponsiveCover } from "../../../../../platform/p1-core/shared/blog-cover-image-set";
 import type { ReactNode } from "react";
 import { ContourField } from "@/components/layout/ContourField";
 import { IndexOfWork } from "@/components/layout/IndexOfWork";
-import { responsiveImageProps } from "@/lib/responsive-images";
+import { responsiveImageProps, publishedResponsiveImageProps } from "@/lib/responsive-images";
 
 const TAN = "hsl(32 42% 62%)";
 
@@ -15,6 +16,7 @@ interface PageHeroBaseProps {
   /** Optional extra content (badges, CTAs) rendered below the subtitle. */
   children?: ReactNode;
   imagePosition?: string;
+  responsiveImage?: PublicBlogResponsiveCover | null;
   /** Show the "Index of Work" side panel (desktop only). */
   indexOfWork?: boolean;
   /** Reduce mobile spacing for unusually long service-page headlines. */
@@ -31,12 +33,12 @@ type PageHeroProps = PageHeroBaseProps & (
  * Mirrors the home hero: low-opacity image, diagonal navy wash, contour-line
  * texture, kicker eyebrow and a left-aligned Fraunces display headline.
  */
-export function PageHero({ eyebrow, title, subtitle, image, imageAlt, imagePosition, children, indexOfWork, compactMobile }: PageHeroProps) {
+export function PageHero({ eyebrow, title, subtitle, image, imageAlt, imagePosition, responsiveImage, children, indexOfWork, compactMobile }: PageHeroProps) {
   return (
     <section className="relative overflow-hidden bg-navy-deep">
       {image && (
         <div className="absolute inset-0">
-          <img src={image} alt={imageAlt} fetchPriority="high" decoding="async" {...responsiveImageProps(image, "100vw")} className="h-full w-full object-cover" style={{ opacity: 0.5, objectPosition: imagePosition }} />
+          <img src={image} alt={imageAlt} fetchPriority="high" decoding="async" {...(responsiveImage?.src === image ? publishedResponsiveImageProps(responsiveImage) : responsiveImageProps(image, "100vw"))} className="h-full w-full object-cover" style={{ opacity: 0.5, objectPosition: imagePosition }} />
         </div>
       )}
       <div

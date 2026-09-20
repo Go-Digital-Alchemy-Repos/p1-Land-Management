@@ -97,6 +97,12 @@ export async function createBlogPublication(
   editorInstanceId: string,
 ) {
   const parsed = blogEditorialSchema.parse(data);
+  if (parsed.coverImageSet != null)
+    throw new CmsMutationError(
+      409,
+      "BLOG_COVER_SET_UNTRUSTED",
+      "Responsive cover sets must be created by the reviewed static importer.",
+    );
   return db.transaction(async (tx) => {
     await lockBlogPublication(tx);
     if ((await tx.select().from(routes).where(eq(routes.slug, parsed.slug))).length)
@@ -115,7 +121,7 @@ export async function createBlogPublication(
         "A post already uses this URL. Reload the list before creating another post.",
       );
     // Legacy identity is durable and kept unpublished; content is owned by revisions.
-    const { presentation, ...legacyFields } = parsed;
+    const { presentation, coverImageSet: _coverImageSet, ...legacyFields } = parsed;
     const [post] = await tx
       .insert(blogPosts)
       .values({ ...legacyFields, isPublished: false, scheduledAt: null, publishedAt: null })
@@ -131,6 +137,7 @@ export async function createBlogPublication(
       },
       undefined,
       presentation,
+      parsed.coverImageSet === null ? null : undefined,
     );
     const lease = await blogLeaseInTransaction(tx, "acquire", post.id, user, { editorInstanceId });
     return { ...(await publicationEnvelope(tx, post.id)), lease };

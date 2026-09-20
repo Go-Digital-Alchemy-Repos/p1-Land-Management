@@ -23,7 +23,18 @@ const fixture = () => ({
         excerpt: "Published excerpt",
         content: "<p>Published body</p>",
         authorName: "P1",
-        coverImageUrl: "/r2/cover.webp",
+        coverImageUrl: "/r2/cms/blog/hero-1280.webp",
+        responsiveCover: {
+          schemaVersion: 1,
+          src: "/r2/cms/blog/hero-1280.webp",
+          width: 1280,
+          height: 698,
+          variants: [
+            { src: "/r2/cms/blog/hero-480.webp", width: 480, height: 262 },
+            { src: "/r2/cms/blog/hero-768.webp", width: 768, height: 419 },
+            { src: "/r2/cms/blog/hero-1280.webp", width: 1280, height: 698 },
+          ],
+        },
         coverImagePositionX: 20,
         coverImagePositionY: 80,
         category: null,
@@ -166,6 +177,10 @@ test(
     const html = await response.text();
     assert.match(html, /<title>Published Fixture SEO<\/title>/);
     assert.match(html, /Published body/);
+    assert.match(
+      html,
+      /hero-480.webp 480w, \/r2\/cms\/blog\/hero-768.webp 768w, \/r2\/cms\/blog\/hero-1280.webp 1280w/,
+    );
     assert.match(html, /September 1, 2026/);
     assert.match(html, /"datePublished":"2026-09-01T12:00:00.000Z"/);
     assert.match(html, /"dateModified":"2026-09-19T12:00:00.000Z"/);
@@ -175,6 +190,10 @@ test(
     );
     const state = hydration(html);
     assert.equal(state.blog.posts.length, 1);
+    assert.deepEqual(
+      state.blog.posts[0].snapshot.responsiveCover,
+      data.posts[0].snapshot.responsiveCover,
+    );
     assert.equal(state.blog.posts[0].snapshot.content, "<p>Published body</p>");
     assert.deepEqual(
       (

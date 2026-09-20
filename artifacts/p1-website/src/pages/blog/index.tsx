@@ -5,7 +5,7 @@ import { FinalCTA } from "@/components/layout/FinalCTA";
 import { PageHero } from "@/components/layout/PageHero";
 import { SEO } from "@/components/seo";
 import { Link } from "wouter";
-import { responsiveImageProps } from "@/lib/responsive-images";
+import { responsiveImageProps, publishedResponsiveImageProps } from "@/lib/responsive-images";
 import { breadcrumbSchema } from "@/lib/structured-data";
 
 import blog1Img from "@/assets/blog-land-clearing.png";
@@ -66,9 +66,10 @@ export default function BlogIndex() {
       title: post.title,
       excerpt: post.excerpt,
       image: post.coverImageUrl,
+      responsiveCover: post.responsiveCover,
       slug: post.slug,
     })),
-    ...staticPosts,
+    ...staticPosts.map(post => ({ ...post, responsiveCover: undefined })),
   ];
   return (
     <Layout>
@@ -117,10 +118,13 @@ export default function BlogIndex() {
                       alt={post.title}
                       loading="lazy"
                       decoding="async"
-                      {...responsiveImageProps(
+                      {...(post.responsiveCover ? publishedResponsiveImageProps(
+                        post.responsiveCover,
+                        "(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw",
+                      ) : responsiveImageProps(
                         post.image,
                         "(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw",
-                      )}
+                      ))}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                   ) : (

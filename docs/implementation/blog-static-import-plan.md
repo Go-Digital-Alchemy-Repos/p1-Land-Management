@@ -254,3 +254,56 @@ separate acceptance item. New shared runtime is explicitly included in Docker.
 Native23 and retained12 tests, both full typechecks and formatting passed. Independent
 review found and verified the Docker allowlist and unsupported-editor-control fixes.
 This adds editing capability; it does not import the five existing source articles.
+
+## Approved responsive media contract and staging — September 19
+
+The importer-bound `coverImageSet` is optional and nullable in an immutable editorial
+snapshot. It records the verified source fingerprint/media-review hash, original
+PNG, default media ID and exactly three ordered WebP variants. Each private asset
+reference has media ID, canonical public object path, SHA256, byte count, MIME,
+dimensions and manifest-declared quality. The retained original is1408×768;
+variants are480×262,768×419 and1280×698. The default is1280×698. No field/default
+is inserted into older snapshots.
+
+Only a reviewed internal importer can establish a set: ordinary API creation cannot
+assert hashes as facts. The immutable import receipt's source manifest holds the
+exact verified set. Saves, publication, scheduling and restores validate that ledger
+and registered media IDs/keys/MIME/bytes. Omitted sets preserve existing metadata;
+explicit null clears. Editors clear an existing set when replacing its cover. An
+older client changing only the cover must receive an actionable conflict. Original
+and variant media remain protected by immutable revisions and permanent receipts.
+
+Public `responsiveCover` contains schemaVersion1, default src/width/height and
+three ordered src/width/height variants only. It never exposes original references,
+media IDs, hashes or provenance. The website rejects invalid supplied sets as an
+invalid projection and uses the same accepted set for SSR and hydration, including
+article heroes, plain articles and listing cards. Absent metadata retains existing
+single-image/bundled-image behavior.
+
+`stageReviewedBlogMedia` is an internal injected-storage primitive, not an endpoint
+or complete importer. All twenty buffers are checked before the first write (10MiB
+per file,50MiB total), including format/dimensions/hash. It uses deterministic
+`cms/blog-static/<sha256>.<extension>` keys with create-only storage and exact
+byte/MIME readback even on replay. It owns buffers across asynchronous writes. No
+overwrite or automatic delete is available. Partial/unreferenced objects remain
+recoverable after failure; exact retry is safe. Caller approval of source/capture
+review and explicit P1 storage selection remain prerequisites. Object staging does
+not itself register media, create receipts, publish posts or prove backup recovery.
+
+The eventual importer must stage/read back objects first, then atomically register
+media, insert the reviewed revision, validate/record receipt and publish under the
+existing Blog write lock. Receipt validation inspects the candidate revision/ledger
+before receipt insertion, avoiding a circular requirement to own an unborn receipt.
+Exact replays must return existing identity without overwriting subsequent edits.
+No production importer or content transfer is included in this foundation.
+
+Validation for this foundation:50 backend tests (including actual PostgreSQL
+publication/receipt/restore/media guards),45 editor tests and43 website tests passed.
+The staging helper's8 tests include truncated-but-correctly-hashed image rejection
+before any writes, exact replay and interrupted recovery. Parent independently
+reran the9 new database cases plus8 staging cases successfully. Independent review
+verified the full-decode fix and found no remaining concrete blocker in its assigned
+scope. SSR tests compare responsive markup with serialized hydration; an actual
+browser hydration execution with imported production articles remains unperformed.
+No production import, media upload, database mutation or ownership transfer has
+been performed by these tests.

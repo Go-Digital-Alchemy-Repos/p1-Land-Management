@@ -1,3 +1,4 @@
+import { assertBlogCoverSetOwned } from "./blog-cover-image-set.service";
 import { listStaticBlogRoutes } from "./blog-static-import-receipts.service";
 import { STATIC_BLOG_SLUGS } from "@shared/public-blog";
 import { resolvePublicBlogMedia } from "./public-blog-media.service";
@@ -71,6 +72,7 @@ export async function initializeBlogInTransaction(
   origin: BlogProvenance,
   expectedFingerprint?: string,
   initialPresentation?: BlogEditorialSnapshot["presentation"],
+  initialCoverImageSet?: null,
 ) {
   await lockBlogPublication(tx);
   if ((await tx.select().from(states).where(eq(states.postId, postId))).length)
@@ -82,6 +84,7 @@ export async function initializeBlogInTransaction(
   const snapshot = blogEditorialSchema.parse({
       ...legacyBlogEditorial(legacy),
       ...(initialPresentation !== undefined ? { presentation: initialPresentation } : {}),
+      ...(initialCoverImageSet !== undefined ? { coverImageSet: initialCoverImageSet } : {}),
     }),
     id = randomUUID(),
     now = await databaseNow(tx);
@@ -202,9 +205,22 @@ async function applyBlogMutation(
     .where(and(eq(revisions.postId, postId), eq(revisions.id, state.draftRevisionId)));
   let snapshot = blogEditorialSchema.parse(draft.snapshot),
     sourceRevisionId: string | null = draft.id;
+  if (
+    options.data &&
+    options.data.coverImageSet === undefined &&
+    snapshot.coverImageSet != null &&
+    options.data.coverImageUrl !== snapshot.coverImageUrl
+  )
+    fail(
+      "BLOG_COVER_SET_CHANGED",
+      "This post has a responsive cover. Reload and explicitly clear its image set when choosing another cover.",
+    );
   if (action === "save" || ((action === "publish" || action === "schedule") && options.data))
     snapshot = blogEditorialSchema.parse({
       ...options.data,
+      ...(options.data?.coverImageSet === undefined && snapshot.coverImageSet !== undefined
+        ? { coverImageSet: snapshot.coverImageSet }
+        : {}),
       ...(options.data?.presentation === undefined && snapshot.presentation !== undefined
         ? { presentation: snapshot.presentation }
         : {}),
@@ -244,6 +260,8 @@ async function applyBlogMutation(
     snapshot = blogEditorialSchema.parse(source.snapshot);
     sourceRevisionId = source.id;
   }
+  if (["save", "publish", "schedule", "scheduled_publish", "restore"].includes(action))
+    await assertBlogCoverSetOwned(postId, snapshot, tx);
   if (action === "publish" || action === "schedule" || action === "scheduled_publish") {
     if (
       WEBSITE_OWNED_BLOG_SLUGS.has(snapshot.slug) &&

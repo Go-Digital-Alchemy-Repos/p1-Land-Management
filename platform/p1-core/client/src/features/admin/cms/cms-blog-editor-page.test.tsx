@@ -22,6 +22,34 @@ const presentationFor = (title: string) => ({
   },
 });
 
+const coverSet = {
+  schemaVersion: 1 as const,
+  sourceFingerprint: "a".repeat(64),
+  mediaReviewSha256: "b".repeat(64),
+  original: {
+    mediaId: "source",
+    url: "/r2/cms/review/source.png",
+    sha256: "c".repeat(64),
+    bytes: 1000,
+    mime: "image/png" as const,
+    width: 1408,
+    height: 768,
+    quality: null,
+  },
+  defaultMediaId: "image1280",
+  variants: [480, 768, 1280].map((width) => ({
+    mediaId: `image${width}`,
+    url: `/r2/cms/review/image-${width}.webp`,
+    sha256: "d".repeat(64),
+    bytes: 100,
+    mime: "image/webp" as const,
+    width,
+    height: Math.round((768 * width) / 1408),
+    quality: 80,
+  })),
+};
+
+let loadedCoverSet: typeof coverSet | null | undefined;
 let loadedPresentation: ReturnType<typeof presentationFor> | null | undefined;
 const navigateMock = vi.fn();
 const lockGuardMock = vi.fn();
@@ -150,7 +178,12 @@ vi.mock("@/components/shared/structured-data-status", () => ({
 }));
 
 vi.mock("@/features/admin/cms/components/cms-image-upload", () => ({
-  CmsImageUpload: () => React.createElement("div", { "data-testid": "cms-image-upload" }),
+  CmsImageUpload: ({ value, onChange }: any) =>
+    React.createElement("input", {
+      "data-testid": "cms-image-upload",
+      value,
+      onChange: (event: any) => onChange(event.target.value),
+    }),
 }));
 
 vi.mock("@/features/admin/cms/components/image-position-picker", () => ({
@@ -177,6 +210,7 @@ describe("CmsBlogEditorPage", () => {
 
   beforeEach(() => {
     loadedPresentation = undefined;
+    loadedCoverSet = undefined;
     navigateMock.mockReset();
     lockGuardMock.mockReset();
     editorLockState.isReadOnly = true;
@@ -214,7 +248,8 @@ describe("CmsBlogEditorPage", () => {
             tags: [],
             excerpt: "",
             content: "<p>Hello</p>",
-            coverImageUrl: "",
+            coverImageUrl: loadedCoverSet ? loadedCoverSet.variants[2].url : "",
+            ...(loadedCoverSet !== undefined ? { coverImageSet: loadedCoverSet } : {}),
             coverImagePositionX: 50,
             coverImagePositionY: 50,
             postType: "article",
@@ -576,4 +611,45 @@ describe("CmsBlogEditorPage", () => {
       container.querySelector<HTMLTextAreaElement>('[aria-label="Related service HTML"]')!.disabled,
     ).toBe(true);
   });
+  it.each([undefined, null, coverSet])(
+    "preserves optional reviewed cover metadata: %j",
+    async (coverImageSet) => {
+      loadedCoverSet = coverImageSet;
+      editorLockState.isReadOnly = false;
+      root = createRoot(container);
+      await act(async () => root!.render(React.createElement(CmsBlogEditorPage)));
+      await act(async () =>
+        container.querySelector<HTMLButtonElement>('[data-testid="button-save-post"]')!.click(),
+      );
+      const variables = mutationStates.flatMap((s) => s.mutate.mock.calls).at(-1)![0];
+      const handler = mutationOptions.filter((o) => o.onSuccess && o.onError).at(-2);
+      await handler.mutationFn(variables);
+      const data = JSON.parse(vi.mocked(fetch).mock.calls.at(-1)![1]!.body as string).data;
+      if (coverImageSet === undefined) expect(data).not.toHaveProperty("coverImageSet");
+      else expect(data.coverImageSet).toEqual(coverImageSet);
+    },
+  );
+  it.each(["/r2/cms/other/new.webp", ""])(
+    "clears reviewed set on cover selection or clearing: %s",
+    async (url) => {
+      loadedCoverSet = coverSet;
+      editorLockState.isReadOnly = false;
+      root = createRoot(container);
+      await act(async () => root!.render(React.createElement(CmsBlogEditorPage)));
+      const input = container.querySelector<HTMLInputElement>('[data-testid="cms-image-upload"]')!;
+      await act(async () => {
+        Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(input, url);
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+      });
+      await act(async () =>
+        container.querySelector<HTMLButtonElement>('[data-testid="button-save-post"]')!.click(),
+      );
+      const variables = mutationStates.flatMap((s) => s.mutate.mock.calls).at(-1)![0];
+      const handler = mutationOptions.filter((o) => o.onSuccess && o.onError).at(-2);
+      await handler.mutationFn(variables);
+      expect(JSON.parse(vi.mocked(fetch).mock.calls.at(-1)![1]!.body as string).data).toMatchObject(
+        { coverImageSet: null, coverImageUrl: url || null },
+      );
+    },
+  );
 });

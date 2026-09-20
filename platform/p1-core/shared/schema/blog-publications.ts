@@ -1,3 +1,4 @@
+import { validateBlogCoverImageSet, type BlogCoverImageSet } from "../blog-cover-image-set";
 import { validateBlogPresentation, type BlogPresentation } from "../blog-presentation";
 import { sql } from "drizzle-orm";
 import {
@@ -41,9 +42,19 @@ export const blogEditorialSchema = z
     ogImageUrl: z.string().nullable(),
     noindex: z.boolean().nullable(),
     presentation: z.custom<BlogPresentation>().nullable().optional(),
+    coverImageSet: z.custom<BlogCoverImageSet>().nullable().optional(),
   })
   .strict()
   .superRefine((value, context) => {
+    if (
+      value.coverImageSet != null &&
+      !validateBlogCoverImageSet(value.coverImageSet, value.coverImageUrl)
+    )
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["coverImageSet"],
+        message: "Invalid responsive cover image set",
+      });
     if (
       value.presentation !== undefined &&
       value.presentation !== null &&

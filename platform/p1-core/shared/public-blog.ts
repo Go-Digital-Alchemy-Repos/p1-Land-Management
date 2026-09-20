@@ -1,3 +1,4 @@
+import type { PublicBlogResponsiveCover } from "./blog-cover-image-set";
 import type { BlogPresentation } from "./blog-presentation";
 /** Public Blog delivery contract. No database, sanitizer, or Node runtime dependencies. */
 export const STATIC_BLOG_SLUGS = [
@@ -31,6 +32,7 @@ export type PublicBlogSnapshot = {
   ogImageUrl: string | null;
   noindex: boolean;
   presentation?: BlogPresentation | null;
+  responsiveCover?: PublicBlogResponsiveCover;
 };
 export type PublicBlogPost = {
   id: string;
@@ -140,6 +142,7 @@ export type PublicBlogSummary = {
   coverImageUrl: string | null;
   coverImagePositionX: number | null;
   coverImagePositionY: number | null;
+  responsiveCover?: PublicBlogResponsiveCover;
 };
 export function publicBlogListing(posts: PublicBlogPost[]): PublicBlogSummary[] {
   const listing = posts.map(({ id, snapshot: s }) => ({
@@ -150,6 +153,7 @@ export function publicBlogListing(posts: PublicBlogPost[]): PublicBlogSummary[] 
     coverImageUrl: s.coverImageUrl,
     coverImagePositionX: s.coverImagePositionX,
     coverImagePositionY: s.coverImagePositionY,
+    ...(s.responsiveCover ? { responsiveCover: s.responsiveCover } : {}),
   }));
   if (
     new TextEncoder().encode(JSON.stringify(listing).replaceAll("<", "\\u003c")).length >

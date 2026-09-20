@@ -1,3 +1,4 @@
+import { assertBlogCoverSetOwned } from "./blog-cover-image-set.service";
 import { inArray, or } from "drizzle-orm";
 import sanitizeHtml from "sanitize-html";
 import { db } from "../db";
@@ -68,6 +69,7 @@ export async function resolvePublicBlogMedia(
 ): Promise<PublishedBlogRow[]> {
   const urls = new Set<string>();
   for (const row of rows) {
+    await assertBlogCoverSetOwned(row.id, row.snapshot, reader);
     if (row.snapshot.coverImageUrl) urls.add(row.snapshot.coverImageUrl);
     if (row.snapshot.ogImageUrl) urls.add(row.snapshot.ogImageUrl);
     rewriteImages(row.snapshot.content, (url) => {

@@ -1,15 +1,34 @@
 import sanitizeHtml from "sanitize-html";
 import { db } from "../db";
-import { blogPostRevisions } from "@shared/schema/blog-publications";
+import { blogPostRevisions, blogStaticImportReceipts } from "@shared/schema/blog-publications";
 import { lockBlogPublication } from "./blog-publication.service";
 import { CmsMutationError } from "./cms-concurrency";
 import type { CmsMediaAsset } from "@shared/schema";
 /** Conservative match protects every restorable revision, including withdrawn posts. */
 export function blogRevisionReferencesMedia(
   snapshot: unknown,
-  asset: Pick<CmsMediaAsset, "url" | "r2Key">,
+  asset: Pick<CmsMediaAsset, "url" | "r2Key"> & Partial<Pick<CmsMediaAsset, "id">>,
   resolvedUrl?: string | null,
 ) {
+  if (asset.id && snapshot && typeof snapshot === "object") {
+    const set = (snapshot as { coverImageSet?: unknown }).coverImageSet;
+    if (set && typeof set === "object") {
+      const entries = set as { original?: unknown; variants?: unknown };
+      const images = [
+        entries.original,
+        ...(Array.isArray(entries.variants) ? entries.variants : []),
+      ];
+      if (
+        images.some(
+          (image) =>
+            image &&
+            typeof image === "object" &&
+            (image as { mediaId?: unknown }).mediaId === asset.id,
+        )
+      )
+        return true;
+    }
+  }
   function aliases(value: string): string[] {
     const values = new Set([value]);
     try {
@@ -56,7 +75,7 @@ export function blogRevisionReferencesMedia(
  * It does not validate arbitrary new URLs after an asset has already been deleted.
  */
 export async function protectBlogRevisionMedia<T>(
-  asset: Pick<CmsMediaAsset, "url" | "r2Key">,
+  asset: Pick<CmsMediaAsset, "url" | "r2Key"> & Partial<Pick<CmsMediaAsset, "id">>,
   resolvedUrl: string | null | undefined,
   operation: () => Promise<T>,
 ): Promise<T> {
@@ -65,7 +84,14 @@ export async function protectBlogRevisionMedia<T>(
     const revisions = await tx
       .select({ snapshot: blogPostRevisions.snapshot })
       .from(blogPostRevisions);
-    if (revisions.some((row) => blogRevisionReferencesMedia(row.snapshot, asset, resolvedUrl)))
+    const receipts = await tx
+      .select({ snapshot: blogStaticImportReceipts.sourceManifest })
+      .from(blogStaticImportReceipts);
+    if (
+      [...revisions, ...receipts].some((row) =>
+        blogRevisionReferencesMedia(row.snapshot, asset, resolvedUrl),
+      )
+    )
       throw new CmsMutationError(
         409,
         "BLOG_REVISION_MEDIA_REFERENCED",

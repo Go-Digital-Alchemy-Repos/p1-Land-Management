@@ -1,3 +1,4 @@
+import type { BlogCoverImageSet } from "./blog-cover-image-set";
 import type { BlogPresentation } from "./blog-presentation";
 // Type-only response contracts derived from Core's own services. Keeping these
 // inside Core preserves its standalone Docker build boundary. No server code is
@@ -9,16 +10,22 @@ import type {
 } from "../server/services/blog-publication-editor.service";
 import type { BlogMutationAction } from "../server/services/blog-publication.service";
 
-type JsonResponse<T> = T extends Date ? string
-  : T extends Array<infer Item> ? JsonResponse<Item>[]
-  : T extends object ? { [Key in keyof T]: JsonResponse<T[Key]> }
-  : T;
+type JsonResponse<T> = T extends Date
+  ? string
+  : T extends Array<infer Item>
+    ? JsonResponse<Item>[]
+    : T extends object
+      ? { [Key in keyof T]: JsonResponse<T[Key]> }
+      : T;
 
 type CreatedPost = JsonResponse<Awaited<ReturnType<typeof createBlogPublication>>>;
 export type BlogPublicationPostResponse = Omit<CreatedPost, "lease"> & {
   lease?: CreatedPost["lease"];
   presentation?: BlogPresentation | null;
+  coverImageSet?: BlogCoverImageSet | null;
 };
 export type BlogPublicationAction = BlogMutationAction;
-export type BlogRevisionResponse = JsonResponse<Awaited<ReturnType<typeof blogRevisionSummaries>>[number]>;
+export type BlogRevisionResponse = JsonResponse<
+  Awaited<ReturnType<typeof blogRevisionSummaries>>[number]
+>;
 export type BlogPreviewResponse = JsonResponse<Awaited<ReturnType<typeof previewBlogRevision>>>;

@@ -1,3 +1,19 @@
+## Responsive Blog images and staging candidate — September 19
+
+Optional importer-bound private coverImageSet, immutable receipt verification,
+registered media checks and ID/URL deletion protection are implemented. Public
+responsiveCover sends only default/variant URLs and dimensions. Both editors preserve
+sets through unrelated edits and clear them when replacing covers. Public hero,
+plain article and listing cards consume the same set during SSR/hydration. Internal
+create-only staging verifies full image decode and byte/MIME readback; no real
+objects have been uploaded. Tests: backend50, editors45, website43, staging8 pass;
+parent reran17 database/staging cases. Core/dashboard/website builds passed.
+
+Actual reviewed importer, media registration, original article transfer, reviewed
+dates and browser publication/recovery acceptance remain outstanding. Complete the
+static import plan; don't mark the broader consolidation done. Generated API
+models now use package-local types; full API, dashboard and Core typechecks pass.
+
 ## Verified shared Blog controls release — September 19
 
 Runtime `f8cdd51fe7319e7d2cc30e3018d02f33708f09d1` pushed to main and task

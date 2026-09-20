@@ -1,3 +1,4 @@
+import { validateBlogCoverImageSet, type BlogCoverImageSet } from "@shared/blog-cover-image-set";
 import {
   BlogPresentationEditor,
   alignPresentationTitle,
@@ -138,6 +139,7 @@ function buildCategoryPath(taxonomy: BlogTaxonomy, all: BlogTaxonomy[]): string 
 
 const postFormSchema = z.object({
   presentation: z.custom<BlogPresentation | null>().optional(),
+  coverImageSet: z.custom<BlogCoverImageSet | null>().optional(),
   title: z.string().min(1, "Title is required"),
   slug: z.string().min(1, "Slug is required"),
   authorName: z.string().min(1, "Author name is required"),
@@ -245,6 +247,7 @@ function CmsBlogEditor() {
     setSnapshot(post);
     form.reset({
       ...(post.presentation !== undefined ? { presentation: post.presentation } : {}),
+      ...(post.coverImageSet !== undefined ? { coverImageSet: post.coverImageSet } : {}),
       title: post.title,
       slug: post.slug,
       authorName: post.authorName,
@@ -294,6 +297,16 @@ function CmsBlogEditor() {
 
   const buildPayload = (data: PostForm) => {
     const presentation = alignPresentationTitle(data.presentation, data.title);
+    if (
+      data.coverImageSet != null &&
+      !validateBlogCoverImageSet(data.coverImageSet, data.coverImageUrl || null)
+    )
+      throw Object.assign(
+        Error(
+          "The reviewed cover image set does not match this cover. Select a new cover to clear it, or reload. Your draft is retained.",
+        ),
+        { status: 400 },
+      );
     if (presentation != null && !validateBlogPresentation(presentation, data.title))
       throw Object.assign(
         Error(
@@ -305,6 +318,7 @@ function CmsBlogEditor() {
     const nextTags = dedupeValues(data.tags ?? []);
     return {
       ...(presentation !== undefined ? { presentation } : {}),
+      ...(data.coverImageSet !== undefined ? { coverImageSet: data.coverImageSet } : {}),
       title: data.title,
       slug: data.slug || generateSlug(data.title),
       excerpt: data.excerpt || null,
@@ -392,7 +406,12 @@ function CmsBlogEditor() {
         navigate("/admin/cms/blog");
         return;
       }
-      if (variables.data) form.reset({ ...variables.data, presentation: result.presentation });
+      if (variables.data)
+        form.reset({
+          ...variables.data,
+          presentation: result.presentation,
+          coverImageSet: result.coverImageSet,
+        });
       else if (["restore", "adopt"].includes(variables.action)) {
         // Explicit adoption/restore replaces the draft; background reads never do.
         queryClient.setQueryData(["/api/admin/blog/publications", id], result);
@@ -950,7 +969,14 @@ function CmsBlogEditor() {
                             <FormControl>
                               <CmsImageUpload
                                 value={field.value ?? ""}
-                                onChange={field.onChange}
+                                onChange={(url) => {
+                                  if (
+                                    url !== (field.value ?? "") &&
+                                    form.getValues("coverImageSet") !== undefined
+                                  )
+                                    form.setValue("coverImageSet", null, { shouldDirty: true });
+                                  field.onChange(url);
+                                }}
                                 helpText="Displayed at the top of the article. Recommended: 1200 × 630 px."
                               />
                             </FormControl>

@@ -44,6 +44,7 @@ export function parsePublicBlog(
   validateHtml,
   projectListing,
   validatePresentation,
+  validateResponsiveCover,
 ) {
   if (
     !exact(data, [
@@ -127,6 +128,9 @@ export function parsePublicBlog(
         "ogImageUrl",
         "noindex",
         ...(Object.hasOwn(s ?? {}, "presentation") ? ["presentation"] : []),
+        ...(Object.hasOwn(s ?? {}, "responsiveCover")
+          ? ["responsiveCover"]
+          : []),
       ]) ||
       !text(s.title, 2000) ||
       !s.title.trim() ||
@@ -154,6 +158,13 @@ export function parsePublicBlog(
         /<img\b/i.test(s.presentation.relatedContent))
     )
       throw Error("Invalid public Blog presentation");
+    if (
+      s.responsiveCover !== undefined &&
+      s.responsiveCover !== null &&
+      (typeof validateResponsiveCover !== "function" ||
+        !validateResponsiveCover(s.responsiveCover, s.coverImageUrl))
+    )
+      throw Error("Invalid public Blog responsive cover");
     slugs.add(s.slug);
     for (const key of ["coverImagePositionX", "coverImagePositionY"])
       if (
@@ -185,6 +196,7 @@ export function createWebsiteBlogStore({
   validateHtml,
   projectListing,
   validatePresentation,
+  validateResponsiveCover,
   ...options
 } = {}) {
   const observed = new Map();
@@ -194,6 +206,7 @@ export function createWebsiteBlogStore({
       validateHtml,
       projectListing,
       validatePresentation,
+      validateResponsiveCover,
     );
     const ownership = new Map(
       next.staticRoutes.map((entry) => [entry.slug, entry.postId]),

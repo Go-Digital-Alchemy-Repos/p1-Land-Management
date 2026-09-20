@@ -686,3 +686,70 @@ it("disables presentation controls without an owned lease", async () => {
       .disabled,
   ).toBe(true);
 });
+
+const coverSet = {
+  schemaVersion: 1 as const,
+  sourceFingerprint: "a".repeat(64),
+  mediaReviewSha256: "b".repeat(64),
+  original: {
+    mediaId: "source",
+    url: "/r2/cms/review/source.png",
+    sha256: "c".repeat(64),
+    bytes: 1000,
+    mime: "image/png" as const,
+    width: 1408,
+    height: 768,
+    quality: null,
+  },
+  defaultMediaId: "image1280",
+  variants: [480, 768, 1280].map((width) => ({
+    mediaId: `image${width}`,
+    url: `/r2/cms/review/image-${width}.webp`,
+    sha256: "d".repeat(64),
+    bytes: 100,
+    mime: "image/webp" as const,
+    width,
+    height: Math.round((768 * width) / 1408),
+    quality: 80,
+  })),
+};
+
+it.each([undefined, null, coverSet])(
+  "preserves optional reviewed cover set on unrelated save: %j",
+  async (coverImageSet) => {
+    state.api.getMarketingBlogPublication.mockResolvedValueOnce({
+      ...post,
+      coverImageUrl: coverSet.variants[2].url,
+      ...(coverImageSet !== undefined ? { coverImageSet } : {}),
+    });
+    await edit();
+    await setInput(
+      host.querySelector("input[required]")!,
+      "An unrelated title edit",
+    );
+    await click("Save post");
+    const data = state.api.mutateMarketingBlogPublication.mock.calls[0][1].data;
+    if (coverImageSet === undefined)
+      expect(data).not.toHaveProperty("coverImageSet");
+    else expect(data.coverImageSet).toEqual(coverImageSet);
+  },
+);
+it.each(["/r2/cms/other/new.webp", ""])(
+  "clears reviewed cover set when cover changes to %s",
+  async (url) => {
+    state.api.getMarketingBlogPublication.mockResolvedValueOnce({
+      ...post,
+      coverImageUrl: coverSet.variants[2].url,
+      coverImageSet: coverSet,
+    });
+    await edit();
+    const input = Array.from(
+      host.querySelectorAll<HTMLInputElement>("input"),
+    ).find((input) => input.value === coverSet.variants[2].url)!;
+    await setInput(input, url);
+    await click("Save post");
+    expect(
+      state.api.mutateMarketingBlogPublication.mock.calls[0][1].data,
+    ).toMatchObject({ coverImageSet: null, coverImageUrl: url || null });
+  },
+);

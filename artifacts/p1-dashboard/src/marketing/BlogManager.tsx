@@ -1,3 +1,4 @@
+import { validateBlogCoverImageSet } from "../../../../platform/p1-core/shared/blog-cover-image-set";
 import {
   BlogPresentationEditor,
   alignPresentationTitle,
@@ -81,7 +82,7 @@ export function blogError(e: unknown) {
   );
 }
 type BlogForm = MarketingBlogInput &
-  Pick<MarketingBlogEditorial, "presentation">;
+  Pick<MarketingBlogEditorial, "presentation" | "coverImageSet">;
 const empty: BlogForm = {
   title: "",
   slug: "",
@@ -130,6 +131,16 @@ function editorial(form: BlogForm): MarketingBlogEditorial {
     ...data
   } = form;
   const presentation = alignPresentationTitle(form.presentation, form.title);
+  if (
+    form.coverImageSet != null &&
+    !validateBlogCoverImageSet(form.coverImageSet, form.coverImageUrl || null)
+  )
+    throw Object.assign(
+      Error(
+        "The reviewed cover image set does not match this cover. Select a new cover to clear it, or reload. Your draft is retained.",
+      ),
+      { status: 400 },
+    );
   if (
     presentation != null &&
     !validateBlogPresentation(presentation, form.title)
@@ -412,7 +423,15 @@ function PostEditor({
       </section>
     );
   const update = (key: keyof BlogForm, value: unknown) =>
-    setForm({ ...form, [key]: value });
+    setForm({
+      ...form,
+      [key]: value,
+      ...(key === "coverImageUrl" &&
+      value !== form.coverImageUrl &&
+      form.coverImageSet !== undefined
+        ? { coverImageSet: null }
+        : {}),
+    });
   const addTerm = (kind: "categories" | "tags", value: string) => {
     const text = value.trim();
     if (

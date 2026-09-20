@@ -1,3 +1,4 @@
+import { publishedResponsiveImageProps } from "@/lib/responsive-images";
 import { Link } from "wouter";
 import { useCms } from "@/lib/cms";
 import { Layout } from "@/components/layout/Layout";
@@ -91,6 +92,7 @@ export default function PublishedBlog() {
             {...(s.coverImageUrl
               ? { image: s.coverImageUrl, imageAlt: presentation.imageAlt }
               : { image: undefined })}
+            responsiveImage={s.responsiveCover}
             imagePosition={`${s.coverImagePositionX ?? 50}% ${s.coverImagePositionY ?? 50}%`}
           />
           <section className="py-16 bg-background">
@@ -152,6 +154,7 @@ export default function PublishedBlog() {
         {s.coverImageUrl && (
           <img
             src={s.coverImageUrl}
+            {...publishedResponsiveImageProps(s.responsiveCover)}
             alt={s.title}
             className="w-full aspect-video object-cover rounded-xl mb-10"
             style={{

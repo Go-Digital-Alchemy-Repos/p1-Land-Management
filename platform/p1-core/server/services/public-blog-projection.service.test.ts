@@ -83,6 +83,14 @@ describe("public Blog projection", () => {
     expect(() => projectPublicBlog([original])).toThrow("Invalid Blog presentation");
     expect(() => blogEditorialSchema.parse(original.snapshot)).toThrow();
   });
+  it("does not inject responsive data or change public hashes when covers are absent or cleared", () => {
+    const source = row();
+    const before = projectPublicBlog([source]);
+    expect(before.posts[0].snapshot).not.toHaveProperty("responsiveCover");
+    source.snapshot.coverImageSet = null;
+    expect(projectPublicBlog([source])).toEqual(before);
+    expect(projectPublicBlog([source]).posts[0].snapshot).not.toHaveProperty("coverImageSet");
+  });
   it("allowlists immutable public fields and emits deterministic authoritative emptiness", () => {
     const data = projectPublicBlog([{ ...row(), privateSecret: "secret" } as PublishedBlogRow]);
     expect(data.posts[0].snapshot).not.toHaveProperty("sidebarId");

@@ -33419,6 +33419,169 @@
               }
             },
             "nullable": true
+          },
+          "coverImageSet": {
+            "type": "object",
+            "nullable": true,
+            "additionalProperties": false,
+            "description": "Private reviewed media metadata. Omission preserves the existing set; null clears it. Original is a 1408x768 PNG; variants are ordered 480, 768, 1280 pixel wide WebP images and defaultMediaId identifies the 1280 variant. Editors cannot manufacture reviewed sets.",
+            "required": [
+              "schemaVersion",
+              "sourceFingerprint",
+              "mediaReviewSha256",
+              "original",
+              "defaultMediaId",
+              "variants"
+            ],
+            "properties": {
+              "schemaVersion": {
+                "type": "integer",
+                "enum": [
+                  1
+                ]
+              },
+              "sourceFingerprint": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "mediaReviewSha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "original": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "mediaId",
+                  "url",
+                  "sha256",
+                  "bytes",
+                  "mime",
+                  "width",
+                  "height",
+                  "quality"
+                ],
+                "properties": {
+                  "mediaId": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9_-]{1,160}$"
+                  },
+                  "url": {
+                    "type": "string",
+                    "maxLength": 2048,
+                    "pattern": "^/r2/cms/[A-Za-z0-9_-]+(?:/[A-Za-z0-9_-]+)*/[A-Za-z0-9_.-]+\\.(?:png|webp)$"
+                  },
+                  "sha256": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  },
+                  "bytes": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 20971520
+                  },
+                  "mime": {
+                    "type": "string",
+                    "enum": [
+                      "image/png"
+                    ]
+                  },
+                  "width": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "enum": [
+                      1408
+                    ]
+                  },
+                  "height": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "enum": [
+                      768
+                    ]
+                  },
+                  "quality": {
+                    "type": "integer",
+                    "nullable": true,
+                    "enum": [
+                      null
+                    ]
+                  }
+                }
+              },
+              "defaultMediaId": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_-]{1,160}$"
+              },
+              "variants": {
+                "type": "array",
+                "minItems": 3,
+                "maxItems": 3,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "mediaId",
+                    "url",
+                    "sha256",
+                    "bytes",
+                    "mime",
+                    "width",
+                    "height",
+                    "quality"
+                  ],
+                  "properties": {
+                    "mediaId": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z0-9_-]{1,160}$"
+                    },
+                    "url": {
+                      "type": "string",
+                      "maxLength": 2048,
+                      "pattern": "^/r2/cms/[A-Za-z0-9_-]+(?:/[A-Za-z0-9_-]+)*/[A-Za-z0-9_.-]+\\.(?:png|webp)$"
+                    },
+                    "sha256": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    },
+                    "bytes": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 20971520
+                    },
+                    "mime": {
+                      "type": "string",
+                      "enum": [
+                        "image/webp"
+                      ]
+                    },
+                    "width": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "enum": [
+                        480,
+                        768,
+                        1280
+                      ]
+                    },
+                    "height": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "enum": [
+                        262,
+                        419,
+                        698
+                      ]
+                    },
+                    "quality": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 100
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "additionalProperties": false
@@ -33647,6 +33810,169 @@
                   }
                 },
                 "nullable": true
+              },
+              "coverImageSet": {
+                "type": "object",
+                "nullable": true,
+                "additionalProperties": false,
+                "description": "Private reviewed media metadata. Omission preserves the existing set; null clears it. Original is a 1408x768 PNG; variants are ordered 480, 768, 1280 pixel wide WebP images and defaultMediaId identifies the 1280 variant. Editors cannot manufacture reviewed sets.",
+                "required": [
+                  "schemaVersion",
+                  "sourceFingerprint",
+                  "mediaReviewSha256",
+                  "original",
+                  "defaultMediaId",
+                  "variants"
+                ],
+                "properties": {
+                  "schemaVersion": {
+                    "type": "integer",
+                    "enum": [
+                      1
+                    ]
+                  },
+                  "sourceFingerprint": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  },
+                  "mediaReviewSha256": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  },
+                  "original": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "mediaId",
+                      "url",
+                      "sha256",
+                      "bytes",
+                      "mime",
+                      "width",
+                      "height",
+                      "quality"
+                    ],
+                    "properties": {
+                      "mediaId": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z0-9_-]{1,160}$"
+                      },
+                      "url": {
+                        "type": "string",
+                        "maxLength": 2048,
+                        "pattern": "^/r2/cms/[A-Za-z0-9_-]+(?:/[A-Za-z0-9_-]+)*/[A-Za-z0-9_.-]+\\.(?:png|webp)$"
+                      },
+                      "sha256": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}$"
+                      },
+                      "bytes": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 20971520
+                      },
+                      "mime": {
+                        "type": "string",
+                        "enum": [
+                          "image/png"
+                        ]
+                      },
+                      "width": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "enum": [
+                          1408
+                        ]
+                      },
+                      "height": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "enum": [
+                          768
+                        ]
+                      },
+                      "quality": {
+                        "type": "integer",
+                        "nullable": true,
+                        "enum": [
+                          null
+                        ]
+                      }
+                    }
+                  },
+                  "defaultMediaId": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9_-]{1,160}$"
+                  },
+                  "variants": {
+                    "type": "array",
+                    "minItems": 3,
+                    "maxItems": 3,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "mediaId",
+                        "url",
+                        "sha256",
+                        "bytes",
+                        "mime",
+                        "width",
+                        "height",
+                        "quality"
+                      ],
+                      "properties": {
+                        "mediaId": {
+                          "type": "string",
+                          "pattern": "^[A-Za-z0-9_-]{1,160}$"
+                        },
+                        "url": {
+                          "type": "string",
+                          "maxLength": 2048,
+                          "pattern": "^/r2/cms/[A-Za-z0-9_-]+(?:/[A-Za-z0-9_-]+)*/[A-Za-z0-9_.-]+\\.(?:png|webp)$"
+                        },
+                        "sha256": {
+                          "type": "string",
+                          "pattern": "^[a-f0-9]{64}$"
+                        },
+                        "bytes": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 20971520
+                        },
+                        "mime": {
+                          "type": "string",
+                          "enum": [
+                            "image/webp"
+                          ]
+                        },
+                        "width": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "enum": [
+                            480,
+                            768,
+                            1280
+                          ]
+                        },
+                        "height": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "enum": [
+                            262,
+                            419,
+                            698
+                          ]
+                        },
+                        "quality": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 100
+                        }
+                      }
+                    }
+                  }
+                }
               }
             }
           }

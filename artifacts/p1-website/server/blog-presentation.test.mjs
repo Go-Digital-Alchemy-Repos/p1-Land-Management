@@ -1,3 +1,4 @@
+import { validateBlogResponsiveCover } from "../../../platform/p1-core/shared/blog-cover-image-set.ts";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { render } from "../dist/server/entry-server.js";
@@ -68,6 +69,7 @@ const parse = (value) =>
     safePublishedHtml,
     publicBlogListing,
     validateBlogPresentation,
+    validateBlogResponsiveCover,
   );
 const ssr = (data) =>
   render("/blog/editorial-fixture", {
@@ -156,4 +158,84 @@ test("another declared organization does not inherit P1 identity", () => {
     name: "Other Organization",
   });
   assert.match(JSON.stringify(result.head.jsonLd.publisher), /#business/);
+});
+
+const responsiveCover = () => ({
+  schemaVersion: 1,
+  src: "/r2/cms/blog/hero-1280.webp",
+  width: 1280,
+  height: 698,
+  variants: [
+    { src: "/r2/cms/blog/hero-480.webp", width: 480, height: 262 },
+    { src: "/r2/cms/blog/hero-768.webp", width: 768, height: 419 },
+    { src: "/r2/cms/blog/hero-1280.webp", width: 1280, height: 698 },
+  ],
+});
+const responsivePublication = () => {
+  const data = publication();
+  const cover = responsiveCover();
+  data.posts[0].snapshot.responsiveCover = cover;
+  data.posts[0].snapshot.coverImageUrl = cover.src;
+  return data;
+};
+test("validated cover variants render identically in editorial hero, plain article and listing SSR", () => {
+  const data = parse(responsivePublication());
+  for (const editorial of [true, false]) {
+    if (!editorial) delete data.posts[0].snapshot.presentation;
+    const { html } = ssr(data);
+    assert.match(
+      html,
+      /srcSet="\/r2\/cms\/blog\/hero-480.webp 480w, \/r2\/cms\/blog\/hero-768.webp 768w, \/r2\/cms\/blog\/hero-1280.webp 1280w"/,
+    );
+    assert.match(html, /sizes="100vw" width="1280" height="698"/);
+  }
+  const listing = publicBlogListing(data.posts);
+  assert.deepEqual(
+    listing[0].responsiveCover,
+    data.posts[0].snapshot.responsiveCover,
+  );
+  const result = render("/blog", {
+    route: "/blog",
+    content: {},
+    global: {},
+    blog: { revision: data.revision, staticRoutes: [], posts: [], listing },
+  });
+  assert.match(result.html, /hero-480.webp 480w/);
+  assert.match(
+    result.html,
+    /sizes="\(min-width: 1024px\) 33vw, \(min-width: 768px\) 50vw, 100vw"/,
+  );
+});
+test("absent and null responsive cover preserve legacy fallback", () => {
+  for (const value of [undefined, null]) {
+    const data = publication();
+    if (value === null) data.posts[0].snapshot.responsiveCover = null;
+    const { html } = ssr(parse(data));
+    assert.match(html, /src="\/r2\/cover.webp"/);
+    assert.doesNotMatch(html, /hero-480.webp/);
+  }
+});
+test("corrupt or private responsive metadata rejects the whole publication", () => {
+  for (const change of [
+    (c) => c.variants.reverse(),
+    (c) => (c.width = 1408),
+    (c) => (c.height = 699),
+    (c) => (c.variants[0].height = 261),
+    (c) => c.variants.pop(),
+    (c) => (c.variants[0].src = "https://evil.test/hero.webp"),
+    (c) => (c.variants[0].src = "/r2/cms/%2e%2e/hero.webp"),
+    (c) => (c.variants[0].src = "/r2/cms/../hero.webp"),
+    (c) => (c.variants[0].src = "/r2/cms/hero.webp?private=1"),
+    (c) => (c.variants[0].src = "/r2/cms/hero.webp#fragment"),
+    (c) => (c.variants[0].src = "/r2/cms/hero.png"),
+    (c) => (c.mediaId = "private-id"),
+    (c) => (c.variants[0].sha256 = "private-hash"),
+  ]) {
+    const data = responsivePublication();
+    change(data.posts[0].snapshot.responsiveCover);
+    assert.throws(() => parse(data));
+  }
+  const mismatch = responsivePublication();
+  mismatch.posts[0].snapshot.coverImageUrl = "/r2/cms/other.webp";
+  assert.throws(() => parse(mismatch));
 });

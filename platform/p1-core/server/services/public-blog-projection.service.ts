@@ -1,3 +1,4 @@
+import { validateBlogCoverImageSet, publicBlogResponsiveCover } from "@shared/blog-cover-image-set";
 import { validateBlogPresentation, type BlogPresentation } from "@shared/blog-presentation";
 import { createHash } from "node:crypto";
 import sanitizeHtml from "sanitize-html";
@@ -154,6 +155,8 @@ export function projectPublicBlog(
   const posts: PublicBlogPost[] = rows
     .map((row) => {
       const s = row.snapshot;
+      if (s.coverImageSet != null && !validateBlogCoverImageSet(s.coverImageSet, s.coverImageUrl))
+        throw new PublicBlogCapacityError("Invalid responsive cover set");
       if (!s.title.trim() || !s.authorName.trim())
         throw new PublicBlogCapacityError("A public title and author are required");
       for (const position of [s.coverImagePositionX, s.coverImagePositionY])
@@ -241,6 +244,9 @@ export function projectPublicBlog(
           seoDescription: optionalText(s.seoDescription, 12000),
           ogImageUrl: safePublicBlogUrl(s.ogImageUrl, true),
           noindex: s.noindex === true,
+          ...(s.coverImageSet
+            ? { responsiveCover: publicBlogResponsiveCover(s.coverImageSet) }
+            : {}),
           ...(presentation !== undefined ? { presentation } : {}),
         },
       };
