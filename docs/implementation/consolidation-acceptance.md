@@ -523,3 +523,7 @@ three Railway services.
 ## Standard estimate delivery — September 20
 
 Additive receiver `519c10b8` verified SUCCESS before enabling Core producer. Durable estimate handoff and queue visibility implemented; 25 focused and 23 actual PostgreSQL tests pass, as do affected builds/typechecks. Producer `b75c3dee` verified Railway SUCCESS on all three applications, dashboard health and public contact HTTP 200; no historical replay. See `estimate-dashboard-intake.md`.
+
+## Analytics report date and filtering acceptance — September 20
+
+Authenticated production Analytics rendered actual property554712298 results (8 active users,22 sessions,170 page views at observation). Daily search narrowed four rows to September17, then showed the explicit no-match state with CSV disabled for an unmatched value. These are provider observations, not fixture data. The daily date column exposed Google's compact YYYYMMDD strings; dashboard date dimensions now render MM/DD/YYYY without timezone shifts, and search accepts either representation. CSV and sort retain original provider values. Four report tests, dashboard typecheck and production build passed. Date-format live verification pending. Search Console access and complete report/export parity remain open.

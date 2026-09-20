@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
   csvCell,
+  dimensionFormat,
   comparison,
   metricFormat,
   presetRange,
@@ -59,3 +60,12 @@ test("search presets use Pacific calendar dates around UTC midnight", () => {
     { startDate: "2026-09-09", endDate: "2026-09-15" },
   );
 });
+
+ test("report calendar dates use month/day/year without changing non-date dimensions", () => {
+  assert.equal(dimensionFormat("20260917", "date"), "09/17/2026");
+  assert.equal(dimensionFormat("2026-09-17", "date"), "09/17/2026");
+  assert.equal(dimensionFormat("20240229", "date"), "02/29/2024");
+  assert.equal(dimensionFormat("20260229", "date"), "20260229");
+  assert.equal(dimensionFormat("20260917", "pagePath"), "20260917");
+  assert.equal(dimensionFormat(undefined, "date"), "—");
+ });

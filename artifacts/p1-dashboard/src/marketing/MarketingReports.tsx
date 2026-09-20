@@ -32,6 +32,7 @@ import type {
 import {
   comparison,
   csvCell,
+  dimensionFormat,
   metricFormat,
   presetRange,
 } from "./report-format";
@@ -147,7 +148,8 @@ function ReportTable({
     () =>
       report.rows
         .filter((row) =>
-          Object.values(row.dimensions)
+          Object.entries(row.dimensions)
+            .map(([key, value]) => `${value} ${dimensionFormat(value, key)}`)
             .join(" ")
             .toLowerCase()
             .includes(search.toLowerCase()),
@@ -251,7 +253,7 @@ function ReportTable({
                     <td key={key}>
                       {row.metrics[key] !== undefined
                         ? metricFormat(row.metrics[key], key)
-                        : row.dimensions[key] || "—"}
+                        : dimensionFormat(row.dimensions[key], key)}
                     </td>
                   ))}
                 </tr>

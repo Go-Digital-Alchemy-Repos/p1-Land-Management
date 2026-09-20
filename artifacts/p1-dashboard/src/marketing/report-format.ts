@@ -1,3 +1,15 @@
+/** Google calendar dates are not instants; format without timezone conversion. */
+export function dimensionFormat(value: string | undefined, dimension: string) {
+  if (!value) return "—";
+  if (dimension !== "date") return value;
+  const match = /^(\d{4})-?(\d{2})-?(\d{2})$/.exec(value);
+  if (!match) return value;
+  const [, year, month, day] = match;
+  const parsed = new Date(`${year}-${month}-${day}T00:00:00Z`);
+  if (!Number.isFinite(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== `${year}-${month}-${day}`) return value;
+  return `${month}/${day}/${year}`;
+}
+
 export function metricFormat(value: number, metric: string) {
   if (/Rate$/.test(metric) || metric === "ctr")
     return new Intl.NumberFormat("en-US", {
