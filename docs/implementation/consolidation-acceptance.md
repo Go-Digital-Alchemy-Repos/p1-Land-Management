@@ -56,7 +56,7 @@ matrix. Changed-content field-event replay now rejects changed kind/payload/vers
 | Approval → operations → activation → billing | `composed-estimate-preparation.integration.test.ts` and recorded mixed-billing rehearsal cover preparation, outbox-only send, approval, activation, visit generation and retry-safe billing. | Actual crew execution/review in the complete browser journey, offline behavior, cancellation/successor/change-order regressions and operational acceptance. Crew synchronization and manager review now use real local HTTP calls; browser offline storage and external posting remain unverified. |
 | Preserve public/media/preview/intake/offline compatibility | Existing retained handlers, stable data stores and targeted runtime/route checks. | Full compatibility inventory and cutover tests spanning both applications. No blanket parity claim is supported yet. |
 | Migration, restore, rollback and retirement | `scripts/consolidation/` has identity/CRM analysis, extraction, reviewed import and independent verification tools with synthetic tests. | Dashboard backup restore/migration/round-trip rehearsal passed September 18. P1 recovery runner now validates exact snapshot identity and fingerprints actual p1-migrations. Historical Core archive row/sequence recovery and a source-based retirement route inventory now exist (see September 19 evidence below). Populated database, downloaded Blog media archive and current/prior source-built application rollback rehearsals passed. Remaining: provider-side storage restoration and exact Railway image recovery, tested retirement/deep-link behavior, identity+CRM reconciliation, final ordering/freeze procedure and release packet. |
-| Validated release candidate and Owner acceptance | Validated commits reconciled to main; the Google target-management release `ca126b51` succeeded on all three web services. Subsequent `19dea572` CRM tooling and `e35b8a88` realtime fix are pushed; latest deployment acceptance is pending. GitHub Actions remain disabled. | Full requirement audit, resolved release blockers, candidate-wide validation, reviewed migration/rollback artifacts and final full-goal acceptance. |
+| Validated release candidate and Owner acceptance | Validated commits reconciled to main. Managed scripts `76127ead`, sidebar colors `552248a0`, crew recovery `fdff1811`, and Blog tool links `70ac81cc` have successful Railway deployment evidence. Managed scripts and Blog links have authenticated live browser checks. GitHub Actions remain disabled. | Full requirement audit, resolved release blockers, candidate-wide validation, reviewed migration/rollback artifacts and final full-goal acceptance. |
 
 
 ## Current interface and recovery checkpoint — September 19
@@ -405,3 +405,24 @@ event-ID and both-accepted-receipt assertions, closing the older fixture limitat
 above. Full CUA download/start/completion/reload/lost-ack/retry journey passed.
 The reusable runner is scripts/consolidation/crew-joined-fixture.py; physical-device
 and other explicitly outstanding scenarios remain open.
+
+
+## Blog tool links and release checkpoint — September 19
+
+`70ac81cc58a47711fd94040ab08fc07c6136b039` deployed successfully in dashboard
+release `1fe216e4-3d8b-493a-95e3-73c3210688f7`. CUA opened `?tab=comments`
+and observed moderation, switched to Comment Settings (`?tab=settings`), then
+reloaded and observed the same settings panel. No settings were changed.
+Thirty-two Blog adapter tests, dashboard types and build passed. Taxonomy uses
+`?tab=taxonomy`; post creation continues to use `?post=new`.
+
+The operation inventory found no missing Blog API operations, but initial-load
+retry, pending-mutation navigation protection and presentation differences remain
+under implementation. Sections exact-instance lease/version protection is also
+unreleased work. Neither is accepted by this checkpoint.
+
+Crew recovery `fdff1811` has Railway SUCCESS deployment
+`be661605-c7ea-46e1-9a45-0fab6573be2e`. Native Backup UI was read-only inspected:
+latest listed scheduled archive is September19 08:56 Eastern, revision9ded625d,
+52tables/584rows/0media. It predates imported Blog content and must not be used as
+proof of current release recovery. Fresh non-pruning capture/rehearsal is underway.
