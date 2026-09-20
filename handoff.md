@@ -1005,3 +1005,13 @@ Authenticated live Schedule loaded the new conflict panel with no pending entrie
 All completed code is on main and the task branch. Next continue the broader open
 acceptance items; do not repeat this completed rehearsal or treat it as complete
 physical offline, CRM migration, account-policy or retained-admin acceptance.
+
+
+### Actual CRM preservation completed — September19
+
+Source-fenced production import and exact replay passed for the full current
+3-lead/zero-client-note-task batch. Created2 separate native inquiries, preserved
+all3 original source snapshots, left the existing receipt-matched lead unchanged;
+live Sales/history/context readback passed. Evidence and remaining permanent source
+write-ownership requirements: `docs/implementation/crm-production-preservation-2026-09-19.md`.
+Do not rerun with new target UUIDs or claim account policy/legacy retirement complete.

@@ -4,7 +4,7 @@ Current assessment: **implementation in progress; not a complete release candida
 
 The Owner's identity link and Website Editor work. Live Analytics now works after correcting empty previous-period report normalization. Search Console remains blocked by property coverage/access (configured domain property returns 403; only the apex URL-prefix property appeared in the authorized list). Do not rotate existing Google credentials or equate apex access with canonical `www` coverage.
 
-The September 17 dashboard backup has passed an isolated restore, application of 19 consolidation SQL migrations, preservation of all preexisting business-table rows, and a second backup/restore comparison. See [restore evidence](dashboard-restore-rehearsal-2026-09-18.md). No real CRM import, approved account-policy reconciliation, actual deployed-image rollback, complete media recovery or `/admin/` retirement has occurred. An isolated current/prior source-rebuild startup rehearsal has a partial result; it does not establish deployed-image provenance or content recovery. Historical Core archive row/sequence recovery passed September 19; see the recovery checkpoint below.
+The September 17 dashboard backup has passed an isolated restore, application of 19 consolidation SQL migrations, preservation of all preexisting business-table rows, and a second backup/restore comparison. See [restore evidence](dashboard-restore-rehearsal-2026-09-18.md). Bounded actual-source CRM preservation has now run (see the September19 production CRM checkpoint below). Approved account-policy reconciliation, actual deployed-image rollback, complete provider media recovery and `/admin/` retirement remain open. An isolated current/prior source-rebuild startup rehearsal has a partial result; it does not establish deployed-image provenance or content recovery. Historical Core archive row/sequence recovery passed September 19; see the recovery checkpoint below.
 
 ## Latest populated recovery evidence — September 19
 
@@ -505,3 +505,17 @@ sign-out succeeds. Dashboard0047 is applied; release0e058517 reached Railway SUC
 three services and authenticated live Schedule loaded the conflict panel successfully. See `field-conflict-resolution.md`. This closes
 this bounded office-review gap, not physical-device offline/eviction, photo
 reconciliation, cancellation/change-order acceptance or the overall crew gate.
+
+
+## Production CRM preservation checkpoint — September19
+
+Fresh source export matched the prior reviewed source hash:3 leads, no clients,
+notes or tasks. The source-fenced dry-run/apply/independent verification/exact replay
+passed. All3 snapshots are preserved;2 separate inquiries were created and the
+existing receipt-matched lead remained unchanged. Live Sales exposed the imported
+inquiries, structured context and original CRM history. See
+[production evidence](crm-production-preservation-2026-09-19.md). This supersedes
+historical “no real CRM import” statements only for this exact bounded batch.
+Permanent source ownership, account policy, pipeline parity and retirement remain
+open. The prior documentation-only revision22bfe064 also reached SUCCESS on all
+three Railway services.
