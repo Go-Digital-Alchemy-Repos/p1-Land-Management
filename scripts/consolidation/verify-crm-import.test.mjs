@@ -256,3 +256,117 @@ test(
     assert.equal(next.counts.nativeTasksChanged, 1);
   },
 );
+
+test(
+  "Additive verification independently checks created values, immutable origin/archive, existing target and receipt identity",
+  { skip: !base },
+  async () => {
+    const state = await setupCrmImportFixture(pool),
+      { input, owner, lead, instance } = state;
+    const matchedBefore = (
+      await pool.query("SELECT to_jsonb(lead) row FROM lead WHERE id=$1", [
+        lead,
+      ])
+    ).rows[0].row;
+    const receiptBefore = (
+      await pool.query(
+        "SELECT to_jsonb(r) row FROM commercial_intake_receipt r WHERE source_instance_id=$1",
+        [instance],
+      )
+    ).rows[0].row;
+    const source = {
+      ...input.records.leads[0],
+      id: "additive-verification",
+      formSubmissionId: randomUUID(),
+      stage: "contacted",
+      formData: { address: "Submitted site", services: ["Mowing"] },
+    };
+    input.records.leads.push(source);
+    const mappings = [
+      {
+        action: "create_separate_inquiry",
+        sourceId: source.id,
+        targetId: randomUUID(),
+      },
+    ];
+    const { prepareCrmImportPlan } = await import("./import-crm-payloads.mjs");
+    const review = {
+      schemaVersion: 2,
+      operation: "import_reviewed_crm",
+      reviewedBy: owner,
+      sourceFreezeVerified: true,
+      inquiryMappings: mappings,
+      manifestSha256: prepareCrmImportPlan(input, mappings).manifestSha256,
+    };
+    await importCrmPayloads(pool, input, review, { dryRun: false });
+    assert.deepEqual(
+      (
+        await pool.query("SELECT to_jsonb(lead) row FROM lead WHERE id=$1", [
+          lead,
+        ])
+      ).rows[0].row,
+      matchedBefore,
+    );
+    assert.deepEqual(
+      (
+        await pool.query(
+          "SELECT to_jsonb(r) row FROM commercial_intake_receipt r WHERE source_instance_id=$1",
+          [instance],
+        )
+      ).rows[0].row,
+      receiptBefore,
+    );
+    let report = await verifyCrmImport(pool, input, review);
+    assert.equal(report.verified, true, JSON.stringify(report.issues));
+    assert.equal(report.byCollection.leads.verified, 2);
+    const directory = await mkdtemp(join(tmpdir(), "p1-crm-additive-verify-"));
+    try {
+      const sourcePath = join(directory, "source.json"),
+        reviewPath = join(directory, "review.json"),
+        outputPath = join(directory, "result.json");
+      await writeFile(sourcePath, JSON.stringify(input), { mode: 0o600 });
+      await writeFile(reviewPath, JSON.stringify(review), { mode: 0o600 });
+      const { main: verifyCli } = await import("./verify-crm-import.mjs");
+      const result = await verifyCli([
+        "--input",
+        sourcePath,
+        "--output",
+        outputPath,
+        "--review",
+        reviewPath,
+      ]);
+      assert.equal(result.verified, true);
+      assert.equal((await stat(outputPath)).mode & 0o777, 0o600);
+      assert.equal(
+        JSON.parse(await readFile(outputPath, "utf8")).manifestSha256,
+        review.manifestSha256,
+      );
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
+
+    await pool.query("UPDATE lead SET status='qualified' WHERE id=$1", [
+      mappings[0].targetId,
+    ]);
+    report = await verifyCrmImport(pool, input, review);
+    assert(codes(report).includes("native_inquiry_current_values_differ"));
+    assert(!codes(report).includes("native_inquiry_origin_mismatch"));
+    // Restore current value; then a receipt remapping must independently fail verification.
+    await pool.query("UPDATE lead SET status='contacted' WHERE id=$1", [
+      mappings[0].targetId,
+    ]);
+    await pool.query(
+      "UPDATE commercial_intake_receipt SET submission_id=$2 WHERE source_instance_id=$1",
+      [instance, randomUUID()],
+    );
+    report = await verifyCrmImport(pool, input, review);
+    assert(codes(report).includes("receipt_mapping_mismatch"));
+    await assert.rejects(
+      verifyCrmImport(pool, input, {
+        ...review,
+        manifestSha256: "0".repeat(64),
+      }),
+      /review_mismatch/,
+    );
+  },
+);

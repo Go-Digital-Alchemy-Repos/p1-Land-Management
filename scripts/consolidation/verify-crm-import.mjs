@@ -7,6 +7,7 @@ import {
   digestCrmValue,
   parseCrmJson,
 } from "./prepare-crm-payloads.mjs";
+import { reviewedCrmImportPlan } from "./import-crm-payloads.mjs";
 const key = (table, id) => table + ":" + id;
 const stamp = (sql) =>
   `to_char(${sql} AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"')`;
@@ -18,8 +19,10 @@ const normalized = (value) =>
       value.slice(19, -1).replace(/^\./, "").padEnd(6, "0") +
       "Z";
 /** Read-only verification of archived source and immutable native origin. Not a cutover/release approval. */
-export async function verifyCrmImport(pool, input) {
-  const manifest = prepareCrmPayloads(input),
+export async function verifyCrmImport(pool, input, review) {
+  const manifest = review
+      ? reviewedCrmImportPlan(input, review)
+      : prepareCrmPayloads(input),
     issues = [],
     byCollection = Object.fromEntries(
       Object.entries(input.records).map(([name, rows]) => [
@@ -172,6 +175,59 @@ export async function verifyCrmImport(pool, input) {
           ).rowCount
         )
           add("parent_missing_or_invalid", collection, sourceId);
+        if (record.action === "create_separate_inquiry") {
+          nativeChecked++;
+          const native = (
+            await c.query(
+              `SELECT name,email,phone,location,description,source,status,
+             reported_company_name AS "reportedCompanyName",contact_title AS "contactTitle",
+             reported_property_name AS "reportedPropertyName",property_type AS "propertyType",
+             acreage_description AS "acreageDescription",project_stage AS "projectStage",
+             service_timing AS "serviceTiming",services,attribution,owner_id AS "ownerId",next_action AS "nextAction",
+             ${stamp("next_action_due_at")} AS "nextActionDueAt",${stamp("created_at")} AS "createdAt",
+             ${stamp("last_activity_at")} AS "lastActivityAt" FROM lead WHERE id=$1`,
+              [targetId],
+            )
+          ).rows[0];
+          const expectedProjection = {
+            ...p,
+            createdAt: normalized(p.createdAt),
+            lastActivityAt: normalized(p.lastActivityAt),
+            nextActionDueAt: normalized(p.nextActionDueAt),
+          };
+          if (
+            !native ||
+            digestCrmValue(native) !== digestCrmValue(expectedProjection)
+          )
+            add("native_inquiry_current_values_differ", collection, sourceId);
+          const origin = (
+            await c.query(
+              "SELECT kind,fields FROM lead_detail_revision WHERE lead_id=$1 AND version=1",
+              [targetId],
+            )
+          ).rows[0];
+          if (
+            !origin ||
+            origin.kind !== "created" ||
+            digestCrmValue(origin.fields) !==
+              digestCrmValue({
+                name: p.name,
+                email: p.email,
+                phone: p.phone,
+                location: p.location,
+                description: p.description,
+                reported_company_name: p.reportedCompanyName,
+              })
+          )
+            add("native_inquiry_origin_mismatch", collection, sourceId);
+          // No receipt is invented for these generic historical inquiries. A newly
+          // delivered handoff for the same submission requires reconciliation.
+          if (
+            record.sourceSnapshot.formSubmissionId &&
+            receipts.has(record.sourceSnapshot.formSubmissionId)
+          )
+            add("unexpected_created_inquiry_receipt", collection, sourceId);
+        }
       } else if (kind === "note") {
         const native = (
           await c.query(
@@ -318,7 +374,8 @@ export async function verifyCrmImport(pool, input) {
 }
 export async function main(args) {
   if (
-    args.length !== 4 ||
+    ![4, 6].includes(args.length) ||
+    (args.length === 6 && (args[4] !== "--review" || args[5] === args[3])) ||
     args[0] !== "--input" ||
     args[2] !== "--output" ||
     args[1] === args[3] ||
@@ -338,7 +395,16 @@ export async function main(args) {
     max: 1,
   });
   try {
-    const report = await verifyCrmImport(pool, parseCrmJson(raw));
+    let review;
+    if (args.length === 6) {
+      if ((await stat(args[5])).size > 32 * 1024 * 1024)
+        throw Error("crm_verify_input_limit");
+      const reviewRaw = await readFile(args[5]);
+      if (reviewRaw.length > 32 * 1024 * 1024)
+        throw Error("crm_verify_input_limit");
+      review = parseCrmJson(reviewRaw);
+    }
+    const report = await verifyCrmImport(pool, parseCrmJson(raw), review);
     report.inputFileSha256 = createHash("sha256").update(raw).digest("hex");
     await writeFile(args[3], JSON.stringify(report, null, 2) + "\n", {
       flag: "wx",

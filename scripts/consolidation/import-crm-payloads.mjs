@@ -13,20 +13,156 @@ const uuid = (v) =>
 const fail = (code) => {
   throw Error(code);
 };
-/** Operational import, not an HTTP endpoint. Caller supplies a privileged pool and reviewed frozen export. */
-export async function importCrmPayloads(
-  pool,
-  input,
-  review,
-  { dryRun = true } = {},
-) {
-  if (typeof dryRun !== "boolean") fail("crm_import_mode_required");
-  const manifest = prepareCrmPayloads(input);
+/** Derive, never accept, native fields from one reviewed source inquiry. */
+function inquiryProjection(source) {
+  const text = (value, max, required = false) => {
+    if (value == null && !required) return null;
+    if (
+      typeof value !== "string" ||
+      value.length > max ||
+      (required && !value.trim())
+    )
+      fail("crm_import_inquiry_field_requires_review");
+    return value;
+  };
+  const form = source.formData;
+  if (
+    !source.createdAt ||
+    !source.updatedAt ||
+    !["new", "contacted", "qualified", "proposal", "won", "lost"].includes(
+      source.stage,
+    )
+  )
+    fail("crm_import_inquiry_lifecycle_requires_review");
+  const services = form.services ?? [];
+  if (
+    !Array.isArray(services) ||
+    services.length > 100 ||
+    services.some((value) => typeof value !== "string" || value.length > 300)
+  )
+    fail("crm_import_inquiry_services_require_review");
+  const attribution = form.attribution ?? {};
+  if (
+    typeof attribution !== "object" ||
+    Array.isArray(attribution) ||
+    attribution === null
+  )
+    fail("crm_import_inquiry_attribution_requires_review");
+  return {
+    name: text(source.name, 200, true),
+    email: text(source.email, 320),
+    phone: text(source.phone, 100),
+    location: text(form.address, 2000) ?? "",
+    description: text(source.message, 10000) ?? "",
+    source: text(source.source, 200, true),
+    status: source.stage,
+    reportedCompanyName: text(source.company, 300),
+    contactTitle: text(form.title, 300),
+    reportedPropertyName: text(form.propertyName, 300),
+    propertyType: text(form.propertyType, 300),
+    acreageDescription: text(form.acreage, 300),
+    projectStage: text(form.projectStage, 300),
+    serviceTiming: text(form.serviceTiming, 300),
+    services,
+    attribution,
+    ownerId: null,
+    nextAction: null,
+    nextActionDueAt: source.nextFollowUpAt,
+    createdAt: source.createdAt,
+    lastActivityAt: source.updatedAt,
+  };
+}
+/** Private review plan; source manifest remains unchanged. No name/contact-based matching. */
+export function prepareCrmImportPlan(input, inquiryMappings) {
+  const original = prepareCrmPayloads(input);
+  if (
+    !Array.isArray(inquiryMappings) ||
+    !inquiryMappings.length ||
+    inquiryMappings.length > 10000
+  )
+    fail("crm_import_inquiry_mappings_required");
+  const mappings = [...inquiryMappings].sort((a, b) =>
+    String(a?.sourceId).localeCompare(String(b?.sourceId), "en"),
+  );
+  const sourceIds = new Set(),
+    targetIds = new Set();
+  for (const mapping of mappings) {
+    if (
+      !mapping ||
+      Object.keys(mapping).sort().join(",") !== "action,sourceId,targetId" ||
+      mapping.action !== "create_separate_inquiry" ||
+      typeof mapping.sourceId !== "string" ||
+      !uuid(mapping.targetId) ||
+      mapping.targetId !== mapping.targetId.toLowerCase() ||
+      sourceIds.has(mapping.sourceId) ||
+      targetIds.has(mapping.targetId)
+    )
+      fail("crm_import_invalid_inquiry_mapping");
+    const proposal = original.reconciliation.proposals.find(
+      (p) => p.entity === "lead" && p.sourceId === mapping.sourceId,
+    );
+    if (
+      proposal?.action !== "review_unmapped" ||
+      input.targetInventory.dashboardLeads.some(
+        (row) => row.id === mapping.targetId,
+      ) ||
+      original.records.some((row) => row.targetId === mapping.targetId)
+    )
+      fail("crm_import_inquiry_mapping_not_unmatched");
+    sourceIds.add(mapping.sourceId);
+    targetIds.add(mapping.targetId);
+  }
+  const records = original.records.map((record) => {
+    const mapping =
+      record.entity === "lead" &&
+      mappings.find((m) => m.sourceId === record.sourceParentId);
+    if (!mapping) return record;
+    if (record.blockers.some((b) => b !== "parent_mapping_requires_review"))
+      fail("crm_import_unresolved_or_oversized");
+    return {
+      ...record,
+      targetId: mapping.targetId,
+      blockers: [],
+      action:
+        record.kind === "parent"
+          ? "create_separate_inquiry"
+          : "review_native_projection",
+      nativeProjection:
+        record.kind === "parent"
+          ? inquiryProjection(record.sourceSnapshot)
+          : { ...record.nativeProjection, parentId: mapping.targetId },
+    };
+  });
+  const plan = {
+    ...original,
+    schemaVersion: 2,
+    mode: "reviewed_additive_inquiry_plan",
+    sourceManifestSha256: original.manifestSha256,
+    inquiryMappings: mappings,
+    records,
+    counts: {
+      ...original.counts,
+      blocked: records.filter((r) => r.blockers.length).length,
+    },
+  };
+  delete plan.manifestSha256;
+  plan.manifestSha256 = digestCrmValue(plan);
+  return plan;
+}
+/** Validate the exact operator review before any database access. */
+export function reviewedCrmImportPlan(input, review) {
+  const additive = review?.schemaVersion === 2;
+  const manifest = additive
+    ? prepareCrmImportPlan(input, review.inquiryMappings)
+    : prepareCrmPayloads(input);
   if (
     !review ||
     Object.keys(review).sort().join(",") !==
-      "manifestSha256,operation,reviewedBy,schemaVersion" ||
-    review.schemaVersion !== 1 ||
+      (additive
+        ? "inquiryMappings,manifestSha256,operation,reviewedBy,schemaVersion,sourceFreezeVerified"
+        : "manifestSha256,operation,reviewedBy,schemaVersion") ||
+    (!additive && review.schemaVersion !== 1) ||
+    (additive && review.sourceFreezeVerified !== true) ||
     review.operation !== "import_reviewed_crm" ||
     review.manifestSha256 !== manifest.manifestSha256 ||
     typeof review.reviewedBy !== "string" ||
@@ -41,6 +177,18 @@ export async function importCrmPayloads(
     )
   )
     fail("crm_import_invalid_target");
+  return manifest;
+}
+/** Operational import, not an HTTP endpoint. Caller supplies a privileged pool and reviewed frozen export. */
+export async function importCrmPayloads(
+  pool,
+  input,
+  review,
+  { dryRun = true } = {},
+) {
+  if (typeof dryRun !== "boolean") fail("crm_import_mode_required");
+  const manifest = reviewedCrmImportPlan(input, review);
+  const additive = review.schemaVersion === 2;
   const client = await pool.connect();
   let broken = false;
   let created = 0,
@@ -60,6 +208,25 @@ export async function importCrmPayloads(
     await client.query("SELECT pg_advisory_xact_lock(hashtextextended($1,0))", [
       "crm-import:" + manifest.sourceInstanceId,
     ]);
+    // Match the live ingress submission lock before checking absence. The source/outbox
+    // must remain frozen for the cutover; this does not fabricate an ingress receipt.
+    for (const submission of [
+      ...new Set(
+        input.records.leads
+          .filter(
+            (row) =>
+              additive &&
+              manifest.inquiryMappings.some((m) => m.sourceId === row.id),
+          )
+          .map((row) => row.formSubmissionId)
+          .filter(Boolean),
+      ),
+    ].sort()) {
+      await client.query(
+        "SELECT pg_advisory_xact_lock(hashtextextended($1,0))",
+        [`commercial:submission:${manifest.sourceInstanceId}:${submission}`],
+      );
+    }
     const expectedReceipts = new Set(
       input.targetInventory.receipts
         .filter((row) => row.sourceInstanceId === manifest.sourceInstanceId)
@@ -119,6 +286,59 @@ export async function importCrmPayloads(
     async function parent(entity, sourceId, targetId) {
       const key = entity + ":" + sourceId;
       if (parents.has(key)) return parents.get(key);
+      const source = sources[entity].get(sourceId);
+      if (!source) fail("crm_import_parent_missing");
+      const creation = manifest.records.find(
+        (r) =>
+          r.entity === entity &&
+          r.kind === "parent" &&
+          r.sourceId === sourceId &&
+          r.action === "create_separate_inquiry",
+      );
+      if (creation) {
+        // Existing IDs must never be adopted by a creation mapping. Only an exact
+        // immutable archive permits replay, handled before this function is called.
+        if (
+          source.formSubmissionId &&
+          (
+            await client.query(
+              "SELECT source_id FROM crm_source_record WHERE source_instance_id=$1 AND source_table='leads' AND source_payload->>'formSubmissionId'=$2",
+              [manifest.sourceInstanceId, source.formSubmissionId],
+            )
+          ).rowCount
+        )
+          fail("crm_import_submission_already_archived");
+        const p = creation.nativeProjection;
+        await client.query(
+          `INSERT INTO lead(id,name,email,phone,location,description,source,status,
+            reported_company_name,contact_title,reported_property_name,property_type,
+            acreage_description,project_stage,service_timing,services,attribution,
+            owner_id,next_action,next_action_due_at,created_at,last_activity_at)
+          VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,NULL,NULL,$18,$19,$20)`,
+          [
+            targetId,
+            p.name,
+            p.email,
+            p.phone,
+            p.location,
+            p.description,
+            p.source,
+            p.status,
+            p.reportedCompanyName,
+            p.contactTitle,
+            p.reportedPropertyName,
+            p.propertyType,
+            p.acreageDescription,
+            p.projectStage,
+            p.serviceTiming,
+            p.services,
+            JSON.stringify(p.attribution),
+            p.nextActionDueAt,
+            p.createdAt,
+            p.lastActivityAt,
+          ],
+        );
+      }
       const row = (
         await client.query(
           `SELECT ${entity === "lead" ? "id,converted_client_id" : "id,archived"} FROM ${entity === "lead" ? "lead" : "client"} WHERE id=$1 FOR SHARE`,
@@ -127,8 +347,6 @@ export async function importCrmPayloads(
       ).rows[0];
       if (!row || (entity === "client" && row.archived))
         fail("crm_import_parent_unavailable");
-      const source = sources[entity].get(sourceId);
-      if (!source) fail("crm_import_parent_missing");
       if (entity === "lead" && source.formSubmissionId) {
         const receipts =
           uuid(manifest.sourceInstanceId) && uuid(source.formSubmissionId)
@@ -165,7 +383,9 @@ export async function importCrmPayloads(
       parents.set(key, row);
       return row;
     }
-    for (const record of manifest.records) {
+    for (const record of [...manifest.records].sort(
+      (a, b) => Number(b.kind === "parent") - Number(a.kind === "parent"),
+    )) {
       const {
         collection,
         sourceId,
@@ -191,6 +411,16 @@ export async function importCrmPayloads(
           archived[entity + "_id"] !== targetId
         )
           fail("crm_import_source_conflict");
+        if (kind === "parent") {
+          const existing = (
+            await client.query(
+              `SELECT ${entity === "lead" ? "id,converted_client_id" : "id,archived"} FROM ${entity === "lead" ? "lead" : "client"} WHERE id=$1 FOR SHARE`,
+              [targetId],
+            )
+          ).rows[0];
+          if (!existing) fail("crm_import_native_record_missing");
+          parents.set(entity + ":" + sourceId, existing);
+        }
         if (kind !== "parent") {
           const table =
             kind === "task"

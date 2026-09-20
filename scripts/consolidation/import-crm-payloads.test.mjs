@@ -6,7 +6,10 @@ import { createRequire } from "node:module";
 import { setupCrmImportFixture } from "./crm-import-fixture.mjs";
 import { at } from "./crm-payload-fixture.mjs";
 import { prepareCrmPayloads } from "./prepare-crm-payloads.mjs";
-import { importCrmPayloads } from "./import-crm-payloads.mjs";
+import {
+  importCrmPayloads,
+  prepareCrmImportPlan,
+} from "./import-crm-payloads.mjs";
 const base = process.env.DASHBOARD_TEST_ORIGIN;
 if (
   base &&
@@ -468,5 +471,343 @@ test(
       /invalid_target/,
     );
     assert.equal(await count(s.instance), 0);
+  },
+);
+
+function additiveInput(input) {
+  const source = {
+    ...input.records.leads[0],
+    id: "unmatched-a",
+    formSubmissionId: randomUUID(),
+    name: "Contact A",
+    stage: "new",
+    ownerId: "historical-owner",
+    formData: {
+      address: "Shared submitted site",
+      propertyName: "Submitted property",
+      services: ["Mowing"],
+      attribution: { source: "historical" },
+      acreage: "10",
+      unknown: { retained: true },
+    },
+  };
+  input.records.leads.push(source, {
+    ...source,
+    id: "unmatched-b",
+    formSubmissionId: randomUUID(),
+    name: "Contact B",
+    stage: "contacted",
+    message: "Separate inquiry",
+  });
+  return [source.id, "unmatched-b"].map((sourceId) => ({
+    action: "create_separate_inquiry",
+    sourceId,
+    targetId: randomUUID(),
+  }));
+}
+const additiveReview = (input, owner, inquiryMappings) => ({
+  schemaVersion: 2,
+  operation: "import_reviewed_crm",
+  manifestSha256: prepareCrmImportPlan(input, inquiryMappings).manifestSha256,
+  reviewedBy: owner,
+  sourceFreezeVerified: true,
+  inquiryMappings,
+});
+
+test("Additive review binds separate source identities, targets and derived fields without changing the source manifest", async () => {
+  const { fixture } = await import("./crm-payload-fixture.mjs");
+  const input = fixture(),
+    before = prepareCrmPayloads(input).manifestSha256;
+  const mappings = additiveInput(input);
+  const sourceHash = prepareCrmPayloads(input).manifestSha256;
+  const plan = prepareCrmImportPlan(input, mappings);
+  assert.equal(plan.sourceManifestSha256, sourceHash);
+  assert.equal(prepareCrmPayloads(input).manifestSha256, sourceHash);
+  assert.notEqual(before, sourceHash);
+  assert.equal(
+    plan.manifestSha256,
+    prepareCrmImportPlan(input, [...mappings].reverse()).manifestSha256,
+  );
+  assert.notEqual(
+    plan.manifestSha256,
+    prepareCrmImportPlan(
+      input,
+      mappings.map((m, i) => (i ? m : { ...m, targetId: randomUUID() })),
+    ).manifestSha256,
+  );
+  const projected = plan.records.filter(
+    (r) => r.action === "create_separate_inquiry",
+  );
+  assert.equal(projected.length, 2);
+  assert.equal(projected[0].nativeProjection.name, "Contact A");
+  assert.equal(
+    projected[0].nativeProjection.reportedPropertyName,
+    "Submitted property",
+  );
+  assert.equal(projected[0].nativeProjection.ownerId, null);
+  assert.equal(projected[0].nativeProjection.nextAction, null);
+  assert.equal(projected[0].nativeProjection.nextActionDueAt, at);
+  assert.throws(
+    () =>
+      prepareCrmImportPlan(input, [
+        { ...mappings[0], sourceId: "source-lead" },
+      ]),
+    /not_unmatched/,
+  );
+  assert.throws(
+    () =>
+      prepareCrmImportPlan(input, [
+        mappings[0],
+        { ...mappings[1], targetId: mappings[0].targetId },
+      ]),
+    /invalid_inquiry_mapping/,
+  );
+  input.records.leads[1].stage = "custom-stage";
+  assert.throws(
+    () => prepareCrmImportPlan(input, mappings),
+    /lifecycle_requires_review/,
+  );
+});
+
+test(
+  "Additive inquiry import preserves identities/dates, dry-runs and concurrently replays without merging or overwriting",
+  { skip: !base },
+  async () => {
+    const { owner, lead, instance, input } = await setup();
+    const mappings = additiveInput(input),
+      approved = additiveReview(input, owner, mappings);
+    await assert.rejects(
+      importCrmPayloads(pool, input, {
+        ...approved,
+        sourceFreezeVerified: false,
+      }),
+      /review_mismatch/,
+    );
+    await assert.rejects(
+      importCrmPayloads(pool, input, {
+        ...approved,
+        inquiryMappings: mappings.map((m, i) =>
+          i ? m : { ...m, targetId: randomUUID() },
+        ),
+      }),
+      /review_mismatch/,
+    );
+    const dry = await importCrmPayloads(pool, input, approved);
+    assert.equal(dry.wouldCreate, 8);
+    assert.equal(
+      (
+        await pool.query("SELECT id FROM lead WHERE id=ANY($1::uuid[])", [
+          mappings.map((m) => m.targetId),
+        ])
+      ).rowCount,
+      0,
+    );
+    const results = await Promise.all(
+      [1, 2].map(() =>
+        importCrmPayloads(pool, input, approved, { dryRun: false }),
+      ),
+    );
+    assert.deepEqual(results.map((r) => r.created).sort(), [0, 8]);
+    const rows = (
+      await pool.query(
+        `SELECT *,to_char(next_action_due_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') due,
+    to_char(created_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') created,
+    to_char(last_activity_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') activity
+    FROM lead WHERE id=ANY($1::uuid[]) ORDER BY name`,
+        [mappings.map((m) => m.targetId)],
+      )
+    ).rows;
+    assert.deepEqual(
+      rows.map((r) => r.name),
+      ["Contact A", "Contact B"],
+    );
+    assert.deepEqual(
+      rows.map((r) => r.status),
+      ["new", "contacted"],
+    );
+    for (const row of rows) {
+      assert.equal(row.location, "Shared submitted site");
+      assert.equal(row.owner_id, null);
+      assert.equal(row.next_action, null);
+      assert.equal(row.due, at);
+      assert.equal(row.created, at);
+      assert.equal(row.activity, at);
+      assert.equal(row.converted_client_id, null);
+      assert.equal(row.converted_property_id, null);
+      assert.equal(row.inquiry_type, null);
+      assert.deepEqual(row.services, ["Mowing"]);
+    }
+    assert.equal(
+      (
+        await pool.query(
+          "SELECT count(*)::int n FROM commercial_intake_receipt WHERE source_instance_id=$1",
+          [instance],
+        )
+      ).rows[0].n,
+      1,
+    );
+    assert.equal(
+      (await pool.query("SELECT name FROM lead WHERE id=$1", [lead])).rows[0]
+        .name,
+      "Existing lead",
+    );
+    const archived = (
+      await pool.query(
+        "SELECT source_payload,review_sha256 FROM crm_source_record WHERE source_instance_id=$1 AND source_id='unmatched-a'",
+        [instance],
+      )
+    ).rows[0];
+    assert.deepEqual(archived.source_payload, input.records.leads[1]);
+    assert.equal(archived.review_sha256, approved.manifestSha256);
+    await pool.query(
+      "UPDATE lead SET name='Later staff edit',version=version+1 WHERE id=$1",
+      [mappings[0].targetId],
+    );
+    assert.equal(
+      (await importCrmPayloads(pool, input, approved, { dryRun: false }))
+        .replayed,
+      8,
+    );
+    assert.equal(
+      (
+        await pool.query("SELECT name FROM lead WHERE id=$1", [
+          mappings[0].targetId,
+        ])
+      ).rows[0].name,
+      "Later staff edit",
+    );
+    const changed = mappings.map((m, i) =>
+      i ? m : { ...m, targetId: randomUUID() },
+    );
+    await assert.rejects(
+      importCrmPayloads(pool, input, additiveReview(input, owner, changed), {
+        dryRun: false,
+      }),
+      /source_conflict/,
+    );
+  },
+);
+
+test(
+  "Additive creation rolls back the entire batch on occupied target, changed receipt or late archive audit failure",
+  { skip: !base },
+  async () => {
+    for (const failure of ["target", "receipt", "audit"]) {
+      const { owner, instance, input, lead } = await setup();
+      const mappings = additiveInput(input),
+        approved = additiveReview(input, owner, mappings);
+      if (failure === "target")
+        await pool.query(
+          "INSERT INTO lead(id,name,location,description) VALUES($1,'Existing unrelated','','')",
+          [mappings[1].targetId],
+        );
+      if (failure === "receipt")
+        await pool.query(
+          `INSERT INTO commercial_intake_receipt(id,source_instance_id,submission_id,event_id,schema_version,payload_sha256,accepted_at,lead_id,raw_intake)
+      VALUES($1,$2,$3,$4,1,$5,now(),$6,'{}')`,
+          [
+            randomUUID(),
+            instance,
+            input.records.leads[2].formSubmissionId,
+            randomUUID(),
+            "a".repeat(64),
+            // A fresh target for the late handoff; it must not be duplicated by import.
+            (
+              await pool.query(
+                "INSERT INTO lead(id,name,location,description) VALUES($1,'Late intake','','') RETURNING id",
+                [randomUUID()],
+              )
+            ).rows[0].id,
+          ],
+        );
+      const trigger = "reject_crm_" + randomUUID().replaceAll("-", "");
+      if (failure === "audit") {
+        await pool.query(
+          `CREATE FUNCTION ${trigger}() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.details->>'sourceInstanceId'='${instance}' AND NEW.details->>'sourceId'='unmatched-b' THEN RAISE EXCEPTION 'synthetic late failure'; END IF; RETURN NEW; END $$`,
+        );
+        await pool.query(
+          `CREATE TRIGGER ${trigger} BEFORE INSERT ON audit_event FOR EACH ROW EXECUTE FUNCTION ${trigger}()`,
+        );
+      }
+      try {
+        await assert.rejects(
+          importCrmPayloads(pool, input, approved, { dryRun: false }),
+        );
+        assert.equal(await count(instance), 0);
+        assert.equal(
+          (
+            await pool.query("SELECT id FROM lead WHERE id=$1", [
+              mappings[0].targetId,
+            ])
+          ).rowCount,
+          0,
+        );
+        assert.equal(
+          (await pool.query("SELECT name FROM lead WHERE id=$1", [lead]))
+            .rows[0].name,
+          "Existing lead",
+        );
+      } finally {
+        if (failure === "audit") {
+          await pool.query(`DROP TRIGGER ${trigger} ON audit_event`);
+          await pool.query(`DROP FUNCTION ${trigger}()`);
+        }
+      }
+    }
+  },
+);
+
+test(
+  "Created inquiry supports existing note/task projection and rejects a second source identity for its archived submission",
+  { skip: !base },
+  async () => {
+    const { owner, input } = await setup();
+    const mappings = additiveInput(input);
+    input.records.leadNotes.push({
+      ...input.records.leadNotes[0],
+      id: "unmatched-note",
+      leadId: "unmatched-a",
+    });
+    input.records.leadTasks.push({
+      ...input.records.leadTasks[0],
+      id: "unmatched-task",
+      leadId: "unmatched-a",
+    });
+    const approved = additiveReview(input, owner, mappings);
+    assert.equal(
+      (await importCrmPayloads(pool, input, approved, { dryRun: false }))
+        .created,
+      10,
+    );
+    assert.equal(
+      (await importCrmPayloads(pool, input, approved, { dryRun: false }))
+        .replayed,
+      10,
+    );
+    assert.equal(
+      (
+        await pool.query(
+          "SELECT lead_id FROM lead_note WHERE source_instance_id=$1 AND source_note_id='unmatched-note'",
+          [input.sourceInstanceId],
+        )
+      ).rows[0].lead_id,
+      mappings[0].targetId,
+    );
+    const later = structuredClone(input);
+    for (const key of Object.keys(later.records)) later.records[key] = [];
+    later.records.leads = [{ ...input.records.leads[1], id: "renamed-source" }];
+    const mapping = [
+      {
+        action: "create_separate_inquiry",
+        sourceId: "renamed-source",
+        targetId: randomUUID(),
+      },
+    ];
+    await assert.rejects(
+      importCrmPayloads(pool, later, additiveReview(later, owner, mapping), {
+        dryRun: false,
+      }),
+      /submission_already_archived/,
+    );
   },
 );
