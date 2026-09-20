@@ -1,3 +1,7 @@
+## Estimate delivery receiver-first release — September 20
+
+The additive estimate ingress receiver and mirrored contracts are ready for the first release. Core producer/worker changes are validated locally but must remain uncommitted until receiver deployment succeeds. See `docs/implementation/estimate-dashboard-intake.md` for tests, compatibility, duplicate safeguards and rollback ordering. No production submissions were created for testing.
+
 ## Live draft cleanup and deployment checkpoint — September 19
 
 The stalled Blog browser tabs were no longer present. Parent reopened the actual

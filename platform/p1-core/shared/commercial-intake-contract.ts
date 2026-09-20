@@ -62,3 +62,37 @@ export type CommercialIntakeResult = z.infer<typeof commercialIntakeResultSchema
 export function commercialSignatureInput(keyId: string, sentAt: string, bodySha256: string) {
   return ["POST", COMMERCIAL_INGRESS_PATH, keyId, sentAt, bodySha256].join("\n");
 }
+
+// Additive estimate event on the same authenticated website-intake transport.
+// Existing commercial event bytes and signatures are unchanged.
+export const estimateInquirySchema = z
+  .object({
+    inquiryType: z.literal("general"),
+    name: z.string().trim().min(1).max(150),
+    email: z.string().trim().email().max(254),
+    phone: nullableText(300),
+    company: nullableText(300),
+    address: z.string().trim().min(1).max(500),
+    acreage: nullableText(300),
+    propertyType: nullableText(300),
+    services: z.array(z.string().trim().min(1).max(100)).max(12),
+    message: z.string().trim().min(1).max(5000),
+    attribution: z
+      .record(z.string().max(64), z.string().max(2048))
+      .refine((value) => Object.keys(value).length <= 12),
+  })
+  .strict()
+  .refine(
+    (value) => new TextEncoder().encode(JSON.stringify(value)).byteLength <= 60000,
+    "Estimate exceeds delivery capacity",
+  );
+export const estimateIntakeEventSchema = commercialIntakeEventSchema.extend({
+  eventType: z.literal("p1.estimate_inquiry.accepted"),
+  formSlug: z.literal("p1-estimate"),
+  inquiry: estimateInquirySchema,
+});
+export const websiteIntakeEventSchema = z.discriminatedUnion("eventType", [
+  commercialIntakeEventSchema,
+  estimateIntakeEventSchema,
+]);
+export type EstimateInquiry = z.infer<typeof estimateInquirySchema>;

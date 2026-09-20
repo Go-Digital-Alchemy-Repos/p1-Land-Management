@@ -464,3 +464,20 @@ test(
     }
   },
 );
+
+test("estimate receiver preserves independent inquiries and exact replay without commercial provisioning", {skip: !testUrl}, async () => {
+  await pool.query("UPDATE integration_ingress_key SET enabled=true,revoked_at=NULL WHERE key_id=$1",[keyId]);
+  const general = {...event(),eventType:"p1.estimate_inquiry.accepted",formSlug:"p1-estimate",inquiry:{inquiryType:"general",name:"Estimate test",email:"estimate@example.test",phone:null,company:null,address:"Test site",propertyType:null,acreage:null,services:[],message:"Estimate request",attribution:{}}};
+  const bytes=Buffer.from(JSON.stringify(general));
+  const [a,b]=await Promise.all([receiveCommercialInquiry(bytes,sign(bytes)),receiveCommercialInquiry(bytes,sign(bytes))]);
+  assert.equal(a.leadId,b.leadId);
+  assert.equal([a,b].filter(r=>!r.duplicate).length,1);
+  const lead=(await pool.query("SELECT * FROM lead WHERE id=$1",[a.leadId])).rows[0];
+  assert.equal(lead.inquiry_type,"general");assert.equal(lead.status,"new");assert.equal(lead.project_stage,null);assert.equal(lead.service_timing,null);
+  assert.deepEqual(lead.services,[]);
+  const changed=Buffer.from(JSON.stringify({...general,inquiry:{...general.inquiry,message:"changed"}}));
+  await assert.rejects(receiveCommercialInquiry(changed,sign(changed)),/identity_conflict/);
+  const separate=Buffer.from(JSON.stringify({...general,eventId:randomUUID(),submissionId:randomUUID()}));
+  const second=await receiveCommercialInquiry(separate,sign(separate));assert.notEqual(second.leadId,a.leadId);
+  assert.equal((await pool.query("SELECT count(*)::int AS n FROM audit_event WHERE action='estimate.intake_received'")).rows[0].n,2);
+});

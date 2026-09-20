@@ -8,7 +8,7 @@ import { z } from "zod";
 import { transaction } from "./database";
 import { HttpError } from "./policy";
 import {
-  commercialIntakeEventSchema,
+  websiteIntakeEventSchema,
   commercialSignatureInput,
   type CommercialIntakeResult,
 } from "./commercial-intake-contract";
@@ -62,9 +62,9 @@ export async function receiveCommercialInquiry(
   if (body.length > 65536)
     throw new HttpError(413, "commercial_payload_too_large");
   const verified = verifyCommercialSignature(body, headers);
-  let event: z.infer<typeof commercialIntakeEventSchema>;
+  let event: z.infer<typeof websiteIntakeEventSchema>;
   try {
-    event = commercialIntakeEventSchema.parse(
+    event = websiteIntakeEventSchema.parse(
       JSON.parse(body.toString("utf8")),
     );
   } catch {
@@ -135,12 +135,12 @@ export async function receiveCommercialInquiry(
         i.message || "",
         i.inquiryType,
         i.company,
-        i.title,
-        i.propertyName,
+        "title" in i ? i.title : null,
+        "propertyName" in i ? i.propertyName : null,
         i.propertyType,
         i.acreage,
-        i.projectStage,
-        i.serviceTiming,
+        "projectStage" in i ? i.projectStage : null,
+        "serviceTiming" in i ? i.serviceTiming : null,
         i.services,
         i.attribution,
       ],
@@ -161,7 +161,7 @@ export async function receiveCommercialInquiry(
       )
     ).rows[0];
     await c.query(
-      "INSERT INTO audit_event(id,user_id,action,entity_id,details) VALUES($1,NULL,'commercial.intake_received',$2,$3)",
+      "INSERT INTO audit_event(id,user_id,action,entity_id,details) VALUES($1,NULL,$4,$2,$3)",
       [
         randomUUID(),
         leadId,
@@ -171,6 +171,7 @@ export async function receiveCommercialInquiry(
           submissionId: event.submissionId,
           keyId: verified.keyId,
         },
+        event.eventType === "p1.estimate_inquiry.accepted" ? "estimate.intake_received" : "commercial.intake_received",
       ],
     );
     return {
