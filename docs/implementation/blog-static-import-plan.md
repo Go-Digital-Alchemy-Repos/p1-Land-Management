@@ -218,3 +218,39 @@ PageHero SSR/hydration must cover the complete set. Object writes cannot be made
 transactional with PostgreSQL: use staged idempotent create-only uploads and then
 atomic DB registration/publication, with an explicit recoverable orphan/retry policy.
 Do not describe a successful upload as completed import or media-recovery acceptance.
+
+## Reviewed media manifest and live byte verification — September 19
+
+`prepare-blog-media.mjs` now accepts the schema2 review bundle, explicit source
+assets directory, built public directory and a new output path. It validates the
+five source originals and fifteen 480/768/1280 WebP derivatives by format, dimensions,
+byte counts and SHA256; captured hero/srcset URLs must resolve to identical built
+bytes. It reruns the content mapper and rejects altered preservation claims,
+missing/duplicate variants, path traversal, symlinks and oversized inputs. Output
+is exclusive/private, review-only, and always `canApply:false`. Encoding quality
+is manifest-declared; it is not inferred from compressed bytes.
+
+Parent reran all five tool tests successfully and generated the actual twenty-file
+review at `/private/tmp/p1-blog-media-reviewed-20260919.json`. A separate read-only
+HTTP check fetched all fifteen canonical public derivative URLs: each returned
+WebP with exactly the reviewed SHA256 and byte count. Evidence is at
+`/private/tmp/p1-blog-media-live-readback-20260919.json`. These local artifacts do
+not establish managed-storage registration, immutable variant ownership, historical
+date verification, production import, or complete media backup/recovery. No
+production content, provider configuration or media objects were changed.
+
+## Shared presentation controls — September 19
+
+Both Blog hosts now render the same presentation card in their existing Layout
+tab. It supports optional enable/explicit clear, hero eyebrow and alt text, title
+emphasis, structured headline/description/author type and nullable date-only fields.
+Title segments are reset only when their joined text no longer matches the current
+title, preserving a newly authored emphasis after a title change. Invalid dates
+retain the draft; conflict, pending and lease-loss guards also cover these controls.
+Related content uses the host textarea with HTML text/link guidance; unsupported
+image/gallery insertion controls are not exposed. Preview completeness remains a
+separate acceptance item. New shared runtime is explicitly included in Docker.
+
+Native23 and retained12 tests, both full typechecks and formatting passed. Independent
+review found and verified the Docker allowlist and unsupported-editor-control fixes.
+This adds editing capability; it does not import the five existing source articles.

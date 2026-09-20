@@ -1,3 +1,8 @@
+import {
+  BlogPresentationEditor,
+  alignPresentationTitle,
+} from "@/components/shared/blog-presentation-editor";
+import { Label } from "@/components/ui/label";
 import { validateBlogPresentation, type BlogPresentation } from "@shared/blog-presentation";
 import type {
   BlogPublicationPostResponse as MarketingBlogPublicationPost,
@@ -288,13 +293,12 @@ function CmsBlogEditor() {
   );
 
   const buildPayload = (data: PostForm) => {
-    const presentation =
-      data.presentation && data.title !== snapshot?.title
-        ? { ...data.presentation, titleParts: [{ text: data.title, emphasis: false }] }
-        : data.presentation;
+    const presentation = alignPresentationTitle(data.presentation, data.title);
     if (presentation != null && !validateBlogPresentation(presentation, data.title))
       throw Object.assign(
-        Error("This post contains unsupported presentation metadata. Your draft is retained."),
+        Error(
+          "This post contains unsupported presentation metadata. Check the headline and declared dates; modification must not precede publication. Your draft is retained.",
+        ),
         { status: 400 },
       );
     const nextCategories = dedupeValues(data.categories ?? []);
@@ -1041,6 +1045,34 @@ function CmsBlogEditor() {
                 }
                 layout={
                   <>
+                    <BlogPresentationEditor
+                      ui={{
+                        Card,
+                        CardHeader,
+                        CardTitle,
+                        CardContent,
+                        Input,
+                        Label,
+                        Textarea,
+                        Checkbox,
+                        Button,
+                        Select,
+                        SelectTrigger,
+                        SelectValue,
+                        SelectContent,
+                        SelectItem,
+                      }}
+                      value={form.watch("presentation")}
+                      title={form.watch("title")}
+                      excerpt={form.watch("excerpt") || ""}
+                      disabled={unavailable}
+                      onChange={(value) =>
+                        form.setValue("presentation", value, {
+                          shouldDirty: true,
+                          shouldValidate: true,
+                        })
+                      }
+                    />
                     <Card>
                       <CardHeader>
                         <CardTitle className="text-base">Sidebar Layout</CardTitle>

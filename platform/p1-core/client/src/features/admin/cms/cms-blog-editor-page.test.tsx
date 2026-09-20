@@ -467,4 +467,113 @@ describe("CmsBlogEditorPage", () => {
     const second = mutationStates.flatMap((s) => s.mutate.mock.calls).at(-1)![0];
     expect(second.data.presentation).toEqual(normalized);
   });
+  async function editPresentationField(label: string, value: string) {
+    const input = container.querySelector<HTMLInputElement>(`[aria-label="${label}"]`)!;
+    await act(async () => {
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(input, value);
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+  }
+  async function openLayout() {
+    await act(async () => {
+      container
+        .querySelector<HTMLElement>('[data-testid="tab-layout"]')!
+        .dispatchEvent(new MouseEvent("mousedown", { bubbles: true, button: 0 }));
+    });
+  }
+  it("edits shared presentation controls and preserves selected emphasis after changing title, then explicitly clears", async () => {
+    editorLockState.isReadOnly = false;
+    root = createRoot(container);
+    await act(async () => root!.render(React.createElement(CmsBlogEditorPage)));
+    const title = container.querySelector<HTMLInputElement>('[data-testid="input-post-title"]')!;
+    await act(async () => {
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(
+        title,
+        "New article title",
+      );
+      title.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    await openLayout();
+    await act(async () =>
+      container
+        .querySelector<HTMLButtonElement>('[aria-label="Enable editorial presentation"]')!
+        .click(),
+    );
+    await editPresentationField("Hero eyebrow", "Field notes");
+    await editPresentationField("Exact title phrase to emphasize", "article");
+    await act(async () =>
+      Array.from(container.querySelectorAll("button"))
+        .find((b) => b.textContent === "Apply emphasis")!
+        .click(),
+    );
+    await act(async () =>
+      container.querySelector<HTMLButtonElement>('[data-testid="button-save-post"]')!.click(),
+    );
+    const variables = mutationStates.flatMap((s) => s.mutate.mock.calls).at(-1)![0];
+    expect(variables.data.presentation).toMatchObject({
+      eyebrow: "Field notes",
+      titleParts: [
+        { text: "New ", emphasis: false },
+        { text: "article", emphasis: true },
+        { text: " title", emphasis: false },
+      ],
+      structuredData: { authorType: "Person", publishedDate: null, modifiedDate: null },
+    });
+    await act(async () =>
+      container
+        .querySelector<HTMLButtonElement>('[aria-label="Enable editorial presentation"]')!
+        .click(),
+    );
+    await act(async () =>
+      container.querySelector<HTMLButtonElement>('[data-testid="button-save-post"]')!.click(),
+    );
+    expect(
+      mutationStates.flatMap((s) => s.mutate.mock.calls).at(-1)![0].data.presentation,
+    ).toBeNull();
+  });
+  it("retains invalid declared date draft without a mutation and permits clearing", async () => {
+    loadedPresentation = presentationFor("Latest Insights");
+    editorLockState.isReadOnly = false;
+    root = createRoot(container);
+    await act(async () => root!.render(React.createElement(CmsBlogEditorPage)));
+    await openLayout();
+    await editPresentationField("Declared modification date", "2020-01-01");
+    await act(async () =>
+      container.querySelector<HTMLButtonElement>('[data-testid="button-save-post"]')!.click(),
+    );
+    const invalidVariables = mutationStates.flatMap((s) => s.mutate.mock.calls).at(-1)![0];
+    const handler = mutationOptions.filter((o) => o.onSuccess && o.onError).at(-2);
+    await expect(handler.mutationFn(invalidVariables)).rejects.toThrow(
+      "unsupported presentation metadata",
+    );
+    expect(fetch).not.toHaveBeenCalled();
+    expect(
+      (container.querySelector('[aria-label="Declared modification date"]') as HTMLInputElement)
+        .value,
+    ).toBe("2020-01-01");
+    await editPresentationField("Declared modification date", "");
+    await act(async () =>
+      container.querySelector<HTMLButtonElement>('[data-testid="button-save-post"]')!.click(),
+    );
+    expect(
+      mutationStates.flatMap((s) => s.mutate.mock.calls).at(-1)![0].data.presentation.structuredData
+        .modifiedDate,
+    ).toBeNull();
+  });
+  it("disables presentation controls when another editor owns the lease", async () => {
+    loadedPresentation = presentationFor("Latest Insights");
+    root = createRoot(container);
+    await act(async () => root!.render(React.createElement(CmsBlogEditorPage)));
+    await openLayout();
+    expect(
+      container.querySelector<HTMLButtonElement>('[aria-label="Enable editorial presentation"]')!
+        .disabled,
+    ).toBe(true);
+    expect(container.querySelector<HTMLInputElement>('[aria-label="Hero eyebrow"]')!.disabled).toBe(
+      true,
+    );
+    expect(
+      container.querySelector<HTMLTextAreaElement>('[aria-label="Related service HTML"]')!.disabled,
+    ).toBe(true);
+  });
 });

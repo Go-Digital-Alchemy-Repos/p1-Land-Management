@@ -137,6 +137,7 @@ platform/p1-core/client/src/components/ui/*
 !platform/p1-core/client/src/components/shared/cms-upload-dropzone.tsx
 
 !platform/p1-core/client/src/components/shared/blog-editor-presentation.tsx
+!platform/p1-core/client/src/components/shared/blog-presentation-editor.tsx
 !platform/p1-core/client/src/components/shared/blog-list-presentation.tsx
 
 !platform/p1-core/client/src/components/shared/menu-item-presentation.tsx

@@ -1,3 +1,14 @@
+## Presentation controls and verified source images — September 19 candidate
+
+Both Blog hosts now share editing controls in Layout, with guarded nullable metadata,
+title emphasis and date fields. Native23/Core12 tests and both typechecks pass;
+independent review fixes are incorporated. The twenty-file media review tool passes
+five tests and the actual source inventory; all fifteen live WebP derivatives have
+matching SHA256/bytes. No source articles or media were imported. Details/evidence
+paths are in the static Blog import plan. Remaining: immutable responsive media-set
+contract, managed registration and reviewed atomic import, plus the broader goal
+gates below. Keep original admin available.
+
 ## Verified presentation preservation release — September 19
 
 Runtime `5799e3f3b5369471ae190f519b8858c863d208de` is pushed to main/task branch.

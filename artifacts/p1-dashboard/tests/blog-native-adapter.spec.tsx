@@ -577,3 +577,112 @@ it("blocks an unsupported presentation version instead of silently dropping it",
   expect(state.api.mutateMarketingBlogPublication).not.toHaveBeenCalled();
   expect(host.textContent).toContain("unsupported presentation metadata");
 });
+
+it("edits presentation in original Layout card, retains chosen emphasis after title edit, and clears explicitly", async () => {
+  await edit();
+  await setInput(host.querySelector("input[required]")!, "A changed title");
+  await click("Layout");
+  await act(async () =>
+    host
+      .querySelector<HTMLInputElement>(
+        '[aria-label="Enable editorial presentation"]',
+      )!
+      .click(),
+  );
+  await setInput(
+    host.querySelector('[aria-label="Hero eyebrow"]')!,
+    "Field notes",
+  );
+  await setInput(
+    host.querySelector('[aria-label="Hero image alternative text"]')!,
+    "A maintained field",
+  );
+  await setInput(
+    host.querySelector('[aria-label="Exact title phrase to emphasize"]')!,
+    "changed",
+  );
+  await click("Apply emphasis");
+  await setInput(
+    host.querySelector('[aria-label="Related service HTML"]')!,
+    '<p><a href="/services">Property services</a></p>',
+  );
+  await click("Save post");
+  const value =
+    state.api.mutateMarketingBlogPublication.mock.calls[0][1].data.presentation;
+  expect(value).toMatchObject({
+    relatedContent: '<p><a href="/services">Property services</a></p>',
+    eyebrow: "Field notes",
+    imageAlt: "A maintained field",
+    titleParts: [
+      { text: "A ", emphasis: false },
+      { text: "changed", emphasis: true },
+      { text: " title", emphasis: false },
+    ],
+    structuredData: {
+      authorType: "Person",
+      publishedDate: null,
+      modifiedDate: null,
+      headline: "A changed title",
+    },
+  });
+  await act(async () =>
+    host
+      .querySelector<HTMLInputElement>(
+        '[aria-label="Enable editorial presentation"]',
+      )!
+      .click(),
+  );
+  await click("Save post");
+  expect(
+    state.api.mutateMarketingBlogPublication.mock.calls[1][1].data.presentation,
+  ).toBeNull();
+});
+it("rejects reversed declared dates without losing draft and permits clearing a date", async () => {
+  state.api.getMarketingBlogPublication.mockResolvedValueOnce({
+    ...post,
+    presentation: presentationFor(post.title),
+  });
+  await edit();
+  await click("Layout");
+  await setInput(
+    host.querySelector('[aria-label="Declared modification date"]')!,
+    "2020-01-01",
+  );
+  await click("Save post");
+  expect(state.api.mutateMarketingBlogPublication).not.toHaveBeenCalled();
+  expect(
+    (
+      host.querySelector(
+        '[aria-label="Declared modification date"]',
+      ) as HTMLInputElement
+    ).value,
+  ).toBe("2020-01-01");
+  await setInput(
+    host.querySelector('[aria-label="Declared modification date"]')!,
+    "",
+  );
+  await click("Save post");
+  expect(
+    state.api.mutateMarketingBlogPublication.mock.calls[0][1].data.presentation
+      .structuredData.modifiedDate,
+  ).toBeNull();
+});
+it("disables presentation controls without an owned lease", async () => {
+  state.api.getMarketingBlogPublication.mockResolvedValueOnce({
+    ...post,
+    presentation: presentationFor(post.title),
+  });
+  await edit();
+  await click("Layout");
+  state.owned = false;
+  await act(async () => root.render(<BlogManager canUseMedia={false} />));
+  expect(
+    host.querySelector<HTMLInputElement>(
+      '[aria-label="Enable editorial presentation"]',
+    )!.disabled,
+  ).toBe(true);
+  expect(
+    host.querySelector<HTMLInputElement>('[aria-label="Hero eyebrow"]')!
+      .disabled,
+  ).toBe(true);
+});

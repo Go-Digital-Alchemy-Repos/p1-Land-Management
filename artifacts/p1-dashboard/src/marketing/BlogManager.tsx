@@ -1,3 +1,7 @@
+import {
+  BlogPresentationEditor,
+  alignPresentationTitle,
+} from "../../../../platform/p1-core/client/src/components/shared/blog-presentation-editor";
 import { validateBlogPresentation } from "../../../../platform/p1-core/shared/blog-presentation";
 import { BlogImageInput } from "./BlogImageInput";
 import { BlogPostCard } from "../../../../platform/p1-core/client/src/components/shared/blog-list-presentation";
@@ -48,12 +52,17 @@ import {
 function BlogCheckbox({
   checked,
   onCheckedChange,
+  ...props
 }: {
+  id?: string;
+  disabled?: boolean;
+  "aria-label"?: string;
   checked: boolean;
   onCheckedChange: (value: boolean) => void;
 }) {
   return (
     <input
+      {...props}
       type="checkbox"
       checked={checked}
       onChange={(event) => onCheckedChange(event.target.checked)}
@@ -113,30 +122,21 @@ function input(post: MarketingBlogPublicationPost): BlogForm {
     next.categories = [post.category];
   return next;
 }
-function editorial(
-  form: BlogForm,
-  originalTitle?: string,
-): MarketingBlogEditorial {
+function editorial(form: BlogForm): MarketingBlogEditorial {
   const {
     isPublished: _published,
     publishedAt: _date,
     scheduledAt: _schedule,
     ...data
   } = form;
-  const presentation =
-    form.presentation && form.title !== originalTitle
-      ? {
-          ...form.presentation,
-          titleParts: [{ text: form.title, emphasis: false }],
-        }
-      : form.presentation;
+  const presentation = alignPresentationTitle(form.presentation, form.title);
   if (
     presentation != null &&
     !validateBlogPresentation(presentation, form.title)
   )
     throw Object.assign(
       Error(
-        "This post contains unsupported presentation metadata. Your draft is retained.",
+        "This post contains unsupported presentation metadata. Check the headline and declared dates; modification must not precede publication. Your draft is retained.",
       ),
       { status: 400 },
     );
@@ -272,7 +272,7 @@ function PostEditor({
       if (id === "new") {
         post = await createMarketingBlogPublication(
           {
-            data: editorial(form, saved?.title),
+            data: editorial(form),
             editorInstanceId: lock.editorInstanceId,
           },
           { signal: abort.current.signal },
@@ -296,7 +296,7 @@ function PostEditor({
             ...proof,
             action,
             ...(action === "save" || action === "publish"
-              ? { data: editorial(form, saved?.title) }
+              ? { data: editorial(form) }
               : {}),
             ...(revisionId ? { revisionId } : {}),
             ...(action === "schedule"
@@ -411,7 +411,7 @@ function PostEditor({
         <button onClick={onClose}>Back to posts</button>
       </section>
     );
-  const update = (key: keyof MarketingBlogInput, value: unknown) =>
+  const update = (key: keyof BlogForm, value: unknown) =>
     setForm({ ...form, [key]: value });
   const addTerm = (kind: "categories" | "tags", value: string) => {
     const text = value.trim();
@@ -729,40 +729,50 @@ function PostEditor({
               </div>
             }
             layout={
-              <section className="blog-card">
-                <h2>Sidebar Layout</h2>
-                <p>
-                  Saved sidebar layout selection is retained. Public rendering
-                  depends on the site renderer.
-                </p>
-                <p>
-                  Use the system-wide default blog sidebar, or choose a specific
-                  sidebar for this post.
-                </p>{" "}
-                <label>
-                  Sidebar
-                  <select
-                    aria-label="Post sidebar"
-                    value={form.sidebarId || ""}
-                    onChange={(e) =>
-                      update("sidebarId", e.target.value || null)
-                    }
-                  >
-                    <option value="">Default sidebar</option>
-                    {form.sidebarId &&
-                      !refs.sidebars.some((s) => s.id === form.sidebarId) && (
-                        <option value={form.sidebarId}>
-                          Saved sidebar (unavailable)
+              <>
+                <BlogPresentationEditor
+                  ui={blogTaxonomyPrimitives as any}
+                  value={form.presentation}
+                  title={form.title}
+                  excerpt={form.excerpt || ""}
+                  disabled={unavailable}
+                  onChange={(value) => update("presentation", value)}
+                />
+                <section className="blog-card">
+                  <h2>Sidebar Layout</h2>
+                  <p>
+                    Saved sidebar layout selection is retained. Public rendering
+                    depends on the site renderer.
+                  </p>
+                  <p>
+                    Use the system-wide default blog sidebar, or choose a
+                    specific sidebar for this post.
+                  </p>{" "}
+                  <label>
+                    Sidebar
+                    <select
+                      aria-label="Post sidebar"
+                      value={form.sidebarId || ""}
+                      onChange={(e) =>
+                        update("sidebarId", e.target.value || null)
+                      }
+                    >
+                      <option value="">Default sidebar</option>
+                      {form.sidebarId &&
+                        !refs.sidebars.some((s) => s.id === form.sidebarId) && (
+                          <option value={form.sidebarId}>
+                            Saved sidebar (unavailable)
+                          </option>
+                        )}
+                      {refs.sidebars.map((s) => (
+                        <option key={s.id} value={s.id}>
+                          {s.name}
                         </option>
-                      )}
-                    {refs.sidebars.map((s) => (
-                      <option key={s.id} value={s.id}>
-                        {s.name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              </section>
+                      ))}
+                    </select>
+                  </label>
+                </section>
+              </>
             }
             seo={
               <>
