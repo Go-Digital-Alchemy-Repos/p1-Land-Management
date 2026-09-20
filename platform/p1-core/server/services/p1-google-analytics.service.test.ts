@@ -177,3 +177,32 @@ it("accepts Google's headerless empty historical report without fabricating rows
     expect(() => normalizeReport(raw, spec)).toThrow();
   }
 });
+
+it("accepts headerless realtime empty windows for every projection and caches the empty result", async () => {
+  const fetcher = vi.fn(async (url: string) => new Response(JSON.stringify(
+    url.includes("oauth2") ? { access_token: "synthetic", expires_in: 3600 } : { kind: "analyticsData#runRealtimeReport" }
+  )));
+  const service = createGAService(env, fetcher as any);
+  const result = await service.realtime();
+  expect(result.status).toBe("empty");
+  for (const report of Object.values(result.reports)) {
+    expect(report).toMatchObject({ metrics: ["activeUsers"], rows: [], rowCount: 0, truncated: false });
+  }
+  expect(result.reports.countries.dimensions).toEqual(["country"]);
+  expect(result.reports.devices.dimensions).toEqual(["deviceCategory"]);
+  expect(await service.realtime()).toBe(result);
+  expect(fetcher).toHaveBeenCalledTimes(4);
+});
+it("realtime empty normalization rejects wrong kinds, partial headers and headerless nonempty data", () => {
+  const spec = { dimensions: ["country"], metrics: ["activeUsers"] };
+  for (const raw of [
+    {}, { kind: "analyticsData#runReport" },
+    { kind: "analyticsData#runRealtimeReport", rowCount: 1 },
+    { kind: "analyticsData#runRealtimeReport", rows: [{ metricValues: [{ value: "1" }] }] },
+    { kind: "analyticsData#runRealtimeReport", metricHeaders: [] },
+    { kind: "analyticsData#runRealtimeReport", dimensionHeaders: [] },
+    { kind: "analyticsData#runRealtimeReport", metricHeaders: [{ name: "sessions" }], dimensionHeaders: [{ name: "country" }] },
+  ]) expect(() => normalizeReport(raw, spec, "analyticsData#runRealtimeReport")).toThrow();
+  expect(() => normalizeReport({ kind: "analyticsData#runRealtimeReport" }, spec)).toThrow();
+  expect(normalizeReport({ kind: "analyticsData#runRealtimeReport", rowCount: 0 }, spec, "analyticsData#runRealtimeReport").rows).toEqual([]);
+});

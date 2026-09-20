@@ -85,11 +85,12 @@ const specs: Record<GAReportKey, { dimensions: string[]; metrics: string[] }> = 
 export function normalizeReport(
   raw: any,
   spec: { dimensions: string[]; metrics: string[] },
+  reportKind: "analyticsData#runReport" | "analyticsData#runRealtimeReport" = "analyticsData#runReport",
 ): GAReport {
-  // GA omits headers and rows for periods before this property recorded data.
+  // GA can omit headers and rows for an empty reporting window.
   // Accept only an explicitly typed, empty provider report; malformed/nonempty
   // responses must still pass the requested-column validation below.
-  const emptyProviderReport = raw?.kind === "analyticsData#runReport" &&
+  const emptyProviderReport = raw?.kind === reportKind &&
     raw.metricHeaders === undefined && raw.dimensionHeaders === undefined &&
     raw.rows === undefined && (raw.rowCount === undefined || raw.rowCount === 0);
   if (!emptyProviderReport && (
@@ -237,6 +238,7 @@ export function createGAService(
               limit: "10000",
             }),
             spec,
+            "analyticsData#runRealtimeReport",
           );
         }
         return {

@@ -27,3 +27,16 @@ review on loopback synthetic data confirmed saved-target changes and readable mo
 controls at390px; no production/provider configuration was written. Deployment and
 live read-only verification follow. Full credential management and Search Console
 property access remain separate acceptance items.
+
+## Live read and realtime follow-up
+
+On September 19, 2026, the deployed Analytics page returned Google Data API totals
+for property 554712298 (8 active users, 21 sessions and 157 page views for the
+selected 28-day period). No reporting configuration was changed. Realtime displayed
+an unavailable state, so that part is not accepted as working yet.
+
+The normalizer now recognizes Google's distinct empty `runRealtimeReport` response
+kind, while still rejecting malformed, partial and headerless nonempty responses.
+Nine service tests passed independently, including all three realtime projections
+and cache behavior. This fixes a verified handling gap; the observed live failure's
+cause remains unconfirmed until post-deployment verification.
