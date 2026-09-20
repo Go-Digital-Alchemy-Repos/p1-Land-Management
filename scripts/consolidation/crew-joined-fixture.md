@@ -104,3 +104,13 @@ download and sign-out cannot discard these entries. Stop the fixture afterward.
 September19 actual CUA run at loopback58914 passed this sequence and the database
 verifier. It simulates crew API503; it is not physical offline or agreement-term
 cancellation. Office resolution and subsequent safe queue clearance remain open.
+
+## Record-only office resolution rehearsal
+
+After the cancellation sequence, navigate the fixture browser to
+`/__fixture/office`. Review both entries in Schedule and record explicit notes.
+Return through `/__fixture/crew`, sync and check zero pending entries and safe
+sign-out. `verify-resolved PRIVATE_DIRECTORY` checks both original conflicts are
+preserved, both office reviews exist, cancelled status remains and no charge was
+created. The office route is synthetic loopback-only fixture authentication, never
+part of production. Browser completion is a separate gate from this verifier.

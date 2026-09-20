@@ -126,11 +126,14 @@ import type {
   EstimateDecisionReceipt,
   EstimateRevision,
   Expense,
+  FieldConflictList,
+  FieldConflictResolution,
   FieldSyncResponse,
   GenerateAssessmentAvailability,
   GeneratedAssessmentAvailability,
   GetClientCrmArchiveParams,
   GetClientTaskHistoryParams,
+  GetFieldResolutionReceiptsBody,
   GetLeadCrmArchiveParams,
   GetLeadDetailHistoryParams,
   GetLeadTaskHistoryParams,
@@ -295,6 +298,7 @@ import type {
   RequestManagedPasswordRecovery200,
   RescheduleWork,
   ResendManagedInvitation200,
+  ResolveFieldConflict,
   RetryMarketingFormDeliveryJob200,
   ReviewAgreementDraftPricing,
   ReviewAgreementDraftTemplates,
@@ -9258,6 +9262,75 @@ export const saveGoogleReportingConfiguration = async (googleReportingConfigurat
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
       googleReportingConfigurationSave,)
+  }
+);}
+
+
+
+export const getListFieldConflictsUrl = () => {
+
+
+
+
+  return `/api/v1/field/conflicts`
+}
+
+export const listFieldConflicts = async ( options?: RequestInit): Promise<FieldConflictList> => {
+
+  return customFetch<FieldConflictList>(getListFieldConflictsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getResolveFieldConflictUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/field/conflicts/${id}/resolve`
+}
+
+export const resolveFieldConflict = async (id: string,
+    resolveFieldConflict: ResolveFieldConflict, options?: RequestInit): Promise<FieldConflictResolution> => {
+
+  return customFetch<FieldConflictResolution>(getResolveFieldConflictUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      resolveFieldConflict,)
+  }
+);}
+
+
+
+export const getGetFieldResolutionReceiptsUrl = () => {
+
+
+
+
+  return `/api/v1/field/resolutions`
+}
+
+/**
+ * Returns only exact office-resolved receipts owned by the current submitting user; other input IDs are omitted.
+ */
+export const getFieldResolutionReceipts = async (getFieldResolutionReceiptsBody: GetFieldResolutionReceiptsBody, options?: RequestInit): Promise<FieldSyncResponse> => {
+
+  return customFetch<FieldSyncResponse>(getGetFieldResolutionReceiptsUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      getFieldResolutionReceiptsBody,)
   }
 );}
 

@@ -6,11 +6,9 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export type FieldSyncResponseResultsItemStatus = typeof FieldSyncResponseResultsItemStatus[keyof typeof FieldSyncResponseResultsItemStatus];
+export type FieldConflictResolutionStatus = typeof FieldConflictResolutionStatus[keyof typeof FieldConflictResolutionStatus];
 
 
-export const FieldSyncResponseResultsItemStatus = {
-  accepted: 'accepted',
-  conflict: 'conflict',
+export const FieldConflictResolutionStatus = {
   resolved: 'resolved',
 } as const;

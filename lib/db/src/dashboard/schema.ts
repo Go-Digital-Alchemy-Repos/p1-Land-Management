@@ -2051,3 +2051,10 @@ export const leadCustomerOnboarding = pgTable("lead_customer_onboarding", {
   check("lead_customer_onboarding_mode_check", sql`${t.mode} IN ('create','link')`),
   check("lead_customer_onboarding_lead_version_check", sql`${t.leadVersion}>0`),
 ]);
+
+export const fieldEventResolution = pgTable("field_event_resolution", {
+  eventId: uuid("event_id").primaryKey().references(() => fieldEvent.id),
+  resolvedBy: text("resolved_by").notNull().references(() => user.id),
+  note: text().notNull(),
+  resolvedAt: timestamp("resolved_at", {withTimezone:true, mode:"string"}).defaultNow().notNull(),
+}, table => [check("field_event_resolution_note_check", sql`length(${table.note}) BETWEEN 1 AND 2000`)]);

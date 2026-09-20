@@ -185,6 +185,47 @@ test(
           assert.deepEqual(await state(), saved);
         },
       );
+      await t.test("office resolution preserves cancelled events and returns exact receipts after reassignment", async () => {
+        const office = async (path: string, body?: unknown, actor = user) => fetch(base + path, {
+          method: body === undefined ? "GET" : "POST",
+          headers: {"content-type":"application/json","x-test-user":actor},
+          body: body === undefined ? undefined : JSON.stringify(body),
+        });
+        assert.equal((await office(`/work-orders/${work}/status`, {status:"cancelled",version:1})).status,200);
+        const stale = {...event,id:randomUUID(),kind:"complete",payload:{text:"Stale completion"}};
+        assert.deepEqual(await (await call(stale)).json(),{results:[{id:stale.id,status:"conflict"}]});
+        await pool.query("UPDATE staff_profile SET role='crew' WHERE user_id=$1",[other]);
+        assert.equal((await office('/field/conflicts',undefined,other)).status,403);
+        const decision = {note:"Cancelled by office; no completion applied",disposition:"record_only"};
+        assert.equal((await office(`/field/conflicts/${stale.id}/resolve`,decision,other)).status,403);
+        assert.equal((await office(`/field/conflicts/${event.id}/resolve`,decision)).status,409);
+        const list = await office('/field/conflicts');
+        assert.equal(list.status,200);
+        assert.equal(list.headers.get('cache-control'),'private, no-store');
+        assert((await list.json() as any).items.some((row:any)=>row.id===stale.id));
+        const before = (await pool.query('SELECT * FROM field_event WHERE id=$1',[stale.id])).rows[0];
+        assert.equal((await office(`/field/conflicts/${stale.id}/resolve`,{...decision,note:" "})).status,400);
+        assert.equal((await office(`/field/conflicts/${stale.id}/resolve`,decision)).status,200);
+        assert.equal((await office(`/field/conflicts/${stale.id}/resolve`,decision)).status,200);
+        assert.equal((await office(`/field/conflicts/${stale.id}/resolve`,{...decision,note:"Different decision"})).status,409);
+        assert.deepEqual((await pool.query('SELECT * FROM field_event WHERE id=$1',[stale.id])).rows[0],before);
+        assert.equal((await pool.query("SELECT status FROM work_order WHERE id=$1",[work])).rows[0].status,'cancelled');
+        assert.equal((await pool.query("SELECT count(*)::int AS n FROM audit_event WHERE action='field.conflict_resolved' AND entity_id=$1",[stale.id])).rows[0].n,1);
+        assert(!(await (await office('/field/conflicts')).json() as any).items.some((row:any)=>row.id===stale.id));
+        await assert.rejects(pool.query("UPDATE field_event_resolution SET note='overwrite' WHERE event_id=$1",[stale.id]),/append-only/);
+        await pool.query("UPDATE staff_profile SET role='crew' WHERE user_id=$1",[user]);
+        await pool.query("UPDATE work_order SET assigned_to=$2 WHERE id=$1",[work,other]);
+        const mixed = {events:[{...stale,id:randomUUID()},stale,{...stale,payload:{text:'wrong'}}]};
+        const receipts = await office('/field/resolutions',mixed);
+        assert.equal(receipts.status,200);
+        assert.equal(receipts.headers.get('cache-control'),'private, no-store');
+        assert.deepEqual(await receipts.json(),{results:[{id:stale.id,status:"resolved"}]});
+        assert.deepEqual(await (await office('/field/resolutions',mixed,other)).json(),{results:[]});
+        assert.deepEqual(await (await call(stale)).json(),{results:[{id:stale.id,status:"resolved"}]});
+        assert.deepEqual(await (await call(stale)).json(),{results:[{id:stale.id,status:"resolved"}]});
+        assert.equal((await call({...stale,payload:{text:'Changed'}})).status,403);
+        assert.equal((await call(stale,other)).status,409);
+      });
     } finally {
       (auth.api as any).getSession = originalSession;
       await new Promise<void>((resolve, reject) =>

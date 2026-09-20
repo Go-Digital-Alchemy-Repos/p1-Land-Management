@@ -61,6 +61,27 @@ app.get("/__fixture/crew", (req: any, res: any) => {
   res.setHeader("Set-Cookie", crewCookie + "; Path=/; HttpOnly; SameSite=Lax");
   res.redirect("/my-day");
 });
+app.get("/__fixture/office", (_req: any, res: any) => {
+  if (!ready) return res.sendStatus(503);
+  res.setHeader("Set-Cookie", managerCookie + "; Path=/; HttpOnly; SameSite=Lax");
+  res.redirect("/schedule");
+});
+app.post("/__fixture/verify-resolved", protectedControl, async (_req: any, res: any, next: any) => {
+  try {
+    assert(officeCancelled);
+    const events = (await pool.query(`SELECT e.id,e.conflict,r.resolved_by,r.note
+      FROM field_event e LEFT JOIN field_event_resolution r ON r.event_id=e.id
+      WHERE e.work_order_id=$1`, [workId])).rows;
+    assert.equal(events.length, 2);
+    assert(events.every(e => e.conflict && e.resolved_by === actor.id && e.note.length > 0));
+    assert.equal((await pool.query("SELECT status FROM work_order WHERE id=$1", [workId])).rows[0].status, "cancelled");
+    assert.equal((await pool.query("SELECT count(*)::int AS n FROM agreement_charge WHERE work_order_id=$1", [workId])).rows[0].n, 0);
+    const evidence = {status:"passed", scenario:"office-record-only-resolution", preservedConflictEvents:2,
+      officeReviews:2, cancelledWorkUnchanged:true, chargesCreated:0};
+    writeFileSync(process.env.P1_FIXTURE_EVIDENCE!.replace("workflow-evidence", "resolution-evidence"), JSON.stringify(evidence,null,2), {mode:0o600});
+    res.json(evidence);
+  } catch(error) { next(error); }
+});
 app.post("/__fixture/network", protectedControl, (req: any, res: any) => {
   assert.equal(typeof req.body.offline, "boolean");
   apiOffline = req.body.offline;

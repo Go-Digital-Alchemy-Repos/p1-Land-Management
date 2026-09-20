@@ -29,7 +29,9 @@ import { onboardClient, updateClient } from "./client-onboarding";
 import { agreementPreparationHealth } from "./agreement-preparation";
 import { geocodePropertyAddress } from "./property-geocoding";
 import { notifyCapability } from "./job-notifications";
+import { fieldConflictsApi } from "./field-conflicts.routes";
 export const api = Router();
+api.use(fieldConflictsApi);
 const id = z.string().uuid();
 const text = z.string().trim().min(1).max(10000);
 const addressLine = z.string().trim().min(1).max(200);
@@ -723,21 +725,23 @@ api.post("/field/sync", async (req, res) => {
         ])
       ).rows[0];
       if (!w) throw new HttpError(404, "Work order not found");
-      if (assignedWorkOnly(a) && w.assigned_to !== a.id)
-        throw new HttpError(
-          403,
-          "Assignment changed; retain this submission for office review",
-        );
       const old = (
         await c.query(
           // Compare database-normalized values: JSON object key order and equivalent
           // timestamp spellings must not turn an exact retry into a conflict.
           `SELECT user_id,conflict,work_order_id,
+            EXISTS(SELECT 1 FROM field_event_resolution r WHERE r.event_id=field_event.id) AS resolved,
             (kind=$2 AND payload=$3::jsonb AND base_version=$4 AND captured_at=$5::timestamptz) AS matches
            FROM field_event WHERE id=$1`,
           [e.id, e.kind, JSON.stringify(e.payload), e.baseVersion, e.capturedAt],
         )
       ).rows[0];
+      // Exact, already-reviewed receipts belong to their original author even
+      // after reassignment. This reveals no new work data and never applies an event.
+      if (old?.resolved && old.user_id === a.id && old.work_order_id === w.id && old.matches)
+        return { id: e.id, status: "resolved" };
+      if (assignedWorkOnly(a) && w.assigned_to !== a.id)
+        throw new HttpError(403, "Assignment changed; retain this submission for office review");
       if (old) {
         if (old.user_id !== a.id || old.work_order_id !== w.id || !old.matches)
           throw new HttpError(409, "Operation ID conflict");
@@ -829,7 +833,7 @@ api.get("/properties/:id/timeline", async (req, res) => {
   const key = id.parse(req.params.id);
   await propertyAccess(a, key);
   const fieldRows = (!["client", "crew"].includes(a.role) && !hasCapability(a, "operations.schedule")) ? { rows: [] } : await pool.query(
-    `SELECT f.id,f.kind,f.payload,f.conflict,f.published,f.captured_at,w.title FROM field_event f JOIN work_order w ON w.id=f.work_order_id WHERE w.property_id=$1 ${a.role === "client" ? "AND f.published=true AND w.published=true" : a.role === "crew" ? "AND w.assigned_to=$2" : ""} ORDER BY f.captured_at DESC LIMIT 200`,
+    `SELECT f.id,f.kind,f.payload,f.conflict,EXISTS(SELECT 1 FROM field_event_resolution r WHERE r.event_id=f.id) AS resolved,f.published,f.captured_at,w.title FROM field_event f JOIN work_order w ON w.id=f.work_order_id WHERE w.property_id=$1 ${a.role === "client" ? "AND f.published=true AND w.published=true" : a.role === "crew" ? "AND w.assigned_to=$2" : ""} ORDER BY f.captured_at DESC LIMIT 200`,
     a.role === "crew" ? [key, a.id] : [key],
   );
   const inspectionRows =

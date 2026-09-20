@@ -54,13 +54,13 @@ def run():
 def control(action,directory):
  path=pathlib.Path(directory)/'control.json';assert path.stat().st_uid==os.getuid() and path.stat().st_mode&0o777==0o600
  state=json.loads(path.read_text());assert urllib.parse.urlparse(state['origin']).hostname=='127.0.0.1'
- if action in ('verify','verify-cancelled','cancel-work','offline','online'):
-  req=urllib.request.Request(state['origin']+('/__fixture/'+action if action in ('verify','verify-cancelled','cancel-work') else '/__fixture/network'),data=(b'{}' if action in ('verify','verify-cancelled','cancel-work') else json.dumps({'offline':action=='offline'}).encode()),headers={'Content-Type':'application/json','X-Fixture-Control':state['control']},method='POST')
+ if action in ('verify','verify-cancelled','verify-resolved','cancel-work','offline','online'):
+  req=urllib.request.Request(state['origin']+('/__fixture/'+action if action in ('verify','verify-cancelled','verify-resolved','cancel-work') else '/__fixture/network'),data=(b'{}' if action in ('verify','verify-cancelled','verify-resolved','cancel-work') else json.dumps({'offline':action=='offline'}).encode()),headers={'Content-Type':'application/json','X-Fixture-Control':state['control']},method='POST')
   with urllib.request.urlopen(req,timeout=30) as response:print(response.read().decode())
  else:
   process=command(['ps','-p',str(state['supervisorPid']),'-o','command=']);assert 'crew-joined-fixture.py run' in process
   os.kill(state['supervisorPid'],signal.SIGTERM)
 if __name__=='__main__':
- parser=argparse.ArgumentParser();parser.add_argument('action',choices=['run','verify','verify-cancelled','cancel-work','stop','offline','online']);parser.add_argument('directory',nargs='?');args=parser.parse_args()
+ parser=argparse.ArgumentParser();parser.add_argument('action',choices=['run','verify','verify-cancelled','verify-resolved','cancel-work','stop','offline','online']);parser.add_argument('directory',nargs='?');args=parser.parse_args()
  if args.action=='run':run()
  else:control(args.action,args.directory)

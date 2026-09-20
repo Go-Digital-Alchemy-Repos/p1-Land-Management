@@ -16278,6 +16278,110 @@
           }
         }
       }
+    },
+    "/field/conflicts": {
+      "get": {
+        "operationId": "listFieldConflicts",
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FieldConflictList"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/field/conflicts/{id}/resolve": {
+      "post": {
+        "operationId": "resolveFieldConflict",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResolveFieldConflict"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FieldConflictResolution"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/field/resolutions": {
+      "post": {
+        "operationId": "getFieldResolutionReceipts",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FieldSyncResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "Access denied"
+          },
+          "409": {
+            "description": "Record changed or operation conflict"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "events": {
+                    "type": "array",
+                    "maxItems": 100,
+                    "items": {
+                      "$ref": "#/components/schemas/FieldOperation"
+                    }
+                  }
+                },
+                "required": [
+                  "events"
+                ]
+              }
+            }
+          }
+        },
+        "description": "Returns only exact office-resolved receipts owned by the current submitting user; other input IDs are omitted."
+      }
     }
   },
   "components": {
@@ -17999,7 +18103,8 @@
                   "type": "string",
                   "enum": [
                     "accepted",
-                    "conflict"
+                    "conflict",
+                    "resolved"
                   ]
                 }
               },
@@ -34388,6 +34493,110 @@
           "project_stage",
           "service_timing",
           "services"
+        ]
+      },
+      "FieldConflict": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "work_order_id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "captured_at": {
+            "type": "string"
+          },
+          "work_title": {
+            "type": "string"
+          },
+          "work_status": {
+            "type": "string"
+          },
+          "property_name": {
+            "type": "string"
+          },
+          "submitted_by": {
+            "type": "string"
+          },
+          "payload": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "base_version": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "work_order_id",
+          "kind",
+          "captured_at",
+          "work_title",
+          "work_status",
+          "property_name",
+          "submitted_by",
+          "payload",
+          "base_version"
+        ]
+      },
+      "FieldConflictList": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FieldConflict"
+            }
+          },
+          "hasMore": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "items",
+          "hasMore"
+        ]
+      },
+      "ResolveFieldConflict": {
+        "type": "object",
+        "properties": {
+          "note": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "disposition": {
+            "type": "string",
+            "enum": [
+              "record_only"
+            ]
+          }
+        },
+        "required": [
+          "note",
+          "disposition"
+        ]
+      },
+      "FieldConflictResolution": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "resolved"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "status"
         ]
       }
     }

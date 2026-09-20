@@ -1,3 +1,5 @@
+import { reconcileFieldResolutions } from "./field-resolution-receipts";
+import { FieldConflictReview } from "./FieldConflictReview";
 import { isTransientRefreshFailure, refreshEntries } from "./my-day-recovery";
 import { DESIGN_COPY } from "../../../platform/p1-core/shared/design-page-copy";
 import { InquiryList } from "./InquiryList";
@@ -543,6 +545,10 @@ function App() {
   }
   async function sync() {
     if (!person) return;
+    // Reconcile reviewed receipts first; a denied photo or unrelated entry must
+    // not trap an already-resolved operation on the device.
+    const reviewedCount = await reconcileFieldResolutions(person.id);
+    setCount((await offline.pending(person.id)).length + (await offline.pendingPhotos(person.id)).length);
     for (const photo of await offline.pendingPhotos(person.id)) {
       const r = await fetch("/api/v1/files/" + photo.id, {
         method: "POST",
@@ -562,14 +568,16 @@ function App() {
     if (events.length) {
       const r = await syncFieldEvents({ events });
       for (const ack of r.results)
-        if (ack.status === "accepted")
+        if (ack.status === "accepted" || ack.status === "resolved")
           await offline.acknowledge(person.id, ack.id);
       setNotice(
         r.results.some((r: any) => r.status === "conflict")
           ? "Some entries need office review and remain on this device."
-          : "All entries synchronized.",
+          : r.results.some((r: any) => r.status === "resolved")
+            ? "Office-reviewed entries cleared from this device. Original entries remain in property history."
+            : "All entries synchronized.",
       );
-    } else setNotice("Everything is up to date.");
+    } else setNotice(reviewedCount ? "Office-reviewed entries cleared from this device. Original entries remain in property history." : "Everything is up to date.");
     await refresh();
   }
   async function logout() {
@@ -1982,6 +1990,7 @@ function App() {
                   />
                 )}
               </section>
+              {view === "Schedule" && ops && <FieldConflictReview />}
               {view === "Schedule" && ops && (
                 <AssessmentAvailability request={api} onChange={refresh} />
               )}
@@ -2529,7 +2538,7 @@ function App() {
                     <div className="timeline-row" key={e.id}>
                       <span className="badge">
                         {e.kind}
-                        {e.conflict ? " · needs review" : ""}
+                        {e.conflict ? e.resolved ? " · reviewed without applying" : " · needs review" : ""}
                       </span>
                       <p>
                         {e.kind === "inspection"

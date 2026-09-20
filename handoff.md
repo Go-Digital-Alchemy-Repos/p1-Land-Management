@@ -981,3 +981,13 @@ SHA-256: `7d509ebdad328ad5ede44a3baa61e0cce6cf0f6d4c32cbba62976f8941cb9ecc`.
 This backup is **not in GitHub and will not appear on a new workstation**. Arrange secure access or a fresh verified backup before any migration requiring it. The private directory also holds release credentials; do not upload that directory or print its contents. A successful archive listing is not a completed restore rehearsal. Keep additive schema during application rollback; no destructive down-migration is authorized by this handoff.
 
 Previous task checkout: `/Users/mikedickerman/Documents/Codex Projects/p1-business-center-consolidation`. Working tree was clean at the start of handoff preparation. No uncommitted implementation needs transfer; no implementation or deployment is running as part of this handoff. Browser sessions and temporary release archives are local conveniences, not prerequisites or portable acceptance evidence.
+
+### In-progress field conflict review checkpoint
+
+Office record-only resolution and exact-author crew receipt reconciliation are
+implemented on the consolidation branch but are not deployed. See
+`docs/implementation/field-conflict-resolution.md` for actual tests, the fresh
+Dashboard backup/0047 restore rehearsal and remaining browser gate. Do not push
+this checkpoint to main until final integrated checks and office-to-crew browser
+acceptance pass and dashboard0047 is applied before API deployment. The last
+completed release remains `2c760be3` on main. Preserve the full consolidation scope.
