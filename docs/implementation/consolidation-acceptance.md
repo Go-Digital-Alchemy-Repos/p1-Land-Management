@@ -399,3 +399,9 @@ Recent releases: managed Head Tags `76127ead` and sidebar icon colors `552248a0`
 are verified live on Railway. Head Tags now manages the existing GA tracking ID;
 Turnstile remains enabled with authoritative status displayed. Full consolidation
 acceptance and safe admin retirement remain incomplete.
+
+Fresh joined fixture rehearsal on September 19 (port57934) passed the stronger exact
+event-ID and both-accepted-receipt assertions, closing the older fixture limitation
+above. Full CUA download/start/completion/reload/lost-ack/retry journey passed.
+The reusable runner is scripts/consolidation/crew-joined-fixture.py; physical-device
+and other explicitly outstanding scenarios remain open.
