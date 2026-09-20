@@ -1,3 +1,18 @@
+## Native backup restore candidate — September 20
+
+The task branch contains the native review/confirmation/execution/history and
+receipt-based reconciliation workflow. It is **not deployed**: main remains at
+`3dc1e269`. Core0008 and Dashboard0049/0050 are candidate migrations only. Real
+PostgreSQL and authenticated Dashboard HTTP tests pass; the HTTP test uses a
+controlled Core transport fixture, not a complete two-service deployment.
+Independent review found missing-receipt recovery and archive sequence scope
+blockers. Sequence scope is fixed and independently re-reviewed;17 PostgreSQL tests pass. Receipt reservation at
+review, inactive-Owner recovery, complete two-service/restart acceptance, browser
+and mobile checks, and migration/recovery rehearsals remain. `/admin` stays active.
+See `docs/implementation/website-backups-contract.md`; use
+`python3 scripts/consolidation/test-website-restore.py` for the isolated Dashboard
+ledger/HTTP checks. Do not promote the task branch as a completed restore release.
+
 ## Estimate delivery deployed — September 20
 
 `b75c3deef4b96c3e4ba62e1597f1484866e72ec1` is pushed to main/task branch and Railway SUCCESS on all three applications. Dashboard `4b1a7602-ce39-44ac-9252-e63291490dc8`, Core `2ebd3ac0-f772-49a1-995d-3d226aba37ce`, Website `7259a772-216a-4ebf-a138-368ed3e2bec1`. Dashboard health/public contact HTTP 200. No live inquiry or notification generated. Isolated validation: 25 focused + 23 PostgreSQL tests, affected typechecks/builds. Full goal remains active; see estimate-dashboard-intake.md for rollback constraints.

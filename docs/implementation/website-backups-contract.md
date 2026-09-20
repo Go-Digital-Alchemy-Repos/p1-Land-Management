@@ -342,3 +342,31 @@ a blocker: failures before Core admission currently leave Dashboard unresolved,
 with no supported self-service resolution. An expired request must be safely
 cancelled/reconciled without mistaking loss/replacement of the receipt store for
 proof of no prior commit. This must be solved and tested before production release.
+
+### Independent review remediation: sequence ownership
+
+The reviewed restore now derives sequence resets exclusively from PostgreSQL's
+current ownership catalog, filtered to tables in the restored archive. Archived
+sequence mappings cannot add another sequence to the native mutation set. Retained
+operator recovery remains unchanged. A new real PostgreSQL test supplies a
+syntactically valid but false mapping to an excluded table's sequence and verifies
+its value/called state stays unchanged both on successful restoration and on a
+forced completion-receipt rollback. All16 database tests and Core typecheck pass.
+Independent verification of this change was requested before release acceptance.
+
+Missing-receipt recovery design: reserve the correlated Core receipt during
+archive review, before Dashboard creates an executable review. Dashboard supplies
+the operation UUID; Core binds it to the verified actor, fingerprint and expiry.
+Execution consumes reserved→started once under the existing lock, with completion
+still atomic with restored rows. An expired reserved/started receipt can support
+positive no-commit reconciliation under the lock; genuinely missing evidence must
+remain unknown. A database epoch alone is insufficient because restoring an older
+full database can preserve its epoch while losing newer receipts. This reservation
+flow is the next implementation step, not yet an implemented guarantee. An
+inactive initiating Owner also requires a reviewed operator recovery/takeover path.
+
+Independent sequence re-review closed the finding after inspecting the patch.
+The requested additional identity-sequence regression also passed: advance live
+state to41 after backup, fail completion after restore sequence adjustment, verify
+rollback retains last_value41/is_calledtrue and next generated ID42. The full
+PostgreSQL suite now passes17 tests without skips; cleanup and Core typecheck pass.

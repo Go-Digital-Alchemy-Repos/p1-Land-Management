@@ -622,7 +622,9 @@ async function restoreBackupSnapshotWithClient(
       // Discover owned sequences for restored tables so their next insert cannot reuse IDs.
       const restoredNames = new Set(snapshot.tables.map((table) => table.name));
       const discoveredSequences = (await querySequenceColumns(client)).filter((sequence) => restoredNames.has(sequence.tableName));
-      const sequences = new Map(snapshot.sequences.map((sequence) => [sequence.sequenceName, sequence]));
+      // Reviewed archives cannot choose a sequence belonging to excluded data.
+      // The current PostgreSQL ownership catalog is authoritative for this path.
+      const sequences = new Map((validateReviewedDeadline ? [] : snapshot.sequences).map((sequence) => [sequence.sequenceName, sequence]));
       for (const sequence of discoveredSequences) sequences.set(sequence.sequenceName, sequence);
       for (const sequence of sequences.values()) {
         await client.query(
