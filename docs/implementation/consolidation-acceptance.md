@@ -545,3 +545,14 @@ This establishes current backend regressions, not the complete customer/staff/cr
 Revision `a7550741` reached terminal SUCCESS on Website `54bc4eb7-b6c5-4d71-8393-a779217a247d`, Core `239f5c1e-816a-4f7f-85b9-254e7cc5fc10` and Dashboard `b42aa35b-8784-400f-a7f7-050edb4041f5`. Public-server compatibility suite passed97 tests without skips; analytics suite passed5. Live DOM inspection found exactly one `G-YX69CJ1QNJ` loader before and after SPA navigation. This does not prove provider-side event deduplication; collection-level verification remains open.
 
 The same check reproduced a deployment-crossing stale About chunk (`Failed to fetch dynamically imported module`); reload rendered the correct About page/title. The route error boundary now recovers this specific failure with one session-wide reload per minute, retaining manual recovery for repeated failures, storage restrictions or unrelated rendering errors. Two regression tests verify across-document loop suppression and conservative fallback. Website typecheck and full build passed (54 prerendered routes); preexisting build sourcemap warnings remain. Run `pnpm --filter @workspace/p1-website check:route-recovery`. No analytics provider configuration changed. Deployment of this recovery increment still needs verification.
+## Client Stack Onboarding retirement — September 20
+
+The Owner directed removal of the Client Stack Onboarding feature because P1 is
+a standalone system for one client, not a multi-tenant product. The candidate
+removes its Dashboard navigation, route and lazy UI; the retained Core admin
+navigation, route and API; and the Dashboard-to-Core transport/OpenAPI contract.
+Its historical evidence table and immutable migration history remain intact, so
+no production data deletion or migration is required. This does not affect the
+single-client origin, preview, backup or storage safety boundaries, nor the
+separate customer/client and property onboarding workflows. Deployment and
+live verification remain separate release gates.

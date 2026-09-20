@@ -40,7 +40,7 @@ All destination paths below are on the Business Center host. They are proposed m
 | `/admin/design/social-media` | `/marketing/design/social-media` | Preserve profile ordering/icon style/public delivery. |
 | `/admin/design/typography` | `/marketing/design/typography` | Preserve font selection/upload/public delivery and deployment-independent changes. |
 | `/admin/system/backups` | `/marketing/system/backups` | Native status/run released; destructive restore has **no native operation**. Recovery evidence and deliberate restore flow remain required. |
-| `/admin/client-stack-onboarding` | `/marketing/system/onboarding` | Four native operations exist; retain evidence attribution and no implicit DNS mutations. |
+| `/admin/client-stack-onboarding` | Retired; no replacement | The Owner retired the standalone client-stack onboarding tool on September 20, 2026. Preserve its historical evidence and migrations; do not recreate a multi-client workflow. |
 | `/admin/cms/website` | `/marketing/content/website` | Published P1 content contracts remain distinct from generic CMS pages. |
 | `/admin/cms/website/:routeId/:componentKey` | `/marketing/content/website?routeId=<encoded>&componentKey=<encoded>` | Native query selection exists; validate both keys, record permission and draft/preview restoration. |
 | `/admin/cms` | No identical overview; choose reviewed Content landing | Do not silently equate overview with Website Editor or generic Pages. |

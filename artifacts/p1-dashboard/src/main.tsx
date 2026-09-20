@@ -104,7 +104,6 @@ const WebsiteSocial = lazy(() => import("./marketing/WebsiteSocial"));
 const WebsiteTypography = lazy(() => import("./marketing/WebsiteTypography"));
 const WebsiteColors = lazy(() => import("./marketing/WebsiteColors"));
 const WebsiteFeatures = lazy(() => import("./marketing/WebsiteFeatures"));
-const ClientStackOnboarding = lazy(() => import("./marketing/ClientStackOnboarding"));
 const WebsiteBackups = lazy(() => import("./marketing/WebsiteBackups"));
 const WebsiteIntegrations = lazy(() => import("./marketing/WebsiteIntegrations"));
 const EmailTemplateManager = lazy(() => import("./marketing/EmailTemplateManager"));
@@ -169,7 +168,6 @@ const sidebarIconColors: Record<keyof typeof icons, string> = {
   "Website Social": "#059669",
   "Website Typography": "#0284c7",
   "Website Colors": "#f43f5e",
-  "Website Onboarding": "#059669",
   "Website Sections": "#a78bfa",
   "Website SEO": "#a78bfa",
   "Website Blog": "#9333ea",
@@ -232,7 +230,6 @@ const icons: Record<DashboardPageRoute["view"] | "Settings:security" | "Settings
   "Website Backups": DatabaseBackup,
   "Website Integrations": SlidersHorizontal,
   "Website Email Templates": Mail,
-  "Website Onboarding": Globe,
   "Website Sections": Blocks,
   "Website SEO": Search,
   "Website Blog": BookOpen,
@@ -1549,7 +1546,6 @@ function App() {
           {view === "Website Typography" && <Suspense fallback={<p role="status">Loading website fonts…</p>}><WebsiteTypography key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Website Colors" && <Suspense fallback={<p role="status">Loading website colors…</p>}><WebsiteColors key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Website Features" && person.role === "owner" && <Suspense fallback={<p role="status">Loading website modules…</p>}><WebsiteFeatures key={person.id}/></Suspense>}
-          {view === "Website Onboarding" && person.role === "owner" && <Suspense fallback={<p role="status">Loading onboarding…</p>}><ClientStackOnboarding key={person.id}/></Suspense>}
           {view === "Website Backups" && person.role === "owner" && <Suspense fallback={<p role="status">Loading website backups…</p>}><WebsiteBackups key={person.id}/></Suspense>}
           {view === "Website Integrations" && person.role === "owner" && <Suspense fallback={<p role="status">Loading website integrations…</p>}><WebsiteIntegrations key={person.id}/></Suspense>}
           {view === "Website Email Templates" && person.role === "owner" && <Suspense fallback={<p role="status">Loading email templates…</p>}><EmailTemplateManager key={person.id}/></Suspense>}

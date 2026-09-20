@@ -6,7 +6,6 @@ export * from "./schema/blog-publications";
 export * from "./schema/blog-taxonomies";
 export * from "./schema/careers";
 export * from "./schema/client-site-content";
-export * from "./schema/client-stack-onboarding";
 export * from "./schema/cms-galleries";
 export * from "./schema/cms-media";
 export * from "./schema/cms-menus";

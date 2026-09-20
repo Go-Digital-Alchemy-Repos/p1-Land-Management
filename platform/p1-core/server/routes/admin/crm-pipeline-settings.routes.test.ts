@@ -63,7 +63,6 @@ vi.mock("./careers.routes", () => ({ default: express.Router() }));
 vi.mock("./portfolio.routes", () => ({ default: express.Router() }));
 vi.mock("./membership.routes", () => ({ default: express.Router() }));
 vi.mock("./client-site-content.routes", () => ({ default: express.Router() }));
-vi.mock("./client-stack-onboarding.routes", () => ({ default: express.Router() }));
 vi.mock("../../services/email.service", () => ({}));
 vi.mock("../../services/r2.service", () => ({}));
 vi.mock("../../services/system-email-templates.service", () => ({}));
