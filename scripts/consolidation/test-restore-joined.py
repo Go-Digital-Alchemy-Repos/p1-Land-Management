@@ -9,7 +9,7 @@ def port():
 def main():
  if not output(['docker','context','inspect','--format','{{.Endpoints.docker.Host}}']).startswith('unix://'):raise RuntimeError('Local Docker required')
  directory=pathlib.Path(tempfile.mkdtemp(prefix='p1-restore-joined-',dir='/private/tmp'));directory.chmod(0o700)
- name='p1-restore-joined-'+secrets.token_hex(6);created=False;children=[];core=None;checks=[]
+ name='p1-restore-joined-'+secrets.token_hex(6);created=False;children=[];core=None;checks=[];tls_paths=[]
  def sql(database,query):
   return output(['docker','exec',name,'psql','-U','postgres','-d',database,'-At','-v','ON_ERROR_STOP=1','-c',query])
  def check(label,condition):
@@ -67,7 +67,7 @@ def main():
   core_port,dashboard_port=port(),port();origin=f'http://127.0.0.1:{dashboard_port}';core_origin=f'https://127.0.0.1:{core_port}'
   cert=directory/'cert.pem';key=directory/'key.pem';conf=directory/'openssl.cnf'
   conf.write_text('[req]\ndistinguished_name=dn\nx509_extensions=ext\nprompt=no\n[dn]\nCN=localhost\n[ext]\nsubjectAltName=DNS:localhost,IP:127.0.0.1\nbasicConstraints=critical,CA:TRUE\n')
-  subprocess.run(['openssl','req','-x509','-newkey','rsa:2048','-nodes','-days','1','-keyout',str(key),'-out',str(cert),'-config',str(conf)],check=True,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL);key.chmod(0o600)
+  subprocess.run(['openssl','req','-x509','-newkey','rsa:2048','-nodes','-days','1','-keyout',str(key),'-out',str(cert),'-config',str(conf)],check=True,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL);key.chmod(0o600);tls_paths=[cert,key]
   ids={role:str(uuid.uuid4()) for role in ['owner','recovery','manager']};secret=secrets.token_urlsafe(40);service=secrets.token_urlsafe(40)
   base={'PATH':os.environ['PATH'],'NODE_ENV':'test','TZ':'America/New_York','NODE_EXTRA_CA_CERTS':str(cert),'CORE_FEDERATION_ENABLED':'true','CORE_FEDERATION_CLIENT_ID':'restore_fixture','CORE_FEDERATION_CLIENT_SECRET_CURRENT':secret}
   dbprefix=f"postgres://postgres:synthetic-only@127.0.0.1:{binding['HostPort']}/"
@@ -136,5 +136,7 @@ def main():
   if created:
    subprocess.run(['docker','rm','-fv',name],check=True,capture_output=True)
    check('container cleanup',name not in output(['docker','ps','-a','--format','{{.Names}}']).splitlines())
+  for tls_path in tls_paths:
+   tls_path.unlink(missing_ok=True)
   (directory/'evidence.json').write_text(json.dumps({'checks':checks},indent=2));print(json.dumps({'directory':str(directory),'checks':checks}))
 if __name__=='__main__':main()

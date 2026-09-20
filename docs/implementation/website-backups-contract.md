@@ -471,10 +471,18 @@ The post-fix joined rerun passed all 24 checks: anonymous/manager/CSRF denial,
 Core backup and review, correlated reservation, successful restore, duplicate
 execution protection, response-loss reconciliation after Core restart,
 pre-admission outage uncertainty, and inactive-initiator outcome-only recovery
-with both Core audits. The temporary databases, HTTPS key material, archive peer
-and Docker container were removed. The runner additionally waits for a real
+with both Core audits. The temporary databases, HTTPS server process and Docker
+container were removed; the generated TLS certificate/key are deleted after each
+run, while private synthetic logs and evidence remain in the reported directory
+for diagnosis. The runner additionally waits for a real
 fixture-database query rather than relying on the image's transient init-server
 `pg_isready` response.
+
+Archives written by earlier builds may retain a relative key inside their
+compressed manifest. Strict native review intentionally rejects those archives
+rather than silently rewriting their identity. Use the existing controlled
+operator-recovery path or capture and verify a new qualified-key archive before
+attempting native restore acceptance.
 
 This is an isolated synthetic acceptance result, not a production restore,
 deployment, populated-production recovery, physical-device/browser accessibility
