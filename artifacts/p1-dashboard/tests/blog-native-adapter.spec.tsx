@@ -753,3 +753,23 @@ it.each(["/r2/cms/other/new.webp", ""])(
     ).toMatchObject({ coverImageSet: null, coverImageUrl: url || null });
   },
 );
+
+it.each([['comments', 'Comments'], ['settings', 'Comment settings'], ['taxonomy', 'Categories and tags']])('opens the requested Blog tool from tab=%s', async (key, label) => {
+  history.replaceState(null, '', '/marketing/content/blog?tab=' + key);
+  await mount();
+  expect(host.querySelector('nav[aria-label="Blog tools"] [aria-current="page"]')?.textContent).toBe(label);
+  expect(state.api.listMarketingBlogPublications).not.toHaveBeenCalled();
+});
+it('persists tool selection and respects unsaved-navigation cancellation', async () => {
+  await mount();
+  await click('Comments');
+  expect(new URLSearchParams(location.search).get('tab')).toBe('comments');
+  const block = (event: Event) => event.preventDefault();
+  window.addEventListener('p1:before-navigation', block);
+  try {
+    await click('Comment settings');
+    expect(new URLSearchParams(location.search).get('tab')).toBe('comments');
+  } finally { window.removeEventListener('p1:before-navigation', block); }
+  await click('Posts');
+  expect(new URLSearchParams(location.search).has('tab')).toBe(false);
+});

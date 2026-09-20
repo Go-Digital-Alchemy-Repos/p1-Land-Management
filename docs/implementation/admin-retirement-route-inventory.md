@@ -49,7 +49,7 @@ All destination paths below are on the Business Center host. They are proposed m
 | `/admin/cms/team` | `/marketing/content/team` | Preserve ordering/visibility/images and public rendering. |
 | `/admin/cms/galleries`, `/admin/cms/galleries/new`, `/admin/cms/galleries/:id` | `/marketing/content/galleries?gallery=<id or new>` | Direct selection/create intent released at `112f1d1`; retained-record, item ordering and public consumer parity remain. |
 | `/admin/cms/blog`, `/admin/cms/blog/:id` | `/marketing/content/blog?post=<encoded id>` | Native `post` query selection exists; validate old IDs and revision/draft/publish behavior. |
-| `/admin/cms/blog/new`, `/admin/cms/blog/settings`, `/admin/cms/blog/comments` | `/marketing/content/blog` | Distinct creation/settings/comments intent must be retained; no verified native URL intent mapping is established here. |
+| `/admin/cms/blog/new`, `/admin/cms/blog/settings`, `/admin/cms/blog/comments` | `/marketing/content/blog?post=new`, `/marketing/content/blog?tab=settings`, `/marketing/content/blog?tab=comments` | Native selectors preserve creation/settings/comments intent; taxonomy uses `tab=taxonomy`. UI tab changes preserve unrelated query context and honor unsaved-edit cancellation. Retirement redirects remain unimplemented. |
 | `/admin/cms/sections`, `/admin/cms/sections/new`, `/admin/cms/sections/:id` | `/marketing/content/sections?section=<id or new>` | Direct selection/create intent released at `112f1d1`; full editing/reference parity remains. |
 | `/admin/cms/seo` | `/marketing/content/seo` | Include redirects, robots/global metadata and affected public responses. |
 | `/admin/cms/menus` | `/marketing/content/menus` | Preserve hierarchy/order/locations, deletion relationships and public navigation. |

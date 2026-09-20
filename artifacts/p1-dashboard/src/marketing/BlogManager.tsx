@@ -1195,8 +1195,18 @@ function BlogPosts({ canUseMedia = false }: { canUseMedia?: boolean }) {
   );
 }
 
+const blogToolTabs = {
+  posts: "Posts",
+  taxonomy: "Categories and tags",
+  comments: "Comments",
+  settings: "Comment settings",
+} as const;
 export default function BlogManager({ canUseMedia }: { canUseMedia: boolean }) {
-  const [tab, setTab] = useState("Posts");
+  const [tab, setTab] = useState<string>(() => {
+    const key = new URLSearchParams(location.search).get("tab") || "posts";
+    return Object.prototype.hasOwnProperty.call(blogToolTabs, key)
+      ? blogToolTabs[key as keyof typeof blogToolTabs] : "Posts";
+  });
   return (
     <div className="blog-manager">
       {tab !== "Posts" && <h1>Blog</h1>}
@@ -1212,8 +1222,14 @@ export default function BlogManager({ canUseMedia }: { canUseMedia: boolean }) {
                   window.dispatchEvent(
                     new Event("p1:before-navigation", { cancelable: true }),
                   )
-                )
+                ) {
+                  const url = new URL(location.href);
+                  const key = Object.entries(blogToolTabs).find(([, label]) => label === name)![0];
+                  if (key === "posts") url.searchParams.delete("tab");
+                  else url.searchParams.set("tab", key);
+                  history.replaceState(null, "", url.pathname + url.search);
                   setTab(name);
+                }
               }}
             >
               {name}
