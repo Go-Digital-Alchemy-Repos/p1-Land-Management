@@ -127,7 +127,34 @@ const PropertyMap = lazy(() =>
   import("./PropertyMap").then(({ PropertyMap }) => ({ default: PropertyMap })),
 );
 // Match the retained admin tool icons; color is decorative, labels remain authoritative.
-const marketingIconColors: Partial<Record<DashboardPageRoute["view"], string>> = {
+const sidebarIconColors: Record<keyof typeof icons, string> = {
+  Overview: "#2563eb",
+  "My Day": "#0891b2",
+  Properties: "#16a34a",
+  Clients: "#9333ea",
+  Requests: "#db2777",
+  Schedule: "#0891b2",
+  Recurring: "#0d9488",
+  Projects: "#7c3aed",
+  Inspections: "#16a34a",
+  Sales: "#2563eb",
+  Agreements: "#d97706",
+  "Agreement Drafts": "#ea580c",
+  "Agreement Templates": "#a16207",
+  Billing: "#059669",
+  Expenses: "#e11d48",
+  Profile: "#9333ea",
+  Settings: "#9333ea",
+  "Settings:security": "#16a34a",
+  "Settings:integrations": "#0891b2",
+  "Settings:preferences": "#7c3aed",
+  "Settings:term-libraries": "#d97706",
+  Analytics: "#0d9488",
+  "Search Console": "#2563eb",
+  "Website Features": "#7c3aed",
+  "Website Head Tags": "#0284c7",
+  "Website Integrations": "#0891b2",
+  "Website Email Templates": "#db2777",
   "Website Sidebars": "#10b981",
   "Website Galleries": "#c026d3",
   "Website Careers": "#d97706",
@@ -1290,7 +1317,7 @@ function App() {
                           setMenu(false);
                         }}
                       >
-                        <Icon size={19} aria-hidden="true" style={item.group === "Marketing" ? { color: marketingIconColors[item.view] } : undefined} />
+                        <Icon size={19} aria-hidden="true" style={{ color: sidebarIconColors[item.settingsSection && item.settingsSection !== "people" ? `Settings:${item.settingsSection}` as keyof typeof icons : item.view] }} />
                         {item.label}
                         {item.view === "Requests" && data.requests?.length > 0 && (
                           <b>{data.requests.length}</b>
