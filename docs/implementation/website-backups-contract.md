@@ -450,3 +450,33 @@ review found no remaining authority/predicate blocker. No production changes.
 Remaining restore release gates: genuine authenticated two-service acceptance,
 restart/response-loss boundaries, browser/mobile accessibility and error checks,
 current populated migration/recovery rehearsal and deployment/rollback evidence.
+
+### Joined Core–Dashboard restore acceptance — September 20 (candidate only)
+
+`python3 scripts/consolidation/test-restore-joined.py` now starts the actual
+Dashboard application and Core Business Center router against two disposable,
+loopback-only PostgreSQL databases and a local HTTPS S3-compatible peer. It
+exercises real Dashboard session/grant handling, Core archive upload/review,
+receipt reservation, restore SQL and reconciliation; only test identities,
+storage peer and transport-fault timing are synthetic.
+
+The first joined run exposed a real archive self-reference defect: uploads used a
+qualified per-client object key while the compressed manifest retained the
+pre-upload relative key. Core correctly rejected review rather than treating the
+two keys as equivalent. `runSystemBackup` now embeds the qualified key before
+compression and uploads using the relative storage input. A focused regression
+asserts that the stored manifest key equals the returned archive key.
+
+The post-fix joined rerun passed all 24 checks: anonymous/manager/CSRF denial,
+Core backup and review, correlated reservation, successful restore, duplicate
+execution protection, response-loss reconciliation after Core restart,
+pre-admission outage uncertainty, and inactive-initiator outcome-only recovery
+with both Core audits. The temporary databases, HTTPS key material, archive peer
+and Docker container were removed. The runner additionally waits for a real
+fixture-database query rather than relying on the image's transient init-server
+`pg_isready` response.
+
+This is an isolated synthetic acceptance result, not a production restore,
+deployment, populated-production recovery, physical-device/browser accessibility
+acceptance, or approval to retire `/admin`. Independent review and the remaining
+release gates above still apply.

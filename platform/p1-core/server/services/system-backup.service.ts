@@ -372,12 +372,17 @@ export async function runSystemBackup(reason: BackupRunReason = "manual") {
       const totalRowCount = tableSnapshots.reduce((sum, table) => sum + table.rowCount, 0);
       const mediaAssetTable = tableSnapshots.find((table) => table.name === "cms_media");
       const mediaAssetCount = mediaAssetTable?.rowCount ?? 0;
+      // The archive is stored below the per-client prefix. Embed that qualified
+      // object key before compression so a later review proves it read the exact
+      // archive the manifest identifies, rather than a pre-upload relative key.
+      const snapshotKey = buildSnapshotKey(createdAt, reason);
+      const archiveKey = `${storageInfo.prefix.replace(/^\/+|\/+$/g, "")}/${snapshotKey}`.replace(/\/+/g, "/");
 
       const manifest: BackupManifest = {
         schemaVersion: 1,
         clientStackId: process.env.CLIENT_STACK_ID?.trim() || null,
         createdAt: createdAt.toISOString(),
-        key: buildSnapshotKey(createdAt, reason),
+        key: archiveKey,
         reason,
         appVersion: APP_VERSION,
         gitCommitSha: process.env.RAILWAY_GIT_COMMIT_SHA || null,
@@ -401,7 +406,7 @@ export async function runSystemBackup(reason: BackupRunReason = "manual") {
       };
 
       const compressed = gzipSync(Buffer.from(JSON.stringify(snapshot), "utf8"));
-      const uploaded = await uploadBackupObject(manifest.key, compressed, "application/json", {
+      const uploaded = await uploadBackupObject(snapshotKey, compressed, "application/json", {
         contentEncoding: "gzip",
         metadata: {
           createdAt: manifest.createdAt,
@@ -414,7 +419,6 @@ export async function runSystemBackup(reason: BackupRunReason = "manual") {
         throw new Error("Backup upload failed");
       }
 
-      manifest.key = uploaded.key;
       await writeLatestManifest(manifest, operation);
       await pruneExpiredBackups(getRetentionDays(), getMaxSnapshots(), operation);
 

@@ -1,5 +1,5 @@
 const reviewedIdentity={operationId:"11111111-1111-4111-8111-111111111111",actorId:"synthetic-owner"};
-import { gzipSync } from "node:zlib";
+import { gunzipSync, gzipSync } from "node:zlib";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("../db", () => ({ pool: { connect: vi.fn(), query: vi.fn() } }));
@@ -130,6 +130,12 @@ describe("backup session cleanup failures", () => {
     vi.mocked(storage.listBackupObjects).mockResolvedValue([{ key: "original/db/old.json.gz", size: 1, lastModified: "2000-01-01T00:00:00Z" }]);
     const manifest = await runSystemBackup();
     expect(manifest.bucketName).toBe("original");
+    expect(manifest.key).toMatch(/^original\/db\//);
+    const snapshotUpload = vi.mocked(storage.uploadBackupObject).mock.calls.find(([key]) => key.startsWith("db/"));
+    expect(snapshotUpload).toBeDefined();
+    expect(
+      JSON.parse(gunzipSync(snapshotUpload![1] as Buffer).toString("utf8")).manifest.key,
+    ).toBe(manifest.key);
     expect(storage.beginBackupStorageOperation).toHaveBeenCalledTimes(1);
     expect(vi.mocked(storage.uploadBackupObject).mock.calls.every(call => call[4] === operation)).toBe(true);
     expect(storage.listBackupObjects).toHaveBeenCalledWith("db", 500, operation);
