@@ -86,6 +86,11 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
     child.stdout.on('data', chunk => { if (String(chunk).includes('P1 website listening')) { clearTimeout(timer); resolveReady(); } });
   });
 
+  await t.test('public form proxy preserves the Turnstile token outside the submission body', async () => {
+    await request(port, '/api/forms/p1-estimate/submit', { 'X-Turnstile-Token': 'synthetic-challenge-token' }, 'POST');
+    const forwarded = upstreamRequests.find(item => item.path === '/api/forms/p1-estimate/submit');
+    assert.equal(forwarded?.headers['x-turnstile-token'], 'synthetic-challenge-token');
+  });
   await t.test('one identity revision drives SSR, serialized hydration and navigation without credential forwarding',async()=>{
     const page=await request(port,'/',{Cookie:'private',Authorization:'Bearer private'});
     assert.equal(page.status,200);
@@ -158,7 +163,8 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
       assert.equal(response.status, 200);
       const policy = response.headers['content-security-policy'];
       assert.match(policy, /connect-src 'self' https:\/\/tiles\.openfreemap\.org(?: |;)/);
-      assert.match(policy, /script-src 'self' https:\/\/www\.googletagmanager\.com;/);
+      assert.match(policy, /frame-src 'self' https:\/\/challenges\.cloudflare\.com;/);
+      assert.match(policy, /script-src 'self' https:\/\/www\.googletagmanager\.com https:\/\/challenges\.cloudflare\.com;/);
       assert.doesNotMatch(policy, /unsafe-eval|https:\/\/\*/);
     }
     const directory = await request(port, '/service-areas');

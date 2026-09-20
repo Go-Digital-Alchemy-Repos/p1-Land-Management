@@ -1,3 +1,4 @@
+import { turnstile, requirePublicFormVerification } from "../services/turnstile.service";
 import { getBaseUrl } from "../utils/route-helpers";
 import rateLimit from "express-rate-limit";
 import { Router } from "express";
@@ -8,6 +9,10 @@ import { paramString } from "../utils/params";
 import { sanitizePublicCmsContent } from "../utils/sanitize-rich-html";
 
 const router = Router();
+router.get("/turnstile-config", asyncHandler(async (_req, res) => {
+  res.setHeader("Cache-Control", "no-store");
+  res.json(turnstile.publicConfiguration());
+}));
 
 router.get(
   "/:slug",
@@ -37,6 +42,7 @@ router.get(
 router.post(
   "/:slug/submit",
   rateLimit({ windowMs: 15 * 60_000, limit: 10, standardHeaders: "draft-7", legacyHeaders: false }),
+  requirePublicFormVerification,
   asyncHandler(async (req, res) => {
     const baseUrl = getBaseUrl(req);
     const result = await submitManagedFormBySlug(paramString(req.params.slug), req.body, {

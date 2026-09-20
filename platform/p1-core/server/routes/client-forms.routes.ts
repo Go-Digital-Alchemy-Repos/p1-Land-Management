@@ -1,3 +1,4 @@
+import { turnstile } from "../services/turnstile.service";
 import { getBaseUrl } from "../utils/route-helpers";
 import { Router } from "express";
 import { asyncHandler } from "../middleware/error-handler";
@@ -27,6 +28,7 @@ function proxyFormHandler(slug: "contact-form" | "newsletter-signup" | "p1-estim
       return;
     }
 
+    await turnstile.verify(req.get("X-Turnstile-Token"));
     const baseUrl = getBaseUrl(req);
     const result = await submitManagedFormBySlug(slug, req.body, {
       baseUrl,

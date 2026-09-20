@@ -1,3 +1,4 @@
+import { requirePublicFormVerification } from "../services/turnstile.service";
 import { getBaseUrl } from "../utils/route-helpers";
 import { Router } from "express";
 import multer from "multer";
@@ -140,10 +141,9 @@ router.post(
     ) {
       return res.status(401).json({ message: "Invalid Indeed Apply secret" });
     }
-    res.status(202).json({
-      accepted: true,
-      message: "Indeed Apply endpoint is ready for partner payload mapping",
-    });
+    // Partner payload mapping is not implemented; never acknowledge an application
+    // that has not been durably accepted. These are not browser challenge flows.
+    res.status(503).json({ message: "Indeed Apply integration is not configured" });
   }),
 );
 
@@ -161,6 +161,7 @@ router.get(
 
 router.post(
   "/jobs/:slug/apply",
+  requirePublicFormVerification,
   resumeUpload.single("resume"),
   asyncHandler(async (req, res) => {
     const slug = paramString(req.params.slug);
@@ -202,10 +203,7 @@ router.post(
   "/ziprecruiter/apply",
   asyncHandler(async (req, res) => {
     zipRecruiterWebhookSchema.parse(req.body);
-    res.status(202).json({
-      accepted: true,
-      message: "ZipRecruiter inbound apply endpoint is ready for partner payload mapping",
-    });
+    res.status(503).json({ message: "ZipRecruiter Apply integration is not configured" });
   }),
 );
 

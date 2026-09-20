@@ -1,3 +1,4 @@
+import {usePublicFormVerification} from '../forms/PublicFormVerification';
 import { useEffect, useMemo, useRef, useState, type ComponentProps } from 'react';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '../ui/dialog';
 import { Button } from '../ui/button';
@@ -27,6 +28,7 @@ export default function MenuFormDialog({request, onClose}: {request: MenuFormReq
   const [notice,setNotice] = useState<{title:string;description?:string;variant?:'default'|'destructive'}>();
   const [accepted,setAccepted] = useState(false); const [busy,setBusy] = useState(false); const pending = useRef(false);
   const preview = new URLSearchParams(window.location.search).has('cmsPreview');
+  const verification=usePublicFormVerification(preview || accepted);
   const host = useMemo(() => ({ui,toast:setNotice}),[]);
   useEffect(() => {
     const controller = new AbortController(); let disposed = false; const timer = setTimeout(() => controller.abort(),15000);
@@ -40,19 +42,20 @@ export default function MenuFormDialog({request, onClose}: {request: MenuFormReq
   },[item.formSlug,attempt]);
   async function submit(values: Record<string,unknown>, idempotencyKey:string) {
     if (preview || pending.current) throw Error('A submission is already in progress or this is a preview.');
+    const verificationHeaders=verification.headers();
     pending.current = true; setBusy(true);
     try {
-      const response = await fetch(`/api/forms/${encodeURIComponent(item.formSlug!)}/submit`,{method:'POST',credentials:'omit',redirect:'error',signal:AbortSignal.timeout(25000),headers:{'Content-Type':'application/json','Idempotency-Key':idempotencyKey},body:JSON.stringify(values)});
+      const response = await fetch(`/api/forms/${encodeURIComponent(item.formSlug!)}/submit`,{method:'POST',credentials:'omit',redirect:'error',signal:AbortSignal.timeout(25000),headers:{'Content-Type':'application/json','Idempotency-Key':idempotencyKey,...verificationHeaders},body:JSON.stringify(values)});
       const result = await readJson(response,16384);
       if (!response.ok || typeof result.submissionId !== 'string') throw Error('We could not confirm receipt. Your entries are retained; please retry.');
       return {message:typeof result.message === 'string' ? result.message : 'Your inquiry has been received.'};
-    } finally {pending.current = false; setBusy(false);}
+    } catch(error) {verification.reset();throw error;} finally {pending.current = false; setBusy(false);}
   }
   return <Dialog open onOpenChange={open => {if (!open && !pending.current) onClose();}}><DialogContent className="max-h-[85dvh] w-[calc(100%-2rem)] overflow-y-auto" onCloseAutoFocus={event => {event.preventDefault();if (opener.isConnected && opener.getClientRects().length) opener.focus();else if (fallback?.isConnected && fallback.getClientRects().length) fallback.focus();else document.querySelector<HTMLButtonElement>('[data-p1-menu-trigger]')?.focus();}}>
     <DialogTitle>{item.modalTitle || form?.name || item.label}</DialogTitle>
     <DialogDescription>{item.modalDescription || 'Complete this form to contact P1.'}</DialogDescription>
-    {preview && <p role="status">Preview only. Submissions are disabled.</p>}
-    {error ? <div role="alert"><p>{error}</p><Button onClick={() => setAttempt(value => value+1)}>Try again</Button></div> : <FormPresentationHostProvider value={host}>{!accepted && <fieldset disabled={busy} aria-busy={busy}><FormPresentation slug={item.formSlug!} form={form} isLoading={loading} preview={preview} submit={submit} showHeader={false} onSubmitSuccess={() => setAccepted(true)} /></fieldset>}</FormPresentationHostProvider>}
+    {!accepted && verification.control}
+    {error ? <div role="alert"><p>{error}</p><Button onClick={() => setAttempt(value => value+1)}>Try again</Button></div> : <FormPresentationHostProvider value={host}>{!accepted && <><fieldset disabled={busy} aria-busy={busy}><FormPresentation slug={item.formSlug!} form={form} isLoading={loading} preview={preview} submit={submit} showHeader={false} onSubmitSuccess={() => setAccepted(true)} /></fieldset></>}</FormPresentationHostProvider>}
     {notice && <div role={notice.variant === 'destructive' ? 'alert' : 'status'} className="rounded border p-3"><strong>{notice.title}</strong><p>{notice.description}</p></div>}
   </DialogContent></Dialog>;
 }

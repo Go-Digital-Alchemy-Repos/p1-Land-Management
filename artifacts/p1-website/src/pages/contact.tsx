@@ -1,3 +1,4 @@
+import {usePublicFormVerification,isPublicFormPreview} from "@/components/forms/PublicFormVerification";
 import { PHONE_DISPLAY, PHONE_HREF } from "@/lib/site";
 import { acquisitionSource, trackAcquisition } from "@/lib/acquisition";
 import { useEffect, useRef, useState } from "react";
@@ -45,6 +46,7 @@ const FAQS = [
 
 export default function Contact() {
   const [submitted, setSubmitted] = useState(false);
+  const verification=usePublicFormVerification(isPublicFormPreview() || submitted);
 
   const formStarted = useRef(false);
   const [pending, setPending] = useState(false);
@@ -56,6 +58,8 @@ export default function Contact() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (pending) return;
+    let verificationHeaders:Record<string,string>;
+    try {verificationHeaders=verification.headers();} catch(error){setError(error instanceof Error?error.message:"Complete verification first.");return;}
     const fd = new FormData(e.currentTarget);
     const get = (key: string) => String(fd.get(key) || "").trim();
     const payload = JSON.stringify({
@@ -72,7 +76,7 @@ export default function Contact() {
     setError("");
     try {
       const response = await fetch("/api/forms/p1-estimate/submit", {
-        method: "POST", headers: { "Content-Type": "application/json", "Idempotency-Key": request.current.key },
+        method: "POST", headers: { "Content-Type": "application/json", ...verificationHeaders, "Idempotency-Key": request.current.key },
         body: payload, signal: AbortSignal.timeout(20000),
       });
       const receipt = await response.json().catch(() => null);
@@ -80,6 +84,7 @@ export default function Contact() {
       setSubmitted(true);
       request.current = null;
     } catch (cause) {
+      verification.reset();
       trackAcquisition("form_error");
       setError("We couldn’t confirm your request. Please try again or call us. Your information is still here.");
     } finally {
@@ -223,7 +228,8 @@ export default function Contact() {
 
                 <p className="text-sm text-secondary/80">We use these details to respond to your project inquiry. Please avoid including sensitive information.</p>
                 {error && <p role="alert" className="text-destructive font-medium">{error}</p>}
-                <Button disabled={pending} type="submit" size="lg" className="w-full text-lg h-14 font-bold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg">
+                {verification.control}
+                <Button disabled={pending || !verification.ready} type="submit" size="lg" className="w-full text-lg h-14 font-bold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg">
                   {pending ? "Sending request…" : "Get a Free Site Assessment"}
                 </Button>
               </form>

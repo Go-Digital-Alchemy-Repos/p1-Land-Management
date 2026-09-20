@@ -38,9 +38,9 @@ export function inquiryAttempt(previous: { payload: string; key: string } | null
   const serialized = JSON.stringify(payload);
   return previous?.payload === serialized ? previous : { payload: serialized, key: newKey() };
 }
-export async function sendCommercialInquiry(attempt: { payload: string; key: string }, transport: typeof fetch = fetch): Promise<string> {
+export async function sendCommercialInquiry(attempt: { payload: string; key: string }, transport: typeof fetch = fetch, verificationHeaders: Record<string,string> = {}): Promise<string> {
   const response = await transport('/api/forms/p1-commercial-assessment/submit', {
-    method: 'POST', headers: { 'Content-Type': 'application/json', 'Idempotency-Key': attempt.key },
+    method: 'POST', headers: { 'Content-Type': 'application/json', 'Idempotency-Key': attempt.key, ...verificationHeaders },
     body: attempt.payload, signal: AbortSignal.timeout(20_000),
   });
   const receipt = await response.json().catch(() => null);

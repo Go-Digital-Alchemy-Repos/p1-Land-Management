@@ -1,3 +1,4 @@
+import {usePublicFormVerification,isPublicFormPreview} from "@/components/forms/PublicFormVerification";
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { Link } from 'wouter';
 import { Layout } from '@/components/layout/Layout';
@@ -29,6 +30,7 @@ function AssessmentForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [failure, setFailure] = useState('');
   const [receipt, setReceipt] = useState('');
+  const verification=usePublicFormVerification(isPublicFormPreview() || Boolean(receipt));
   const attempt = useRef<{ payload: string; key: string } | null>(null);
   const started = useRef(false);
   const inFlight = useRef(false);
@@ -37,14 +39,16 @@ function AssessmentForm() {
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (inFlight.current) return;
+    let verificationHeaders:Record<string,string>;
+    try {verificationHeaders=verification.headers();} catch(error){setFailure(error instanceof Error?error.message:"Complete verification first.");return;}
     const payload = commercialPayload(new FormData(event.currentTarget), acquisitionSource());
     const invalid = commercialErrors(payload);
     setErrors(invalid); setFailure('');
     if (Object.keys(invalid).length) { trackAcquisition('form_error'); return; }
     attempt.current = inquiryAttempt(attempt.current, payload, () => crypto.randomUUID());
     inFlight.current = true; setBusy(true);
-    try { setReceipt(await sendCommercialInquiry(attempt.current)); }
-    catch (error) { setFailure(error instanceof Error && error.name !== 'TimeoutError' ? error.message : 'We could not confirm receipt before the connection timed out. Your details are still here; retrying the same request is safe.'); trackAcquisition('form_error'); }
+    try { setReceipt(await sendCommercialInquiry(attempt.current, fetch, verificationHeaders)); }
+    catch (error) { verification.reset(); setFailure(error instanceof Error && error.name !== 'TimeoutError' ? error.message : 'We could not confirm receipt before the connection timed out. Your details are still here; retrying the same request is safe.'); trackAcquisition('form_error'); }
     finally { inFlight.current = false; setBusy(false); }
   }
   if (receipt) return <div ref={outcome} tabIndex={-1} role="status" className="rounded-sm border-2 border-primary bg-white p-6 md:p-10">
@@ -81,7 +85,8 @@ function AssessmentForm() {
     <div><label htmlFor="commercial-message" className="font-semibold">Anything else we should know? (optional)</label><textarea id="commercial-message" name="message" rows={4} maxLength={5000} className={fieldClass} aria-describedby="commercial-privacy" /><p id="commercial-privacy" className="mt-2 text-sm text-slate-600">Share the need and useful timing. Please do not include access codes, facility-security plans or sensitive documents.</p></div>
     <div hidden aria-hidden="true"><label htmlFor="commercial-website">Leave this field empty</label><input id="commercial-website" name="website" tabIndex={-1} autoComplete="off" /></div>
     <p className="text-sm text-slate-600">We'll use these details to follow up on your inquiry and arrange a free site assessment. We'll confirm access and available dates with you.</p>
-    <button disabled={busy} type="submit" className={`${ctaClass} w-full disabled:opacity-70`}>{busy ? 'Sending your request…' : 'Get a Free Site Assessment'}</button>
+    {verification.control}
+    <button disabled={busy || !verification.ready} type="submit" className={`${ctaClass} w-full disabled:opacity-70`}>{busy ? 'Sending your request…' : 'Get a Free Site Assessment'}</button>
     <p className="text-sm text-slate-600">Prefer to talk? <a className="font-semibold text-primary underline" href={PHONE_HREF}>{PHONE_DISPLAY}</a></p>
   </form>;
 }

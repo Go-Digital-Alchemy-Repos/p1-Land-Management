@@ -1,3 +1,4 @@
+import { requirePublicFormVerification } from "../services/turnstile.service";
 import { Router } from "express";
 import { storage } from "../storage/index";
 import { asyncHandler } from "../middleware/error-handler";
@@ -36,6 +37,7 @@ function formatEventDate(date: Date | string): string {
 
 router.post(
   "/:id/register-guest",
+  requirePublicFormVerification,
   asyncHandler(async (req, res) => {
     const eventId = paramString(req.params.id);
 

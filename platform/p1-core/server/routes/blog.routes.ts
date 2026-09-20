@@ -1,3 +1,4 @@
+import { requirePublicFormVerification } from "../services/turnstile.service";
 import { Router } from "express";
 import crypto from "crypto";
 import { storage } from "../storage/index";
@@ -73,6 +74,7 @@ router.get(
 
 router.post(
   "/:slug/comments",
+  requirePublicFormVerification,
   optionalAuth,
   asyncHandler(async (req, res) => {
     const slug = req.params.slug as string;

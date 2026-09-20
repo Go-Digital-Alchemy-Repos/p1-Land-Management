@@ -1,3 +1,4 @@
+import { requirePublicFormVerification } from "../services/turnstile.service";
 import { getBaseUrl } from "../utils/route-helpers";
 import { Router } from "express";
 import { asyncHandler } from "../middleware/error-handler";
@@ -7,6 +8,7 @@ const router = Router();
 
 router.post(
   "/",
+  requirePublicFormVerification,
   asyncHandler(async (req, res) => {
     const baseUrl = getBaseUrl(req);
     const result = await submitManagedFormBySlug("contact-form", req.body, {
