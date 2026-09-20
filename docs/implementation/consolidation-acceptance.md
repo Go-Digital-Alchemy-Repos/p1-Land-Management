@@ -519,3 +519,7 @@ historical “no real CRM import” statements only for this exact bounded batch
 Permanent source ownership, account policy, pipeline parity and retirement remain
 open. The prior documentation-only revision22bfe064 also reached SUCCESS on all
 three Railway services.
+
+## Standard estimate delivery — September 20
+
+Additive receiver `519c10b8` verified SUCCESS before enabling Core producer. Durable estimate handoff and queue visibility implemented; 25 focused and 23 actual PostgreSQL tests pass, as do affected builds/typechecks. Producer deployment verification pending; no historical replay. See `estimate-dashboard-intake.md`.

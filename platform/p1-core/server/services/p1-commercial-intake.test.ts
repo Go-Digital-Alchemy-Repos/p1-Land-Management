@@ -121,6 +121,7 @@ describe("P1 managed intake integration", () => {
       website: "",
     });
     const effects = mocks.createSubmissionWithEffects.mock.calls[0][1];
+    expect(effects).toEqual(expect.arrayContaining([expect.objectContaining({kind:"estimate_dashboard_intake",inquiry:expect.objectContaining({inquiryType:"general",email:"pat@example.test"})})]));
     expect(
       effects
         .filter((effect: { kind: string }) => effect.kind === "admin_notification")
@@ -128,6 +129,11 @@ describe("P1 managed intake integration", () => {
     ).toEqual(["owner-one@example.test", "owner-two@example.test"]);
     expect(mocks.getFormNotificationUsers).not.toHaveBeenCalled();
     expect(mocks.getUsersByRole).not.toHaveBeenCalled();
+  });
+  it("rejects oversized UTF-8 estimates before durable acceptance", async () => {
+    mocks.getPublicBySlug.mockResolvedValue({...form,id:"estimate-form",slug:"p1-estimate",name:"Estimate"});
+    await expect(submitManagedFormBySlug("p1-estimate", {name:"Pat",email:"pat@example.test",address:"Test",message:"Estimate",attribution:Object.fromEntries(Array.from({length:12},(_,i)=>["key"+i,"界".repeat(2048)]))})).rejects.toMatchObject({statusCode:400});
+    expect(mocks.createSubmissionWithEffects).not.toHaveBeenCalled();
   });
   it("returns the storage duplicate outcome with the original receipt", async () => {
     mocks.createSubmissionWithEffects.mockResolvedValue({

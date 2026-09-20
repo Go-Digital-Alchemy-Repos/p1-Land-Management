@@ -1,6 +1,6 @@
 import { z } from "zod";
 import {
-  commercialIntakeEventSchema,
+  websiteIntakeEventSchema,
   type CommercialIntakeResult,
 } from "../../shared/commercial-intake-contract";
 import { randomUUID } from "node:crypto";
@@ -396,7 +396,7 @@ export class FormsStorage {
           ),
         )
         .for("update");
-      if (!job || job.payload.kind !== "commercial_dashboard_intake")
+      if (!job || (job.payload.kind !== "commercial_dashboard_intake" && job.payload.kind !== "estimate_dashboard_intake"))
         throw new Error("commercial_claim_lost");
       if (job.deliveryPayload) return job.deliveryPayload;
       const [submission] = await tx
@@ -404,15 +404,16 @@ export class FormsStorage {
         .from(cmsFormSubmissions)
         .where(eq(cmsFormSubmissions.id, job.submissionId));
       if (!submission?.createdAt) throw new Error("commercial_submission_unavailable");
-      const event = commercialIntakeEventSchema.parse({
-        eventType: "p1.commercial_inquiry.accepted",
+      const estimate = job.payload.kind === "estimate_dashboard_intake";
+      const event = websiteIntakeEventSchema.parse({
+        eventType: estimate ? "p1.estimate_inquiry.accepted" : "p1.commercial_inquiry.accepted",
         schemaVersion: 1,
         eventId: job.id,
         source: "p1-core",
         sourceInstanceId,
         submissionId: submission.id,
         acceptedAt: submission.createdAt.toISOString(),
-        formSlug: "p1-commercial-assessment",
+        formSlug: estimate ? "p1-estimate" : "p1-commercial-assessment",
         inquiry: job.payload.inquiry,
       });
       const frozen = JSON.stringify(event);
@@ -448,7 +449,7 @@ export class FormsStorage {
         .strict()
         .parse(JSON.parse(Buffer.from(query.cursor, "base64url").toString("utf8")));
     }
-    const commercial = sql`${cmsFormEffectJobs.payload}->>'kind' = 'commercial_dashboard_intake'`;
+    const commercial = sql`${cmsFormEffectJobs.payload}->>'kind' IN ('commercial_dashboard_intake','estimate_dashboard_intake')`;
     const scope =
       query.status === "completed"
         ? sql`(${commercial} AND ${cmsFormEffectJobs.status} = 'completed')`

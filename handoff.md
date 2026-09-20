@@ -1,3 +1,7 @@
+## Estimate producer release — September 20
+
+Receiver `519c10b8` is SUCCESS on all three Railway services; dashboard health is OK. The new estimate producer/worker and native delivery-queue label are now ready for release with 25 focused tests, 6 Dashboard PostgreSQL tests and 17 Core PostgreSQL tests passing. All three typechecks/builds passed. No historical backfill and no production test notifications. Follow the deployment handles for this next commit; full consolidation remains incomplete.
+
 ## Estimate delivery receiver-first release — September 20
 
 The additive estimate ingress receiver and mirrored contracts are ready for the first release. Core producer/worker changes are validated locally but must remain uncommitted until receiver deployment succeeds. See `docs/implementation/estimate-dashboard-intake.md` for tests, compatibility, duplicate safeguards and rollback ordering. No production submissions were created for testing.

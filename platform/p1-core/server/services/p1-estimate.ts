@@ -13,7 +13,7 @@ export const p1EstimateSchema = z
     services: z.array(z.string().trim().min(1).max(100)).max(12).default([]),
     message: z.string().trim().min(1).max(5000),
     attribution: z
-      .record(z.string().max(2048))
+      .record(z.string().max(64), z.string().max(2048))
       .refine((value) => Object.keys(value).length <= 12)
       .optional(),
     website: z.literal("").optional(),

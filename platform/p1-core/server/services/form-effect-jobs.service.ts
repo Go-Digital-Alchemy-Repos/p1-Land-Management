@@ -21,7 +21,7 @@ async function applyJob(job: CmsFormEffectJob, clock: () => Date) {
     const page = await getDashboardNotificationSubjects(payload);
     return storage.forms.completeNotificationDispatch(job, page.subjects, page.nextCursor, clock);
   }
-  if (payload.kind === "commercial_dashboard_intake") {
+  if (payload.kind === "commercial_dashboard_intake" || payload.kind === "estimate_dashboard_intake") {
     const result = await deliverCommercialHandoff(job);
     return storage.forms.completeEffectJob(job.id, token, "completed", clock, undefined, result);
   }

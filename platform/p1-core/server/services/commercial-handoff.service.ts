@@ -4,7 +4,7 @@ import { storage } from "../storage";
 import type { CmsFormEffectJob } from "@shared/schema";
 import {
   COMMERCIAL_INGRESS_PATH,
-  commercialIntakeEventSchema,
+  websiteIntakeEventSchema,
   commercialIntakeResultSchema,
   commercialSignatureInput,
 } from "../../shared/commercial-intake-contract";
@@ -48,7 +48,7 @@ export async function deliverCommercialHandoff(job: CmsFormEffectJob) {
     job.processingToken,
     config.source,
   );
-  const event = commercialIntakeEventSchema.parse(JSON.parse(bytes));
+  const event = websiteIntakeEventSchema.parse(JSON.parse(bytes));
   if (event.sourceInstanceId !== config.source)
     throw new CommercialHandoffError("commercial_source_changed");
   const sentAt = String(Math.floor(Date.now() / 1000));

@@ -14,6 +14,7 @@ const message = (error: unknown) =>
   "Delivery request failed";
 const labels: Record<string, string> = {
   commercial_dashboard_intake: "Commercial inquiry handoff",
+  estimate_dashboard_intake: "Estimate inquiry handoff",
   dashboard_form_notification: "Team notification",
   dashboard_form_notification_dispatch: "Team notification distribution",
   admin_notification: "Website notification",
@@ -193,7 +194,7 @@ export function FormDeliveryQueue({ close }: { close: () => void }) {
     <section className="form-manager" aria-label="Form delivery monitoring">
       <h2>Form delivery monitoring</h2>
       <p>
-        Review commercial inquiry handoffs and failed delivery jobs. Accepted
+        Review website inquiry handoffs and failed delivery jobs. Accepted
         submissions remain saved while delivery is retried.
       </p>
       <button onClick={close}>Back to forms</button>
@@ -207,7 +208,7 @@ export function FormDeliveryQueue({ close }: { close: () => void }) {
           }
         >
           <option value="actionable">
-            Pending commercial handoffs and failed deliveries
+            Pending inquiry handoffs and failed deliveries
           </option>
           <option value="completed">Completed commercial handoffs</option>
           <option value="all">All monitored deliveries</option>

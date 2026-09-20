@@ -1,3 +1,4 @@
+import { estimateInquirySnapshot } from "./estimate-inquiry-snapshot";
 import { commercialInquirySnapshot } from "./commercial-inquiry-snapshot";
 import { p1CommercialAssessmentSchema } from "./p1-commercial-assessment";
 import { p1EstimateSchema } from "./p1-estimate";
@@ -364,6 +365,13 @@ async function buildFormEffects(form: CmsForm, data: Record<string, unknown>, ba
   const effects: CmsFormEffectPayload[] = [];
   if (form.slug === "p1-commercial-assessment") {
     effects.push({ kind: "commercial_dashboard_intake", inquiry: commercialInquirySnapshot(data) });
+  }
+  if (form.slug === "p1-estimate") {
+    try {
+      effects.push({ kind: "estimate_dashboard_intake", inquiry: estimateInquirySnapshot(data) });
+    } catch {
+      throw new AppError("Please shorten your estimate request fields and try again.", 400);
+    }
   }
   if (settings.createCrmLead) effects.push({ kind: "crm_intake", formName: form.name });
   const contact = {

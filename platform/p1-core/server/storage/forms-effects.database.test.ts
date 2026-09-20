@@ -474,6 +474,18 @@ describe.skipIf(!testUrl)("managed form outbox disposable PostgreSQL", () => {
     expect(await count("cms_form_effect_jobs")).toBe(2);
     expect(await count("crm_leads")).toBe(2);
   });
+  it("freezes estimate delivery identity and keeps it observable until acknowledged", async () => {
+    const { estimateInquirySnapshot } = await import("../services/estimate-inquiry-snapshot");
+    const inquiry=estimateInquirySnapshot({name:"Pat",email:"pat@example.test",address:"Test site",message:"Estimate request"});
+    await forms.createSubmissionWithEffects({formId,data:inquiry,idempotencyKey:"estimate-bridge"},[{kind:"estimate_dashboard_intake",inquiry}]);
+    const job=(await forms.claimNextEffectJob(await readyTime()))!;
+    const frozen=await forms.freezeCommercialDelivery(job.id,job.processingToken!,"e3c6e038-97e6-4e72-889b-9d32ef5f122a");
+    expect(JSON.parse(frozen)).toMatchObject({eventType:"p1.estimate_inquiry.accepted",formSlug:"p1-estimate",eventId:job.id,submissionId:job.submissionId,inquiry});
+    expect(await forms.freezeCommercialDelivery(job.id,job.processingToken!,"9a52a5b0-5773-4718-bd07-5084957f1d85")).toBe(frozen);
+    const jobs=await forms.listDeliveryJobs({status:"all"});
+    expect(JSON.stringify(jobs)).toContain("estimate_dashboard_intake");
+    await expect(forms.freezeCommercialDelivery(job.id,"wrong-token","e3c6e038-97e6-4e72-889b-9d32ef5f122a")).rejects.toThrow("commercial_claim_lost");
+  });
   it("freezes commercial delivery identity once and commits acknowledgement with the active claim", async () => {
     const inquiry = {
       inquiryType: "commercial_site_assessment" as const,

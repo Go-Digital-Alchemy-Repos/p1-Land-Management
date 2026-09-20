@@ -1,4 +1,4 @@
-import type { CommercialInquiry, CommercialIntakeResult } from "../commercial-intake-contract";
+import type { EstimateInquiry, CommercialInquiry, CommercialIntakeResult } from "../commercial-intake-contract";
 import { sql } from "drizzle-orm";
 import {
   pgTable,
@@ -219,6 +219,7 @@ export type CmsFormEffectPayload =
   | DashboardFormNotification
   | DashboardFormNotificationDispatch
   | { kind: "commercial_dashboard_intake"; inquiry: CommercialInquiry }
+  | { kind: "estimate_dashboard_intake"; inquiry: EstimateInquiry }
   | { kind: "crm_intake"; formName: string }
   | { kind: "contact_message" }
   | { kind: "mailchimp_sync"; email: string; firstName: string; lastName: string; tag: string }
