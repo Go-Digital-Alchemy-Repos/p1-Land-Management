@@ -1,6 +1,5 @@
 import websiteBackups from "./business-center-backups.routes";
 import websiteIntegrationsRouter from "./business-center-integrations.routes";
-import clientStackOnboarding from "./admin/client-stack-onboarding.routes";
 import { requireWebsiteOwner } from "../middleware/website-owner";
 import websiteEmailTemplates from "./business-center-email-templates.routes";
 import websiteDocs from "./business-center-docs.routes";
@@ -86,7 +85,6 @@ router.get("/notification-forms", async (req, res, next) => {
     next(error);
   }
 });
-router.use("/website-system/onboarding", requireWebsiteOwner, clientStackOnboarding);
 router.use("/website-system/backups", websiteBackups);
 router.use("/website-system/integrations", websiteIntegrationsRouter);
 router.use("/website-system/email-templates", websiteEmailTemplates);
