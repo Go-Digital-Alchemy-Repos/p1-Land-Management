@@ -174,6 +174,46 @@ test(
         ),
         1,
       );
+      // A cancelled term can continue only through a distinct approved estimate.
+      // Concurrent successor creation must retain a single unambiguous chain.
+      const predecessorBefore = (
+        await pool.query("SELECT to_jsonb(a) AS row FROM service_agreement a WHERE id=$1", [activeId])
+      ).rows[0].row;
+      const successorEstimate = randomUUID();
+      await pool.query(
+        "INSERT INTO estimate(id,property_id,title,amount_cents,scope,status) VALUES($1,$2,'Approved successor',5000,'New approved scope','approved')",
+        [successorEstimate, property],
+      );
+      const successor = {
+        ...body,
+        id: randomUUID(),
+        estimateId: successorEstimate,
+        predecessorId: activeId,
+        terms: revised,
+      };
+      await assert.rejects(
+        createServiceAgreement(actor, { ...successor, estimateId: estimate }),
+        /new approved estimate/,
+      );
+      await assert.rejects(
+        createServiceAgreement(actor, { ...successor, terms: body.terms }),
+        /prior effective term/,
+      );
+      const candidates = [successor, { ...successor, id: randomUUID() }];
+      const successorResults = await Promise.allSettled(
+        candidates.map((candidate) => createServiceAgreement(actor, candidate)),
+      );
+      assert.equal(successorResults.filter((r) => r.status === "fulfilled").length, 1);
+      const rejected = successorResults.find((r) => r.status === "rejected");
+      assert(rejected?.status === "rejected" && rejected.reason.status === 409);
+      const accepted = candidates[successorResults.findIndex((r) => r.status === "fulfilled")];
+      assert.equal((await createServiceAgreement(actor, accepted)).id, accepted.id);
+      assert.equal((await activateServiceAgreement(actor, accepted.id, { version: 1 })).status, "active");
+      assert.equal((await pool.query("SELECT count(*)::int n FROM service_agreement WHERE predecessor_id=$1", [activeId])).rows[0].n, 1);
+      assert.deepEqual(
+        (await pool.query("SELECT to_jsonb(a) AS row FROM service_agreement a WHERE id=$1", [activeId])).rows[0].row,
+        predecessorBefore,
+      );
       const emptyRecurrence = randomUUID(),
         emptyEstimate = randomUUID();
       await pool.query(
