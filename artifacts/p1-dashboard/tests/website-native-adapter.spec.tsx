@@ -237,3 +237,26 @@ it("provides one heading for content selection and selected-editor loading", asy
   ).toEqual(["Website Content"]);
   expect(host.textContent).toContain("Loading website editor…");
 });
+
+it.each([false, true])(
+  "archives owned Blog fields and gates Blog link: %s",
+  async (canUseBlog) => {
+    state.server.ownedBlog = {
+      postId: "post-one",
+      sourceSlug: "land-clearing-cost-per-acre-south-carolina",
+    };
+    await act(async () =>
+      root.render(<WebsiteEditor canUseBlog={canUseBlog} />),
+    );
+    expect(host.textContent).toContain("This article is managed in Blog");
+    expect(host.querySelector("fieldset")!.disabled).toBe(true);
+    expect(
+      host.querySelector('a[href="/marketing/content/blog?post=post-one"]') !==
+        null,
+    ).toBe(canUseBlog);
+    await click("Save draft");
+    await click("Publish");
+    expect(state.api.saveWebsiteContentDraft).not.toHaveBeenCalled();
+    expect(state.api.publishWebsiteContent).not.toHaveBeenCalled();
+  },
+);

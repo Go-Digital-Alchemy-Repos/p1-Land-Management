@@ -1,3 +1,24 @@
+## Atomic Blog import and editor-ownership candidate — September 19
+
+The internal five-article importer, source admission fence and post-transfer
+Website editor guard are implemented. See `docs/implementation/blog-static-import.md`.
+No production apply entry point exists and no articles/media were imported.
+Parent independently reran27 new source/import/guard tests and36 existing
+publication/cover/staging tests, all passing; the guard3 were rerun with the correct
+dedicated database variable after the initial combined command skipped them.
+Read-only preparation tools16/16 pass. Agent UI tests Core23/native6 and Core,
+dashboard/API-package typechecks pass; parent Core clean typecheck and Core/dashboard
+builds pass. Independent importer/lock-order review found no confirmed blocker.
+
+Next: build a privileged apply wrapper that verifies exact reviewed artifact bytes
+and constructs the plan, obtain fresh capture/source-row/deployment evidence,
+resolve the explicit historical-date policy, rehearse populated restore, then
+perform article transfer and browser publication/preview/recovery acceptance.
+Source freeze now uses READ COMMITTED + Blog advisory -> source SHARE -> media
+registration lock, with5s lock timeout and no provider I/O inside the final DB
+transaction. Do not confuse this tested internal foundation with completed Blog
+or Marketing parity. Broader goal remains active and retained admin stays available.
+
 ## Verified responsive-image foundation release — September 19
 
 Runtime `3a15d365ca68b9c1fff0b9335a6bbab4352f2fda` pushed to main/task branch.

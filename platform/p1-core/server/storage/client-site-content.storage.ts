@@ -1,3 +1,4 @@
+import { assertClientSiteBlogWritable } from "../services/client-site-blog-ownership.service";
 import { and, desc, eq } from "drizzle-orm";
 import { db } from "../db";
 import {
@@ -22,7 +23,15 @@ export interface ClientSiteContentIdentity {
 
 export class ClientSiteContentStorage {
   listMediaUsage() {
-    return db.select({id:clientSiteContent.id,routeId:clientSiteContent.routeId,componentKey:clientSiteContent.componentKey,draftContent:clientSiteContent.draftContent,publishedContent:clientSiteContent.publishedContent}).from(clientSiteContent);
+    return db
+      .select({
+        id: clientSiteContent.id,
+        routeId: clientSiteContent.routeId,
+        componentKey: clientSiteContent.componentKey,
+        draftContent: clientSiteContent.draftContent,
+        publishedContent: clientSiteContent.publishedContent,
+      })
+      .from(clientSiteContent);
   }
 
   get(identity: ClientSiteContentIdentity): Promise<ClientSiteContent | undefined> {
@@ -43,6 +52,7 @@ export class ClientSiteContentStorage {
     kind: "draft-save" | "restore" = "draft-save",
   ): Promise<ClientSiteContent> {
     return db.transaction(async (tx) => {
+      await assertClientSiteBlogWritable(tx, identity);
       const existing = await tx.query.clientSiteContent.findFirst({
         where: and(
           eq(clientSiteContent.stackId, identity.stackId),
@@ -98,6 +108,7 @@ export class ClientSiteContentStorage {
     userId: string,
   ): Promise<ClientSiteContent> {
     return db.transaction(async (tx) => {
+      await assertClientSiteBlogWritable(tx, identity);
       const existing = await tx.query.clientSiteContent.findFirst({
         where: and(
           eq(clientSiteContent.stackId, identity.stackId),

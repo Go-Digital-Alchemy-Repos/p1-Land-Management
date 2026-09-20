@@ -1,3 +1,4 @@
+import type { OwnedBlog } from "./client-site-blog-ownership.service";
 import { createHash } from "node:crypto";
 import path from "node:path";
 import { validateClientSiteComponentContent } from "@shared/client-site-content-contract";
@@ -27,7 +28,8 @@ export function resolveClientSiteComponent(
 ) {
   const route = manifest.routes.find((candidate) => candidate.id === routeId);
   if (!route) throw new Error("Client site route is not declared");
-  if (componentKey === "site-chrome" && routeId !== "home") throw new Error("Client site shared content belongs to home");
+  if (componentKey === "site-chrome" && routeId !== "home")
+    throw new Error("Client site shared content belongs to home");
   const component = manifest.puck.editableComponents.find(
     (candidate) => candidate.key === componentKey,
   );
@@ -54,9 +56,11 @@ export function serializeAdminContent(
   routeId: string,
   componentKey: string,
   record?: ClientSiteContent,
+  ownedBlog?: OwnedBlog,
 ) {
   const { route, component } = resolveClientSiteComponent(manifest, routeId, componentKey);
   return {
+    ...(ownedBlog ? { ownedBlog } : {}),
     stackId: manifest.client.stackId,
     route,
     component,

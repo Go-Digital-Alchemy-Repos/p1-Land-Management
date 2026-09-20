@@ -5,11 +5,13 @@
  * Shared field, scheduling and commercial inbox contract. Other office routes remain documented in docs/dashboard/API.md.
  * OpenAPI spec version: 0.1.0
  */
-import type { WebsiteContentComponent } from './websiteContentComponent';
-import type { WebsiteContentDraftContent } from './websiteContentDraftContent';
-import type { WebsiteContentRoute } from './websiteContentRoute';
+import type { WebsiteContentComponent } from "./websiteContentComponent";
+import type { WebsiteContentDraftContent } from "./websiteContentDraftContent";
+import type { WebsiteContentRoute } from "./websiteContentRoute";
 
 export interface WebsiteContent {
+  /** Permanent Blog ownership; legacy structured fields are archived. */
+  ownedBlog?: { postId: string; sourceSlug: string };
   stackId: string;
   route: WebsiteContentRoute;
   component: WebsiteContentComponent;

@@ -138,9 +138,11 @@ function Preview({
 function ContentEditor({
   entry,
   canUseMedia,
+  canUseBlog,
 }: {
   entry: WebsiteContentEntry;
   canUseMedia: boolean;
+  canUseBlog: boolean;
 }) {
   const [imageField, setImageField] = useState<string | null>(null);
   const picker = useRef<HTMLDialogElement>(null);
@@ -201,8 +203,8 @@ function ContentEditor({
     };
   }, []);
   const working = useRef(false);
-  const perform = async (work: () => Promise<void>) => {
-    if (working.current) return;
+  const perform = async (work: () => Promise<void>, mutation = true) => {
+    if (working.current || (mutation && data?.ownedBlog)) return;
     working.current = true;
     setBusy(true);
     setImageField(null);
@@ -237,7 +239,7 @@ function ContentEditor({
       !dirty ||
       window.confirm("Discard local edits and reload the latest revision?")
     )
-      void perform(load);
+      void perform(load, false);
   };
   return (
     <section
@@ -303,6 +305,19 @@ function ContentEditor({
                 <p role="alert">{error} Your unsaved content is retained.</p>
               )}
               {notice && <p role="status">{notice}</p>}
+              {data.ownedBlog && (
+                <p role="status">
+                  This article is managed in Blog. These Website fields and
+                  revisions are archived and no longer affect the article.{" "}
+                  {canUseBlog && (
+                    <a
+                      href={`/marketing/content/blog?post=${encodeURIComponent(data.ownedBlog.postId)}`}
+                    >
+                      Open Blog editor
+                    </a>
+                  )}
+                </p>
+              )}
             </>
           }
           toolbar={
@@ -317,7 +332,9 @@ function ContentEditor({
           )}
           revisions={revisions}
           valueAt={(path) => valueAt(content, path)}
-          onChange={(path, value) => setContent(setValue(content, path, value))}
+          onChange={(path, value) => {
+            if (!data.ownedBlog) setContent(setValue(content, path, value));
+          }}
           fieldTools={
             <label>
               Find a field
@@ -330,13 +347,13 @@ function ContentEditor({
             </label>
           }
           fieldAction={(field) =>
-            field.type === "image" && canUseMedia ? (
+            field.type === "image" && canUseMedia && !data.ownedBlog ? (
               <button type="button" onClick={() => setImageField(field.path)}>
                 Choose image for {field.label}
               </button>
             ) : null
           }
-          busy={busy}
+          busy={busy || !!data.ownedBlog}
           saveDisabled={!dirty && data.draftRevision > 0}
           publishDisabled={
             dirty ||
@@ -395,7 +412,9 @@ function ContentEditor({
           preview={
             <>
               <p className="text-sm text-muted-foreground">
-                Draft changes appear here. Publishing is a separate action.
+                {data.ownedBlog
+                  ? "This preview shows the Blog-managed article; archived Website fields do not change it."
+                  : "Draft changes appear here. Publishing is a separate action."}
               </p>
               <Preview data={data} content={content} />
             </>
@@ -416,8 +435,10 @@ function ContentEditor({
 
 export default function WebsiteEditor({
   canUseMedia = false,
+  canUseBlog = false,
 }: {
   canUseMedia?: boolean;
+  canUseBlog?: boolean;
 }) {
   const [entries, setEntries] = useState<WebsiteContentEntry[]>([]),
     [selected, setSelected] = useState<WebsiteContentEntry | null>(null),
@@ -482,6 +503,7 @@ export default function WebsiteEditor({
             key={`${selected.routeId}:${selected.componentKey}`}
             entry={selected}
             canUseMedia={canUseMedia}
+            canUseBlog={canUseBlog}
           />
         </>
       ) : (

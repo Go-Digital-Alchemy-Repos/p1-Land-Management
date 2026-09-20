@@ -1,3 +1,4 @@
+import { useAuth } from "@/hooks/use-auth";
 import { StructuredWebsiteEditorPresentation } from "@/components/shared/structured-website-editor-presentation";
 import { useRoute } from "wouter";
 import { useEffect, useMemo, useState, useRef } from "react";
@@ -16,6 +17,7 @@ import type { ClientSiteEditableComponent } from "@shared/client-site-content-co
 import type { ClientSiteContentRevision } from "@shared/schema";
 
 interface EditorPayload {
+  ownedBlog?: { postId: string; sourceSlug: string };
   stackId: string;
   route: { id: string; path: string };
   component: ClientSiteEditableComponent;
@@ -60,6 +62,7 @@ export default function ClientSiteContentEditorPage(): JSX.Element {
   const componentKey = params?.componentKey ?? "home-content";
   const endpoint = `/api/admin/client-site-content/${routeId}/${componentKey}`;
   const { toast } = useToast();
+  const { hasAdminPermission } = useAuth();
   const ownership = useRef({ endpoint });
   if (ownership.current.endpoint !== endpoint) ownership.current = { endpoint };
   const mounted = useRef(true);
@@ -99,8 +102,10 @@ export default function ClientSiteContentEditorPage(): JSX.Element {
       !changedEndpoint &&
       data &&
       JSON.stringify(contentRef.current) !== JSON.stringify(data.draftContent)
-    )
+    ) {
+      if (incomingData.ownedBlog) setData({ ...data, ownedBlog: incomingData.ownedBlog });
       return;
+    }
     setData(incomingData);
     setContent(incomingData.draftContent);
   }, [incomingData, endpoint]);
@@ -149,8 +154,14 @@ export default function ClientSiteContentEditorPage(): JSX.Element {
   };
   const save = useMutation({
     onMutate: () => ({ owner: ownership.current }),
-    mutationFn: () =>
-      apiRequest("PUT", `${endpoint}/draft`, { content, expectedRevision: data!.draftRevision }),
+    mutationFn: () => {
+      if (data?.ownedBlog)
+        throw Error("This article is managed in Blog. Archived Website fields are read-only.");
+      return apiRequest("PUT", `${endpoint}/draft`, {
+        content,
+        expectedRevision: data!.draftRevision,
+      });
+    },
     onSuccess: (_result, _variables, context) =>
       context && refreshAfterMutation("Draft saved", context.owner),
     onError: (cause: Error, _variables, context) =>
@@ -164,8 +175,11 @@ export default function ClientSiteContentEditorPage(): JSX.Element {
   });
   const publish = useMutation({
     onMutate: () => ({ owner: ownership.current }),
-    mutationFn: () =>
-      apiRequest("POST", `${endpoint}/publish`, { expectedRevision: data!.draftRevision }),
+    mutationFn: () => {
+      if (data?.ownedBlog)
+        throw Error("This article is managed in Blog. Archived Website fields are read-only.");
+      return apiRequest("POST", `${endpoint}/publish`, { expectedRevision: data!.draftRevision });
+    },
     onSuccess: (_result, _variables, context) =>
       context && refreshAfterMutation("Content published", context.owner),
     onError: (cause: Error, _variables, context) =>
@@ -179,10 +193,13 @@ export default function ClientSiteContentEditorPage(): JSX.Element {
   });
   const restore = useMutation({
     onMutate: () => ({ owner: ownership.current }),
-    mutationFn: (revision: number) =>
-      apiRequest("POST", `${endpoint}/revisions/${revision}/restore`, {
+    mutationFn: (revision: number) => {
+      if (data?.ownedBlog)
+        throw Error("This article is managed in Blog. Archived Website fields are read-only.");
+      return apiRequest("POST", `${endpoint}/revisions/${revision}/restore`, {
         expectedRevision: data!.draftRevision,
-      }),
+      });
+    },
     onSuccess: (_result, _variables, context) =>
       context && refreshAfterMutation("Revision restored as a new draft", context.owner),
     onError: (cause: Error, _variables, context) =>
@@ -209,13 +226,42 @@ export default function ClientSiteContentEditorPage(): JSX.Element {
           fields={data.component.fields}
           revisions={revisions}
           valueAt={(path) => getPath(content, path)}
-          onChange={(path, value) => setContent(setPath(content, path, value))}
+          onChange={(path, value) => {
+            if (!data.ownedBlog) setContent(setPath(content, path, value));
+          }}
           dirty={isDirty}
-          busy={save.isPending || publish.isPending || restore.isPending || reloading}
+          busy={
+            !!data.ownedBlog ||
+            save.isPending ||
+            publish.isPending ||
+            restore.isPending ||
+            reloading
+          }
           alerts={
-            error ? (
-              <p role="alert">{(error as Error).message}. Local content is retained.</p>
-            ) : null
+            <>
+              {error && <p role="alert">{(error as Error).message}. Local content is retained.</p>}
+              {data.ownedBlog && (
+                <p role="status">
+                  This article is managed in Blog. These Website fields and revisions are archived
+                  and no longer affect the article.{" "}
+                  {hasAdminPermission("content") && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={() =>
+                        unsavedChanges.confirmDiscardChanges(() =>
+                          window.location.assign(
+                            `/admin/cms/blog/${encodeURIComponent(data.ownedBlog!.postId)}`,
+                          ),
+                        )
+                      }
+                    >
+                      Open Blog editor
+                    </Button>
+                  )}
+                </p>
+              )}
+            </>
           }
           toolbar={
             <Button

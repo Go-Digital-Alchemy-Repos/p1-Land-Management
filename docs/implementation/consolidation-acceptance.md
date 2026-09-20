@@ -323,3 +323,13 @@ editorial rendering preserves hero/body/aside semantics and declared date precis
 Live health and Blog reads passed without production content mutation. Remaining:
 presentation editing controls, registered originals+responsive variants, genuine date/
 source review and atomic import acceptance. No full Blog/CMS parity claim yet.
+
+### Atomic Blog import foundation (September 19)
+
+Implemented internal reviewed importer and exact source fence, plus archived
+Website editor read-only routing once permanent Blog ownership exists.27 new
+source/import/guard checks,36 regression checks and16 review-tool checks passed
+in parent verification. Core/dashboard builds and Core/dashboard/API types passed.
+See `blog-static-import.md` for contracts, replay and explicit remaining gates.
+Production articles are not transferred; real apply tooling, populated restore,
+reviewed dates and browser mutation acceptance remain pending.

@@ -1,4 +1,4 @@
-import { assertBlogCoverSetOwned } from "./blog-cover-image-set.service";
+import { assertBlogCoverSetOwned, assertBlogCoverSetLedger } from "./blog-cover-image-set.service";
 import { listStaticBlogRoutes } from "./blog-static-import-receipts.service";
 import { STATIC_BLOG_SLUGS } from "@shared/public-blog";
 import { resolvePublicBlogMedia } from "./public-blog-media.service";
@@ -74,6 +74,53 @@ export async function initializeBlogInTransaction(
   initialPresentation?: BlogEditorialSnapshot["presentation"],
   initialCoverImageSet?: null,
 ) {
+  return initializeBlogSnapshotInTransaction(
+    tx,
+    postId,
+    actorId,
+    origin,
+    expectedFingerprint,
+    initialPresentation,
+    initialCoverImageSet,
+  );
+}
+/** Internal reviewed importer only. Ledger registration must precede this call in the same transaction. */
+export async function initializeReviewedBlogImportInTransaction(
+  tx: CmsTransaction,
+  postId: string,
+  actorId: string,
+  snapshot: BlogEditorialSnapshot,
+  ledger: unknown,
+  provenance: { kind: "static-import"; sourceReference: string; reason: string },
+) {
+  const parsed = blogEditorialSchema.parse(snapshot);
+  await lockBlogPublication(tx);
+  await assertBlogCoverSetLedger(parsed, ledger, tx);
+  return initializeBlogSnapshotInTransaction(
+    tx,
+    postId,
+    actorId,
+    {
+      ...blogProvenanceSchema.parse({ ...provenance, kind: "legacy-adoption" }),
+      kind: "static-import",
+    },
+    undefined,
+    undefined,
+    undefined,
+    parsed,
+  );
+}
+async function initializeBlogSnapshotInTransaction(
+  tx: CmsTransaction,
+  postId: string,
+  actorId: string,
+  origin: BlogProvenance | { kind: "static-import"; sourceReference: string; reason: string },
+  expectedFingerprint?: string,
+  initialPresentation?: BlogEditorialSnapshot["presentation"],
+  initialCoverImageSet?: null,
+  reviewedSnapshot?: BlogEditorialSnapshot,
+) {
+  if (!actorId.trim()) throw Error("Actor required");
   await lockBlogPublication(tx);
   if ((await tx.select().from(states).where(eq(states.postId, postId))).length)
     fail("BLOG_ALREADY_INITIALIZED", "This post already has publication state.");
@@ -81,11 +128,13 @@ export async function initializeBlogInTransaction(
   if (!legacy) throw new CmsMutationError(404, "BLOG_NOT_FOUND", "Post not found");
   if (expectedFingerprint && expectedFingerprint !== legacyBlogFingerprint(legacy))
     fail("BLOG_LEGACY_STALE", "Legacy content changed; reload before adoption.");
-  const snapshot = blogEditorialSchema.parse({
-      ...legacyBlogEditorial(legacy),
-      ...(initialPresentation !== undefined ? { presentation: initialPresentation } : {}),
-      ...(initialCoverImageSet !== undefined ? { coverImageSet: initialCoverImageSet } : {}),
-    }),
+  const snapshot = blogEditorialSchema.parse(
+      reviewedSnapshot ?? {
+        ...legacyBlogEditorial(legacy),
+        ...(initialPresentation !== undefined ? { presentation: initialPresentation } : {}),
+        ...(initialCoverImageSet !== undefined ? { coverImageSet: initialCoverImageSet } : {}),
+      },
+    ),
     id = randomUUID(),
     now = await databaseNow(tx);
   const [state] = await tx
@@ -127,6 +176,19 @@ export async function mutateBlogPublication(
   action: BlogMutationAction,
   options: { data?: BlogEditorialSnapshot; revisionId?: string; scheduledAt?: Date } = {},
 ) {
+  return db.transaction((tx) =>
+    mutateBlogPublicationInTransaction(tx, postId, actorId, proof, action, options),
+  );
+}
+/** Internal transaction composition; identical validated lease/version proof as the API wrapper. */
+export async function mutateBlogPublicationInTransaction(
+  tx: CmsTransaction,
+  postId: string,
+  actorId: string,
+  proof: PagePreconditions,
+  action: BlogMutationAction,
+  options: { data?: BlogEditorialSnapshot; revisionId?: string; scheduledAt?: Date } = {},
+) {
   const permitted: Record<BlogMutationAction, string[]> = {
     save: ["data"],
     publish: ["data"],
@@ -159,7 +221,7 @@ export async function mutateBlogPublication(
       "CMS_CONCURRENCY_REQUIRED",
       "Version and editor lease are required.",
     );
-  return db.transaction((tx) => applyBlogMutation(tx, postId, actorId, proof, action, options));
+  return applyBlogMutation(tx, postId, actorId, parsed.data, action, options);
 }
 async function applyBlogMutation(
   tx: CmsTransaction,

@@ -1,3 +1,4 @@
+import { getClientSiteBlogOwnership } from "../../services/client-site-blog-ownership.service";
 import { Router, type Response } from "express";
 import { requireBusinessCapability } from "../../middleware/auth";
 import { z } from "zod";
@@ -70,7 +71,15 @@ router.get("/:routeId/:componentKey", async (req, res) => {
     const record = await storage.clientSiteContent.get(
       contentIdentity(manifest, routeId, componentKey),
     );
-    res.json(serializeAdminContent(manifest, routeId, componentKey, record));
+    res.json(
+      serializeAdminContent(
+        manifest,
+        routeId,
+        componentKey,
+        record,
+        await getClientSiteBlogOwnership(contentIdentity(manifest, routeId, componentKey)),
+      ),
+    );
   } catch (error) {
     handleError(res, error);
   }

@@ -7,12 +7,16 @@ import ClientSiteContentEditorPage from "./client-site-content-editor-page";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 const state = vi.hoisted(() => ({
   server: {} as any,
+  canBlog: false,
   route: "home",
   delayedRead: null as Promise<any> | null,
   conflict: false,
   failRead: false,
   failReadAfterMutation: false,
   toast: vi.fn(),
+}));
+vi.mock("@/hooks/use-auth", () => ({
+  useAuth: () => ({ hasAdminPermission: () => state.canBlog }),
 }));
 vi.mock("wouter", () => ({
   useRoute: () => [true, { routeId: state.route, componentKey: "home-content" }],
@@ -64,6 +68,7 @@ vi.mock("@/lib/queryClient", async () => {
 let root: Root, host: HTMLDivElement;
 const endpoint = "/api/admin/client-site-content/home/home-content";
 beforeEach(() => {
+  state.canBlog = false;
   Object.assign(globalThis, { React, IS_REACT_ACT_ENVIRONMENT: true });
   queryClient.clear();
   vi.clearAllMocks();
@@ -317,4 +322,41 @@ it("does not refresh or announce a mutation that completes after leaving its rou
   expect((host.querySelector("input") as HTMLInputElement).value).toBe("B local draft");
   expect(host.textContent).toContain("Draft r9");
   fetch.mockRestore();
+});
+
+it.each([false, true])(
+  "owned Blog fields are archived with permission-gated navigation: %s",
+  async (canBlog) => {
+    state.canBlog = canBlog;
+    state.server.ownedBlog = {
+      postId: "post-one",
+      sourceSlug: "land-clearing-cost-per-acre-south-carolina",
+    };
+    await render();
+    expect(host.textContent).toContain("This article is managed in Blog");
+    expect(host.querySelector("fieldset")!.disabled).toBe(true);
+    expect(
+      Array.from(host.querySelectorAll("button")).some((b) => b.textContent === "Open Blog editor"),
+    ).toBe(canBlog);
+    await save();
+    expect(apiRequest).not.toHaveBeenCalled();
+  },
+);
+it("adopts ownership notice from a refetch without discarding a dirty archived draft", async () => {
+  await render();
+  await type("Keep my unsaved text");
+  await act(async () => {
+    queryClient.setQueryData([endpoint], {
+      ...state.server,
+      ownedBlog: { postId: "post-one", sourceSlug: "land-clearing-cost-per-acre-south-carolina" },
+    });
+    await settle();
+  });
+  expect((host.querySelector("#website-field-title") as HTMLInputElement).value).toBe(
+    "Keep my unsaved text",
+  );
+  expect(host.textContent).toContain("This article is managed in Blog");
+  expect(host.querySelector("fieldset")!.disabled).toBe(true);
+  await save();
+  expect(apiRequest).not.toHaveBeenCalled();
 });

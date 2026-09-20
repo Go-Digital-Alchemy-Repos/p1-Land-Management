@@ -25124,6 +25124,23 @@
           "publishedAt": {
             "type": "string",
             "nullable": true
+          },
+          "ownedBlog": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "postId",
+              "sourceSlug"
+            ],
+            "properties": {
+              "postId": {
+                "type": "string"
+              },
+              "sourceSlug": {
+                "type": "string"
+              }
+            },
+            "description": "Permanent Blog ownership. Structured Website fields and revisions are retained read-only."
           }
         },
         "required": [
