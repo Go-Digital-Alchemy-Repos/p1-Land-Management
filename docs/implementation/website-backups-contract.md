@@ -321,3 +321,24 @@ chunk-size warning. Initial UI command used the default Core config and found no
 tests; the dashboard-specific config then ran all11 successfully. Browser/mobile
 visual checks and composed authenticated HTTP tests remain pending. This remains
 a task-branch candidate, not completed production restore parity.
+
+### Authenticated Dashboard HTTP acceptance checkpoint
+
+`python3 scripts/consolidation/test-website-restore.py` creates an owned local
+PostgreSQL18 container using the pinned image, applies Dashboard migrations,
+runs ledger and authenticated HTTP tests sequentially, then removes the container.
+It refuses remote Docker contexts and does not inherit provider credentials or
+production database configuration. Both tests passed without skips; API typecheck
+also passed. The HTTP test uses real Better Auth session verification, Dashboard
+routes, PostgreSQL claims/audits and federation grants, with a controlled Core
+transport fixture. It proves denied anonymous/manager/inactive/MFA-unsatisfied
+access, Owner isolation, invalid confirmation denial, lost-response uncertainty,
+non-replaying retries, blocking competing operations, mismatched receipt rejection,
+verified completion, concurrent one-call execution and grant cleanup. It does not
+claim full live Dashboard-to-Core provider or browser acceptance.
+
+Independent release review is underway. Missing-receipt recovery is confirmed as
+a blocker: failures before Core admission currently leave Dashboard unresolved,
+with no supported self-service resolution. An expired request must be safely
+cancelled/reconciled without mistaking loss/replacement of the receipt store for
+proof of no prior commit. This must be solved and tested before production release.
