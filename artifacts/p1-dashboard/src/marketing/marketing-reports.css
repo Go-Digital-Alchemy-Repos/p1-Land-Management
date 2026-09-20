@@ -164,3 +164,13 @@
 .report-chart {
   overflow: hidden;
 }
+
+/* Shared retained Analytics overview uses the dashboard's single system theme. */
+.marketing-reporting
+  .analytics-overview-card
+  .recharts-cartesian-axis-tick-value {
+  fill: hsl(var(--muted-foreground));
+}
+.marketing-reporting .analytics-overview-card select {
+  width: auto;
+}

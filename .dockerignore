@@ -169,3 +169,4 @@ platform/p1-core/client/src/components/ui/*
 !platform/p1-core/client/src/components/shared/email-template-editor-presentation.tsx
 !platform/p1-core/client/src/components/shared/email-template-library-presentation.tsx
 !platform/p1-core/client/src/components/shared/email-template-presentation.utilities.css
+!platform/p1-core/client/src/components/shared/analytics-overview-presentation.tsx

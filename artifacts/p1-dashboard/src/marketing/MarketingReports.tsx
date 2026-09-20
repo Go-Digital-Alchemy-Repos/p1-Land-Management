@@ -1,3 +1,7 @@
+import {
+  AnalyticsOverview,
+  AnalyticsSummaryCards,
+} from "../../../../platform/p1-core/client/src/components/shared/analytics-overview-presentation";
 import { useEffect, useMemo, useState } from "react";
 import {
   Area,
@@ -671,21 +675,30 @@ export function MarketingReports({ source }: { source: Source }) {
             {data.status === "empty" && (
               <p role="status">No data is available for this period.</p>
             )}
-            <div className="report-metrics">
-              {metrics.map((key) => (
-                <article className="report-card" key={key}>
-                  <h3>{label(key)}</h3>
-                  <strong>
-                    {totals?.[key] === undefined
-                      ? "—"
-                      : metricFormat(totals[key], key)}
-                  </strong>
-                  <p className="muted">
-                    {comparison(totals?.[key], previous?.[key])}
-                  </p>
-                </article>
-              ))}
-            </div>
+            {source === "analytics" ? (
+              <AnalyticsSummaryCards
+                totals={totals}
+                previous={previous}
+                format={metricFormat}
+                comparison={comparison}
+              />
+            ) : (
+              <div className="report-metrics">
+                {metrics.map((key) => (
+                  <article className="report-card" key={key}>
+                    <h3>{label(key)}</h3>
+                    <strong>
+                      {totals?.[key] === undefined
+                        ? "—"
+                        : metricFormat(totals[key], key)}
+                    </strong>
+                    <p className="muted">
+                      {comparison(totals?.[key], previous?.[key])}
+                    </p>
+                  </article>
+                ))}
+              </div>
+            )}
             <Disclosures report={reports.totals} />
             {source === "analytics" && (
               <nav
@@ -711,22 +724,38 @@ export function MarketingReports({ source }: { source: Source }) {
                 these reports.
               </p>
             )}
-            {keys.map(
-              (key) =>
-                reports[key] && (
-                  <div className="report-section" key={key}>
-                    <ReportChart
-                      title={reportNames[key]}
-                      report={reports[key]}
-                      daily={key === "daily"}
-                      range={data.dateRange}
-                    />
-                    <ReportTable
-                      title={reportNames[key]}
-                      report={reports[key]}
-                    />
-                  </div>
-                ),
+            {source === "analytics" && tab === "overview" ? (
+              <AnalyticsOverview
+                daily={reports.daily}
+                channels={reports.channels}
+                devices={reports.devices}
+                range={data.dateRange}
+                label={label}
+                format={metricFormat}
+                note={(report) => <Disclosures report={report} />}
+                table={(title, report) =>
+                  report ? <ReportTable title={title} report={report} /> : null
+                }
+                allowMetricSelection
+              />
+            ) : (
+              keys.map(
+                (key) =>
+                  reports[key] && (
+                    <div className="report-section" key={key}>
+                      <ReportChart
+                        title={reportNames[key]}
+                        report={reports[key]}
+                        daily={key === "daily"}
+                        range={data.dateRange}
+                      />
+                      <ReportTable
+                        title={reportNames[key]}
+                        report={reports[key]}
+                      />
+                    </div>
+                  ),
+              )
             )}
             <footer className="report-source">
               <a

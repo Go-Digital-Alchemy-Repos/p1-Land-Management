@@ -1,3 +1,28 @@
+## Analytics overview restoration and live Blog draft check — September 19
+
+Analytics Overview now shares original KPI cards, trend and paired acquisition/
+device charts across Core and dashboard. Native controller, CSV tables, grants,
+realtime and disclosures remain. Parent added narrow Docker allowlist and Recharts
+Vite deduplication; native chart chunk fell from 859.86 KB to 437.96 KB before gzip.
+Author and independent reviewer passed five adapter checks under both React hosts;
+parent reran five Core-host checks and both production builds. Author clean types
+passed. Parent reviewed actual Recharts in isolated synthetic fixture at1280/390px:
+all three charts render, readable labels, no horizontal document overflow. Browser
+click interaction was not accepted because a separate native confirm stalled UI.
+No production analytics/provider settings changed. Release verification follows.
+
+Live Blog: all five imported posts appear in manager. Saved-draft preview and draft
+save passed. Temporary excerpt 'Private draft acceptance check — do not publish.'
+is saved in land-clearing article draft version3 ONLY; public projection retained
+original excerpt and no test text. Restore-revision confirmation stalled browser
+control in tab45. getJsDialog returnedundefined; reload/close timed out. After lease
+expiry, tab46 reacquired the editor; original excerpt is entered but SAVE IS NOT
+CONFIRMED (version3/unsaved still shown). User was asked to dismiss the stale restore
+confirmation. Do not publish this draft. Next recheck actual state and save original
+excerpt or restore version2 via normal UI, then verify clean draft. No authorization
+was bypassed. Full preview/publish/restore acceptance remains open. Tab46 retained
+for cleanup; broader goal stays active and retained admin stays available.
+
 ## Production Blog transfer verified — September 19
 
 Applied the reviewed five-article transfer on Core deployment

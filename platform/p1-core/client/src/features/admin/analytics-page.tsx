@@ -1,31 +1,24 @@
+import {
+  AnalyticsOverview,
+  AnalyticsSummaryCards,
+  AnalyticsBreakdown,
+} from "@/components/shared/analytics-overview-presentation";
 import type { SearchConsoleResponse } from "@shared/p1-search-console";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
-  Activity,
   ArrowDownToLine,
   ArrowUpDown,
   BarChart3,
   RefreshCw,
   Search,
   Radio,
-  Users,
-  MousePointer2,
-  Eye,
-  Timer,
-  Target,
   ExternalLink,
 } from "lucide-react";
 import {
   Area,
   AreaChart,
-  Bar,
-  BarChart,
   CartesianGrid,
-  Cell,
-  Legend,
-  Pie,
-  PieChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -46,7 +39,6 @@ import type {
   GARealtimeResponse as Live,
 } from "@shared/p1-google-analytics";
 // Totals come directly from GA, never from summing distinct segment users.
-const COLORS = ["#0d9488", "#3b82f6", "#8b5cf6", "#f59e0b", "#ec4899", "#64748b"];
 const LABELS: Record<string, string> = {
   clicks: "Search clicks",
   impressions: "Impressions",
@@ -260,88 +252,21 @@ function Breakdown({
   report?: Report;
   donut?: boolean;
 }) {
-  const dimension = report?.dimensions[0] || "";
-  const metric = report?.metrics.includes("sessions")
-    ? "sessions"
-    : report?.metrics[0] || "activeUsers";
-  const data = flatten(report)
-    .slice(0, 6)
-    .map((row) => ({ name: String(row[dimension] || "(not set)"), value: Number(row[metric]) }));
   return (
-    <Card className="min-w-0 shadow-sm">
-      <CardHeader>
-        <CardTitle className="text-base">{title}</CardTitle>
-        <p className="text-xs text-muted-foreground">
-          Top {data.length || 6} · {label(metric)}
-        </p>
-      </CardHeader>
-      <CardContent>
-        <Note report={report} />
-        {data.length ? (
-          <div
-            className="h-64"
-            role="img"
-            aria-label={`${title}: ${data.map((d) => `${d.name} ${d.value}`).join(", ")}`}
-          >
-            <ResponsiveContainer width="100%" height="100%">
-              {donut ? (
-                <PieChart>
-                  <Pie
-                    data={data}
-                    dataKey="value"
-                    nameKey="name"
-                    innerRadius={60}
-                    outerRadius={86}
-                    paddingAngle={3}
-                  >
-                    {data.map((_, i) => (
-                      <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                  <Legend iconType="circle" iconSize={8} />
-                </PieChart>
-              ) : (
-                <BarChart
-                  data={data}
-                  layout="vertical"
-                  margin={{ left: 0, right: 20 }}
-                  accessibilityLayer
-                >
-                  <CartesianGrid horizontal={false} stroke="currentColor" opacity={0.08} />
-                  <XAxis type="number" tick={{ fontSize: 11 }} allowDecimals={false} />
-                  <YAxis
-                    type="category"
-                    dataKey="name"
-                    width={110}
-                    tick={{ fontSize: 11 }}
-                    tickLine={false}
-                    axisLine={false}
-                  />
-                  <Tooltip cursor={{ fill: "rgba(13,148,136,.08)" }} />
-                  <Bar
-                    dataKey="value"
-                    name={label(metric)}
-                    fill={COLORS[0]}
-                    radius={[0, 4, 4, 0]}
-                    maxBarSize={24}
-                  />
-                </BarChart>
-              )}
-            </ResponsiveContainer>
-          </div>
-        ) : (
-          <Empty />
-        )}
-      </CardContent>
-    </Card>
+    <AnalyticsBreakdown
+      title={title}
+      report={report}
+      donut={donut}
+      label={label}
+      format={metricFormat}
+      note={(report) => <Note report={report} />}
+    />
   );
 }
 export default function AnalyticsPage() {
   const [range, setRange] = useState(() => presetRange(28));
   const [draft, setDraft] = useState(range);
   const [error, setError] = useState("");
-  const [trend, setTrend] = useState("sessions");
   const url = `/api/p1/google-analytics?${new URLSearchParams(range)}`;
   const query = useQuery<Reports>({
     queryKey: [url],
@@ -359,25 +284,6 @@ export default function AnalyticsPage() {
     reports = data?.reports,
     totals = reports?.totals?.rows[0]?.metrics,
     previous = reports?.previousTotals?.rows[0]?.metrics;
-  const daily = useMemo(() => {
-    if (!data || !reports?.daily?.rows.length) return [];
-    const byDate = new Map(
-      flatten(reports.daily).map((row) => [
-        String(row.date).replace(/^(\d{4})(\d{2})(\d{2})$/, "$1-$2-$3"),
-        row,
-      ]),
-    );
-    const points = [];
-    for (
-      let stamp = Date.parse(data.dateRange.startDate);
-      stamp <= Date.parse(data.dateRange.endDate);
-      stamp += 86400000
-    ) {
-      const date = new Date(stamp).toISOString().slice(0, 10);
-      points.push({ ...byDate.get(date), date });
-    }
-    return points;
-  }, [data, reports]);
   function apply() {
     const days = (Date.parse(draft.endDate) - Date.parse(draft.startDate)) / 86400000 + 1;
     if (!Number.isFinite(days) || days < 1 || days > 93) {
@@ -387,14 +293,6 @@ export default function AnalyticsPage() {
     setError("");
     setRange(draft);
   }
-  const cards = [
-    ["activeUsers", "Active users", Users],
-    ["sessions", "Sessions", MousePointer2],
-    ["screenPageViews", "Page views", Eye],
-    ["engagementRate", "Engagement rate", Activity],
-    ["averageSessionDuration", "Avg. session", Timer],
-    ["keyEvents", "Key events", Target],
-  ] as const;
   return (
     <AdminSidebar>
       <main className="mx-auto max-w-[1600px] space-y-6 p-4 md:p-8">
@@ -531,7 +429,14 @@ export default function AnalyticsPage() {
             </div>
             {query.isLoading ? (
               <div role="status" className="grid gap-4 sm:grid-cols-3">
-                {cards.map(([key]) => (
+                {[
+                  "activeUsers",
+                  "sessions",
+                  "screenPageViews",
+                  "engagementRate",
+                  "averageSessionDuration",
+                  "keyEvents",
+                ].map((key) => (
                   <div key={key} className="h-32 animate-pulse rounded-xl bg-muted" />
                 ))}
                 <span className="sr-only">Loading Google Analytics reports</span>
@@ -562,26 +467,12 @@ export default function AnalyticsPage() {
                       16, 2026; standard Google Analytics reports can take 24–48 hours to populate.
                     </div>
                   )}
-                  <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
-                    {cards.map(([metric, title, Icon]) => (
-                      <Card key={metric} className="overflow-hidden shadow-sm">
-                        <CardContent className="p-5">
-                          <div className="flex items-center justify-between text-sm text-muted-foreground">
-                            <span>{title}</span>
-                            <Icon className="size-4 text-teal-600" />
-                          </div>
-                          <p className="mt-4 text-3xl font-semibold tracking-tight tabular-nums">
-                            {totals?.[metric] === undefined
-                              ? "—"
-                              : metricFormat(totals[metric], metric)}
-                          </p>
-                          <p className="mt-2 text-xs text-muted-foreground">
-                            {comparison(totals?.[metric], previous?.[metric])}
-                          </p>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
+                  <AnalyticsSummaryCards
+                    totals={totals}
+                    previous={previous}
+                    format={metricFormat}
+                    comparison={comparison}
+                  />
                   <Note report={reports?.totals} />
                   <Tabs defaultValue="overview" className="space-y-5">
                     <div className="overflow-x-auto">
@@ -594,95 +485,16 @@ export default function AnalyticsPage() {
                       </TabsList>
                     </div>
                     <TabsContent value="overview" className="space-y-5">
-                      <Card className="shadow-sm">
-                        <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-3">
-                          <div>
-                            <CardTitle className="text-base">Traffic over time</CardTitle>
-                            <p className="mt-1 text-xs text-muted-foreground">
-                              Daily totals in the property timezone
-                            </p>
-                          </div>
-                          <select
-                            className="rounded-md border bg-background px-3 py-2 text-sm"
-                            aria-label="Trend metric"
-                            value={trend}
-                            onChange={(e) => setTrend(e.target.value)}
-                          >
-                            {["sessions", "activeUsers", "screenPageViews"].map((m) => (
-                              <option key={m} value={m}>
-                                {label(m)}
-                              </option>
-                            ))}
-                          </select>
-                        </CardHeader>
-                        <CardContent>
-                          <Note report={reports?.daily} />
-                          {daily.length ? (
-                            <div
-                              className="h-80"
-                              role="img"
-                              aria-label={`${label(trend)} over the selected period. Exact values available in the daily activity table.`}
-                            >
-                              <ResponsiveContainer width="100%" height="100%">
-                                <AreaChart
-                                  data={daily}
-                                  accessibilityLayer
-                                  margin={{ left: 0, right: 16, top: 12, bottom: 0 }}
-                                >
-                                  <defs>
-                                    <linearGradient id="ga-trend" x1="0" y1="0" x2="0" y2="1">
-                                      <stop offset="0%" stopColor="#0d9488" stopOpacity={0.3} />
-                                      <stop offset="100%" stopColor="#0d9488" stopOpacity={0.01} />
-                                    </linearGradient>
-                                  </defs>
-                                  <CartesianGrid
-                                    vertical={false}
-                                    stroke="currentColor"
-                                    opacity={0.08}
-                                  />
-                                  <XAxis
-                                    dataKey="date"
-                                    tick={{ fontSize: 11 }}
-                                    minTickGap={45}
-                                    tickFormatter={(s) => s.slice(5)}
-                                    axisLine={false}
-                                    tickLine={false}
-                                  />
-                                  <YAxis
-                                    tick={{ fontSize: 11 }}
-                                    allowDecimals={false}
-                                    axisLine={false}
-                                    tickLine={false}
-                                  />
-                                  <Tooltip
-                                    contentStyle={{
-                                      background: "hsl(var(--card))",
-                                      borderColor: "hsl(var(--border))",
-                                      borderRadius: 10,
-                                    }}
-                                  />
-                                  <Area
-                                    dataKey={trend}
-                                    name={label(trend)}
-                                    type="monotone"
-                                    stroke="#0d9488"
-                                    strokeWidth={2.5}
-                                    fill="url(#ga-trend)"
-                                    isAnimationActive={false}
-                                  />
-                                </AreaChart>
-                              </ResponsiveContainer>
-                            </div>
-                          ) : (
-                            <Empty />
-                          )}
-                        </CardContent>
-                      </Card>
-                      <div className="grid gap-5 lg:grid-cols-2">
-                        <Breakdown title="Acquisition mix" report={reports?.channels} />
-                        <Breakdown title="Devices" report={reports?.devices} donut />
-                      </div>
-                      <ReportTable title="Daily activity" report={reports?.daily} />
+                      <AnalyticsOverview
+                        daily={reports?.daily}
+                        channels={reports?.channels}
+                        devices={reports?.devices}
+                        range={data.dateRange}
+                        label={label}
+                        format={metricFormat}
+                        note={(report) => <Note report={report} />}
+                        table={(title, report) => <ReportTable title={title} report={report} />}
+                      />
                     </TabsContent>
                     <TabsContent value="acquisition" className="space-y-5">
                       <div className="grid gap-5 lg:grid-cols-2">

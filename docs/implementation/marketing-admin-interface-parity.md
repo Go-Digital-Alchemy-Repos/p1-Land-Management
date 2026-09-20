@@ -524,3 +524,18 @@ services. Authenticated live library reads passed for Integrations, five saved
 Email Templates and the empty Developer Resources workspace. The full Core
 production build also passed. Inherited email branding/provider-template content
 remains a separate reconciliation item; no templates were changed in production.
+
+## Analytics overview shared restoration
+
+Core and dashboard now share KPI cards, traffic trend, paired horizontal acquisition
+and device charts, and the daily table layout. Source-specific API/auth controllers,
+CSV/filter/pagination behavior, missing-date gaps and provider disclosures remain.
+Other native tabs retain their full tables. Colorful standalone icons follow the
+approved dashboard theme. The shared file is narrowly allowlisted in Docker and
+Recharts is deduplicated alongside React to avoid two local chart runtimes.
+
+Both React-host test runs pass; independent review found no blocker. Parent Core
+and dashboard builds pass. Actual chart render checks at1280px and390px showed all
+three charts, readable labels and no document overflow. Synthetic data was isolated
+to a temporary loopback fixture; no placeholder data entered production. Live
+release/provider verification and complete Marketing parity remain separate gates.
