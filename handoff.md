@@ -991,3 +991,10 @@ Dashboard backup/0047 restore rehearsal and remaining browser gate. Do not push
 this checkpoint to main until final integrated checks and office-to-crew browser
 acceptance pass and dashboard0047 is applied before API deployment. The last
 completed release remains `2c760be3` on main. Preserve the full consolidation scope.
+
+
+Follow-up: the field conflict office-to-crew browser acceptance now passed on fresh
+fixture59354, including reload and sign-out. Dashboard0047 is committed in production
+after fresh restore rehearsal and checksum verification. Release this accepted
+slice to main and verify Railway/live reads; record the resulting revision in
+`docs/implementation/field-conflict-resolution.md`. Broader consolidation remains open.

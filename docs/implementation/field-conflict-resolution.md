@@ -1,6 +1,6 @@
 # Office review of stale field entries
 
-Implementation checkpoint — not released or accepted end-to-end.
+Browser acceptance passed; production migration applied, application deployment pending.
 
 ## Behavior
 
@@ -55,3 +55,23 @@ refresh to the new client; this is safe but does not clear their queue.
 
 This does not complete photo reconciliation, physical device offline/eviction,
 agreement cancellation/change-order acceptance, or retained-admin retirement.
+
+## Final browser acceptance and migration — September 19
+
+Fresh loopback59354 rehearsal passed: downloaded crew assignment, API503,
+office cancellation, local start and completion entries, two sync attempts with
+stable conflict receipts, and successful cancellation verifier. Office staff used
+the inline confirmation to record both reviews. Returning to the original crew
+account showed2 pending entries; Sync cleared to0, reload retained0, and Sign out
+returned to the login screen. The resolution verifier found2 preserved conflict
+events,2 office reviews, cancelled work unchanged and0 charges. Owned fixture
+container/volume cleanup passed. Calendar availability returned404 in this narrow
+fixture because its unrelated endpoints are not mounted; this is not full Schedule
+acceptance. No production customer records were used in the browser rehearsal.
+
+Dashboard migration0047 was applied to the explicit production dashboard service
+in an advisory-locked transaction after verifying every existing source migration
+checksum and the50-entry baseline. Committed checksum:
+`ef9987949480fb30d0e439a5e3766dc2ce11165b1a0381e270104b6dc3b0901d`.
+The newly created resolution table contained0 records. API build passed.
+Application deployment and live read verification remain to be recorded below.

@@ -495,3 +495,13 @@ Prior inquiry context runtime `b09db1a59e0640d6ccbc1f75ca93d4668aa9fb0b`
 reached Railway SUCCESS: dashboard `bc0693e5-b9be-4e5f-a1bd-7533eb54dec6`,
 Core `1e37d292-1928-49bd-8bff-702c80f711fe`, website
 `1b15445e-1718-4198-b417-b9238ff1edca`.
+
+### Field conflict review acceptance — September19
+
+Office record-only resolution now passes the joined local browser/API/database
+journey: cancelled-work entries remain immutable, office reviews are append-only,
+crew receipt sync clears only reviewed copies,0 pending survives reload, and safe
+sign-out succeeds. The production dashboard0047 migration is applied; application
+release verification is pending. See `field-conflict-resolution.md`. This closes
+this bounded office-review gap, not physical-device offline/eviction, photo
+reconciliation, cancellation/change-order acceptance or the overall crew gate.
