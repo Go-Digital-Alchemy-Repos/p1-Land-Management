@@ -2,12 +2,11 @@
 
 The task branch contains the native review/confirmation/execution/history and
 receipt-based reconciliation workflow. It is **not deployed**: main remains at
-`3dc1e269`. Core0008 and Dashboard0049/0050 are candidate migrations only. Real
+`3dc1e269`. Core0008/0009 and Dashboard0049/0050 are candidate migrations only. Real
 PostgreSQL and authenticated Dashboard HTTP tests pass; the HTTP test uses a
 controlled Core transport fixture, not a complete two-service deployment.
 Independent review found missing-receipt recovery and archive sequence scope
-blockers. Sequence scope is fixed and independently re-reviewed;17 PostgreSQL tests pass. Receipt reservation at
-review, inactive-Owner recovery, complete two-service/restart acceptance, browser
+blockers. Sequence scope is fixed and independently re-reviewed;17 PostgreSQL tests pass. Receipt reservation at review is now implemented with exact cross-service identity/deadline and terminal no-commit evidence; candidate validation is recorded in the contract. Inactive-Owner recovery, complete two-service/restart acceptance, browser
 and mobile checks, and migration/recovery rehearsals remain. `/admin` stays active.
 See `docs/implementation/website-backups-contract.md`; use
 `python3 scripts/consolidation/test-website-restore.py` for the isolated Dashboard

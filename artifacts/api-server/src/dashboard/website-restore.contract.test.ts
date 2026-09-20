@@ -4,9 +4,9 @@ import { coreRestoreReview,restoreOperationView,restoreReviewRequest,restoreSour
 import { callCms,cmsDestination,cmsOperations,restoreReviewOperation,restoreExecuteOperation,restoreOutcomeOperation } from "./marketing-cms.transport";
 const summary={createdAt:"2026-09-20T00:00:00Z",clientStackId:"p1-land-management",tableCount:1,totalRowCount:2,mediaAssetCount:0};
 test("Core review discards archive internals and rejects incomplete identity or fingerprint",()=>{
- const value={manifest:{...summary,key:"db/fixture.gz",rows:[{secret:"private"}],privateCapture:{private:true}},fingerprint:"a".repeat(64)};
- assert.deepEqual(coreRestoreReview.parse(value),{manifest:{...summary,key:"db/fixture.gz"},fingerprint:value.fingerprint});
- for(const bad of [{...value,fingerprint:"invalid"},{...value,manifest:{...value.manifest,clientStackId:null}},{...value,manifest:{...value.manifest,tableCount:0}}]) assert.equal(coreRestoreReview.safeParse(bad).success,false);
+ const value={operationId:"11111111-1111-4111-8111-111111111111",expiresAt:"2026-09-20T00:05:00Z",manifest:{...summary,key:"db/fixture.gz",rows:[{secret:"private"}],privateCapture:{private:true}},fingerprint:"a".repeat(64)};
+ assert.deepEqual(coreRestoreReview.parse(value),{manifest:{...summary,key:"db/fixture.gz"},fingerprint:value.fingerprint,operationId:value.operationId,expiresAt:value.expiresAt});
+ for(const bad of [{...value,operationId:undefined},{...value,expiresAt:undefined},{...value,operationId:"invalid"},{...value,expiresAt:"invalid"},{...value,fingerprint:"invalid"},{...value,manifest:{...value.manifest,clientStackId:null}},{...value,manifest:{...value.manifest,tableCount:0}}]) assert.equal(coreRestoreReview.safeParse(bad).success,false);
  for(const body of [{key:"x",fingerprint:value.fingerprint},{key:"x",sourceBinding:"x"},{key:" "}]) assert.equal(restoreReviewRequest.safeParse(body).success,false);
 });
 test("public operation view excludes all archive and actor bindings",()=>{

@@ -60,7 +60,7 @@ import { getCrmPipelineSettings, saveCrmPipelineSettings } from "./crm-pipeline-
 import * as storage from "./backup-storage.service";
 import {
   restoreBackupSnapshot,
-  getSystemBackupRestoreReview,
+  reserveSystemBackupRestoreReview,
   restoreReviewedSystemBackup,
   getReviewedRestoreOutcome,
   restoreSystemBackupFromKey,
@@ -98,6 +98,7 @@ describe.skipIf(!testUrl)("system backup disposable PostgreSQL", () => {
     await pool.query("DROP TABLE IF EXISTS p1_operations.restore_receipts");
     const { readFile } = await import("node:fs/promises");
     await pool.query(await readFile(new URL("../../p1-migrations/0008_restore_operation_receipts.sql",import.meta.url),"utf8"));
+    await pool.query(await readFile(new URL("../../p1-migrations/0009_restore_receipt_reservations.sql",import.meta.url),"utf8"));
     vi.clearAllMocks();
     vi.stubEnv("CLIENT_STACK_ID", "backup-test");
     vi.stubEnv("SYSTEM_BACKUP_EXCLUDED_TABLES", "session,__drizzle_migrations");
@@ -131,12 +132,12 @@ describe.skipIf(!testUrl)("system backup disposable PostgreSQL", () => {
     await runSystemBackup();
     const snapshot=exportedSnapshot();
     vi.mocked(storage.downloadBackupObject).mockResolvedValue(gzipSync(JSON.stringify(snapshot)));
-    const review=await getSystemBackupRestoreReview(snapshot.manifest.key);
+    const review=await reserveSystemBackupRestoreReview(snapshot.manifest.key,reviewedIdentity);
     expect((await pool.query("INSERT INTO a_parents DEFAULT VALUES RETURNING id")).rows).toEqual([{id:41}]);
     await pool.query(`CREATE FUNCTION p1_operations.reject_owned_sequence() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'Synthetic post-sequence failure'; END $$;
-      CREATE TRIGGER reject_owned_sequence BEFORE UPDATE ON p1_operations.restore_receipts FOR EACH ROW EXECUTE FUNCTION p1_operations.reject_owned_sequence()`);
+      CREATE TRIGGER reject_owned_sequence BEFORE UPDATE ON p1_operations.restore_receipts FOR EACH ROW WHEN (NEW.status = 'completed') EXECUTE FUNCTION p1_operations.reject_owned_sequence()`);
     try {
-      await expect(restoreReviewedSystemBackup(snapshot.manifest.key,review.fingerprint,new Date(Date.now()+60_000).toISOString(),reviewedIdentity)).rejects.toThrow("Synthetic post-sequence failure");
+      await expect(restoreReviewedSystemBackup(snapshot.manifest.key,review.fingerprint,review.expiresAt,reviewedIdentity)).rejects.toThrow("Synthetic post-sequence failure");
       expect((await pool.query("SELECT last_value::text,is_called FROM a_parents_id_seq")).rows).toEqual([{last_value:"41",is_called:true}]);
       expect((await pool.query("INSERT INTO a_parents DEFAULT VALUES RETURNING id")).rows).toEqual([{id:42}]);
       expect((await pool.query("SELECT id FROM a_parents ORDER BY id")).rows).toEqual([{id:1},{id:41},{id:42}]);
@@ -154,16 +155,17 @@ describe.skipIf(!testUrl)("system backup disposable PostgreSQL", () => {
       vi.stubEnv("SYSTEM_BACKUP_EXCLUDED_TABLES","session,__drizzle_migrations,excluded_assets");
       snapshot.sequences=[{tableName:"a_parents",columnName:"id",sequenceName:"public.excluded_assets_id_seq"}];
       vi.mocked(storage.downloadBackupObject).mockResolvedValue(gzipSync(JSON.stringify(snapshot)));
-      const review=await getSystemBackupRestoreReview(snapshot.manifest.key);
+      const review=await reserveSystemBackupRestoreReview(snapshot.manifest.key,reviewedIdentity);
       await pool.query("INSERT INTO a_parents VALUES (2)");
-      await restoreReviewedSystemBackup(snapshot.manifest.key,review.fingerprint,new Date(Date.now()+60_000).toISOString(),reviewedIdentity);
+      await restoreReviewedSystemBackup(snapshot.manifest.key,review.fingerprint,review.expiresAt,reviewedIdentity);
       expect((await pool.query("SELECT last_value::text,is_called FROM excluded_assets_id_seq")).rows).toEqual([{last_value:"73",is_called:true}]);
       expect((await pool.query("SELECT * FROM excluded_assets")).rows).toEqual([{id:1}]);
       await pool.query("INSERT INTO a_parents VALUES (2)");
       await pool.query(`CREATE FUNCTION p1_operations.reject_sequence_fixture() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'Synthetic receipt rejection'; END $$;
-        CREATE TRIGGER reject_sequence_fixture BEFORE UPDATE ON p1_operations.restore_receipts FOR EACH ROW EXECUTE FUNCTION p1_operations.reject_sequence_fixture()`);
+        CREATE TRIGGER reject_sequence_fixture BEFORE UPDATE ON p1_operations.restore_receipts FOR EACH ROW WHEN (NEW.status = 'completed') EXECUTE FUNCTION p1_operations.reject_sequence_fixture()`);
       try {
-        await expect(restoreReviewedSystemBackup(snapshot.manifest.key,review.fingerprint,new Date(Date.now()+60_000).toISOString(),{...reviewedIdentity,operationId:"33333333-3333-4333-8333-333333333333"})).rejects.toThrow("Synthetic receipt rejection");
+        const second=await reserveSystemBackupRestoreReview(snapshot.manifest.key,{...reviewedIdentity,operationId:"33333333-3333-4333-8333-333333333333"});
+        await expect(restoreReviewedSystemBackup(snapshot.manifest.key,second.fingerprint,second.expiresAt,{...reviewedIdentity,operationId:second.operationId})).rejects.toThrow("Synthetic receipt rejection");
         expect((await pool.query("SELECT last_value::text,is_called FROM excluded_assets_id_seq")).rows).toEqual([{last_value:"73",is_called:true}]);
         expect((await pool.query("SELECT * FROM a_parents ORDER BY id")).rows).toEqual([{id:1},{id:2}]);
       } finally {await pool.query("DROP TRIGGER reject_sequence_fixture ON p1_operations.restore_receipts; DROP FUNCTION p1_operations.reject_sequence_fixture()");}
@@ -172,14 +174,15 @@ describe.skipIf(!testUrl)("system backup disposable PostgreSQL", () => {
   });
 
   it("reconciles only matched receipts under the restore lock and never changes data", async () => {
-    const {admitRestoreReceipt,completeRestoreReceipt}=await import("./restore-receipt");
+    const {reserveRestoreReceipt,admitRestoreReceipt,completeRestoreReceipt}=await import("./restore-receipt");
     const input={...reviewedIdentity,fingerprint:"a".repeat(64),expiresAt:new Date(Date.now()+60_000).toISOString()};
     expect(await getReviewedRestoreOutcome(input)).toBe("unknown");
     const c=await pool.connect();
-    try { await admitRestoreReceipt(c,input); } finally {c.release();}
+    try { await reserveRestoreReceipt(c,input); await admitRestoreReceipt(c,input); } finally {c.release();}
     expect(await getReviewedRestoreOutcome(input)).toBe("unknown");
-    const clock=vi.spyOn(Date,"now").mockReturnValue(Date.parse(input.expiresAt)+1);
-    try {
+    input.expiresAt=new Date(Date.now()-60_000).toISOString();
+    await pool.query("UPDATE p1_operations.restore_receipts SET expires_at=$1",[input.expiresAt]);
+    {
       expect(await getReviewedRestoreOutcome(input)).toBe("not_applied");
       expect(await getReviewedRestoreOutcome({...input,actorId:"another-owner"})).toBe("unknown");
       const lock=await pool.connect();
@@ -187,10 +190,55 @@ describe.skipIf(!testUrl)("system backup disposable PostgreSQL", () => {
         await lock.query("SELECT pg_advisory_lock(880120441)");
         await expect(getReviewedRestoreOutcome(input)).rejects.toThrow("already running");
       } finally {await lock.query("SELECT pg_advisory_unlock(880120441)");lock.release();}
-    } finally {clock.mockRestore();}
+    }
     const complete=await pool.connect();
-    try {await complete.query("BEGIN");await completeRestoreReceipt(complete,input);await complete.query("COMMIT");} finally {complete.release();}
-    expect(await getReviewedRestoreOutcome(input)).toBe("completed");
+    try {await expect(completeRestoreReceipt(complete,input)).rejects.toThrow("could not be completed");} finally {complete.release();}
+    expect(await getReviewedRestoreOutcome(input)).toBe("not_applied");
+    expect((await pool.query("SELECT * FROM a_parents")).rows).toEqual([{id:1}]);
+    await assertLockAvailable();
+  });
+
+  it("migrates existing started/completed receipts without losing their evidence", async () => {
+    const {readFile}=await import("node:fs/promises");
+    await pool.query("DROP TABLE p1_operations.restore_receipts");
+    await pool.query(await readFile(new URL("../../p1-migrations/0008_restore_operation_receipts.sql",import.meta.url),"utf8"));
+    await pool.query(`INSERT INTO p1_operations.restore_receipts(operation_id,actor_id,fingerprint,expires_at,status,completed_at)
+      VALUES ('11111111-1111-4111-8111-111111111111','owner',$1,now(),'started',NULL),
+      ('22222222-2222-4222-8222-222222222222','owner',$1,now(),'completed',now())`,["a".repeat(64)]);
+    const before=(await pool.query("SELECT * FROM p1_operations.restore_receipts ORDER BY operation_id")).rows;
+    await pool.query(await readFile(new URL("../../p1-migrations/0009_restore_receipt_reservations.sql",import.meta.url),"utf8"));
+    expect((await pool.query("SELECT * FROM p1_operations.restore_receipts ORDER BY operation_id")).rows).toEqual(before);
+    expect((await pool.query(`INSERT INTO p1_operations.restore_receipts(operation_id,actor_id,fingerprint,expires_at)
+      VALUES ('33333333-3333-4333-8333-333333333333','owner',$1,now()) RETURNING status,started_at`,["a".repeat(64)])).rows).toEqual([{status:"reserved",started_at:null}]);
+  });
+
+  it("reserves before execution and uses the database deadline despite application clock skew", async () => {
+    await runSystemBackup();
+    const snapshot=exportedSnapshot();
+    vi.mocked(storage.downloadBackupObject).mockResolvedValue(gzipSync(JSON.stringify(snapshot)));
+    const review=await reserveSystemBackupRestoreReview(snapshot.manifest.key,reviewedIdentity);
+    const input={...reviewedIdentity,fingerprint:review.fingerprint,expiresAt:review.expiresAt};
+    expect((await pool.query("SELECT status,started_at FROM p1_operations.restore_receipts")).rows).toEqual([{status:"reserved",started_at:null}]);
+    await expect(reserveSystemBackupRestoreReview(snapshot.manifest.key,reviewedIdentity)).rejects.toThrow("already reserved");
+    const fastClock=vi.spyOn(Date,"now").mockReturnValue(Date.parse(input.expiresAt)+60_000);
+    try { expect(await getReviewedRestoreOutcome(input)).toBe("unknown"); } finally {fastClock.mockRestore();}
+    expect(await getReviewedRestoreOutcome({...input,fingerprint:"b".repeat(64)})).toBe("unknown");
+    const {admitRestoreReceipt}=await import("./restore-receipt");
+    const client=await pool.connect();
+    try {
+      await expect(admitRestoreReceipt(client,{...input,actorId:"wrong-owner"})).rejects.toThrow("missing, expired or already admitted");
+      input.expiresAt=new Date(Date.now()-60_000).toISOString();
+      await client.query("UPDATE p1_operations.restore_receipts SET expires_at=$1",[input.expiresAt]);
+      expect(await getReviewedRestoreOutcome(input)).toBe("not_applied");
+      await expect(admitRestoreReceipt(client,input)).rejects.toThrow("missing, expired or already admitted");
+      expect((await client.query("SELECT status FROM p1_operations.restore_receipts")).rows).toEqual([{status:"not_applied"}]);
+      input.expiresAt=new Date(Date.now()+60_000).toISOString();
+      await client.query("UPDATE p1_operations.restore_receipts SET expires_at=$1",[input.expiresAt]);
+      expect(await getReviewedRestoreOutcome(input)).toBe("not_applied");
+      await expect(admitRestoreReceipt(client,input)).rejects.toThrow("missing, expired or already admitted");
+      await client.query("DELETE FROM p1_operations.restore_receipts");
+      expect(await getReviewedRestoreOutcome(input)).toBe("unknown");
+    } finally {client.release();}
     expect((await pool.query("SELECT * FROM a_parents")).rows).toEqual([{id:1}]);
     await assertLockAvailable();
   });
@@ -199,12 +247,12 @@ describe.skipIf(!testUrl)("system backup disposable PostgreSQL", () => {
     await runSystemBackup();
     const snapshot=exportedSnapshot();
     vi.mocked(storage.downloadBackupObject).mockResolvedValue(gzipSync(JSON.stringify(snapshot)));
-    const review=await getSystemBackupRestoreReview(snapshot.manifest.key);
+    const review=await reserveSystemBackupRestoreReview(snapshot.manifest.key,reviewedIdentity);
     await pool.query("INSERT INTO a_parents VALUES (2)");
-    await restoreReviewedSystemBackup(snapshot.manifest.key,review.fingerprint,new Date(Date.now()+60_000).toISOString(),reviewedIdentity);
+    await restoreReviewedSystemBackup(snapshot.manifest.key,review.fingerprint,review.expiresAt,reviewedIdentity);
     expect((await pool.query("SELECT status FROM p1_operations.restore_receipts")).rows).toEqual([{status:"completed"}]);
     await pool.query("INSERT INTO a_parents VALUES (3)");
-    await expect(restoreReviewedSystemBackup(snapshot.manifest.key,review.fingerprint,new Date(Date.now()+60_000).toISOString(),reviewedIdentity)).rejects.toThrow("already admitted");
+    await expect(restoreReviewedSystemBackup(snapshot.manifest.key,review.fingerprint,review.expiresAt,reviewedIdentity)).rejects.toThrow("already admitted");
     expect((await pool.query("SELECT id FROM a_parents WHERE id=3")).rowCount).toBe(1);
     // A retained public-data restore cannot overwrite operational receipts either.
     await restoreBackupSnapshot(snapshot);
@@ -218,12 +266,12 @@ describe.skipIf(!testUrl)("system backup disposable PostgreSQL", () => {
     await runSystemBackup();
     const snapshot=exportedSnapshot();
     vi.mocked(storage.downloadBackupObject).mockResolvedValue(gzipSync(JSON.stringify(snapshot)));
-    const review=await getSystemBackupRestoreReview(snapshot.manifest.key);
+    const review=await reserveSystemBackupRestoreReview(snapshot.manifest.key,reviewedIdentity);
     await pool.query("INSERT INTO a_parents VALUES (2)");
     await pool.query(`CREATE FUNCTION p1_operations.reject_completion() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'Synthetic receipt failure'; END $$;
-      CREATE TRIGGER reject_completion BEFORE UPDATE ON p1_operations.restore_receipts FOR EACH ROW EXECUTE FUNCTION p1_operations.reject_completion()`);
+      CREATE TRIGGER reject_completion BEFORE UPDATE ON p1_operations.restore_receipts FOR EACH ROW WHEN (NEW.status = 'completed') EXECUTE FUNCTION p1_operations.reject_completion()`);
     try {
-      await expect(restoreReviewedSystemBackup(snapshot.manifest.key,review.fingerprint,new Date(Date.now()+60_000).toISOString(),reviewedIdentity)).rejects.toThrow("Synthetic receipt failure");
+      await expect(restoreReviewedSystemBackup(snapshot.manifest.key,review.fingerprint,review.expiresAt,reviewedIdentity)).rejects.toThrow("Synthetic receipt failure");
       expect((await pool.query("SELECT * FROM a_parents ORDER BY id")).rows).toEqual([{id:1},{id:2}]);
       expect((await pool.query("SELECT status FROM p1_operations.restore_receipts")).rows).toEqual([{status:"started"}]);
       await assertLockAvailable();
@@ -234,12 +282,15 @@ describe.skipIf(!testUrl)("system backup disposable PostgreSQL", () => {
     await runSystemBackup();
     const snapshot=exportedSnapshot();
     vi.mocked(storage.downloadBackupObject).mockResolvedValue(gzipSync(JSON.stringify(snapshot)));
-    const review=await getSystemBackupRestoreReview(snapshot.manifest.key);
+    const review=await reserveSystemBackupRestoreReview(snapshot.manifest.key,reviewedIdentity);
     await pool.query("CREATE TABLE newer_customer_data (id integer PRIMARY KEY, parent_id integer REFERENCES a_parents(id))");
     try {
       await pool.query("INSERT INTO newer_customer_data VALUES (7,1)");
       await pool.query("INSERT INTO a_parents VALUES (2)");
-      const execute=(operationId=reviewedIdentity.operationId)=>restoreReviewedSystemBackup(snapshot.manifest.key,review.fingerprint,new Date(Date.now()+60_000).toISOString(),{...reviewedIdentity,operationId});
+      const execute=async(operationId=reviewedIdentity.operationId)=>{
+        const selected=operationId===reviewedIdentity.operationId?review:await reserveSystemBackupRestoreReview(snapshot.manifest.key,{...reviewedIdentity,operationId});
+        return restoreReviewedSystemBackup(snapshot.manifest.key,selected.fingerprint,selected.expiresAt,{...reviewedIdentity,operationId});
+      };
       await expect(execute()).rejects.toThrow("table inventory differs");
       vi.stubEnv("SYSTEM_BACKUP_EXCLUDED_TABLES","session,__drizzle_migrations,newer_customer_data");
       await expect(execute("22222222-2222-4222-8222-222222222222")).rejects.toThrow("foreign key constraint");

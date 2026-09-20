@@ -1,4 +1,4 @@
-import { admitRestoreReceipt, completeRestoreReceipt, readRestoreReceipt, restoreReceiptIdentity, type RestoreReceiptIdentity } from "./restore-receipt";
+import { expireRestoreReceipt, reserveRestoreReceipt, admitRestoreReceipt, completeRestoreReceipt, readRestoreReceipt, restoreReceiptIdentity, type RestoreReceiptIdentity } from "./restore-receipt";
 import { validateBackupRestoreReview } from "./backup-restore-review";
 import { createHash } from "node:crypto";
 import { isDeepStrictEqual } from "node:util";
@@ -684,6 +684,18 @@ export async function getSystemBackupRestoreReview(key: string) {
   return { manifest: snapshot.manifest, fingerprint: backupRestoreFingerprint(snapshot) };
 }
 
+/** Review metadata becomes executable only after Core durably reserves its identity. */
+export async function reserveSystemBackupRestoreReview(key: string, operationIdentity: { operationId: string; actorId: string }) {
+  const identity = restoreReceiptIdentity.pick({operationId:true,actorId:true}).parse(operationIdentity);
+  const review = await getSystemBackupRestoreReview(key);
+  return withBackupLock(async (client) => {
+    const clock = await client.query("SELECT clock_timestamp() AS current_time");
+    const expiresAt = new Date(new Date(clock.rows[0].current_time).getTime() + 5 * 60_000).toISOString();
+    await reserveRestoreReceipt(client, {...identity,fingerprint:review.fingerprint,expiresAt});
+    return {...review,operationId:identity.operationId,expiresAt};
+  });
+}
+
 function backupRestoreFingerprint(snapshot: DatabaseBackupSnapshot) {
   return createHash("sha256").update(JSON.stringify(snapshot)).digest("hex");
 }
@@ -719,7 +731,9 @@ export async function getReviewedRestoreOutcome(input: RestoreReceiptIdentity) {
   return withBackupLock(async (client) => {
     const state = await readRestoreReceipt(client, receipt);
     if (state === "completed") return "completed" as const;
-    if (state === "started" && Date.parse(receipt.expiresAt) <= Date.now()) return "not_applied" as const;
+    if (state === "not_applied") return "not_applied" as const;
+    if ((state === "reserved" || state === "started") && await expireRestoreReceipt(client, receipt))
+      return "not_applied" as const;
     return "unknown" as const;
   });
 }

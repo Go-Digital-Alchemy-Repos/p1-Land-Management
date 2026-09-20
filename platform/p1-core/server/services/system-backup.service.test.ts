@@ -243,7 +243,7 @@ it("rechecks expiry after archive download and after transaction lock waits, bef
       vi.mocked(storage.downloadBackupObject).mockResolvedValue(gzipSync(JSON.stringify(snapshot)));
       const review=await getSystemBackupRestoreReview(validManifest.key);
       const query=vi.fn(async(sql:string)=>{
-        if(sql.includes("INSERT INTO p1_operations.restore_receipts")) return {rows:[{operation_id:reviewedIdentity.operationId}]};
+        if(sql.includes("UPDATE p1_operations.restore_receipts SET status='started'")) return {rows:[{operation_id:reviewedIdentity.operationId}]};
     if(sql.includes("pg_try_advisory_lock")) return {rows:[{acquired:true}]};
         if(sql.includes("pg_advisory_unlock")) return {rows:[{released:true}]};
         if(delayed==="transaction-lock" && sql.includes("blog-publication-writes")) clock.mockReturnValue(instant+61_000);
@@ -265,7 +265,7 @@ it("rejects reviewed archives missing current tables before truncation", async (
   const previous=process.env.CLIENT_STACK_ID;
   process.env.CLIENT_STACK_ID="p1-land-management";
   const query=vi.fn(async(sql:string)=>{
-    if(sql.includes("INSERT INTO p1_operations.restore_receipts")) return {rows:[{operation_id:reviewedIdentity.operationId}]};
+    if(sql.includes("UPDATE p1_operations.restore_receipts SET status='started'")) return {rows:[{operation_id:reviewedIdentity.operationId}]};
     if(sql.includes("pg_try_advisory_lock")) return {rows:[{acquired:true}]};
     if(sql.includes("pg_advisory_unlock")) return {rows:[{released:true}]};
     if(sql.includes("FROM pg_tables")) return {rows:[{table_name:"example"},{table_name:"newer_customer_data"}]};
@@ -286,7 +286,7 @@ it("never cascades reviewed truncation into excluded or new relations", async ()
   const previous=process.env.CLIENT_STACK_ID;
   process.env.CLIENT_STACK_ID="p1-land-management";
   const query=vi.fn(async(sql:string)=>{
-    if(sql.includes("INSERT INTO p1_operations.restore_receipts")) return {rows:[{operation_id:reviewedIdentity.operationId}]};
+    if(sql.includes("UPDATE p1_operations.restore_receipts SET status='started'")) return {rows:[{operation_id:reviewedIdentity.operationId}]};
     if(sql.includes("pg_try_advisory_lock")) return {rows:[{acquired:true}]};
     if(sql.includes("pg_advisory_unlock")) return {rows:[{released:true}]};
     if(sql.includes("FROM pg_tables")) return {rows:[{table_name:"example"},{table_name:"session"}]};

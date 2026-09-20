@@ -3,7 +3,7 @@ import { z, ZodError } from "zod";
 import { requireWebsiteOwner } from "../middleware/website-owner";
 import { asyncHandler } from "../middleware/error-handler";
 import { storage } from "../storage";
-import { getBackupStatus, getSystemBackupRestoreReview, restoreReviewedSystemBackup, getReviewedRestoreOutcome, runSystemBackup } from "../services/system-backup.service";
+import { getBackupStatus, reserveSystemBackupRestoreReview, restoreReviewedSystemBackup, getReviewedRestoreOutcome, runSystemBackup } from "../services/system-backup.service";
 const router = Router();
 const empty = z.object({}).strict();
 const summarySchema = z.object({
@@ -83,15 +83,17 @@ router.get(
     });
   }),
 );
-// Read-only archive admission. Execution remains a separate, ledger-backed workflow.
+// Archive admission with durable receipt reservation. Execution remains a separate, ledger-backed workflow.
 router.post(
   "/restore-review",
   asyncHandler(async (req, res) => {
-    const { key } = z.object({ key: z.string().trim().min(1).max(2048) }).strict().parse(req.body);
-    const review = await getSystemBackupRestoreReview(key);
+    const { key, operationId } = z.object({ key: z.string().trim().min(1).max(2048), operationId:z.string().uuid() }).strict().parse(req.body);
+    const actorId = z.string().min(1).max(255).parse(req.dashboardIdentity!.subject);
+    const review = await reserveSystemBackupRestoreReview(key, {operationId,actorId});
     const fingerprint = z.string().regex(/^[a-f0-9]{64}$/).safeParse(review.fingerprint);
     if (!fingerprint.success) throw Error("Invalid backup fingerprint");
-    res.json({ manifest: summary(review.manifest), fingerprint: fingerprint.data });
+    if (review.operationId !== operationId || !z.string().datetime().safeParse(review.expiresAt).success) throw Error("Invalid backup reservation");
+    res.json({ manifest: summary(review.manifest), fingerprint: fingerprint.data, operationId:review.operationId, expiresAt:review.expiresAt });
   }),
 );
 const restoreIdentityBody = z.object({

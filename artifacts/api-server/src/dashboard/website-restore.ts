@@ -29,14 +29,15 @@ websiteRestoreApi.post(root, async (req,res) => {
   z.object({}).strict().parse(req.query);
   const input = restoreReviewRequest.parse(req.body);
   const connection = marketingConnection();
-  const result = await callRestoreCore(req,a.id,connection,restoreReviewOperation,input);
+  const operationId = randomUUID();
+  const result = await callRestoreCore(req,a.id,connection,restoreReviewOperation,{...input,operationId});
   const parsed = result.status === 200 ? coreRestoreReview.safeParse(result.body) : null;
-  if(!parsed?.success || parsed.data.manifest.key !== input.key)
+  if(!parsed?.success || parsed.data.operationId !== operationId || parsed.data.manifest.key !== input.key)
     throw new HttpError(503,"Archive review unavailable; no restore was started");
-  const {manifest,fingerprint} = parsed.data;
+  const {manifest,fingerprint,expiresAt} = parsed.data;
   const {key,...summary} = manifest;
   const row = await recordWebsiteRestoreReview(a.id,{
-    sourceBinding:restoreSourceBinding(connection.origin,manifest.clientStackId),key,fingerprint,summary,
+    operationId,expiresAt,sourceBinding:restoreSourceBinding(connection.origin,manifest.clientStackId),key,fingerprint,summary,
   });
   res.status(201).json(restoreOperationView(row));
 });

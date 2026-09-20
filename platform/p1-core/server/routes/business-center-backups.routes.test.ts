@@ -13,7 +13,7 @@ const state = vi.hoisted(() => ({
 vi.mock("../services/system-backup.service", () => ({
   getBackupStatus: state.status,
   runSystemBackup: state.run,
-  getSystemBackupRestoreReview: state.review,
+  reserveSystemBackupRestoreReview: state.review,
   restoreReviewedSystemBackup:state.execute,
   getReviewedRestoreOutcome:state.outcome,
 }));
@@ -45,7 +45,7 @@ beforeEach(async () => {
   state.execute.mockResolvedValue(manifest);
   state.outcome.mockResolvedValue("unknown");
   state.run.mockResolvedValue(manifest);
-  state.review.mockResolvedValue({ manifest, fingerprint: "a".repeat(64) });
+  state.review.mockResolvedValue({ manifest, fingerprint: "a".repeat(64), operationId:receiptBody.operationId, expiresAt:receiptBody.expiresAt });
   state.status.mockResolvedValue({
     enabled: false,
     configured: true,
@@ -93,7 +93,7 @@ it("gates all operations before service or audit access", async () => {
     state.identity = identity;
     expect((await req("/status")).status).toBe(403);
     expect((await req("/run", "POST")).status).toBe(403);
-    expect((await req("/restore-review", "POST", { key: manifest.key })).status).toBe(403);
+    expect((await req("/restore-review", "POST", { key: manifest.key, operationId:receiptBody.operationId })).status).toBe(403);
     expect((await req("/restore-execute", "POST", {})).status).toBe(403);
     expect((await req("/restore-outcome", "POST", {})).status).toBe(403);
   }
@@ -180,31 +180,33 @@ it("treats malformed stored manifests as service failures instead of client vali
 });
 
 it("reviews an archive without exposing rows, storage internals or starting a backup", async () => {
-  const res = await req("/restore-review", "POST", { key: manifest.key });
+  const res = await req("/restore-review", "POST", { key: manifest.key, operationId:receiptBody.operationId });
   expect(res.status).toBe(200);
   expect(res.headers.get("cache-control")).toBe("private, no-store");
   const body = await res.json();
   expect(body.fingerprint).toBe("a".repeat(64));
   expect(body.manifest.key).toBe(manifest.key);
+  expect(body.operationId).toBe(receiptBody.operationId);
+  expect(body.expiresAt).toBe(receiptBody.expiresAt);
   expect(JSON.stringify(body)).not.toContain("private");
-  expect(state.review).toHaveBeenCalledExactlyOnceWith(manifest.key);
+  expect(state.review).toHaveBeenCalledExactlyOnceWith(manifest.key,{operationId:receiptBody.operationId,actorId:"canonical-owner"});
   expect(state.run).not.toHaveBeenCalled();
   expect(state.log).not.toHaveBeenCalled();
 });
 it("rejects malformed or injected review requests before archive access", async () => {
-  for (const body of [{}, { key: " " }, { key: "x".repeat(2049) }, { key: manifest.key, fingerprint: "a".repeat(64) }, { key: manifest.key, allowLegacy: true }]) {
+  for (const body of [{}, { key: " " }, { key: "x".repeat(2049) }, { operationId:receiptBody.operationId, key: manifest.key, fingerprint: "a".repeat(64) }, { operationId:receiptBody.operationId, key: manifest.key, allowLegacy: true }, {key:manifest.key,operationId:receiptBody.operationId,actorId:"injected"}]) {
     expect((await req("/restore-review", "POST", body)).status).toBe(400);
   }
-  expect((await req("/restore-review?allowLegacy=true", "POST", { key: manifest.key })).status).toBe(400);
+  expect((await req("/restore-review?allowLegacy=true", "POST", { key: manifest.key, operationId:receiptBody.operationId })).status).toBe(400);
   expect(state.review).not.toHaveBeenCalled();
 });
 it("sanitizes archive admission failures and malformed provider fingerprints", async () => {
   state.review.mockRejectedValueOnce(Error("private archive contents"));
-  const res = await req("/restore-review", "POST", { key: manifest.key });
+  const res = await req("/restore-review", "POST", { key: manifest.key, operationId:receiptBody.operationId });
   expect(res.status).toBe(503);
   expect(await res.text()).not.toContain("private");
   state.review.mockResolvedValueOnce({ manifest, fingerprint: "invalid" });
-  expect((await req("/restore-review", "POST", { key: manifest.key })).status).toBe(503);
+  expect((await req("/restore-review", "POST", { key: manifest.key, operationId:receiptBody.operationId })).status).toBe(503);
 });
 
 const receiptBody={operationId:"11111111-1111-4111-8111-111111111111",fingerprint:"a".repeat(64),expiresAt:"2026-09-20T12:00:00Z"};

@@ -12,7 +12,7 @@ after(()=>pool.end());
 test("authenticated restore HTTP claims, grants, outcomes and retries preserve the ledger",{skip:!database},async()=>{
  const originalFetch=globalThis.fetch,oldOrigin=process.env.CORE_MARKETING_ORIGIN,oldKey=process.env.CORE_MARKETING_SERVICE_KEY;
  process.env.CORE_MARKETING_ORIGIN="https://restore-core.example.test";process.env.CORE_MARKETING_SERVICE_KEY="x".repeat(43);
- let mode="lost",outcome="unknown",executions=0,providerCalls=0;
+ let reservationMode="valid",mode="lost",outcome="unknown",executions=0,providerCalls=0;
  globalThis.fetch=async(input,options)=>{
   const url=String(input);
   if(!url.startsWith("https://restore-core.example.test/"))return originalFetch(input,options);
@@ -22,7 +22,7 @@ test("authenticated restore HTTP claims, grants, outcomes and retries preserve t
   const g=(await pool.query("SELECT * FROM core_federation_grant WHERE id=$1 AND expires_at>now()",[grant])).rows[0];
   assert.ok(g?.owner_attested);
   const b=JSON.parse(String(options?.body));
-  if(url.endsWith("/restore-review"))return Response.json({manifest:{key:b.key,createdAt:"2026-09-20T00:00:00Z",clientStackId:"p1-land-management",tableCount:2,totalRowCount:3,mediaAssetCount:0},fingerprint:"a".repeat(64)});
+  if(url.endsWith("/restore-review"))return Response.json({operationId:reservationMode==="mismatch"?randomUUID():b.operationId,expiresAt:new Date(Date.now()+(reservationMode==="expired"?-1000:60000)).toISOString(),manifest:{key:b.key,createdAt:"2026-09-20T00:00:00Z",clientStackId:"p1-land-management",tableCount:2,totalRowCount:3,mediaAssetCount:0},fingerprint:"a".repeat(64)});
   const row=(await pool.query("SELECT * FROM website_restore_operation WHERE id=$1",[b.operationId])).rows[0];
   assert.equal(row.actor_id,g.canonical_user_id);assert.equal(b.fingerprint,row.archive_fingerprint);
   assert.equal(b.expiresAt,new Date(row.expires_at).toISOString());
@@ -54,6 +54,13 @@ test("authenticated restore HTTP claims, grants, outcomes and retries preserve t
   assert.equal((await req("")).status,401);
   for(const cookie of [manager,inactive,mfa])assert.equal((await req(cookie)).status,403);
   assert.equal(providerCalls,0);
+  for(const [invalidMode,status] of [["mismatch",503],["expired",409]] as const){
+   reservationMode=invalidMode;
+   const before=(await pool.query("SELECT count(*)::int n FROM website_restore_operation")).rows[0].n;
+   assert.equal((await req(owner,"",{key:"db/fixture"})).status,status);
+   assert.equal((await pool.query("SELECT count(*)::int n FROM website_restore_operation")).rows[0].n,before);
+  }
+  reservationMode="valid";
   const review=await req(owner,"",{key:"db/fixture"});assert.equal(review.status,201);
   const id=review.body.id;
   assert.equal(JSON.stringify(review.body).includes("fingerprint"),false);

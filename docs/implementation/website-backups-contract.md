@@ -370,3 +370,53 @@ The requested additional identity-sequence regression also passed: advance live
 state to41 after backup, fail completion after restore sequence adjustment, verify
 rollback retains last_value41/is_calledtrue and next generated ID42. The full
 PostgreSQL suite now passes17 tests without skips; cleanup and Core typecheck pass.
+
+### Receipt reservation remediation — candidate, September20
+
+Dashboard now generates the operation UUID before requesting Core review and
+requires the returned reservation to match. It records Core's exact UUID and
+expiry rather than generating a second identity/deadline locally. Invalid,
+expired, or mismatched reservations cannot create executable Dashboard reviews.
+The browser still supplies only the archive key, and privileged execute/outcome
+transports remain outside the generic CMS proxy.
+
+Dashboard validation: five contract tests, two isolated PostgreSQL/authenticated
+HTTP suites (zero skips), and API typechecking pass. These include correlation and
+expiry rejection without ledger creation, exact reserved identity/deadline
+persistence, duplicate identity rejection, lost responses and execution replay
+protection. The disposable database/container was removed. Core reservation,
+independent review, and complete cross-service failure acceptance are still being
+validated; this checkpoint does not authorize production promotion.
+
+Independent Dashboard review found no reservation-correlation defect. The claim
+freshness check now uses wall-clock database time after the advisory-lock wait.
+A real PostgreSQL regression holds that lock, observes the blocked claimant,
+expires its reservation, releases the lock, and verifies no running claim occurs.
+Both isolated suites pass again without skips.
+
+The next inactive-initiator recovery design is Owner-only outcome verification,
+not execution takeover: another active Owner may inspect unresolved operations of
+an inactive initiator, with original receipt identity resolved exclusively from
+stored ledger data. A separate Core outcome contract must authenticate the acting
+Owner while verifying the original receipt; audit both identities. No impersonation,
+reactivation, retry execution or browser-supplied receipt identity is permitted.
+This is a reviewed implementation direction, not an implemented capability yet.
+
+Core remediation completed in candidate0009: review persists a reserved receipt
+before returning metadata; execution consumes only the matching unexpired receipt.
+Locked reconciliation uses PostgreSQL time and persists terminal `not_applied`,
+which cannot later admit execution even if the clock moves backward. Missing or
+mismatched evidence remains unknown. Existing0008 started/completed rows survive
+the additive migration unchanged. Core's operation schema remains outside public
+website archives; full infrastructure database recovery must preserve/reconcile
+that schema as part of its controlled recovery procedure.
+
+Final validation:54 focused Core tests,19 real PostgreSQL tests (independently
+rerun by parent with sanitized environment; exit0, cleanup confirmed), five
+Dashboard contract tests and two PostgreSQL/authenticated HTTP suites pass. Core
+and API typechecks and Dashboard API production build pass. Independent review
+found no additional correctness blocker in the final reservation patch. This
+closes the ordinary pre-admission missing-receipt gap only. Inactive-initiator
+recovery, genuine two-service authenticated failure acceptance, browser/mobile
+checks, and production migration/rollback evidence remain required. No production
+restore, migration, deployment or `/admin` retirement occurred.

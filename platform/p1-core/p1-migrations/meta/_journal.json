@@ -64,6 +64,13 @@
       "when": 1789833600005,
       "tag": "0008_restore_operation_receipts",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1789833600006,
+      "tag": "0009_restore_receipt_reservations",
+      "breakpoints": true
     }
   ]
 }

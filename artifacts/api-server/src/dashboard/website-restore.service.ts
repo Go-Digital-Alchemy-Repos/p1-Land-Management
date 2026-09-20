@@ -6,6 +6,7 @@ import { HttpError } from "./policy";
 import type { PoolClient } from "pg";
 const hash = z.string().regex(/^[a-f0-9]{64}$/);
 const reviewSchema = z.object({
+  operationId: z.string().uuid(), expiresAt: z.string().datetime(),
   sourceBinding: hash,
   key: z.string().min(1).max(2048), fingerprint: hash,
   summary: z.object({
@@ -23,11 +24,13 @@ async function audit(c: PoolClient, actorId: string, id: string, action: string)
 }
 /** Input is a server-validated Core review, never a browser-supplied archive. */
 export async function recordWebsiteRestoreReview(actorId: string, input: unknown) {
-  const b=reviewSchema.parse(input), id=randomUUID();
+  const b=reviewSchema.parse(input), id=b.operationId;
   return transaction(async c=>{
     await owner(c,actorId);
+    const deadline=(await c.query("SELECT $1::timestamptz > clock_timestamp() AND $1::timestamptz <= clock_timestamp()+interval '5 minutes' AS fresh",[b.expiresAt])).rows[0];
+    if (!deadline.fresh) throw new HttpError(409,"Restore reservation expired or invalid; review again");
     const row=(await c.query(`INSERT INTO website_restore_operation(id,actor_id,source_binding,archive_key,archive_fingerprint,summary,expires_at)
-      VALUES($1,$2,$3,$4,$5,$6,now()+interval '5 minutes') RETURNING *`,[id,actorId,b.sourceBinding,b.key,b.fingerprint,b.summary])).rows[0];
+      VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING *`,[id,actorId,b.sourceBinding,b.key,b.fingerprint,b.summary,b.expiresAt])).rows[0];
     await audit(c,actorId,id,"website.restore_reviewed");
     return row;
   });
@@ -40,7 +43,7 @@ export async function claimWebsiteRestore(actorId: string, id: string, sourceBin
     await owner(c,actorId);
     // Serialize claims to this backend, including different review IDs.
     await c.query("SELECT pg_advisory_xact_lock(hashtextextended($1, 0))",["website-restore:"+sourceBinding]);
-    const row=(await c.query("SELECT *,expires_at > now() AS fresh FROM website_restore_operation WHERE id=$1 FOR UPDATE",[id])).rows[0];
+    const row=(await c.query("SELECT *,expires_at > clock_timestamp() AS fresh FROM website_restore_operation WHERE id=$1 FOR UPDATE",[id])).rows[0];
     if (!row || row.actor_id!==actorId) throw new HttpError(404,"Restore review not found");
     if (row.source_binding!==sourceBinding) throw new HttpError(409,"Website connection changed; review again");
     if (row.status!=="reviewed") return {execute:false,operation:row};

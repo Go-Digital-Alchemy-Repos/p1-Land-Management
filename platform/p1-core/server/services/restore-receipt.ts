@@ -5,14 +5,22 @@ export const restoreReceiptIdentity=z.object({
   fingerprint:z.string().regex(/^[a-f0-9]{64}$/),expiresAt:z.string().datetime(),
 }).strict();
 export type RestoreReceiptIdentity=z.infer<typeof restoreReceiptIdentity>;
+/** Persist reservation before returning an executable review to Dashboard. */
+export async function reserveRestoreReceipt(client:PoolClient,input:RestoreReceiptIdentity){
+  const b=restoreReceiptIdentity.parse(input);
+  const inserted=await client.query(`INSERT INTO p1_operations.restore_receipts(operation_id,actor_id,fingerprint,expires_at,status)
+    VALUES($1,$2,$3,$4,'reserved') ON CONFLICT(operation_id) DO NOTHING RETURNING operation_id`,[b.operationId,b.actorId,b.fingerprint,b.expiresAt]);
+  if(inserted.rows.length!==1) throw new Error("Restore operation was already reserved; review with a new operation");
+}
 /** Caller holds the backup advisory lock. Commit admission before any restore transaction. */
 export async function admitRestoreReceipt(client:PoolClient,input:RestoreReceiptIdentity){
   const b=restoreReceiptIdentity.parse(input);
-  const inserted=await client.query(`INSERT INTO p1_operations.restore_receipts(operation_id,actor_id,fingerprint,expires_at)
-    VALUES($1,$2,$3,$4) ON CONFLICT(operation_id) DO NOTHING RETURNING operation_id`,[b.operationId,b.actorId,b.fingerprint,b.expiresAt]);
-  if(inserted.rows.length) return;
-  // Never replay even when the earlier attempt rolled back or its response was lost.
-  throw new Error("Restore operation was already admitted; verify its outcome");
+  const admitted=await client.query(`UPDATE p1_operations.restore_receipts SET status='started',started_at=now()
+    WHERE operation_id=$1 AND actor_id=$2 AND fingerprint=$3 AND expires_at=$4
+      AND status='reserved' AND expires_at>clock_timestamp() RETURNING operation_id`,[b.operationId,b.actorId,b.fingerprint,b.expiresAt]);
+  if(admitted.rows.length===1) return;
+  // Never replay, invent a missing reservation, or admit altered review identity.
+  throw new Error("Restore operation is missing, expired or already admitted; verify its outcome");
 }
 /** Must run in the SAME transaction as restored rows, before COMMIT. */
 export async function completeRestoreReceipt(client:PoolClient,input:RestoreReceiptIdentity){
@@ -27,5 +35,14 @@ export async function readRestoreReceipt(client:PoolClient,input:RestoreReceiptI
   const result=await client.query(`SELECT status FROM p1_operations.restore_receipts
     WHERE operation_id=$1 AND actor_id=$2 AND fingerprint=$3 AND expires_at=$4`,[b.operationId,b.actorId,b.fingerprint,b.expiresAt]);
   if(!result.rows.length) return null;
-  return z.enum(["started","completed"]).parse(result.rows[0].status);
+  return z.enum(["reserved","started","completed","not_applied"]).parse(result.rows[0].status);
+}
+
+/** Caller holds the restore lock; seal no-commit evidence before Dashboard may unblock. */
+export async function expireRestoreReceipt(client:PoolClient,input:RestoreReceiptIdentity){
+  const b=restoreReceiptIdentity.parse(input);
+  const result=await client.query(`UPDATE p1_operations.restore_receipts SET status='not_applied'
+    WHERE operation_id=$1 AND actor_id=$2 AND fingerprint=$3 AND expires_at=$4
+      AND status IN ('reserved','started') AND expires_at<=clock_timestamp() RETURNING operation_id`,[b.operationId,b.actorId,b.fingerprint,b.expiresAt]);
+  return result.rows.length===1;
 }

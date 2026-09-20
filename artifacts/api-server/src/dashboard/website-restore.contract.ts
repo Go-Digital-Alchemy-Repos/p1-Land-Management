@@ -9,6 +9,7 @@ export const restoreSummary = z.object({
   mediaAssetCount:z.number().int().nonnegative(),
 });
 export const coreRestoreReview = z.object({
+  operationId:z.string().uuid(), expiresAt:z.string().datetime(),
   manifest:restoreSummary.extend({key:z.string().min(1).max(2048)}),
   fingerprint:z.string().regex(/^[a-f0-9]{64}$/),
 }).strict();
