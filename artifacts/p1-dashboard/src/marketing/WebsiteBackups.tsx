@@ -6,6 +6,7 @@ import {
 } from "@workspace/api-client-react/dashboard";
 import { scheduleDateTime } from "../schedule-dates";
 import "./website-backups.css";
+import WebsiteRestore from "./WebsiteRestore";
 
 type Status = Awaited<ReturnType<typeof getWebsiteBackupStatus>>;
 type Summary = Awaited<ReturnType<typeof runWebsiteBackup>>;
@@ -287,10 +288,11 @@ export default function WebsiteBackups() {
       ) : (
         !busy && !completed && <p>Backup status has not loaded.</p>
       )}
+      <WebsiteRestore backups={status?.recent ?? []} disabled={busy || !fresh || !status?.configured} />
       <p className="backup-note">
         Media counts describe database records, not backed-up media files.
         Separate media recovery and an isolated restore rehearsal are required.
-        Restore is not available from this page.
+        Database restore does not recover separately stored media files.
       </p>
     </section>
   );

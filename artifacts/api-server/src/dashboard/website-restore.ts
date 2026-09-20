@@ -7,7 +7,7 @@ import { HttpError } from "./policy";
 import { marketingConnection } from "./marketing-reporting.transport";
 import { callCms, restoreReviewOperation, restoreExecuteOperation, restoreOutcomeOperation, type CmsOperation } from "./marketing-cms.transport";
 import { coreRestoreReview, restoreReviewRequest, restoreSourceBinding, restoreOperationView, verifiedRestoreOutcome, restoreExecutionRequest } from "./website-restore.contract";
-import { recordWebsiteRestoreReview, readWebsiteRestoreOperation, claimWebsiteRestore, recordWebsiteRestoreOutcome, reconcileWebsiteRestore } from "./website-restore.service";
+import { recordWebsiteRestoreReview, readWebsiteRestoreOperation, listWebsiteRestoreOperations, claimWebsiteRestore, recordWebsiteRestoreOutcome, reconcileWebsiteRestore } from "./website-restore.service";
 export const websiteRestoreApi = Router();
 const root = "/marketing/cms/website-system/backups/restore-operations";
 async function callRestoreCore(req:Request,actorId:string,connection:ReturnType<typeof marketingConnection>,operation:CmsOperation,body:unknown){
@@ -39,6 +39,13 @@ websiteRestoreApi.post(root, async (req,res) => {
     sourceBinding:restoreSourceBinding(connection.origin,manifest.clientStackId),key,fingerprint,summary,
   });
   res.status(201).json(restoreOperationView(row));
+});
+websiteRestoreApi.get(root,async(req,res)=>{
+  res.set("Cache-Control","private, no-store");
+  const a=await actor(req);
+  if(a.role!=="owner") throw new HttpError(403,"Owner access required");
+  z.object({}).strict().parse(req.query);
+  res.json((await listWebsiteRestoreOperations(a.id)).map(restoreOperationView));
 });
 websiteRestoreApi.get(root+"/:id",async(req,res)=>{
   res.set("Cache-Control","private, no-store");

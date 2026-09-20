@@ -16427,6 +16427,202 @@
           }
         }
       }
+    },
+    "/marketing/cms/website-system/backups/restore-operations": {
+      "get": {
+        "operationId": "listWebsiteRestoreOperations",
+        "tags": [
+          "Dashboard"
+        ],
+        "responses": {
+          "200": {
+            "description": "Owner restore operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WebsiteRestoreOperation"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "reviewWebsiteRestore",
+        "tags": [
+          "Dashboard"
+        ],
+        "responses": {
+          "201": {
+            "description": "Owner restore operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteRestoreOperation"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "key"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "key": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/marketing/cms/website-system/backups/restore-operations/{id}": {
+      "get": {
+        "operationId": "getWebsiteRestoreOperation",
+        "tags": [
+          "Dashboard"
+        ],
+        "responses": {
+          "200": {
+            "description": "Owner restore operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteRestoreOperation"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    },
+    "/marketing/cms/website-system/backups/restore-operations/{id}/execute": {
+      "post": {
+        "operationId": "executeWebsiteRestore",
+        "tags": [
+          "Dashboard"
+        ],
+        "responses": {
+          "200": {
+            "description": "Owner restore operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteRestoreOperation"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Owner restore operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteRestoreOperation"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "confirmation"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "confirmation": {
+                    "type": "string",
+                    "enum": [
+                      "RESTORE WEBSITE DATABASE"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/marketing/cms/website-system/backups/restore-operations/{id}/reconcile": {
+      "post": {
+        "operationId": "reconcileWebsiteRestore",
+        "tags": [
+          "Dashboard"
+        ],
+        "responses": {
+          "200": {
+            "description": "Owner restore operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteRestoreOperation"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -34733,6 +34929,72 @@
           },
           "config": {
             "$ref": "#/components/schemas/SalesPipelineConfig"
+          }
+        }
+      },
+      "WebsiteRestoreOperation": {
+        "type": "object",
+        "required": [
+          "id",
+          "status",
+          "summary",
+          "expiresAt",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "reviewed",
+              "running",
+              "completed",
+              "uncertain",
+              "not_applied"
+            ]
+          },
+          "summary": {
+            "type": "object",
+            "required": [
+              "createdAt",
+              "clientStackId",
+              "tableCount",
+              "totalRowCount",
+              "mediaAssetCount"
+            ],
+            "properties": {
+              "createdAt": {
+                "type": "string"
+              },
+              "clientStackId": {
+                "type": "string"
+              },
+              "tableCount": {
+                "type": "integer"
+              },
+              "totalRowCount": {
+                "type": "integer"
+              },
+              "mediaAssetCount": {
+                "type": "integer"
+              }
+            }
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       }

@@ -93,3 +93,11 @@ export async function reconcileWebsiteRestore(actorId:string,id:string,sourceBin
     return next;
   });
 }
+
+export async function listWebsiteRestoreOperations(actorId:string){
+  return transaction(async c=>{
+    await owner(c,actorId);
+    return (await c.query(`SELECT * FROM website_restore_operation WHERE actor_id=$1
+      ORDER BY CASE WHEN status IN ('running','uncertain') THEN 0 ELSE 1 END,created_at DESC,id DESC LIMIT 50`,[actorId])).rows;
+  });
+}

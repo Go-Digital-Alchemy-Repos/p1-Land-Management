@@ -125,6 +125,7 @@ import type {
   EstimateDecision,
   EstimateDecisionReceipt,
   EstimateRevision,
+  ExecuteWebsiteRestoreBody,
   Expense,
   FieldConflictList,
   FieldConflictResolution,
@@ -292,6 +293,7 @@ import type {
   PublicationReceipt,
   ReadinessResult,
   ReadinessUpdate,
+  ReconcileWebsiteRestoreBody,
   RecurringJob,
   RecurringServicePause,
   ReplaceMarketingMediaBody,
@@ -302,6 +304,7 @@ import type {
   RetryMarketingFormDeliveryJob200,
   ReviewAgreementDraftPricing,
   ReviewAgreementDraftTemplates,
+  ReviewWebsiteRestoreBody,
   ReviseAgreementTemplateBody,
   RevokeManagedInvitation200,
   RevokeManagedUserSessions200,
@@ -390,6 +393,7 @@ import type {
   WebsiteMenuPatch,
   WebsiteMenuPreconditions,
   WebsiteMenuReferences,
+  WebsiteRestoreOperation,
   WebsiteSocialInput,
   WebsiteSocialState,
   WebsiteTypographyInput,
@@ -9376,6 +9380,116 @@ export const saveSalesPipelineSettings = async (saveSalesPipelineSettings: SaveS
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
       saveSalesPipelineSettings,)
+  }
+);}
+
+
+
+export const getListWebsiteRestoreOperationsUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/website-system/backups/restore-operations`
+}
+
+export const listWebsiteRestoreOperations = async ( options?: RequestInit): Promise<WebsiteRestoreOperation[]> => {
+
+  return customFetch<WebsiteRestoreOperation[]>(getListWebsiteRestoreOperationsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getReviewWebsiteRestoreUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/website-system/backups/restore-operations`
+}
+
+export const reviewWebsiteRestore = async (reviewWebsiteRestoreBody: ReviewWebsiteRestoreBody, options?: RequestInit): Promise<WebsiteRestoreOperation> => {
+
+  return customFetch<WebsiteRestoreOperation>(getReviewWebsiteRestoreUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      reviewWebsiteRestoreBody,)
+  }
+);}
+
+
+
+export const getGetWebsiteRestoreOperationUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/website-system/backups/restore-operations/${id}`
+}
+
+export const getWebsiteRestoreOperation = async (id: string, options?: RequestInit): Promise<WebsiteRestoreOperation> => {
+
+  return customFetch<WebsiteRestoreOperation>(getGetWebsiteRestoreOperationUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getExecuteWebsiteRestoreUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/website-system/backups/restore-operations/${id}/execute`
+}
+
+export const executeWebsiteRestore = async (id: string,
+    executeWebsiteRestoreBody: ExecuteWebsiteRestoreBody, options?: RequestInit): Promise<WebsiteRestoreOperation> => {
+
+  return customFetch<WebsiteRestoreOperation>(getExecuteWebsiteRestoreUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      executeWebsiteRestoreBody,)
+  }
+);}
+
+
+
+export const getReconcileWebsiteRestoreUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/marketing/cms/website-system/backups/restore-operations/${id}/reconcile`
+}
+
+export const reconcileWebsiteRestore = async (id: string,
+    reconcileWebsiteRestoreBody: ReconcileWebsiteRestoreBody, options?: RequestInit): Promise<WebsiteRestoreOperation> => {
+
+  return customFetch<WebsiteRestoreOperation>(getReconcileWebsiteRestoreUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      reconcileWebsiteRestoreBody,)
   }
 );}
 

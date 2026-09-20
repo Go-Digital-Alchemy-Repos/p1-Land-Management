@@ -295,3 +295,29 @@ conflict rejection. API typechecking passed. Composed HTTP and browser acceptanc
 remain pending, along with native UI/history and operator recovery for missing
 receipts. Core0008 and Dashboard0049/0050 remain undeployed candidates; do not
 retire `/admin` or mark restore parity complete yet.
+
+### Native restore UI/history candidate
+
+The Backups page now offers archive selection, metadata review, exact typed
+confirmation, review-expiry messaging, per-Owner operation history and explicit
+outcome checks. It describes destructive replacement and separate media recovery.
+History loads independently on mount; running/uncertain records appear first and
+block new UI attempts. A lost execution response disables execution until history
+is refreshed. Double-clicks share one in-flight gate. Reconciliation never calls
+execution, and confirmed not-applied operations require a fresh archive review.
+
+`GET .../restore-operations` returns up to50 initiating-Owner records, prioritizing
+unresolved operations. It rejects inactive Owners and query injection. OpenAPI is
+the source for the regenerated typed review/list/read/execute/reconcile clients.
+Design reference lock: retain the approved current Backups page's white panels,
+neutral typography/borders,24px panel radius, bare colored icons and responsive
+single-column layout. The restore action uses the existing warning-color role;
+no new global theme or public-website style is introduced.
+
+Validation:11 rendered-component tests pass (7 existing backup,4 restore), the
+real PostgreSQL ledger test passes including history isolation/prioritization,
+Dashboard/API typechecks pass, and Dashboard production build passes with its
+chunk-size warning. Initial UI command used the default Core config and found no
+tests; the dashboard-specific config then ran all11 successfully. Browser/mobile
+visual checks and composed authenticated HTTP tests remain pending. This remains
+a task-branch candidate, not completed production restore parity.

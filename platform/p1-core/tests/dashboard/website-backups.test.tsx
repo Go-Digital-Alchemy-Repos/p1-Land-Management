@@ -4,6 +4,7 @@ import { createRoot, type Root } from "react-dom/client";
 import { beforeEach, afterEach, it, expect, vi } from "vitest";
 const api = vi.hoisted(() => ({ get: vi.fn(), run: vi.fn() }));
 vi.mock("@workspace/api-client-react/dashboard", () => ({
+  listWebsiteRestoreOperations:async()=>[],
   getWebsiteBackupStatus: api.get,
   runWebsiteBackup: api.run,
 }));
