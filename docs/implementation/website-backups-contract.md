@@ -81,3 +81,23 @@ Authenticated Owner navigation loaded the native screen and ten real history ent
 Desktop and 390px mobile visual checks passed; document width was 390px and only one h1 existed. No captured browser console errors. Public, Core and Dashboard health endpoints returned 200. Unauthenticated native status returned 401; non-Owner denial is covered by local route/transport tests, not impersonation of a real account. No create, retention delete, restore, upload or configuration mutation was performed in production.
 
 The readable manifest now provides a concrete recovery source to investigate. It does not prove the archive has been independently copied, restored or reconciled, and zero media records does not establish recoverability of public media assets. These are the next recovery acceptance boundaries.
+
+## Controlled restore foundation — September 20 (not exposed)
+
+Native restore remains a required parity gap. The next workflow will require an
+Owner to review a selected archive before explicitly confirming replacement of
+Core data. Service foundation now offers a read-only review fingerprint over the
+entire parsed snapshot and a separate reviewed restore entry point. It re-downloads
+inside the existing session advisory lock, verifies target stack and key, and
+rejects any changed fingerprint before restore SQL. Existing retained callers are
+unchanged. A fingerprint is an integrity precondition, not authentication or a
+permission grant; the native route must independently enforce active Owner access.
+
+No new route or UI is enabled in this checkpoint. Required next work: metadata-only
+strict review/execute contracts and allowlists; archive structural validation;
+bounded review lifetime and explicit typed destructive confirmation; independent
+operation/audit recovery because restoring Core can replace its audit/user rows;
+uncertain-outcome handling without automatic replay; isolated successful restore
+and failure-path tests, UI acceptance, and review before production exposure.
+Never run production restore as an acceptance test. Keep `/admin` available until
+the full workflow is accepted. The earlier restore and rollback gates still apply.

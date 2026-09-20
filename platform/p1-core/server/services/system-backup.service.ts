@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { isDeepStrictEqual } from "node:util";
 import { startStoppableWorker, type StoppableWorker } from "../utils/runtime-lifecycle";
 import { gzipSync, gunzipSync } from "zlib";
@@ -646,6 +647,35 @@ export async function restoreBackupSnapshot(
     allowLegacyBackup: options.allowLegacyBackup,
   });
   return withBackupLock((client) => restoreBackupSnapshotWithClient(client, snapshot, options));
+}
+
+/** Read-only review; callers must project metadata, never archive rows. */
+export async function getSystemBackupRestoreReview(key: string) {
+  const operation = await beginBackupStorageOperation();
+  if (!operation) throw new Error("Backup storage is not configured");
+  const snapshot = await loadBackupSnapshotFromKey(key, operation);
+  assertBackupRestoreIdentity(snapshot.manifest, { targetStackId: process.env.CLIENT_STACK_ID });
+  if (snapshot.manifest.key !== key) throw new Error("Backup archive key mismatch");
+  return { manifest: snapshot.manifest, fingerprint: backupRestoreFingerprint(snapshot) };
+}
+
+function backupRestoreFingerprint(snapshot: DatabaseBackupSnapshot) {
+  return createHash("sha256").update(JSON.stringify(snapshot)).digest("hex");
+}
+
+/** Separate reviewed entry point; retained callers keep their existing contract. */
+export async function restoreReviewedSystemBackup(key: string, expectedFingerprint: string) {
+  if (!/^[a-f0-9]{64}$/.test(expectedFingerprint)) throw new Error("Backup review is required");
+  const operation = await beginBackupStorageOperation();
+  if (!operation) throw new Error("Backup storage is not configured");
+  return withBackupLock(async (client) => {
+    const snapshot = await loadBackupSnapshotFromKey(key, operation);
+    assertBackupRestoreIdentity(snapshot.manifest, { targetStackId: process.env.CLIENT_STACK_ID });
+    if (snapshot.manifest.key !== key || backupRestoreFingerprint(snapshot) !== expectedFingerprint)
+      throw new Error("Backup changed after review; review it again before restoring");
+    await restoreBackupSnapshotWithClient(client, snapshot);
+    return snapshot.manifest;
+  });
 }
 
 export async function restoreSystemBackupFromKey(key: string) {

@@ -18,7 +18,7 @@ vi.mock("./backup-storage.service", () => ({
 import type { PoolClient } from "pg";
 import { pool } from "../db";
 import * as storage from "./backup-storage.service";
-import { getBackupStatus, listRecentBackupManifests, runSystemBackup, serializeRestoreValue } from "./system-backup.service";
+import { getBackupStatus, listRecentBackupManifests, runSystemBackup, serializeRestoreValue, getSystemBackupRestoreReview, restoreReviewedSystemBackup } from "./system-backup.service";
 
 describe("serializeRestoreValue", () => {
   it("preserves JSON arrays and objects as JSON parameters during restore", () => {
@@ -172,5 +172,52 @@ describe("backup session cleanup failures", () => {
     expect(release).toHaveBeenCalledExactlyOnceWith(false);
     expect(query).toHaveBeenCalledTimes(1);
     expect(storage.uploadBackupObject).not.toHaveBeenCalled();
+  });
+});
+
+
+describe("reviewed backup restore admission", () => {
+  it("reviews content without database access and fingerprints all rows", async () => {
+    vi.clearAllMocks();
+    const previous = process.env.CLIENT_STACK_ID;
+    process.env.CLIENT_STACK_ID = "p1-land-management";
+    try {
+      vi.mocked(storage.beginBackupStorageOperation).mockResolvedValue({ source: "env", bucketName: "test", prefix: "test" });
+      const snapshot = { manifest: validManifest, tables: [], sequences: [] };
+      vi.mocked(storage.downloadBackupObject).mockResolvedValue(gzipSync(JSON.stringify(snapshot)));
+      const first = await getSystemBackupRestoreReview(validManifest.key);
+      expect(first.fingerprint).toMatch(/^[a-f0-9]{64}$/);
+      expect(first).not.toHaveProperty("tables");
+      vi.mocked(storage.downloadBackupObject).mockResolvedValue(gzipSync(JSON.stringify({...snapshot, tables:[{name:"example",rows:[{id:1}],rowCount:1}]})));
+      expect((await getSystemBackupRestoreReview(validManifest.key)).fingerprint).not.toBe(first.fingerprint);
+      expect(pool.connect).not.toHaveBeenCalled();
+    } finally { if(previous === undefined) delete process.env.CLIENT_STACK_ID; else process.env.CLIENT_STACK_ID=previous; }
+  });
+  it("rejects replaced archives under the operation lock before starting restore SQL", async () => {
+    vi.clearAllMocks();
+    const previous = process.env.CLIENT_STACK_ID;
+    process.env.CLIENT_STACK_ID = "p1-land-management";
+    const query = vi.fn(async (sql: string) => {
+      if (sql.includes("pg_try_advisory_lock")) return {rows:[{acquired:true}]};
+      if (sql.includes("pg_advisory_unlock")) return {rows:[{released:true}]};
+      throw Error("Restore SQL must not execute");
+    });
+    const release = vi.fn();
+    vi.mocked(pool.connect as () => Promise<PoolClient>).mockResolvedValue({query,release} as unknown as PoolClient);
+    vi.mocked(storage.beginBackupStorageOperation).mockResolvedValue({source:"env",bucketName:"test",prefix:"test"});
+    try {
+      vi.mocked(storage.downloadBackupObject).mockResolvedValue(gzipSync(JSON.stringify({manifest:validManifest,tables:[],sequences:[]})));
+      const review = await getSystemBackupRestoreReview(validManifest.key);
+      vi.mocked(storage.downloadBackupObject).mockResolvedValue(gzipSync(JSON.stringify({manifest:{...validManifest,totalRowCount:1},tables:[],sequences:[]})));
+      await expect(restoreReviewedSystemBackup(validManifest.key,review.fingerprint)).rejects.toThrow("changed after review");
+      expect(query).toHaveBeenCalledTimes(2);
+      expect(release).toHaveBeenCalledWith(false);
+    } finally { if(previous === undefined) delete process.env.CLIENT_STACK_ID; else process.env.CLIENT_STACK_ID=previous; }
+  });
+  it("rejects missing review before storage or database access", async () => {
+    vi.clearAllMocks();
+    await expect(restoreReviewedSystemBackup(validManifest.key, "")).rejects.toThrow("review is required");
+    expect(storage.beginBackupStorageOperation).not.toHaveBeenCalled();
+    expect(pool.connect).not.toHaveBeenCalled();
   });
 });
