@@ -1,3 +1,28 @@
+## Populated database and media archive recovery verified — September 19
+
+Actual post-import database snapshot passed isolated PostgreSQL18 restore: all
+57tables/645rows, exact timestamp microseconds, five Blog receipts/posts/routes/
+states, eleven revisions and20media records. Repeated restore checked populated
+receipt protection; sequences and migration replay passed. Container/volume
+cleanup verified. Private evidence:
+`/private/tmp/p1-populated-recovery-51adx6is/evidence.json`. Sourcehelper SHA
+`9af2d32467bc28cd9c7187772dcc828d5843480378e581f91f4c653f9b7850f5`.
+No application/provider worker started and no production restore occurred.
+
+All20actual production media objects were downloaded read-only, matched to approved
+hashes/MIME/dimensions and fully decoded. A private media archive was extracted
+into an isolated directory and every byte hash matched; restore directory removed.
+11,411,502 bytes; archive SHA256
+`2b68c4a62aac28f6668876ba69ec8b8959cb08d21d86ed51e600eedb0cf803b4`.
+Private pointer `/private/tmp/p1-blog-media-recovery-current-path` retains manifest,
+objects, archive and evidence. This is local byte recovery, not provider restoration.
+
+backup_retirement_review is enhancing the existing application rollback runner
+with explicit full Blog publication and permanent-ownership probes. Do not accept
+empty client_site_content as proof of populated Blog recovery. Current/prior image
+startup and actual provider restoration remain open. Private draft cleanup still
+pending browser confirmation; public publication is unchanged.
+
 ## Analytics release verified — September 19
 
 Runtime `9978d9dba6d2f1db0297bbff291c33fdfff88aa4` is pushed to main and task
