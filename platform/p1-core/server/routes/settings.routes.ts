@@ -1,3 +1,5 @@
+import { hasReservedWebsiteScriptMarkers } from "../services/website-script-management.service";
+import { isWebsiteScriptSetting } from "@shared/website-script-management";
 import { isGoogleReportingSetting } from "@shared/google-reporting-config";
 import { integrationRegistry, websiteIntegrationProviders } from "@shared/website-integrations";
 import { isWebsiteIdentityKey } from "@shared/website-identity";
@@ -55,7 +57,7 @@ function requireAdminOrDesignEditor(req: Request, res: Response, next: NextFunct
 
 const integrationKeys = new Set<string>(Object.values(integrationRegistry).flatMap(provider => [...provider.publicKeys, ...provider.secretKeys]));
 function isWebsiteIntegrationSetting(key: unknown, category?: unknown) {
-  return isGoogleReportingSetting(key, category) || (typeof key === "string" && integrationKeys.has(key)) ||
+  return isWebsiteScriptSetting(key, category) || isGoogleReportingSetting(key, category) || (typeof key === "string" && integrationKeys.has(key)) ||
     (typeof category === "string" && websiteIntegrationProviders.some(provider => provider === category));
 }
 const integrationMovedMessage = "Manage website integrations in Marketing > Website System > Integrations";
@@ -130,6 +132,9 @@ router.put(
     )
       return res.status(403).json({ message: "This retired private proof setting is protected" });
     if (isWebsiteIntegrationSetting(existingPrivate?.key, existingPrivate?.category)) return rejectLegacyIntegration(req,res);
+    if (data.key === "public_head_html" && hasReservedWebsiteScriptMarkers(data.value) && data.value !== existingPrivate?.value) {
+      return res.status(400).json({ message: "Manage Google Analytics and Turnstile through Head Tags > Managed scripts. Remove their script snippets from custom head markup." });
+    }
     const scope = websiteSettingScope(data.key,data.category) || websiteSettingScope(existingPrivate?.key,existingPrivate?.category);
     if (scope && !isWebsiteOwner(req)) return res.status(403).json({message:"Owner access required"});
     if (req.user?.role !== "admin" && !(scope && isWebsiteOwner(req))) {

@@ -12,9 +12,7 @@ import {
 import { Router as WouterRouter, useLocation, useSearch } from "wouter";
 import { checkClientRedirect } from "@/lib/website-redirects";
 
-const trackGooglePage = createGoogleAnalytics(
-  import.meta.env.VITE_GA_MEASUREMENT_ID,
-);
+const trackGooglePage = createGoogleAnalytics();
 
 class RouteErrorBoundary extends Component<
   { children: ReactNode },
@@ -48,7 +46,7 @@ function ScrollToTop() {
     window.scrollTo(0, 0);
     trackAcquisition("page_view");
     try {
-      trackGooglePage();
+      void trackGooglePage().catch(() => { /* Analytics must not break navigation. */ });
     } catch {
       /* Optional analytics must not break navigation. */
     }

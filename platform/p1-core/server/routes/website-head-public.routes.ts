@@ -1,6 +1,14 @@
+import { websiteScriptManagement } from "../services/website-script-management.service";
 import { Router } from "express";
 import { storage } from "../storage";
 const router = Router();
+router.get("/website-script-config", async (req, res) => {
+  res.setHeader("Cache-Control", "no-store");
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  if (Object.keys(req.query).length) return res.status(400).json({ error: "Unsupported query" });
+  try { return res.json(await websiteScriptManagement.publicConfiguration()); }
+  catch { return res.status(503).json({ error: "Website script configuration unavailable" }); }
+});
 /** Public projection of the Owner-authored markup only. Never expose the settings category. */
 router.get("/website-head-tags", async (req, res) => {
   res.setHeader("Cache-Control", "no-store");

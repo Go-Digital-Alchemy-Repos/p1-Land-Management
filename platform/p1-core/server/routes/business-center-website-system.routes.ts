@@ -1,3 +1,5 @@
+import { hasReservedWebsiteScriptMarkers } from "../services/website-script-management.service";
+import websiteScripts from "./website-scripts.routes";
 import {
   DEFAULT_SITE_FEATURES,
   SITE_FEATURE_SETTING_KEYS,
@@ -16,6 +18,7 @@ const input = z
   .object({ expectedVersion: z.string().regex(/^[a-f0-9]{64}$/), html: z.string().max(100000) })
   .strict();
 router.use(requireWebsiteOwner);
+router.use("/scripts", websiteScripts);
 router.get(
   "/head-tags",
   asyncHandler(async (req, res) => {
@@ -29,6 +32,12 @@ router.put(
   asyncHandler(async (req, res) => {
     z.object({}).strict().parse(req.query);
     const body = input.parse(req.body);
+    if (hasReservedWebsiteScriptMarkers(body.html)) {
+      const current = await storage.settings.getCategorySnapshot(category, true);
+      if (body.html !== (current.values[key] || "")) {
+        return res.status(400).json({ message: "Manage Google Analytics and Turnstile through Head Tags > Managed scripts. Remove their script snippets from custom head markup." });
+      }
+    }
     await storage.settings.upsertSettings(
       [{ key, category, value: body.html, isSecret: false }],
       { category, version: body.expectedVersion, publicOnly: true },

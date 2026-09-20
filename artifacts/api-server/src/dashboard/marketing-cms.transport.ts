@@ -35,7 +35,7 @@ for (const [method, path] of [
 ] as const) cmsOperations.push({method, path, capabilities:[], ownerOnly:true});
 cmsOperations.push({method:"POST",path:"/design/branding/assets",capabilities:["marketing.design.branding"],multipart:true});
 for (const method of ["GET", "PUT"] as const) cmsOperations.push({method,path:"/design/branding",capabilities:["marketing.design.branding"]});
-for (const path of ["/website-system/head-tags", "/website-system/features"]) {
+for (const path of ["/website-system/head-tags", "/website-system/scripts", "/website-system/features"]) {
   for (const method of ["GET", "PUT"] as const) cmsOperations.push({method,path,capabilities:[],ownerOnly:true});
 }
 for (const method of ["GET", "PUT"] as const) cmsOperations.push({method,path:"/design/colors",capabilities:["marketing.design.colors"]});

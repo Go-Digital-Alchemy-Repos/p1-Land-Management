@@ -1072,6 +1072,16 @@ it("website head settings require an attested Owner and stay available when CMS 
  state.headSnapshot.mockResolvedValue({values:{public_head_html:'<script>literal()</script>',unrelated:'not projected'},version:'a'.repeat(64)});
  const read=await request("/website-system/head-tags");expect(read.status).toBe(200);expect(await read.json()).toEqual({html:'<script>literal()</script>',version:'a'.repeat(64)});
  expect(state.headSnapshot).toHaveBeenCalledWith("head_tag_additions",true);
+ const existingReserved='<script src="https://www.googletagmanager.com/gtag/js?id=G-OLD"></script>';
+ state.headSnapshot.mockResolvedValue({values:{public_head_html:existingReserved},version:'a'.repeat(64)});
+ const reservedBody={html:existingReserved,expectedVersion:'a'.repeat(64)};
+ expect((await request("/website-system/head-tags","PUT",{},"/service",reservedBody)).status).toBe(200);
+ const savedCount=state.headSave.mock.calls.length;
+ for(const marker of ['gtag("config","G-NEW")','dataLayer.push({})','https://www.googletagmanager.com/gtag/js','https://challenges.cloudflare.com/turnstile/v0/api.js','TURNSTILE.render()']) {
+  const denied=await request("/website-system/head-tags","PUT",{},"/service",{...reservedBody,html:marker});
+  expect(denied.status).toBe(400);expect((await denied.json()).message).toContain("Managed scripts");
+ }
+ expect(state.headSave.mock.calls.length).toBe(savedCount);
  const body={html:'<meta name="test" content="literal">',expectedVersion:'a'.repeat(64)};
  expect((await request("/website-system/head-tags","PUT",{},"/service",body)).status).toBe(200);
  expect(state.headSave).toHaveBeenCalledWith([{key:"public_head_html",category:"head_tag_additions",value:body.html,isSecret:false}],{category:"head_tag_additions",version:body.expectedVersion,publicOnly:true},{userId:"linked",action:"website_head_tags_updated",details:"public_head_html"});

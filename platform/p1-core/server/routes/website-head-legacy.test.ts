@@ -153,3 +153,32 @@ it("legacy identity mutations and direct image application cannot bypass the new
  expect((await fetch(base+"/branding/upload",{method:"POST"})).status).toBe(409);
  expect(state.save).not.toHaveBeenCalled();expect(state.legacySave).not.toHaveBeenCalled();expect(state.remove).not.toHaveBeenCalled();
 });
+it("managed script keys and category cannot be laundered through generic settings", async () => {
+  for (const identity of [null, { active: true, role: "owner", ownerAttested: true }]) {
+    state.identity = identity;
+    const denied = identity ? 409 : 403;
+    for (const key of ["google_analytics_source", "google_analytics_measurement_id"]) {
+      expect((await put({ key, category: "branding", value: "G-TEST", isSecret: false })).status).toBe(denied);
+      expect((await fetch(base + "/settings/" + key, { method: "DELETE" })).status).toBe(denied);
+    }
+    expect((await put({ key: "unrelated", category: "website_script_management", value: "G-TEST", isSecret: false })).status).toBe(denied);
+    state.getAll.mockResolvedValue([{ key: "legacy_name", category: "website_script_management", value: "private", isSecret: false }]);
+    expect((await put({ key: "legacy_name", category: "branding", value: "G-TEST", isSecret: false })).status).toBe(denied);
+    expect((await fetch(base + "/settings/legacy_name", { method: "DELETE" })).status).toBe(denied);
+    expect(await (await fetch(base + "/settings")).json()).toEqual({});
+  }
+  expect(state.save).not.toHaveBeenCalled(); expect(state.legacySave).not.toHaveBeenCalled(); expect(state.remove).not.toHaveBeenCalled();
+});
+
+it("legacy head writes cannot bypass reserved managed script protection", async () => {
+  state.identity = { active: true, role: "owner", ownerAttested: true };
+  const markup = '<script src="https://www.googletagmanager.com/gtag/js?id=G-OLD"></script>';
+  state.getAll.mockResolvedValue([{ ...body, value: markup }]);
+  expect((await put({ ...body, value: markup })).status).toBe(200);
+  const count = state.save.mock.calls.length;
+  for (const value of ['gtag("config","G-NEW")', 'turnstile.render()', markup + '<meta name="changed">']) {
+    expect((await put({ ...body, value })).status).toBe(400);
+  }
+  expect(state.save.mock.calls.length).toBe(count);
+  expect((await put({ ...body, value: '<meta name="clean">' })).status).toBe(200);
+});

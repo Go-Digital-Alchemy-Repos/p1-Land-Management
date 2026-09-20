@@ -17,6 +17,7 @@ export function HeadTagPresentation({
   limitNotice,
   saveLabel = "Save Head Tags",
   headingLevel = 2,
+  managedScripts,
 }: {
   html: string;
   onChange: (html: string) => void;
@@ -31,6 +32,7 @@ export function HeadTagPresentation({
   limitNotice?: ReactNode;
   saveLabel?: string;
   headingLevel?: 1 | 2;
+  managedScripts?: ReactNode;
 }) {
   const id = useId();
   const Heading = headingLevel === 1 ? "h1" : "h2";
@@ -47,6 +49,7 @@ export function HeadTagPresentation({
           {"<head>"}.
         </p>
       </header>
+      {managedScripts}
       <div className="head-tag-card">
         <header className="head-tag-card-header">
           <h3>
@@ -62,14 +65,14 @@ export function HeadTagPresentation({
           <aside className="head-tag-analytics">
             <h4>A quick note on Google Analytics</h4>
             <p>
-              The structured <strong>Integrations &gt; Google Analytics</strong> configuration is
-              the right place for a GA4 measurement ID. Use this area when you specifically need to
-              paste a raw vendor head tag.
+              Google Analytics and form verification use managed website loaders. Do not paste
+              duplicate Google Analytics or Turnstile scripts here. Reporting property settings are
+              separate from the website’s tracking measurement ID.
             </p>
             <p>
-              Raw tags entered here are not automatically gated by cookie-consent preferences. Use
-              the integration instead of pasting the full Google script snippet to keep analytics
-              aligned with the site’s consent flow.
+              This website does not currently gate Google Analytics through a cookie-consent
+              preference. Raw markup does not add consent handling, and website security policy
+              continues to restrict executable scripts.
             </p>
           </aside>
           {publicationNotice && (

@@ -46,6 +46,7 @@ test("CMS allowlist uses current leaf grants, exact paths and bounded query para
   for (const method of ["GET","PUT"]) assert.deepEqual(operation(method,"/design/colors").capabilities,["marketing.design.colors"]);
   for (const method of ["GET", "PUT"]) {assert.equal(operation(method,"/website-system/features").ownerOnly,true);assert.deepEqual(operation(method,"/website-system/features").capabilities,[]);}
   for (const method of ["GET","PUT"]) { assert.equal(operation(method,"/website-system/head-tags").ownerOnly,true); assert.deepEqual(operation(method,"/website-system/head-tags").capabilities,[]); }
+  for (const method of ["GET","PUT"]) { assert.equal(operation(method,"/website-system/scripts").ownerOnly,true); assert.deepEqual(operation(method,"/website-system/scripts").capabilities,[]); }
   for (const path of [
     "/careers/jobs",
     "/careers/applications",

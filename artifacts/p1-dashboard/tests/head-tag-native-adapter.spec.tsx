@@ -7,9 +7,34 @@ vi.mock("@workspace/api-client-react/dashboard", () => ({
   saveWebsiteHeadTags: api.save,
 }));
 import HeadTagSettings from "../src/marketing/HeadTagSettings";
+const scriptConfig = {
+  version: "a".repeat(64),
+  googleAnalytics: { source: "deployment", measurementId: "" },
+  effectiveGoogleAnalytics: {
+    source: "deployment",
+    measurementId: "G-YX69CJ1QNJ",
+  },
+  turnstile: {
+    enabled: true,
+    siteKey: "public-site-key",
+    scriptUrl:
+      "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit",
+  },
+  scriptUrls: {
+    googleAnalytics: "https://www.googletagmanager.com/gtag/js",
+    turnstile:
+      "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit",
+  },
+  rawMarkupConflict: false,
+};
 let container: HTMLDivElement, root: Root;
 beforeEach(() => {
   vi.resetAllMocks();
+  vi.stubGlobal(
+    "fetch",
+    vi.fn().mockImplementation(async () => Response.json(scriptConfig)),
+  );
+
   api.get.mockResolvedValue({
     html: '<meta name="old">',
     version: "version-one",
@@ -25,6 +50,7 @@ afterEach(async () => {
   await act(async () => root.unmount());
   container.remove();
   vi.restoreAllMocks();
+  vi.unstubAllGlobals();
 });
 async function render() {
   await act(async () => root.render(<HeadTagSettings />));
@@ -54,15 +80,17 @@ async function submit() {
 async function reload() {
   await act(async () => {
     [...container.querySelectorAll("button")]
-      .find((b) => b.textContent?.includes("Reload"))!
+      .find((b) => b.textContent === "Reload saved tags")!
       .click();
   });
 }
 it("restores the markup card, standalone icon, example and accurate publication guidance", async () => {
   await render();
-  expect(container.querySelector(".head-tag-card h3")?.textContent).toContain(
-    "Public Head Markup",
-  );
+  expect(
+    [...container.querySelectorAll(".head-tag-card h3")]
+      .map((node) => node.textContent)
+      .join(" "),
+  ).toContain("Public Head Markup");
   expect(container.querySelector(".head-tag-icon")).not.toBeNull();
   expect(textarea().placeholder).toContain("google-site-verification");
   expect(container.textContent).toContain("A quick note on Google Analytics");
@@ -148,4 +176,61 @@ it("preserves existing oversized markup without silently truncating it", async (
   expect(container.textContent).toContain("Existing longer markup is retained");
   await edit("shortened");
   expect(save().disabled).toBe(false);
+});
+
+it("shows authoritative managed values and saves versioned GA settings without credentials", async () => {
+  await render();
+  expect(container.textContent).toContain("G-YX69CJ1QNJ");
+  expect(container.textContent).toContain("public-site-key");
+  expect(container.textContent).toContain("server-managed");
+  const select = container.querySelector("select")!;
+  await act(async () => {
+    select.value = "managed";
+    select.dispatchEvent(new Event("change", { bubbles: true }));
+  });
+  await act(async () => {
+    const input = container.querySelector(
+      'input[aria-label="GA4 measurement ID"]',
+    )!;
+    Object.getOwnPropertyDescriptor(
+      HTMLInputElement.prototype,
+      "value",
+    )!.set!.call(input, "G-NEW123");
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+  await act(async () => {
+    [...container.querySelectorAll("button")]
+      .find((b) => b.textContent === "Save managed scripts")!
+      .click();
+  });
+  const calls = vi.mocked(fetch).mock.calls;
+  const put = calls.find(([, options]) => options?.method === "PUT")!;
+  expect(put[0]).toBe("/api/v1/marketing/cms/website-system/scripts");
+  expect(JSON.parse(put[1]!.body as string)).toEqual({
+    expectedVersion: scriptConfig.version,
+    googleAnalytics: { source: "managed", measurementId: "G-NEW123" },
+  });
+  expect(container.textContent).toContain("current settings reloaded");
+});
+it("retains GA draft and blocks replay after an uncertain save until reload", async () => {
+  await render();
+  await act(async () => {
+    const select = container.querySelector("select")!;
+    select.value = "disabled";
+    select.dispatchEvent(new Event("change", { bubbles: true }));
+  });
+  vi.mocked(fetch).mockRejectedValueOnce(new Error("lost response"));
+  const button = [...container.querySelectorAll("button")].find(
+    (b) => b.textContent === "Save managed scripts",
+  )!;
+  await act(async () => button.click());
+  expect(container.querySelector("select")!.value).toBe("disabled");
+  expect(button.disabled).toBe(true);
+  expect(container.textContent).toContain("Your draft is retained");
+  await act(async () => {
+    [...container.querySelectorAll("button")]
+      .find((b) => b.textContent === "Reload managed scripts")!
+      .click();
+  });
+  expect(container.querySelector("select")!.value).toBe("deployment");
 });
