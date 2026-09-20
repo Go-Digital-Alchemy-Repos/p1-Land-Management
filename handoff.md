@@ -1,3 +1,7 @@
+## Estimate delivery deployed — September 20
+
+`b75c3deef4b96c3e4ba62e1597f1484866e72ec1` is pushed to main/task branch and Railway SUCCESS on all three applications. Dashboard `4b1a7602-ce39-44ac-9252-e63291490dc8`, Core `2ebd3ac0-f772-49a1-995d-3d226aba37ce`, Website `7259a772-216a-4ebf-a138-368ed3e2bec1`. Dashboard health/public contact HTTP 200. No live inquiry or notification generated. Isolated validation: 25 focused + 23 PostgreSQL tests, affected typechecks/builds. Full goal remains active; see estimate-dashboard-intake.md for rollback constraints.
+
 ## Estimate producer release — September 20
 
 Receiver `519c10b8` is SUCCESS on all three Railway services; dashboard health is OK. The new estimate producer/worker and native delivery-queue label are now ready for release with 25 focused tests, 6 Dashboard PostgreSQL tests and 17 Core PostgreSQL tests passing. All three typechecks/builds passed. No historical backfill and no production test notifications. Follow the deployment handles for this next commit; full consolidation remains incomplete.

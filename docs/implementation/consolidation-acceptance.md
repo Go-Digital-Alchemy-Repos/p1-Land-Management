@@ -522,4 +522,4 @@ three Railway services.
 
 ## Standard estimate delivery — September 20
 
-Additive receiver `519c10b8` verified SUCCESS before enabling Core producer. Durable estimate handoff and queue visibility implemented; 25 focused and 23 actual PostgreSQL tests pass, as do affected builds/typechecks. Producer deployment verification pending; no historical replay. See `estimate-dashboard-intake.md`.
+Additive receiver `519c10b8` verified SUCCESS before enabling Core producer. Durable estimate handoff and queue visibility implemented; 25 focused and 23 actual PostgreSQL tests pass, as do affected builds/typechecks. Producer `b75c3dee` verified Railway SUCCESS on all three applications, dashboard health and public contact HTTP 200; no historical replay. See `estimate-dashboard-intake.md`.
