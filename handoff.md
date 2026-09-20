@@ -1,3 +1,26 @@
+## Verified shared Blog controls release — September 19
+
+Runtime `f8cdd51fe7319e7d2cc30e3018d02f33708f09d1` pushed to main and task
+branch. Railway SUCCESS: Core `131aa56d-49ed-400e-b6b5-8e1894a87379`, Website
+`d360b2c8-fa6f-427f-9ab0-5b3a1e9f746b`, Dashboard
+`b1bfe43e-7f3b-4212-8ff1-6bd65c475ada`. Both health endpoints and public
+Blog v2 returned200; posts/ownership remain empty, original representative article
+returned200 with oneH1. Final Core/dashboard builds passed after review corrections.
+The candidate notes below describe this released slice; full-goal gates remain open.
+
+Next: implement the reviewed importer-bound optional coverImageSet contract.
+Do not trust client-declared hashes: cms_media lacks authoritative dimensions/hashes.
+Only the importer may establish sets using verified staging/readback and immutable
+receipt provenance. Subsequent saves validate exact registered media identity and
+ledger match; omission preserves metadata and explicit null clears. Cover replacement
+must clear old variants; an older client silently changing only coverURL must get
+an actionable conflict. Protect original/variants in revisions and receipts even
+after withdrawal/deletion. Public projection exposes only responsive URLs/dimensions,
+not original/private provenance. Stage create-only objects first; atomic DB media/
+revision/receipt/publication follows under existing lock. Exact replay must not
+overwrite later edits. Retain orphaned staged objects on uncertain failure.
+No implementation of that contract/importer exists yet.
+
 ## Presentation controls and verified source images — September 19 candidate
 
 Both Blog hosts now share editing controls in Layout, with guarded nullable metadata,
