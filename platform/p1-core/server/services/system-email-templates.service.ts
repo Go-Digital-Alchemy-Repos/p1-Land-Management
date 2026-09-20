@@ -35,7 +35,7 @@ const SYSTEM_EMAIL_TEMPLATE_BASE_DEFAULTS: Omit<InsertEmailTemplate, "module">[]
   {
     slug: "password-reset",
     name: "Password Reset",
-    subject: "Reset Your Core Platform Password",
+    subject: "Reset Your P1 Password",
     description: "Sent when a user requests a password reset or an admin sends a reset link.",
     variables: ["firstName", "resetUrl"],
     htmlBody: baseWrap(
@@ -56,14 +56,14 @@ const SYSTEM_EMAIL_TEMPLATE_BASE_DEFAULTS: Omit<InsertEmailTemplate, "module">[]
   {
     slug: "welcome-new-user",
     name: "Welcome New User",
-    subject: "Welcome to Core Platform!",
+    subject: "Welcome to P1 Land & Property Management!",
     description: "Sent when an admin manually creates a new user account.",
     variables: ["firstName", "loginUrl", "tempPassword"],
     htmlBody: baseWrap(
-      "Welcome to Core Platform",
+      "Welcome to P1 Land &amp; Property Management",
       `
     <p style="color:#374151;font-size:15px;line-height:1.6;">Hi {{firstName}},</p>
-    <p style="color:#374151;font-size:15px;line-height:1.6;">An account has been created for you on Core Platform.</p>
+    <p style="color:#374151;font-size:15px;line-height:1.6;">An account has been created for you with P1 Land &amp; Property Management.</p>
     {{#tempPassword}}<div style="background:#f0fdf4;border-left:4px solid #22c55e;padding:12px 16px;margin:16px 0;border-radius:0 4px 4px 0;">
       <p style="margin:0;color:#166534;font-size:14px;"><strong>Temporary Password:</strong> {{tempPassword}}</p>
       <p style="margin:4px 0 0;color:#166534;font-size:13px;">Please change this after logging in.</p>

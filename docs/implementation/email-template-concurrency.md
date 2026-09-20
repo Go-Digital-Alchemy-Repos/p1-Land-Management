@@ -17,3 +17,12 @@ Content follow-up: live subjects still include inherited Core Platform branding 
 Native implementation validation (September 19): 92 Core route/provider regression tests, 10 dashboard component tests and 27 transport/navigation tests passed. Core, API and dashboard type checks and production builds passed. Provider credential readers now refresh database snapshots across processes and reuse storage clients only while effective configuration is unchanged. No production templates were edited and no real mail was sent during these checks. Live verification is pending this release.
 
 Live release evidence: `45e2800f016d479a45ed78afe1bd3fa78014f04b` reached Railway SUCCESS for Dashboard (`1f06b6d1-b7b4-455f-bcc0-2aff0cacb8a2`), Core (`6151d8a6-d048-4bec-b30a-7681e0d6c79a`) and public website (`799d2a84-d3dd-4b31-8a57-d395b3adb1c8`). The authenticated native library showed all five existing templates. Contact-form preview rendered P1 branding and sample substitutions. An edit reservation was acquired; applying bold in an unsaved visual draft and switching to HTML produced the expected `<b>` markup while retaining inline styles and variables. No Save, Restore or Send action was invoked. Browser automation stalled at the local discard confirmation and could not confirm tab cleanup; this does not represent a server template mutation. Mobile and full end-to-end mutation/retirement acceptance remain outstanding.
+
+## P1 account default branding — September 19
+
+Password-reset and welcome defaults now identify P1 rather than Core Platform.
+HTML encodes the company ampersand and existing delivery variables are preserved.
+Normal startup continues to preserve saved templates; this change affects missing
+initial defaults and explicit default restoration, not customized stored content.
+Focused default test passed. No email was sent and stored-template reconciliation
+remains a separate acceptance step.
