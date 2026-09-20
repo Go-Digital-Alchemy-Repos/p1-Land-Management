@@ -1,3 +1,4 @@
+import { validateBackupRestoreReview } from "./backup-restore-review";
 import { createHash } from "node:crypto";
 import { isDeepStrictEqual } from "node:util";
 import { startStoppableWorker, type StoppableWorker } from "../utils/runtime-lifecycle";
@@ -649,11 +650,22 @@ export async function restoreBackupSnapshot(
   return withBackupLock((client) => restoreBackupSnapshotWithClient(client, snapshot, options));
 }
 
+async function loadReviewedBackup(key: string, operation: BackupStorageOperation): Promise<DatabaseBackupSnapshot> {
+  const compressed = await downloadBackupObject(key, operation);
+  if (!compressed || compressed.byteLength > 64 * 1024 * 1024)
+    throw new Error("Backup archive unavailable or exceeds review limit");
+  try {
+    return validateBackupRestoreReview(JSON.parse(gunzipSync(compressed, { maxOutputLength: 256 * 1024 * 1024 }).toString("utf8")));
+  } catch {
+    throw new Error("Backup archive could not be validated for review");
+  }
+}
+
 /** Read-only review; callers must project metadata, never archive rows. */
 export async function getSystemBackupRestoreReview(key: string) {
   const operation = await beginBackupStorageOperation();
   if (!operation) throw new Error("Backup storage is not configured");
-  const snapshot = await loadBackupSnapshotFromKey(key, operation);
+  const snapshot = await loadReviewedBackup(key, operation);
   assertBackupRestoreIdentity(snapshot.manifest, { targetStackId: process.env.CLIENT_STACK_ID });
   if (snapshot.manifest.key !== key) throw new Error("Backup archive key mismatch");
   return { manifest: snapshot.manifest, fingerprint: backupRestoreFingerprint(snapshot) };
@@ -669,7 +681,7 @@ export async function restoreReviewedSystemBackup(key: string, expectedFingerpri
   const operation = await beginBackupStorageOperation();
   if (!operation) throw new Error("Backup storage is not configured");
   return withBackupLock(async (client) => {
-    const snapshot = await loadBackupSnapshotFromKey(key, operation);
+    const snapshot = await loadReviewedBackup(key, operation);
     assertBackupRestoreIdentity(snapshot.manifest, { targetStackId: process.env.CLIENT_STACK_ID });
     if (snapshot.manifest.key !== key || backupRestoreFingerprint(snapshot) !== expectedFingerprint)
       throw new Error("Backup changed after review; review it again before restoring");

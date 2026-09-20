@@ -101,3 +101,13 @@ uncertain-outcome handling without automatic replay; isolated successful restore
 and failure-path tests, UI acceptance, and review before production exposure.
 Never run production restore as an acceptance test. Keep `/admin` available until
 the full workflow is accepted. The earlier restore and rollback gates still apply.
+
+Archive validation follow-up: native reviewed entry points now enforce schema1,
+unique table/sequence identities, complete restore-order membership, exact table/
+row/media counts (`cms_media`), sequence-table references, identifier syntax and
+consistent row columns. The reviewed loader caps compressed objects at64MiB and
+expanded JSON at256MiB. Unsupported or oversized archives require a separately
+reviewed operator recovery path; native review never offers them as actionable.
+Retained/direct recovery functions keep their existing contracts. Thirty-four
+focused tests and Core typechecking pass. Full successful reviewed restore against
+an isolated database and real-archive compatibility remain necessary before exposure.

@@ -183,12 +183,12 @@ describe("reviewed backup restore admission", () => {
     process.env.CLIENT_STACK_ID = "p1-land-management";
     try {
       vi.mocked(storage.beginBackupStorageOperation).mockResolvedValue({ source: "env", bucketName: "test", prefix: "test" });
-      const snapshot = { manifest: validManifest, tables: [], sequences: [] };
+      const snapshot = { manifest: {...validManifest,tableCount:1,restoreOrder:["example"]}, tables: [{name:"example",rowCount:0,rows:[]}], sequences: [] };
       vi.mocked(storage.downloadBackupObject).mockResolvedValue(gzipSync(JSON.stringify(snapshot)));
       const first = await getSystemBackupRestoreReview(validManifest.key);
       expect(first.fingerprint).toMatch(/^[a-f0-9]{64}$/);
       expect(first).not.toHaveProperty("tables");
-      vi.mocked(storage.downloadBackupObject).mockResolvedValue(gzipSync(JSON.stringify({...snapshot, tables:[{name:"example",rows:[{id:1}],rowCount:1}]})));
+      vi.mocked(storage.downloadBackupObject).mockResolvedValue(gzipSync(JSON.stringify({...snapshot, manifest:{...snapshot.manifest,totalRowCount:1}, tables:[{name:"example",rows:[{id:1}],rowCount:1}]})));
       expect((await getSystemBackupRestoreReview(validManifest.key)).fingerprint).not.toBe(first.fingerprint);
       expect(pool.connect).not.toHaveBeenCalled();
     } finally { if(previous === undefined) delete process.env.CLIENT_STACK_ID; else process.env.CLIENT_STACK_ID=previous; }
@@ -206,9 +206,9 @@ describe("reviewed backup restore admission", () => {
     vi.mocked(pool.connect as () => Promise<PoolClient>).mockResolvedValue({query,release} as unknown as PoolClient);
     vi.mocked(storage.beginBackupStorageOperation).mockResolvedValue({source:"env",bucketName:"test",prefix:"test"});
     try {
-      vi.mocked(storage.downloadBackupObject).mockResolvedValue(gzipSync(JSON.stringify({manifest:validManifest,tables:[],sequences:[]})));
+      vi.mocked(storage.downloadBackupObject).mockResolvedValue(gzipSync(JSON.stringify({manifest:{...validManifest,tableCount:1,restoreOrder:["example"]},tables:[{name:"example",rowCount:0,rows:[]}],sequences:[]})));
       const review = await getSystemBackupRestoreReview(validManifest.key);
-      vi.mocked(storage.downloadBackupObject).mockResolvedValue(gzipSync(JSON.stringify({manifest:{...validManifest,totalRowCount:1},tables:[],sequences:[]})));
+      vi.mocked(storage.downloadBackupObject).mockResolvedValue(gzipSync(JSON.stringify({manifest:{...validManifest,tableCount:1,totalRowCount:1,restoreOrder:["example"]},tables:[{name:"example",rowCount:1,rows:[{id:1}]}],sequences:[]})));
       await expect(restoreReviewedSystemBackup(validManifest.key,review.fingerprint)).rejects.toThrow("changed after review");
       expect(query).toHaveBeenCalledTimes(2);
       expect(release).toHaveBeenCalledWith(false);
