@@ -16742,6 +16742,9 @@
               },
               "version": {
                 "type": "integer"
+              },
+              "submittedContext": {
+                "$ref": "#/components/schemas/LeadSubmittedContext"
               }
             },
             "required": [
@@ -34340,6 +34343,51 @@
           {
             "$ref": "#/components/schemas/MarketingSectionPreconditions"
           }
+        ]
+      },
+      "LeadSubmittedContext": {
+        "type": "object",
+        "description": "Reported intake context; does not change linked operational property records.",
+        "properties": {
+          "contact_title": {
+            "type": "string",
+            "nullable": true
+          },
+          "reported_property_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "property_type": {
+            "type": "string",
+            "nullable": true
+          },
+          "acreage_description": {
+            "type": "string",
+            "nullable": true
+          },
+          "project_stage": {
+            "type": "string",
+            "nullable": true
+          },
+          "service_timing": {
+            "type": "string",
+            "nullable": true
+          },
+          "services": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "contact_title",
+          "reported_property_name",
+          "property_type",
+          "acreage_description",
+          "project_stage",
+          "service_timing",
+          "services"
         ]
       }
     }

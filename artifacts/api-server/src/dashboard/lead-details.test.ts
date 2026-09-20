@@ -119,7 +119,7 @@ test(
       (await call(sales, "", { ...saved, expectedVersion: 2 })).status,
       400,
     ); // Server fields are never writable.
-    const { id, version, ...savedFields } = saved;
+    const { id, version, submittedContext, ...savedFields } = saved;
     assert.equal(
       (await call(sales, "", { ...savedFields, expectedVersion: 2 })).status,
       200,

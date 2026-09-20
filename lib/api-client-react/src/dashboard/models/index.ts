@@ -303,6 +303,7 @@ export * from './leadOnboardingInput';
 export * from './leadOnboardingInputCustomer';
 export * from './leadOnboardingResult';
 export * from './leadOnboardingState';
+export * from './leadSubmittedContext';
 export * from './legacyProjectPhase';
 export * from './listAgreementChargeQueueParams';
 export * from './listAgreementChargeReviewsParams';

@@ -6,8 +6,10 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { LeadDetailFields } from './leadDetailFields';
+import type { LeadSubmittedContext } from './leadSubmittedContext';
 
 export type LeadDetails = LeadDetailFields & {
   id: string;
   version: number;
+  submittedContext?: LeadSubmittedContext;
 };

@@ -426,3 +426,14 @@ The dashboard editor preserves unsupported stored values until explicitly replac
 ### Website company identity and images
 
 `GET/PUT /marketing/cms/design/branding` require `marketing.design.branding` and expose six retained company/logo/favicon fields with a category version. Writes are nonempty partial changes with `expectedVersion`, strict bounded text/URL validation and atomic `website_identity_updated` audit. `POST /marketing/cms/design/branding/assets` uses the same grant, accepts one multipart image up to 10 MiB plus `settingKey`, and prepares a Media asset without applying it. Versioned Save applies the asset URL. Legacy generic identity mutations/direct upload application return 409. See [identity editor and delivery boundary](../implementation/website-identity-editor.md) for fields, failure recovery, current consumers and pending public-site delivery.
+
+### Submitted project context in inquiry details
+
+`GET` and successful `PATCH /api/v1/leads/:id/details` include optional
+`submittedContext` with contact title, reported property name/type, acreage,
+project stage, service timing, and requested services. It is read-only submitted
+information, not a verified property or permission to create operational records.
+Existing Sales capability checks apply. PATCH still accepts only the documented
+contact/detail correction fields plus `expectedVersion`; sending context is rejected.
+The optional response supports old/new application rollout. Historical detail
+revisions retain their existing contact-field scope.

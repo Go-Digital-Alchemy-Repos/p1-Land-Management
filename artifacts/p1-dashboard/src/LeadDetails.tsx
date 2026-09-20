@@ -247,6 +247,28 @@ function Editor({
           <small>Version {saved.version}</small>
         </form>
       )}
+      {saved?.submittedContext && (
+        <section aria-label="Submitted property and project details">
+          <h4>Submitted property & project details</h4>
+          <p>Reported with this inquiry. These values do not establish verified property records.</p>
+          <dl>
+            {([
+              ["Contact title", saved.submittedContext.contact_title],
+              ["Property / project name", saved.submittedContext.reported_property_name],
+              ["Property type", saved.submittedContext.property_type],
+              ["Approximate acreage", saved.submittedContext.acreage_description],
+              ["Project stage", saved.submittedContext.project_stage],
+              ["Service timing", saved.submittedContext.service_timing],
+              ["Services of interest", saved.submittedContext.services.join(", ")],
+            ] as const).map(([label, value]) => (
+              <div key={label}>
+                <dt>{label}</dt>
+                <dd style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>{value || "Not provided"}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      )}
       <h4>Detail history</h4>
       <p>
         Baseline entries show values when history tracking began; created

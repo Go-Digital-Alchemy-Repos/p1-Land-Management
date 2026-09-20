@@ -23,13 +23,34 @@ const updateInput = fields
   .extend({ expectedVersion: z.number().int().positive() })
   .strict();
 const projection =
-  "id,version,name,email,phone,location,description,reported_company_name";
+  "id,version,name,email,phone,location,description,reported_company_name,contact_title,reported_property_name,property_type,acreage_description,project_stage,service_timing,services";
+function response(row: Record<string, any>) {
+  return {
+    id: row.id as string,
+    version: row.version as number,
+    name: row.name as string,
+    email: row.email as string | null,
+    phone: row.phone as string | null,
+    location: row.location as string,
+    description: row.description as string,
+    reported_company_name: row.reported_company_name as string | null,
+    submittedContext: {
+      contact_title: row.contact_title as string | null,
+      reported_property_name: row.reported_property_name as string | null,
+      property_type: row.property_type as string | null,
+      acreage_description: row.acreage_description as string | null,
+      project_stage: row.project_stage as string | null,
+      service_timing: row.service_timing as string | null,
+      services: row.services as string[],
+    },
+  };
+}
 export async function getLeadDetails(id: string) {
   const row = (
     await pool.query(`SELECT ${projection} FROM lead WHERE id=$1`, [id])
   ).rows[0];
   if (!row) throw new HttpError(404, "Inquiry not found");
-  return row;
+  return response(row);
 }
 export async function updateLeadDetails(
   id: string,
@@ -55,7 +76,7 @@ export async function updateLeadDetails(
       "reported_company_name",
     ] as const;
     const changed = keys.filter((key) => existing[key] !== body[key]);
-    if (!changed.length) return existing;
+    if (!changed.length) return response(existing);
     await c.query("SELECT set_config('p1.lead_detail_actor',$1,true)", [
       actorId,
     ]);
@@ -74,7 +95,7 @@ export async function updateLeadDetails(
         { version: row.version, changedFields: changed },
       ],
     );
-    return row;
+    return response(row);
   });
 }
 export async function getLeadDetailHistory(id: string, input: unknown) {

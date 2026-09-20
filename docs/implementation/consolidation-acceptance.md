@@ -444,3 +444,28 @@ Core `ac3f01f5-aca4-4500-8c84-e043f2bb83ad`, dashboard
 confirmed Blog Participation Rules/Spam Protection controls and successful empty
 Sections library loading. No production save/reset/delete was performed. These checks do
 not close CRM/account migration, full operational acceptance or admin retirement.
+
+## CRM field usability — September 19
+
+The fresh protected Core snapshot captured at 2026-09-20T02:58:47.367Z has
+three leads (two New, one Contacted), zero clients/notes/tasks, no assigned source
+owners, and one follow-up date. All three have form submission IDs. There is no
+stored `crm_pipeline_config`; therefore no custom stage label/order/color data
+exists in this snapshot to transfer. This does not prove current live source
+freshness or eliminate the required native pipeline settings capability.
+
+General inquiry details now include read-only submitted contact title, property
+name/type, acreage, project stage, service timing and requested services. Previously
+those preserved native fields were visible through commercial tooling but absent
+from the general inquiry details editor. Both read and correction responses return
+an allowlisted `submittedContext`; the correction request and revision-history
+contract remain unchanged. Attribution and arbitrary metadata are not added to this
+response. The UI distinguishes reported context from verified operational properties.
+
+Validation: fresh disposable PostgreSQL migrations and service regression passed
+(0 skipped), including stale-write rejection, read-only input rejection, no-op
+stability and unchanged history. Two UI adapter tests passed (escaped content and
+older-API compatibility). Dashboard/API typechecks and production builds passed.
+The owned fixture database was removed. This improves migrated inquiry usability;
+it does not constitute production import, reviewed mappings, context correction/
+adoption, pipeline customization, or account-policy acceptance.
