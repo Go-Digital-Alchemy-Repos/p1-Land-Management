@@ -333,3 +333,15 @@ in parent verification. Core/dashboard builds and Core/dashboard/API types passe
 See `blog-static-import.md` for contracts, replay and explicit remaining gates.
 Production articles are not transferred; real apply tooling, populated restore,
 reviewed dates and browser mutation acceptance remain pending.
+
+## Live Analytics overview and Blog transfer checkpoint
+
+Runtime9978d9db is verified successful on all three Railway applications. The live
+Analytics overview uses the shared original presentation and real provider data;
+no alert or page overflow was observed. Parent desktop/mobile isolated render checks
+and both-host tests/builds passed. Five Blog articles are now CMS-owned and publicly
+served with matching responsive images. Private draft save isolation passed, but
+live restore/publish cleanup is still pending a stalled browser confirmation.
+An actual populated post-import snapshot is acquired privately; its isolated
+restore rehearsal remains in progress. These do not close overall CMS, recovery,
+account/CRM, operational acceptance or retirement gates.

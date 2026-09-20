@@ -1,3 +1,22 @@
+## Analytics release verified — September 19
+
+Runtime `9978d9dba6d2f1db0297bbff291c33fdfff88aa4` is pushed to main and task
+branch. Railway SUCCESS: Website `466d4131-7148-4faa-a657-62cf31957550`, Core
+`7a37b993-728a-47f0-b0fc-8e539a0b7512`, Dashboard
+`7cc9f0b0-a28a-4b05-b97a-45492d3cc0c3`. Health endpoints200. Authenticated live
+Analytics displays shared KPI cards/charts with genuine provider data (8 users,
+21 sessions,157 views for Aug23–Sep19); source property554712298, no alert or
+horizontal overflow. Historical comparison unavailable is shown honestly.
+
+Post-import private snapshot: pointer `/private/tmp/p1-post-blog-backup-current-path`,
+57tables, SHA256 `7d4d4379525e76eb11fb13c2b878beaa000a4b187845909c259c2a5c1dd87505`.
+backup_retirement_review is performing an isolated local recovery rehearsal with
+current helpers and raw timestamp comparisons; results are not yet accepted.
+Private Blog test draft cleanup remains pending as described below. Rechecked
+public projection: five posts/five owned routes, no private test text. No production
+restore or admin retirement. Do not restart running recovery work from a state file
+alone; coordinate with the assigned agent and inspect its concrete process.
+
 ## Analytics overview restoration and live Blog draft check — September 19
 
 Analytics Overview now shares original KPI cards, trend and paired acquisition/
