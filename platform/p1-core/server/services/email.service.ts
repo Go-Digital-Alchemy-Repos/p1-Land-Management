@@ -380,7 +380,7 @@ export async function sendPasswordResetEmail(
   const { subject, html, isActive } = await getTemplateHtml(
     "password-reset",
     vars,
-    "Reset Your Password",
+    "Reset Your P1 Password",
     `<p>Hi ${vars.firstName}, click here to reset your password: ${resetUrl}</p>`,
   );
   if (!isActive) return false;
@@ -397,7 +397,7 @@ export async function sendWelcomeEmail(
   const { subject, html, isActive } = await getTemplateHtml(
     "welcome-new-user",
     vars,
-    "Welcome to Core Platform!",
+    "Welcome to P1 Land & Property Management!",
     `<p>Hi ${vars.firstName}, an account has been created for you.</p>`,
   );
   if (!isActive) return false;

@@ -26,3 +26,9 @@ Normal startup continues to preserve saved templates; this change affects missin
 initial defaults and explicit default restoration, not customized stored content.
 Focused default test passed. No email was sent and stored-template reconciliation
 remains a separate acceptance step.
+
+## Stored P1 account templates reconciled — September 20
+
+Using the authenticated native editor and its reservations/version checks, the Owner-scoped session saved the password-reset subject as “Reset Your P1 Password” and the welcome subject as “Welcome to P1 Land & Property Management!”. The welcome HTML received two narrow company-name replacements with an HTML-encoded ampersand; links, template variables, conditional temporary-password block and activation remained present. Reloading the library confirmed both subjects, and reopening the welcome editor confirmed persisted P1 body text and variables. No Restore System Templates or Send test action was used. The obsolete provider template remains stored pending excluded-module consumer reconciliation.
+
+The delivery fallback subjects now also identify P1. Seven actual disposable PostgreSQL tests passed, including edit/restore races, audit-failure rollback, preserved IDs/activation/custom templates and version detection. This provides live save/reload evidence and isolated storage-restore evidence, not a production default-restore exercise or actual email-delivery acceptance.
