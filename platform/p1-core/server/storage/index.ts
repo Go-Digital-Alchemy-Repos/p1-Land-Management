@@ -28,7 +28,6 @@ import { CrmStorage } from "./crm.storage";
 import { CareerStorage } from "./career.storage";
 import { TeamStorage } from "./team.storage";
 import { ClientSiteContentStorage } from "./client-site-content.storage";
-import { ClientStackOnboardingStorage } from "./client-stack-onboarding.storage";
 export const storage = {
   team: new TeamStorage(),
   users: new UserStorage(),
@@ -61,7 +60,6 @@ export const storage = {
   crm: new CrmStorage(),
   careers: new CareerStorage(),
   clientSiteContent: new ClientSiteContentStorage(),
-  clientStackOnboarding: new ClientStackOnboardingStorage(),
 };
 
 export type {

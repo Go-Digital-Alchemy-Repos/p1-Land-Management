@@ -509,15 +509,6 @@
               }
             }
           },
-          "400": {
-            "description": "Invalid request"
-          },
-          "403": {
-            "description": "Area access required"
-          },
-          "404": {
-            "description": "Parent or task not found"
-          },
           "201": {
             "description": "Success",
             "content": {
@@ -527,6 +518,15 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "403": {
+            "description": "Area access required"
+          },
+          "404": {
+            "description": "Parent or task not found"
           },
           "409": {
             "description": "Task ID already used"
@@ -811,15 +811,6 @@
               }
             }
           },
-          "400": {
-            "description": "Invalid request"
-          },
-          "403": {
-            "description": "Area access required"
-          },
-          "404": {
-            "description": "Parent or task not found"
-          },
           "201": {
             "description": "Success",
             "content": {
@@ -829,6 +820,15 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "403": {
+            "description": "Area access required"
+          },
+          "404": {
+            "description": "Parent or task not found"
           },
           "409": {
             "description": "Task ID already used"
@@ -2774,6 +2774,16 @@
           }
         },
         "responses": {
+          "200": {
+            "description": "Exact same-author creation replay",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatedResource"
+                }
+              }
+            }
+          },
           "201": {
             "description": "Note recorded",
             "content": {
@@ -2795,16 +2805,6 @@
           },
           "404": {
             "description": "Client not found"
-          },
-          "200": {
-            "description": "Exact same-author creation replay",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CreatedResource"
-                }
-              }
-            }
           },
           "409": {
             "description": "Requested note ID already used"
@@ -6911,6 +6911,9 @@
               }
             }
           },
+          "400": {
+            "description": "Invalid account history cursor or query"
+          },
           "401": {
             "description": "Sign in required"
           },
@@ -6919,9 +6922,6 @@
           },
           "409": {
             "description": "Stale version or conflicting lifecycle"
-          },
-          "400": {
-            "description": "Invalid account history cursor or query"
           }
         },
         "parameters": [
@@ -6986,6 +6986,9 @@
               }
             }
           },
+          "400": {
+            "description": "Invalid invitation cursor or query"
+          },
           "401": {
             "description": "Sign in required"
           },
@@ -6994,9 +6997,6 @@
           },
           "409": {
             "description": "Stale version or conflicting lifecycle"
-          },
-          "400": {
-            "description": "Invalid invitation cursor or query"
           }
         },
         "parameters": [
@@ -9098,14 +9098,14 @@
               }
             }
           },
+          "400": {
+            "description": "Invalid input"
+          },
           "401": {
             "description": "Verified session required"
           },
           "403": {
             "description": "SEO capability required"
-          },
-          "400": {
-            "description": "Invalid input"
           },
           "409": {
             "description": "Conflict"
@@ -9126,14 +9126,14 @@
               }
             }
           },
+          "400": {
+            "description": "Invalid input"
+          },
           "401": {
             "description": "Verified session required"
           },
           "403": {
             "description": "SEO capability required"
-          },
-          "400": {
-            "description": "Invalid input"
           },
           "409": {
             "description": "Conflict"
@@ -9166,14 +9166,14 @@
               }
             }
           },
+          "400": {
+            "description": "Invalid input"
+          },
           "401": {
             "description": "Verified session required"
           },
           "403": {
             "description": "SEO capability required"
-          },
-          "400": {
-            "description": "Invalid input"
           },
           "409": {
             "description": "Conflict"
@@ -9194,14 +9194,14 @@
               }
             }
           },
+          "400": {
+            "description": "Invalid input"
+          },
           "401": {
             "description": "Verified session required"
           },
           "403": {
             "description": "SEO capability required"
-          },
-          "400": {
-            "description": "Invalid input"
           },
           "409": {
             "description": "Conflict"
@@ -9234,14 +9234,14 @@
               }
             }
           },
+          "400": {
+            "description": "Invalid input"
+          },
           "401": {
             "description": "Verified session required"
           },
           "403": {
             "description": "SEO capability required"
-          },
-          "400": {
-            "description": "Invalid input"
           },
           "409": {
             "description": "Conflict"
@@ -9267,14 +9267,14 @@
               }
             }
           },
+          "400": {
+            "description": "Invalid input"
+          },
           "401": {
             "description": "Verified session required"
           },
           "403": {
             "description": "SEO capability required"
-          },
-          "400": {
-            "description": "Invalid input"
           },
           "409": {
             "description": "Conflict"
@@ -9285,18 +9285,6 @@
         "operationId": "createMarketingRedirect",
         "description": "Requires marketing.content.seo. Retained Core storage and validation apply.",
         "responses": {
-          "401": {
-            "description": "Verified session required"
-          },
-          "403": {
-            "description": "SEO capability required"
-          },
-          "400": {
-            "description": "Invalid input"
-          },
-          "409": {
-            "description": "Conflict"
-          },
           "201": {
             "description": "Success",
             "content": {
@@ -9306,6 +9294,18 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Verified session required"
+          },
+          "403": {
+            "description": "SEO capability required"
+          },
+          "409": {
+            "description": "Conflict"
           }
         },
         "requestBody": {
@@ -9335,14 +9335,14 @@
               }
             }
           },
+          "400": {
+            "description": "Invalid input"
+          },
           "401": {
             "description": "Verified session required"
           },
           "403": {
             "description": "SEO capability required"
-          },
-          "400": {
-            "description": "Invalid input"
           },
           "409": {
             "description": "Conflict"
@@ -9383,14 +9383,14 @@
               }
             }
           },
+          "400": {
+            "description": "Invalid input"
+          },
           "401": {
             "description": "Verified session required"
           },
           "403": {
             "description": "SEO capability required"
-          },
-          "400": {
-            "description": "Invalid input"
           },
           "409": {
             "description": "Conflict"
@@ -9426,11 +9426,11 @@
               }
             }
           },
-          "403": {
-            "description": "Sidebar capability required"
-          },
           "400": {
             "description": "Invalid input"
+          },
+          "403": {
+            "description": "Sidebar capability required"
           },
           "404": {
             "description": "Not found"
@@ -9451,11 +9451,11 @@
               }
             }
           },
-          "403": {
-            "description": "Sidebar capability required"
-          },
           "400": {
             "description": "Invalid input"
+          },
+          "403": {
+            "description": "Sidebar capability required"
           },
           "404": {
             "description": "Not found"
@@ -9488,11 +9488,11 @@
               }
             }
           },
-          "403": {
-            "description": "Sidebar capability required"
-          },
           "400": {
             "description": "Invalid input"
+          },
+          "403": {
+            "description": "Sidebar capability required"
           },
           "404": {
             "description": "Not found"
@@ -9523,11 +9523,11 @@
               }
             }
           },
-          "403": {
-            "description": "Sidebar capability required"
-          },
           "400": {
             "description": "Invalid input"
+          },
+          "403": {
+            "description": "Sidebar capability required"
           },
           "404": {
             "description": "Not found"
@@ -9568,11 +9568,11 @@
               }
             }
           },
-          "403": {
-            "description": "Sidebar capability required"
-          },
           "400": {
             "description": "Invalid input"
+          },
+          "403": {
+            "description": "Sidebar capability required"
           },
           "404": {
             "description": "Not found"
@@ -9605,11 +9605,11 @@
               }
             }
           },
-          "403": {
-            "description": "Sidebar capability required"
-          },
           "400": {
             "description": "Invalid input"
+          },
+          "403": {
+            "description": "Sidebar capability required"
           },
           "404": {
             "description": "Not found"
@@ -11388,14 +11388,14 @@
           "403": {
             "description": "Owner access required"
           },
+          "404": {
+            "description": "Account not found"
+          },
           "409": {
             "description": "Stale version or conflicting lifecycle"
           },
           "429": {
             "description": "Wait before requesting another recovery email"
-          },
-          "404": {
-            "description": "Account not found"
           }
         },
         "parameters": [
@@ -11579,15 +11579,6 @@
         "operationId": "createMarketingForm",
         "description": "Requires the Forms capability; commercial backfill additionally requires Owner. Uses canonical website validation and storage.",
         "responses": {
-          "403": {
-            "description": "Access denied"
-          },
-          "404": {
-            "description": "Record not found"
-          },
-          "409": {
-            "description": "Conflict"
-          },
           "201": {
             "description": "Success",
             "content": {
@@ -11597,6 +11588,15 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "Access denied"
+          },
+          "404": {
+            "description": "Record not found"
+          },
+          "409": {
+            "description": "Conflict"
           }
         },
         "requestBody": {
@@ -14102,11 +14102,11 @@
           "403": {
             "description": "Required access missing"
           },
-          "409": {
-            "description": "Job changed or has applications; archive instead to preserve history"
-          },
           "404": {
             "description": "Not found or feature disabled"
+          },
+          "409": {
+            "description": "Job changed or has applications; archive instead to preserve history"
           }
         },
         "parameters": [
@@ -14317,11 +14317,11 @@
           "403": {
             "description": "Required access missing"
           },
-          "409": {
-            "description": "Settings changed since they were loaded"
-          },
           "404": {
             "description": "Not found or feature disabled"
+          },
+          "409": {
+            "description": "Settings changed since they were loaded"
           }
         },
         "requestBody": {
@@ -15186,171 +15186,6 @@
             "schema": {
               "type": "string",
               "format": "uuid"
-            }
-          }
-        ]
-      }
-    },
-    "/marketing/cms/website-system/onboarding/domain-plan": {
-      "post": {
-        "operationId": "createOnboardingPlan",
-        "tags": [
-          "WebsiteSystem"
-        ],
-        "summary": "Owner-only client stack domain-plan",
-        "responses": {
-          "200": {
-            "description": "Recorded result or saved evidence",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OnboardingPlan"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request"
-          },
-          "403": {
-            "description": "Owner access required"
-          },
-          "503": {
-            "description": "Service unavailable"
-          }
-        },
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/OnboardingPlanInput"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/marketing/cms/website-system/onboarding/dns-verification": {
-      "post": {
-        "operationId": "verifyOnboardingDns",
-        "tags": [
-          "WebsiteSystem"
-        ],
-        "summary": "Owner-only client stack dns-verification",
-        "responses": {
-          "200": {
-            "description": "Recorded result or saved evidence",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OnboardingDnsResult"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request"
-          },
-          "403": {
-            "description": "Owner access required"
-          },
-          "503": {
-            "description": "Service unavailable"
-          }
-        },
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/OnboardingDnsInput"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/marketing/cms/website-system/onboarding/readiness": {
-      "post": {
-        "operationId": "evaluateOnboardingReadiness",
-        "tags": [
-          "WebsiteSystem"
-        ],
-        "summary": "Owner-only client stack readiness",
-        "responses": {
-          "200": {
-            "description": "Recorded result or saved evidence",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OnboardingReadinessResult"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request"
-          },
-          "403": {
-            "description": "Owner access required"
-          },
-          "503": {
-            "description": "Service unavailable"
-          }
-        },
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/OnboardingReadinessInput"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/marketing/cms/website-system/onboarding/{stackId}/evidence": {
-      "get": {
-        "operationId": "getOnboardingEvidence",
-        "tags": [
-          "WebsiteSystem"
-        ],
-        "summary": "Owner-only client stack {stackId}/evidence",
-        "responses": {
-          "200": {
-            "description": "Recorded result or saved evidence",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/OnboardingEvidence"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request"
-          },
-          "403": {
-            "description": "Owner access required"
-          },
-          "503": {
-            "description": "Service unavailable"
-          }
-        },
-        "parameters": [
-          {
-            "name": "stackId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
-              "maxLength": 120
             }
           }
         ]
@@ -16449,7 +16284,7 @@
             }
           }
         },
-        "description": "Active Owner only. Includes the acting Owner\u2019s operations and unresolved operations whose initiator no longer has active Owner access. Recovery verifies outcomes only; it never transfers execution authority. Original receipt identity is resolved server-side and recovery is audited. Terminal results remain visible to the recorded recovery actor so lost responses can be confirmed after refresh."
+        "description": "Active Owner only. Includes the acting Owner’s operations and unresolved operations whose initiator no longer has active Owner access. Recovery verifies outcomes only; it never transfers execution authority. Original receipt identity is resolved server-side and recovery is audited. Terminal results remain visible to the recorded recovery actor so lost responses can be confirmed after refresh."
       },
       "post": {
         "operationId": "reviewWebsiteRestore",
@@ -16518,7 +16353,7 @@
             }
           }
         ],
-        "description": "Active Owner only. Includes the acting Owner\u2019s operations and unresolved operations whose initiator no longer has active Owner access. Recovery verifies outcomes only; it never transfers execution authority. Original receipt identity is resolved server-side and recovery is audited. Terminal results remain visible to the recorded recovery actor so lost responses can be confirmed after refresh."
+        "description": "Active Owner only. Includes the acting Owner’s operations and unresolved operations whose initiator no longer has active Owner access. Recovery verifies outcomes only; it never transfers execution authority. Original receipt identity is resolved server-side and recovery is audited. Terminal results remain visible to the recorded recovery actor so lost responses can be confirmed after refresh."
       }
     },
     "/marketing/cms/website-system/backups/restore-operations/{id}/execute": {
@@ -16624,7 +16459,7 @@
             }
           }
         },
-        "description": "Active Owner only. Includes the acting Owner\u2019s operations and unresolved operations whose initiator no longer has active Owner access. Recovery verifies outcomes only; it never transfers execution authority. Original receipt identity is resolved server-side and recovery is audited. Terminal results remain visible to the recorded recovery actor so lost responses can be confirmed after refresh."
+        "description": "Active Owner only. Includes the acting Owner’s operations and unresolved operations whose initiator no longer has active Owner access. Recovery verifies outcomes only; it never transfers execution authority. Original receipt identity is resolved server-side and recovery is audited. Terminal results remain visible to the recorded recovery actor so lost responses can be confirmed after refresh."
       }
     }
   },
@@ -32334,527 +32169,6 @@
             }
           }
         ]
-      },
-      "OnboardingPlanInput": {
-        "type": "object",
-        "properties": {
-          "stackId": {
-            "type": "string",
-            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
-            "maxLength": 120
-          },
-          "publicDomain": {
-            "type": "string"
-          },
-          "adminDomain": {
-            "type": "string"
-          },
-          "canonicalHost": {
-            "type": "string",
-            "enum": [
-              "apex",
-              "www"
-            ]
-          },
-          "publicRecords": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "host": {
-                  "type": "string",
-                  "enum": [
-                    "@",
-                    "www"
-                  ]
-                },
-                "type": {
-                  "type": "string",
-                  "enum": [
-                    "A",
-                    "AAAA",
-                    "ALIAS",
-                    "ANAME",
-                    "CNAME"
-                  ]
-                },
-                "value": {
-                  "type": "string"
-                },
-                "ttl": {
-                  "type": "integer",
-                  "minimum": 60,
-                  "maximum": 86400
-                },
-                "proxyMode": {
-                  "type": "string",
-                  "enum": [
-                    "dns-only",
-                    "provider-managed",
-                    "not-applicable"
-                  ]
-                }
-              },
-              "required": [
-                "host",
-                "type",
-                "value",
-                "ttl",
-                "proxyMode"
-              ],
-              "additionalProperties": false
-            }
-          },
-          "adminRecord": {
-            "type": "object",
-            "properties": {
-              "type": {
-                "type": "string",
-                "enum": [
-                  "A",
-                  "AAAA",
-                  "ALIAS",
-                  "ANAME",
-                  "CNAME"
-                ]
-              },
-              "value": {
-                "type": "string"
-              },
-              "ttl": {
-                "type": "integer",
-                "minimum": 60,
-                "maximum": 86400
-              },
-              "proxyMode": {
-                "type": "string",
-                "enum": [
-                  "dns-only",
-                  "provider-managed",
-                  "not-applicable"
-                ]
-              }
-            },
-            "required": [
-              "type",
-              "value",
-              "ttl",
-              "proxyMode"
-            ],
-            "additionalProperties": false
-          },
-          "dnsOperator": {
-            "type": "string"
-          },
-          "launchOwner": {
-            "type": "string"
-          },
-          "routingMode": {
-            "type": "string",
-            "enum": [
-              "same-origin-proxy"
-            ]
-          }
-        },
-        "required": [
-          "stackId",
-          "publicDomain",
-          "adminDomain",
-          "canonicalHost",
-          "publicRecords",
-          "adminRecord",
-          "dnsOperator",
-          "launchOwner",
-          "routingMode"
-        ],
-        "additionalProperties": false
-      },
-      "OnboardingReceipt": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "recordedAt": {
-            "type": "string",
-            "format": "date-time"
-          }
-        },
-        "required": [
-          "id",
-          "recordedAt"
-        ],
-        "additionalProperties": false
-      },
-      "OnboardingPlan": {
-        "type": "object",
-        "properties": {
-          "stackId": {
-            "type": "string"
-          },
-          "publicOrigin": {
-            "type": "string"
-          },
-          "adminOrigin": {
-            "type": "string"
-          },
-          "records": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "fqdn": {
-                  "type": "string"
-                },
-                "type": {
-                  "type": "string",
-                  "enum": [
-                    "A",
-                    "AAAA",
-                    "ALIAS",
-                    "ANAME",
-                    "CNAME"
-                  ]
-                },
-                "value": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "fqdn",
-                "type",
-                "value"
-              ],
-              "additionalProperties": true
-            }
-          },
-          "manualInstructions": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "rollbackInstructions": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "requiredVerification": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "evidence": {
-            "$ref": "#/components/schemas/OnboardingReceipt"
-          }
-        },
-        "required": [
-          "stackId",
-          "publicOrigin",
-          "adminOrigin",
-          "records",
-          "manualInstructions",
-          "rollbackInstructions",
-          "requiredVerification",
-          "evidence"
-        ],
-        "additionalProperties": false
-      },
-      "OnboardingDnsInput": {
-        "type": "object",
-        "properties": {
-          "stackId": {
-            "type": "string"
-          },
-          "records": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "fqdn": {
-                  "type": "string"
-                },
-                "type": {
-                  "type": "string",
-                  "enum": [
-                    "A",
-                    "AAAA",
-                    "ALIAS",
-                    "ANAME",
-                    "CNAME"
-                  ]
-                },
-                "value": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "fqdn",
-                "type",
-                "value"
-              ],
-              "additionalProperties": false
-            },
-            "minItems": 1,
-            "maxItems": 8
-          }
-        },
-        "required": [
-          "stackId",
-          "records"
-        ],
-        "additionalProperties": false
-      },
-      "OnboardingDnsResult": {
-        "type": "object",
-        "properties": {
-          "status": {
-            "type": "string",
-            "enum": [
-              "ready",
-              "pending",
-              "blocked"
-            ]
-          },
-          "records": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "fqdn": {
-                  "type": "string"
-                },
-                "type": {
-                  "type": "string",
-                  "enum": [
-                    "A",
-                    "AAAA",
-                    "ALIAS",
-                    "ANAME",
-                    "CNAME"
-                  ]
-                },
-                "expectedValue": {
-                  "type": "string"
-                },
-                "status": {
-                  "type": "string",
-                  "enum": [
-                    "passed",
-                    "pending",
-                    "failed",
-                    "manual-review"
-                  ]
-                },
-                "observedValues": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                },
-                "message": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "fqdn",
-                "type",
-                "expectedValue",
-                "status",
-                "observedValues",
-                "message"
-              ],
-              "additionalProperties": false
-            }
-          },
-          "evidence": {
-            "$ref": "#/components/schemas/OnboardingReceipt"
-          }
-        },
-        "required": [
-          "status",
-          "records",
-          "evidence"
-        ],
-        "additionalProperties": false
-      },
-      "OnboardingReadinessInput": {
-        "type": "object",
-        "properties": {
-          "stackId": {
-            "type": "string"
-          },
-          "checks": {
-            "type": "object",
-            "properties": {
-              "ownership": {
-                "type": "string",
-                "enum": [
-                  "pass",
-                  "pending",
-                  "fail"
-                ]
-              },
-              "authoritativeDns": {
-                "type": "string",
-                "enum": [
-                  "pass",
-                  "pending",
-                  "fail"
-                ]
-              },
-              "certificate": {
-                "type": "string",
-                "enum": [
-                  "pass",
-                  "pending",
-                  "fail"
-                ]
-              },
-              "publicRouting": {
-                "type": "string",
-                "enum": [
-                  "pass",
-                  "pending",
-                  "fail"
-                ]
-              },
-              "adminRouting": {
-                "type": "string",
-                "enum": [
-                  "pass",
-                  "pending",
-                  "fail"
-                ]
-              },
-              "sameOriginApi": {
-                "type": "string",
-                "enum": [
-                  "pass",
-                  "pending",
-                  "fail"
-                ]
-              },
-              "applicationHealth": {
-                "type": "string",
-                "enum": [
-                  "pass",
-                  "pending",
-                  "fail"
-                ]
-              },
-              "canonicalRedirect": {
-                "type": "string",
-                "enum": [
-                  "pass",
-                  "pending",
-                  "fail"
-                ]
-              },
-              "rollbackPlan": {
-                "type": "string",
-                "enum": [
-                  "pass",
-                  "pending",
-                  "fail"
-                ]
-              }
-            },
-            "required": [
-              "ownership",
-              "authoritativeDns",
-              "certificate",
-              "publicRouting",
-              "adminRouting",
-              "sameOriginApi",
-              "applicationHealth",
-              "canonicalRedirect",
-              "rollbackPlan"
-            ],
-            "additionalProperties": false
-          }
-        },
-        "required": [
-          "stackId",
-          "checks"
-        ],
-        "additionalProperties": false
-      },
-      "OnboardingReadinessResult": {
-        "type": "object",
-        "properties": {
-          "status": {
-            "type": "string",
-            "enum": [
-              "ready",
-              "pending",
-              "blocked"
-            ]
-          },
-          "passed": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "pending": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "failed": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "evidence": {
-            "$ref": "#/components/schemas/OnboardingReceipt"
-          }
-        },
-        "required": [
-          "status",
-          "passed",
-          "pending",
-          "failed",
-          "evidence"
-        ],
-        "additionalProperties": false
-      },
-      "OnboardingEvidence": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "stackId": {
-            "type": "string"
-          },
-          "kind": {
-            "type": "string"
-          },
-          "payload": {},
-          "recordedAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "recordedByUserId": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "required": [
-          "id",
-          "stackId",
-          "kind",
-          "payload",
-          "recordedAt",
-          "recordedByUserId"
-        ],
-        "additionalProperties": false
       },
       "WebsiteEmailTemplate": {
         "type": "object",

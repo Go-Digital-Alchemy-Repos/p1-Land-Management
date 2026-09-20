@@ -152,12 +152,8 @@ test("Developer resources is an Owner-only Website System destination", () => {
     assert.equal(canAccessRoute(route,role,["marketing.content.pages"]),false);
 });
 
-test("Onboarding stays under Website System with Owner-only navigation", () => {
-  const route=routeFromPath("/marketing/system/onboarding");
-  assert.equal(route.kind,"page");if(route.kind!=="page")return;
-  assert.equal(route.page.view,"Website Onboarding");assert.equal(route.page.section,"Website System");
-  assert.equal(canAccessRoute(route,"owner"),true);
-  for(const role of ["admin","member","client","crew",null]) assert.equal(canAccessRoute(route,role,["marketing.content.pages"]),false);
+test("retired client stack onboarding deep link is not a dashboard route", () => {
+  assert.equal(routeFromPath("/marketing/system/onboarding").kind, "not-found");
 });
 
 test("Email Templates is an Owner-only Website System destination", () => {

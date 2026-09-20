@@ -560,3 +560,15 @@ The same check reproduced a deployment-crossing stale About chunk (`Failed to fe
 ## Fresh Dashboard recovery — September 20
 
 The current pre0048 production archive (SHA-256 `94fd189d7f0d45058a710f4b1361c8f7be026464bf9c4eeb036398b62b4a906f`) passed `scripts/consolidation/rehearse-dashboard-restore.py` on pinned PostgreSQL18 image `sha256:6c538e7206ea40ff740ef27883529390a690b6ead6ba96b44c67a9f7c638e8fd`. The isolated source had85 tables and51 migration ledger entries. Applying only0048 yielded86 tables/52 entries without changing existing business rows. A second backup/restore matched rows, schema objects and sequence states; all current migration checksums matched. The historical ledger-only MFA entry was retained. Network was none, no host ports or app/notification workers ran, and removal of the named rehearsal container was confirmed. This extends Dashboard recovery to current CRM archives/inquiries and pipeline schema; it does not close provider media restoration or historical Railway application-image recovery.
+
+## Client Stack Onboarding retirement — September 20
+
+The Owner directed removal of the Client Stack Onboarding feature because P1 is
+a standalone system for one client, not a multi-tenant product. The candidate
+removes its Dashboard navigation, route and lazy UI; the retained Core admin
+navigation, route and API; and the Dashboard-to-Core transport/OpenAPI contract.
+Its historical evidence table and immutable migration history remain intact, so
+no production data deletion or migration is required. This does not affect the
+single-client origin, preview, backup or storage safety boundaries, nor the
+separate customer/client and property onboarding workflows. Deployment and
+live verification remain separate release gates.

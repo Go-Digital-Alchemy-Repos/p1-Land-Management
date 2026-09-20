@@ -340,12 +340,6 @@ export function buildNavGroups(
                 iconColor: "text-cyan-600",
               },
               {
-                title: "Client Stack Onboarding",
-                href: "/admin/client-stack-onboarding",
-                icon: Globe,
-                iconColor: "text-emerald-600",
-              },
-              {
                 title: "User Manager",
                 href: "/admin/users",
                 icon: Users,
