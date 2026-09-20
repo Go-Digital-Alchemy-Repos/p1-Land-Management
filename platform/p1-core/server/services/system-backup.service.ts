@@ -505,6 +505,7 @@ async function restoreBackupSnapshotWithClient(
   client: PoolClient,
   snapshot: DatabaseBackupSnapshot,
   options: RestoreBackupSnapshotOptions = {},
+  beforeMutation?: () => void,
 ) {
   const identity = assertBackupRestoreIdentity(snapshot.manifest, {
     targetStackId: process.env.CLIENT_STACK_ID,
@@ -557,6 +558,7 @@ async function restoreBackupSnapshotWithClient(
           }
         }
       }
+      beforeMutation?.();
       if (tableNames.length > 0) {
         await client.query(
           `TRUNCATE TABLE ${tableNames.map((table) => `public.${quoteIdent(table)}`).join(", ")} RESTART IDENTITY CASCADE`,
@@ -676,16 +678,24 @@ function backupRestoreFingerprint(snapshot: DatabaseBackupSnapshot) {
 }
 
 /** Separate reviewed entry point; retained callers keep their existing contract. */
-export async function restoreReviewedSystemBackup(key: string, expectedFingerprint: string) {
+export async function restoreReviewedSystemBackup(key: string, expectedFingerprint: string, expiresAt: string) {
   if (!/^[a-f0-9]{64}$/.test(expectedFingerprint)) throw new Error("Backup review is required");
+  const deadline = Date.parse(expiresAt);
+  const assertFresh = () => {
+    if (!Number.isFinite(deadline) || deadline <= Date.now() || deadline > Date.now() + 5 * 60_000)
+      throw new Error("Backup review expired or invalid; review again");
+  };
+  assertFresh();
   const operation = await beginBackupStorageOperation();
   if (!operation) throw new Error("Backup storage is not configured");
   return withBackupLock(async (client) => {
+    assertFresh();
     const snapshot = await loadReviewedBackup(key, operation);
     assertBackupRestoreIdentity(snapshot.manifest, { targetStackId: process.env.CLIENT_STACK_ID });
     if (snapshot.manifest.key !== key || backupRestoreFingerprint(snapshot) !== expectedFingerprint)
       throw new Error("Backup changed after review; review it again before restoring");
-    await restoreBackupSnapshotWithClient(client, snapshot);
+    assertFresh();
+    await restoreBackupSnapshotWithClient(client, snapshot, {}, assertFresh);
     return snapshot.manifest;
   });
 }

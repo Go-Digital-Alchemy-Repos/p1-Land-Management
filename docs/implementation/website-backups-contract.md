@@ -182,3 +182,22 @@ UI, typed confirmation, execution receipts and uncertain-outcome reconciliation
 remain required before this candidate can ship. Same-origin backend replacement
 cannot be detected from the origin binding alone; archive fingerprint and fresh
 Core identity validation must still be enforced immediately before execution.
+
+### Explicit intent and expiry enforcement candidate
+
+A Dashboard claim now requires the exact typed confirmation `RESTORE WEBSITE
+DATABASE`, with no additional execution fields accepted. Missing/mistyped intent
+cannot change the reviewed operation. Core's separate reviewed restore service
+requires a finite expiry no more than five minutes ahead. It checks before
+storage access, under the backup lock, after archive download, and inside the
+restore transaction after publication-lock/compatibility checks immediately
+before destructive SQL. Expiry during a download or lock wait aborts the restore;
+retained/direct operator recovery contracts remain unchanged.
+
+Validation: 50 focused Core tests pass, including expiry during download and
+transaction-lock waits with no destructive SQL and transaction rollback. The
+real PostgreSQL ledger test passes including invalid confirmation leaving the
+review untouched. Both Core and Dashboard API typechecks pass. No execute HTTP
+endpoint, production migration or production restore is enabled. Durable Core
+receipt correlation, uncertainty reconciliation, full schema compatibility,
+composed HTTP/UI acceptance and independent review remain release requirements.

@@ -1,5 +1,7 @@
 import { createHash } from "node:crypto";
 import { z } from "zod";
+export const RESTORE_CONFIRMATION = "RESTORE WEBSITE DATABASE";
+export const restoreExecutionRequest = z.object({confirmation:z.literal(RESTORE_CONFIRMATION)}).strict();
 export const restoreReviewRequest = z.object({key:z.string().trim().min(1).max(2048)}).strict();
 export const restoreSummary = z.object({
   createdAt:z.string().datetime(), clientStackId:z.string().min(1).max(255),

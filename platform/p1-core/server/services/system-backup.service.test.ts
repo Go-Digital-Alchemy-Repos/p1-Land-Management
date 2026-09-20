@@ -209,15 +209,52 @@ describe("reviewed backup restore admission", () => {
       vi.mocked(storage.downloadBackupObject).mockResolvedValue(gzipSync(JSON.stringify({manifest:{...validManifest,tableCount:1,restoreOrder:["example"]},tables:[{name:"example",rowCount:0,rows:[]}],sequences:[]})));
       const review = await getSystemBackupRestoreReview(validManifest.key);
       vi.mocked(storage.downloadBackupObject).mockResolvedValue(gzipSync(JSON.stringify({manifest:{...validManifest,tableCount:1,totalRowCount:1,restoreOrder:["example"]},tables:[{name:"example",rowCount:1,rows:[{id:1}]}],sequences:[]})));
-      await expect(restoreReviewedSystemBackup(validManifest.key,review.fingerprint)).rejects.toThrow("changed after review");
+      await expect(restoreReviewedSystemBackup(validManifest.key,review.fingerprint,new Date(Date.now()+60_000).toISOString())).rejects.toThrow("changed after review");
       expect(query).toHaveBeenCalledTimes(2);
       expect(release).toHaveBeenCalledWith(false);
     } finally { if(previous === undefined) delete process.env.CLIENT_STACK_ID; else process.env.CLIENT_STACK_ID=previous; }
   });
   it("rejects missing review before storage or database access", async () => {
     vi.clearAllMocks();
-    await expect(restoreReviewedSystemBackup(validManifest.key, "")).rejects.toThrow("review is required");
+    await expect(restoreReviewedSystemBackup(validManifest.key, "",new Date(Date.now()+60_000).toISOString())).rejects.toThrow("review is required");
     expect(storage.beginBackupStorageOperation).not.toHaveBeenCalled();
     expect(pool.connect).not.toHaveBeenCalled();
   });
+});
+
+it("rejects expired, missing and excessive reviewed execution deadlines before storage", async () => {
+  vi.clearAllMocks();
+  for (const deadline of ["", "invalid", new Date(Date.now()-1).toISOString(),new Date(Date.now()+600_000).toISOString()])
+    await expect(restoreReviewedSystemBackup(validManifest.key,"a".repeat(64),deadline)).rejects.toThrow("review expired or invalid");
+  expect(storage.beginBackupStorageOperation).not.toHaveBeenCalled();
+  expect(pool.connect).not.toHaveBeenCalled();
+});
+it("rechecks expiry after archive download and after transaction lock waits, before destructive SQL", async () => {
+  const previous=process.env.CLIENT_STACK_ID;
+  process.env.CLIENT_STACK_ID="p1-land-management";
+  const instant=Date.parse("2026-09-20T12:00:00Z");
+  const clock=vi.spyOn(Date,"now").mockReturnValue(instant);
+  const snapshot={manifest:{...validManifest,tableCount:1,restoreOrder:["example"]},tables:[{name:"example",rowCount:0,rows:[]}],sequences:[]};
+  try {
+    for(const delayed of ["download","transaction-lock"]){
+      vi.clearAllMocks();clock.mockReturnValue(instant);
+      vi.mocked(storage.beginBackupStorageOperation).mockResolvedValue({source:"env",bucketName:"test",prefix:"test"});
+      vi.mocked(storage.downloadBackupObject).mockResolvedValue(gzipSync(JSON.stringify(snapshot)));
+      const review=await getSystemBackupRestoreReview(validManifest.key);
+      const query=vi.fn(async(sql:string)=>{
+        if(sql.includes("pg_try_advisory_lock")) return {rows:[{acquired:true}]};
+        if(sql.includes("pg_advisory_unlock")) return {rows:[{released:true}]};
+        if(delayed==="transaction-lock" && sql.includes("blog-publication-writes")) clock.mockReturnValue(instant+61_000);
+        return {rows:[]};
+      });
+      vi.mocked(pool.connect as () => Promise<PoolClient>).mockResolvedValue({query,release:vi.fn()} as unknown as PoolClient);
+      vi.mocked(storage.downloadBackupObject).mockImplementation(async()=>{
+        if(delayed==="download") clock.mockReturnValue(instant+61_000);
+        return gzipSync(JSON.stringify(snapshot));
+      });
+      await expect(restoreReviewedSystemBackup(validManifest.key,review.fingerprint,new Date(instant+60_000).toISOString())).rejects.toThrow("review expired or invalid");
+      expect(query.mock.calls.some(([sql])=>/TRUNCATE|INSERT INTO/.test(sql))).toBe(false);
+      if(delayed==="transaction-lock") expect(query.mock.calls.some(([sql])=>sql==="ROLLBACK")).toBe(true);
+    }
+  } finally { clock.mockRestore();if(previous===undefined) delete process.env.CLIENT_STACK_ID;else process.env.CLIENT_STACK_ID=previous; }
 });

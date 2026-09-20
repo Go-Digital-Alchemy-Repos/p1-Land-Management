@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { z } from "zod";
 import { transaction } from "./database";
+import { restoreExecutionRequest } from "./website-restore.contract";
 import { HttpError } from "./policy";
 import type { PoolClient } from "pg";
 const hash = z.string().regex(/^[a-f0-9]{64}$/);
@@ -32,7 +33,8 @@ export async function recordWebsiteRestoreReview(actorId: string, input: unknown
   });
 }
 /** Commit this claim before calling Core. A repeated request never invokes restore again. */
-export async function claimWebsiteRestore(actorId: string, id: string, sourceBinding: string) {
+export async function claimWebsiteRestore(actorId: string, id: string, sourceBinding: string, confirmation: unknown) {
+  restoreExecutionRequest.parse(confirmation);
   z.string().uuid().parse(id); hash.parse(sourceBinding);
   return transaction(async c=>{
     await owner(c,actorId);
