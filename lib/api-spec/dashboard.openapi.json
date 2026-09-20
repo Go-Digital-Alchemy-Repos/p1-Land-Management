@@ -16211,6 +16211,33 @@
           }
         ]
       }
+    },
+    "/marketing/cms/website-system/integrations/google-reporting": {
+      "put": {
+        "operationId": "saveGoogleReportingConfiguration",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoogleReportingConfigurationSave"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Saved report targets; deployment credentials unchanged",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GoogleReportingConfigurationSaved"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -32806,55 +32833,7 @@
             }
           },
           "google": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "effectiveSource": {
-                "type": "string"
-              },
-              "configurationManagement": {
-                "type": "string"
-              },
-              "credentialMode": {
-                "type": "string",
-                "enum": [
-                  "service-account",
-                  "oauth",
-                  "missing"
-                ]
-              },
-              "propertyId": {
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              "searchConsoleConfigured": {
-                "type": "boolean"
-              },
-              "searchConsoleSite": {
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              "publicTrackingSource": {
-                "type": "string"
-              },
-              "note": {
-                "type": "string"
-              }
-            },
-            "required": [
-              "effectiveSource",
-              "configurationManagement",
-              "credentialMode",
-              "propertyId",
-              "searchConsoleConfigured",
-              "searchConsoleSite",
-              "publicTrackingSource",
-              "note"
-            ]
+            "$ref": "#/components/schemas/GoogleReportingConfiguration"
           },
           "backups": {
             "type": "object",
@@ -34135,6 +34114,156 @@
             "$ref": "#/components/schemas/MarketingBlogEditorial"
           }
         }
+      },
+      "GoogleReportingConfiguration": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "effectiveSource": {
+            "type": "string"
+          },
+          "configurationManagement": {
+            "type": "string"
+          },
+          "credentialMode": {
+            "type": "string",
+            "enum": [
+              "service-account",
+              "oauth",
+              "missing"
+            ]
+          },
+          "propertyId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "searchConsoleConfigured": {
+            "type": "boolean"
+          },
+          "searchConsoleSite": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "publicTrackingSource": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "targetSource": {
+            "type": "string",
+            "enum": [
+              "deployment",
+              "managed"
+            ]
+          },
+          "credentialManagement": {
+            "type": "string",
+            "enum": [
+              "deployment"
+            ]
+          },
+          "managedTargets": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "propertyId": {
+                "type": "string"
+              },
+              "searchConsoleSite": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "propertyId",
+              "searchConsoleSite"
+            ]
+          }
+        },
+        "required": [
+          "effectiveSource",
+          "configurationManagement",
+          "credentialMode",
+          "propertyId",
+          "searchConsoleConfigured",
+          "searchConsoleSite",
+          "publicTrackingSource",
+          "note",
+          "version",
+          "targetSource",
+          "credentialManagement",
+          "managedTargets"
+        ]
+      },
+      "GoogleReportingConfigurationSave": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "expectedVersion": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "fields": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "targetSource": {
+                "type": "string",
+                "enum": [
+                  "deployment",
+                  "managed"
+                ]
+              },
+              "propertyId": {
+                "type": "string",
+                "maxLength": 32,
+                "pattern": "^[0-9]*$"
+              },
+              "searchConsoleSite": {
+                "type": "string",
+                "enum": [
+                  "",
+                  "sc-domain:p1landmanagement.com",
+                  "https://www.p1landmanagement.com/",
+                  "https://p1landmanagement.com/"
+                ]
+              }
+            },
+            "required": [
+              "targetSource",
+              "propertyId",
+              "searchConsoleSite"
+            ]
+          }
+        },
+        "required": [
+          "expectedVersion",
+          "fields"
+        ]
+      },
+      "GoogleReportingConfigurationSaved": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "saved": {
+            "type": "boolean"
+          },
+          "google": {
+            "$ref": "#/components/schemas/GoogleReportingConfiguration"
+          }
+        },
+        "required": [
+          "saved",
+          "google"
+        ]
       }
     }
   }

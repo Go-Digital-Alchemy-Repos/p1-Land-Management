@@ -143,7 +143,12 @@ it("excludes registered keys and provider categories from legacy reads regardles
   state.all.mockResolvedValue([
     { key: "mailgun_api_key", value: "must-not-leak", category: "branding", isSecret: false },
     { key: "r2_secret_access_key", value: "must-not-leak", category: "other", isSecret: false },
-    { key: "historical-provider-key", value: "must-not-leak", category: "mailchimp", isSecret: false },
+    {
+      key: "historical-provider-key",
+      value: "must-not-leak",
+      category: "mailchimp",
+      isSecret: false,
+    },
     { key: "site-example", value: "public", category: "branding", isSecret: false },
     { key: "other-secret", value: "must-not-leak", category: "other", isSecret: true },
   ]);
@@ -158,4 +163,23 @@ it("excludes registered keys and provider categories from legacy reads regardles
     expect(JSON.stringify(payload)).not.toContain("mailgun_api_key");
     expect(JSON.stringify(payload)).not.toContain("r2_secret_access_key");
   }
+});
+it("blocks Google target generic writes/deletes/category laundering and hides legacy read values", async () => {
+  expect((await put("p1_google_reporting_property_id", "branding")).status).toBe(409);
+  expect((await req("/settings/p1_google_reporting_property_id", "DELETE")).status).toBe(409);
+  expect((await put("unregistered", "google_reporting")).status).toBe(409);
+  state.all.mockResolvedValue([
+    {
+      key: "p1_google_reporting_property_id",
+      category: "branding",
+      value: "DO_NOT_LEAK",
+      isSecret: false,
+    },
+    { key: "historical", category: "google_reporting", value: "DO_NOT_LEAK", isSecret: false },
+  ]);
+  expect((await put("historical", "branding")).status).toBe(409);
+  expect((await req("/settings/historical", "DELETE")).status).toBe(409);
+  expect(await (await req("/settings", "GET")).text()).not.toContain("DO_NOT_LEAK");
+  expect(state.save).not.toHaveBeenCalled();
+  expect(state.remove).not.toHaveBeenCalled();
 });

@@ -186,3 +186,24 @@
   [data-testid^="button-integration-group-"] {
   display: block;
 }
+
+.website-integrations .integration-google fieldset {
+  min-width: 0;
+  display: grid;
+  gap: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 16px;
+}
+.website-integrations .integration-google label {
+  display: grid;
+  gap: 6px;
+}
+.website-integrations .integration-google input,
+.website-integrations .integration-google select {
+  background: var(--surface);
+  color: var(--ink);
+}
+.website-integrations .integration-google dd {
+  overflow-wrap: anywhere;
+}

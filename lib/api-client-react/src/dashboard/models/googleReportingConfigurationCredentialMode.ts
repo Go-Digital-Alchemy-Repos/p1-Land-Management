@@ -6,10 +6,10 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export type WebsiteIntegrationsGoogleCredentialMode = typeof WebsiteIntegrationsGoogleCredentialMode[keyof typeof WebsiteIntegrationsGoogleCredentialMode];
+export type GoogleReportingConfigurationCredentialMode = typeof GoogleReportingConfigurationCredentialMode[keyof typeof GoogleReportingConfigurationCredentialMode];
 
 
-export const WebsiteIntegrationsGoogleCredentialMode = {
+export const GoogleReportingConfigurationCredentialMode = {
   'service-account': 'service-account',
   oauth: 'oauth',
   missing: 'missing',

@@ -1,3 +1,5 @@
+import { GOOGLE_REPORTING_CATEGORY, googleReportingKeys, googleReportingKeyRules, googleReportingWrite } from "@shared/google-reporting-config";
+import { googleReportingConfiguration } from "../services/google-reporting-config.service";
 import { Router, type ErrorRequestHandler } from "express";
 import { z } from "zod";
 import { integrationFields, integrationKeyRules, integrationRegistry, integrationWriteSchema, websiteIntegrationProviderSchema, websiteIntegrationProviders, type WebsiteIntegrationProvider } from "@shared/website-integrations";
@@ -42,19 +44,41 @@ router.get("/", asyncHandler(async (req, res) => {
           testEffects: "Read-only provider request; no email, subscriptions, or object writes." };
       }
     })),
-    google: {
-      effectiveSource: "deployment", configurationManagement: "remaining",
-      credentialMode: process.env.P1_GA_SERVICE_ACCOUNT_JSON ? "service-account" : process.env.P1_GA_CLIENT_ID && process.env.P1_GA_CLIENT_SECRET && process.env.P1_GA_REFRESH_TOKEN ? "oauth" : "missing",
-      propertyId: /^\d+$/.test(process.env.P1_GA_PROPERTY_ID || "554712298") ? (process.env.P1_GA_PROPERTY_ID || "554712298") : null,
-      searchConsoleConfigured: /^(sc-domain:p1landmanagement\.com|https:\/\/(www\.)?p1landmanagement\.com\/)$/i.test(process.env.P1_GSC_SITE_URL || ""),
-      searchConsoleSite: /^(sc-domain:p1landmanagement\.com|https:\/\/(www\.)?p1landmanagement\.com\/)$/i.test(process.env.P1_GSC_SITE_URL || "") ? process.env.P1_GSC_SITE_URL : null,
-      publicTrackingSource: "website-build-VITE_GA_MEASUREMENT_ID",
-      note: "Legacy Google settings do not configure live reporting or the public website. Credential presence does not prove provider access or canonical site coverage.",
-    },
+    google: await googleReportingConfiguration.view(),
     backups: { effectiveSource: hasS3("BACKUP_S3") ? "BACKUP_S3" : hasS3("S3") ? "S3" : ["ACCOUNT_ID", "ACCESS_KEY_ID", "SECRET_ACCESS_KEY", "BUCKET_NAME"].every(key => process.env[`BACKUP_R2_${key}`]) ? "BACKUP_R2" : "settings" },
     smtpFallbackConfigured: Boolean(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS),
   });
 }));
+router.put(
+  "/google-reporting",
+  asyncHandler(async (req, res) => {
+    empty.parse(req.query);
+    const body = googleReportingWrite.parse(req.body);
+    const entries = Object.entries(googleReportingKeys).map(([field, key]) => ({
+      key,
+      category: GOOGLE_REPORTING_CATEGORY,
+      value: body.fields[field as keyof typeof googleReportingKeys],
+      isSecret: false,
+    }));
+    await storage.settings.upsertSettings(
+      entries,
+      {
+        category: GOOGLE_REPORTING_CATEGORY,
+        version: body.expectedVersion,
+        keyRules: googleReportingKeyRules,
+      },
+      {
+        userId: req.user!.id,
+        action: "website_google_reporting_targets_updated",
+        details: JSON.stringify({
+          keys: entries.map((entry) => entry.key),
+          targetSource: body.fields.targetSource,
+        }),
+      },
+    );
+    res.json({ saved: true, google: await googleReportingConfiguration.view() });
+  }),
+);
 router.put("/:provider", asyncHandler(async (req, res) => {
   empty.parse(req.query);
   const provider = websiteIntegrationProviderSchema.parse(req.params.provider);

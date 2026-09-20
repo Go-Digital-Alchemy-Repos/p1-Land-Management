@@ -2,10 +2,11 @@
 import React, { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { beforeEach, afterEach, it, expect, vi } from "vitest";
-const api = vi.hoisted(() => ({ get: vi.fn(), save: vi.fn(), test: vi.fn() }));
+const api = vi.hoisted(() => ({ get: vi.fn(), save: vi.fn(), googleSave: vi.fn(), test: vi.fn() }));
 vi.mock("@workspace/api-client-react/dashboard", () => ({
   getWebsiteIntegrations: api.get,
   saveWebsiteIntegration: api.save,
+  saveGoogleReportingConfiguration: api.googleSave,
   testWebsiteIntegration: api.test,
 }));
 import WebsiteIntegrations from "../../../../artifacts/p1-dashboard/src/marketing/WebsiteIntegrations";
@@ -22,6 +23,10 @@ const provider = {
 const snapshot = {
   providers: [provider],
   google: {
+    version: "c".repeat(64),
+    targetSource: "deployment",
+    managedTargets: { propertyId: "123", searchConsoleSite: "sc-domain:p1landmanagement.com" },
+    credentialManagement: "deployment",
     effectiveSource: "deployment",
     configurationManagement: "remaining",
     credentialMode: "oauth",
@@ -293,4 +298,103 @@ it("retains original filter trigger widths in the native select adapter", () => 
   expect(category.classList.contains("sm:w-[190px]")).toBe(true);
   expect(status.classList.contains("sm:w-[165px]")).toBe(true);
   expect(module.getAttribute("aria-label")).toBe("Module type");
+});
+
+const googleForm = () =>
+  container.querySelector<HTMLFormElement>('form[aria-label="Google reporting targets"]')!;
+async function googleSubmit() {
+  await act(async () =>
+    googleForm().dispatchEvent(new Event("submit", { bubbles: true, cancelable: true })),
+  );
+}
+it("Google source switching preserves managed drafts and saves only versioned target fields", async () => {
+  const form = googleForm();
+  await change(form.querySelector("input")!, "987");
+  await change(form.querySelector("select")!, "managed");
+  await change(form.querySelector("select")!, "deployment");
+  expect(form.querySelector("input")!.value).toBe("987");
+  expect(container.textContent).toContain("554712298");
+  api.googleSave.mockResolvedValue({
+    saved: true,
+    google: {
+      ...snapshot.google,
+      version: "d".repeat(64),
+      managedTargets: { ...snapshot.google.managedTargets, propertyId: "987" },
+    },
+  });
+  await googleSubmit();
+  expect(api.googleSave.mock.calls[0][0]).toEqual({
+    expectedVersion: "c".repeat(64),
+    fields: {
+      targetSource: "deployment",
+      propertyId: "987",
+      searchConsoleSite: "sc-domain:p1landmanagement.com",
+    },
+  });
+  expect(form.querySelector('input[type="password"]')).toBeNull();
+  expect(api.test).not.toHaveBeenCalled();
+});
+it("Google uncertain saves retain draft and block retries until confirmed successful reload", async () => {
+  await change(googleForm().querySelector("input")!, "987");
+  api.googleSave.mockRejectedValue(new Error("Lost response"));
+  await googleSubmit();
+  expect(googleForm().querySelector("input")!.value).toBe("987");
+  expect(googleForm().querySelector("fieldset")!.disabled).toBe(true);
+  await googleSubmit();
+  expect(api.googleSave).toHaveBeenCalledTimes(1);
+  vi.mocked(window.confirm).mockReturnValue(false);
+  await click("Reload saved configuration");
+  expect(googleForm().querySelector("input")!.value).toBe("987");
+  vi.mocked(window.confirm).mockReturnValue(true);
+  api.get.mockRejectedValueOnce(new Error("Offline"));
+  await click("Reload saved configuration");
+  expect(googleForm().querySelector("fieldset")!.disabled).toBe(true);
+  expect(googleForm().querySelector("input")!.value).toBe("987");
+  await click("Reload saved configuration");
+  expect(googleForm().querySelector("fieldset")!.disabled).toBe(false);
+  expect(googleForm().querySelector("input")!.value).toBe("123");
+});
+it("pending Google saves fence all other configuration actions", async () => {
+  let resolve!: (value: unknown) => void;
+  api.googleSave.mockImplementation(
+    () =>
+      new Promise((r) => {
+        resolve = r;
+      }),
+  );
+  await change(googleForm().querySelector("input")!, "987");
+  await googleSubmit();
+  expect(googleForm().querySelector("fieldset")!.disabled).toBe(true);
+  await googleSubmit();
+  await click("Reload saved configuration");
+  expect(api.googleSave).toHaveBeenCalledTimes(1);
+  expect(api.get).toHaveBeenCalledTimes(1);
+  await act(async () => resolve({ saved: true, google: snapshot.google }));
+});
+it("Google managed targets validate before write and adopt the returned version", async () => {
+  await change(googleForm().querySelector("select")!, "managed");
+  await change(googleForm().querySelector("input")!, "invalid");
+  await googleSubmit();
+  expect(api.googleSave).not.toHaveBeenCalled();
+  await change(googleForm().querySelector("input")!, "987");
+  const saved = {
+    ...snapshot.google,
+    targetSource: "managed",
+    version: "e".repeat(64),
+    managedTargets: { ...snapshot.google.managedTargets, propertyId: "987" },
+    propertyId: "987",
+  };
+  api.googleSave.mockResolvedValue({ saved: true, google: saved });
+  await googleSubmit();
+  await change(googleForm().querySelector("input")!, "988");
+  await googleSubmit();
+  expect(api.googleSave.mock.calls[1][0].expectedVersion).toBe("e".repeat(64));
+});
+it("Google version conflicts retain the draft and prohibit blind retry", async () => {
+  await change(googleForm().querySelector("input")!, "987");
+  api.googleSave.mockRejectedValue({ status: 409 });
+  await googleSubmit();
+  expect(googleForm().querySelector("input")!.value).toBe("987");
+  await googleSubmit();
+  expect(api.googleSave).toHaveBeenCalledTimes(1);
 });

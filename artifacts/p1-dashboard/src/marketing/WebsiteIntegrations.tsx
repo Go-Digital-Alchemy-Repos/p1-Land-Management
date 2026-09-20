@@ -7,6 +7,7 @@ import { Cloud, Mail, Plug, RefreshCw } from "lucide-react";
 import {
   getWebsiteIntegrations,
   saveWebsiteIntegration,
+  saveGoogleReportingConfiguration,
   testWebsiteIntegration,
 } from "@workspace/api-client-react/dashboard";
 import { useCmsUnsavedChanges } from "./useCmsUnsavedChanges";
@@ -149,6 +150,14 @@ function changed(draft?: Draft) {
       draft.baseline,
   );
 }
+type GoogleFields = {
+  targetSource: "deployment" | "managed";
+  propertyId: string;
+  searchConsoleSite: string;
+};
+function googleFields(view: Snapshot["google"]): GoogleFields {
+  return { targetSource: view.targetSource, ...view.managedTargets };
+}
 export default function WebsiteIntegrations() {
   const [selected, setSelected] = useState<Provider | null>(null);
   const dialog = useRef<HTMLDialogElement>(null);
@@ -167,6 +176,14 @@ export default function WebsiteIntegrations() {
   const [blocked, setBlocked] = useState<Partial<Record<Provider, boolean>>>(
     {},
   );
+  const [googleDraft, setGoogleDraft] = useState<GoogleFields | null>(null);
+  const [googleBlocked, setGoogleBlocked] = useState(false);
+  const googleDirty = Boolean(
+    googleDraft &&
+    snapshot &&
+    JSON.stringify(googleDraft) !==
+      JSON.stringify(googleFields(snapshot.google)),
+  );
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
@@ -174,9 +191,10 @@ export default function WebsiteIntegrations() {
   const live = useRef(true),
     gate = useRef(false),
     request = useRef<AbortController | null>(null);
-  const dirty = providers.some((provider) => changed(drafts[provider]));
+  const dirty =
+    googleDirty || providers.some((provider) => changed(drafts[provider]));
   useCmsUnsavedChanges(
-    busy || dirty || Object.values(blocked).some(Boolean),
+    busy || dirty || googleBlocked || Object.values(blocked).some(Boolean),
     "Leave website integrations? Unsaved configuration and replacement credentials will be discarded.",
   );
   function options() {
@@ -188,7 +206,10 @@ export default function WebsiteIntegrations() {
       ]),
     };
   }
-  async function run(work: () => Promise<void>, provider?: Provider) {
+  async function run(
+    work: () => Promise<void>,
+    provider?: Provider | "google",
+  ) {
     if (gate.current) return;
     gate.current = true;
     setBusy(true);
@@ -198,10 +219,12 @@ export default function WebsiteIntegrations() {
       await work();
     } catch {
       if (live.current) {
-        if (provider) setBlocked((value) => ({ ...value, [provider]: true }));
+        if (provider === "google") setGoogleBlocked(true);
+        else if (provider)
+          setBlocked((value) => ({ ...value, [provider]: true }));
         setError(
           provider
-            ? `${names[provider]} save was not confirmed or its saved configuration changed. Your inputs are retained. Reload saved configuration and compare before another save; do not repeat an uncertain write.`
+            ? `${provider === "google" ? "Google reporting" : names[provider]} save was not confirmed or its saved configuration changed. Your inputs are retained. Reload saved configuration and compare before another save; do not repeat an uncertain write.`
             : "Could not load the requested result. Your inputs are retained. Check the connection and try again.",
         );
       }
@@ -213,7 +236,7 @@ export default function WebsiteIntegrations() {
   async function reload() {
     if (
       gate.current ||
-      ((dirty || Object.values(blocked).some(Boolean)) &&
+      ((dirty || googleBlocked || Object.values(blocked).some(Boolean)) &&
         !window.confirm(
           "Reload all saved configuration? This discards unsaved fields and replacement credentials only after the saved configuration loads successfully.",
         ))
@@ -223,6 +246,8 @@ export default function WebsiteIntegrations() {
       const result = await getWebsiteIntegrations(options());
       if (!live.current) return;
       setSnapshot(result);
+      setGoogleDraft(googleFields(result.google));
+      setGoogleBlocked(false);
       setDrafts(
         Object.fromEntries(
           result.providers.map((view) => [view.provider, makeDraft(view)]),
@@ -320,6 +345,53 @@ export default function WebsiteIntegrations() {
         `${names[provider]} settings saved. Replacement credentials have been cleared from this form. No connection check ran.`,
       );
     }, provider);
+  }
+  async function saveGoogle(event: FormEvent) {
+    event.preventDefault();
+    if (
+      gate.current ||
+      googleBlocked ||
+      !googleDirty ||
+      !googleDraft ||
+      !snapshot
+    )
+      return;
+    const fields = { ...googleDraft };
+    if (
+      (fields.propertyId && !/^\d{1,32}$/.test(fields.propertyId)) ||
+      (fields.targetSource === "managed" &&
+        (!fields.propertyId || !fields.searchConsoleSite))
+    ) {
+      setError(
+        "Enter a numeric Analytics property ID and choose a Search Console site for managed reporting.",
+      );
+      return;
+    }
+    const searchConsoleSite = fields.searchConsoleSite;
+    if (
+      searchConsoleSite !== "" &&
+      searchConsoleSite !== "sc-domain:p1landmanagement.com" &&
+      searchConsoleSite !== "https://www.p1landmanagement.com/" &&
+      searchConsoleSite !== "https://p1landmanagement.com/"
+    ) {
+      setError("Choose one of the supported P1 Search Console sites.");
+      return;
+    }
+    const expectedVersion = snapshot.google.version;
+    await run(async () => {
+      const result = await saveGoogleReportingConfiguration(
+        { expectedVersion, fields: { ...fields, searchConsoleSite } },
+        options(),
+      );
+      if (!live.current) return;
+      setSnapshot((current) =>
+        current ? { ...current, google: result.google } : current,
+      );
+      setGoogleDraft(googleFields(result.google));
+      setNotice(
+        "Google reporting targets saved. Credentials and public website tracking were not changed. Open the reports to verify access.",
+      );
+    }, "google");
   }
   async function check(provider: Provider, view: ProviderView) {
     if (gate.current || blocked[provider] || view.configurationIssue) return;
@@ -636,8 +708,8 @@ export default function WebsiteIntegrations() {
         >
           <h2>Google reporting</h2>
           <p>
-            Effective source: deployment. Configuration management remains to be
-            completed in this area.
+            Saved target source: {snapshot.google.targetSource}. The effective
+            targets below reflect saved configuration, not unsaved inputs.
           </p>
           <dl>
             <div>
@@ -657,6 +729,88 @@ export default function WebsiteIntegrations() {
               <dd>{snapshot.google.publicTrackingSource}</dd>
             </div>
           </dl>
+          {googleDraft && (
+            <form onSubmit={saveGoogle} aria-label="Google reporting targets">
+              <fieldset disabled={busy || googleBlocked}>
+                <legend>Reporting target settings</legend>
+                <label>
+                  Target source
+                  <select
+                    value={googleDraft.targetSource}
+                    onChange={(event) => {
+                      if (!gate.current && !googleBlocked)
+                        setGoogleDraft({
+                          ...googleDraft,
+                          targetSource: event.target
+                            .value as GoogleFields["targetSource"],
+                        });
+                    }}
+                  >
+                    <option value="deployment">Deployment targets</option>
+                    <option value="managed">Managed targets</option>
+                  </select>
+                </label>
+                <p>
+                  Managed target values are retained when deployment targets are
+                  selected. They become effective only after saving Managed
+                  targets.
+                </p>
+                <label>
+                  Managed Analytics property ID
+                  <input
+                    inputMode="numeric"
+                    maxLength={32}
+                    value={googleDraft.propertyId}
+                    onChange={(event) => {
+                      if (!gate.current && !googleBlocked)
+                        setGoogleDraft({
+                          ...googleDraft,
+                          propertyId: event.target.value,
+                        });
+                    }}
+                  />
+                </label>
+                <label>
+                  Managed Search Console site
+                  <select
+                    value={googleDraft.searchConsoleSite}
+                    onChange={(event) => {
+                      if (!gate.current && !googleBlocked)
+                        setGoogleDraft({
+                          ...googleDraft,
+                          searchConsoleSite: event.target.value,
+                        });
+                    }}
+                  >
+                    <option value="">Choose a site</option>
+                    <option value="sc-domain:p1landmanagement.com">
+                      Domain: p1landmanagement.com
+                    </option>
+                    <option value="https://www.p1landmanagement.com/">
+                      https://www.p1landmanagement.com/
+                    </option>
+                    <option value="https://p1landmanagement.com/">
+                      https://p1landmanagement.com/
+                    </option>
+                  </select>
+                </label>
+                <button type="submit" disabled={!googleDirty}>
+                  Save reporting targets
+                </button>
+              </fieldset>
+              {googleBlocked && (
+                <p role="status">
+                  Save is blocked until you reload saved configuration and
+                  compare. Your draft is retained.
+                </p>
+              )}
+            </form>
+          )}
+          <p>
+            Reporting credentials are deployment-managed. This form has no
+            credential inputs. Public website tracking is configured separately
+            at build time.
+          </p>
           <p>{snapshot.google.note}</p>
           <p>
             Configuration presence is not verified provider access. Review the

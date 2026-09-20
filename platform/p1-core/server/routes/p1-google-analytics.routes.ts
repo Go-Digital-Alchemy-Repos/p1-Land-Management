@@ -1,7 +1,7 @@
 import { Router, type RequestHandler } from "express";
 import { authenticateToken, requireBusinessCapability } from "../middleware/auth";
-import { GAError, p1GoogleAnalytics } from "../services/p1-google-analytics.service";
-import { p1SearchConsole } from "../services/p1-search-console.service";
+import { GAError } from "../services/p1-google-analytics.service";
+import { googleReportingConfiguration } from "../services/google-reporting-config.service";
 const router = Router();
 router.use(authenticateToken);
 router.use((_req, res, next) => {
@@ -16,21 +16,29 @@ const failure = (res: import("express").Response, error: unknown) => {
 };
 export const analyticsReport: RequestHandler = async (req, res) => {
   try {
-    return res.json(await p1GoogleAnalytics.reports(req.query.startDate, req.query.endDate));
+    return res.json(
+      await (
+        await googleReportingConfiguration.services()
+      ).analytics.reports(req.query.startDate, req.query.endDate),
+    );
   } catch (error) {
     return failure(res, error);
   }
 };
 export const realtimeReport: RequestHandler = async (_req, res) => {
   try {
-    return res.json(await p1GoogleAnalytics.realtime());
+    return res.json(await (await googleReportingConfiguration.services()).analytics.realtime());
   } catch (error) {
     return failure(res, error);
   }
 };
 export const searchConsoleReport: RequestHandler = async (req, res) => {
   try {
-    return res.json(await p1SearchConsole.reports(req.query.startDate, req.query.endDate));
+    return res.json(
+      await (
+        await googleReportingConfiguration.services()
+      ).searchConsole.reports(req.query.startDate, req.query.endDate),
+    );
   } catch (error) {
     const code = error instanceof GAError ? error.code : "provider_unavailable";
     return res.status(code === "invalid_date_range" ? 400 : 503).json({

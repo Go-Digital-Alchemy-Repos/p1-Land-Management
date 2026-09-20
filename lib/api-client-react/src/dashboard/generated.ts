@@ -141,6 +141,8 @@ import type {
   GetMarketingSearchConsoleParams,
   GetScheduleParams,
   GetSetupStatus200,
+  GoogleReportingConfigurationSave,
+  GoogleReportingConfigurationSaved,
   InspectionReport,
   IntegrationHealth,
   LeadDetailHistory,
@@ -9224,6 +9226,28 @@ export const getMarketingBlogPreview = async (id: string,
     method: 'GET'
 
 
+  }
+);}
+
+
+
+export const getSaveGoogleReportingConfigurationUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/website-system/integrations/google-reporting`
+}
+
+export const saveGoogleReportingConfiguration = async (googleReportingConfigurationSave: GoogleReportingConfigurationSave, options?: RequestInit): Promise<GoogleReportingConfigurationSaved> => {
+
+  return customFetch<GoogleReportingConfigurationSaved>(getSaveGoogleReportingConfigurationUrl(),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      googleReportingConfigurationSave,)
   }
 );}
 

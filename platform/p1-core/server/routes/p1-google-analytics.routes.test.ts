@@ -23,6 +23,14 @@ vi.mock("../services/p1-google-analytics.service", async () => {
 vi.mock("../services/p1-search-console.service", () => ({
   p1SearchConsole: { reports: calls.search },
 }));
+vi.mock("../services/google-reporting-config.service", () => ({
+  googleReportingConfiguration: {
+    services: async () => ({
+      analytics: { reports: calls.reports, realtime: calls.realtime },
+      searchConsole: { reports: calls.search },
+    }),
+  },
+}));
 import router from "./p1-google-analytics.routes";
 let server: Server;
 afterEach(async () => {

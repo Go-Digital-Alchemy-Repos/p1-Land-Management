@@ -28,7 +28,7 @@ it("redacts secrets, identifies deployment-backed reporting, and uses private no
   expect(response.headers.get("cache-control")).toBe("private, no-store");
   expect(JSON.stringify(body)).not.toContain("private-do-not-return");
   expect(body.providers[0].secrets.mailgun_api_key).toEqual({ configured: true });
-  expect(body.google.configurationManagement).toBe("remaining");
+  expect(body.google.configurationManagement).toBe("report-targets");
 });
 it("denies member, unattested and inactive identities before storage", async () => {
   for (const value of [{ role: "member", active: true, ownerAttested: true }, { role: "owner", active: false, ownerAttested: true }, { role: "owner", active: true, ownerAttested: false }]) {
@@ -93,7 +93,7 @@ it("does not imply a default Search Console property or accept unrelated URLs", 
 });
 
 it("withholds malformed historical rows and prevents test calls", async () => {
-  state.snapshot.mockRejectedValue(Object.assign(new Error("private-value"), {code:"settings_boundary_mismatch",statusCode:409}));
+  state.snapshot.mockImplementation(async (category:string) => {if(category === "google_reporting")return {values:{},version:"a".repeat(64)};throw Object.assign(new Error("private-value"), {code:"settings_boundary_mismatch",statusCode:409});});
   const response = await fetch(base);const body=await response.json();
   expect(response.status).toBe(200);expect(body.providers[0].configurationIssue).toContain("reconciliation");
   expect(JSON.stringify(body)).not.toContain("private-value");
@@ -112,4 +112,38 @@ it("accepts a safely normalized historical Mailchimp API hostname for read-only 
   state.mailchimp.mockResolvedValue({success:true});
   const response=await fetch(`${base}/mailchimp/test`,{method:"POST"});
   expect((await response.json()).code).toBe("connection_verified");expect(state.mailchimp).toHaveBeenCalledOnce();
+});
+
+it("version-writes Google targets only, rejects credential changes and preserves conflict/Owner gates", async () => {
+  vi.stubEnv("P1_GA_REFRESH_TOKEN", "PRIVATE_REFRESH");
+  const send = (fields: any) =>
+    fetch(`${base}/google-reporting`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ expectedVersion: "a".repeat(64), fields }),
+    });
+  const fields = {
+    targetSource: "managed",
+    propertyId: "123",
+    searchConsoleSite: "sc-domain:p1landmanagement.com",
+  };
+  const response = await send(fields);
+  expect(response.status).toBe(200);
+  expect(JSON.stringify(await response.json())).not.toContain("PRIVATE_REFRESH");
+  const [entries, expected, audit] = state.save.mock.calls[0];
+  expect(entries).toHaveLength(3);
+  expect(entries.every((e: any) => e.category === "google_reporting" && !e.isSecret)).toBe(true);
+  expect(expected.version).toBe("a".repeat(64));
+  expect(audit.userId).toBe("owner");
+  expect(process.env.P1_GA_REFRESH_TOKEN).toBe("PRIVATE_REFRESH");
+  state.save.mockClear();
+  expect((await send({ ...fields, refreshToken: "secret" })).status).toBe(400);
+  expect((await send({ ...fields, searchConsoleSite: "https://example.com/" })).status).toBe(400);
+  expect(state.save).not.toHaveBeenCalled();
+  state.save.mockRejectedValueOnce(Object.assign(new Error("PRIVATE"), { statusCode: 409 }));
+  expect((await send(fields)).status).toBe(409);
+  expect(state.save).toHaveBeenCalledOnce();
+  identity = { role: "member", active: true, ownerAttested: true };
+  expect((await send(fields)).status).toBe(403);
+  expect(state.save).toHaveBeenCalledOnce();
 });

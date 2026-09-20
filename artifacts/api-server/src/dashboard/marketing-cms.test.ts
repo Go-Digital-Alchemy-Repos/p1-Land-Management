@@ -602,3 +602,10 @@ test("page and menu DELETE forward concurrency proofs", async () => {
     });
   }
 });
+
+test("Google report targets retain the Owner-only integration boundary", () => {
+ const op=operation("PUT","/website-system/integrations/:provider");
+ assert.equal(op.ownerOnly,true);
+ assert.equal(cmsDestination(op,{provider:"google-reporting"},{}),"/website-system/integrations/google-reporting");
+ assert.throws(()=>cmsDestination(op,{provider:"google-reporting"},{token:"not-allowed"}));
+});

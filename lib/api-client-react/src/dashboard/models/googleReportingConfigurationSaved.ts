@@ -6,12 +6,8 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { GoogleReportingConfiguration } from './googleReportingConfiguration';
-import type { WebsiteIntegration } from './websiteIntegration';
-import type { WebsiteIntegrationsBackups } from './websiteIntegrationsBackups';
 
-export interface WebsiteIntegrations {
-  providers: WebsiteIntegration[];
+export interface GoogleReportingConfigurationSaved {
+  saved: boolean;
   google: GoogleReportingConfiguration;
-  backups: WebsiteIntegrationsBackups;
-  smtpFallbackConfigured: boolean;
 }

@@ -1,3 +1,4 @@
+import { isGoogleReportingSetting } from "@shared/google-reporting-config";
 import { integrationRegistry, websiteIntegrationProviders } from "@shared/website-integrations";
 import { isWebsiteIdentityKey } from "@shared/website-identity";
 import { isSocialSettingKey } from "@shared/social-media";
@@ -54,7 +55,7 @@ function requireAdminOrDesignEditor(req: Request, res: Response, next: NextFunct
 
 const integrationKeys = new Set<string>(Object.values(integrationRegistry).flatMap(provider => [...provider.publicKeys, ...provider.secretKeys]));
 function isWebsiteIntegrationSetting(key: unknown, category?: unknown) {
-  return (typeof key === "string" && integrationKeys.has(key)) ||
+  return isGoogleReportingSetting(key, category) || (typeof key === "string" && integrationKeys.has(key)) ||
     (typeof category === "string" && websiteIntegrationProviders.some(provider => provider === category));
 }
 const integrationMovedMessage = "Manage website integrations in Marketing > Website System > Integrations";
