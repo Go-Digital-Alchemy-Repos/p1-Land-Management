@@ -1,3 +1,25 @@
+## Live draft cleanup and deployment checkpoint — September 19
+
+The stalled Blog browser tabs were no longer present. Parent reopened the actual
+land-clearing editor, restored its original excerpt, saved draft version4, then
+reloaded and verified persistence with no private acceptance text. Nothing was
+published. The public projection still has five posts/five owned routes and no
+test excerpt; website/dashboard health endpoints returned200.
+
+Railway latest eae8c58e4bf8751ccdcd614b30c55cce485415f7 SUCCESS: Core
+f69e1e79-1601-4921-82bb-ddf596a52b80, Dashboard
+21db4fb7-ff1c-48a3-aa02-7eb8bc7e2f3a, Website
+6b42056a-a189-4084-b424-5df3afcb5e2b. Both remote branches match that revision.
+
+Populated application rehearsal built current9978d9db and priorb3dca732 images
+from exact committed source plus the corrected recovery helper. Initial run failed
+at baseline-blog-projection; cleanup verified. Private evidence/context:
+/private/tmp/p1-blog-app-images-aar7h839. backup_retirement_review is diagnosing
+that failure. Do not claim application rollback accepted. Parent independently
+passed12 recovery and9 rollback tests before the run. CRM additive unmatched
+inquiry implementation is assigned to marketing_parity_inventory; no production
+import is authorized by its implementation report alone.
+
 ## Populated database and media archive recovery verified — September 19
 
 Actual post-import database snapshot passed isolated PostgreSQL18 restore: all
