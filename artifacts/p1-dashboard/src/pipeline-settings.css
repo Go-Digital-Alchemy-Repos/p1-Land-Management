@@ -1,0 +1,71 @@
+.pipeline-settings {
+  margin-bottom: 24px;
+}
+.pipeline-settings p {
+  color: var(--muted);
+  margin: 8px 0;
+}
+.pipeline-settings form {
+  padding: 20px;
+}
+.pipeline-settings fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+.pipeline-settings legend {
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+.pipeline-settings-row {
+  display: grid;
+  grid-template-columns: minmax(130px, 1fr) minmax(140px, 2fr) minmax(
+      100px,
+      1fr
+    ) minmax(90px, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 0;
+  border-top: 1px solid var(--line);
+}
+.pipeline-settings-row small {
+  display: block;
+  max-width: 240px;
+  color: var(--muted);
+  margin-top: 6px;
+}
+.pipeline-settings-row label {
+  display: grid;
+  gap: 6px;
+}
+.pipeline-settings-row input,
+.pipeline-settings-row select {
+  min-width: 0;
+  width: 100%;
+}
+.pipeline-settings-actions,
+.pipeline-settings-order {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.pipeline-settings-actions {
+  margin: 20px 0;
+}
+.pipeline-stage {
+  font-weight: 600;
+}
+@media (max-width: 800px) {
+  .pipeline-settings-row {
+    grid-template-columns: 1fr 1fr;
+  }
+  .pipeline-settings-row > div:first-child {
+    grid-column: 1/-1;
+  }
+  .pipeline-settings-row label {
+    min-width: 0;
+  }
+  .pipeline-settings-order {
+    justify-content: flex-end;
+  }
+}

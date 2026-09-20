@@ -309,6 +309,8 @@ import type {
   SalesLead,
   SalesLeadConversion,
   SalesLeadConversionReceipt,
+  SalesPipelineSettings,
+  SaveSalesPipelineSettings,
   SaveWebsiteColors200,
   SaveWebsiteFeatures200,
   SaveWebsiteHeadTags200,
@@ -9331,6 +9333,49 @@ export const getFieldResolutionReceipts = async (getFieldResolutionReceiptsBody:
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
       getFieldResolutionReceiptsBody,)
+  }
+);}
+
+
+
+export const getGetSalesPipelineSettingsUrl = () => {
+
+
+
+
+  return `/api/v1/sales/pipeline-settings`
+}
+
+export const getSalesPipelineSettings = async ( options?: RequestInit): Promise<SalesPipelineSettings> => {
+
+  return customFetch<SalesPipelineSettings>(getGetSalesPipelineSettingsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getSaveSalesPipelineSettingsUrl = () => {
+
+
+
+
+  return `/api/v1/sales/pipeline-settings`
+}
+
+export const saveSalesPipelineSettings = async (saveSalesPipelineSettings: SaveSalesPipelineSettings, options?: RequestInit): Promise<SalesPipelineSettings> => {
+
+  return customFetch<SalesPipelineSettings>(getSaveSalesPipelineSettingsUrl(),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      saveSalesPipelineSettings,)
   }
 );}
 

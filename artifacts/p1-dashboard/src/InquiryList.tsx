@@ -1,3 +1,4 @@
+import { PipelineStage, usePipelineStages } from "./PipelineSettings";
 import { LeadOnboarding } from "./LeadOnboarding";
 import { CrmArchive } from "./CrmArchive";
 import { LeadDetails } from "./LeadDetails";
@@ -39,6 +40,7 @@ export function InquiryList({
     role?: string;
   }>;
 }) {
+  const pipeline = usePipelineStages();
   const [items, setItems] = useState<Inquiry[]>([]),
     [cursor, setCursor] = useState<string | null>(null),
     [filters, setFilters] = useState(emptyFilters),
@@ -177,10 +179,10 @@ export function InquiryList({
             onChange={(e) => setFilters({ ...filters, status: e.target.value })}
           >
             <option value="">All stages</option>
-            {["new", "contacted", "qualified", "proposal", "won", "lost"].map(
-              (status) => (
-                <option key={status} value={status}>
-                  {status[0].toUpperCase() + status.slice(1)}
+            {pipeline.map(
+              (stage) => (
+                <option key={stage.key} value={stage.key}>
+                  {stage.label}
                 </option>
               ),
             )}
@@ -279,7 +281,7 @@ export function InquiryList({
                   : ""}
               </small>
             </div>
-            <span className="badge">{lead.status}</span>
+            <PipelineStage value={lead.status} />
             {canOnboard && <LeadOnboarding leadId={lead.id} onSaved={() => setNeedsRefresh(true)} />}
             <LeadFollowUp leadId={lead.id} onSaved={acknowledge} />
             <LeadDetails

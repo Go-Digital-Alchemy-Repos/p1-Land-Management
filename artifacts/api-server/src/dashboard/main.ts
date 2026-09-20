@@ -1,3 +1,4 @@
+import { pipelineSettingsApi } from "./pipeline-settings";
 import { leadDetailsApi } from "./lead-details";
 import { inquiryListApi } from "./inquiry-list";
 import { leadFollowUpApi } from "./lead-follow-up";
@@ -131,6 +132,7 @@ app.use(
   leadOnboardingApi,
   leadFollowUpApi,
   inquiryListApi,
+  pipelineSettingsApi,
   leadDetailsApi,
   crmTasksApi,
 );

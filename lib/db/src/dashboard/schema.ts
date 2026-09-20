@@ -2058,3 +2058,15 @@ export const fieldEventResolution = pgTable("field_event_resolution", {
   note: text().notNull(),
   resolvedAt: timestamp("resolved_at", {withTimezone:true, mode:"string"}).defaultNow().notNull(),
 }, table => [check("field_event_resolution_note_check", sql`length(${table.note}) BETWEEN 1 AND 2000`)]);
+
+export const salesPipelineSettings = pgTable("sales_pipeline_settings", {
+  singleton: boolean("singleton").primaryKey().default(true),
+  revision: integer("revision").notNull(),
+  config: jsonb("config").notNull(),
+  updatedBy: text("updated_by").notNull().references(() => user.id),
+  updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" }).defaultNow().notNull(),
+}, table => [
+  check("sales_pipeline_settings_singleton_check", sql`${table.singleton}`),
+  check("sales_pipeline_settings_revision_check", sql`${table.revision} > 0`),
+  check("sales_pipeline_settings_config_check", sql`jsonb_typeof(${table.config}) = 'object'`),
+]);

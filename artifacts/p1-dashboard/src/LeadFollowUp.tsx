@@ -1,3 +1,4 @@
+import { usePipelineStages } from "./PipelineSettings";
 import { useEffect, useRef, useState } from "react";
 import {
   getLeadFollowUp,
@@ -53,6 +54,7 @@ function FollowUpEditor({
   leadId: string;
   onSaved: (lead: FollowUp) => void;
 }) {
+  const pipeline = usePipelineStages();
   const [saved, setSaved] = useState<FollowUp | null>(null),
     [owners, setOwners] = useState<Owner[]>([]),
     [owner, setOwner] = useState(""),
@@ -240,9 +242,9 @@ function FollowUpEditor({
                     Previous stage: {status}
                   </option>
                 )}
-                {stages.map((s) => (
-                  <option key={s} value={s}>
-                    {s[0].toUpperCase() + s.slice(1)}
+                {pipeline.map((s) => (
+                  <option key={s.key} value={s.key}>
+                    {s.label}
                   </option>
                 ))}
               </select>

@@ -2,7 +2,7 @@
 
 September 20, 2026. Implementation in progress; not enabled in production.
 
-The retained Core pipeline supports labels, named colors and presentation order for six fixed lifecycle keys. Native inquiries currently hard-code those labels and need this capability before legacy retirement. The keys remain `new`, `contacted`, `qualified`, `proposal`, `won`, `lost`; renaming or reordering must never change lead statuses, conversion/onboarding, filtering values or history.
+The retained Core pipeline supports labels, named colors and presentation order for six fixed lifecycle keys. Native inquiries now consume the shared presentation configuration in the pending integration candidate. The keys remain `new`, `contacted`, `qualified`, `proposal`, `won`, `lost`; renaming or reordering must never change lead statuses, conversion/onboarding, filtering values or history.
 
 ## Storage and authorization decision
 
@@ -10,17 +10,29 @@ Native Dashboard owns the future sales presentation configuration in additive mi
 
 The singleton starts absent (revision zero/default six stages). Owner writes require the exact current revision, serialize first insert and subsequent updates, and commit configuration plus before/after audit in one transaction. Sales-capable members may read; only Owner may write. Unsupported stored data fails instead of becoming an editable default. Colors come from the retained six-name palette; all keys must occur once, labels must be unique, bounded and free of control characters. No lead row is updated by a configuration save.
 
-The HTTP router is implemented but intentionally not mounted in the application yet. This avoids exposing an incomplete tool or querying a production table that has not been migrated. No production schema change has occurred.
+The integration candidate mounts the HTTP router and provides the Owner editor. It must not be promoted to main until migration 0048 is applied and verified. Migration 0048 is now applied and verified; the integrated application is awaiting release.
 
 ## Verified checkpoint
 
 Three tests ran against a dedicated disposable PostgreSQL database with all migrations: validation; concurrent first writes/stale edits/audit rollback/no lead changes; mounted HTTP authentication and permission matrix (sales read, Owner write, denied ungranted manager/crew/client, unauthenticated rejection). All passed without skips, cleanup succeeded, API typecheck passed. The mounted fixture uses an identity-only auth double; role, activation and grants are resolved from actual database rows. No production settings were written.
 
-## Required next work
+## Integrated candidate
 
-- Promote the contract through the existing shared/OpenAPI/generated-client convention; do not create a conflicting frontend schema.
-- Build the Owner editor with draft retention, explicit reload on conflict, static color previews and accessible reorder controls.
-- Use settings in inquiry filters, cards/status labels and follow-up stage choices; preserve stable keys and Won onboarding semantics.
-- Add UI and full-candidate route tests, independent review, and source configuration recheck.
-- Back up/apply additive migration before mounting the router; push/release the integrated feature to main and verify live.
+The canonical validator/defaults live in `lib/api-zod/src/pipeline-settings.ts`; the existing OpenAPI generator supplies the client contract. The Drizzle schema mirrors migration 0048. Sales inquiry filters, row labels and follow-up choices consume presentation settings while submitting unchanged lifecycle keys.
+
+The Owner editor supports labels, named colors and accessible up/down ordering. Saves use the loaded revision. Failed or uncertain saves retain the draft and require reload before another attempt; discarding edits requires explicit confirmation. Unsaved changes use the existing navigation guard. Failed initial reads cannot enable editing. Clients viewing estimates do not request sales settings.
+
+Five UI tests pass, covering saves/consumer updates, failed-save draft retention, failed initial reads, duplicate labels and client request isolation. Dashboard and API production builds pass. The local browser fixture verified rename, reorder and save with consumer updates; the themed 390px mobile layout had no horizontal overflow. Independent review identified the client-access warning, which was corrected and regression-tested. These checks do not substitute for production acceptance.
+
+## Required release work
+
+- Recheck source Core configuration and reconcile any new override before enabling the native editor.
+- Capture a fresh database backup, apply additive migration 0048 using the migration ledger and checksum checks, then verify it.
+- Push/release the integrated feature to main and verify the live Owner editor without changing real configuration for testing.
 - Rollback keeps the additive table/audit; older application can ignore it. Do not drop stored settings or replay legacy configuration blindly.
+
+## Production migration checkpoint
+
+Fresh read-only custom-format backup captured September 20 at 04:39 UTC: 319,848 bytes, SHA-256 `94fd189d7f0d45058a710f4b1361c8f7be026464bf9c4eeb036398b62b4a906f`. Exact Dashboard/database connection binding was checked without publishing credentials. Core recheck found no `crm_pipeline_config` override.
+
+Initial migration preflight stopped without changes on the documented ledger-only `0019_optional_owner_mfa.sql`. After confirming its historical checksum against existing release records, that entry was preserved without replay or policy changes. All current migration checksums matched. Migration 0048 was committed under advisory lock 918277 and its ledger read-back matched SHA-256 `2fca3028410d0f5b244e5ad977ae04226489e74688b344d7e601c1bd8163c1b4`. The settings table is empty, preserving revision-zero defaults; no lead, account or settings values were changed.

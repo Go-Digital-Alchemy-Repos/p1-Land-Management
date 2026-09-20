@@ -1,3 +1,4 @@
+import { PipelineProvider, PipelineSettingsEditor } from "./PipelineSettings";
 import { reconcileFieldResolutions } from "./field-resolution-receipts";
 import { FieldConflictReview } from "./FieldConflictReview";
 import { isTransientRefreshFailure, refreshEntries } from "./my-day-recovery";
@@ -2022,7 +2023,8 @@ function App() {
             </>
           )}
           {view === "Sales" && (
-            <>
+            <PipelineProvider key={`${person.id}:${can("revenue.sales")}`} enabled={can("revenue.sales")}>
+              {person.role === "owner" && <PipelineSettingsEditor />}
               {hasCapability(person, "revenue.sales") && <a href="/agreements/drafts">Agreement drafts</a>}
               {hasCapability(person, "revenue.sales") && <CommercialInbox staff={data.staff || []} canOnboard={can("customers.clients")} />}
               <section className="panel">
@@ -2106,7 +2108,7 @@ function App() {
                   canOnboard={can("customers.clients")}
                 />
               )}
-            </>
+            </PipelineProvider>
           )}
           {view === "Billing" && (
             <section className="panel">

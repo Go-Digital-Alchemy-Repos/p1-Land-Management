@@ -16382,6 +16382,51 @@
         },
         "description": "Returns only exact office-resolved receipts owned by the current submitting user; other input IDs are omitted."
       }
+    },
+    "/sales/pipeline-settings": {
+      "get": {
+        "operationId": "getSalesPipelineSettings",
+        "responses": {
+          "200": {
+            "description": "Pipeline presentation settings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SalesPipelineSettings"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "saveSalesPipelineSettings",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveSalesPipelineSettings"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Pipeline presentation settings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SalesPipelineSettings"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Revision conflict; reload before saving"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -34598,6 +34643,98 @@
           "id",
           "status"
         ]
+      },
+      "SalesPipelineConfig": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "version",
+          "stages"
+        ],
+        "properties": {
+          "version": {
+            "type": "integer",
+            "enum": [
+              1
+            ]
+          },
+          "stages": {
+            "type": "array",
+            "minItems": 6,
+            "maxItems": 6,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "key",
+                "label",
+                "color"
+              ],
+              "properties": {
+                "key": {
+                  "type": "string",
+                  "enum": [
+                    "new",
+                    "contacted",
+                    "qualified",
+                    "proposal",
+                    "won",
+                    "lost"
+                  ]
+                },
+                "label": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 40
+                },
+                "color": {
+                  "type": "string",
+                  "enum": [
+                    "blue",
+                    "cyan",
+                    "emerald",
+                    "amber",
+                    "green",
+                    "slate"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "SalesPipelineSettings": {
+        "type": "object",
+        "required": [
+          "revision",
+          "config"
+        ],
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "config": {
+            "$ref": "#/components/schemas/SalesPipelineConfig"
+          }
+        }
+      },
+      "SaveSalesPipelineSettings": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expectedRevision",
+          "config"
+        ],
+        "properties": {
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "config": {
+            "$ref": "#/components/schemas/SalesPipelineConfig"
+          }
+        }
       }
     }
   }

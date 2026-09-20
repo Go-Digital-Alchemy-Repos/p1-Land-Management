@@ -1,3 +1,4 @@
+import { PipelineStage, usePipelineStages } from "./PipelineSettings";
 import { LeadOnboarding } from "./LeadOnboarding";
 import { CrmArchive } from "./CrmArchive";
 import { LeadDetails } from "./LeadDetails";
@@ -15,14 +16,6 @@ import { useEffect, useRef, useState } from "react";
 import { EmailLink, PhoneLink } from "./contact-links";
 import { RichTextEditor } from "./RichTextEditor";
 import "./commercial-inbox.css";
-const statuses = [
-  "new",
-  "contacted",
-  "qualified",
-  "proposal",
-  "won",
-  "lost",
-] as const;
 type Staff = { id: string; name: string; role: string; canOwnSales?: boolean };
 type Inquiry = Awaited<ReturnType<typeof getCommercialInquiry>>;
 type InquiryRow = Awaited<
@@ -57,6 +50,7 @@ export function CommercialInbox({
   contextApi?: ContextTransport;
   canOnboard?: boolean;
 }) {
+  const pipeline = usePipelineStages();
   const [status, setStatus] = useState<Filters["status"] | "">(""),
     [owner, setOwner] = useState(""),
     [overdue, setOverdue] = useState(false);
@@ -228,8 +222,8 @@ export function CommercialInbox({
             }
           >
             <option value="">All statuses</option>
-            {statuses.map((s) => (
-              <option key={s}>{s}</option>
+            {pipeline.map((s) => (
+              <option key={s.key} value={s.key}>{s.label}</option>
             ))}
           </select>
         </label>
@@ -273,7 +267,7 @@ export function CommercialInbox({
               <strong>{row.reported_company_name || row.name}</strong>
               <span>{row.reported_property_name || row.location}</span>
               <small>
-                {row.status} ·{" "}
+                <PipelineStage value={row.status} /> ·{" "}
                 {owners.find((p) => p.id === row.owner_id)?.name ||
                   (row.owner_id ? "Previous staff owner" : "Unassigned")}
               </small>
@@ -369,8 +363,8 @@ export function CommercialInbox({
                   defaultValue={selected.status}
                   disabled={detailsBusy}
                 >
-                  {statuses.map((s) => (
-                    <option key={s}>{s}</option>
+                  {pipeline.map((s) => (
+                    <option key={s.key} value={s.key}>{s.label}</option>
                   ))}
                 </select>
               </label>
