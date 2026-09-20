@@ -1,3 +1,4 @@
+import { sectionLeaseTransport } from "@/hooks/use-editor-lock";
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { SectionListPresentation } from "@/components/shared/cms-section-list-presentation";
@@ -44,7 +45,24 @@ export default function CmsSectionsPage() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      await apiRequest("DELETE", `/api/admin/cms/sections/${id}`);
+      const section = sections.find((section) => section.id === id);
+      if (!section?.version) throw Error("Reload sections before deleting.");
+      const editorInstanceId = crypto.randomUUID();
+      const lease = await sectionLeaseTransport("acquire", id, { editorInstanceId });
+      if (!lease.ownedByCurrentEditor || !lease.lock)
+        throw Error("Another editor holds this section.");
+      try {
+        await apiRequest("DELETE", `/api/admin/cms/sections/${id}`, {
+          expectedVersion: section.version,
+          editorInstanceId,
+          leaseId: lease.lock.id,
+        });
+      } finally {
+        await sectionLeaseTransport("release", id, {
+          editorInstanceId,
+          leaseId: lease.lock.id,
+        }).catch(() => {});
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/cms/sections"] });

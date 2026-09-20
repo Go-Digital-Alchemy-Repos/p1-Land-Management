@@ -9,7 +9,16 @@ const navigateMock = vi.fn();
 const lockGuardMock = vi.fn();
 const useQueryMock = vi.fn();
 const useMutationMock = vi.fn();
+const apiRequestMock = vi.fn();
+vi.mock("@/lib/queryClient", () => ({
+  apiRequest: (...args: unknown[]) => apiRequestMock(...args),
+}));
 const editorLockState = {
+  preconditions: vi.fn(async (version: number) => ({
+    expectedVersion: version,
+    editorInstanceId: "instance",
+    leaseId: "lease",
+  })),
   hasLocking: true,
   hasLoaded: true,
   isReadOnly: true,
@@ -74,6 +83,9 @@ describe("CmsSectionEditorPage", () => {
   let root: Root | null = null;
 
   beforeEach(() => {
+    apiRequestMock.mockReset();
+    editorLockState.preconditions.mockClear();
+    useMutationMock.mockClear();
     navigateMock.mockReset();
     lockGuardMock.mockReset();
     useQueryMock.mockImplementation(({ queryKey }: { queryKey: unknown[] }) => {
@@ -81,6 +93,7 @@ describe("CmsSectionEditorPage", () => {
         return {
           data: {
             id: "section-1",
+            version: 4,
             name: "Homepage CTA",
             description: "Saved CTA block",
             category: "cta",
@@ -143,5 +156,34 @@ describe("CmsSectionEditorPage", () => {
     expect(saveButton).not.toBeNull();
     expect(saveButton?.disabled).toBe(true);
     expect(navigateMock).toHaveBeenCalledWith("/admin/cms/sections");
+  });
+  it("sends saved version plus exact lease and adopts only the successful returned version", async () => {
+    root = createRoot(container);
+    await act(async () => {
+      root!.render(React.createElement(CmsSectionEditorPage));
+    });
+    const getUpdate = () => useMutationMock.mock.calls.at(-1)![0];
+    const payload = { name: "Edited", description: "", category: "cta", content: { blocks: [] } };
+    apiRequestMock.mockResolvedValue({ json: async () => ({ version: 5 }) });
+    let update = getUpdate();
+    await update.mutationFn(payload);
+    expect(apiRequestMock).toHaveBeenLastCalledWith(
+      "PUT",
+      "/api/admin/cms/sections/section-1",
+      expect.objectContaining({
+        expectedVersion: 4,
+        editorInstanceId: "instance",
+        leaseId: "lease",
+      }),
+    );
+    await act(async () => {
+      await update.onSuccess({ json: async () => ({ version: 5 }) }, payload);
+    });
+    update = getUpdate();
+    apiRequestMock.mockRejectedValueOnce(Error("stale"));
+    await expect(update.mutationFn(payload)).rejects.toThrow("stale");
+    expect(editorLockState.preconditions).toHaveBeenLastCalledWith(5);
+    await update.mutationFn(payload);
+    expect(editorLockState.preconditions).toHaveBeenLastCalledWith(5);
   });
 });

@@ -426,3 +426,16 @@ Crew recovery `fdff1811` has Railway SUCCESS deployment
 latest listed scheduled archive is September19 08:56 Eastern, revision9ded625d,
 52tables/584rows/0media. It predates imported Blog content and must not be used as
 proof of current release recovery. Fresh non-pruning capture/rehearsal is underway.
+
+
+## Sections and Blog settings release candidate — September 19
+
+Sections now coordinates exact-editor leases, versioned update/delete and atomic
+starter resets across both editors. See `sections-concurrency.md` for compatibility,
+rollback and the fresh 57-table/663-row populated backup/restore evidence. Parent
+PostgreSQL tests (10), Blog settings tests (6), and integrated Core/dashboard types
+and builds passed. Blog settings now handles failed reads, uncertain taxonomy
+creation, pending navigation, category hierarchy and moderation counts/dates; see
+`blog-settings-recovery.md` for the remaining visual/concurrency limitations.
+Deployment and live acceptance are pending for this candidate. These checks do
+not close CRM/account migration, full operational acceptance or admin retirement.

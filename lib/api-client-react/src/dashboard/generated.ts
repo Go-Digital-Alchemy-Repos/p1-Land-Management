@@ -248,6 +248,8 @@ import type {
   MarketingSection,
   MarketingSectionBuilder,
   MarketingSectionInput,
+  MarketingSectionPatch,
+  MarketingSectionPreconditions,
   MarketingSectionStarterResult,
   MarketingSeoAudit,
   MarketingSeoSettings,
@@ -5899,10 +5901,10 @@ export const getUpdateMarketingSectionUrl = (id: string,) => {
 }
 
 /**
- * Requires marketing.content.sections. Preserves retained block payloads and Core storage.
+ * Requires marketing.content.sections, the saved expectedVersion, editorInstanceId and current leaseId. Stale versions or lost leases return 409 without changing content.
  */
 export const updateMarketingSection = async (id: string,
-    marketingSectionInput: MarketingSectionInput, options?: RequestInit): Promise<MarketingSection> => {
+    marketingSectionPatch: MarketingSectionPatch, options?: RequestInit): Promise<MarketingSection> => {
 
   return customFetch<MarketingSection>(getUpdateMarketingSectionUrl(id),
   {
@@ -5910,7 +5912,7 @@ export const updateMarketingSection = async (id: string,
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
-      marketingSectionInput,)
+      marketingSectionPatch,)
   }
 );}
 
@@ -5925,16 +5927,18 @@ export const getDeleteMarketingSectionUrl = (id: string,) => {
 }
 
 /**
- * Requires marketing.content.sections. Preserves retained block payloads and Core storage.
+ * Requires marketing.content.sections, the saved expectedVersion, editorInstanceId and current leaseId. Stale versions or lost leases return 409 without changing content.
  */
-export const deleteMarketingSection = async (id: string, options?: RequestInit): Promise<MarketingDeleteResult> => {
+export const deleteMarketingSection = async (id: string,
+    marketingSectionPreconditions: MarketingSectionPreconditions, options?: RequestInit): Promise<MarketingDeleteResult> => {
 
   return customFetch<MarketingDeleteResult>(getDeleteMarketingSectionUrl(id),
   {
     ...options,
-    method: 'DELETE'
-
-
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingSectionPreconditions,)
   }
 );}
 
@@ -5997,16 +6001,18 @@ export const getAcquireMarketingSectionReservationUrl = (id: string,) => {
 }
 
 /**
- * Requires marketing.content.sections; retained advisory reservation.
+ * Requires marketing.content.sections and an exact editor-instance lease. Reservation ownership is never inferred from the user alone.
  */
-export const acquireMarketingSectionReservation = async (id: string, options?: RequestInit): Promise<WebsiteEditorReservation> => {
+export const acquireMarketingSectionReservation = async (id: string,
+    marketingPageLeaseAcquire: MarketingPageLeaseAcquire, options?: RequestInit): Promise<WebsiteEditorReservation> => {
 
   return customFetch<WebsiteEditorReservation>(getAcquireMarketingSectionReservationUrl(id),
   {
     ...options,
-    method: 'POST'
-
-
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingPageLeaseAcquire,)
   }
 );}
 
@@ -6021,16 +6027,18 @@ export const getHeartbeatMarketingSectionReservationUrl = (id: string,) => {
 }
 
 /**
- * Requires marketing.content.sections; retained advisory reservation.
+ * Requires marketing.content.sections and an exact editor-instance lease. Reservation ownership is never inferred from the user alone.
  */
-export const heartbeatMarketingSectionReservation = async (id: string, options?: RequestInit): Promise<WebsiteEditorReservation> => {
+export const heartbeatMarketingSectionReservation = async (id: string,
+    marketingPageLeaseProof: MarketingPageLeaseProof, options?: RequestInit): Promise<WebsiteEditorReservation> => {
 
   return customFetch<WebsiteEditorReservation>(getHeartbeatMarketingSectionReservationUrl(id),
   {
     ...options,
-    method: 'POST'
-
-
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingPageLeaseProof,)
   }
 );}
 
@@ -6045,16 +6053,18 @@ export const getReleaseMarketingSectionReservationUrl = (id: string,) => {
 }
 
 /**
- * Requires marketing.content.sections; retained advisory reservation.
+ * Requires marketing.content.sections and an exact editor-instance lease. Reservation ownership is never inferred from the user alone.
  */
-export const releaseMarketingSectionReservation = async (id: string, options?: RequestInit): Promise<WebsiteEditorReservation> => {
+export const releaseMarketingSectionReservation = async (id: string,
+    marketingPageLeaseProof: MarketingPageLeaseProof, options?: RequestInit): Promise<WebsiteEditorReservation> => {
 
   return customFetch<WebsiteEditorReservation>(getReleaseMarketingSectionReservationUrl(id),
   {
     ...options,
-    method: 'POST'
-
-
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      marketingPageLeaseProof,)
   }
 );}
 

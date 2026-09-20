@@ -111,6 +111,7 @@ function Editor({
     [notice, setNotice] = useState(""),
     [busy, setBusy] = useState(false),
     [showPreview, setShowPreview] = useState(false);
+  const [savedVersion, setSavedVersion] = useState(0);
   const saving = useRef(false);
   const lock = useSectionReservation(id === "new" ? null : id);
   const dirty = JSON.stringify(draft) !== JSON.stringify(saved);
@@ -127,6 +128,7 @@ function Editor({
         if (c.signal.aborted) return;
         setCatalog(defs);
         if (row) {
+          setSavedVersion(row.version);
           setDraft(input(row));
           setSaved(input(row));
         }
@@ -165,11 +167,14 @@ function Editor({
     setError("");
     setNotice("");
     try {
-      await lock.verify();
       const row =
         id === "new"
           ? await createMarketingSection(draft)
-          : await updateMarketingSection(id, draft);
+          : await updateMarketingSection(id, {
+              ...draft,
+              ...(await lock.preconditions(savedVersion)),
+            });
+      setSavedVersion(row.version);
       setDraft(input(row));
       setSaved(input(row));
       setNotice("Section saved.");
@@ -325,8 +330,10 @@ function Editor({
                       return;
                     setBusy(true);
                     try {
-                      await lock.verify();
-                      await deleteMarketingSection(id);
+                      await deleteMarketingSection(
+                        id,
+                        await lock.preconditions(savedVersion),
+                      );
                       onClose();
                     } catch (e) {
                       setError(message(e));
@@ -363,12 +370,14 @@ function Editor({
 }
 function DeleteSectionDialog({
   id,
+  version,
   name,
   onClose,
   onDeleted,
 }: {
   id: string;
   name: string;
+  version: number;
   onClose: () => void;
   onDeleted: () => void;
 }) {
@@ -407,8 +416,10 @@ function DeleteSectionDialog({
             setBusy(true);
             setError("");
             try {
-              await lock.verify();
-              await deleteMarketingSection(id);
+              await deleteMarketingSection(
+                id,
+                await lock.preconditions(version),
+              );
               onDeleted();
             } catch (e) {
               setError(message(e));
@@ -547,6 +558,7 @@ export default function SectionManager({
       {deletingId && (
         <DeleteSectionDialog
           id={deletingId}
+          version={rows.find((row) => row.id === deletingId)?.version ?? 0}
           name={rows.find((row) => row.id === deletingId)?.name || "Section"}
           onClose={() => setDeletingId(null)}
           onDeleted={() => {

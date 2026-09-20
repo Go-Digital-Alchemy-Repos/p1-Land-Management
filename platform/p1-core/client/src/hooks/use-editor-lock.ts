@@ -329,6 +329,25 @@ export const pageLeaseTransport: PageLeaseTransport = async (action, id, payload
   }
   return response.json() as Promise<PageLeaseState>;
 };
+export const sectionLeaseTransport: PageLeaseTransport = async (action, id, payload, options) => {
+  const response = await fetch(
+    `/api/admin/editor-locks/cms_section/${encodeURIComponent(id)}/${action}`,
+    {
+      ...options,
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    },
+  );
+  if (!response.ok) {
+    const detail = await response.json().catch(() => ({}));
+    throw Error(
+      detail.error || detail.message || "Section reservation failed. Your draft is retained.",
+    );
+  }
+  return response.json() as Promise<PageLeaseState>;
+};
 export const blogLeaseTransport: PageLeaseTransport = async (action, id, payload, options) => {
   const response = await fetch(
     `/api/admin/editor-locks/blog_post/${encodeURIComponent(id)}/${action}`,
@@ -350,12 +369,24 @@ export const blogLeaseTransport: PageLeaseTransport = async (action, id, payload
 };
 export function useEditorLock(options: UseEditorLockOptions) {
   const { user } = useAuth();
-  const isPage = options.resourceType === "cms_page" || options.resourceType === "blog_post";
+  const isPage =
+    options.resourceType === "cms_page" ||
+    options.resourceType === "blog_post" ||
+    options.resourceType === "cms_section";
   const enabled = options.enabled !== false;
   const legacy = useLegacyEditorLock({ ...options, enabled: enabled && !isPage });
   const lease = usePageEditorLease(
     isPage && enabled && user ? options.resourceId || null : null,
-    options.resourceType === "blog_post" ? blogLeaseTransport : pageLeaseTransport,
+    options.resourceType === "blog_post"
+      ? blogLeaseTransport
+      : options.resourceType === "cms_section"
+        ? sectionLeaseTransport
+        : pageLeaseTransport,
+    options.resourceType === "cms_section"
+      ? "section"
+      : options.resourceType === "blog_post"
+        ? "post"
+        : "page",
   );
   if (!isPage)
     return {
@@ -366,7 +397,12 @@ export function useEditorLock(options: UseEditorLockOptions) {
       },
     };
   const hasLocking = Boolean(enabled && user && options.resourceId);
-  const label = options.resourceType === "blog_post" ? "post" : "page";
+  const label =
+    options.resourceType === "blog_post"
+      ? "post"
+      : options.resourceType === "cms_section"
+        ? "section"
+        : "page";
   const summary = !hasLocking
     ? null
     : lease.owned

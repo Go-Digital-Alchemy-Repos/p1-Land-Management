@@ -570,6 +570,8 @@ export * from './marketingSectionBuilderPagesItem';
 export * from './marketingSectionBuilderTeamItem';
 export * from './marketingSectionInput';
 export * from './marketingSectionInputBlocksItem';
+export * from './marketingSectionPatch';
+export * from './marketingSectionPreconditions';
 export * from './marketingSectionStarterResult';
 export * from './marketingSeoAudit';
 export * from './marketingSeoAuditRecord';

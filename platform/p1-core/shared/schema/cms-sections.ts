@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, timestamp, jsonb, index } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, timestamp, jsonb, index, integer } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 import { users } from "./users";
@@ -10,6 +10,7 @@ export const cmsSections = pgTable(
     id: varchar("id")
       .primaryKey()
       .default(sql`gen_random_uuid()`),
+    version: integer("version").notNull().default(1),
     name: text("name").notNull(),
     description: text("description"),
     category: text("category").default("general"),
@@ -29,6 +30,7 @@ export const cmsSections = pgTable(
 
 export const insertCmsSectionSchema = createInsertSchema(cmsSections).omit({
   id: true,
+  version: true,
   createdAt: true,
   updatedAt: true,
 });

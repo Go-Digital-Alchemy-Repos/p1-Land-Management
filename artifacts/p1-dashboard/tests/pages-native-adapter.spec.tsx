@@ -244,9 +244,10 @@ describe("CMS page native presentation adapter", () => {
     };
     await render();
     await click("Templates");
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 60));
-    });
+    await vi.waitFor(async () => {
+      await act(async () => { await new Promise((resolve) => setTimeout(resolve, 10)); });
+      expect(container.querySelector('[data-testid="template-card-blank"]')).not.toBeNull();
+    }, { timeout: 3000, interval: 25 });
     const card = container.querySelector<HTMLButtonElement>(
       '[data-testid="template-card-blank"]',
     );

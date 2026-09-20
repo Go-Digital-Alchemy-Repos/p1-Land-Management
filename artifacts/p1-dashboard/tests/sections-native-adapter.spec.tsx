@@ -81,6 +81,14 @@ vi.mock("../src/marketing/useSectionReservation", () => ({
   useSectionReservation: () => ({
     owned: state.owned,
     verify: state.verify,
+    preconditions: async (version: number) => {
+      await state.verify();
+      return {
+        expectedVersion: version,
+        editorInstanceId: "fixture-instance",
+        leaseId: "fixture-lease",
+      };
+    },
     acquire: vi.fn(),
     error: "",
     holder: "Another editor",
@@ -95,6 +103,7 @@ vi.mock("../src/marketing/BuilderPreview", () => ({
 let root: Root, host: HTMLDivElement;
 const retained = {
   id: "s",
+  version: 1,
   name: "Reusable proof",
   category: "custom",
   description: "Actual section",
@@ -127,6 +136,7 @@ beforeEach(() => {
   state.api.updateMarketingSection.mockImplementation(async (_id, draft) => ({
     ...retained,
     ...draft,
+    version: draft.expectedVersion + 1,
   }));
   history.replaceState({}, "", "/");
   HTMLDialogElement.prototype.showModal = function () {
@@ -175,6 +185,9 @@ it("preserves unknown blocks and thumbnail values through verified saves", async
   expect(state.api.updateMarketingSection).toHaveBeenCalledWith(
     "s",
     expect.objectContaining({
+      expectedVersion: 1,
+      editorInstanceId: "fixture-instance",
+      leaseId: "fixture-lease",
       thumbnailUrl: "/image.jpg",
       blocks: retained.blocks,
     }),
@@ -225,4 +238,33 @@ it("rejects malformed editor shapes without changing valid unknown-block metadat
     false,
   );
   expect(editableSectionBlocks(retained.blocks)).toBe(true);
+});
+
+it("advances the saved version only on success and retains it after a stale failure", async () => {
+  await edit();
+  await click('[data-testid="button-save-section"]');
+  await click('[data-testid="test-add-block"]');
+  state.api.updateMarketingSection.mockRejectedValueOnce(
+    new Error("This section changed. Reload before saving"),
+  );
+  await click('[data-testid="button-save-section"]');
+  expect(
+    state.api.updateMarketingSection.mock.lastCall?.[1].expectedVersion,
+  ).toBe(2);
+  expect(state.builder.mock.lastCall?.[0].blocks).toHaveLength(2);
+  expect(host.textContent).toContain("This section changed");
+  await click('[data-testid="button-save-section"]');
+  expect(
+    state.api.updateMarketingSection.mock.lastCall?.[1].expectedVersion,
+  ).toBe(2);
+});
+it("sends list-selected section version and exact lease proof on delete", async () => {
+  await render();
+  await click('[data-testid="button-delete-section-s"]');
+  await click('[data-testid="button-confirm-delete-section"]');
+  expect(state.api.deleteMarketingSection).toHaveBeenCalledWith("s", {
+    expectedVersion: 1,
+    editorInstanceId: "fixture-instance",
+    leaseId: "fixture-lease",
+  });
 });

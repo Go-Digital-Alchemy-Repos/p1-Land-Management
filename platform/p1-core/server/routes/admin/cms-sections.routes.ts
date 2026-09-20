@@ -1,3 +1,5 @@
+import { sectionPreconditions } from "../../services/cms-section-concurrency";
+import { CmsMutationError } from "../../services/cms-concurrency";
 import { loadCmsBuilderReferences } from "../../services/cms-builder-references";
 import { requireBusinessCapability as p1Authorize } from "../../middleware/auth";
 import { Router } from "express";
@@ -7,11 +9,14 @@ import { storage } from "../../storage";
 import { ensureSystemCmsSections } from "../../services/system-cms-sections.service";
 import { paramString } from "../../utils/params";
 
-
 const router = Router();
-router.get("/section-builder", p1Authorize("marketing.content.sections"), asyncHandler(async (_req, res) => {
-  res.json(await loadCmsBuilderReferences());
-}));
+router.get(
+  "/section-builder",
+  p1Authorize("marketing.content.sections"),
+  asyncHandler(async (_req, res) => {
+    res.json(await loadCmsBuilderReferences());
+  }),
+);
 
 const createSectionSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -24,7 +29,8 @@ const createSectionSchema = z.object({
 const updateSectionSchema = createSectionSchema.partial();
 
 router.get(
-  "/sections", p1Authorize("marketing.content.sections"),
+  "/sections",
+  p1Authorize("marketing.content.sections"),
   asyncHandler(async (_req, res) => {
     const sections = await storage.cmsSections.getAllSections();
     res.json(sections);
@@ -32,7 +38,8 @@ router.get(
 );
 
 router.post(
-  "/sections/system/starter-library", p1Authorize("marketing.content.sections"),
+  "/sections/system/starter-library",
+  p1Authorize("marketing.content.sections"),
   asyncHandler(async (_req, res) => {
     const result = await ensureSystemCmsSections({ refreshExisting: true });
     res.json({ success: true, ...result });
@@ -40,7 +47,8 @@ router.post(
 );
 
 router.get(
-  "/sections/:id", p1Authorize("marketing.content.sections"),
+  "/sections/:id",
+  p1Authorize("marketing.content.sections"),
   asyncHandler(async (req, res) => {
     const id = paramString(req.params.id);
     const section = await storage.cmsSections.getSection(id);
@@ -50,7 +58,8 @@ router.get(
 );
 
 router.post(
-  "/sections", p1Authorize("marketing.content.sections"),
+  "/sections",
+  p1Authorize("marketing.content.sections"),
   asyncHandler(async (req, res) => {
     const parsed = createSectionSchema.safeParse(req.body);
     if (!parsed.success) {
@@ -66,31 +75,54 @@ router.post(
 );
 
 router.put(
-  "/sections/:id", p1Authorize("marketing.content.sections"),
+  "/sections/:id",
+  p1Authorize("marketing.content.sections"),
   asyncHandler(async (req, res) => {
     const id = paramString(req.params.id);
-    const existing = await storage.cmsSections.getSection(id);
-    if (!existing) return res.status(404).json({ error: "Section not found" });
 
     const parsed = updateSectionSchema.safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json({ error: "Validation failed", issues: parsed.error.issues });
     }
-    const updated = await storage.cmsSections.updateSection(id, {
-      ...parsed.data,
-    });
+    const updated = await storage.cmsSections.updateSection(
+      id,
+      {
+        ...parsed.data,
+      },
+      req.user!.id,
+      sectionPreconditions(req.body),
+    );
     res.json(updated);
   }),
 );
 
 router.delete(
-  "/sections/:id", p1Authorize("marketing.content.sections"),
+  "/sections/:id",
+  p1Authorize("marketing.content.sections"),
   asyncHandler(async (req, res) => {
     const id = paramString(req.params.id);
-    const ok = await storage.cmsSections.deleteSection(id);
+    const ok = await storage.cmsSections.deleteSection(
+      id,
+      req.user!.id,
+      sectionPreconditions(req.body),
+    );
     if (!ok) return res.status(404).json({ error: "Section not found" });
     res.json({ success: true });
   }),
 );
 
+router.use(
+  (
+    error: unknown,
+    _req: import("express").Request,
+    res: import("express").Response,
+    next: import("express").NextFunction,
+  ) => {
+    if (error instanceof CmsMutationError)
+      return res
+        .status(error.status)
+        .json({ error: error.message, code: error.code, ...error.details });
+    next(error);
+  },
+);
 export default router;

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   listMarketingBlogTaxonomies,
   createMarketingBlogTaxonomy,
@@ -18,6 +18,52 @@ import type {
   MarketingBlogCommentSettings,
 } from "../../../../lib/api-client-react/src/dashboard/models";
 import { useCmsUnsavedChanges } from "./useCmsUnsavedChanges";
+import { FolderTree, Tag, MessageSquare, ShieldCheck } from "lucide-react";
+
+// A pending write must finish before a tab/filter can unmount its result.
+function usePendingNavigation(busy: boolean) {
+  useEffect(() => {
+    if (!busy) return;
+    const block = (event: Event) => {
+      event.preventDefault();
+      if (event.type === "beforeunload")
+        (event as BeforeUnloadEvent).returnValue = "";
+    };
+    window.addEventListener("p1:before-navigation", block);
+    window.addEventListener("beforeunload", block);
+    return () => {
+      window.removeEventListener("p1:before-navigation", block);
+      window.removeEventListener("beforeunload", block);
+    };
+  }, [busy]);
+}
+function taxonomyInput(
+  row: MarketingBlogTaxonomyInput,
+): MarketingBlogTaxonomyInput {
+  return {
+    name: row.name,
+    slug: row.slug ?? "",
+    type: row.type,
+    parentId: row.parentId ?? null,
+    sortOrder: row.sortOrder ?? 0,
+  };
+}
+function categoryPath(
+  row: MarketingBlogTaxonomy,
+  rows: MarketingBlogTaxonomy[],
+) {
+  const names = [row.name],
+    seen = new Set([row.id]);
+  let parent = row.parentId;
+  while (parent && !seen.has(parent)) {
+    seen.add(parent);
+    const item = rows.find((r) => r.id === parent);
+    if (!item) break;
+    names.unshift(item.name);
+    parent = item.parentId;
+  }
+  return names.join(" / ");
+}
 const message = (e: unknown) =>
   (e as { data?: { message?: string } }).data?.message ||
   (e as Error).message ||
@@ -37,18 +83,39 @@ export function BlogTaxonomies() {
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false),
     [version, setVersion] = useState(0);
+  const [loaded, setLoaded] = useState(false),
+    [loading, setLoading] = useState(true),
+    [uncertain, setUncertain] = useState(false),
+    [reviewed, setReviewed] = useState(false);
+  const gate = useRef(false);
+  usePendingNavigation(busy);
   const dirty = JSON.stringify(draft) !== JSON.stringify(saved);
-  useCmsUnsavedChanges(dirty);
+  useCmsUnsavedChanges(dirty || uncertain);
   useEffect(() => {
     const controller = new AbortController();
+    setLoading(true);
     listMarketingBlogTaxonomies({ signal: controller.signal })
-      .then(setRows)
+      .then((next) => {
+        if (!controller.signal.aborted) {
+          setRows(next);
+          setLoaded(true);
+          setReviewed(true);
+          setError("");
+        }
+      })
       .catch((e) => {
-        if (!controller.signal.aborted) setError(message(e));
+        if (!controller.signal.aborted) {
+          setLoaded(false);
+          setError(message(e));
+        }
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false);
       });
     return () => controller.abort();
   }, [version]);
   function choose(row?: MarketingBlogTaxonomy) {
+    if (gate.current || !loaded || (uncertain && !row)) return;
     if (dirty && !confirm("Discard taxonomy changes?")) return;
     const next = row
       ? {
@@ -63,6 +130,7 @@ export function BlogTaxonomies() {
     setDraft(next);
     setSaved(next);
     setError("");
+    setUncertain(false);
   }
   function allowedParent(row: MarketingBlogTaxonomy) {
     const visited = new Set<string>();
@@ -78,25 +146,85 @@ export function BlogTaxonomies() {
     <section>
       <h2>Categories and tags</h2>
       {error && <p role="alert">{error}</p>}
-      <button disabled={busy} onClick={() => choose()}>
+      <button
+        disabled={busy || !loaded || loading || uncertain}
+        onClick={() => choose()}
+      >
         New category or tag
       </button>
+      <button
+        disabled={busy || loading}
+        onClick={() => setVersion((v) => v + 1)}
+      >
+        Reload taxonomies
+      </button>
+      {loading && <p role="status">Loading taxonomies…</p>}
+      {uncertain && (
+        <aside role="alert">
+          The create could not be confirmed. Your draft is retained. Reload the
+          list and inspect it before creating again; select a saved item if the
+          request succeeded.
+          <button
+            disabled={!reviewed || !loaded || busy}
+            onClick={() => {
+              if (
+                confirm(
+                  "I reviewed the reloaded list and confirmed this taxonomy was not created. Allow another create?",
+                )
+              )
+                setUncertain(false);
+            }}
+          >
+            I checked the list; allow another create
+          </button>
+        </aside>
+      )}
       <div className="blog-list">
-        {rows.map((row) => (
-          <article key={row.id}>
-            <h3>{row.name}</h3>
+        {(["category", "tag"] as const).map((type) => (
+          <article key={type}>
+            <h3>
+              {type === "category" ? (
+                <FolderTree size={18} color="#8b5cf6" aria-hidden="true" />
+              ) : (
+                <Tag size={18} color="#8b5cf6" aria-hidden="true" />
+              )}{" "}
+              {type === "category" ? "Categories" : "Tags"}
+            </h3>
             <p>
-              {row.type} · {row.slug}
+              {type === "category"
+                ? "Create top-level categories and subcategories for your blog posts."
+                : "Manage reusable tags that editors can assign across multiple posts."}
             </p>
-            <button disabled={busy} onClick={() => choose(row)}>
-              Edit {row.name}
-            </button>
+            {loaded && !rows.some((row) => row.type === type) && (
+              <p>No {type === "category" ? "categories" : "tags"} yet.</p>
+            )}
+            {rows
+              .filter((row) => row.type === type)
+              .map((row) => (
+                <article key={row.id}>
+                  <h4>
+                    {type === "category" ? categoryPath(row, rows) : row.name}
+                  </h4>
+                  <p>
+                    {row.parentId ? "Subcategory · " : ""}
+                    {row.type} · /{row.slug}
+                  </p>
+                  <button
+                    disabled={busy || !loaded || loading}
+                    onClick={() => choose(row)}
+                  >
+                    Edit {row.name}
+                  </button>
+                </article>
+              ))}
           </article>
         ))}
       </div>
       <form
         onSubmit={async (e) => {
           e.preventDefault();
+          if (gate.current || !loaded || loading || uncertain) return;
+          gate.current = true;
           setBusy(true);
           setError("");
           try {
@@ -108,17 +236,22 @@ export function BlogTaxonomies() {
               ? await updateMarketingBlogTaxonomy(id, payload)
               : await createMarketingBlogTaxonomy(payload);
             setId(result.id);
-            setDraft(result);
-            setSaved(result);
+            setDraft(taxonomyInput(result));
+            setSaved(taxonomyInput(result));
             setVersion((v) => v + 1);
           } catch (e) {
+            if (!id) {
+              setUncertain(true);
+              setReviewed(false);
+            }
             setError(message(e));
           } finally {
+            gate.current = false;
             setBusy(false);
           }
         }}
       >
-        <fieldset disabled={busy}>
+        <fieldset disabled={busy || !loaded || loading || uncertain}>
           <legend>{id ? "Edit taxonomy" : "New taxonomy"}</legend>
           <label>
             Name
@@ -186,12 +319,14 @@ export function BlogTaxonomies() {
             <button
               type="button"
               onClick={async () => {
+                if (gate.current) return;
                 if (
                   !confirm(
-                    "Delete this taxonomy? It will be removed from posts, and child categories will become top-level categories.",
+                    "Delete this taxonomy option? Child categories become top-level. Legacy post references are updated; immutable publication snapshots retain their labels until explicitly edited.",
                   )
                 )
                   return;
+                gate.current = true;
                 setBusy(true);
                 try {
                   await deleteMarketingBlogTaxonomy(id);
@@ -202,6 +337,7 @@ export function BlogTaxonomies() {
                 } catch (e) {
                   setError(message(e));
                 } finally {
+                  gate.current = false;
                   setBusy(false);
                 }
               }}
@@ -229,11 +365,16 @@ export function BlogCommentSettings() {
     [error, setError] = useState(""),
     [notice, setNotice] = useState(""),
     [busy, setBusy] = useState(false);
+  const [reload, setReload] = useState(0);
+  const gate = useRef(false);
+  usePendingNavigation(busy);
   useCmsUnsavedChanges(JSON.stringify(draft) !== JSON.stringify(saved));
   useEffect(() => {
     const c = new AbortController();
+    setError("");
     getMarketingBlogCommentSettings({ signal: c.signal })
       .then((r) => {
+        if (c.signal.aborted) return;
         setDraft(r.settings);
         setSaved(r.settings);
       })
@@ -241,16 +382,30 @@ export function BlogCommentSettings() {
         if (!c.signal.aborted) setError(message(e));
       });
     return () => c.abort();
-  }, []);
+  }, [reload]);
   return (
     <section>
-      <h2>Comment settings</h2>
+      <h2>
+        <MessageSquare size={18} color="#8b5cf6" aria-hidden="true" /> Comment
+        settings
+      </h2>
+      <p>
+        Configure participation and moderation rules. These settings do not add
+        a comment interface to the P1 public website.
+      </p>
+      {!draft && (
+        <button disabled={busy} onClick={() => setReload((v) => v + 1)}>
+          Retry loading settings
+        </button>
+      )}
       {error && <p role="alert">{error}</p>}
       {notice && <p role="status">{notice}</p>}
       {draft ? (
         <form
           onSubmit={async (e) => {
             e.preventDefault();
+            if (gate.current) return;
+            gate.current = true;
             setBusy(true);
             setError("");
             setNotice("");
@@ -262,24 +417,57 @@ export function BlogCommentSettings() {
             } catch (e) {
               setError(message(e));
             } finally {
+              gate.current = false;
               setBusy(false);
             }
           }}
         >
           <fieldset disabled={busy}>
-            {Object.entries(labels).map(([key, label]) => (
-              <label key={key}>
-                <input
-                  type="checkbox"
-                  checked={Boolean(
-                    draft[key as keyof MarketingBlogCommentSettings],
-                  )}
-                  onChange={(e) =>
-                    setDraft({ ...draft, [key]: e.target.checked })
-                  }
-                />
-                {label}
-              </label>
+            {[
+              {
+                title: "Comment availability",
+                description: "Set the comment service availability.",
+                keys: ["commentsEnabled"],
+              },
+              {
+                title: "Participation Rules",
+                description:
+                  "Decide who can post and how visible comments become.",
+                keys: [
+                  "allowGuestComments",
+                  "requireApproval",
+                  "allowLinksInComments",
+                ],
+              },
+              {
+                title: "Spam Protection",
+                description:
+                  "Use practical safeguards for unwanted submissions.",
+                keys: [
+                  "enableSpamProtection",
+                  "enableHoneypot",
+                  "enableRateLimit",
+                ],
+              },
+            ].map((group) => (
+              <fieldset key={group.title}>
+                <legend>{group.title}</legend>
+                <p>{group.description}</p>
+                {group.keys.map((key) => (
+                  <label key={key}>
+                    <input
+                      type="checkbox"
+                      checked={Boolean(
+                        draft[key as keyof MarketingBlogCommentSettings],
+                      )}
+                      onChange={(e) =>
+                        setDraft({ ...draft, [key]: e.target.checked })
+                      }
+                    />
+                    {labels[key]}
+                  </label>
+                ))}
+              </fieldset>
             ))}
             <label>
               Seconds between comments
@@ -335,10 +523,14 @@ function CommentCard({
     [note, setNote] = useState(row.moderationNote || ""),
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false);
+  const gate = useRef(false);
+  usePendingNavigation(busy);
   useCmsUnsavedChanges(
     body !== row.body || note !== (row.moderationNote || ""),
   );
   async function run(action: () => Promise<MarketingBlogComment | null>) {
+    if (gate.current) return;
+    gate.current = true;
     setBusy(true);
     setError("");
     try {
@@ -351,6 +543,7 @@ function CommentCard({
     } catch (e) {
       setError(message(e));
     } finally {
+      gate.current = false;
       setBusy(false);
     }
   }
@@ -361,6 +554,9 @@ function CommentCard({
         {row.authorName} {row.authorEmail ? `(${row.authorEmail})` : ""} ·{" "}
         {row.status}
       </p>
+      {row.createdAt && (
+        <p>{new Date(row.createdAt).toLocaleString("en-US")}</p>
+      )}
       {error && <p role="alert">{error}</p>}
       <fieldset disabled={busy}>
         <label>
@@ -427,7 +623,10 @@ export function BlogComments() {
   const [rows, setRows] = useState<MarketingBlogComment[]>([]),
     [error, setError] = useState(""),
     [status, setStatus] = useState("all"),
-    [loading, setLoading] = useState(true);
+    [loading, setLoading] = useState(true),
+    [revision, setRevision] = useState(0),
+    [counts, setCounts] = useState<Record<string, number> | null>(null),
+    [countRevision, setCountRevision] = useState(0);
   useEffect(() => {
     const c = new AbortController();
     setLoading(true);
@@ -436,7 +635,9 @@ export function BlogComments() {
       status === "all" ? undefined : { status: status as "pending" },
       { signal: c.signal },
     )
-      .then(setRows)
+      .then((next) => {
+        if (!c.signal.aborted) setRows(next);
+      })
       .catch((e) => {
         if (!c.signal.aborted) setError(message(e));
       })
@@ -444,10 +645,41 @@ export function BlogComments() {
         if (!c.signal.aborted) setLoading(false);
       });
     return () => c.abort();
-  }, [status]);
+  }, [status, revision]);
+  useEffect(() => {
+    const c = new AbortController();
+    setCounts(null);
+    getMarketingBlogCommentSettings({ signal: c.signal })
+      .then((r) => {
+        if (!c.signal.aborted) setCounts(r.statusCounts);
+      })
+      .catch(() => {
+        if (!c.signal.aborted) setCounts(null);
+      });
+    return () => c.abort();
+  }, [status, revision, countRevision]);
   return (
     <section>
-      <h2>Comment moderation</h2>
+      <h2>
+        <ShieldCheck size={18} color="#8b5cf6" aria-hidden="true" /> Comment
+        moderation
+      </h2>
+      <p>
+        Review pending comments, approve good ones, and keep spam out of public
+        posts.
+      </p>
+      <button
+        onClick={() => {
+          if (
+            window.dispatchEvent(
+              new Event("p1:before-navigation", { cancelable: true }),
+            )
+          )
+            setRevision((v) => v + 1);
+        }}
+      >
+        Reload comments
+      </button>
       <label>
         Comment status
         <select
@@ -462,20 +694,25 @@ export function BlogComments() {
           }}
         >
           {["all", "pending", "approved", "rejected", "spam"].map((s) => (
-            <option key={s}>{s}</option>
+            <option key={s} value={s}>
+              {s}
+              {counts && s !== "all" ? ` (${counts[s] ?? 0})` : ""}
+            </option>
           ))}
         </select>
       </label>
       {error && <p role="alert">{error}</p>}
       {loading ? (
         <p role="status">Loading comments…</p>
-      ) : (
+      ) : error ? null : (
         <div className="blog-list">
           {rows.map((row) => (
             <CommentCard
               key={row.id}
               row={row}
-              onChanged={(next) =>
+              onChanged={(next) => {
+                setCounts(null);
+                setCountRevision((v) => v + 1);
                 setRows((current) =>
                   current.flatMap((item) =>
                     item.id !== row.id
@@ -484,8 +721,8 @@ export function BlogComments() {
                         ? [{ ...item, ...next }]
                         : [],
                   ),
-                )
-              }
+                );
+              }}
             />
           ))}
           {!rows.length && <p>No comments match this status.</p>}

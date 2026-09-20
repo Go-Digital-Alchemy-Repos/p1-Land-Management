@@ -17,7 +17,11 @@ export type PageLeaseTransport = (
   options?: RequestInit,
 ) => Promise<PageLeaseState>;
 /** A page lease belongs to this editor instance, never merely to the signed-in user. */
-export function usePageEditorLease(id: string | null, transport: PageLeaseTransport) {
+export function usePageEditorLease(
+  id: string | null,
+  transport: PageLeaseTransport,
+  resourceLabel = "page",
+) {
   const editorInstanceId = useMemo(() => crypto.randomUUID(), [id]);
   const [state, setState] = useState<PageLeaseState | null>(null),
     [error, setError] = useState(""),
@@ -52,10 +56,12 @@ export function usePageEditorLease(id: string | null, transport: PageLeaseTransp
     }
   }, [id, editorInstanceId, transport]);
   const verify = useCallback(async () => {
-    if (!id) throw Error("Save this page before changing its publication status.");
+    if (!id) throw Error(`Save this ${resourceLabel} before changing it.`);
     const lease = current.current;
     if (!lease?.ownedByCurrentEditor || !lease.lock)
-      throw Error("This editor does not hold the page reservation. Your draft is retained.");
+      throw Error(
+        `This editor does not hold the ${resourceLabel} reservation. Your draft is retained.`,
+      );
     const signal = controller.current?.signal;
     try {
       const result = await transport(
@@ -68,7 +74,7 @@ export function usePageEditorLease(id: string | null, transport: PageLeaseTransp
       current.current = result;
       setState(result);
       if (!result.ownedByCurrentEditor || !result.lock)
-        throw Error("Page reservation lost. Your draft is retained.");
+        throw Error(`${resourceLabel} reservation lost. Your draft is retained.`);
       return result;
     } catch (e) {
       if (!signal?.aborted) {
@@ -78,15 +84,15 @@ export function usePageEditorLease(id: string | null, transport: PageLeaseTransp
       }
       throw e;
     }
-  }, [id, editorInstanceId, transport]);
+  }, [id, editorInstanceId, transport, resourceLabel]);
   const preconditions = useCallback(
     async (expectedVersion: number): Promise<PageWritePreconditions> => {
       if (!Number.isInteger(expectedVersion) || expectedVersion <= 0)
-        throw Error("Reload this page to obtain its saved version before editing.");
+        throw Error(`Reload this ${resourceLabel} to obtain its saved version before editing.`);
       const lease = await verify();
       return { expectedVersion, editorInstanceId, leaseId: lease.lock!.id };
     },
-    [verify, editorInstanceId],
+    [verify, editorInstanceId, resourceLabel],
   );
   useEffect(() => {
     if (releaseTimer.current?.id === id && releaseTimer.current.instance === editorInstanceId)

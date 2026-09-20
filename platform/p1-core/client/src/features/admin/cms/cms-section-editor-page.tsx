@@ -60,6 +60,7 @@ export default function CmsSectionEditorPage() {
 
   const [builderContent, setBuilderContent] = useState<BuilderContent>(EMPTY_CONTENT);
   const [initialized, setInitialized] = useState(false);
+  const [savedVersion, setSavedVersion] = useState(0);
   const [savedBuilderSnapshot, setSavedBuilderSnapshot] = useState(() =>
     JSON.stringify(EMPTY_CONTENT),
   );
@@ -87,6 +88,7 @@ export default function CmsSectionEditorPage() {
 
   useEffect(() => {
     if (section && !initialized) {
+      setSavedVersion(section.version);
       form.reset({
         name: section.name,
         description: section.description ?? "",
@@ -145,10 +147,13 @@ export default function CmsSectionEditorPage() {
     mutationFn: async (payload: SectionForm & { content: BuilderContent }) => {
       return apiRequest("PUT", `/api/admin/cms/sections/${id}`, {
         ...payload,
+        ...(await editorLock.preconditions(savedVersion)),
         blocks: payload.content.blocks,
       });
     },
-    onSuccess: (_, variables) => {
+    onSuccess: async (response, variables) => {
+      const updated: CmsSection = await response.json();
+      setSavedVersion(updated.version);
       queryClient.invalidateQueries({ queryKey: ["/api/admin/cms/sections"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/cms/sections", id] });
       toast({ title: "Section saved" });

@@ -152,73 +152,20 @@ function buildStarterSectionRecord(block: BlockDef) {
 }
 
 export async function ensureSystemCmsSections(options?: { refreshExisting?: boolean }) {
-  const refreshExisting = options?.refreshExisting ?? false;
-  const existingSections = await storage.cmsSections.getAllSections();
-  const existingByName = new Map(existingSections.map((section) => [section.name, section]));
-  const desiredStarterNames = new Set(
-    STARTER_LIBRARY_BLOCKS.map((block) => `${SYSTEM_SECTION_NAME_PREFIX}${block.label}`),
-  );
-
-  let created = 0;
-  if (!existingByName.has("Team")) {
-    await storage.cmsSections.createSection({
+  const result = await storage.cmsSections.ensureSystemSections(
+    {
       name: "Team",
       description:
         "Select team members and choose a portrait grid, bordered cards, or horizontal profiles.",
       category: "team",
       blocks: [createBlock("team")],
-    });
-    created += 1;
-  }
-  let updated = 0;
-  let deleted = 0;
-
-  if (refreshExisting) {
-    for (const section of existingSections) {
-      if (
-        section.name.startsWith(SYSTEM_SECTION_NAME_PREFIX) &&
-        !desiredStarterNames.has(section.name)
-      ) {
-        await storage.cmsSections.deleteSection(section.id);
-        deleted += 1;
-      }
-    }
-  }
-
-  for (const block of STARTER_LIBRARY_BLOCKS) {
-    const starterSection = buildStarterSectionRecord(block);
-    const existing = existingByName.get(starterSection.name);
-
-    if (!existing) {
-      await storage.cmsSections.createSection({
-        ...starterSection,
-      });
-      created += 1;
-      continue;
-    }
-
-    if (refreshExisting) {
-      await storage.cmsSections.updateSection(existing.id, {
-        name: starterSection.name,
-        description: starterSection.description,
-        category: starterSection.category,
-        blocks: starterSection.blocks,
-      });
-      updated += 1;
-    }
-  }
-
+    },
+    STARTER_LIBRARY_BLOCKS.map(buildStarterSectionRecord),
+    options?.refreshExisting ?? false,
+  );
   logger.cms.info("Ensured system CMS reusable sections", {
-    created,
-    updated,
-    deleted,
-    refreshExisting,
+    ...result,
+    refreshExisting: options?.refreshExisting ?? false,
   });
-
-  return {
-    created,
-    updated,
-    deleted,
-    total: STARTER_LIBRARY_BLOCKS.length + 1,
-  };
+  return result;
 }

@@ -10208,7 +10208,7 @@
       },
       "put": {
         "operationId": "updateMarketingSection",
-        "description": "Requires marketing.content.sections. Preserves retained block payloads and Core storage.",
+        "description": "Requires marketing.content.sections, the saved expectedVersion, editorInstanceId and current leaseId. Stale versions or lost leases return 409 without changing content.",
         "responses": {
           "200": {
             "description": "Success",
@@ -10235,7 +10235,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/MarketingSectionInput"
+                "$ref": "#/components/schemas/MarketingSectionPatch"
               }
             }
           }
@@ -10253,7 +10253,7 @@
       },
       "delete": {
         "operationId": "deleteMarketingSection",
-        "description": "Requires marketing.content.sections. Preserves retained block payloads and Core storage.",
+        "description": "Requires marketing.content.sections, the saved expectedVersion, editorInstanceId and current leaseId. Stale versions or lost leases return 409 without changing content.",
         "responses": {
           "200": {
             "description": "Success",
@@ -10284,7 +10284,17 @@
               "type": "string"
             }
           }
-        ]
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketingSectionPreconditions"
+              }
+            }
+          }
+        }
       }
     },
     "/marketing/cms/section-builder": {
@@ -10344,7 +10354,7 @@
     "/marketing/cms/editor-locks/cms_section/{id}/acquire": {
       "post": {
         "operationId": "acquireMarketingSectionReservation",
-        "description": "Requires marketing.content.sections; retained advisory reservation.",
+        "description": "Requires marketing.content.sections and an exact editor-instance lease. Reservation ownership is never inferred from the user alone.",
         "responses": {
           "200": {
             "description": "Website menu result",
@@ -10384,13 +10394,23 @@
               "type": "string"
             }
           }
-        ]
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketingPageLeaseAcquire"
+              }
+            }
+          }
+        }
       }
     },
     "/marketing/cms/editor-locks/cms_section/{id}/heartbeat": {
       "post": {
         "operationId": "heartbeatMarketingSectionReservation",
-        "description": "Requires marketing.content.sections; retained advisory reservation.",
+        "description": "Requires marketing.content.sections and an exact editor-instance lease. Reservation ownership is never inferred from the user alone.",
         "responses": {
           "200": {
             "description": "Website menu result",
@@ -10430,13 +10450,23 @@
               "type": "string"
             }
           }
-        ]
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketingPageLeaseProof"
+              }
+            }
+          }
+        }
       }
     },
     "/marketing/cms/editor-locks/cms_section/{id}/release": {
       "post": {
         "operationId": "releaseMarketingSectionReservation",
-        "description": "Requires marketing.content.sections; retained advisory reservation.",
+        "description": "Requires marketing.content.sections and an exact editor-instance lease. Reservation ownership is never inferred from the user alone.",
         "responses": {
           "200": {
             "description": "Website menu result",
@@ -10476,7 +10506,17 @@
               "type": "string"
             }
           }
-        ]
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketingPageLeaseProof"
+              }
+            }
+          }
+        }
       }
     },
     "/marketing/cms/pages": {
@@ -26718,7 +26758,8 @@
         "required": [
           "id",
           "name",
-          "blocks"
+          "blocks",
+          "version"
         ],
         "properties": {
           "id": {
@@ -26763,6 +26804,10 @@
               "type": "object",
               "additionalProperties": {}
             }
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
           }
         }
       },
@@ -34263,6 +34308,38 @@
         "required": [
           "saved",
           "google"
+        ]
+      },
+      "MarketingSectionPreconditions": {
+        "type": "object",
+        "properties": {
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "editorInstanceId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "leaseId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "expectedVersion",
+          "editorInstanceId",
+          "leaseId"
+        ]
+      },
+      "MarketingSectionPatch": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MarketingSectionInput"
+          },
+          {
+            "$ref": "#/components/schemas/MarketingSectionPreconditions"
+          }
         ]
       }
     }

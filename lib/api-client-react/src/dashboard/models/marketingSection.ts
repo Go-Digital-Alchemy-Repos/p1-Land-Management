@@ -21,4 +21,6 @@ export interface MarketingSection {
   /** @nullable */
   updatedAt?: string | null;
   blocks: MarketingSectionBlocksItem[];
+  /** @minimum 1 */
+  version: number;
 }

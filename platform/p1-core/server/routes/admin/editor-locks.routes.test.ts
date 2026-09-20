@@ -1,3 +1,4 @@
+vi.mock("../../services/cms-section-leases.service", () => ({ sectionLease: state.sectionLease }));
 import express from "express";
 import type { Server } from "node:http";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
@@ -5,6 +6,7 @@ const state = vi.hoisted(() => ({
   rows: new Map<string, any>(),
   work: vi.fn(),
   pageLease: vi.fn(),
+  sectionLease: vi.fn(),
   blogLease: vi.fn(),
 }));
 vi.mock("../../services/blog-publication-leases.service", () => ({
@@ -71,6 +73,8 @@ beforeEach(async () => {
     }[action as "status" | "acquire" | "heartbeat" | "release"];
     return operation("blog_post", id, user);
   });
+  state.sectionLease.mockReset();
+  state.sectionLease.mockResolvedValue({ status: "acquired", ownedByCurrentEditor: true });
   state.pageLease.mockReset();
   state.pageLease.mockResolvedValue({ status: "acquired", ownedByCurrentEditor: true });
   actor = {
@@ -162,6 +166,10 @@ it("authorizes by resource on all reads and writes, including legacy body-scoped
       expect(state.pageLease).toHaveBeenCalledWith("acquire", "record", actor, {
         resourceType: "doc",
       });
+    else if (resource === "cms_section")
+      expect(state.sectionLease).toHaveBeenCalledWith("acquire", "record", actor, {
+        resourceType: "doc",
+      });
     else expect(state.rows.has(`${resource}:record`)).toBe(true);
     expect(state.rows.has("doc:record")).toBe(false);
   }
@@ -221,5 +229,20 @@ it("forwards adopted Blog proof to exact-instance dispatch for generic and scope
     expect(state.blogLease).toHaveBeenLastCalledWith(action, "post", actor, proof, true);
     await request(`/${action}`, { resourceType: "blog_post", resourceId: "post", ...proof });
     expect(state.blogLease).toHaveBeenLastCalledWith(action, "post", actor, proof, true);
+  }
+});
+
+it("forwards exact section proof for both reservation route forms", async () => {
+  grant.capabilities = ["marketing.content.sections"];
+  const proof = {
+    editorInstanceId: "11111111-1111-4111-8111-111111111111",
+    leaseId: "22222222-2222-4222-8222-222222222222",
+  };
+  for (const action of ["acquire", "heartbeat", "release"]) {
+    expect((await request(`/cms_section/section/${action}`, proof)).status).toBe(200);
+    expect(state.sectionLease).toHaveBeenLastCalledWith(action, "section", actor, proof);
+    const body = { resourceType: "cms_section", resourceId: "section", ...proof };
+    expect((await request(`/${action}`, body)).status).toBe(200);
+    expect(state.sectionLease).toHaveBeenLastCalledWith(action, "section", actor, body);
   }
 });
