@@ -2,7 +2,7 @@ import { test, after } from "node:test";
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import { pool } from "./database";
-import { recordWebsiteRestoreReview, claimWebsiteRestore, recordWebsiteRestoreOutcome } from "./website-restore.service";
+import { recordWebsiteRestoreReview, claimWebsiteRestore, recordWebsiteRestoreOutcome, readWebsiteRestoreOperation } from "./website-restore.service";
 const url=process.env.RESTORE_TEST_DATABASE_URL;
 if(url && (!/^postgres(?:ql)?:\/\/[^@]+@(?:127\.0\.0\.1|localhost):\d+\/restore_operations_test$/.test(url)||url!==process.env.DASHBOARD_DATABASE_URL)) throw Error("Dedicated local restore test database required");
 after(()=>pool.end());
@@ -12,6 +12,9 @@ test("restore claims expire, serialize concurrent submissions, preserve audit an
   const review={sourceBinding:"a".repeat(64),key:"db/test.gz",fingerprint:"b".repeat(64),summary:{createdAt:"2026-09-20T00:00:00Z",clientStackId:"p1-land-management",tableCount:1,totalRowCount:0,mediaAssetCount:0}};
   for(const id of [member,inactive]) await assert.rejects(recordWebsiteRestoreReview(id,review),/Active Owner/);
   const first=await recordWebsiteRestoreReview(owner,review);
+  assert.equal((await readWebsiteRestoreOperation(owner,first.id)).status,"reviewed");
+  await assert.rejects(readWebsiteRestoreOperation(other,first.id),/not found/);
+  for(const id of [member,inactive]) await assert.rejects(readWebsiteRestoreOperation(id,first.id),/Active Owner/);
   await assert.rejects(claimWebsiteRestore(other,first.id,review.sourceBinding),/not found/);
   await assert.rejects(claimWebsiteRestore(owner,first.id,"c".repeat(64)),/connection changed/);
   const claims=await Promise.all([claimWebsiteRestore(owner,first.id,review.sourceBinding),claimWebsiteRestore(owner,first.id,review.sourceBinding)]);

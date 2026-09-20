@@ -64,3 +64,14 @@ export async function recordWebsiteRestoreOutcome(actorId: string, id: string, s
     return next;
   });
 }
+
+/** Status is available only to the active Owner who initiated this review. */
+export async function readWebsiteRestoreOperation(actorId: string, id: string) {
+  z.string().uuid().parse(id);
+  return transaction(async c => {
+    await owner(c, actorId);
+    const row = (await c.query("SELECT * FROM website_restore_operation WHERE id=$1 AND actor_id=$2", [id, actorId])).rows[0];
+    if (!row) throw new HttpError(404, "Restore operation not found");
+    return row;
+  });
+}

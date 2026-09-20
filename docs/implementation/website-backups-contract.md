@@ -160,3 +160,25 @@ Validation: 48 focused Core tests passed (11 route,16 archive-validation,21 back
 service). Review authorization, input injection, private metadata suppression and
 provider failure sanitization are covered. This candidate remains on the task
 branch pending the complete ledger-backed workflow and its release gates above.
+
+### Dashboard review persistence bridge candidate
+
+The dedicated `POST /marketing/cms/website-system/backups/restore-operations`
+accepts only an archive key, verifies the signed-in Owner, issues a short-lived
+Core federation grant, validates the returned metadata/fingerprint and exact key,
+and stores the review in the independent Dashboard ledger. Grant cleanup precedes
+ledger creation. Source binding hashes the server-configured Core origin and the
+validated archive stack identity; it is never accepted from browser input.
+`GET .../restore-operations/:id` requires the initiating active Owner. Both return
+an explicit public projection with operation ID, state, timestamps and archive
+counts/identity; archive keys, fingerprints, actor IDs and source binding stay
+server-side. The internal Core review operation is deliberately excluded from
+the generic browser proxy registry, preventing bypass of review persistence.
+
+Validation: 25 transport/contract tests passed without skips, plus the disposable
+PostgreSQL ledger test including active-Owner status reads and cross-Owner denial.
+API typechecking passed. Production remains unchanged. Composed HTTP acceptance,
+UI, typed confirmation, execution receipts and uncertain-outcome reconciliation
+remain required before this candidate can ship. Same-origin backend replacement
+cannot be detected from the origin binding alone; archive fingerprint and fresh
+Core identity validation must still be enforced immediately before execution.

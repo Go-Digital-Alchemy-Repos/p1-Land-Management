@@ -10,7 +10,10 @@ import {
   callCms,
 } from "./marketing-cms.transport";
 
+import { websiteRestoreApi } from "./website-restore";
+
 export const marketingCmsApi = Router();
+marketingCmsApi.use(websiteRestoreApi);
 for (const operation of cmsOperations) {
   const method = operation.method.toLowerCase() as
     | "get"

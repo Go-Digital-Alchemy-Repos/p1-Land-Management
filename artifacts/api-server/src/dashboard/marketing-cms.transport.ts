@@ -12,6 +12,10 @@ export interface CmsOperation {
   multipart?: boolean;
   binary?: boolean;
 }
+/** Internal only: the dedicated controller persists review state before returning it. */
+export const restoreReviewOperation: CmsOperation = Object.freeze({
+  method: "POST", path: "/website-system/backups/restore-review", capabilities: [], ownerOnly: true,
+});
 /** Explicit method/path pairs. Adding a Core route never exposes it automatically. */
 export const cmsOperations: CmsOperation[] = [];
 for (const [method, path] of [
@@ -251,7 +255,7 @@ export function cmsDestination(
   params: Record<string, unknown>,
   query: Record<string, unknown>,
 ) {
-  if (!cmsOperations.includes(operation))
+  if (!cmsOperations.includes(operation) && operation !== restoreReviewOperation)
     throw new HttpError(404, "CMS operation not found");
   const path = operation.path.replace(/:([A-Za-z]+)/g, (_match, key) => {
     const value = params[key];
