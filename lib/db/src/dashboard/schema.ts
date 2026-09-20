@@ -2087,6 +2087,6 @@ export const websiteRestoreOperation = pgTable("website_restore_operation", {
   check("website_restore_operation_archive_key_check", sql`length(${t.archiveKey}) BETWEEN 1 AND 2048`),
   check("website_restore_operation_archive_fingerprint_check", sql`${t.archiveFingerprint} ~ '^[a-f0-9]{64}$'`),
   check("website_restore_operation_summary_check", sql`jsonb_typeof(${t.summary}) = 'object'`),
-  check("website_restore_operation_status_check", sql`${t.status} IN ('reviewed','running','completed','uncertain')`),
+  check("website_restore_operation_status_check", sql`${t.status} IN ('reviewed','running','completed','uncertain','not_applied')`),
   uniqueIndex("website_restore_one_unresolved_source").on(t.sourceBinding).where(sql`${t.status} IN ('running','uncertain')`),
 ]);

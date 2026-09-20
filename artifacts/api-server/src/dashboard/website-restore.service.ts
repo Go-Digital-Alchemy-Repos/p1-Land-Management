@@ -77,3 +77,19 @@ export async function readWebsiteRestoreOperation(actorId: string, id: string) {
     return row;
   });
 }
+
+/** Called only after a correlated Core outcome was verified; never accept a browser status. */
+export async function reconcileWebsiteRestore(actorId:string,id:string,sourceBinding:string,outcome:"completed"|"not_applied"|"unknown"){
+  z.string().uuid().parse(id);hash.parse(sourceBinding);z.enum(["completed","not_applied","unknown"]).parse(outcome);
+  return transaction(async c=>{
+    await owner(c,actorId);
+    const row=(await c.query("SELECT * FROM website_restore_operation WHERE id=$1 AND actor_id=$2 FOR UPDATE",[id,actorId])).rows[0];
+    if(!row) throw new HttpError(404,"Restore operation not found");
+    if(row.source_binding!==sourceBinding) throw new HttpError(409,"Website connection changed; operator verification required");
+    if(outcome==="unknown" || row.status===outcome) return row;
+    if(!["running","uncertain"].includes(row.status)) throw new HttpError(409,"Restore state does not permit this reconciliation");
+    const next=(await c.query("UPDATE website_restore_operation SET status=$2,updated_at=now() WHERE id=$1 RETURNING *",[id,outcome])).rows[0];
+    await audit(c,actorId,id,"website.restore_reconciled_"+outcome);
+    return next;
+  });
+}

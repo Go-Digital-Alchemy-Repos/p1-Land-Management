@@ -269,3 +269,29 @@ wrong-actor receipts, expired started receipts, completion, lock contention and
 unchanged public rows during reconciliation. Core typecheck passed. Production
 remains unchanged. Dashboard execution/reconciliation orchestration, recovery for
 missing receipts, full UI/HTTP acceptance and independent review remain pending.
+
+### Dashboard execution/reconciliation candidate (migration0050, not deployed)
+
+Dedicated `POST .../restore-operations/:id/execute` accepts only typed
+confirmation. It reads the Owner's saved review, checks the server-derived source
+binding, atomically claims it, and only then calls Core with stored archive data.
+Repeated claims return the existing state. Only a strict, matching operation-ID
+completion response records success; transport/unconfirmed results record
+uncertainty with HTTP202. If persistence itself fails, the already-committed
+running claim remains blocking. No automatic replay occurs.
+
+`POST .../:id/reconcile` accepts an empty body, checks Owner/source binding and
+reads Core's outcome. Migration0050 adds `not_applied`; verified completed or
+not-applied outcomes resolve running/uncertain rows with an atomic independent
+audit. Unknown preserves the block, as do provider failures. Neither execution
+nor reconciliation is in the generic CMS proxy. Grant lifecycle is shared by
+these dedicated controllers and review; identity always comes from the session.
+
+Validation:26 contract/transport tests and the real PostgreSQL ledger test pass
+without skips, including correlation rejection, unresolved unknown states,
+cross-Owner/source denial, idempotent reconciliation audit, resolved-operation
+non-replay, fresh-review admission after verified no-commit, and terminal-state
+conflict rejection. API typechecking passed. Composed HTTP and browser acceptance
+remain pending, along with native UI/history and operator recovery for missing
+receipts. Core0008 and Dashboard0049/0050 remain undeployed candidates; do not
+retire `/admin` or mark restore parity complete yet.

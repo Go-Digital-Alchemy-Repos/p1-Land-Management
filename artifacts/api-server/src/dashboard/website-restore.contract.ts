@@ -20,10 +20,16 @@ export function restoreSourceBinding(origin:string,stackId:string){
 export function restoreOperationView(row:Record<string,unknown>){
   return {
     id:z.string().uuid().parse(row.id),
-    status:z.enum(["reviewed","running","completed","uncertain"]).parse(row.status),
+    status:z.enum(["reviewed","running","completed","uncertain","not_applied"]).parse(row.status),
     summary:restoreSummary.parse(row.summary),
     expiresAt:z.coerce.date().parse(row.expires_at).toISOString(),
     createdAt:z.coerce.date().parse(row.created_at).toISOString(),
     updatedAt:z.coerce.date().parse(row.updated_at).toISOString(),
   };
+}
+
+export function verifiedRestoreOutcome(result:{status:number;body:unknown},operationId:string){
+  const parsed=z.object({operationId:z.literal(operationId),outcome:z.enum(["completed","not_applied","unknown"])}).strict().safeParse(result.body);
+  if(result.status!==200 || !parsed.success) throw new Error("Restore outcome could not be verified");
+  return parsed.data.outcome;
 }
