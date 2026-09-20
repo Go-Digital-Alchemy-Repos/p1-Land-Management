@@ -201,3 +201,21 @@ review untouched. Both Core and Dashboard API typechecks pass. No execute HTTP
 endpoint, production migration or production restore is enabled. Durable Core
 receipt correlation, uncertainty reconciliation, full schema compatibility,
 composed HTTP/UI acceptance and independent review remain release requirements.
+
+### Reviewed restore inventory and non-cascading safety
+
+The native reviewed path now compares the archive table set with the current
+nonexcluded public table inventory inside the restore transaction and rejects
+mismatches before truncation. Its `TRUNCATE` omits `CASCADE`, so PostgreSQL refuses
+implicit deletion of excluded/new referencing relations. The retained operator
+path is unchanged. This is table-set compatibility, not a claim that all schema
+versions are interchangeable; incompatible columns/constraints still cause
+transaction rollback and require operator reconciliation.
+
+Validation:52 focused Core tests passed. A fresh disposable PostgreSQL18 database
+ran13 database tests without skips, including an exact reviewed archive restore,
+rejection of a new table absent from the archive, and real foreign-key rejection
+when that new table was excluded. Its rows and current parent rows survived both
+rejections; the advisory lock was released. The temporary container was removed.
+Core typechecking passed. Production was not touched; native execution remains
+unexposed pending operation receipt/reconciliation and full HTTP/UI acceptance.

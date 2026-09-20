@@ -258,3 +258,46 @@ it("rechecks expiry after archive download and after transaction lock waits, bef
     }
   } finally { clock.mockRestore();if(previous===undefined) delete process.env.CLIENT_STACK_ID;else process.env.CLIENT_STACK_ID=previous; }
 });
+it("rejects reviewed archives missing current tables before truncation", async () => {
+  vi.clearAllMocks();
+  const previous=process.env.CLIENT_STACK_ID;
+  process.env.CLIENT_STACK_ID="p1-land-management";
+  const query=vi.fn(async(sql:string)=>{
+    if(sql.includes("pg_try_advisory_lock")) return {rows:[{acquired:true}]};
+    if(sql.includes("pg_advisory_unlock")) return {rows:[{released:true}]};
+    if(sql.includes("FROM pg_tables")) return {rows:[{table_name:"example"},{table_name:"newer_customer_data"}]};
+    return {rows:[]};
+  });
+  vi.mocked(pool.connect as () => Promise<PoolClient>).mockResolvedValue({query,release:vi.fn()} as unknown as PoolClient);
+  vi.mocked(storage.beginBackupStorageOperation).mockResolvedValue({source:"env",bucketName:"test",prefix:"test"});
+  vi.mocked(storage.downloadBackupObject).mockResolvedValue(gzipSync(JSON.stringify({manifest:{...validManifest,tableCount:1,restoreOrder:["example"]},tables:[{name:"example",rowCount:0,rows:[]}],sequences:[]})));
+  try {
+    const review=await getSystemBackupRestoreReview(validManifest.key);
+    await expect(restoreReviewedSystemBackup(validManifest.key,review.fingerprint,new Date(Date.now()+60_000).toISOString())).rejects.toThrow("table inventory differs");
+    expect(query.mock.calls.some(([sql])=>sql.startsWith("TRUNCATE"))).toBe(false);
+    expect(query.mock.calls.some(([sql])=>sql==="ROLLBACK")).toBe(true);
+  } finally { if(previous===undefined) delete process.env.CLIENT_STACK_ID;else process.env.CLIENT_STACK_ID=previous; }
+});
+it("never cascades reviewed truncation into excluded or new relations", async () => {
+  vi.clearAllMocks();
+  const previous=process.env.CLIENT_STACK_ID;
+  process.env.CLIENT_STACK_ID="p1-land-management";
+  const query=vi.fn(async(sql:string)=>{
+    if(sql.includes("pg_try_advisory_lock")) return {rows:[{acquired:true}]};
+    if(sql.includes("pg_advisory_unlock")) return {rows:[{released:true}]};
+    if(sql.includes("FROM pg_tables")) return {rows:[{table_name:"example"},{table_name:"session"}]};
+    if(sql.startsWith("TRUNCATE")) throw Error("Synthetic referencing relation denial");
+    return {rows:[]};
+  });
+  vi.mocked(pool.connect as () => Promise<PoolClient>).mockResolvedValue({query,release:vi.fn()} as unknown as PoolClient);
+  vi.mocked(storage.beginBackupStorageOperation).mockResolvedValue({source:"env",bucketName:"test",prefix:"test"});
+  vi.mocked(storage.downloadBackupObject).mockResolvedValue(gzipSync(JSON.stringify({manifest:{...validManifest,tableCount:1,restoreOrder:["example"]},tables:[{name:"example",rowCount:0,rows:[]}],sequences:[]})));
+  try {
+    const review=await getSystemBackupRestoreReview(validManifest.key);
+    await expect(restoreReviewedSystemBackup(validManifest.key,review.fingerprint,new Date(Date.now()+60_000).toISOString())).rejects.toThrow("referencing relation denial");
+    const sql=query.mock.calls.find(([sql])=>sql.startsWith("TRUNCATE"))?.[0];
+    expect(sql).toBe('TRUNCATE TABLE public."example" RESTART IDENTITY');
+    expect(query.mock.calls.some(([sql])=>sql==="ROLLBACK")).toBe(true);
+    expect(query.mock.calls.some(([sql])=>sql==="COMMIT")).toBe(false);
+  } finally { if(previous===undefined) delete process.env.CLIENT_STACK_ID;else process.env.CLIENT_STACK_ID=previous; }
+});

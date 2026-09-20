@@ -59,6 +59,8 @@ import { getCrmPipelineSettings, saveCrmPipelineSettings } from "./crm-pipeline-
 import * as storage from "./backup-storage.service";
 import {
   restoreBackupSnapshot,
+  getSystemBackupRestoreReview,
+  restoreReviewedSystemBackup,
   restoreSystemBackupFromKey,
   runSystemBackup,
 } from "./system-backup.service";
@@ -115,6 +117,37 @@ describe.skipIf(!testUrl)("system backup disposable PostgreSQL", () => {
   afterAll(async () => {
     vi.unstubAllEnvs();
     await pool.end();
+  });
+
+  it("restores an exact reviewed archive against PostgreSQL", async () => {
+    await runSystemBackup();
+    const snapshot=exportedSnapshot();
+    vi.mocked(storage.downloadBackupObject).mockResolvedValue(gzipSync(JSON.stringify(snapshot)));
+    const review=await getSystemBackupRestoreReview(snapshot.manifest.key);
+    await pool.query("INSERT INTO a_parents VALUES (2)");
+    await restoreReviewedSystemBackup(snapshot.manifest.key,review.fingerprint,new Date(Date.now()+60_000).toISOString());
+    expect((await pool.query("SELECT * FROM a_parents")).rows).toEqual([{id:1}]);
+    expect((await pool.query("SELECT * FROM z_children")).rows).toEqual([{id:1,parent_id:1}]);
+    await assertLockAvailable();
+  });
+
+  it("preserves newly introduced and excluded referencing tables during reviewed rejection", async () => {
+    await runSystemBackup();
+    const snapshot=exportedSnapshot();
+    vi.mocked(storage.downloadBackupObject).mockResolvedValue(gzipSync(JSON.stringify(snapshot)));
+    const review=await getSystemBackupRestoreReview(snapshot.manifest.key);
+    await pool.query("CREATE TABLE newer_customer_data (id integer PRIMARY KEY, parent_id integer REFERENCES a_parents(id))");
+    try {
+      await pool.query("INSERT INTO newer_customer_data VALUES (7,1)");
+      await pool.query("INSERT INTO a_parents VALUES (2)");
+      const execute=()=>restoreReviewedSystemBackup(snapshot.manifest.key,review.fingerprint,new Date(Date.now()+60_000).toISOString());
+      await expect(execute()).rejects.toThrow("table inventory differs");
+      vi.stubEnv("SYSTEM_BACKUP_EXCLUDED_TABLES","session,__drizzle_migrations,newer_customer_data");
+      await expect(execute()).rejects.toThrow("foreign key constraint");
+      expect((await pool.query("SELECT * FROM newer_customer_data")).rows).toEqual([{id:7,parent_id:1}]);
+      expect((await pool.query("SELECT * FROM a_parents ORDER BY id")).rows).toEqual([{id:1},{id:2}]);
+      await assertLockAvailable();
+    } finally { await pool.query("DROP TABLE newer_customer_data"); }
   });
 
   it("restores GENERATED ALWAYS identity IDs, foreign keys and the next generated value", async () => {

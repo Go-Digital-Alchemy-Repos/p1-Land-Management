@@ -505,7 +505,7 @@ async function restoreBackupSnapshotWithClient(
   client: PoolClient,
   snapshot: DatabaseBackupSnapshot,
   options: RestoreBackupSnapshotOptions = {},
-  beforeMutation?: () => void,
+  validateReviewedDeadline?: () => void,
 ) {
   const identity = assertBackupRestoreIdentity(snapshot.manifest, {
     targetStackId: process.env.CLIENT_STACK_ID,
@@ -558,10 +558,16 @@ async function restoreBackupSnapshotWithClient(
           }
         }
       }
-      beforeMutation?.();
+      if (validateReviewedDeadline) {
+        validateReviewedDeadline();
+        const currentTables = await queryAllTableNames(client);
+        if (currentTables.length !== tableNames.length || currentTables.some((name) => !tableNames.includes(name)))
+          throw new Error("Backup table inventory differs from the current database; operator reconciliation is required");
+        validateReviewedDeadline();
+      }
       if (tableNames.length > 0) {
         await client.query(
-          `TRUNCATE TABLE ${tableNames.map((table) => `public.${quoteIdent(table)}`).join(", ")} RESTART IDENTITY CASCADE`,
+          `TRUNCATE TABLE ${tableNames.map((table) => `public.${quoteIdent(table)}`).join(", ")} RESTART IDENTITY${validateReviewedDeadline ? "" : " CASCADE"}`,
         );
       }
 
