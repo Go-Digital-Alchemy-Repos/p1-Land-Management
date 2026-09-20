@@ -1,3 +1,30 @@
+## Verified responsive-image foundation release — September 19
+
+Runtime `3a15d365ca68b9c1fff0b9335a6bbab4352f2fda` pushed to main/task branch.
+Railway SUCCESS: Core `768a3c65-e407-4a39-9a8b-6b5c251cfcf4`, Website
+`05b139c4-08e2-4a1e-93f8-39ccfc7ce99f`, Dashboard
+`b7af26b2-b0fa-4269-b315-9e3016d715cb`. Live health endpoints and Blog v2
+returned200; posts/ownership still empty. Original representative article returns200
+with oneH1 and responsive image markup. All tests/typechecks/builds described below
+passed. Actual twenty reviewed files also passed full decode/staging/readback and
+exact replay using an in-memory adapter with zero provider writes.
+
+Next implement bounded five-article importer: strict reviewed-plan admission,
+all-five receipt replay (mixed ownership fails), stage all20bytes, then one DB
+transaction for media rows/unpublished legacy IDs/complete initial revisions/states/
+receipts/publication. Receipt insertion follows revision and precedes publish.
+Use existing mutation authorization/leases, aggregate capacity checks and normal
+route claims; no general endpoint or scheduler bypass. On failure DB rolls back
+and objects remain recoverable; replay must preserve subsequent edits/deletion.
+
+Source freeze requires investigation: Blog lock does not fence client_site_content
+writes or inserts for absent revision0 rows. Proposed short SHARE table lock needs
+lock-order/timeout review and exact capture-hash-to-DB evidence mapping; no provider
+I/O inside transaction. Website deployment identity is a separate external fence.
+Do not perform actual import until these acceptance checks and populated restore
+rehearsal pass. Current source dates remain declared, not historically verified.
+Broader goal gates are unchanged; retained admin remains available.
+
 ## Responsive Blog images and staging candidate — September 19
 
 Optional importer-bound private coverImageSet, immutable receipt verification,
