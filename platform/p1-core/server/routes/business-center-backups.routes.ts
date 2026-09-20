@@ -3,7 +3,7 @@ import { z, ZodError } from "zod";
 import { requireWebsiteOwner } from "../middleware/website-owner";
 import { asyncHandler } from "../middleware/error-handler";
 import { storage } from "../storage";
-import { getBackupStatus, getSystemBackupRestoreReview, runSystemBackup } from "../services/system-backup.service";
+import { getBackupStatus, getSystemBackupRestoreReview, restoreReviewedSystemBackup, getReviewedRestoreOutcome, runSystemBackup } from "../services/system-backup.service";
 const router = Router();
 const empty = z.object({}).strict();
 const summarySchema = z.object({
@@ -94,6 +94,22 @@ router.post(
     res.json({ manifest: summary(review.manifest), fingerprint: fingerprint.data });
   }),
 );
+const restoreIdentityBody = z.object({
+  operationId: z.string().uuid(), fingerprint: z.string().regex(/^[a-f0-9]{64}$/),
+  expiresAt: z.string().datetime(),
+}).strict();
+router.post("/restore-execute", asyncHandler(async (req, res) => {
+  const b = restoreIdentityBody.extend({key:z.string().min(1).max(2048)}).parse(req.body);
+  const actorId = z.string().min(1).max(255).parse(req.dashboardIdentity!.subject);
+  await restoreReviewedSystemBackup(b.key,b.fingerprint,b.expiresAt,{operationId:b.operationId,actorId});
+  res.json({operationId:b.operationId,outcome:"completed"});
+}));
+router.post("/restore-outcome", asyncHandler(async (req,res)=>{
+  const b = restoreIdentityBody.parse(req.body);
+  const actorId = z.string().min(1).max(255).parse(req.dashboardIdentity!.subject);
+  const outcome = await getReviewedRestoreOutcome({...b,actorId});
+  res.json({operationId:b.operationId,outcome});
+}));
 router.post(
   "/run",
   asyncHandler(async (req, res) => {

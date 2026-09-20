@@ -62,6 +62,7 @@ import {
   restoreBackupSnapshot,
   getSystemBackupRestoreReview,
   restoreReviewedSystemBackup,
+  getReviewedRestoreOutcome,
   restoreSystemBackupFromKey,
   runSystemBackup,
 } from "./system-backup.service";
@@ -122,6 +123,30 @@ describe.skipIf(!testUrl)("system backup disposable PostgreSQL", () => {
   afterAll(async () => {
     vi.unstubAllEnvs();
     await pool.end();
+  });
+
+  it("reconciles only matched receipts under the restore lock and never changes data", async () => {
+    const {admitRestoreReceipt,completeRestoreReceipt}=await import("./restore-receipt");
+    const input={...reviewedIdentity,fingerprint:"a".repeat(64),expiresAt:new Date(Date.now()+60_000).toISOString()};
+    expect(await getReviewedRestoreOutcome(input)).toBe("unknown");
+    const c=await pool.connect();
+    try { await admitRestoreReceipt(c,input); } finally {c.release();}
+    expect(await getReviewedRestoreOutcome(input)).toBe("unknown");
+    const clock=vi.spyOn(Date,"now").mockReturnValue(Date.parse(input.expiresAt)+1);
+    try {
+      expect(await getReviewedRestoreOutcome(input)).toBe("not_applied");
+      expect(await getReviewedRestoreOutcome({...input,actorId:"another-owner"})).toBe("unknown");
+      const lock=await pool.connect();
+      try {
+        await lock.query("SELECT pg_advisory_lock(880120441)");
+        await expect(getReviewedRestoreOutcome(input)).rejects.toThrow("already running");
+      } finally {await lock.query("SELECT pg_advisory_unlock(880120441)");lock.release();}
+    } finally {clock.mockRestore();}
+    const complete=await pool.connect();
+    try {await complete.query("BEGIN");await completeRestoreReceipt(complete,input);await complete.query("COMMIT");} finally {complete.release();}
+    expect(await getReviewedRestoreOutcome(input)).toBe("completed");
+    expect((await pool.query("SELECT * FROM a_parents")).rows).toEqual([{id:1}]);
+    await assertLockAvailable();
   });
 
   it("restores an exact reviewed archive against PostgreSQL", async () => {

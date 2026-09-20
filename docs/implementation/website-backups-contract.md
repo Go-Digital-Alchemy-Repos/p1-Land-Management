@@ -246,3 +246,26 @@ restored content while retaining the started admission. Core typechecking passed
 the test database container was removed. No production migration/restore occurred.
 Pending: authenticated receipt-status/reconciliation routes, Dashboard resolution,
 full composed HTTP/UI tests, independent review and release acceptance.
+
+### Core execute/outcome bridge candidate
+
+Attested-Owner Core bridge routes now accept strict operation ID, fingerprint and
+expiry fields: `POST /restore-execute` additionally requires the archive key;
+`POST /restore-outcome` only inspects the receipt. Both derive the canonical actor
+from the federation grant and reject injected actor fields. Responses contain only
+operation ID and outcome. Neither path is in the Dashboard generic proxy registry.
+
+Outcome verification acquires the existing backup advisory lock. A matching
+completed receipt confirms commit; a matching started receipt whose deadline has
+passed confirms no committed restore under the healthy receipt-store assumption.
+An absent/mismatched receipt or still-valid started admission returns `unknown`.
+Lock contention refuses reconciliation. The operation is never executed from an
+outcome check. Dashboard must validate correlation and record reconciliation in
+its independent ledger; unknown must not clear its unresolved-operation block.
+
+Validation:38 focused service/route tests and15 disposable PostgreSQL tests pass,
+including actor injection rejection, non-replaying outcome requests, absent and
+wrong-actor receipts, expired started receipts, completion, lock contention and
+unchanged public rows during reconciliation. Core typecheck passed. Production
+remains unchanged. Dashboard execution/reconciliation orchestration, recovery for
+missing receipts, full UI/HTTP acceptance and independent review remain pending.

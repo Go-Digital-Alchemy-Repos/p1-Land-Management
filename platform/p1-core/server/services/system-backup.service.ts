@@ -1,4 +1,4 @@
-import { admitRestoreReceipt, completeRestoreReceipt } from "./restore-receipt";
+import { admitRestoreReceipt, completeRestoreReceipt, readRestoreReceipt, restoreReceiptIdentity, type RestoreReceiptIdentity } from "./restore-receipt";
 import { validateBackupRestoreReview } from "./backup-restore-review";
 import { createHash } from "node:crypto";
 import { isDeepStrictEqual } from "node:util";
@@ -708,6 +708,17 @@ export async function restoreReviewedSystemBackup(key: string, expectedFingerpri
     await admitRestoreReceipt(client, receipt);
     await restoreBackupSnapshotWithClient(client, snapshot, {}, assertFresh, () => completeRestoreReceipt(client, receipt));
     return snapshot.manifest;
+  });
+}
+
+/** Never execute from reconciliation. Missing evidence remains explicitly unknown. */
+export async function getReviewedRestoreOutcome(input: RestoreReceiptIdentity) {
+  const receipt = restoreReceiptIdentity.parse(input);
+  return withBackupLock(async (client) => {
+    const state = await readRestoreReceipt(client, receipt);
+    if (state === "completed") return "completed" as const;
+    if (state === "started" && Date.parse(receipt.expiresAt) <= Date.now()) return "not_applied" as const;
+    return "unknown" as const;
   });
 }
 

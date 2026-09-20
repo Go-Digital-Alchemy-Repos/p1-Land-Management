@@ -6,12 +6,16 @@ const state = vi.hoisted(() => ({
   status: vi.fn(),
   run: vi.fn(),
   review: vi.fn(),
+  execute: vi.fn(),
+  outcome: vi.fn(),
   log: vi.fn(),
 }));
 vi.mock("../services/system-backup.service", () => ({
   getBackupStatus: state.status,
   runSystemBackup: state.run,
   getSystemBackupRestoreReview: state.review,
+  restoreReviewedSystemBackup:state.execute,
+  getReviewedRestoreOutcome:state.outcome,
 }));
 vi.mock("../storage", () => ({ storage: { activity: { log: state.log } } }));
 vi.mock("../utils/logger", () => ({ logger: { app: { warn: vi.fn(), error: vi.fn() } } }));
@@ -36,8 +40,10 @@ const manifest = {
 let server: Server, base: string;
 beforeEach(async () => {
   vi.clearAllMocks();
-  state.identity = { active: true, role: "owner", ownerAttested: true };
+  state.identity = { active: true, role: "owner", ownerAttested: true, subject:"canonical-owner" };
   state.log.mockResolvedValue(undefined);
+  state.execute.mockResolvedValue(manifest);
+  state.outcome.mockResolvedValue("unknown");
   state.run.mockResolvedValue(manifest);
   state.review.mockResolvedValue({ manifest, fingerprint: "a".repeat(64) });
   state.status.mockResolvedValue({
@@ -88,9 +94,13 @@ it("gates all operations before service or audit access", async () => {
     expect((await req("/status")).status).toBe(403);
     expect((await req("/run", "POST")).status).toBe(403);
     expect((await req("/restore-review", "POST", { key: manifest.key })).status).toBe(403);
+    expect((await req("/restore-execute", "POST", {})).status).toBe(403);
+    expect((await req("/restore-outcome", "POST", {})).status).toBe(403);
   }
   expect(state.status).not.toHaveBeenCalled();
   expect(state.review).not.toHaveBeenCalled();
+  expect(state.execute).not.toHaveBeenCalled();
+  expect(state.outcome).not.toHaveBeenCalled();
   expect(state.run).not.toHaveBeenCalled();
   expect(state.log).not.toHaveBeenCalled();
 });
@@ -195,4 +205,25 @@ it("sanitizes archive admission failures and malformed provider fingerprints", a
   expect(await res.text()).not.toContain("private");
   state.review.mockResolvedValueOnce({ manifest, fingerprint: "invalid" });
   expect((await req("/restore-review", "POST", { key: manifest.key })).status).toBe(503);
+});
+
+const receiptBody={operationId:"11111111-1111-4111-8111-111111111111",fingerprint:"a".repeat(64),expiresAt:"2026-09-20T12:00:00Z"};
+it("derives restore actor from the grant and returns only correlated outcome",async()=>{
+  const response=await req("/restore-execute","POST",{...receiptBody,key:manifest.key});
+  expect(response.status).toBe(200);
+  expect(await response.json()).toEqual({operationId:receiptBody.operationId,outcome:"completed"});
+  expect(state.execute).toHaveBeenCalledExactlyOnceWith(manifest.key,receiptBody.fingerprint,receiptBody.expiresAt,{operationId:receiptBody.operationId,actorId:"canonical-owner"});
+  expect(state.outcome).not.toHaveBeenCalled();
+});
+it("checks outcomes without replaying and never accepts a supplied actor",async()=>{
+  for(const outcome of ["unknown","not_applied","completed"]){
+    state.outcome.mockResolvedValueOnce(outcome);
+    const response=await req("/restore-outcome","POST",receiptBody);
+    expect(await response.json()).toEqual({operationId:receiptBody.operationId,outcome});
+  }
+  expect(state.outcome).toHaveBeenCalledWith({...receiptBody,actorId:"canonical-owner"});
+  expect(state.execute).not.toHaveBeenCalled();
+  for(const path of ["/restore-execute","/restore-outcome"]){
+    expect((await req(path,"POST",{...receiptBody,...(path.endsWith("execute")?{key:manifest.key}:{}),actorId:"injected"})).status).toBe(400);
+  }
 });
