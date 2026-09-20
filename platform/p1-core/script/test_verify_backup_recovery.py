@@ -166,6 +166,37 @@ class RecoveryProvenanceTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             recovery.safe_failure_diagnostic({**value, 'sqlState': 'SYNTHETIC_SECRET'})
 
+    def test_temporal_comparison_preserves_microseconds_and_legacy_expected_values(self):
+        helper=recovery.CHILD.split("// Match captureTable's query-local raw temporal parser. Never round actual data.",1)[1].split("try {\n  const snapshot=JSON.parse",1)[0]
+        script=r'''
+        import assert from 'node:assert/strict';
+        const check=condition=>assert.ok(condition);
+        const pgTypes={getTypeParser:(oid,format)=>value=>({oid,format,value})};
+        '''+helper+r'''
+        for(const oid of [1082,1114,1184])assert.equal(recoveryTypeParser(oid)('2026-09-19 10:11:12.123456'),'2026-09-19 10:11:12.123456');
+        assert.deepEqual(recoveryTypeParser(25)('unchanged'),{oid:25,format:'text',value:'unchanged'});
+        assert.equal(recoveryTypeParser(1114,'binary')('bytes').format,'binary');
+        const calls=[];
+        const query=async(text,values)=>{calls.push({text,values});return {rows:[{value:values[0]==='2026-09-19T14:11:12.123Z'?'2026-09-19 14:11:12.123+00':values[0]}]};};
+        const fields=[{name:'instant',dataTypeID:1184},{name:'local',dataTypeID:1114},{name:'label',dataTypeID:25}];
+        const raw={instant:'2026-09-19 14:11:12.123456+00',local:'2026-09-19 10:11:12.123456',label:'SYNTHETIC_PRIVATE'};
+        const expected=await expectedTemporalRow(raw,fields,query);
+        assert.deepEqual(expected,raw);
+        assert.notDeepEqual(expected,{...raw,local:'2026-09-19 10:11:12.123457'});
+        const legacy=await expectedTemporalRow({...raw,instant:'2026-09-19T14:11:12.123Z'},fields,query);
+        assert.equal(legacy.instant,'2026-09-19 14:11:12.123+00');
+        assert.notEqual(legacy.instant,raw.instant);
+        await expectedTemporalRow(raw,fields,query);assert.equal(calls.length,3);
+        assert.deepEqual(calls.map(c=>c.text),['SELECT $1::timestamptz::text AS value','SELECT $1::timestamp::text AS value','SELECT $1::timestamptz::text AS value']);
+        assert.ok(calls.every(c=>!c.text.includes('2026')));
+        assert.equal((await expectedTemporalRow({instant:null},[fields[0]],query)).instant,null);
+        console.log('temporal-comparison-passed');
+        '''
+        result=recovery.subprocess.run(['node','--input-type=module','-e',script],capture_output=True,text=True)
+        self.assertEqual(result.returncode,0,result.stderr)
+        self.assertEqual(result.stdout.strip(),'temporal-comparison-passed')
+        self.assertIn('types:{getTypeParser:recoveryTypeParser}',recovery.CHILD)
+
     def test_failure_diagnostic_never_exports_error_message_or_details(self):
         # Execute only the current catch body with synthetic errors, not imports,
         # the restore child, Docker, a database or any archived data.

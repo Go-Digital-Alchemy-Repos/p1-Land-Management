@@ -38,9 +38,62 @@ def safe_env(stack, password, database, ca):
                 TRUSTED_ORIGINS='https://admin.rehearsal.invalid,https://public.rehearsal.invalid',
                 P1_FORM_NOTIFICATION_RECIPIENTS='fixture-one@example.invalid,fixture-two@example.invalid')
 
+def archived_blog_contract(archived):
+    """Select immutable published pointers, never a later private draft."""
+    names=('blog_publication_state','blog_post_revisions','blog_publication_routes','blog_static_import_receipts')
+    tables=archived.get('tables',[])
+    found={name:[t for t in tables if t.get('name')==name] for name in names}
+    if not any(found.values()):return None  # Historical pre-Blog archive remains partial.
+    if any(len(found[name])!=1 or not isinstance(found[name][0].get('rows'),list) for name in names):
+        raise ValueError('incomplete-blog-archive')
+    rows={name:found[name][0]['rows'] for name in names}
+    states={row['post_id']:row for row in rows[names[0]]}
+    revisions={row['id']:row for row in rows[names[1]]}
+    posts=[]
+    for route in rows[names[2]]:
+        if route['state']!='published':continue
+        state=states.get(route['post_id']);revision=revisions.get(route['revision_id'])
+        if not state or not revision or state['visibility']!='published' or state['published_revision_id']!=route['revision_id'] or revision['post_id']!=route['post_id'] or revision['snapshot']['slug']!=route['slug']:
+            raise ValueError('inconsistent-blog-pointers')
+        posts.append({'id':route['post_id'],'revisionId':route['revision_id'],'generation':route['generation']})
+    if {row['post_id'] for row in rows[names[0]] if row['visibility']=='published'}!={post['id'] for post in posts}:
+        raise ValueError('missing-published-blog-route')
+    ownership=[{'slug':row['source_slug'],'postId':row['post_id']} for row in rows[names[3]]]
+    if len({p['id'] for p in posts})!=len(posts) or len({r['slug'] for r in ownership})!=len(ownership):
+        raise ValueError('duplicate-blog-identity')
+    return {'posts':sorted(posts,key=lambda p:p['id']),'staticRoutes':sorted(ownership,key=lambda r:r['slug'])}
+
+# Shared digest format includes every public snapshot field, not only title/count.
+BLOG_DIGEST = r'''
+const digest=value=>crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex');
+function blogEvidence(body) {
+ if(body.schemaVersion!==2||body.stackId!==process.env.STACK_ID||!/^[a-f0-9]{64}$/.test(body.revision)||!Array.isArray(body.posts)||!Array.isArray(body.staticRoutes))throw Error('blog-schema');
+ if(body.revision!==digest({posts:body.posts,staticRoutes:body.staticRoutes}))throw Error('blog-revision');
+ return {revision:body.revision,posts:body.posts.map(post=>({id:post.id,revisionId:post.revisionId,generation:post.generation,hash:digest(post)})).sort((a,b)=>a.id.localeCompare(b.id)),staticRoutes:[...body.staticRoutes].sort((a,b)=>a.slug.localeCompare(b.slug))};
+}
+'''
+BLOG_BASELINE = "import crypto from 'node:crypto';\n"+BLOG_DIGEST+r'''
+let pool,blogStage='database-import';
+try {
+ const load=path=>import(new URL(path,'file:///runtime/').href);
+ const database=await load('server/db.ts');pool=database.pool;
+ blogStage='publication-import';
+ const {listPublishedBlogSnapshots}=await load('server/services/blog-publication.service.ts');
+ blogStage='media-import';
+ const {resolvePublicBlogMedia}=await load('server/services/public-blog-media.service.ts');
+ blogStage='ownership-import';
+ const {listStaticBlogRoutes}=await load('server/services/blog-static-import-receipts.service.ts');
+ blogStage='projection-import';
+ const {projectPublicBlog}=await load('server/services/public-blog-projection.service.ts');
+ blogStage='projection-read';
+ const projection=await database.db.transaction(async tx=>{blogStage='published-read';const rows=await listPublishedBlogSnapshots(tx);blogStage='media-resolution';const media=await resolvePublicBlogMedia(rows,tx);blogStage='ownership-read';const ownership=await listStaticBlogRoutes(tx);blogStage='public-projection';return projectPublicBlog(media,ownership);},{isolationLevel:'repeatable read',accessMode:'read only'});
+ blogStage='digest';
+ process.stdout.write('BLOG_BASELINE='+JSON.stringify(blogEvidence(projection))+'\n');
+} catch {process.stdout.write('BLOG_BASELINE_FAILURE='+blogStage+'\n');process.exitCode=1;} finally {await pool?.end();}
+'''
+
 # Only status, revision and content digests leave this process; never response bodies.
-PROBE = r'''
-const crypto=require('node:crypto');
+PROBE = "const crypto=require('node:crypto');\n"+BLOG_DIGEST+r'''
 (async()=>{
  const base='http://'+process.env.TARGET+':5000';
  const request=(path,headers={})=>fetch(base+path,{headers,redirect:'error',signal:AbortSignal.timeout(5000)});
@@ -57,8 +110,16 @@ const crypto=require('node:crypto');
    const conditional=await request(path,{'if-none-match':etag});if(conditional.status!==304)throw Error('conditional');
    contentEvidence={contentRecoveryVerified:true,contentAbsent404:false,contentRevision:body.revision,contentHash:crypto.createHash('sha256').update(JSON.stringify(body.content)).digest('hex'),conditional304:true};
  }
+ let blog={blogRecoveryVerified:false};
+ if(process.env.EXPECT_BLOG) {
+   const expected=JSON.parse(process.env.EXPECT_BLOG);
+   const response=await request('/api/website/blog-publication');if(response.status!==200)throw Error('blog-status');
+   const actual=blogEvidence(await response.json());
+   if(JSON.stringify(actual)!==JSON.stringify(expected))throw Error('blog-archive-drift');
+   blog={blogRecoveryVerified:actual.posts.length>0,blogRevision:actual.revision,blogPostCount:actual.posts.length,blogOwnershipCount:actual.staticRoutes.length,blogSnapshotHashes:actual.posts.map(post=>post.hash),blogOwnershipHash:digest(actual.staticRoutes)};
+ }
  const identity=await request('/api/p1/website-identity');if(identity.status!==200)throw Error('identity');const projected=await identity.json();if(projected.schemaVersion!==1||projected.stackId!==process.env.STACK_ID||typeof projected.version!=='string'||!/^[a-f0-9]{64}$/.test(projected.version))throw Error('identity-schema');for(const key of ['companyName','companyAddress','phoneDisplay','phoneHref','logoUrl','faviconUrl','googleBusinessUrl']){if(projected[key]!==null&&(typeof projected[key]!=='string'||projected[key].length>4096))throw Error('identity-field');}
- process.stdout.write(JSON.stringify({health:true,ready:true,authRejected:true,setupAvailable:true,needsSetup:state.needsSetup,...contentEvidence,identityHash:crypto.createHash('sha256').update(JSON.stringify(projected)).digest('hex')}));
+ process.stdout.write(JSON.stringify({health:true,ready:true,authRejected:true,setupAvailable:true,needsSetup:state.needsSetup,...contentEvidence,...blog,identityHash:crypto.createHash('sha256').update(JSON.stringify(projected)).digest('hex')}));
 })().catch(()=>{process.exitCode=1});
 '''
 
@@ -129,9 +190,10 @@ def main(args):
                 archived=json.loads(content_file.read(recovery.MAX_SNAPSHOT_BYTES+1))
             content_tables=[table for table in archived.get('tables',[]) if table.get('name')=='client_site_content']
             empty_content=len(content_tables)==1 and content_tables[0].get('rows')==[]
+            expected_blog_contract=archived_blog_contract(archived)
             del archived
             report['contentRecoveryVerified']=False
-            if empty_content:report['contentRecoveryGap']='Archive client_site_content table is empty; only absence404 can be tested. Populated content recovery remains pending.'
+            if empty_content:report['contentRecoveryGap']='Archive client_site_content is empty; its legacy endpoint is tested for absence404 only. Blog publication recovery is reported separately.'
             report['backupSha256']=hashlib.sha256(archive.read_bytes()).hexdigest()
             stage='tls-preparation'
             certs=directory/'certs';certs.mkdir(mode=0o755)
@@ -165,6 +227,22 @@ def main(args):
             if len(markers)!=1:raise RuntimeError('restore-unconfirmed')
             evidence=json.loads(markers[0])
             if not all(evidence.get(key) is True for key in ('restoredRowsVerified','sequencesVerified','postRestoreMigrationsVerified')):raise RuntimeError('restore-unverified')
+            expected_blog=None
+            if expected_blog_contract is not None:
+                stage='baseline-blog-projection'
+                name=prefix+'-blog-baseline'
+                create_container(name,args.recovery_image,dict(base_environment,NODE_ENV='test',STACK_ID=args.expected_stack_id),('--read-only','--tmpfs','/tmp:rw,nosuid,size=64m'),('node','--import','tsx','--input-type=module','-e',BLOG_BASELINE))
+                projected=docker('start','--attach',name,timeout=60,check=False)
+                if projected.returncode:
+                    allowed={'database-import','publication-import','media-import','ownership-import','projection-import','projection-read','published-read','media-resolution','ownership-read','public-projection','digest'}
+                    failures=[line.removeprefix('BLOG_BASELINE_FAILURE=') for line in projected.stdout.splitlines() if line.startswith('BLOG_BASELINE_FAILURE=')]
+                    if len(failures)==1 and failures[0] in allowed:report['blogFailureStage']=failures[0]
+                    raise RuntimeError('baseline-blog-child-failed')
+                markers=[line.removeprefix('BLOG_BASELINE=') for line in projected.stdout.splitlines() if line.startswith('BLOG_BASELINE=')]
+                if len(markers)!=1 or len(markers[0])>65536:raise RuntimeError('baseline-blog-unconfirmed')
+                expected_blog=json.loads(markers[0])
+                actual_contract={'posts':[{key:post[key] for key in ('id','revisionId','generation')} for post in expected_blog['posts']],'staticRoutes':expected_blog['staticRoutes']}
+                if actual_contract!=expected_blog_contract:raise RuntimeError('baseline-blog-archive-mismatch')
             baseline=fingerprint('baseline');report['baselineTables']=len(baseline)
             report['baselineFingerprint']=hashlib.sha256(json.dumps(baseline,sort_keys=True).encode()).hexdigest()
             report['baselineMigrationTables']={key:value['rows'] for key,value in baseline.items() if 'migration' in key}
@@ -180,7 +258,7 @@ def main(args):
                 probe=None
                 for attempt in range(30):
                     name=prefix+'-'+label+'-probe-'+str(attempt)
-                    create_container(name,args.recovery_image,{'TARGET':app,'STACK_ID':args.expected_stack_id,'EXPECT_EMPTY_CONTENT':'true' if empty_content else 'false','CONTENT_ROUTE':args.content_route,'CONTENT_COMPONENT':args.content_component},('--read-only',),('node','-e',PROBE))
+                    create_container(name,args.recovery_image,{'TARGET':app,'STACK_ID':args.expected_stack_id,'EXPECT_EMPTY_CONTENT':'true' if empty_content else 'false','CONTENT_ROUTE':args.content_route,'CONTENT_COMPONENT':args.content_component,**({'EXPECT_BLOG':json.dumps(expected_blog,separators=(',',':'))} if expected_blog is not None else {})},('--read-only',),('node','-e',PROBE))
                     response=docker('start','--attach',name,timeout=40,check=False)
                     if response.returncode==0:
                         probe=json.loads(response.stdout);break
@@ -202,7 +280,10 @@ def main(args):
             report['baselineUnchanged']=fingerprint('baseline')==baseline
             if not report['baselineUnchanged']:raise RuntimeError('baseline-mutated')
             report['contentRecoveryVerified']=not empty_content
-            report['status']='passed-partial' if empty_content else 'passed'
+            report['blogRecoveryVerified']=expected_blog is not None and bool(expected_blog['posts']) and all(report[label]['probes'].get('blogRecoveryVerified') is True for label in ('current','previous'))
+            report['blogPublicationParity']=report['blogRecoveryVerified'] and all(report['current']['probes'].get(key)==report['previous']['probes'].get(key) for key in ('blogRevision','blogSnapshotHashes','blogOwnershipHash'))
+            if expected_blog is not None and expected_blog['posts'] and not report['blogPublicationParity']:raise RuntimeError('blog-recovery-unverified')
+            report['status']='passed' if not empty_content or report['blogPublicationParity'] else 'passed-partial'
     except Exception:
         report.update(failedStage=stage,error='Rehearsal failed; raw logs and response bodies withheld.')
     finally:

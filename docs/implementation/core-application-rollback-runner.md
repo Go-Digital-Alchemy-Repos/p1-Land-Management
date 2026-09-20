@@ -61,3 +61,96 @@ A fresh genuine run produced `application-rollback-evidence-04.json` with correc
 This run additionally verified why baseline totals exceed archive totals: the archive's52 tables/519 rows exclude the migration ledger; candidate initialization adds `drizzle.__drizzle_migrations` with3 rows, producing53 tables/522 rows. No unexplained business-row increase occurred. Private SQL comparisons of per-column hashes found only `cms_forms.updated_at` changed during each app boot; no substantive form column changed. No column values or raw row content were exported. Baseline remained unchanged and cleanup passed again.
 
 Parent re-ran seven offline tests successfully and verified evidence04 mode0600 and SHA256 `1fc40069e69f2941d4b7ed60ea8b03b209c23117145e168bc98e8125a9b0422c`.
+
+## Populated Blog v2 acceptance extension
+
+The runner now checks `/api/website/blog-publication` independently of the legacy
+`client_site_content` endpoint. It reads the archive's publication states, routes,
+immutable revisions and permanent import receipts before starting fixtures. The
+expected post identities use **published** revision pointers, never later private
+drafts. Missing tables, duplicate identities or inconsistent pointers reject.
+
+After verified restoration, a separate read-only baseline transaction runs the
+existing public Blog media resolver and projection in the prepared recovery image.
+This performs database reads, not object downloads. Its post identities and permanent
+ownership must match the archive. Only bounded public-projection digests/identities
+leave that child; no raw post content or receipt provenance is printed. Candidate
+and prior HTTP responses must have schemaVersion2, the exact P1 stack, a valid
+self-consistent collection revision, identical permanent ownership, and an exact
+full-post digest for every archived published article. This includes body, aside,
+SEO, cover metadata and revision identity, not merely counts or titles.
+
+`blogRecoveryVerified` and `blogPublicationParity` report this evidence separately.
+An empty legacy content table still yields `contentRecoveryVerified:false` and
+absence404 checks. A populated, verified Blog can produce `status:passed` for this
+bounded application rehearsal; that does not establish legacy populated-content,
+media-byte delivery, provider recovery, authenticated workflows or retirement.
+Historical archives without Blog tables retain partial behavior. Empty Blog
+collections alone cannot close the populated recovery gate.
+
+For the September19 post-import candidate, prepare already-local images from exact
+current source `9978d9dba6d2f1db0297bbff291c33fdfff88aa4` and prior source
+`b3dca73283edfa75c85470f8146b26631aa36cb5`. Both include permanent ownership and
+Blog v2 support. Do not use the earlier pre-ownership rollback images; their inability
+to satisfy the new contract is a failure, not a reason to omit the check. Image IDs
+must be resolved from those separately built images, not guessed from source SHAs.
+A source rebuild still does not establish availability of the historical Railway image.
+
+```sh
+python3 platform/p1-core/script/rehearse-application-rollback.py \
+  --current-image "$P1_CURRENT_IMAGE_ID" \
+  --current-revision 9978d9dba6d2f1db0297bbff291c33fdfff88aa4 \
+  --previous-image "$P1_PREVIOUS_IMAGE_ID" \
+  --previous-revision b3dca73283edfa75c85470f8146b26631aa36cb5 \
+  --recovery-image "$P1_CURRENT_RECOVERY_IMAGE_ID" \
+  --postgres-image sha256:6c538e7206ea40ff740ef27883529390a690b6ead6ba96b44c67a9f7c638e8fd \
+  --backup /private/tmp/p1-post-blog-backup-4toox0yp/snapshot.json.gz \
+  --expected-stack-id p1-land-management \
+  --content-route home --content-component hero \
+  --output /private/path/populated-blog-application-recovery.json
+```
+
+Preparation prerequisite: rebuild the recovery image with the current restore, Blog
+and verifier sources. The verifier now uses captureTable-equivalent query-local raw
+PostgreSQL temporal parsers. It casts archived expected date/timestamp values through
+PostgreSQL (parameterized and cached) for legacy ISO compatibility; actual values
+are never rounded. Twelve offline recovery tests pass, including six-digit precision,
+a one-microsecond mismatch, legacy ISO expectations and unchanged non-temporal
+parsers. An image built before this correction still contains the old comparison.
+Do not remove identity/receipt metadata to force a pass.
+
+Nine offline test methods pass, including Node-executed five-post probes rejecting
+changed fifth-post content, missing ownership, a draft revision, an empty collection,
+wrong schema and503. Mocked lifecycle checks cover populated Blog success while the
+legacy content endpoint remains empty, alongside prior isolation/cleanup/failure
+regressions. No genuine application rehearsal was executed for this extension.
+
+### Genuine populated application rehearsal — September19
+
+`/private/tmp/p1-blog-app-images-aar7h839/populated-blog-application-recovery-03.json`
+(mode0600) records a successful isolated run using the exact source rebuilds above.
+Current image `sha256:f3e8e5e2e422b35b81c6461f333e4cdae3c2bcd4c717c2a92a0c028ac83ae72c`
+and previous image `sha256:beb46653b9003c5ada615d93184efce5b7a0f92dd2b4f99caffb7a36cce68f45`
+both passed health/readiness, unauthenticated rejection, setup-status and identity
+checks, plus exact baseline comparisons for five full public Blog snapshots and
+five permanent ownership records. `blogRecoveryVerified` and
+`blogPublicationParity` are true. Legacy content remains absent404 and separately
+reports `contentRecoveryVerified:false`/`publishedContentParity:false`.
+
+Baseline58 tables/652 rows equal the57-table/645-row archive plus the migration
+ledger table with seven rows. Both app boots retained652 rows and identical
+migration fingerprints. Only `cms_forms.updated_at` changed; the untouched
+baseline remained unchanged. Containers, database volumes and internal network
+cleanup all passed. No provider request or production mutation was made. This is
+source-image rollback evidence, not historical Railway image availability or
+media-byte delivery through the application.
+
+The first two attempts failed before the baseline Blog script could run: `tsx`
+preload needs a writable `/tmp` cache on the read-only recovery image. A synthetic
+`--network none` reproduction confirmed the missing directory failure. The Blog
+baseline child now receives the same bounded64MiB temporary filesystem as the
+restore child; root filesystem, mounts and network restrictions remain intact.
+Attempts01/02 are retained and their cleanup passed. Fixed allowlisted stage names
+are the only baseline failure diagnostic exported; raw exceptions are withheld.
+Ten offline rollback tests now pass, including temporary-filesystem and diagnostic
+privacy regressions. No application image rebuild was required for this fix.

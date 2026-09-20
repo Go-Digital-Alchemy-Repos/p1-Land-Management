@@ -84,6 +84,7 @@ CHILD = r'''
 import fs from 'node:fs';
 import {gunzipSync} from 'node:zlib';
 import {pathToFileURL} from 'node:url';
+import {types as pgTypes} from 'pg';
 const load = path => import(pathToFileURL(process.cwd()+'/'+path).href);
 let pool;
 let childStage="snapshot-validation";
@@ -95,6 +96,27 @@ const canonical = value => {
   if (value && typeof value === 'object') return Object.fromEntries(Object.keys(value).sort().map(key => [key,canonical(value[key])]));
   return value;
 };
+// Match captureTable's query-local raw temporal parser. Never round actual data.
+const recoveryTypeParser=(oid,format='text')=>format==='text'&&[1082,1114,1184].includes(oid)?value=>value:pgTypes.getTypeParser(oid,format);
+const expectedTemporalCache=new Map();
+async function expectedTemporalRow(row,fields,query) {
+  const result={...row};
+  for(const field of fields) {
+    const type=({1082:'date',1114:'timestamp',1184:'timestamptz'})[field.dataTypeID];
+    const value=row[field.name];
+    if(!type||value===null)continue;
+    check(typeof value==='string');
+    const key=JSON.stringify([type,value]);
+    if(!expectedTemporalCache.has(key)) {
+      // Casting archived expectations handles historical ISO serialization and
+      // timezone spelling without truncating either side's fractional precision.
+      const converted=await query('SELECT $1::'+type+'::text AS value',[value]);
+      expectedTemporalCache.set(key,converted.rows[0].value);
+    }
+    result[field.name]=expectedTemporalCache.get(key);
+  }
+  return result;
+}
 try {
   const snapshot=JSON.parse(gunzipSync(fs.readFileSync(process.env.RECOVERY_INPUT), {maxOutputLength: 1024*1024*1024}).toString('utf8'));
   check(snapshot?.manifest?.schemaVersion===1);
@@ -142,8 +164,10 @@ try {
       check(count.rows[0].count===String(table.rowCount));
       if(!table.rows.length) continue;
       const columns=Object.keys(table.rows[0]);
-      const result=await pool.query('SELECT '+columns.map(quote).join(',')+' FROM public.'+quote(table.name));
-      const expected=table.rows.map(row=>JSON.stringify(canonical(row))).sort();
+      const result=await pool.query({text:'SELECT '+columns.map(quote).join(',')+' FROM public.'+quote(table.name),types:{getTypeParser:recoveryTypeParser}});
+      const expectedRows=[];
+      for(const row of table.rows)expectedRows.push(await expectedTemporalRow(row,result.fields,(text,values)=>pool.query(text,values)));
+      const expected=expectedRows.map(row=>JSON.stringify(canonical(row))).sort();
       const actual=result.rows.map(row=>JSON.stringify(canonical(row))).sort();
       check(JSON.stringify(actual)===JSON.stringify(expected));
     }

@@ -57,7 +57,7 @@ class RollbackTests(unittest.TestCase):
                 if command[2] not in containers:code=1
                 else:out=json.dumps([{'NetworkSettings':{'Networks':{network:{}}},'HostConfig':{'PortBindings':{}},'Mounts':[]}])
             elif command[:3]==['docker','start','--attach']:
-                out=('RECOVERY_RESULT={"restoredRowsVerified":false}' if fault=='restore' else 'RECOVERY_RESULT={"restoredRowsVerified":true,"sequencesVerified":true,"postRestoreMigrationsVerified":true}') if command[-1].endswith('-restore') else json.dumps(probe)
+                out=('BLOG_BASELINE='+json.dumps(blog_expected)) if command[-1].endswith('-blog-baseline') else ('RECOVERY_RESULT={"restoredRowsVerified":false}' if fault=='restore' else 'RECOVERY_RESULT={"restoredRowsVerified":true,"sequencesVerified":true,"postRestoreMigrationsVerified":true}') if command[-1].endswith('-restore') else json.dumps(probe)
             elif command[:2]==['docker','exec'] and 'psql' in command:
                 if 'json_agg' in command[-1]:out='[]'
             elif command[:2]==['docker','rm']:containers.pop(command[-1],None)
@@ -91,6 +91,23 @@ class RollbackTests(unittest.TestCase):
         self.assertFalse(partial['contentRecoveryVerified'])
         self.assertFalse(partial['publishedContentParity'])
         self.assertTrue(partial['contentAbsenceParity'])
+        blog_expected={'revision':'e'*64,'posts':[{'id':'post1','revisionId':'revision1','generation':1,'hash':'f'*64}],'staticRoutes':[{'slug':'article','postId':'post1'}]}
+        blog_tables=[{'name':'client_site_content','rows':[]},
+            {'name':'blog_publication_state','rows':[{'post_id':'post1','visibility':'published','published_revision_id':'revision1'}]},
+            {'name':'blog_post_revisions','rows':[{'id':'revision1','post_id':'post1','snapshot':{'slug':'article'}}]},
+            {'name':'blog_publication_routes','rows':[{'post_id':'post1','state':'published','revision_id':'revision1','slug':'article','generation':1}]},
+            {'name':'blog_static_import_receipts','rows':[{'source_slug':'article','post_id':'post1'}]}]
+        self.args.backup.write_bytes(gzip.compress(json.dumps({'manifest':{'schemaVersion':1,'clientStackId':'p1-land-management'},'tables':blog_tables}).encode()))
+        probe.update(blogRecoveryVerified=True,blogRevision='e'*64,blogSnapshotHashes=['f'*64],blogOwnershipHash='a'*64)
+        with patch.object(runner.subprocess,'run',side_effect=fake),patch.object(runner.time,'sleep'),patch('builtins.print'),patch.object(runner.signal,'signal'):
+            self.assertEqual(runner.main(self.args),0)
+        populated=json.loads(self.args.output.read_text())
+        self.assertEqual(populated['status'],'passed');self.assertTrue(populated['blogPublicationParity'])
+        self.assertTrue(populated['blogRecoveryVerified']);self.assertFalse(populated['contentRecoveryVerified'])
+        self.assertTrue(any('EXPECT_BLOG=' in arg for c in calls for arg in c))
+        baseline_commands=[c for c in calls if c[:2]==['docker','create'] and c[c.index('--name')+1].endswith('-blog-baseline')]
+        self.assertTrue(baseline_commands)
+        self.assertTrue(all('--read-only' in c and '--tmpfs' in c and '/tmp:rw,nosuid,size=64m' in c for c in baseline_commands))
         for fault in ('cleanup','stop','restore'):
             calls.clear();containers.clear()
             with self.subTest(fault=fault),patch.object(runner.subprocess,'run',side_effect=fake),patch.object(runner.time,'sleep'),patch('builtins.print'),patch.object(runner.signal,'signal'):
@@ -126,6 +143,62 @@ class RollbackTests(unittest.TestCase):
                 self.assertEqual(result.returncode,expected)
                 self.assertNotIn('private fixture',result.stdout)
                 if expected==0:self.assertEqual(json.loads(result.stdout)['contentRecoveryVerified'],empty!='true')
+
+    def test_archive_blog_selects_published_revision_and_requires_complete_tables(self):
+        archive={'tables':[
+            {'name':'blog_publication_state','rows':[{'post_id':'post1','visibility':'published','published_revision_id':'published','draft_revision_id':'private-draft'}]},
+            {'name':'blog_post_revisions','rows':[{'id':'published','post_id':'post1','snapshot':{'slug':'article'}},{'id':'private-draft','post_id':'post1','snapshot':{'slug':'private-draft'}}]},
+            {'name':'blog_publication_routes','rows':[{'post_id':'post1','state':'published','revision_id':'published','slug':'article','generation':2}]},
+            {'name':'blog_static_import_receipts','rows':[{'source_slug':'article','post_id':'post1'}]}]}
+        expected=runner.archived_blog_contract(archive)
+        self.assertEqual(expected['posts'],[{'id':'post1','revisionId':'published','generation':2}])
+        self.assertNotIn('private-draft',json.dumps(expected))
+        with self.assertRaises(ValueError):runner.archived_blog_contract({'tables':archive['tables'][:-1]})
+        archive['tables'][2]['rows'][0]['revision_id']='private-draft'
+        with self.assertRaises(ValueError):runner.archived_blog_contract(archive)
+        self.assertIsNone(runner.archived_blog_contract({'tables':[]}))
+
+    def test_blog_probe_compares_all_five_snapshots_and_permanent_ownership(self):
+        setup=r'''
+        process.env.TARGET='fixture';process.env.STACK_ID='p1-land-management';process.env.EXPECT_EMPTY_CONTENT='true';
+        const c=require('node:crypto'),hash=v=>c.createHash('sha256').update(JSON.stringify(v)).digest('hex');
+        const posts=Array.from({length:5},(_,i)=>({id:'post'+i,revisionId:'published'+i,generation:1,snapshot:{title:'Title'+i,content:'Private fixture article '+i,excerpt:'Published excerpt',responsiveCover:{src:'/r2/cover.webp'},presentation:{relatedContent:'Aside'}}}));
+        const staticRoutes=posts.map((p,i)=>({slug:'article'+i,postId:p.id}));
+        const body={schemaVersion:2,stackId:'p1-land-management',revision:hash({posts,staticRoutes}),posts,staticRoutes};
+        process.env.EXPECT_BLOG=JSON.stringify({revision:body.revision,posts:posts.map(p=>({id:p.id,revisionId:p.revisionId,generation:p.generation,hash:hash(p)})),staticRoutes});
+        MUTATION
+        global.fetch=async(url,opts)=>{const path=new URL(url).pathname;let status=200,data={};
+        if(path==='/api/auth/me')status=401;
+        if(path==='/api/setup/status')data={needsSetup:false};
+        if(path.startsWith('/api/client-site-content/'))status=404;
+        if(path==='/api/website/blog-publication'){status=BLOG_STATUS;data=body;}
+        if(path==='/api/p1/website-identity')data={schemaVersion:1,stackId:'p1-land-management',version:'a'.repeat(64),companyName:null,companyAddress:null,phoneDisplay:null,phoneHref:null,logoUrl:null,faviconUrl:null,googleBusinessUrl:null};
+        return {status,headers:{get:()=>null},json:async()=>data};};
+        '''
+        cases=[('',200,0),('body.posts[4].snapshot.content="Wrong fifth article";',200,1),('body.staticRoutes.pop();',200,1),('body.posts[0].revisionId="private-draft";',200,1),('body.posts=[];',200,1),('body.schemaVersion=1;',200,1),('',503,1)]
+        for mutation,status,expected in cases:
+            # Recompute revision too: mismatched archive content must fail even when
+            # a candidate returns a self-consistent, newly generated collection hash.
+            script=setup.replace('MUTATION',mutation+'body.revision=hash({posts:body.posts,staticRoutes:body.staticRoutes});').replace('BLOG_STATUS',str(status))+runner.PROBE
+            result=subprocess.run(['node','-e',script],capture_output=True,text=True)
+            with self.subTest(mutation=mutation,status=status):
+                self.assertEqual(result.returncode,expected)
+                self.assertNotIn('Private fixture article',result.stdout)
+                if expected==0:
+                    evidence=json.loads(result.stdout)
+                    self.assertTrue(evidence['blogRecoveryVerified']);self.assertEqual(evidence['blogPostCount'],5)
+                    self.assertEqual(evidence['blogOwnershipCount'],5);self.assertEqual(len(evidence['blogSnapshotHashes']),5)
+                    self.assertFalse(evidence['contentRecoveryVerified'])
+
+    def test_baseline_projection_script_parses_and_never_exports_exception_values(self):
+        syntax=subprocess.run(['node','--input-type=module','--check'],input=runner.BLOG_BASELINE,capture_output=True,text=True)
+        self.assertEqual(syntax.returncode,0,syntax.stderr)
+        catch=runner.BLOG_BASELINE.split('} catch {',1)[1].split('} finally {',1)[0]
+        script="const blogStage='media-resolution';const error=new Error('SYNTHETIC_PRIVATE');"+catch
+        result=subprocess.run(['node','-e',script],capture_output=True,text=True)
+        self.assertEqual(result.returncode,1)
+        self.assertEqual(result.stdout,'BLOG_BASELINE_FAILURE=media-resolution\n')
+        self.assertNotIn('SYNTHETIC_PRIVATE',result.stdout+result.stderr)
 
     def test_input_output_alias_rejected(self):
         self.args.output=self.args.backup

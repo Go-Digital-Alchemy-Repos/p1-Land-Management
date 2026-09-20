@@ -6,6 +6,25 @@ The Owner's identity link and Website Editor work. Live Analytics now works afte
 
 The September 17 dashboard backup has passed an isolated restore, application of 19 consolidation SQL migrations, preservation of all preexisting business-table rows, and a second backup/restore comparison. See [restore evidence](dashboard-restore-rehearsal-2026-09-18.md). No real CRM import, approved account-policy reconciliation, actual deployed-image rollback, complete media recovery or `/admin/` retirement has occurred. An isolated current/prior source-rebuild startup rehearsal has a partial result; it does not establish deployed-image provenance or content recovery. Historical Core archive row/sequence recovery passed September 19; see the recovery checkpoint below.
 
+## Latest populated recovery evidence — September 19
+
+The five real Blog articles and20media records are imported and live. Their full
+57-table database backup passed exact row/sequence recovery; all20media object
+bytes passed a separate archive/extraction/hash rehearsal. The current9978d9db
+and previousb3dca732 source-built application images now both pass startup against
+the populated restored database, including all five full public Blog snapshots,
+permanent route ownership, identity parity and authentication rejection. Parent
+inspected retry03 evidence and reran10 rollback plus12 recovery tests. Only the
+expected cms_forms.updated_at field changed on application startup; baseline and
+row counts remained intact, with isolated resource cleanup verified.
+
+This supersedes earlier empty-Blog rehearsal limitations below. It does not prove
+Railway historical-image retrieval, provider-side object restoration, populated
+legacy client_site_content (that table is empty), or final retirement readiness.
+The live private draft test excerpt was restored and persisted as version4; public
+content stayed unchanged. Evidence: core-application-rollback-runner.md and private
+/private/tmp/p1-blog-app-images-aar7h839/populated-blog-application-recovery-03.json.
+
 ## Requirement-level status
 
 “Implemented” below means source exists with recorded validation, not release acceptance. Every row remains open until its stated acceptance evidence is complete.
@@ -66,7 +85,7 @@ The [operation-level inventory](website-system-parity-inventory.md) now records 
 
 ## Remaining work sequence
 
-1. Finish the original Website System interface restoration (Integrations, Email Templates and Developer Resources), then verify nested CMS behavior and public consumers. Public identity and four-slot menu delivery are already released; dynamic Blog delivery is released; full publication acceptance and five-article import remain open.
+1. Finish the original Website System interface restoration (Integrations, Email Templates and Developer Resources), then verify nested CMS behavior and public consumers. Public identity and four-slot menu delivery are already released; dynamic Blog delivery is released; full publication acceptance remains open; five-article import is complete.
 2. Finish missing native CRM/settings/identity behavior and reconcile the source data/account contracts. Keep provider provisioning and Owner-reviewed mappings explicit as external acceptance dependencies.
 3. Complete the whole-system capability matrix and full agreement/crew/offline journey. Reuse implemented proposal and billing services; do not rebuild them because an old checkpoint says they were pending.
 4. Run isolated export/import/reconciliation and backup/restore/rollback rehearsals; finish safe legacy deep-link and retirement behavior.
