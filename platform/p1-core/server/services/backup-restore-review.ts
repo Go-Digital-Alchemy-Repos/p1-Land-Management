@@ -13,9 +13,15 @@ const snapshotSchema = z.object({
     storageSource: z.enum(["env", "settings"]), bucketName: metadata, bucketPrefix: metadata,
     tableCount: count, totalRowCount: count, mediaAssetCount: count,
     restoreOrder: z.array(identifier).max(1000),
+    // Offline captures carry provenance; it is never a restore authorization.
+    privateCapture: z.object({
+      method: metadata, helperSourceSha256: z.string().regex(/^[a-f0-9]{64}$/),
+      transactionReadOnly: z.boolean(), transactionIsolation: metadata,
+      excludedTables: z.array(identifier).max(1000), uploaded: z.boolean(), mediaBytesIncluded: z.boolean(),
+    }).strict().optional(),
   }).strict(),
   tables: z.array(z.object({name: identifier, rowCount: count, rows: z.array(z.record(z.unknown()))}).strict()).min(1).max(1000),
-  sequences: z.array(z.object({tableName: identifier, columnName: identifier, sequenceName: identifier}).strict()).max(10000),
+  sequences: z.array(z.object({tableName: identifier, columnName: identifier, sequenceName: z.string().min(1).max(70).regex(/^(?:public\.)?[a-zA-Z_][a-zA-Z0-9_]*$/)}).strict()).max(10000),
 }).strict();
 
 /** Reject ambiguous or corrupt archives before exposing an actionable restore review. */
@@ -25,7 +31,7 @@ export function validateBackupRestoreReview(value: unknown) {
   const snapshot = parsed.data;
   const names = new Set(snapshot.tables.map(t => t.name));
   const order = new Set(snapshot.manifest.restoreOrder);
-  const sequences = new Set(snapshot.sequences.map(s => s.sequenceName));
+  const sequences = new Set(snapshot.sequences.map(s => s.sequenceName.replace(/^public\./, "")));
   if (names.size !== snapshot.tables.length || order.size !== names.size ||
       snapshot.manifest.restoreOrder.length !== names.size || [...order].some(n => !names.has(n)) ||
       snapshot.manifest.tableCount !== names.size ||

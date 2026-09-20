@@ -9,6 +9,11 @@ describe("archive review validation",()=>{
   it("accepts complete JSON row snapshots without changing content",()=>{
     const source=fixture();expect(validateBackupRestoreReview(source)).toEqual(source);
   });
+  it("accepts qualified public sequences and bounded capture provenance",()=>{
+    const source:any=fixture();source.sequences[0].sequenceName="public.example_id_seq";
+    source.manifest.privateCapture={method:"readonly",helperSourceSha256:"a".repeat(64),transactionReadOnly:true,transactionIsolation:"repeatable read",excludedTables:["session"],uploaded:false,mediaBytesIncluded:false};
+    expect(validateBackupRestoreReview(source)).toEqual(source);
+  });
   it.each([
     (s:any)=>{s.manifest.tableCount=2;},
     (s:any)=>{s.manifest.totalRowCount=1;},
@@ -21,6 +26,8 @@ describe("archive review validation",()=>{
     (s:any)=>{s.sequences[0].tableName="missing";},
     (s:any)=>{s.sequences.push(s.sequences[0]);},
     (s:any)=>{s.manifest.schemaVersion=2;},
+    (s:any)=>{s.sequences[0].sequenceName="other.example_id_seq";},
+    (s:any)=>{s.sequences.push({...s.sequences[0],sequenceName:"public.example_id_seq"});},
     (s:any)=>{s.tables[0].name='unsafe;table';},
   ])("rejects corrupt counts, references, columns or schema before a restore",mutate=>{
     const source=fixture();mutate(source);expect(()=>validateBackupRestoreReview(source)).toThrow(/Backup archive/);

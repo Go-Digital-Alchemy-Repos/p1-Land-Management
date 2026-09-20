@@ -111,3 +111,14 @@ reviewed operator recovery path; native review never offers them as actionable.
 Retained/direct recovery functions keep their existing contracts. Thirty-four
 focused tests and Core typechecking pass. Full successful reviewed restore against
 an isolated database and real-archive compatibility remain necessary before exposure.
+
+Real-archive validation (September20): the protected populated Core archive with
+SHA-256 `f2e8b6901bcf8590c282c4cf705b0baca95122e4872189a9ee6c7f083d264944`
+now passes admission:57 tables,645 rows,20 media records. The first inspection
+rejected legitimate bounded `privateCapture` provenance and public-qualified
+sequence names. Both formats are now explicitly supported; arbitrary schemas and
+sequence aliases remain rejected, with canonical duplicate detection. Archive
+bytes were not altered. Thirty-seven focused tests and Core typecheck pass.
+This is read-only compatibility evidence, not a successful native restore or
+permission to restore production. The expiring confirmation and independent audit
+workflow remain unimplemented and must precede route exposure.
