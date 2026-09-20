@@ -1027,3 +1027,7 @@ all3 original source snapshots, left the existing receipt-matched lead unchanged
 live Sales/history/context readback passed. Evidence and remaining permanent source
 write-ownership requirements: `docs/implementation/crm-production-preservation-2026-09-19.md`.
 Do not rerun with new target UUIDs or claim account policy/legacy retirement complete.
+
+## September 20 — native pipeline presentation released
+
+Native Owner pipeline labels, colors and ordering are live at revision `b7a56cc0`; all three Railway services reached SUCCESS. Migration 0048 was applied after a fresh backup, source-override check and migration-ledger reconciliation. Stable lifecycle keys and customer onboarding semantics remain unchanged. Five UI tests, three disposable-PostgreSQL tests, typechecks/builds, local mobile/browser checks and live Owner read-only editor acceptance are recorded in `docs/implementation/sales-pipeline-settings.md`. This closes the native pipeline-presentation gap, not CRM ownership cutover or `/admin` retirement. Search Console access, account disposition/MFA decisions, remaining CMS and operational journey acceptance, and full recovery/retirement gates remain open.
