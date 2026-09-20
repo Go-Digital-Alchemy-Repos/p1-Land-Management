@@ -13,3 +13,7 @@ External Google Fonts CSS and OpenFreeMap map resources are managed by Typograph
 Rollback: restore the previous application revision. Saved managed configuration remains additive; previous builds use their prior build-time tracking configuration. Avoid rolling back after intentionally disabling tracking without reviewing that previous configuration.
 
 Validation: five browser-loader unit tests cover route deduplication, sensitive URL stripping, disabled/unavailable configuration, replacement IDs and pending-preview cancellation. Eight adapter tests cover raw and managed editor recovery. Core route/service tests cover owner restrictions, versioning, generic-route bypass prevention and reserved script rejection. Website, dashboard and Core production builds pass. Deployment/live verification follows the feature commit.
+
+## Live closeout — September 19, 2026
+
+Feature commit `76127eadeeedff40bed6be60cd521cb1e8ddd474` deployed successfully on Railway: website `999189e1-586f-47da-b0fd-f1d0b37893f6`, Core `e80af6a2-206c-4614-8b39-767651153b11`, dashboard `6ed581ff-f79f-44c2-86a6-c8b21b10f2c3`. Owner Head Tags UI displayed both services. Saved the existing `G-YX69CJ1QNJ` as managed configuration through the live editor; save/readback succeeded and the public projection returned source `managed` with that same ID. Turnstile remains enabled with its original public key. Custom markup was empty; no existing tags were removed. Additional 21 public-runtime and 21 bridge checks passed.
