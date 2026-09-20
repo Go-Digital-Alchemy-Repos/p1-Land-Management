@@ -469,3 +469,29 @@ older-API compatibility). Dashboard/API typechecks and production builds passed.
 The owned fixture database was removed. This improves migrated inquiry usability;
 it does not constitute production import, reviewed mappings, context correction/
 adoption, pipeline customization, or account-policy acceptance.
+
+## Cancelled downloaded work — September 19
+
+Fresh isolated joined fixture at loopback58914 completed real agreement approval,
+activation, visit generation and scheduling. CUA downloaded the assignment. During
+crew API503 simulation, the fixture manager cancelled the work order through the
+actual status endpoint; CUA queued a start and completion from its stale download.
+After reconnection both events received conflict receipts. Reload and retry kept
+two pending entries. Independent database verification confirmed exactly those two
+event IDs, both conflicts, unchanged Cancelled work, zero charges and billing denial.
+CUA also confirmed that download replacement and sign-out refused to discard the
+pending entries. No provider worker or production mutation ran.
+
+The reusable fixture now supports `cancel-work` and `verify-cancelled`. Python
+compilation and both acknowledgement tests passed. This closes the tested
+work-order cancellation retention/replay case, not agreement-term cancellation,
+successor/change-order integration, physical device persistence, or full offline
+acceptance. Office conflict resolution and a durable acknowledgement that permits
+safe removal of resolved local entries are still missing; repeated synchronization
+alone cannot clear these conflicts. Implement that workflow before calling the
+crew journey operationally complete.
+
+Prior inquiry context runtime `b09db1a59e0640d6ccbc1f75ca93d4668aa9fb0b`
+reached Railway SUCCESS: dashboard `bc0693e5-b9be-4e5f-a1bd-7533eb54dec6`,
+Core `1e37d292-1928-49bd-8bff-702c80f711fe`, website
+`1b15445e-1718-4198-b417-b9238ff1edca`.

@@ -84,3 +84,23 @@ verifier: exact stored event IDs matched both submitted batches and both receipt
 reported accepted status. Two queued entries survived reload; the deliberately lost
 acknowledgement kept them queued until replay cleared them. Manager review and
 billing receipt retry passed. This supersedes the older port55533 verifier limit.
+
+## Work-order cancellation while crew is disconnected
+
+Use a fresh fixture; do not reuse the completed/billed happy-path fixture.
+Download the assignment, run `offline PRIVATE_DIRECTORY`, then
+`cancel-work PRIVATE_DIRECTORY`. The latter uses the actual office status API.
+The fixture's synthetic manager session remains reachable while crew API requests
+receive503, representing independent office connectivity. No production behavior
+or authorization is changed.
+
+In CUA, queue Start work and a completion submission, then run `online` and Sync
+Now. Both entries must remain pending with the office-review message. Reload and
+sync again. `verify-cancelled PRIVATE_DIRECTORY` checks exact event IDs, two stored
+conflicts, identical conflict receipts, unchanged Cancelled status, no charge and
+billing denial. It writes private `cancellation-evidence.json`. Confirm that a new
+download and sign-out cannot discard these entries. Stop the fixture afterward.
+
+September19 actual CUA run at loopback58914 passed this sequence and the database
+verifier. It simulates crew API503; it is not physical offline or agreement-term
+cancellation. Office resolution and subsequent safe queue clearance remain open.

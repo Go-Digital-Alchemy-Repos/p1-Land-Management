@@ -39,7 +39,8 @@ let crewCookie = "",
 const lostAck = createLostAcknowledgement();
 const batches = lostAck.batches;
 let initialBlocked = false,
-  apiOffline = false;
+  apiOffline = false,
+  officeCancelled = false;
 const actor = {
   id: randomUUID(),
   name: "Fixture Manager",
@@ -92,6 +93,43 @@ const call = async (path: string, body: any, cookie = managerCookie) => {
   assert(r.ok, `Fixture request failed ${r.status}`);
   return r.json() as any;
 };
+app.post("/__fixture/cancel-work", protectedControl, async (_req: any, res: any, next: any) => {
+  try {
+    assert(ready && !officeCancelled);
+    const work = (await pool.query("SELECT status,version FROM work_order WHERE id=$1", [workId])).rows[0];
+    assert.equal(work.status, "scheduled");
+    await call(`/api/v1/work-orders/${workId}/status`, { status: "cancelled", version: work.version });
+    officeCancelled = true;
+    res.json({ officeCancelled: true });
+  } catch (error) { next(error); }
+});
+app.post("/__fixture/verify-cancelled", protectedControl, async (_req: any, res: any, next: any) => {
+  try {
+    assert(officeCancelled);
+    const work = (await pool.query("SELECT status FROM work_order WHERE id=$1", [workId])).rows[0];
+    assert.equal(work.status, "cancelled");
+    assert(batches.length >= 2);
+    assert.deepEqual(batches[0], batches[1]);
+    const events = (await pool.query("SELECT id,kind,conflict FROM field_event WHERE work_order_id=$1", [workId])).rows;
+    assert.equal(events.length, 2);
+    assert.deepEqual(events.map(e => e.id).sort(), [...batches[0]].sort());
+    assert(events.every(e => e.conflict === true));
+    assert(events.some(e => e.kind === "time") && events.some(e => e.kind === "complete"));
+    assert(lostAck.receipts.length >= 2);
+    for (const receipt of lostAck.receipts.slice(0, 2)) {
+      assert.equal(receipt.status, 200);
+      assert.deepEqual(receipt.results.map((r: any) => r.id), batches[0]);
+      assert(receipt.results.every((r: any) => r.status === "conflict"));
+    }
+    await assert.rejects(prepareAgreementCharge(actor, agreementId, { workOrderId: workId }), { status: 409 });
+    assert.equal((await pool.query("SELECT count(*)::int AS n FROM agreement_charge WHERE work_order_id=$1", [workId])).rows[0].n, 0);
+    const evidence = { status: "passed", scenario: "office-work-order-cancellation", realCrewEvents: 2,
+      conflictsPreserved: true, stableReplayIds: true, cancelledWorkUnchanged: true,
+      billingBlocked: true, providerWorkerStarted: false };
+    writeFileSync(process.env.P1_FIXTURE_EVIDENCE!.replace("workflow-evidence", "cancellation-evidence"), JSON.stringify(evidence, null, 2), { mode: 0o600 });
+    res.json(evidence);
+  } catch (error) { next(error); }
+});
 app.post(
   "/__fixture/verify",
   protectedControl,
@@ -165,7 +203,7 @@ app.post(
 app.use(
   "/api/v1",
   (req: any, res: any, next: any) => {
-    if (apiOffline)
+    if (apiOffline && req.headers.cookie !== managerCookie)
       return res.status(503).json({ error: "Fixture API outage enabled" });
     if (!["GET", "HEAD"].includes(req.method) && req.headers.origin !== origin)
       return res.sendStatus(403);
