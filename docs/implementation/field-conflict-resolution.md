@@ -1,6 +1,6 @@
 # Office review of stale field entries
 
-Browser acceptance passed; production migration applied, application deployment pending.
+Released and verified at `0e0585171374b31d2a46500fdb90baa0a4201ac9`.
 
 ## Behavior
 
@@ -75,3 +75,16 @@ checksum and the50-entry baseline. Committed checksum:
 `ef9987949480fb30d0e439a5e3766dc2ce11165b1a0381e270104b6dc3b0901d`.
 The newly created resolution table contained0 records. API build passed.
 Application deployment and live read verification remain to be recorded below.
+
+## Production closeout
+
+All three Railway deployments reached SUCCESS for0e058517:
+- Dashboard: `c7c6232f-bb4b-4136-a6d6-22d4a4e6a710`
+- Core: `49c9838c-7c09-433c-ba45-046c61fbabd9`
+- Website: `5247174d-26b5-4890-b5ea-07c07cac68c0`
+
+A separate production database read confirmed migration0047's exact checksum and
+zero resolution rows. Authenticated live Schedule CUA loaded the new panel and
+“No field entries need review.” Existing work/calendar data loaded successfully;
+no work, customer or review records were mutated. Temporary verification tabs were
+closed. This release accepts only the bounded field conflict review workflow.

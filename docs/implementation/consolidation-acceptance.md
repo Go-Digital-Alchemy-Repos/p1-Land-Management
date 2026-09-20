@@ -501,7 +501,7 @@ Core `1e37d292-1928-49bd-8bff-702c80f711fe`, website
 Office record-only resolution now passes the joined local browser/API/database
 journey: cancelled-work entries remain immutable, office reviews are append-only,
 crew receipt sync clears only reviewed copies,0 pending survives reload, and safe
-sign-out succeeds. The production dashboard0047 migration is applied; application
-release verification is pending. See `field-conflict-resolution.md`. This closes
+sign-out succeeds. Dashboard0047 is applied; release0e058517 reached Railway SUCCESS for all
+three services and authenticated live Schedule loaded the conflict panel successfully. See `field-conflict-resolution.md`. This closes
 this bounded office-review gap, not physical-device offline/eviction, photo
 reconciliation, cancellation/change-order acceptance or the overall crew gate.
