@@ -437,5 +437,10 @@ PostgreSQL tests (10), Blog settings tests (6), and integrated Core/dashboard ty
 and builds passed. Blog settings now handles failed reads, uncertain taxonomy
 creation, pending navigation, category hierarchy and moderation counts/dates; see
 `blog-settings-recovery.md` for the remaining visual/concurrency limitations.
-Deployment and live acceptance are pending for this candidate. These checks do
+Runtime `0db3ed9b9afc21ccc5698301004838000c4c3d34` reached Railway SUCCESS:
+Core `ac3f01f5-aca4-4500-8c84-e043f2bb83ad`, dashboard
+`21f7721b-0f33-458e-a21d-ebc419dee59a`, website
+`d275a1dc-5f02-4385-b3d9-b34a7b1f7f2c`. Authenticated CUA read checks
+confirmed Blog Participation Rules/Spam Protection controls and successful empty
+Sections library loading. No production save/reset/delete was performed. These checks do
 not close CRM/account migration, full operational acceptance or admin retirement.
