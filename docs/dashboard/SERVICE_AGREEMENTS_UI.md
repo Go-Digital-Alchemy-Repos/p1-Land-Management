@@ -11,13 +11,14 @@ A draft edit conflict preserves entered values. Staff can fetch the current save
 The workspace remounts when its user identity or role changes. Parent callbacks from an unmounted workspace are ignored. Server authorization and role projections remain authoritative. The application mount must pass both `person.id` and `person.role`.
 
 Dispatch compatibility: the existing `revenue.agreements` grant remains the
-read grant for a Dispatch account. It permits only the redacted operational
-agreement projection (scope, dates and status); it does not show the financial
-queue, amounts, charge periods, agreement creation or draft editing controls.
-The Dashboard API applies the same rule to reject Dispatch create, edit,
-activate and cancel requests even if that stored read grant is present. No
-capability vocabulary, persisted grant, account or database migration is
-required for this boundary.
+read grant for a Dispatch account. With that normal agreements-only grant, it
+permits only the redacted operational agreement projection (scope, dates and
+status); it does not show the financial queue, amounts, charge periods,
+agreement creation or draft editing controls. A separately assigned
+`revenue.billing` grant continues to control financial access independently.
+The Dashboard API rejects Dispatch create, edit, activate and cancel requests
+even when the stored read grant is present. No capability vocabulary, persisted
+grant, account or database migration is required for this boundary.
 
 The billing queue shows ready charges and unresolved cancellation or eligibility cases. Preparation removes an acknowledged ready entry and retains the draft receipt in the preview. Refreshing or retrying uses the server's source identity; it cannot create another charge for that source. Cancelling an agreement does not cancel or credit an existing accounting invoice.
 

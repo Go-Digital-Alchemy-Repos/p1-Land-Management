@@ -588,9 +588,11 @@ This establishes current backend regressions, not the complete customer/staff/cr
 ## Dispatch agreement read boundary — September 21
 
 The existing `revenue.agreements` stored grant now has an explicit Dispatch
-read-only interpretation. Dispatch can list and open the redacted operational
-agreement projection (scope, dates and status) but cannot see charge periods,
-amounts, queues or financial preparation. The native dashboard hides agreement
+read-only interpretation. A Dispatch account with that normal agreements-only
+grant can list and open the redacted operational agreement projection (scope,
+dates and status), but cannot see charge periods, amounts, queues or financial
+preparation. A separately assigned `revenue.billing` grant still controls
+financial access independently. The native dashboard hides agreement
 creation/editing controls for Dispatch while retaining its operational list;
 the API independently rejects create, edit, activate and cancel requests from
 that role. Other non-Dispatch actors with the existing explicit grant retain
