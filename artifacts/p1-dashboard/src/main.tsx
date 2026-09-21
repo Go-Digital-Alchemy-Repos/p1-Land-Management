@@ -1044,6 +1044,51 @@ function App() {
       : []),
   ];
   const inScheduleWorkspace = ["Schedule", "Recurring"].includes(view);
+  const marketingWorkspaceGroups = [
+    {
+      label: "Content",
+      tone: "violet",
+      views: ["Website Editor", "CMS Pages", "Website Blog", "Website Forms", "Website Events", "Website Careers", "Website Team", "Media Library", "Website Galleries", "Website Sections"],
+    },
+    {
+      label: "Brand",
+      tone: "rose",
+      views: ["Website Identity", "Website Social", "Website Colors", "Website Typography"],
+    },
+    {
+      label: "Site",
+      tone: "green",
+      views: ["Website SEO", "Website Menus", "Website Sidebars"],
+    },
+    {
+      label: "System",
+      tone: "cyan",
+      views: ["Website Features", "Website Backups", "Website Integrations", "Website Email Templates", "Website Documents", "Website Head Tags"],
+    },
+    {
+      label: "Reporting",
+      tone: "blue",
+      views: ["Analytics", "Search Console"],
+    },
+  ] as const;
+  const marketingWorkspace = marketingWorkspaceGroups.find((workspace) =>
+    workspace.views.includes(view as never),
+  );
+  const marketingWorkspaceLabels: Partial<Record<DashboardPageRoute["view"], string>> = {
+    "Website Editor": "Website",
+    "Website Identity": "Branding",
+    "Website SEO": "SEO",
+    "Website Features": "Website modules",
+    Analytics: "Google Analytics",
+  };
+  const marketingWorkspaceTabs = marketingWorkspace && person
+    ? marketingWorkspace.views.flatMap((marketingView) => {
+        const page = nav.find((item) => item.view === marketingView);
+        return page && canAccessRoute({ kind: "page", page }, person.role, person.capabilities)
+          ? [{ ...page, label: marketingWorkspaceLabels[marketingView] ?? page.label, tone: marketingWorkspace.tone }]
+          : [];
+      })
+    : [];
   const propertyTypes = data["property-types"] || [];
   const visibleProperties = (data.properties || [])
     .filter((property: any) => {
@@ -1493,13 +1538,20 @@ function App() {
               {notice}
             </div>
           )}
-          {!routeUnavailable && marketingDesignCopy[view] && <nav className="marketing-design-tabs" aria-label="Design tools">
-            {(["Website Identity", "Website Social", "Website Colors", "Website Typography"] as const).map(designView => {
-              const page = allowedNav.find(item => item.view === designView);
-              if (!page) return null;
-              return <button key={designView} type="button" aria-current={view === designView ? "page" : undefined} onClick={() => navigate(designView)}>{marketingDesignCopy[designView]?.title}</button>;
-            })}
-          </nav>}
+          {!routeUnavailable && marketingWorkspace && marketingWorkspaceTabs.length > 1 && (
+            <nav className="workspace-tabs marketing-workspace-tabs" aria-label={`${marketingWorkspace.label} tools`}>
+              {marketingWorkspaceTabs.map((tab) => {
+                const Icon = tab.icon;
+                const active = view === tab.view;
+                return (
+                  <a key={tab.path} href={tab.path} className={active ? "active" : ""} aria-current={active ? "page" : undefined}>
+                    <span className={`workspace-tab-icon workspace-tab-icon--${tab.tone}`} aria-hidden="true"><Icon size={17} strokeWidth={1.8} /></span>
+                    {tab.label}
+                  </a>
+                );
+              })}
+            </nav>
+          )}
           {!routeUnavailable && inAgreementWorkspace && agreementWorkspaceTabs.length > 1 && (
             <nav className="workspace-tabs agreement-workspace-tabs" aria-label="Agreement workspace">
               {agreementWorkspaceTabs.map((tab) => {
