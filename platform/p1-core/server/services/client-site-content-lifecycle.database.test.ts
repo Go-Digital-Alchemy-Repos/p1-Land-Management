@@ -28,13 +28,46 @@ const identity = {
 const storage = new ClientSiteContentStorage();
 const suite = fixture.url ? describe : describe.skip;
 
+function isolatedFixtureUrl(value: string, database: string) {
+  let url: URL;
+  try {
+    url = new URL(value);
+  } catch {
+    throw Error("Valid isolated fixture database URL required");
+  }
+  if (
+    !["postgres:", "postgresql:"].includes(url.protocol) ||
+    !["localhost", "127.0.0.1", "[::1]"].includes(url.hostname) ||
+    url.pathname !== `/${database}` ||
+    url.search ||
+    url.hash
+  )
+    throw Error("Exact loopback isolated fixture database URL required");
+  return url;
+}
+
+describe("Client Site Content storage fixture URL guard", () => {
+  it("accepts only the exact loopback PostgreSQL database without URL overrides", () => {
+    const database = "p1_client_site_content_lifecycle_test";
+    expect(
+      isolatedFixtureUrl(`postgresql://postgres:fixture@127.0.0.1/${database}`, database),
+    ).toBeInstanceOf(URL);
+    for (const invalid of [
+      `https://127.0.0.1/${database}`,
+      `postgresql://postgres:fixture@example.test/${database}`,
+      "postgresql://postgres:fixture@127.0.0.1/not-the-fixture",
+      `postgresql://postgres:fixture@127.0.0.1/${database}?application_name=override`,
+      `postgresql://postgres:fixture@127.0.0.1/${database}#fragment`,
+    ])
+      expect(() => isolatedFixtureUrl(invalid, database)).toThrow(
+        "Exact loopback isolated fixture database URL required",
+      );
+  });
+});
+
 suite("Client Site Content lifecycle on isolated PostgreSQL", () => {
   beforeAll(async () => {
-    const url = new URL(fixture.url!);
-    if (!["localhost", "127.0.0.1", "[::1]"].includes(url.hostname))
-      throw Error("Loopback fixture database required");
-    if (url.pathname !== "/p1_client_site_content_lifecycle_test")
-      throw Error("Exact dedicated lifecycle fixture database required");
+    isolatedFixtureUrl(fixture.url!, "p1_client_site_content_lifecycle_test");
     if (fixture.allowDestructiveFixture !== "true")
       throw Error("Explicit CLIENT_SITE_CONTENT_TEST_ALLOW_DESTRUCTIVE_FIXTURE=true required");
     await migrate(db, { migrationsFolder: "p1-migrations" });
