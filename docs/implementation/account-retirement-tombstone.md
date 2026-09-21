@@ -44,6 +44,13 @@ tombstone row is atomically renewed instead of inserting a duplicate primary
 key, resetting its recovery markers and preserving the newest retirement
 boundary for signed verification links.
 
+For the specific case of a recovered, noncanonical Owner, reactivation is a
+separate Owner-only action. It requires the recovered account to have enrolled
+two-factor authentication, turns on the account's MFA requirement atomically,
+and revokes sessions again. The canonical `installation.owner_id` can never use
+this path. This keeps recovery reversible without silently restoring an
+unprotected Owner-level account.
+
 Before any production transition, retain a new private, mode-0600 read-only
 account inventory and its digest; run the migration; retire each verified
 non-canonical target through the Owner-only route; then capture the matching
@@ -53,9 +60,11 @@ work. Do not delete `audit_event` rows or anonymize their actor references.
 
 ## Validation
 
-The focused retirement test covers: inactive-only admission, canonical Owner
+The focused retirement tests cover: inactive-only admission, canonical Owner
 protection, session revocation, normal User Manager exclusion, pre-session and
 existing-session denial, reset denial, pending-invitation revocation, cleared
-stored grants, preserved audit rows and constrained recovery. Full migration
+stored grants, preserved audit rows, mutation guards for hidden tombstones,
+MFA-gated noncanonical Owner reactivation, and a deliberately interleaved
+sign-in that is ordered before retirement and then revoked. Full migration
 replay, API generation/typecheck and production review remain required before
 deployment.
