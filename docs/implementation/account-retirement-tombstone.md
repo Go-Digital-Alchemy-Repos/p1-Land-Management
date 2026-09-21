@@ -17,10 +17,16 @@ event. The account is excluded from User Manager and remains excluded from
 staff/operational selectors through the existing active-profile checks.
 
 The authentication hook rejects retired identities before sign-in, password
-reset or sign-up handling. The application identity gate separately rejects a
-retired account's pre-existing cookie/bearer session, which closes the race
-between an incoming request and session revocation. A tombstone is not a hidden
-authorization flag: server-side checks enforce it for direct requests.
+reset or sign-up handling. Retirement deletes only Better Auth verification
+records whose opaque `value` is the retired user ID, including password-reset
+tokens; records belonging to other users are retained. Email-verification links
+are signed, stateless JWTs rather than database records. Their verified
+issued-at timestamp is compared with the account's latest retirement timestamp,
+so a link issued before retirement is rejected both while tombstoned and after
+recovery. The application identity gate separately rejects a retired account's
+pre-existing cookie/bearer session, which closes the race between an incoming
+request and session revocation. A tombstone is not a hidden authorization flag:
+server-side checks enforce it for direct requests.
 
 ## Recovery / rollback
 
@@ -32,6 +38,11 @@ session, or weakens the canonical Owner/MFA policy. The recovery audit record
 and historical attribution remain intact. To make the recovered inactive
 account operational, the normal Owner-reviewed activation process is still
 required.
+
+A previously recovered inactive account can be retired again. The same durable
+tombstone row is atomically renewed instead of inserting a duplicate primary
+key, resetting its recovery markers and preserving the newest retirement
+boundary for signed verification links.
 
 Before any production transition, retain a new private, mode-0600 read-only
 account inventory and its digest; run the migration; retire each verified
