@@ -39,7 +39,7 @@ import publicRouter from "../client-site-content.routes";
 
 const fixtureUser = "cms-api-lifecycle-editor";
 const suite = fixture.url ? describe : describe.skip;
-let server: Server;
+let server: Server | undefined;
 let base: string;
 
 async function request(path: string, init?: RequestInit) {
@@ -89,8 +89,11 @@ suite("Client Site Content HTTP lifecycle on isolated PostgreSQL", () => {
   });
 
   afterAll(async () => {
-    await new Promise<void>((resolve) => server.close(() => resolve()));
-    await pool.end();
+    try {
+      if (server) await new Promise<void>((resolve) => server!.close(() => resolve()));
+    } finally {
+      await pool.end();
+    }
   });
 
   it("uses the real HTTP parser, revision lifecycle, restore and public ETag projection", async () => {
