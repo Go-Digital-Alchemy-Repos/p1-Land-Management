@@ -79,15 +79,17 @@ export default function PublicForm() {
   const activeSlug = useRef(slug);
   const routeVersion = useRef(0);
   const verification = usePublicFormVerification(preview || accepted);
+  const hostRouteVersion = routeVersion.current;
   const host = useMemo(
     () => ({
       ui,
       // Ignore a stale renderer's completion notice after route navigation.
       toast: (nextNotice: NonNullable<typeof notice>) => {
-        if (activeSlug.current === slug) setNotice(nextNotice);
+        if (activeSlug.current === slug && routeVersion.current === hostRouteVersion)
+          setNotice(nextNotice);
       },
     }),
-    [slug],
+    [hostRouteVersion, slug],
   );
 
   useEffect(() => {
