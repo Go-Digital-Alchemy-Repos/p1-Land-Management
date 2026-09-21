@@ -32,10 +32,13 @@ suite("atomic settings real database", () => {
     await pool.query(
       `CREATE TABLE IF NOT EXISTS system_settings (id varchar PRIMARY KEY DEFAULT gen_random_uuid(), key text NOT NULL UNIQUE, value text NOT NULL, category text NOT NULL, is_secret boolean NOT NULL DEFAULT false, updated_at timestamp DEFAULT now());`,
     );
+    await pool.query(
+      "CREATE TABLE IF NOT EXISTS activity_logs (id varchar PRIMARY KEY DEFAULT gen_random_uuid(), user_id varchar NOT NULL, action text NOT NULL, details text, created_at timestamp DEFAULT now())",
+    );
     settings = new SettingsStorage(60_000, drizzle(pool, { schema }));
   });
   beforeEach(async () => {
-    await pool.query("TRUNCATE system_settings");
+    await pool.query("TRUNCATE system_settings, activity_logs");
     settings.invalidateAll();
   });
   afterAll(async () => {
@@ -53,9 +56,6 @@ suite("atomic settings real database", () => {
     await expect(settings.getCategorySnapshot("mailgun", false, rules)).rejects.toMatchObject({ code: "settings_boundary_mismatch" });
   });
   it("repairs a wrong public-setting boundary with a metadata-only CAS token and audit", async () => {
-    await pool.query(
-      "CREATE TABLE IF NOT EXISTS activity_logs (id varchar PRIMARY KEY DEFAULT gen_random_uuid(), user_id varchar NOT NULL, action text NOT NULL, details text, created_at timestamp DEFAULT now())",
-    );
     await settings.upsertSetting("legacy_staff_crm_writes_fenced", "unreadable", "wrong", true);
     const before = await settings.getSettingBoundarySnapshot("legacy_staff_crm_writes_fenced");
     await settings.repairPublicSettingBoundary(
