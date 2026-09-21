@@ -1221,6 +1221,7 @@ textarea {
     top: 68px;
     height: calc(100dvh - 68px);
     transform: translateX(-100%);
+    visibility: hidden;
     z-index: 9;
     transition: transform 0.2s;
     width: min(300px, calc(100vw - 28px));
@@ -1228,6 +1229,7 @@ textarea {
   }
   .sidebar.open {
     transform: translateX(0);
+    visibility: visible;
   }
   .workspace {
     margin: 0;

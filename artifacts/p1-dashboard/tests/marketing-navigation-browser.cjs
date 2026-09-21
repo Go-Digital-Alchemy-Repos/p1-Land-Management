@@ -79,8 +79,37 @@ const origin = process.env.DASHBOARD_BROWSER_ORIGIN || "http://127.0.0.1:4181";
         .getAttribute("aria-current"),
       "page",
     );
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.reload();
+    await page.getByRole("button", { name: "Toggle navigation" }).waitFor();
+    const sidebar = page.locator(".sidebar");
+    assert.equal(await sidebar.evaluate((element) => getComputedStyle(element).visibility), "hidden");
+    await page.keyboard.press("Tab");
+    assert.equal(
+      await page.evaluate(() => document.activeElement?.getAttribute("aria-label")),
+      "Toggle navigation",
+    );
+    await page.getByRole("button", { name: "Toggle navigation" }).click();
+    assert.equal(await sidebar.evaluate((element) => getComputedStyle(element).visibility), "visible");
+    await page.getByRole("button", { name: "Toggle navigation" }).click();
+    assert.equal(await sidebar.evaluate((element) => getComputedStyle(element).visibility), "hidden");
+
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.reload();
+    await page.getByRole("button", { name: "Toggle navigation" }).waitFor();
+    assert.equal(await sidebar.evaluate((element) => getComputedStyle(element).visibility), "hidden");
+    await page.getByRole("button", { name: "Toggle navigation" }).click();
+    assert.equal(await sidebar.evaluate((element) => getComputedStyle(element).visibility), "visible");
+
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.reload();
+    await dashboard.waitFor();
+    assert.equal(await sidebar.evaluate((element) => getComputedStyle(element).visibility), "visible");
+    assert.equal(await page.getByRole("button", { name: "Toggle navigation" }).isVisible(), false);
     assert.deepEqual(errors, []);
-    console.log("Marketing navigation browser: slim sidebar and deep-link tabs passed");
+    console.log("Marketing navigation browser: deep-link tabs and responsive sidebar focus passed");
   } finally {
     await browser.close();
   }
