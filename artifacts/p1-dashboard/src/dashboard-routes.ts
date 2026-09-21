@@ -168,6 +168,36 @@ function pageFor(view: DashboardView) {
   return DASHBOARD_PAGES.find((page) => page.view === view && !page.settingsSection);
 }
 
+const navigationFallbackViews: Partial<Record<DashboardView, readonly DashboardView[]>> = {
+  Schedule: ["Recurring"],
+  Agreements: ["Agreement Drafts", "Agreement Templates"],
+  "Website Editor": ["CMS Pages", "Website Blog", "Website Forms", "Website Events", "Website Careers", "Website Team", "Media Library", "Website Galleries", "Website Sections"],
+  "Website Identity": ["Website Social", "Website Typography", "Website Colors"],
+  "Website SEO": ["Website Menus", "Website Sidebars"],
+  "Website Features": ["Website Backups", "Website Integrations", "Website Email Templates", "Website Documents", "Website Head Tags"],
+  Analytics: ["Search Console"],
+};
+
+/**
+ * A collapsed workspace remains discoverable when the account holds a nested
+ * tool grant but not its conventional landing-page grant. The caller retains
+ * the parent label/icon while using this returned, authorized page as its URL
+ * target; no non-granted route is exposed by the fallback.
+ */
+export function navigationTargetFor(
+  page: DashboardPageRoute,
+  role: string | null | undefined,
+  capabilities?: readonly string[],
+): DashboardPageRoute | null {
+  if (page.navigation === false) return null;
+  if (canAccessRoute({ kind: "page", page }, role, capabilities)) return page;
+  for (const view of navigationFallbackViews[page.view] || []) {
+    const fallback = pageFor(view);
+    if (fallback && canAccessRoute({ kind: "page", page: fallback }, role, capabilities)) return fallback;
+  }
+  return null;
+}
+
 function recordId(pathname: string, prefix: string) {
   if (!pathname.startsWith(prefix)) return null;
   const value = pathname.slice(prefix.length);

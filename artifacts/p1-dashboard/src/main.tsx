@@ -90,6 +90,7 @@ import {
   canAccessRoute,
   DASHBOARD_PAGES,
   defaultRouteForRole,
+  navigationTargetFor,
   NAVIGATION_GROUPS,
   pathForRoute,
   routeFromPath,
@@ -212,6 +213,9 @@ type Person = {
 };
 type NavItem = DashboardPageRoute & {
   icon: typeof LayoutDashboard;
+};
+type VisibleNavItem = NavItem & {
+  target: DashboardPageRoute;
 };
 const icons: Record<DashboardPageRoute["view"] | "Settings:security" | "Settings:integrations" | "Settings:preferences" | "Settings:term-libraries", typeof LayoutDashboard> = {
   Analytics: BarChart3,
@@ -1108,9 +1112,12 @@ function App() {
           )
         : left.name.localeCompare(right.name),
     );
-  const allowedNav = nav.filter((item) =>
-    item.navigation !== false && canAccessRoute({ kind: "page", page: item }, person?.role, person?.capabilities),
-  );
+  const allowedNav: VisibleNavItem[] = person
+    ? nav.flatMap((item) => {
+        const target = navigationTargetFor(item, person.role, person.capabilities);
+        return target ? [{ ...item, target }] : [];
+      })
+    : [];
   const activePage = nav.find(
     (item) =>
       item.view === view &&
@@ -1145,10 +1152,10 @@ function App() {
       setNotice("That area is not included in your selected access.");
     }
   }, [person?.role, person?.capabilities, view, settingsSection, recordRoute?.id]);
-  const activeNav = (item: NavItem) =>
+  const activeNav = (item: VisibleNavItem) =>
     !routeUnavailable &&
-    view === item.view &&
-    (item.view !== "Settings" || settingsSection === item.settingsSection);
+    view === item.target.view &&
+    (item.target.view !== "Settings" || settingsSection === item.target.settingsSection);
   const accountWorkspace =
     recordRoute?.kind === "client" || recordRoute?.kind === "property";
   useEffect(() => {
@@ -1393,7 +1400,7 @@ function App() {
                         className={activeNav(item) ? "active" : ""}
                         aria-current={activeNav(item) ? "page" : undefined}
                         onClick={() => {
-                          navigate(item.view, item.settingsSection);
+                          navigate(item.target.view, item.target.settingsSection);
                           setMenu(false);
                         }}
                       >

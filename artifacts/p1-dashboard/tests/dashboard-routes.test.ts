@@ -4,6 +4,7 @@ import {
   canAccessRoute,
   DASHBOARD_PAGES,
   defaultRouteForRole,
+  navigationTargetFor,
   pathForRoute,
   routeFromPath,
 } from "../src/dashboard-routes";
@@ -196,6 +197,26 @@ test("Recurring remains an authorized deep link while Schedule is the only Opera
     DASHBOARD_PAGES.some((page) => page.group === "Operations" && page.label === "Recurring" && page.navigation !== false),
     false,
   );
+});
+
+test("collapsed workspace anchors target the first authorized nested tool without widening access", () => {
+  const page = (view: string) => {
+    const result = DASHBOARD_PAGES.find((candidate) => candidate.view === view && candidate.navigation !== false);
+    assert.ok(result, `missing navigation anchor for ${view}`);
+    return result;
+  };
+  const cases = [
+    { anchor: "Website Editor", grants: ["marketing.content.forms"], expected: "Website Forms" },
+    { anchor: "Analytics", grants: ["marketing.search-console.view"], expected: "Search Console" },
+    { anchor: "Schedule", grants: ["operations.recurring"], expected: "Recurring" },
+    { anchor: "Agreements", grants: ["revenue.agreement-templates.manage"], expected: "Agreement Templates" },
+  ];
+  for (const testCase of cases) {
+    const target = navigationTargetFor(page(testCase.anchor), "member", testCase.grants);
+    assert.equal(target?.view, testCase.expected);
+    assert.equal(canAccessRoute({ kind: "page", page: target! }, "member", testCase.grants), true);
+  }
+  assert.equal(navigationTargetFor(page("Website Editor"), "member", ["marketing.content.seo"]), null);
 });
 test("Developer resources is an Owner-only Website System destination", () => {
   const route=routeFromPath("/marketing/system/documents");
