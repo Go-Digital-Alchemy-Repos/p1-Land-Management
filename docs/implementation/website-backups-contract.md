@@ -488,3 +488,15 @@ This is an isolated synthetic acceptance result, not a production restore,
 deployment, populated-production recovery, physical-device/browser accessibility
 acceptance, or approval to retire `/admin`. Independent review and the remaining
 release gates above still apply.
+
+### Current candidate recheck — September 21
+
+The joined runner was rerun unchanged against the current consolidation
+candidate. All 24 checks passed again, including Core backup/review, actual
+Dashboard-to-Core reservation and restore, duplicate-execution prevention,
+response-loss reconciliation after a Core restart, pre-admission outage handling,
+inactive-initiator recovery boundaries, audit evidence, grant cleanup and Docker
+cleanup. Its protected synthetic evidence directory is
+`/private/tmp/p1-restore-joined-jq139gv4`. This recheck does not add provider
+storage restoration, an original Railway-image rollback, a populated production
+recovery rehearsal, deployment authority or `/admin` retirement acceptance.
