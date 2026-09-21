@@ -316,6 +316,11 @@ export function AgreementQueue({
                 : "Reviewed visit"}
             </strong>
             <span>{row.state.replaceAll("_", " ")}</span>
+            {row.reviewState && (
+              <p>
+                Cancellation review: {row.reviewState.replaceAll("_", " ")}
+              </p>
+            )}
             {row.reason && <p>{row.reason}</p>}
             {row.amountCents !== null && (
               <p>{agreementMoney(row.amountCents)}</p>
