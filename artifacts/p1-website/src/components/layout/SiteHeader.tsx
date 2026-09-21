@@ -89,7 +89,7 @@ export function SiteHeader({ assessmentCta = false }: { assessmentCta?: boolean 
             (704) 221-8928
           </a>
           <Button asChild className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-6 hidden sm:inline-flex">
-            {assessmentCta ? <a href="#assessment-request" onClick={(event) => { event.preventDefault(); focusAssessment(); }}>Get a Free Site Assessment</a> : <Link href="/contact">Get a Free Site Assessment</Link>}
+            {assessmentCta ? <a href="#assessment-request" onClick={(event) => { event.preventDefault(); focusAssessment(); }}>Request a Site Visit</a> : <Link href="/contact">Request a Site Visit</Link>}
           </Button>
 
           {/* Mobile Menu */}
@@ -167,7 +167,7 @@ export function SiteHeader({ assessmentCta = false }: { assessmentCta?: boolean 
                     Call P1 <span className="text-sm font-medium text-muted-foreground">(704) 221-8928</span>
                   </a>
                   <Button asChild className="mt-3 min-h-12 w-full rounded-2xl bg-primary font-bold text-primary-foreground shadow-md shadow-primary/20 transition-transform hover:bg-primary/90 active:scale-[0.98]">
-                    {assessmentCta ? <a href="#assessment-request" onClick={(event) => { event.preventDefault(); focusAssessmentAfterClose.current = true; setIsOpen(false); }}>Get a Free Site Assessment</a> : <Link href="/contact" onClick={() => setIsOpen(false)}>Get a Free Site Assessment</Link>}
+                    {assessmentCta ? <a href="#assessment-request" onClick={(event) => { event.preventDefault(); focusAssessmentAfterClose.current = true; setIsOpen(false); }}>Request a Site Visit</a> : <Link href="/contact" onClick={() => setIsOpen(false)}>Request a Site Visit</Link>}
                   </Button>
                 </div>
               </div>

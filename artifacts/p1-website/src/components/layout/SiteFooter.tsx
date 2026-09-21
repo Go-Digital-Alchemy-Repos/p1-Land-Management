@@ -3,6 +3,7 @@ import logo from "@assets/Asset_1_1782329698014.svg";
 import { Button } from "@/components/ui/button";
 import { Phone } from "lucide-react";
 import { GOOGLE_BUSINESS_URL } from "@/lib/site";
+import { footerBlurb } from "@/content/site-facts";
 
 export function SiteFooter() {
   return (
@@ -14,7 +15,7 @@ export function SiteFooter() {
             <img src={logo} alt="P1 Land & Property Management" className="h-12 w-auto brightness-0 invert" />
           </Link>
           <p className="text-secondary-foreground/70 text-sm leading-relaxed max-w-xs">
-            Full-service land and property management for commercial, agricultural, industrial, municipal, and institutional properties 1 acre and larger across Upstate SC and the Charlotte, NC region.
+            {footerBlurb}
           </p>
           <div className="space-y-2 pt-2">
             <a href="tel:7042218928" className="flex items-center gap-2 text-xl font-sans font-bold hover:text-primary transition-colors">
@@ -91,7 +92,7 @@ export function SiteFooter() {
             <li>Sunday: Closed</li>
             <li className="pt-4">
               <Button asChild variant="outline" className="min-h-14 w-full whitespace-normal bg-transparent px-4 py-3 text-center leading-snug border-secondary-foreground/20 hover:bg-secondary-foreground/10 text-white">
-                <Link href="/contact">Get a Free Site Assessment</Link>
+                <Link href="/contact">Request a Site Visit</Link>
               </Button>
             </li>
           </ul>
