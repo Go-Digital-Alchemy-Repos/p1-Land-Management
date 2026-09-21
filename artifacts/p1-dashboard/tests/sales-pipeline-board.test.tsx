@@ -12,9 +12,22 @@ const api = vi.hoisted(() => ({
 vi.mock("@workspace/api-client-react/dashboard", () => api);
 
 import { SalesPipelineBoard } from "../src/SalesPipelineBoard";
+import { PipelineProvider } from "../src/PipelineSettings";
 
 let host: HTMLDivElement;
 let root: Root;
+
+function deferred<T>() {
+  let resolve!: (value: T) => void;
+  let reject!: (reason?: unknown) => void;
+  const promise = new Promise<T>((next, fail) => {
+    resolve = next;
+    reject = fail;
+  });
+  return { promise, resolve, reject };
+}
+
+const emptyPage = { items: [], nextCursor: null };
 
 beforeEach(() => {
   vi.resetAllMocks();
@@ -124,6 +137,8 @@ it("retries a failed refresh and appends the next page without duplicating a car
   expect(host.querySelector('[role="alert"]')?.textContent).toContain(
     "Could not load",
   );
+  expect(host.textContent).toContain("Pipeline unavailable. Retry to refresh.");
+  expect(host.textContent).not.toContain("No inquiries in this stage.");
   refreshes = 1;
   await act(async () => {
     host.querySelector<HTMLButtonElement>("button:nth-of-type(2)")!.click();
@@ -141,4 +156,173 @@ it("retries a failed refresh and appends the next page without duplicating a car
   expect(column?.textContent).toContain("North Site");
   expect(column?.textContent).toContain("South Site");
   expect(column?.querySelectorAll(".sales-pipeline-card")).toHaveLength(2);
+});
+
+it("keeps a refreshed pipeline when an older page resolves after its request was cancelled", async () => {
+  const staleMore = deferred<any>();
+  let newPage = 0;
+  api.listSalesInquiries.mockImplementation(({ status, cursor }: any) => {
+    if (status !== "new") return Promise.resolve(emptyPage);
+    if (cursor === "first-page") return staleMore.promise;
+    newPage++;
+    return Promise.resolve(
+      newPage === 1
+        ? {
+            items: [
+              {
+                id: "11111111-1111-4111-8111-111111111111",
+                name: "Before refresh",
+                status: "new",
+              },
+            ],
+            nextCursor: "first-page",
+          }
+        : {
+            items: [
+              {
+                id: "22222222-2222-4222-8222-222222222222",
+                name: "After refresh",
+                status: "new",
+              },
+            ],
+            nextCursor: null,
+          },
+    );
+  });
+  await act(async () => {
+    root.render(<SalesPipelineBoard onCreate={vi.fn()} />);
+    await Promise.resolve();
+  });
+  const older = [...host.querySelectorAll<HTMLButtonElement>("button")].find(
+    (button) => button.textContent === "Load older inquiries",
+  );
+  await act(async () => {
+    older!.click();
+    await Promise.resolve();
+  });
+  await act(async () => {
+    [...host.querySelectorAll<HTMLButtonElement>("button")]
+      .find((button) => button.textContent === "Refresh pipeline")!
+      .click();
+    await Promise.resolve();
+  });
+  staleMore.resolve({
+    items: [
+      {
+        id: "33333333-3333-4333-8333-333333333333",
+        name: "Stale older inquiry",
+        status: "new",
+      },
+    ],
+    nextCursor: "stale-cursor",
+  });
+  await act(async () => {
+    await staleMore.promise;
+  });
+  const column = host.querySelector('[aria-label="New inquiries"]');
+  expect(column?.textContent).toContain("After refresh");
+  expect(column?.textContent).not.toContain("Before refresh");
+  expect(column?.textContent).not.toContain("Stale older inquiry");
+  expect(column?.textContent).not.toContain("Load older inquiries");
+  expect(host.querySelector('[role="alert"]')).toBeNull();
+});
+
+it("aborts an in-flight older page on unmount without rendering its late response", async () => {
+  const staleMore = deferred<any>();
+  let moreSignal: AbortSignal | undefined;
+  api.listSalesInquiries.mockImplementation(
+    ({ status, cursor }: any, options?: { signal?: AbortSignal }) => {
+      if (status !== "new") return Promise.resolve(emptyPage);
+      if (cursor) {
+        moreSignal = options?.signal;
+        return staleMore.promise;
+      }
+      return Promise.resolve({
+        items: [
+          {
+            id: "11111111-1111-4111-8111-111111111111",
+            name: "North Site",
+            status: "new",
+          },
+        ],
+        nextCursor: "older-page",
+      });
+    },
+  );
+  await act(async () => {
+    root.render(<SalesPipelineBoard onCreate={vi.fn()} />);
+    await Promise.resolve();
+  });
+  await act(async () => {
+    [...host.querySelectorAll<HTMLButtonElement>("button")]
+      .find((button) => button.textContent === "Load older inquiries")!
+      .click();
+    await Promise.resolve();
+  });
+  expect(moreSignal?.aborted).toBe(false);
+  await act(async () => root.unmount());
+  expect(moreSignal?.aborted).toBe(true);
+  staleMore.resolve({
+    items: [
+      {
+        id: "22222222-2222-4222-8222-222222222222",
+        name: "Late inquiry",
+        status: "new",
+      },
+    ],
+    nextCursor: null,
+  });
+  await act(async () => {
+    await staleMore.promise;
+  });
+  expect(host.textContent).toBe("");
+});
+
+it("uses the Owner-configured stage order, labels, and colors", async () => {
+  api.getSalesPipelineSettings.mockResolvedValue({
+    revision: 1,
+    config: {
+      version: 1,
+      stages: [
+        { key: "won", label: "Closed won", color: "emerald" },
+        { key: "new", label: "New business", color: "blue" },
+        { key: "contacted", label: "Reached", color: "cyan" },
+        { key: "qualified", label: "Qualified", color: "green" },
+        { key: "proposal", label: "Proposal", color: "amber" },
+        { key: "lost", label: "Closed lost", color: "slate" },
+      ],
+    },
+  });
+  api.listSalesInquiries.mockResolvedValue(emptyPage);
+  await act(async () => {
+    root.render(
+      <PipelineProvider>
+        <SalesPipelineBoard onCreate={vi.fn()} />
+      </PipelineProvider>,
+    );
+    await Promise.resolve();
+  });
+  await act(async () => {
+    await Promise.resolve();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+  });
+  expect(
+    [...host.querySelectorAll(".sales-pipeline-column h3 .pipeline-stage")].map(
+      (stage) => stage.textContent,
+    ),
+  ).toEqual([
+    "Closed won",
+    "New business",
+    "Reached",
+    "Qualified",
+    "Proposal",
+    "Closed lost",
+  ]);
+  const firstStage = host.querySelector(
+    ".sales-pipeline-column h3 .pipeline-stage",
+  ) as HTMLSpanElement;
+  expect(firstStage.style.color).toBe("rgb(5, 150, 105)");
+  expect(
+    host.querySelector('[aria-label="Closed won inquiries"]'),
+  ).not.toBeNull();
 });

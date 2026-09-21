@@ -4,7 +4,7 @@ import { LeadDetails } from "./LeadDetails";
 import { LeadFollowUp } from "./LeadFollowUp";
 import { LeadNotes } from "./LeadNotes";
 import { CrmTasks } from "./CrmTasks";
-import { usePipelineStages } from "./PipelineSettings";
+import { PipelineStage, usePipelineStages } from "./PipelineSettings";
 import { listSalesInquiries } from "@workspace/api-client-react/dashboard";
 import { useEffect, useMemo, useRef, useState } from "react";
 import "./sales-pipeline.css";
@@ -49,13 +49,17 @@ function PipelineCard({
           ? ` · Due ${new Date(inquiry.next_action_due_at).toLocaleString()}`
           : ""}
       </small>
-      {!open && (
-        <button type="button" onClick={() => setOpen(true)}>
-          Open inquiry workspace
-        </button>
-      )}
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-controls={`inquiry-tools-${inquiry.id}`}
+        onClick={() => setOpen((current) => !current)}
+      >
+        {open ? "Close inquiry workspace" : "Open inquiry workspace"}
+      </button>
       {open && (
         <div
+          id={`inquiry-tools-${inquiry.id}`}
           className="sales-pipeline-card-tools"
           aria-label={`Inquiry tools for ${inquiry.name}`}
         >
@@ -88,6 +92,7 @@ export function SalesPipelineBoard({
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const [hasLoaded, setHasLoaded] = useState(false);
   const generation = useRef(0);
   const controller = useRef<AbortController | null>(null);
 
@@ -96,6 +101,7 @@ export function SalesPipelineBoard({
     controller.current?.abort();
     controller.current = new AbortController();
     setLoading(true);
+    setLoadingMore(null);
     setError("");
     try {
       const pages = await Promise.all(
@@ -120,6 +126,7 @@ export function SalesPipelineBoard({
           };
         });
         setColumns(next);
+        setHasLoaded(true);
       }
     } catch (cause) {
       if (generation.current === id && (cause as Error).name !== "AbortError")
@@ -141,15 +148,27 @@ export function SalesPipelineBoard({
 
   async function more(status: string) {
     const column = columns[status];
-    if (!column?.cursor || loadingMore) return;
+    const activeController = controller.current;
+    const id = generation.current;
+    if (!column?.cursor || loading || loadingMore || !activeController) return;
     setLoadingMore(status);
     setError("");
     try {
-      const page = await listSalesInquiries({
-        status: status as StageStatus,
-        limit: 100,
-        cursor: column.cursor,
-      });
+      const page = await listSalesInquiries(
+        {
+          status: status as StageStatus,
+          limit: 100,
+          cursor: column.cursor,
+        },
+        {
+          signal: AbortSignal.any([
+            activeController.signal,
+            AbortSignal.timeout(30000),
+          ]),
+        },
+      );
+      if (generation.current !== id || controller.current !== activeController)
+        return;
       setColumns((current) => ({
         ...current,
         [status]: {
@@ -163,12 +182,19 @@ export function SalesPipelineBoard({
           cursor: page.nextCursor,
         },
       }));
-    } catch {
-      setError(
-        "Could not load older inquiries for this stage. Retry to keep the current cards.",
-      );
+    } catch (cause) {
+      if (
+        generation.current === id &&
+        controller.current === activeController &&
+        (cause as Error).name !== "AbortError"
+      ) {
+        setError(
+          "Could not load older inquiries for this stage. Retry to keep the current cards.",
+        );
+      }
     } finally {
-      setLoadingMore(null);
+      if (generation.current === id && controller.current === activeController)
+        setLoadingMore(null);
     }
   }
 
@@ -207,7 +233,8 @@ export function SalesPipelineBoard({
               aria-label={`${stage.label} inquiries`}
             >
               <h3>
-                {stage.label} <span>{column.items.length}</span>
+                <PipelineStage value={stage.key} />{" "}
+                <span>{column.items.length}</span>
               </h3>
               {column.items.map((inquiry) => (
                 <PipelineCard
@@ -217,7 +244,12 @@ export function SalesPipelineBoard({
                   onChanged={() => void load()}
                 />
               ))}
-              {!loading && !column.items.length && (
+              {!loading && !hasLoaded && (
+                <p className="sales-pipeline-empty">
+                  Pipeline unavailable. Retry to refresh.
+                </p>
+              )}
+              {!loading && hasLoaded && !column.items.length && (
                 <p className="sales-pipeline-empty">
                   No inquiries in this stage.
                 </p>
@@ -225,7 +257,7 @@ export function SalesPipelineBoard({
               {column.cursor && (
                 <button
                   type="button"
-                  disabled={loadingMore === stage.key}
+                  disabled={loading || Boolean(loadingMore)}
                   onClick={() => void more(stage.key)}
                 >
                   {loadingMore === stage.key
