@@ -39,7 +39,9 @@ export async function listManagedAccounts() {
     COALESCE(a.first_name,'') AS "firstName",COALESCE(a.last_name,'') AS "lastName",
     COALESCE(a.capabilities,'{}') AS capabilities,COALESCE(a.form_notification_ids,'{}') AS "formNotificationIds",
     COALESCE(a.version,1) AS version,a.reviewed_at AS "reviewedAt"
-    FROM "user" u JOIN staff_profile p ON p.user_id=u.id LEFT JOIN business_account_access a ON a.user_id=u.id ORDER BY u.name,u.id`);
+    FROM "user" u JOIN staff_profile p ON p.user_id=u.id LEFT JOIN business_account_access a ON a.user_id=u.id
+    LEFT JOIN account_retirement r ON r.user_id=u.id AND r.restored_at IS NULL
+    WHERE r.user_id IS NULL ORDER BY u.name,u.id`);
   return result.rows.map((row) => ({
     ...row,
     capabilities: row.role === "owner" ? [...CAPABILITIES] : row.capabilities,
@@ -47,6 +49,54 @@ export async function listManagedAccounts() {
       ? []
       : suggestedLegacyCapabilities(row.role),
   }));
+}
+
+export async function retireManagedAccount(ownerId: string, targetId: string) {
+  return transaction(async (c) => {
+    await ownerLock(c, ownerId);
+    const target = (await c.query(
+      `SELECT u.email,p.role,p.active,COALESCE(a.capabilities,'{}') AS capabilities,
+       COALESCE(a.form_notification_ids,'{}') AS form_notification_ids,r.user_id AS retired
+       FROM "user" u JOIN staff_profile p ON p.user_id=u.id
+       LEFT JOIN business_account_access a ON a.user_id=u.id
+       LEFT JOIN account_retirement r ON r.user_id=u.id AND r.restored_at IS NULL
+       WHERE u.id=$1 FOR UPDATE OF u,p`, [targetId]
+    )).rows[0];
+    if (!target) throw new HttpError(404, "Account not found");
+    const installation = (await c.query("SELECT owner_id FROM installation WHERE id=1 FOR SHARE")).rows[0];
+    if (installation?.owner_id === targetId) throw new HttpError(409, "The canonical Owner account cannot be retired");
+    if (target.active) throw new HttpError(409, "Only inactive accounts can be retired");
+    if (target.retired) throw new HttpError(409, "Account is already retired");
+    await c.query("INSERT INTO business_account_access(user_id) VALUES($1) ON CONFLICT DO NOTHING", [targetId]);
+    await c.query(
+      `INSERT INTO account_retirement(user_id,retired_by,original_role,original_active,prior_capabilities,prior_form_notification_ids)
+       VALUES($1,$2,$3,false,$4,$5)`, [targetId, ownerId, target.role, target.capabilities, target.form_notification_ids]
+    );
+    await c.query("UPDATE business_account_access SET capabilities='{}',form_notification_ids='{}',version=version+1,updated_at=now() WHERE user_id=$1", [targetId]);
+    await c.query('DELETE FROM session WHERE "userId"=$1', [targetId]);
+    await c.query("UPDATE invitation SET revoked_at=now() WHERE lower(email)=lower($1) AND accepted_at IS NULL AND revoked_at IS NULL", [target.email]);
+    await audit(c, ownerId, "account.retired", targetId, { originalRole: target.role });
+    return { retired: true };
+  });
+}
+
+export async function recoverRetiredManagedAccount(ownerId: string, targetId: string) {
+  return transaction(async (c) => {
+    await ownerLock(c, ownerId);
+    const retired = (await c.query(
+      `SELECT r.prior_capabilities,r.prior_form_notification_ids,p.active,i.owner_id
+       FROM account_retirement r JOIN staff_profile p ON p.user_id=r.user_id
+       CROSS JOIN installation i WHERE r.user_id=$1 AND r.restored_at IS NULL FOR UPDATE OF r,p`, [targetId]
+    )).rows[0];
+    if (!retired) throw new HttpError(404, "Retired account not found");
+    if (retired.owner_id === targetId) throw new HttpError(409, "The canonical Owner account cannot be recovered here");
+    if (retired.active) throw new HttpError(409, "Retired account state is invalid");
+    await c.query("UPDATE account_retirement SET restored_at=now(),restored_by=$2 WHERE user_id=$1", [targetId, ownerId]);
+    await c.query("UPDATE business_account_access SET capabilities=$2,form_notification_ids=$3,version=version+1,updated_at=now() WHERE user_id=$1", [targetId, retired.prior_capabilities, retired.prior_form_notification_ids]);
+    await c.query('DELETE FROM session WHERE "userId"=$1', [targetId]);
+    await audit(c, ownerId, "account.retirement.recovered", targetId);
+    return { recovered: true };
+  });
 }
 export async function updateManagedAccount(
   ownerId: string,

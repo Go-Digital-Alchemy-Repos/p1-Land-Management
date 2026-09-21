@@ -40,6 +40,8 @@ export async function identity(req: Request) {
   const s = await sessionFromRequest(req);
   if (!s || !s.user.emailVerified)
     throw new HttpError(401, "Sign in with a verified account");
+  if ((await pool.query("SELECT 1 FROM account_retirement WHERE user_id=$1 AND restored_at IS NULL", [s.user.id])).rowCount)
+    throw new HttpError(401, "Sign in with a verified account");
   return s;
 }
 export async function actor(req: Request): Promise<Actor> {

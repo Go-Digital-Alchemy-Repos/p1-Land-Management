@@ -1859,6 +1859,21 @@ export const businessAccountAccess = pgTable("business_account_access", {
   updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" }).defaultNow().notNull(),
 }, table => [check("business_account_access_version_check", sql`${table.version} > 0`)]);
 
+export const accountRetirement = pgTable("account_retirement", {
+  userId: text("user_id").primaryKey().references(() => user.id),
+  retiredAt: timestamp("retired_at", { withTimezone: true, mode: "string" }).defaultNow().notNull(),
+  retiredBy: text("retired_by").notNull().references(() => user.id),
+  originalRole: text("original_role").notNull(),
+  originalActive: boolean("original_active").notNull(),
+  priorCapabilities: text("prior_capabilities").array().default(sql`'{}'`).notNull(),
+  priorFormNotificationIds: text("prior_form_notification_ids").array().default(sql`'{}'`).notNull(),
+  restoredAt: timestamp("restored_at", { withTimezone: true, mode: "string" }),
+  restoredBy: text("restored_by").references(() => user.id),
+}, table => [
+  check("account_retirement_original_inactive", sql`${table.originalActive}=false`),
+  check("account_retirement_recovery_pair", sql`(${table.restoredAt} IS NULL) = (${table.restoredBy} IS NULL)`),
+]);
+
 
 export const agreementCompositionDraft = pgTable("agreement_composition_draft", {
   changeOrderEstimateId: uuid("change_order_estimate_id").references(()=>estimate.id),

@@ -35,6 +35,15 @@ async function queueEmail(to: string, subject: string, text: string) {
     { to, subject, text },
   ]);
 }
+async function rejectRetiredIdentity(email: unknown) {
+  const normalized = typeof email === "string" ? email.trim().toLowerCase() : "";
+  if (!normalized) return;
+  const retired = await pool.query(
+    `SELECT 1 FROM "user" u JOIN account_retirement r ON r.user_id=u.id
+     WHERE lower(u.email)=$1 AND r.restored_at IS NULL`, [normalized],
+  );
+  if (retired.rowCount) throw new APIError("FORBIDDEN", { message: "Account is unavailable" });
+}
 async function releaseFactorResetLock(client: PoolClient | undefined) {
   if (!client) return;
   try {
@@ -168,6 +177,8 @@ export const auth = betterAuth({
     }),
     before: createAuthMiddleware(async (ctx) => {
       await requireAssuredFactorReset(ctx);
+      if (["/sign-in/email", "/request-password-reset", "/sign-up/email"].includes(ctx.path))
+        await rejectRetiredIdentity(ctx.body?.email);
       if (ctx.path === "/sign-up/email") {
         const email = String(ctx.body?.email || "").toLowerCase();
         const code = ctx.headers?.get("x-p1-setup-code") || "";

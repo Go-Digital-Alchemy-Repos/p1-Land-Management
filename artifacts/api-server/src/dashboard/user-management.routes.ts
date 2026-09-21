@@ -22,6 +22,8 @@ import {
   listManagedAccounts,
   revokeManagedSessions,
   updateManagedAccount,
+  retireManagedAccount,
+  recoverRetiredManagedAccount,
 } from "./user-management.service";
 
 export const userManagementApi = Router();
@@ -55,6 +57,14 @@ userManagementApi.patch("/user-management/users/:id", async (req, res) => {
     ),
   );
 });
+userManagementApi.post(
+  "/user-management/users/:id/retire",
+  async (req, res) => res.json(await retireManagedAccount((await actor(req)).id, z.string().min(1).parse(req.params.id))),
+);
+userManagementApi.post(
+  "/user-management/users/:id/retire/recover",
+  async (req, res) => res.json(await recoverRetiredManagedAccount((await actor(req)).id, z.string().min(1).parse(req.params.id))),
+);
 userManagementApi.post(
   "/user-management/users/:id/revoke-sessions",
   async (req, res) => {
