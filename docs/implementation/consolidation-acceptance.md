@@ -552,7 +552,10 @@ the existing Sales inquiry API and the versioned follow-up, detail, note, task,
 imported-history and Won-to-customer components; it creates no second CRM store
 or transport contract. Manual inquiry entry, filter/search and estimates remain
 in `/sales`. A dashboard typecheck and focused component test verify route
-authorization and six-status loading against the existing API contract.
+authorization and six-status loading against the existing API contract. The
+loopback-only browser fixture also loads every column, moves a synthetic inquiry
+through the existing versioned follow-up contract, verifies its durable move to
+Contacted, and checks the 390px layout. It makes no provider or production write.
 
 This is an implementation checkpoint, not production CRM cutover evidence. Still
 required: real permitted-user browser acceptance (including mobile and
