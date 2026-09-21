@@ -721,7 +721,7 @@ test(
     );
     await pool.query(
       "INSERT INTO business_account_access(user_id,capabilities) VALUES($1,$2)",
-      [user, ["operations.recurring"]],
+      [user, ["operations.recurring", "revenue.agreements"]],
     );
     await pool.query(
       `INSERT INTO session(id,"expiresAt",token,"userId") VALUES($1,now()+interval '1 hour',$2,$3)`,
@@ -758,6 +758,24 @@ test(
             }),
           },
         );
+      for (const [role, capabilities] of [
+        ["manager", ["operations.recurring"]],
+        ["finance", ["operations.recurring"]],
+        ["dispatch", ["operations.recurring", "revenue.agreements"]],
+      ] as const) {
+        await pool.query("UPDATE staff_profile SET role=$2 WHERE user_id=$1", [user, role]);
+        await pool.query("UPDATE business_account_access SET capabilities=$2 WHERE user_id=$1", [user, capabilities]);
+        const denied = await activate();
+        assert.equal(denied.status, 403, await denied.text());
+        const unchanged = (await pool.query(
+          "SELECT r.paused,a.status FROM recurring_service r JOIN service_agreement a ON a.id=r.agreement_id WHERE r.id=$1",
+          [recurrence.id],
+        )).rows[0];
+        assert.equal(unchanged.paused, true);
+        assert.equal(unchanged.status, "draft");
+      }
+      await pool.query("UPDATE staff_profile SET role='manager' WHERE user_id=$1", [user]);
+      await pool.query("UPDATE business_account_access SET capabilities=$2 WHERE user_id=$1", [user, ["operations.recurring", "revenue.agreements"]]);
       for (const mismatch of [
         { localTime: "23:59" },
         { nextDate: "2032-01-03" },
@@ -801,7 +819,7 @@ test(
     ).rows[0].d;
     await pool.query(
       "UPDATE business_account_access SET capabilities=$2 WHERE user_id=$1",
-      [user, ["operations.recurring", "operations.schedule", "revenue.sales"]],
+      [user, ["operations.recurring", "operations.schedule", "revenue.sales", "revenue.agreements"]],
     );
     const callStaff = async (path: string, body: unknown, cookie = operationsCookie) => {
       const response = await fetch(

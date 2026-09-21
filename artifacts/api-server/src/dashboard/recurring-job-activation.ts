@@ -1,3 +1,4 @@
+import { requireAgreementManagement } from "./service-agreement.policy";
 import { z } from "zod";
 import type { Actor } from "./access";
 import { transaction } from "./database";
@@ -19,6 +20,7 @@ export async function activateRecurringJob(
   input: unknown,
 ) {
   requireCapability(a, "operations.recurring");
+  requireAgreementManagement(a);
   const b = activationInput.parse(input);
   await transaction(async (c) => {
     const identity = (

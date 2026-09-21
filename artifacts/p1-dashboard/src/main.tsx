@@ -10,7 +10,7 @@ import { ComposedProposal } from "./ComposedProposal";
 import BillingEstimatePicker from "./BillingAllocationPicker";
 import { formatEstimateExpiry } from "@workspace/api-zod/estimate-document";
 import { dataLoadPlan } from "./data-load-plan";
-import { hasCapability } from "@workspace/api-zod/business-access";
+import { hasCapability, canManageServiceAgreements } from "@workspace/api-zod/business-access";
 import { UserManager } from "./UserManager";
 import { WorkReadiness } from "./WorkReadiness";
 import { OwnerMfaRecovery } from "./OwnerMfaRecovery";
@@ -2352,7 +2352,7 @@ function App() {
                   empty="No recurring services yet."
                 />
                 <p>Visit allowances include reserved work and charged visits. Cancelled or skipped visits release a slot only when uncharged. Blank counts indicate a service without a per-visit allowance for its next date.</p>
-                {(data["recurring-jobs"] || []).filter((item: any) => item.paused && item.agreement_status === "draft").map((item: any) => <button key={item.id} onClick={() => openForm("activate-recurring", item)}>Schedule and activate {item.title}</button>)}
+                {canManageServiceAgreements(person) && (data["recurring-jobs"] || []).filter((item: any) => item.paused && item.agreement_status === "draft").map((item: any) => <button key={item.id} onClick={() => openForm("activate-recurring", item)}>Schedule and activate {item.title}</button>)}
               </section>
             </>
           )}
