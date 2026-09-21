@@ -238,7 +238,7 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
     assert.equal(old.headers.location, '/services/commercial-snow-ice-management?utm_source=winter');
     const current = await request(port, '/services/commercial-snow-ice-management');
     assert.equal(current.status, 200);
-    assert(current.body.includes('Get a Free Site Assessment'));
+    assert(current.body.includes('Request a Site Visit'));
   });
 
   await t.test('retired testimonials page permanently redirects to Contact', async () => {

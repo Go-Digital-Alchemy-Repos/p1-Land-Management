@@ -5,8 +5,11 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { gzipSync } from 'node:zlib';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const publicRoot = resolve(root, 'dist/public');
 const { render } = await import(pathToFileURL(resolve(root, 'dist/server/entry-server.js')).href);
-const paths = [...readFileSync(resolve(root, 'src/app-routes.tsx'), 'utf8').matchAll(/<Route\s+path="([^"]+)"/g)].map(match => match[1]);
+const paths = [...readFileSync(resolve(root, 'src/app-routes.tsx'), 'utf8').matchAll(/<Route\s+path="([^"]+)"/g)]
+  .map(match => match[1])
+  .filter(path => !path.includes(':') && !path.includes('*'));
 assert(paths.length > 0, 'Public route inventory must not be empty');
 assert.equal(new Set(paths).size, paths.length, 'Public route paths must be unique');
 const companyIconUrl = 'https://www.p1landmanagement.com/p1-symbol.svg';
@@ -45,7 +48,6 @@ try {
     if (path === '/about') assert(result.html.includes('Land and Grounds Care With'), 'Fragment-based hero title uses title case');
     assert(result.head.title.length <= 60, `${path}: title must be 60 characters or fewer (${result.head.title.length})`);
     assert(result.head.description.length <= 160, `${path}: description must be 160 characters or fewer (${result.head.description.length})`);
-    assert.equal((result.html.match(/<h1(?:\s|>)/g) || []).length, 1, `${path}: one heading`);
     assert(result.fields.page.seoTitle && result.fields.page.seoDescription && result.fields.page.seoImage, `${path}: editable SEO`);
     if (path === "/") assert(/href="\/contact"[^>]*class="[^"]*inline-flex|class="[^"]*inline-flex[^>]*href="\/contact"/.test(result.html), "Slot CTA must retain button styling");
     assert(!/Marcus T\.|50-Acre Forestry|P1 took over our|fill-current|Est\. 2009|±0\.1/.test(result.html), `${path}: unverified proof`);
@@ -56,6 +58,12 @@ try {
       const href = match[1].replaceAll('&amp;', '&');
       if (!href.startsWith('/') || href.startsWith('//')) continue;
       const pathname = href.split('?')[0].replace(/\/$/, '') || '/';
+      if (/\.[a-z0-9]{2,8}$/i.test(pathname)) {
+        const asset = resolve(publicRoot, `.${pathname}`);
+        assert(asset.startsWith(`${publicRoot}/`), `${path}: unsafe local asset link ${href}`);
+        assert(existsSync(asset), `${path}: missing local asset link ${href}`);
+        continue;
+      }
       assert(paths.includes(pathname), `${path}: unknown internal link ${href}`);
     }
     for (const type of ['text', 'image', 'ctaTarget']) {
@@ -69,6 +77,7 @@ try {
     }
     const html = readFileSync(resolve(root, `dist/public/${path === '/' ? '' : path.slice(1) + '/'}index.html`), 'utf8');
     assert(!html.includes('GeneralContractor'), `${path}: competing business schema`);
+    assert.equal((html.match(/<h1(?:\s|>)/g) || []).length, 1, `${path}: one heading`);
     assert(html.includes('href="#main-content"'), `${path}: skip link`);
     const main = html.match(/<main\b[^>]*\bid="main-content"[^>]*>([\s\S]*?)<\/main>/)?.[1];
     assert(main, `${path}: main landmark`);
@@ -80,7 +89,11 @@ try {
       const markup = control[0];
       if (/\btype="hidden"|\baria-hidden="true"/.test(markup)) continue;
       const id = markup.match(/\bid="([^"]+)"/)?.[1];
+      const before = main.slice(0, control.index);
+      const isWrappedByLabel = before.lastIndexOf('<label') > before.lastIndexOf('</label>')
+        && main.indexOf('</label>', control.index) !== -1;
       const hasAccessibleName = /\baria-label="[^"]+"|\baria-labelledby="[^"]+"/.test(markup)
+        || isWrappedByLabel
         || (id ? new RegExp(`<label\\b[^>]*\\bfor="${id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`).test(main) : false);
       assert(hasAccessibleName, `${path}: visible ${control[1]} must have a programmatic label`);
     }
@@ -110,14 +123,29 @@ try {
     }
   }
   const home = render('/');
-  for (const type of ['text', 'image', 'ctaTarget']) {
-    const found = Object.entries(home.fields.global).find(([, item]) => item.field.type === type);
-    if (!found) continue;
-    const [key] = found;
-    const replacement = type === 'text' ? 'QA global text' : type === 'image' ? '/qa-global.webp' : '/contact?global=1';
-    assert(render('/', { route: '/', content: {}, global: { [key]: replacement } }).html.includes(replacement), `Global ${type} override`);
-    if (type !== 'text') {
-      assert(!render('/', { route: '/', content: {}, global: { [key]: 'javascript:alert(1)' } }).html.includes('javascript:alert'), `Unsafe ${type} rejected`);
+  // These fields are registered for the editor but only appear in conditional
+  // mobile/desktop navigation states or are retained site-identity metadata.
+  // Keep this list explicit so a newly hidden global field cannot silently escape
+  // the override audit.
+  const intentionallyHiddenGlobalKeys = new Set([
+    'f15oz4jr', 'f9spy6u', 'f1jhcqx9', 'f1hf0vxg', 'f5fayod', 'fgf0583', 'fl6vzc3',
+  ]);
+  const supportedGlobalTypes = new Set(['text', 'textarea', 'image', 'imageAlt', 'ctaTarget']);
+  for (const [key, item] of Object.entries(home.fields.global).filter(([, item]) => supportedGlobalTypes.has(item.field.type))) {
+    const type = item.field.type;
+    const replacement = type === 'image' ? '/qa-global.webp'
+      : type === 'imageAlt' ? 'QA global image alternative'
+        : type === 'ctaTarget' ? '/contact?global=1'
+          : `QA global ${type} ${key}`;
+    const edited = render('/', { route: '/', content: {}, global: { [key]: replacement } });
+    const editedOutput = edited.html + JSON.stringify(edited.head);
+    if (intentionallyHiddenGlobalKeys.has(key)) {
+      assert(!editedOutput.includes(replacement), `${key}: hidden-global classification must remain accurate`);
+      continue;
+    }
+    assert(editedOutput.includes(replacement), `${key}: global ${type} override`);
+    if (type === 'image' || type === 'ctaTarget') {
+      assert(!render('/', { route: '/', content: {}, global: { [key]: 'javascript:alert(1)' } }).html.includes('javascript:alert'), `${key}: unsafe ${type} rejected`);
     }
   }
   const edited = render('/contact', { route: '/contact', content: { seoTitle: 'QA SEO title', seoDescription: 'QA description', seoImage: '/qa.webp' }, global: {} });
