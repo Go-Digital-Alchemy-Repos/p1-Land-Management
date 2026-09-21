@@ -14,6 +14,12 @@ import {
 import { asyncHandler } from "../../middleware/error-handler";
 import { storage } from "../../storage";
 import { createOrUpdateCrmLead, updateCrmLead } from "../../services/crm.service";
+import {
+  getLegacyStaffCrmWriteFence,
+  recoverLegacyStaffCrmWriteFence,
+  requireLegacyStaffCrmWritesAllowed,
+  saveLegacyStaffCrmWriteFence,
+} from "../../services/legacy-staff-crm-write-fence.service";
 import { paramString } from "../../utils/params";
 import type { CrmClientStatus, CrmLeadStage } from "@shared/schema";
 
@@ -28,8 +34,70 @@ router.get(
 router.put(
   "/settings/pipeline",
   requireRole("admin"),
+  requireLegacyStaffCrmWritesAllowed("pipeline_settings"),
   asyncHandler(async (req, res) => {
     res.json(await saveCrmPipelineSettings(req.body, req.user!.id));
+  }),
+);
+
+const activationReadinessSchema = z
+  .object({
+    staffWritesQuiesced: z.literal(true),
+    inFlightStaffWritesDrained: z.literal(true),
+    postFenceReconciliationPlanned: z.literal(true),
+  })
+  .strict();
+
+const writeFenceSchema = z
+  .object({
+    staffWritesFenced: z.boolean(),
+    expectedVersion: z.string().regex(/^[a-f0-9]{64}$/),
+    activationReadiness: activationReadinessSchema.optional(),
+  })
+  .strict()
+  .superRefine((value, context) => {
+    if (value.staffWritesFenced && !value.activationReadiness)
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["activationReadiness"],
+        message: "Quiesce, in-flight drain, and reconciliation confirmation are required",
+      });
+  });
+
+router.get(
+  "/settings/legacy-staff-write-fence",
+  asyncHandler(async (_req, res) => {
+    res.json(await getLegacyStaffCrmWriteFence());
+  }),
+);
+router.put(
+  "/settings/legacy-staff-write-fence",
+  requireRole("admin"),
+  asyncHandler(async (req, res) => {
+    const parsed = writeFenceSchema.parse(req.body);
+    res.json(
+      await saveLegacyStaffCrmWriteFence(
+        parsed.staffWritesFenced,
+        parsed.expectedVersion,
+        req.user!.id,
+        parsed.activationReadiness,
+      ),
+    );
+  }),
+);
+router.put(
+  "/settings/legacy-staff-write-fence/recover",
+  requireRole("admin"),
+  asyncHandler(async (req, res) => {
+    const parsed = writeFenceSchema.parse(req.body);
+    res.json(
+      await recoverLegacyStaffCrmWriteFence(
+        parsed.staffWritesFenced,
+        parsed.expectedVersion,
+        req.user!.id,
+        parsed.activationReadiness,
+      ),
+    );
   }),
 );
 
@@ -84,6 +152,7 @@ router.get(
 
 router.patch(
   "/clients/:id",
+  requireLegacyStaffCrmWritesAllowed("client_update"),
   asyncHandler(async (req, res) => {
     const parsed = crmClientUpdateSchema.parse(req.body);
     const client = await storage.crm.updateClient(paramString(req.params.id), parsed);
@@ -94,6 +163,7 @@ router.patch(
 
 router.post(
   "/clients/:id/notes",
+  requireLegacyStaffCrmWritesAllowed("client_note_create"),
   asyncHandler(async (req, res) => {
     const clientId = paramString(req.params.id);
     const client = await storage.crm.getClientById(clientId);
@@ -111,6 +181,7 @@ router.post(
 
 router.post(
   "/clients/:id/tasks",
+  requireLegacyStaffCrmWritesAllowed("client_task_create"),
   asyncHandler(async (req, res) => {
     const clientId = paramString(req.params.id);
     const client = await storage.crm.getClientById(clientId);
@@ -131,6 +202,7 @@ router.post(
 
 router.patch(
   "/clients/tasks/:taskId",
+  requireLegacyStaffCrmWritesAllowed("client_task_update"),
   asyncHandler(async (req, res) => {
     const parsed = clientTaskUpdateSchema.parse(req.body);
     const task = await storage.crm.updateClientTask(paramString(req.params.taskId), parsed);
@@ -141,6 +213,7 @@ router.patch(
 
 router.post(
   "/",
+  requireLegacyStaffCrmWritesAllowed("lead_create"),
   asyncHandler(async (req, res) => {
     const result = await createOrUpdateCrmLead(
       { ...req.body, source: req.body?.source ?? "manual" },
@@ -161,6 +234,7 @@ router.get(
 
 router.patch(
   "/:id",
+  requireLegacyStaffCrmWritesAllowed("lead_update_or_won_conversion"),
   asyncHandler(async (req, res) => {
     const parsed = leadUpdateSchema.parse(req.body);
     const lead = await updateCrmLead(paramString(req.params.id), parsed, req.user?.id);
@@ -171,6 +245,7 @@ router.patch(
 
 router.post(
   "/:id/notes",
+  requireLegacyStaffCrmWritesAllowed("lead_note_create"),
   asyncHandler(async (req, res) => {
     const leadId = paramString(req.params.id);
     const lead = await storage.crm.getLeadById(leadId);
@@ -188,6 +263,7 @@ router.post(
 
 router.post(
   "/:id/tasks",
+  requireLegacyStaffCrmWritesAllowed("lead_task_create"),
   asyncHandler(async (req, res) => {
     const leadId = paramString(req.params.id);
     const lead = await storage.crm.getLeadById(leadId);
@@ -208,6 +284,7 @@ router.post(
 
 router.patch(
   "/tasks/:taskId",
+  requireLegacyStaffCrmWritesAllowed("lead_task_update"),
   asyncHandler(async (req, res) => {
     const parsed = taskUpdateSchema.parse(req.body);
     const task = await storage.crm.updateTask(paramString(req.params.taskId), parsed);

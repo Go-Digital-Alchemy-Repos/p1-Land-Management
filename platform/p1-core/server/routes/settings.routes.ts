@@ -9,6 +9,7 @@ import { isWebsiteColorKey } from "@shared/website-colors";
 import { isWebsiteOwner, requireWebsiteOwner, websiteSettingScope } from "../middleware/website-owner";
 import { getBaseUrl } from "../utils/route-helpers";
 import { CRM_PIPELINE_SETTING_KEY } from "@shared/crm-pipeline-settings";
+import { LEGACY_STAFF_CRM_WRITE_FENCE_SETTING_KEY } from "@shared/crm-write-fence";
 import { Router, type NextFunction, type Request, type Response } from "express";
 import { z } from "zod";
 import { storage } from "../storage/index";
@@ -119,10 +120,10 @@ router.put(
   requireSettingWritePermission,
   asyncHandler(async (req, res) => {
     const data = upsertSettingSchema.parse(req.body);
-    if (data.key === CRM_PIPELINE_SETTING_KEY)
+    if (data.key === CRM_PIPELINE_SETTING_KEY || data.key === LEGACY_STAFF_CRM_WRITE_FENCE_SETTING_KEY)
       return res
         .status(400)
-        .json({ message: "Use /api/admin/crm/settings/pipeline to update pipeline settings" });
+        .json({ message: "Use the dedicated CRM settings endpoint to update CRM cutover settings" });
     const existingPrivate = (await storage.settings.getAllSettings()).find(
       (s) => s.key === data.key,
     );
@@ -177,10 +178,10 @@ router.delete(
   "/settings/:key",
   requireRole("admin"),
   asyncHandler(async (req, res) => {
-    if (paramString(req.params.key) === CRM_PIPELINE_SETTING_KEY)
+    if ([CRM_PIPELINE_SETTING_KEY, LEGACY_STAFF_CRM_WRITE_FENCE_SETTING_KEY].includes(paramString(req.params.key)))
       return res
         .status(400)
-        .json({ message: "Use /api/admin/crm/settings/pipeline to restore pipeline defaults" });
+        .json({ message: "Use the dedicated CRM settings endpoint to update CRM cutover settings" });
     const existing = (await storage.settings.getAllSettings()).find(
       (s) => s.key === paramString(req.params.key),
     );
