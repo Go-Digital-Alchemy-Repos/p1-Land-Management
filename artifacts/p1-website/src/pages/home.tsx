@@ -15,10 +15,9 @@ import propertyPlanningImg from "@/assets/commercial-property.png";
 import {
   Phone,
   ArrowUpRight,
+  CheckCircle2,
   ShieldCheck,
   Check,
-  MapPin,
-  Mountain,
   Droplets,
   Truck,
   Ruler,
@@ -60,10 +59,10 @@ const FAQS = [
 ];
 
 const trust = [
-  { label: "Nearly 30 Years of Experience", icon: ShieldCheck },
-  { label: "Upstate SC + Charlotte NC", icon: MapPin },
-  { label: "1-Acre Minimum", icon: Ruler },
-  { label: "Large-Acreage Specialists", icon: Mountain },
+  "Nearly 30 Years of Experience",
+  "Upstate SC + Charlotte NC",
+  "1-Acre Minimum",
+  "Large-Acreage Specialists",
 ];
 
 function Kicker({ children, onDark = false }: { children: React.ReactNode; onDark?: boolean }) {
@@ -138,23 +137,14 @@ export default function Home() {
       </section>
 
       {/* TRUST STRIP */}
-      <section className="relative z-10 bg-background py-12">
-        <div className="site-shell">
-          <div
-            className="grid grid-cols-2 overflow-hidden rounded-[4px] border bg-white md:grid-cols-4"
-            style={{ borderColor: "hsl(215 30% 15% / 0.08)", boxShadow: "0 30px 60px -32px hsl(215 45% 15%), 0 8px 18px -12px hsl(215 40% 20% / 0.3)" }}
-          >
-            {trust.map((t, i) => (
-              <div
-                key={t.label}
-                className="flex items-center gap-3 px-6 py-6"
-                style={{ borderRight: i < trust.length - 1 ? "1px solid hsl(215 30% 15% / 0.07)" : "none" }}
-              >
-                <t.icon className="h-5 w-5 shrink-0 text-primary" />
-                <span className="font-sans text-[13px] font-bold leading-tight text-secondary">{t.label}</span>
-              </div>
-            ))}
-          </div>
+      <section className="border-b border-border bg-white py-7" aria-label="Why choose P1">
+        <div className="site-shell grid gap-4 text-sm font-bold text-secondary sm:grid-cols-2 lg:grid-cols-4">
+          {trust.map((item) => (
+            <div key={item} className="flex items-center gap-2">
+              <CheckCircle2 className="h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
+              <span>{item}</span>
+            </div>
+          ))}
         </div>
       </section>
 
