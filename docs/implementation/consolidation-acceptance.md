@@ -590,10 +590,10 @@ substitute for a broader release, migration, or retirement decision.
 | Restore and rollback | Existing dashboard/database restore, migration replay and source-built rollback evidence is retained above. | Recover an owned provider-side object archive and an exact retrievable Railway image, then rehearse the agreed application/data rollback order. Do not treat source rebuilds as image recovery. |
 | Google reporting | Live Owner Analytics showed GA4 Data API property `554712298` with populated page-view rows. Core OAuth token refresh succeeds and the configured Search Console target is `sc-domain:p1landmanagement.com`. | Search Console `sites.get` returned `404 notFound`; the OAuth identity can see only the apex URL-prefix property, while the canonical Domain property has only the verified Owner listed. Add the existing connected principal with least-privilege read access, then rerun the report. Its identity cannot be derived under the intentional `webmasters.readonly` token; do not add scopes or guess a principal. |
 | Accounts and MFA | The September 19 read-only inventory/reconciliation evidence is retained; no profile, factor, invitation or account status was changed during this checkpoint. | Owner must disposition the seven inactive accounts and decide the current Owner MFA enforcement/recovery policy from fresh account evidence. Do not infer current enrollment from the historical inventory. Complete the controlled old-account transition only after that decision. |
-| Standalone public forms, validation and performance | Candidate branch `origin/codex/public-qa-forms` at `ea6e16e2` adds standalone public form routes, required multi-page validation and public bundle/performance checks. The existing released commercial service-choice repair remains separate. | Integrate and locally validate the candidate without widening form effects, then perform the approved live release and controlled end-to-end QA inquiry acceptance. Candidate evidence alone does not establish live form delivery or performance. |
+| Standalone public forms, validation and performance | Release `29b292ad` is on main and all three Railway services reported SUCCESS. Root independently passed integrated builds, Core typecheck, required-field/host checks, seven navigation race tests, nine verification tests, 98 public HTTP tests and 54-route QA within the unchanged 150 KiB initial JavaScript budget. Fresh production browser checks confirmed form choices, noindex, preserved homepage content and a successful controlled inquiry receipt. | Native Sales and notification correlation remains separately recorded; bundle checks are not field Core Web Vitals measurements. |
 | Agreements, customer/staff/crew journey | A synthetic long agreement PDF rendered as 12 US-Letter pages with embedded fonts; first, middle and final pages were visually inspected. The fixture preserved accented text, terms markers and page numbering without clipping or overlap. The existing test is `artifacts/api-server/src/dashboard/estimate-pdf.test.ts` (2/2 passed). On September 21, `node scripts/test-service-agreements.mjs` passed its fresh isolated migration/replay suite: 12 agreement lifecycle, preparation, authorization and authenticated HTTP checks passed. The HTTP role boundary rejects unauthenticated, client and crew agreement-list requests; dispatch receives a reduced agreement projection; manager and finance actions retain their distinct agreement/billing capability boundaries. | The complete authorized customer/staff/crew browser journey remains open. The PDF result and synthetic HTTP roles are not customer document, browser, device, or billing-provider acceptance. |
 | Field/offline/device | Browser queue/replay and local server/database fixtures are recorded above. | Run the physical iPhone and Android acceptance sequence: offline note/time/issue/photo capture, restart, interrupted-photo retry, changed assignment conflict, low-storage and sign-out/recovery checks. Emulator/browser evidence does not prove this gate. |
-| Controlled public commercial inquiry | Core-to-Dashboard handoff and notification jobs have prior non-provider evidence. | One clearly labelled QA inquiry remains prepared but unsubmitted. Browser policy requires immediate Owner confirmation before an external form submission; retain its resulting lead and do not bypass CAPTCHA. |
+| Controlled public commercial inquiry | Exactly one labeled internal QA inquiry (`P1-QA-20260921-29b292ad`) was submitted through the deployed public form. The browser displayed its successful receipt. | Correlate this exact record with native Sales and notification jobs without resubmission or retry. SMTP transport acceptance is not recipient inbox confirmation. |
 
 Focused, sanitized validation commands for the new evidence were:
 
@@ -612,3 +612,22 @@ The PostgreSQL fixture accepted only loopback, an exact dedicated test database
 name and an explicit opt-in; cleanup targeted solely its fixture content identity
 and editor. It was stopped and auto-removed after the test. The long-PDF output
 was synthetic and retained only as a local QA artifact.
+
+## Dispatch/CMS candidate checkpoint
+
+The isolated candidate `codex/dispatch-agreement-hardening` through `6421bdac`
+is based on released main `29b292ad`. Its scoped runtime changes deny Dispatch
+agreement mutations while preserving the reduced read projection, and display
+an existing cancellation review state in the agreement queue. No migrations or
+production account, grant, provider, or content changes are included.
+
+The implementing agent reran 12 database/HTTP agreement tests and 20 browser
+checks successfully, along with library, API, Dashboard and Core type checks.
+Root reviewed all runtime changes, confirmed all four agreement mutations call
+the server guard, independently passed API and Dashboard type checks, and ran
+`git diff --check`. The previously accepted CMS test/docs commits are included.
+A fresh combined CMS browser rerun is **inconclusive**: disposable PostgreSQL
+setup failed with Docker metadata I/O errors on a nearly full local volume.
+No additional Dashboard 143-test rerun occurred at this checkpoint. Previous
+CMS browser evidence remains historical, not a fresh pass of this candidate.
+Production promotion is held pending resolution of this validation gate.

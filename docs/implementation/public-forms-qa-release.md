@@ -21,4 +21,6 @@ Rollback uses reviewed revert commits restoring the public/form-renderer changes
 
 ## Open acceptance
 
-The one labeled production inquiry awaits the browser tool's action-time Owner confirmation. Existing notification jobs establish transport acceptance, not recipient inbox delivery. Search Console's configured Domain property lacks access for the deployment's as-yet-unidentified Google principal. Indexing remains deferred until the remaining release and QA gates are complete. Broader consolidation and recovery limits remain in `consolidation-acceptance.md`.
+All three Railway services reported SUCCESS for `29b292ad16972c1f05b1635e5a33b4e444cb3eab`. Fresh production browser checks confirmed the commercial form's nine service choices, `noindex, follow`, no horizontal overflow, and the preserved homepage hero and service cards. Root submitted exactly one Owner-authorized, clearly labeled internal QA inquiry (`P1-QA-20260921-29b292ad`); the public form displayed its successful receipt. Delivery-job and native Sales correlation remain separate checks. No additional request, replay, or resend was performed.
+
+Existing notification jobs establish transport acceptance, not recipient inbox delivery. Search Console's configured Domain property lacks access for the deployment's as-yet-unidentified Google principal. Indexing remains deferred until the remaining release and QA gates are complete. Broader consolidation and recovery limits remain in `consolidation-acceptance.md`.
