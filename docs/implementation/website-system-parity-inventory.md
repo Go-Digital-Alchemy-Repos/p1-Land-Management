@@ -67,6 +67,16 @@ Historical validation included Owner/non-owner bridge and attribution tests, exa
 
 Historical release evidence: `3c4adbfd3efffef1f0209e8c9522cf28d06ca1d5` reached Railway SUCCESS for Dashboard, Core and public website on September 19. Authenticated Owner browser verification then confirmed the native route, Website System navigation, persistent shell, separate apex/www inputs, and a successful read-only evidence request for `p1-land-management` (empty history). No plan/readiness records, DNS writes, or provider changes were made in production. The September 20 retirement supersedes that historical state; it does not delete the evidence.
 
+Current retirement verification: at 2026-09-21 09:38 EDT, authenticated Owner browser
+access to `https://dashboard.p1landmanagement.com/onboarding` showed the intentional
+**Page unavailable** destination, and the rendered dashboard sidebar contained no
+Client Stack Onboarding entry. The browser reported no console warnings or errors for
+that route. This was observed after Railway reported Dashboard deployment
+`eca3648a-2000-489c-a1f5-4df61db88591` SUCCESS for main commit
+`550e27cad8d1ef2e18f17d0370cc7e02dd42595b`; it verifies the current route and
+navigation state only. It does not establish why an earlier screenshot showed the
+former screen, nor does it alter any remaining retirement or provider-acceptance gate.
+
 ### Next: Email Templates concurrency foundation
 
 Source inspection of `settings.routes.ts`, `email-template.storage.ts` and `system-email-templates.service.ts` confirms that current template edits and activation toggles are unversioned, and forced default restoration updates templates individually without an atomic collection-version check. The legacy editor and native editor must use one versioned write contract before concurrent availability. Follow the existing document-storage transaction/version/audit pattern; include default restoration as a single version-checked operation. Inspect startup template repairs and all direct writers as well. Preserve explicit test-mail action to the authenticated user, safe preview rendering, branding, variable lists and template activation; never send real test mail automatically during acceptance.
