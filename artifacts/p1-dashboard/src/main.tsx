@@ -1025,6 +1025,18 @@ function App() {
   const can = (capability: string) => Boolean(person && person.role !== "crew" && hasCapability(person, capability));
   const ops = can("operations.schedule");
   const fieldWork = ops || can("workspace.my-day") || person?.role === "crew";
+  const agreementWorkspaceTabs = [
+    ...(can("revenue.agreements") || can("revenue.billing")
+      ? [{ view: "Agreements" as const, label: "Agreements", path: "/agreements", icon: FileText, tone: "amber" }]
+      : []),
+    ...(can("revenue.sales") || can("revenue.agreements")
+      ? [{ view: "Agreement Drafts" as const, label: "Drafts", path: "/agreements/drafts", icon: SquarePen, tone: "rose" }]
+      : []),
+    ...(can("revenue.agreement-templates.manage")
+      ? [{ view: "Agreement Templates" as const, label: "Templates", path: "/agreements/templates", icon: LibraryBig, tone: "violet" }]
+      : []),
+  ];
+  const inAgreementWorkspace = ["Agreements", "Agreement Drafts", "Agreement Templates"].includes(view);
   const propertyTypes = data["property-types"] || [];
   const visibleProperties = (data.properties || [])
     .filter((property: any) => {
@@ -1484,6 +1496,20 @@ function App() {
               return <button key={designView} type="button" aria-current={view === designView ? "page" : undefined} onClick={() => navigate(designView)}>{marketingDesignCopy[designView]?.title}</button>;
             })}
           </nav>}
+          {!routeUnavailable && inAgreementWorkspace && agreementWorkspaceTabs.length > 1 && (
+            <nav className="workspace-tabs agreement-workspace-tabs" aria-label="Agreement workspace">
+              {agreementWorkspaceTabs.map((tab) => {
+                const Icon = tab.icon;
+                const active = view === tab.view;
+                return (
+                  <a key={tab.path} href={tab.path} className={active ? "active" : ""} aria-current={active ? "page" : undefined}>
+                    <span className={`workspace-tab-icon workspace-tab-icon--${tab.tone}`} aria-hidden="true"><Icon size={17} strokeWidth={1.8} /></span>
+                    {tab.label}
+                  </a>
+                );
+              })}
+            </nav>
+          )}
           {!routeUnavailable && recordRoute?.kind === "client" ? (
             <ClientWorkspace
               id={recordRoute.id}
@@ -1568,10 +1594,8 @@ function App() {
           {view === "Website Blog" && <Suspense fallback={<p role="status">Loading blog…</p>}><BlogManager canUseMedia={can("marketing.content.media")} key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Website Team" && <Suspense fallback={<p role="status">Loading team…</p>}><TeamManager canUseMedia={can("marketing.content.media")} key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Website Menus" && <Suspense fallback={<p role="status">Loading website menus…</p>}><CmsMenus key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
-          {view === "Agreement Drafts" && <Suspense fallback={<p role="status">Loading agreement drafts…</p>}><AgreementDraftWorkspace key={`${recordRoute?.id || "list"}:${person.id}:${(person.capabilities || []).join(",")}`} id={recordRoute?.kind === "agreement-draft" ? recordRoute.id : undefined} canEdit={hasCapability(person,"revenue.sales")} canManageTemplates={hasCapability(person,"revenue.agreement-templates.manage")} canViewAgreements={hasCapability(person,"revenue.agreements")||hasCapability(person,"revenue.billing")} opened={id => applyRoute({kind:"page", page:nav.find(item => item.view === "Agreement Drafts")!, record:{kind:"agreement-draft", id}}, "replace")}/></Suspense>}
-          {view === "Agreement Templates" && <Suspense fallback={<p role="status">Loading templates…</p>}><TemplateLibrary key={`${person.id}:${(person.capabilities || []).join(",")}`} canUseClauses={hasCapability(person,"settings.term-libraries")} canViewAgreements={hasCapability(person,"revenue.agreements")||hasCapability(person,"revenue.billing")}/></Suspense>}
-          {view === "Agreements" && (hasCapability(person,"revenue.sales") || hasCapability(person,"revenue.agreements")) && <a href="/agreements/drafts">Agreement drafts</a>}
-          {view === "Agreements" && hasCapability(person,"revenue.agreement-templates.manage") && <nav aria-label="Agreement workspace"><span aria-current="page">Agreements</span> <a href="/agreements/templates">Templates</a></nav>}
+          {view === "Agreement Drafts" && <Suspense fallback={<p role="status">Loading agreement drafts…</p>}><AgreementDraftWorkspace key={`${recordRoute?.id || "list"}:${person.id}:${(person.capabilities || []).join(",")}`} id={recordRoute?.kind === "agreement-draft" ? recordRoute.id : undefined} canEdit={hasCapability(person,"revenue.sales")} canManageTemplates={hasCapability(person,"revenue.agreement-templates.manage")} opened={id => applyRoute({kind:"page", page:nav.find(item => item.view === "Agreement Drafts")!, record:{kind:"agreement-draft", id}}, "replace")}/></Suspense>}
+          {view === "Agreement Templates" && <Suspense fallback={<p role="status">Loading templates…</p>}><TemplateLibrary key={`${person.id}:${(person.capabilities || []).join(",")}`} canUseClauses={hasCapability(person,"settings.term-libraries")}/></Suspense>}
           {view === "Agreements" && (
             <ServiceAgreements
               role={person.role}

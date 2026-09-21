@@ -15,13 +15,11 @@ export default function AgreementDraftWorkspace({
   id,
   canEdit,
   canManageTemplates,
-  canViewAgreements,
   opened,
 }: {
   id?: string;
   canEdit: boolean;
   canManageTemplates: boolean;
-  canViewAgreements: boolean;
   opened: (id: string) => void;
 }) {
   const [rows, setRows] = useState<AgreementDraftSummary[]>([]),
@@ -117,11 +115,6 @@ export default function AgreementDraftWorkspace({
     );
   return (
     <section className="template-library" aria-label="Agreement drafts">
-      <nav aria-label="Agreement workspace">
-        {canViewAgreements && <a href="/agreements">Agreements</a>}{" "}
-        <span aria-current="page">Drafts</span>{" "}
-        {canManageTemplates && <a href="/agreements/templates">Templates</a>}
-      </nav>
       <p>
         Private agreement drafts hold client-specific terms, scope and costs.
         Saving a draft does not send it or activate an agreement.

@@ -12,10 +12,8 @@ import { labels, message } from "./template-draft";
 import "./template-library.css";
 export default function TemplateLibrary({
   canUseClauses = false,
-  canViewAgreements = false,
 }: {
   canUseClauses?: boolean;
-  canViewAgreements?: boolean;
 }) {
   const [editorRevision, setEditorRevision] = useState(0);
   const [rows, setRows] = useState<AgreementTemplate[]>([]),
@@ -112,10 +110,6 @@ export default function TemplateLibrary({
     );
   return (
     <section className="template-library" aria-label="Agreement templates">
-      <nav aria-label="Agreement workspace">
-        {canViewAgreements && <a href="/agreements">Agreements</a>}{" "}
-        <span aria-current="page">Templates</span>
-      </nav>
       <p>
         Save reusable agreement terms, scope, cost rows and packages. Review a
         draft before publishing it for client proposals.
