@@ -171,11 +171,11 @@ const assert = require("node:assert/strict");
       .getByRole("button", { name: "Choose image for Hero image", exact: true })
       .click();
     const picker = page.getByRole("dialog", { name: "Choose website image" });
-    await picker.getByRole("button", { name: /Allowed image/ }).waitFor();
+    await picker.getByRole("button", { name: "photo.png", exact: true }).waitFor();
     assert(
-      await picker.getByRole("button", { name: /Foreign image/ }).isDisabled(),
+      await picker.getByRole("button", { name: "foreign.png", exact: true }).isDisabled(),
     );
-    await picker.getByRole("button", { name: /Allowed image/ }).click();
+    await picker.getByRole("button", { name: "photo.png", exact: true }).click();
     assert.equal(
       await page.getByLabel("Hero image", { exact: true }).inputValue(),
       "/uploads/cms/photo.png",

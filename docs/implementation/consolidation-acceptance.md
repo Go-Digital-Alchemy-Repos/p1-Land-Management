@@ -210,6 +210,19 @@ editors before release. This is required conflict protection, not completed work
 
 The preceding page-concurrency gap is repaired in release `872d2bb749adbded8297c817f20a9fcd725f08d4`. Original Pages list/templates/wizard/editor tabs and shared structure/canvas/inspector are integrated in both hosts. Page/menu versions, exact editor-instance leases for Pages, atomic revision/relationship updates and scheduler conflicts have actual PostgreSQL tests; the P1 migration runner and retained data upgrade were exercised separately. Current Core/dashboard typechecks and builds pass; independent parent database rerun11/11 passed. Synthetic browser save, same-user read-only tab, stale-draft retention and responsive390/1279/1280/1440 checks passed after correcting desktop CSS and mobile containment. Full details/limits are in `marketing-admin-interface-parity.md` and `cms-page-concurrency-plan.md`.
 
+### CMS lifecycle browser recheck — September 21
+
+Current loopback Chrome acceptance rechecked the native generic Pages and
+structured Website editors against the current shared tab, media and exact-editor
+lease contracts. `test-cms-page-lifecycle-browser.cjs` opens a synthetic page
+preview, retains a draft after a simulated second-editor lease loss, reacquires
+the lease, saves, publishes, restores a revision without changing publication
+state or sidebar selection, and checks the 390px layout. The updated
+`test-website-editor-browser.cjs` passes draft conflict retention, approved-media
+selection, publish, revision restore and its mobile layout. These are
+loopback-only UI/API simulations, not production publication, a real staff
+simultaneous-editor trial, or authority to retire `/admin`.
+
 Railway SUCCESS: dashboard `7340a4fd-56bf-4e7a-9874-ffebcff8e5ea`, Core `40c4e535-b5a5-435b-8d1b-b8a9428e536a`. Core runtime logs report P1 migrations completed at2026-09-19T19:08:28.720Z. Authenticated live Pages list shows the restored controls and real empty state, with no loading/error alert; no production page was created or edited. The public structured Website content remains a separate contract.
 
 Remaining Marketing interface restoration proceeds with Sections and SEO, then Galleries, structured Website presentation, Backups/onboarding/head tags and remaining integrations/documents/email tools. Existing Sections reservations are not yet server-fenced like Pages; this is a separate concurrency gap and must not be marked accepted merely by sharing the builder. Admin retirement, full content parity, actual account/CRM reconciliation and final operational/recovery acceptance remain open.
