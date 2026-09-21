@@ -6,7 +6,7 @@
     "displayName": "P1 Land & Property Management",
     "source": {
       "repository": "https://github.com/Go-Digital-Alchemy-Repos/p1-Land-Management.git",
-      "revision": "f83280107de1e278ec79339f0001e953f5f69692"
+      "revision": "435d16d3b83bd37ddec20396823551bcc9c9f0e0"
     },
     "owners": [
       {
@@ -5239,22 +5239,22 @@
             "maxLength": 2000
           },
           {
-            "path": "f1g91zbi",
-            "label": "Text: Your First Impression",
+            "path": "f17vwxxs",
+            "label": "Text: First impressions",
             "type": "text",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "fflq22j",
-            "label": "Text: Starts at the Curb.",
+            "path": "frt3wyk",
+            "label": "Text: start at the curb.",
             "type": "text",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "flmnrpy",
-            "label": "Text: We keep large properties looking good and working well across Upstate South Carolina and greate",
+            "path": "f2w9m52",
+            "label": "Text: Commercial landscaping and exterior grounds maintenance that keep your property looking profess",
             "type": "textarea",
             "required": false,
             "maxLength": 12000
@@ -6535,9 +6535,9 @@
           "fveqwxt": "/assets/hero-bg-1280-CsM162Zk.webp",
           "fzw6d7c": "Heavy equipment shaping large acreage",
           "f11v7ef6": "The Land Specialists",
-          "f1g91zbi": "Your First Impression",
-          "fflq22j": "Starts at the Curb.",
-          "flmnrpy": "We keep large properties looking good and working well across Upstate South Carolina and greater Charlotte. Commercial landscaping, grading, drainage, clearing, and pond care—with one team to call.",
+          "f17vwxxs": "First impressions",
+          "frt3wyk": "start at the curb.",
+          "f2w9m52": "Commercial landscaping and exterior grounds maintenance that keep your property looking professional, welcoming, and well cared for.",
           "f179vaag": "Get a Free Site Assessment",
           "fmggb4x": "/contact",
           "f1d192in": "Call (704) 221-8928",

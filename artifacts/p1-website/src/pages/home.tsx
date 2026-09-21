@@ -109,13 +109,13 @@ export default function Home() {
               <Kicker onDark>The Land Specialists</Kicker>
             </div>
             <h1 style={{ color: "hsl(var(--public-text-h1, var(--public-text-inverse, 0 0% 100%)))" }} className="max-w-3xl font-display text-[clamp(2.6rem,6.4vw,5.4rem)] font-light leading-[0.98] tracking-[-0.02em] text-white">
-              Your First Impression{" "}
+              First impressions{" "}
               <em className="font-semibold not-italic text-tan" style={{ fontStyle: "italic" }}>
-                Starts at the Curb.
+                start at the curb.
               </em>
             </h1>
             <p className="mt-7 max-w-xl text-lg leading-relaxed" style={{ color: "hsl(var(--public-text-heading-subtext, 40 20% 92%) / 0.82)" }}>
-              We keep large properties looking good and working well across Upstate South Carolina and greater Charlotte. Commercial landscaping, grading, drainage, clearing, and pond care—with one team to call.
+              Commercial landscaping and exterior grounds maintenance that keep your property looking professional, welcoming, and well cared for.
             </p>
             <div className="mt-9 flex flex-wrap items-center gap-4">
               <Button asChild size="lg" className="group h-12 rounded-[3px] border-0 bg-primary px-4 sm:px-7 font-sans text-[15px] font-bold text-primary-foreground hover:bg-primary/90" style={{ boxShadow: "0 18px 40px -14px hsl(206 70% 48%)" }}>
