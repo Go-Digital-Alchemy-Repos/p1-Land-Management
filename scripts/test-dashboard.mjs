@@ -18,16 +18,23 @@ try {
     "-e",
     "POSTGRES_PASSWORD=p1-test-only",
     "-e",
-    "POSTGRES_DB=dashboard",
+    "POSTGRES_DB=dashboard_test",
     "-p",
     "127.0.0.1::5432",
     "-d",
     "postgres:17-alpine",
   ]);
   created = true;
-  const mapping = (
-    await execFile("docker", ["port", dbName, "5432"])
-  ).stdout.trim();
+  // `docker port` may report a wildcard host (for example `0.0.0.0:49153`)
+  // even though the container was explicitly published to loopback. Keep the
+  // disposable test URL loopback-only so acceptance fixtures cannot
+  // accidentally exercise a non-local database endpoint.
+  const databasePort = JSON.parse(
+    (
+      await execFile("docker", ["inspect", dbName])
+    ).stdout,
+  )[0].NetworkSettings.Ports["5432/tcp"][0].HostPort;
+  const mapping = "127.0.0.1:" + databasePort;
   const temporary = createServer();
   await new Promise((r) => temporary.listen(0, "127.0.0.1", r));
   const port = temporary.address().port;
@@ -35,7 +42,7 @@ try {
   const env = {
     ...process.env,
     DASHBOARD_DATABASE_URL:
-      "postgresql://postgres:p1-test-only@" + mapping + "/dashboard",
+      "postgresql://postgres:p1-test-only@" + mapping + "/dashboard_test",
     DASHBOARD_ORIGIN: "http://localhost:" + port,
     DASHBOARD_TEST_ORIGIN: "http://localhost:" + port,
     NODE_ENV: "test",
@@ -58,7 +65,7 @@ try {
       "https://core.example.test/api/auth/federation/callback",
     CORE_FEDERATION_TEST_ALLOW_INSECURE_ORIGIN: "true",
     COMMERCIAL_TEST_DATABASE_URL:
-      "postgresql://postgres:p1-test-only@" + mapping + "/dashboard",
+      "postgresql://postgres:p1-test-only@" + mapping + "/dashboard_test",
   });
   let ready = false;
   for (let i = 0; i < 30; i++) {

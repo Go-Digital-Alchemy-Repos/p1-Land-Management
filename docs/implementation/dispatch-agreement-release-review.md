@@ -28,11 +28,21 @@ Agreements and Dispatch with Agreements, asserting 403 and unchanged state.
 - Browser fixture review confirmed Dispatch read-only details and Manager edit/activation controls; no production mutation was made.
 - Prior direct agreement HTTP (12) and browser (20) checks passed before this
   correction. They are historical evidence, not a fresh integration run.
-- Fresh database/HTTP coverage of the new recurring activation boundary has
-  **not run**: local Docker containerd reports an input/output error and the host
-  has approximately 1.1 GiB free. Existing containers/data were preserved.
-- Production promotion remains held until that integration gate passes and
-  independent patch review is accepted. No production role or account was changed.
+- Fresh isolated database/HTTP coverage passed after Docker recovered and the
+  host had sufficient free space. `node scripts/test-service-agreements.mjs`
+  passed migrations, replay, agreement lifecycle, billing, preparation,
+  visit-authorization and the HTTP role boundary. `node
+  scripts/test-dashboard.mjs` then passed 143/143 tests, including the composed
+  recurring activation flow and the new denied manager/finance/Dispatch cases,
+  followed by an idempotent migration replay. Both runners create a random,
+  self-removing local PostgreSQL container and strip provider credentials.
+- The full-runner harness now derives the Docker host port by inspection and
+  uses a named `dashboard_test` database over `127.0.0.1`. This satisfies the
+  composed-acceptance fixture's explicit loopback/disposable-database safety
+  checks without weakening them.
+- Production promotion remains held for reviewed integration, a preserved
+  rollback reference, deployment and fresh live verification. No production
+  role or account was changed.
 
 Main at this checkpoint remains `4ea32774`; all three Railway services were
 verified successful at that revision. CMS lifecycle integration, remaining
