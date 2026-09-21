@@ -187,6 +187,20 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
     const missing = await request(port, '/not-a-p1-page'); assert.equal(missing.status, 404); assert.equal(missing.headers['x-robots-tag'], 'noindex');
     assert.equal((await request(port, '/api/p1/page-content?path=%2Fmissing')).status, 404);
   });
+  await t.test('standalone public forms render canonical paths without becoming indexable documents', async () => {
+    for (const path of ['/forms/p1-estimate', '/forms/p1-commercial-assessment']) {
+      const page = await request(port, path);
+      assert.equal(page.status, 200);
+      assert(page.body.includes('Complete Your Request'));
+      assert(page.body.includes('<meta name="robots" content="noindex, follow">'));
+      const snapshot = await request(port, `/api/p1/page-content?path=${encodeURIComponent(path)}`);
+      assert.equal(snapshot.status, 200);
+      assert.equal(JSON.parse(snapshot.body).route, path);
+    }
+    assert.equal((await request(port, '/forms/not/a-form')).status, 404);
+    const sitemap = await request(port, '/sitemap.xml');
+    assert(!sitemap.body.includes('/forms/p1-estimate'));
+  });
   await t.test('CMS redirects govern GET/HEAD, preserve queries, and stay out of the sitemap', async () => {
     for (const method of ['GET','HEAD']) {
       const response = await request(port, '/old-cms-page?utm_source=qa&x=%2F&x=2', {}, method);

@@ -71,7 +71,21 @@ const websiteBlog = createWebsiteBlogStore({
 });
 const blogArticlePath = (route) =>
   /^\/blog\/[a-z0-9]+(?:-[a-z0-9]+)*$/.test(route);
+// Active public forms are resolved by Core. Keep the public page route narrowly
+// shaped so it cannot turn arbitrary nested paths into successful documents.
+const standaloneFormPath = (route) =>
+  /^\/forms\/[A-Za-z0-9][A-Za-z0-9_-]{0,99}$/.test(route);
 async function pageSnapshot(routePath) {
+  if (standaloneFormPath(routePath)) {
+    const [home, identity, menus] = await Promise.all([
+      content.snapshot("/"),
+      websiteIdentity.snapshot(),
+      websiteMenus.snapshot(),
+    ]);
+    return home
+      ? { ...home, route: routePath, content: {}, identity, menus }
+      : null;
+  }
   const [page, identity, menus] = await Promise.all([
     content.snapshot(routePath),
     websiteIdentity.snapshot(),
@@ -582,7 +596,11 @@ const server = http.createServer(async (req, res) => {
       const body = `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${snapshots.map((s) => `<url><loc>${canonical}${escape(s.route)}</loc>${s.publishedAt ? `<lastmod>${escape(new Date(s.publishedAt).toISOString())}</lastmod>` : ""}</url>`).join("")}</urlset>`;
       return send(req, res, 200, body, "application/xml");
     }
-    if (content.routes.has(pathname) || blogArticlePath(pathname)) {
+    if (
+      content.routes.has(pathname) ||
+      blogArticlePath(pathname) ||
+      standaloneFormPath(pathname)
+    ) {
       const snapshot = await pageSnapshot(pathname);
       const result = render(pathname, snapshot);
       const blogDocument = pathname === "/blog" || blogArticlePath(pathname);

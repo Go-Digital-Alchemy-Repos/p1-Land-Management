@@ -36,6 +36,7 @@ export function createSiteRoutes(page: ResolvePage): ComponentType {
       "./pages/commercial/data-centers-secure-facilities.tsx",
     ),
     Contact = page("./pages/contact.tsx"),
+    PublicForm = page("./pages/public-form.tsx"),
     Gallery = page("./pages/gallery.tsx");
   const ServicesIndex = page("./pages/services/index.tsx"),
     CommercialLandscaping = page("./pages/services/commercial-landscaping.tsx"),
@@ -143,6 +144,7 @@ export function createSiteRoutes(page: ResolvePage): ComponentType {
           component={DataCentersSecureFacilities}
         />
         <Route path="/contact" component={Contact} />
+        <Route path="/forms/:slug" component={PublicForm} />
         <Route path="/gallery" component={Gallery} />
         <Route path="/services" component={ServicesIndex} />
         <Route

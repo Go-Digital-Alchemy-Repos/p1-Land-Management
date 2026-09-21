@@ -6,8 +6,28 @@ import { gzipSync } from 'node:zlib';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const publicRoot = resolve(root, 'dist/public');
+function assertLocalAssetLink(route, href) {
+  const pathname = href.split('?')[0].replace(/\/$/, '') || '/';
+  const asset = resolve(publicRoot, `.${pathname}`);
+  assert(asset.startsWith(`${publicRoot}/`), `${route}: unsafe local asset link ${href}`);
+  assert(existsSync(asset), `${route}: missing local asset link ${href}`);
+}
+assert.throws(
+  () => assertLocalAssetLink('/qa', '/assets/qa-missing.webp'),
+  /missing local asset link/,
+  'Asset-link audit must reject a missing local file',
+);
+function assertGlobalOverride(key, type, output, replacement) {
+  assert(output.includes(replacement), `${key}: global ${type} override`);
+}
+assert.throws(
+  () => assertGlobalOverride('qa-global', 'text', '', 'QA global text'),
+  /qa-global: global text override/,
+  'Global-field audit must reject a visible field whose override did not render',
+);
 const { render } = await import(pathToFileURL(resolve(root, 'dist/server/entry-server.js')).href);
-const paths = [...readFileSync(resolve(root, 'src/app-routes.tsx'), 'utf8').matchAll(/<Route\s+path="([^"]+)"/g)]
+const routeSource = readFileSync(resolve(root, 'src/app-routes.tsx'), 'utf8');
+const paths = [...routeSource.matchAll(/<Route\s+path="([^"]+)"/g)]
   .map(match => match[1])
   .filter(path => !path.includes(':') && !path.includes('*'));
 assert(paths.length > 0, 'Public route inventory must not be empty');
@@ -59,9 +79,7 @@ try {
       if (!href.startsWith('/') || href.startsWith('//')) continue;
       const pathname = href.split('?')[0].replace(/\/$/, '') || '/';
       if (/\.[a-z0-9]{2,8}$/i.test(pathname)) {
-        const asset = resolve(publicRoot, `.${pathname}`);
-        assert(asset.startsWith(`${publicRoot}/`), `${path}: unsafe local asset link ${href}`);
-        assert(existsSync(asset), `${path}: missing local asset link ${href}`);
+        assertLocalAssetLink(path, href);
         continue;
       }
       assert(paths.includes(pathname), `${path}: unknown internal link ${href}`);
@@ -122,13 +140,26 @@ try {
       for (const item of faqItems) assert(!/\bopen(?:=|\s|>)/.test(item[0]), `${path}: FAQ answers are collapsed initially`);
     }
   }
+  assert(routeSource.includes('<Route path="/forms/:slug" component={PublicForm} />'), 'Standalone form route must remain explicit');
+  for (const path of ['/forms/p1-estimate', '/forms/p1-commercial-assessment', '/forms/example-form']) {
+    const result = render(path);
+    assert.equal(result.head?.noindex, true, `${path}: standalone form must not be indexed`);
+    assert(result.html.includes('Complete Your Request'), `${path}: standalone form route must render its public shell`);
+    assert(!result.html.includes('Looks Like This Ground'), `${path}: standalone form route must not render the 404 page`);
+  }
+  assert(render('/forms/not/a-form').html.includes('Looks Like This Ground'), 'Malformed standalone form path must remain a 404');
   const home = render('/');
-  // These fields are registered for the editor but only appear in conditional
-  // mobile/desktop navigation states or are retained site-identity metadata.
-  // Keep this list explicit so a newly hidden global field cannot silently escape
-  // the override audit.
-  const intentionallyHiddenGlobalKeys = new Set([
-    'f15oz4jr', 'f9spy6u', 'f1jhcqx9', 'f1hf0vxg', 'f5fayod', 'fgf0583', 'fl6vzc3',
+  // These fields are registered for the editor but not rendered on the Home
+  // document. Keep both their stable keys and reasons explicit so a newly hidden
+  // global cannot silently escape the override audit.
+  const intentionallyHiddenGlobalFields = new Map([
+    ['f15oz4jr', 'phone display is supplied by the locked site-identity record'],
+    ['f9spy6u', 'phone link is supplied by the locked site-identity record'],
+    ['f1jhcqx9', 'map destination is retained site-identity metadata'],
+    ['f1hf0vxg', 'Services heading is only rendered within a closed navigation branch'],
+    ['f5fayod', 'Service Areas heading is only rendered within a closed navigation branch'],
+    ['fgf0583', 'Company heading is only rendered within a closed navigation branch'],
+    ['fl6vzc3', 'Hours heading is only rendered within a closed navigation branch'],
   ]);
   const supportedGlobalTypes = new Set(['text', 'textarea', 'image', 'imageAlt', 'ctaTarget']);
   for (const [key, item] of Object.entries(home.fields.global).filter(([, item]) => supportedGlobalTypes.has(item.field.type))) {
@@ -139,11 +170,11 @@ try {
           : `QA global ${type} ${key}`;
     const edited = render('/', { route: '/', content: {}, global: { [key]: replacement } });
     const editedOutput = edited.html + JSON.stringify(edited.head);
-    if (intentionallyHiddenGlobalKeys.has(key)) {
-      assert(!editedOutput.includes(replacement), `${key}: hidden-global classification must remain accurate`);
+    if (intentionallyHiddenGlobalFields.has(key)) {
+      assert(!editedOutput.includes(replacement), `${key}: hidden-global classification must remain accurate (${intentionallyHiddenGlobalFields.get(key)})`);
       continue;
     }
-    assert(editedOutput.includes(replacement), `${key}: global ${type} override`);
+    assertGlobalOverride(key, type, editedOutput, replacement);
     if (type === 'image' || type === 'ctaTarget') {
       assert(!render('/', { route: '/', content: {}, global: { [key]: 'javascript:alert(1)' } }).html.includes('javascript:alert'), `${key}: unsafe ${type} rejected`);
     }
