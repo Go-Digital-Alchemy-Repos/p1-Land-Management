@@ -1,4 +1,5 @@
 import { Link } from "wouter";
+import { Phone } from "lucide-react";
 import { useSiteIdentity } from "../../lib/use-site-identity";
 import { SiteHeader } from "./SiteHeader";
 import { SiteFooter } from "./SiteFooter";
@@ -23,9 +24,12 @@ export function Layout({ children, assessmentCta = false }: LayoutProps) {
         {children}
       </main>
       <SiteFooter />
-      <nav aria-label="Quick contact" className="sticky bottom-0 z-40 grid grid-cols-2 border-t border-border bg-background pb-[env(safe-area-inset-bottom)] md:hidden">
-        <a href={identity.phoneHref} aria-label={`Call P1 at ${identity.phoneDisplay}`} className="p-4 text-center font-bold text-secondary">Call P1</a>
-        {assessmentCta ? <a href="#assessment-request" className="bg-primary p-4 text-center font-bold text-primary-foreground">Get a Free Site Assessment</a> : <Link href="/contact" className="bg-primary p-4 text-center font-bold text-primary-foreground">Get a Free Site Assessment</Link>}
+      <nav aria-label="Quick contact" className="sticky bottom-0 z-40 grid grid-cols-2 border-t border-border/80 bg-background/95 pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_24px_hsl(var(--secondary)/0.08)] backdrop-blur-xl md:hidden">
+        <a href={identity.phoneHref} aria-label={`Call P1 at ${identity.phoneDisplay}`} className="flex min-h-16 items-center justify-center gap-2 px-3 text-center font-bold text-secondary transition-colors hover:bg-muted/70 active:bg-muted">
+          <Phone className="h-4 w-4 text-primary" aria-hidden="true" />
+          <span>Call P1</span>
+        </a>
+        {assessmentCta ? <a href="#assessment-request" className="flex min-h-16 items-center justify-center bg-primary px-4 text-center text-sm font-bold leading-tight text-primary-foreground transition-colors hover:bg-primary/90 active:bg-primary/85">Get a Free Site Assessment</a> : <Link href="/contact" className="flex min-h-16 items-center justify-center bg-primary px-4 text-center text-sm font-bold leading-tight text-primary-foreground transition-colors hover:bg-primary/90 active:bg-primary/85">Get a Free Site Assessment</Link>}
       </nav>
     </div>
   );
