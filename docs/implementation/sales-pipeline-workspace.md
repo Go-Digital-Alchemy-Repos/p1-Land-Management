@@ -17,11 +17,20 @@ board component tests and 17 route tests, passed Dashboard type checking, and
 checked whitespace. Tests cover pagination/refresh races, unmount cancellation,
 retry, deduplication, custom presentation settings and guarded sidebar routing.
 
-This is a review candidate, not production acceptance. Full build and browser
-workflow verification remain pending. The local machine has approximately 1.1
-GiB free and Docker containerd reports storage I/O errors; no dependency installs,
-Docker pulls or destructive cleanup were performed. Current production remains
-`0377fcfa`. The separate Dispatch/CMS branch is not included in this candidate.
+Root also independently passed the Dashboard production build (3.62 seconds,
+6.3 MiB output; existing large-chunk warning remains) and visually checked the
+real board in the local synthetic fixture. Desktop scroll stays inside the
+board without document overflow; 390px uses one column without overflow. Custom
+stage labels/order/colors rendered correctly. The implementing agent verified
+card open/close controls and an empty browser warning/error log. Fixture evidence
+does not assert production authentication or write-flow acceptance.
+
+The local machine has approximately 1.1 GiB free and Docker containerd reports
+storage I/O errors. No dependency installs, Docker pulls or destructive cleanup
+were performed. Small frontend validation was feasible using existing packages.
+The separate Dispatch/CMS branch is excluded, with its database/browser gate
+still held. Production deployment and a fresh read-only Sales check follow this
+review; the rollback source is `0377fcfa`.
 
 Before promotion, integrate then-current main, complete remaining validation,
 preserve a rollback source revision and verify the deployed SHA and live Sales
