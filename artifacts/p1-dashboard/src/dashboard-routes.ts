@@ -109,7 +109,6 @@ export const DASHBOARD_PAGES: readonly DashboardPageRoute[] = [
   { view: "Projects", label: "Projects", path: "/projects", group: "Operations" },
   { view: "Inspections", label: "Inspections", path: "/inspections", group: "Operations" },
   { view: "Sales", label: "Sales", path: "/sales", group: "Revenue" },
-  { view: "Pipeline", label: "Pipeline", path: "/sales/pipeline", group: "Revenue", navigation: false },
   { view: "Agreements", label: "Agreements", path: "/agreements", group: "Revenue" },
   { view: "Agreement Drafts", label: "Agreement drafts", path: "/agreements/drafts", group: "Revenue", navigation: false },
   { view: "Agreement Templates", label: "Agreement templates", path: "/agreements/templates", group: "Revenue", navigation: false },

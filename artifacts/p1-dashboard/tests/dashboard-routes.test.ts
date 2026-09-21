@@ -142,24 +142,13 @@ test("agreement drafts have separate Sales write and Agreements read navigation,
   assert.equal(routeFromPath("/agreements/drafts/nope").kind, "not-found");
 });
 
-test("Pipeline is a Sales-only Revenue destination", () => {
-  const route = routeFromPath("/sales/pipeline");
-  assert.equal(route.kind, "page");
-  if (route.kind !== "page") return;
-  assert.equal(route.page.view, "Pipeline");
-  assert.equal(route.page.group, "Revenue");
-  assert.equal(canAccessRoute(route, "member", ["revenue.sales"]), true);
-  assert.equal(canAccessRoute(route, "member", ["revenue.agreements"]), false);
-  assert.equal(canAccessRoute(route, "client", ["revenue.sales"]), false);
-});
-
 test("Revenue keeps internal sales and agreement destinations URL-addressable but out of the sidebar", () => {
   const visibleRevenue = DASHBOARD_PAGES
     .filter((page) => page.group === "Revenue" && page.navigation !== false)
     .map((page) => page.label);
   assert.deepEqual(visibleRevenue, ["Sales", "Agreements", "Billing", "Expenses"]);
 
-  for (const path of ["/sales/pipeline", "/agreements/drafts", "/agreements/templates"]) {
+  for (const path of ["/agreements/drafts", "/agreements/templates"]) {
     const route = routeFromPath(path);
     assert.equal(route.kind, "page");
     if (route.kind === "page") assert.equal(route.page.navigation, false);
