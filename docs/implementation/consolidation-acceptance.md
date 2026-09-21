@@ -574,3 +574,41 @@ no production data deletion or migration is required. This does not affect the
 single-client origin, preview, backup or storage safety boundaries, nor the
 separate customer/client and property onboarding workflows. Deployment and
 live verification remain separate release gates.
+
+## Consolidation gate matrix — September 21
+
+This private implementation record separates verified, scoped evidence from the
+open acceptance gates. It contains no customer records, credentials, tokens,
+notification recipients, or production payloads. A checked observation is not a
+substitute for a broader release, migration, or retirement decision.
+
+| Gate | Current verified evidence | Still required / decision owner |
+| --- | --- | --- |
+| Dashboard navigation and Client Stack Onboarding retirement | Production Dashboard revision `a557e8bd` was live-read-checked: the sidebar has no onboarding item; Agreements, Schedule/Recurring and grouped Marketing deep links resolve; the former Dashboard deep link renders the SPA unavailable-page state. | Preserve the global `/admin` retirement gate. The Dashboard unavailable-page observation is not an HTTP-status assertion; retained Core/public route status must be checked separately before any wider retirement claim. |
+| Sales/CRM parity and ownership | Native Sales presentation/settings are released; the protected three-source production preservation/replay evidence remains recorded above. | The source freeze, staff operational adoption, permanent write ownership, remaining source mappings and final cutover reconciliation require Orchestrator/Owner acceptance. |
+| CMS and Website System lifecycle | The live Website editor preview rendered without a production content write. Fresh opt-in, exact-name local PostgreSQL fixtures passed both `server/services/client-site-content-lifecycle.database.test.ts` (storage lifecycle) and `server/routes/admin/client-site-content-lifecycle.database.test.ts` (actual Express admin/public route handlers). The HTTP test persisted draft r1, allowed exactly one simultaneous r1 save as r2, published r3, served its public projection with ETag/304, restored r1 as r4 and rejected stale publication. Its authentication middleware is deliberately fixture-mocked; PostgreSQL storage, validation, route parsing and public projection are real. | Full browser lifecycle and real authentication/editor-session acceptance in a disposable fixture remain open. Production CMS remains read-only unless a real approved correction is needed. Website provider/object recovery remains open. |
+| Restore and rollback | Existing dashboard/database restore, migration replay and source-built rollback evidence is retained above. | Recover an owned provider-side object archive and an exact retrievable Railway image, then rehearse the agreed application/data rollback order. Do not treat source rebuilds as image recovery. |
+| Google reporting | Live Owner Analytics showed GA4 Data API property `554712298` with populated page-view rows. Core OAuth token refresh succeeds and the configured Search Console target is `sc-domain:p1landmanagement.com`. | Search Console `sites.get` returned `404 notFound`; the OAuth identity can see only the apex URL-prefix property, while the canonical Domain property has only the verified Owner listed. Add the existing connected principal with least-privilege read access, then rerun the report. Its identity cannot be derived under the intentional `webmasters.readonly` token; do not add scopes or guess a principal. |
+| Accounts and MFA | The September 19 read-only inventory/reconciliation evidence is retained; no profile, factor, invitation or account status was changed during this checkpoint. | Owner must disposition the seven inactive accounts and decide the current Owner MFA enforcement/recovery policy from fresh account evidence. Do not infer current enrollment from the historical inventory. Complete the controlled old-account transition only after that decision. |
+| Standalone public forms, validation and performance | Candidate branch `origin/codex/public-qa-forms` at `ea6e16e2` adds standalone public form routes, required multi-page validation and public bundle/performance checks. The existing released commercial service-choice repair remains separate. | Integrate and locally validate the candidate without widening form effects, then perform the approved live release and controlled end-to-end QA inquiry acceptance. Candidate evidence alone does not establish live form delivery or performance. |
+| Agreements, customer/staff/crew journey | A synthetic long agreement PDF rendered as 12 US-Letter pages with embedded fonts; first, middle and final pages were visually inspected. The fixture preserved accented text, terms markers and page numbering without clipping or overlap. The existing test is `artifacts/api-server/src/dashboard/estimate-pdf.test.ts` (2/2 passed). | The complete authorized customer/staff/crew browser journey remains open. The PDF result is synthetic layout evidence, not a customer document or billing/provider acceptance. |
+| Field/offline/device | Browser queue/replay and local server/database fixtures are recorded above. | Run the physical iPhone and Android acceptance sequence: offline note/time/issue/photo capture, restart, interrupted-photo retry, changed assignment conflict, low-storage and sign-out/recovery checks. Emulator/browser evidence does not prove this gate. |
+| Controlled public commercial inquiry | Core-to-Dashboard handoff and notification jobs have prior non-provider evidence. | One clearly labelled QA inquiry remains prepared but unsubmitted. Browser policy requires immediate Owner confirmation before an external form submission; retain its resulting lead and do not bypass CAPTCHA. |
+
+Focused, sanitized validation commands for the new evidence were:
+
+```text
+CLIENT_SITE_CONTENT_TEST_DATABASE_URL=… CLIENT_SITE_CONTENT_TEST_ALLOW_DESTRUCTIVE_FIXTURE=true
+  pnpm --dir platform/p1-core exec vitest run server/services/client-site-content-lifecycle.database.test.ts
+
+CLIENT_SITE_CONTENT_API_TEST_DATABASE_URL=… CLIENT_SITE_CONTENT_API_TEST_ALLOW_DESTRUCTIVE_FIXTURE=true
+  pnpm --dir platform/p1-core exec vitest run server/routes/admin/client-site-content-lifecycle.database.test.ts
+
+pnpm --dir platform/p1-core run check
+pnpm --dir artifacts/api-server exec tsx --test src/dashboard/estimate-pdf.test.ts
+```
+
+The PostgreSQL fixture accepted only loopback, an exact dedicated test database
+name and an explicit opt-in; cleanup targeted solely its fixture content identity
+and editor. It was stopped and auto-removed after the test. The long-PDF output
+was synthetic and retained only as a local QA artifact.
