@@ -19,6 +19,7 @@ const state = vi.hoisted(() => ({
   enabled: true,
   fence: false,
   fenceVersion: "a".repeat(64),
+  fenceBoundaryMismatch: false,
   users: new Map<string, unknown>(),
   saved: vi.fn(),
   fenceSaved: vi.fn(),
@@ -31,15 +32,28 @@ vi.mock("../../storage", () => ({
     settings: {
       getSetting: async () => state.raw,
       getDecryptedCategory: async () => ({ enable_crm: String(state.enabled) }),
-      getCategorySnapshot: async () => ({
-        values: state.fence ? { legacy_staff_crm_writes_fenced: "true" } : {},
-        version: state.fenceVersion,
-      }),
+      getCategorySnapshot: async () => {
+        if (state.fenceBoundaryMismatch)
+          throw Object.assign(new Error("Boundary mismatch"), {
+            code: "settings_boundary_mismatch",
+          });
+        return {
+          values: state.fence ? { legacy_staff_crm_writes_fenced: "true" } : {},
+          version: state.fenceVersion,
+        };
+      },
+      getSettingBoundarySnapshot: async () => ({ version: state.fenceVersion }),
       upsertSettings: async (...args: unknown[]) => {
         state.fenceSaved(...args);
         state.fence = (args[0] as Array<{ value: string }>)[0].value === "true";
         state.fenceVersion =
           state.fenceVersion === "a".repeat(64) ? "b".repeat(64) : "c".repeat(64);
+      },
+      repairPublicSettingBoundary: async (...args: unknown[]) => {
+        state.fenceSaved(...args);
+        state.fence = (args[0] as { value: string }).value === "true";
+        state.fenceBoundaryMismatch = false;
+        state.fenceVersion = "c".repeat(64);
       },
       upsertSetting: async (...args: unknown[]) => {
         state.saved(...args);
@@ -142,11 +156,17 @@ describe("mounted CRM settings permissions", () => {
     state.enabled = true;
     state.fence = false;
     state.fenceVersion = "a".repeat(64);
+    state.fenceBoundaryMismatch = false;
     state.users.clear();
     vi.clearAllMocks();
   });
   const path = "/api/admin/crm/settings/pipeline";
   const fencePath = "/api/admin/crm/settings/legacy-staff-write-fence";
+  const activationReadiness = {
+    staffWritesQuiesced: true,
+    inFlightStaffWritesDrained: true,
+    postFenceReconciliationPlanned: true,
+  };
   it("requires authentication", async () => {
     expect((await request(path)).status).toBe(401);
   });
@@ -168,6 +188,7 @@ describe("mounted CRM settings permissions", () => {
           {
             staffWritesFenced: true,
             expectedVersion: "a".repeat(64),
+            activationReadiness,
           },
           ["crm"],
         )
@@ -178,6 +199,15 @@ describe("mounted CRM settings permissions", () => {
         await request(fencePath, "admin", "PUT", {
           staffWritesFenced: true,
           expectedVersion: "a".repeat(64),
+        })
+      ).status,
+    ).toBe(400);
+    expect(
+      (
+        await request(fencePath, "admin", "PUT", {
+          staffWritesFenced: true,
+          expectedVersion: "a".repeat(64),
+          activationReadiness,
         })
       ).status,
     ).toBe(200);
@@ -202,6 +232,23 @@ describe("mounted CRM settings permissions", () => {
       ).status,
     ).toBe(200);
     expect((await request(path, "admin", "PUT", DEFAULT_CRM_PIPELINE_CONFIG)).status).toBe(200);
+    state.fenceBoundaryMismatch = true;
+    const invalid = await request(fencePath, "admin");
+    expect(await invalid.json()).toMatchObject({
+      staffWritesFenced: true,
+      configurationValid: false,
+      issue: "boundary_mismatch",
+      version: "c".repeat(64),
+    });
+    expect(
+      (
+        await request(fencePath + "/recover", "admin", "PUT", {
+          staffWritesFenced: false,
+          expectedVersion: "c".repeat(64),
+        })
+      ).status,
+    ).toBe(200);
+    expect(state.fenceBoundaryMismatch).toBe(false);
   });
   it("rejects unrelated editors and clients", async () => {
     expect((await request(path, "editor", "GET", undefined, ["content"])).status).toBe(403);

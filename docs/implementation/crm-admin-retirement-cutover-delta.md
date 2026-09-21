@@ -56,8 +56,11 @@ cutover control, not a source-data deletion or a replacement Dashboard writer.
 
 - `GET` and admin-only `PUT`
   `/api/admin/crm/settings/legacy-staff-write-fence` expose a versioned
-  `staffWritesFenced` setting. The missing setting means `false`; malformed
-  stored state fails closed rather than silently reopening writes.
+  `staffWritesFenced` setting. The missing setting means `false`; malformed or
+  boundary-mismatched stored state reports `configurationValid: false`, fails
+  closed, and still returns a non-sensitive CAS version. An admin can repair a
+  bad category/secrecy boundary only through the separately audited, versioned
+  `PUT /api/admin/crm/settings/legacy-staff-write-fence/recover` endpoint.
 - Changing the setting commits its configuration and an `activity_logs` entry
   atomically. Generic Core settings endpoints cannot set or delete the key.
 - When `true`, Core staff create/update/note/task routes for leads and clients,
@@ -69,11 +72,22 @@ cutover control, not a source-data deletion or a replacement Dashboard writer.
   remain unchanged. The admin control endpoint remains available so an approved
   operator can re-enable staff writes as forward recovery.
 
-Focused tests cover the default, permission boundary, atomic audit request,
-blocked-write behavior, forward recovery, malformed state, generic-setting
-bypass prevention, and inbound durable-submission replay. This review slice is
-not deployed and its setting must remain false until the cutover runbook and
-acceptance gates below are approved.
+The fence is an **admission control**, not a distributed hard-freeze lock: a
+request admitted before the setting commit can still complete afterwards. Before
+an activation request can set `staffWritesFenced: true`, the admin must submit a
+validated operational assertion that staff writes are quiesced, already-admitted
+staff writes are drained, and a post-fence reconciliation is planned. This is a
+tested gate and audit record, not proof that the operational actions occurred.
+The approved activation runbook must therefore quiesce/drain staff writes before
+the setting change and independently reconcile the source after it. Do not claim
+that this setting alone establishes sole-writer enforcement.
+
+Focused tests cover the default, permission boundary, explicit activation gate,
+atomic audit request, blocked-write behavior, forward recovery including a
+boundary-mismatch repair, malformed state, generic-setting bypass prevention,
+and inbound durable-submission replay. This review slice is not deployed and its
+setting must remain false until the cutover runbook and acceptance gates below
+are approved.
 
 ## Gates still open
 

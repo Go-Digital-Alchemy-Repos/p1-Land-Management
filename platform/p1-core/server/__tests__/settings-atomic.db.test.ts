@@ -52,6 +52,45 @@ suite("atomic settings real database", () => {
     await settings.upsertSetting("mailgun_api_key", "private", "mailgun", false);
     await expect(settings.getCategorySnapshot("mailgun", false, rules)).rejects.toMatchObject({ code: "settings_boundary_mismatch" });
   });
+  it("repairs a wrong public-setting boundary with a metadata-only CAS token and audit", async () => {
+    await pool.query(
+      "CREATE TABLE IF NOT EXISTS activity_logs (id varchar PRIMARY KEY DEFAULT gen_random_uuid(), user_id varchar NOT NULL, action text NOT NULL, details text, created_at timestamp DEFAULT now())",
+    );
+    await settings.upsertSetting("legacy_staff_crm_writes_fenced", "unreadable", "wrong", true);
+    const before = await settings.getSettingBoundarySnapshot("legacy_staff_crm_writes_fenced");
+    await settings.repairPublicSettingBoundary(
+      {
+        key: "legacy_staff_crm_writes_fenced",
+        value: "false",
+        category: "crm_cutover",
+      },
+      before.version,
+      { userId: "owner", action: "legacy_staff_crm_write_fence_recovered", details: "{}" },
+    );
+    await expect(
+      settings.getCategorySnapshot("crm_cutover", true, {
+        legacy_staff_crm_writes_fenced: false,
+      }),
+    ).resolves.toMatchObject({ values: { legacy_staff_crm_writes_fenced: "false" } });
+    expect(
+      (
+        await pool.query(
+          "SELECT action,details FROM activity_logs WHERE action='legacy_staff_crm_write_fence_recovered'",
+        )
+      ).rows,
+    ).toEqual([{ action: "legacy_staff_crm_write_fence_recovered", details: "{}" }]);
+    await expect(
+      settings.repairPublicSettingBoundary(
+        {
+          key: "legacy_staff_crm_writes_fenced",
+          value: "true",
+          category: "crm_cutover",
+        },
+        before.version,
+        { userId: "owner", action: "legacy_staff_crm_write_fence_recovered", details: "{}" },
+      ),
+    ).rejects.toMatchObject({ statusCode: 409 });
+  });
   it("checks every registered integration key under the write lock even when a secret is kept", async () => {
     const rules = { mailgun_domain: false, mailgun_api_key: true };
     await settings.upsertSetting("mailgun_api_key", "private", "mailgun", true);

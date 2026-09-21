@@ -9,34 +9,71 @@ import { storage } from "../storage";
 
 export interface LegacyStaffCrmWriteFence {
   staffWritesFenced: boolean;
+  configurationValid: boolean;
+  issue: "invalid_value" | "boundary_mismatch" | null;
   version: string;
 }
 
-function parseStoredFence(value: string | undefined): boolean {
-  if (value === undefined) return false;
-  if (value === "true") return true;
-  if (value === "false") return false;
+export interface LegacyStaffCrmFenceActivationReadiness {
+  staffWritesQuiesced: true;
+  inFlightStaffWritesDrained: true;
+  postFenceReconciliationPlanned: true;
+}
+
+function parseStoredFence(
+  value: string | undefined,
+): Pick<LegacyStaffCrmWriteFence, "staffWritesFenced" | "configurationValid" | "issue"> {
+  if (value === undefined)
+    return { staffWritesFenced: false, configurationValid: true, issue: null };
+  if (value === "true") return { staffWritesFenced: true, configurationValid: true, issue: null };
+  if (value === "false") return { staffWritesFenced: false, configurationValid: true, issue: null };
   // A malformed row must not silently reopen staff writes after a cutover.
-  throw new AppError("Legacy CRM write-fence configuration is invalid", 503);
+  return { staffWritesFenced: true, configurationValid: false, issue: "invalid_value" };
 }
 
 export async function getLegacyStaffCrmWriteFence(): Promise<LegacyStaffCrmWriteFence> {
-  const snapshot = await storage.settings.getCategorySnapshot(
-    LEGACY_STAFF_CRM_WRITE_FENCE_CATEGORY,
-    true,
-    LEGACY_STAFF_CRM_WRITE_FENCE_KEY_RULES,
-  );
-  return {
-    staffWritesFenced: parseStoredFence(snapshot.values[LEGACY_STAFF_CRM_WRITE_FENCE_SETTING_KEY]),
-    version: snapshot.version,
-  };
+  try {
+    const snapshot = await storage.settings.getCategorySnapshot(
+      LEGACY_STAFF_CRM_WRITE_FENCE_CATEGORY,
+      true,
+      LEGACY_STAFF_CRM_WRITE_FENCE_KEY_RULES,
+    );
+    return {
+      ...parseStoredFence(snapshot.values[LEGACY_STAFF_CRM_WRITE_FENCE_SETTING_KEY]),
+      version: snapshot.version,
+    };
+  } catch (error) {
+    if (
+      !(
+        error &&
+        typeof error === "object" &&
+        (error as { code?: string }).code === "settings_boundary_mismatch"
+      )
+    )
+      throw error;
+    const recovery = await storage.settings.getSettingBoundarySnapshot(
+      LEGACY_STAFF_CRM_WRITE_FENCE_SETTING_KEY,
+    );
+    return {
+      staffWritesFenced: true,
+      configurationValid: false,
+      issue: "boundary_mismatch",
+      version: recovery.version,
+    };
+  }
 }
 
 export async function saveLegacyStaffCrmWriteFence(
   staffWritesFenced: boolean,
   expectedVersion: string,
   actorId: string,
+  activationReadiness?: LegacyStaffCrmFenceActivationReadiness,
 ): Promise<LegacyStaffCrmWriteFence> {
+  if (staffWritesFenced && !activationReadiness)
+    throw new AppError(
+      "Cutover readiness confirmation is required before fencing staff writes",
+      400,
+    );
   await storage.settings.upsertSettings(
     [
       {
@@ -57,7 +94,45 @@ export async function saveLegacyStaffCrmWriteFence(
       action: staffWritesFenced
         ? "legacy_staff_crm_writes_fenced"
         : "legacy_staff_crm_writes_reenabled",
-      details: JSON.stringify({ scope: "legacy_core_staff_crm" }),
+      details: JSON.stringify({
+        scope: "legacy_core_staff_crm",
+        activationReadiness: activationReadiness ?? null,
+      }),
+    },
+  );
+  return getLegacyStaffCrmWriteFence();
+}
+
+/**
+ * A boundary mismatch cannot use the regular versioned writer. This narrowly
+ * repairs this public key with a metadata-only CAS token and a dedicated audit.
+ */
+export async function recoverLegacyStaffCrmWriteFence(
+  staffWritesFenced: boolean,
+  expectedVersion: string,
+  actorId: string,
+  activationReadiness?: LegacyStaffCrmFenceActivationReadiness,
+): Promise<LegacyStaffCrmWriteFence> {
+  if (staffWritesFenced && !activationReadiness)
+    throw new AppError(
+      "Cutover readiness confirmation is required before fencing staff writes",
+      400,
+    );
+  await storage.settings.repairPublicSettingBoundary(
+    {
+      key: LEGACY_STAFF_CRM_WRITE_FENCE_SETTING_KEY,
+      value: String(staffWritesFenced),
+      category: LEGACY_STAFF_CRM_WRITE_FENCE_CATEGORY,
+    },
+    expectedVersion,
+    {
+      userId: actorId,
+      action: "legacy_staff_crm_write_fence_recovered",
+      details: JSON.stringify({
+        scope: "legacy_core_staff_crm",
+        staffWritesFenced,
+        activationReadiness: activationReadiness ?? null,
+      }),
     },
   );
   return getLegacyStaffCrmWriteFence();

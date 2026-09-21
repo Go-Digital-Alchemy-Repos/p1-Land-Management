@@ -16,6 +16,7 @@ import { storage } from "../../storage";
 import { createOrUpdateCrmLead, updateCrmLead } from "../../services/crm.service";
 import {
   getLegacyStaffCrmWriteFence,
+  recoverLegacyStaffCrmWriteFence,
   requireLegacyStaffCrmWritesAllowed,
   saveLegacyStaffCrmWriteFence,
 } from "../../services/legacy-staff-crm-write-fence.service";
@@ -39,12 +40,29 @@ router.put(
   }),
 );
 
+const activationReadinessSchema = z
+  .object({
+    staffWritesQuiesced: z.literal(true),
+    inFlightStaffWritesDrained: z.literal(true),
+    postFenceReconciliationPlanned: z.literal(true),
+  })
+  .strict();
+
 const writeFenceSchema = z
   .object({
     staffWritesFenced: z.boolean(),
     expectedVersion: z.string().regex(/^[a-f0-9]{64}$/),
+    activationReadiness: activationReadinessSchema.optional(),
   })
-  .strict();
+  .strict()
+  .superRefine((value, context) => {
+    if (value.staffWritesFenced && !value.activationReadiness)
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["activationReadiness"],
+        message: "Quiesce, in-flight drain, and reconciliation confirmation are required",
+      });
+  });
 
 router.get(
   "/settings/legacy-staff-write-fence",
@@ -62,6 +80,22 @@ router.put(
         parsed.staffWritesFenced,
         parsed.expectedVersion,
         req.user!.id,
+        parsed.activationReadiness,
+      ),
+    );
+  }),
+);
+router.put(
+  "/settings/legacy-staff-write-fence/recover",
+  requireRole("admin"),
+  asyncHandler(async (req, res) => {
+    const parsed = writeFenceSchema.parse(req.body);
+    res.json(
+      await recoverLegacyStaffCrmWriteFence(
+        parsed.staffWritesFenced,
+        parsed.expectedVersion,
+        req.user!.id,
+        parsed.activationReadiness,
       ),
     );
   }),
