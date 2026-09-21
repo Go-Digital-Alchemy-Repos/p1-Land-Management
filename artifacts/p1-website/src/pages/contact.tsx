@@ -12,7 +12,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CheckCircle2, Phone, Clock, MapPin } from "lucide-react";
 import { PHONE_DISPLAY, PHONE_HREF } from "@/lib/site";
-import { CredentialsStrip } from "@/components/content/CredentialsStrip";
 
 const WORK_TYPES = [
   ["maintenance", "Grounds maintenance contract"],
@@ -42,7 +41,7 @@ const FAQS = [
   },
   {
     question: "Are you licensed and insured?",
-    answer: "Yes, in both states. If your company needs a certificate of insurance or vendor paperwork, tell us in the form and we'll send it with the estimate.",
+    answer: "Ask our team for current insurance documentation and any license information relevant to your project before work begins.",
   },
 ];
 
@@ -291,8 +290,6 @@ export default function Contact() {
           </div>
         </div>
       </section>
-
-      <CredentialsStrip />
 
       {/* FAQ */}
       <section className="py-24 bg-muted border-t border-border">
