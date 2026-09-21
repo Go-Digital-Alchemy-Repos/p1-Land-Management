@@ -20,7 +20,13 @@ export default defineConfig({
     channel: "chrome",
     trace: "retain-on-failure",
   },
-  projects: [{ name: "cms-acceptance-desktop", use: { viewport: { width: 1440, height: 900 } } }],
+  projects: [
+    { name: "cms-acceptance-desktop", use: { viewport: { width: 1440, height: 900 } } },
+    {
+      name: "cms-acceptance-mobile",
+      use: { viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true },
+    },
+  ],
   webServer: {
     command:
       "BROWSER_TEST_FEDERATION=true node --import tsx server/scripts/start-browser-test-app.ts",

@@ -22,7 +22,8 @@ async function openEditor(page: Page) {
 
 test("federated CMS editor saves, publishes, resolves a simultaneous-editor conflict, and restores a revision", async ({
   page,
-}) => {
+}, testInfo) => {
+  test.skip(testInfo.project.name !== "cms-acceptance-desktop", "desktop lifecycle coverage");
   // The first request is intentionally unauthenticated; it proves this browser journey cannot
   // silently rely on the legacy Core session.
   const unauthenticated = await page.request.get(
@@ -90,4 +91,29 @@ test("federated CMS editor saves, publishes, resolves a simultaneous-editor conf
   await expect(page).toHaveURL(editorPath);
   await expect(page.getByRole("heading", { name: "P1 website editor", exact: true })).toBeVisible();
   await expect(page.getByLabel("SEO title", { exact: true })).toHaveValue(initial);
+});
+
+test("federated CMS editor is keyboard reachable and contains at 390px", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== "cms-acceptance-mobile", "mobile accessibility coverage");
+  await signInWithDashboard(page);
+  await openEditor(page);
+  const title = page.getByLabel("SEO title", { exact: true });
+  await expect(title).toBeVisible();
+  await title.fill(`CMS mobile accessibility ${crypto.randomUUID()}`);
+  await page.getByRole("button", { name: "Save draft", exact: true }).click();
+  await expect(page.getByText("Draft saved", { exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Publish", exact: true })).toBeEnabled();
+  await page.getByRole("button", { name: "Save draft", exact: true }).focus();
+  await expect(page.getByRole("button", { name: "Save draft", exact: true })).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("button", { name: "Publish", exact: true })).toBeFocused();
+  await page.keyboard.press("Shift+Tab");
+  await expect(page.getByRole("button", { name: "Save draft", exact: true })).toBeFocused();
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= document.documentElement.clientWidth,
+    ),
+  ).toBe(true);
 });
