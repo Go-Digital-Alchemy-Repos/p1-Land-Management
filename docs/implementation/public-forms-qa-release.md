@@ -24,3 +24,17 @@ Rollback uses reviewed revert commits restoring the public/form-renderer changes
 All three Railway services reported SUCCESS for `29b292ad16972c1f05b1635e5a33b4e444cb3eab`. Fresh production browser checks confirmed the commercial form's nine service choices, `noindex, follow`, no horizontal overflow, and the preserved homepage hero and service cards. Root submitted exactly one Owner-authorized, clearly labeled internal QA inquiry (`P1-QA-20260921-29b292ad`); the public form displayed its successful receipt. Delivery-job and native Sales correlation remain separate checks. No additional request, replay, or resend was performed.
 
 Existing notification jobs establish transport acceptance, not recipient inbox delivery. Search Console's configured Domain property lacks access for the deployment's as-yet-unidentified Google principal. Indexing remains deferred until the remaining release and QA gates are complete. Broader consolidation and recovery limits remain in `consolidation-acceptance.md`.
+
+## Controlled delivery result
+
+Read-only production SQL correlated QA reference `P1-QA-20260921-29b292ad` with
+exactly one submission (`bc1e8cb8-1e2e-4610-b166-c4f1f5ffc277`, 08:57:10Z),
+one Core CRM record, one Dashboard receipt, one native Sales lead
+(`a27953a8-50e3-4b04-8d9b-fd211ea06145`) and one intake audit event. Root also
+confirmed the labeled inquiry in the live Sales UI, New and Unassigned.
+
+Four unique effect jobs completed on their first attempt: one Dashboard handoff,
+one Core CRM intake and two admin notifications. No duplicate submission, job
+key, CRM record, receipt, native lead or audit event was found. No replay, resend,
+retry or deletion was performed. This is persistence and notification transport
+evidence; recipient inbox confirmation remains outstanding.
