@@ -39,3 +39,18 @@ verified successful at that revision. CMS lifecycle integration, remaining
 consolidation/QA, owner inbox receipt confirmation, provider recovery gates,
 and Search Console access/submission remain separate unfinished work. Do not
 submit indexing before the overall QA gate passes.
+
+## Live public HTTP audit — 2026-09-21 12:25 UTC follow-up
+
+Read-only requests checked all 54 URLs in the production sitemap. Every page
+returned successfully without redirects, declared its own canonical URL, and
+had no noindex directive. None contained the three previously reported editorial
+annotation strings. All 75 unique same-origin image URLs found in server-rendered
+`img` elements returned HTTP 200 with an image content type.
+
+This verifies HTTP/metadata and those image resources, not visual layout,
+client-rendered/lazy-only assets, full accessibility, or complete browser journeys.
+No forms were submitted, no additional notification was sent, and no indexing
+request was made. Main remained `4ea32774`. Disk space remained approximately
+1 GiB and Docker image inventory still failed with a containerd I/O error; the
+fresh database integration release gate remains blocked.
