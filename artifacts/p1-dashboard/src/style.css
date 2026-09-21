@@ -1683,9 +1683,9 @@ td { padding: 16px var(--atlas-surface-inset); }
 .atlas-chip { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; padding: 8px 11px; border: 1px solid hsl(var(--border)); border-radius: 999px; background: hsl(var(--card) / 0.72); color: hsl(var(--foreground)); font-size: 11px; font-weight: 650; }
 .workspace-tabs { display: flex; gap: 2px; overflow-x: auto; overscroll-behavior-x: contain; border-bottom: 1px solid var(--atlas-line); margin-bottom: 28px; scrollbar-width: none; }
 .workspace-tabs::-webkit-scrollbar { display: none; }
-.workspace-tabs button { min-height: 48px; border: 0; border-bottom: 2px solid transparent; border-radius: 0; padding: 12px 14px; white-space: nowrap; background: transparent; color: hsl(var(--muted-foreground)); font-size: 12px; font-weight: 620; }
+.workspace-tabs :is(button, a) { min-height: 48px; border: 0; border-bottom: 2px solid transparent; border-radius: 0; padding: 12px 14px; white-space: nowrap; background: transparent; color: hsl(var(--muted-foreground)); font-size: 12px; font-weight: 620; text-decoration: none; }
 /* Shared semantic colors keep client and property navigation consistent. */
-.workspace-tabs button { display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.workspace-tabs :is(button, a) { display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .workspace-tab-icon { display: inline-flex; align-items: center; justify-content: center; width: 17px; height: 17px; flex: 0 0 17px; color: var(--tab-icon-color); }
 .workspace-tab-icon--blue { --tab-icon-color: #3b82f6; }
 .workspace-tab-icon--green { --tab-icon-color: #16a34a; }
@@ -1693,8 +1693,8 @@ td { padding: 16px var(--atlas-surface-inset); }
 .workspace-tab-icon--amber { --tab-icon-color: #d9920b; }
 .workspace-tab-icon--cyan { --tab-icon-color: #089fb5; }
 .workspace-tab-icon--rose { --tab-icon-color: #ec4899; }
-.workspace-tabs button:hover { color: var(--atlas-ink); background: hsl(var(--card) / 0.35); }
-.workspace-tabs button.active { border-bottom-color: hsl(var(--primary)); color: hsl(var(--foreground)); }
+.workspace-tabs :is(button, a):hover { color: var(--atlas-ink); background: hsl(var(--card) / 0.35); }
+.workspace-tabs :is(button, a).active { border-bottom-color: hsl(var(--primary)); color: hsl(var(--foreground)); }
 .account-overview,
 .notes-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, .38fr); gap: 22px; align-items: start; }
 .account-primary-column { display: grid; gap: 22px; min-width: 0; }
@@ -1850,7 +1850,7 @@ td { padding: 16px var(--atlas-surface-inset); }
   .account-hero-title { align-items: flex-start; flex-direction: column; gap: 12px; }
   .account-hero-title h1 { font-size: 32px; }
   .workspace-tabs { margin: 0 -16px 20px; padding: 0 16px; }
-  .workspace-tabs button { min-height: 46px; padding: 11px 12px; }
+  .workspace-tabs :is(button, a) { min-height: 46px; padding: 11px 12px; }
   .atlas-stat-grid { gap: 9px; }
   .atlas-stat { padding: 14px; }
   .atlas-stat strong { margin-top: 12px; font-size: 23px; }
@@ -1899,7 +1899,7 @@ td { padding: 16px var(--atlas-surface-inset); }
 .primary:hover { background: hsl(var(--primary) / .88); }
 input, select, textarea { color: var(--ink); background: var(--surface); border-color: var(--line); }
 input::placeholder, textarea::placeholder { color: hsl(var(--muted-foreground)); }
-button[aria-pressed="true"], .workspace-tabs button.active { color: hsl(var(--accent-foreground)); }
+button[aria-pressed="true"], .workspace-tabs :is(button, a).active { color: hsl(var(--accent-foreground)); }
 .error { color: hsl(var(--danger-ink)); background: hsl(var(--danger-surface)); }
 .warning, .phase-override { color: hsl(var(--warning)); }
 .notice { color: hsl(var(--success)); background: hsl(var(--success-surface)); }
@@ -1951,8 +1951,3 @@ input:not([type="checkbox"]):not([type="radio"]), select, textarea,
 .onboarding-fields label { display: grid; gap: 8px; }
 .onboarding-evidence { max-width: 100%; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; }
 @media (max-width: 680px) { .onboarding-fields { grid-template-columns: 1fr; } }
-
-/* Retained admin Design navigation, using the dashboard's existing guarded routing. */
-.marketing-design-tabs { display:flex; flex-wrap:wrap; gap:4px; padding:4px; margin-bottom:24px; width:fit-content; border-radius:6px; background:hsl(var(--muted)); }
-.marketing-design-tabs button { border:0; border-radius:4px; padding:8px 12px; min-height:36px; background:transparent; color:hsl(var(--muted-foreground)); box-shadow:none; }
-.marketing-design-tabs button[aria-current="page"] { background:hsl(var(--background)); color:hsl(var(--foreground)); box-shadow:0 1px 3px #00000014; }

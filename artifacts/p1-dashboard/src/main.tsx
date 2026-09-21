@@ -16,6 +16,7 @@ import { OwnerMfaRecovery } from "./OwnerMfaRecovery";
 import { CommercialInbox } from "./CommercialInbox";
 import { PropertyFiles } from "./PropertyFiles";
 import { ScheduleCalendar } from "./ScheduleCalendar";
+import { RecurringCalendar } from "./RecurringCalendar";
 import { scheduleDateTime } from "./schedule-dates";
 import { AssessmentAvailability } from "./AssessmentAvailability";
 import { ClientContacts } from "./ClientContacts";
@@ -89,6 +90,8 @@ import {
   canAccessRoute,
   DASHBOARD_PAGES,
   defaultRouteForRole,
+  navigationAnchorIncludes,
+  navigationTargetFor,
   NAVIGATION_GROUPS,
   pathForRoute,
   routeFromPath,
@@ -104,7 +107,6 @@ const WebsiteSocial = lazy(() => import("./marketing/WebsiteSocial"));
 const WebsiteTypography = lazy(() => import("./marketing/WebsiteTypography"));
 const WebsiteColors = lazy(() => import("./marketing/WebsiteColors"));
 const WebsiteFeatures = lazy(() => import("./marketing/WebsiteFeatures"));
-const ClientStackOnboarding = lazy(() => import("./marketing/ClientStackOnboarding"));
 const WebsiteBackups = lazy(() => import("./marketing/WebsiteBackups"));
 const WebsiteIntegrations = lazy(() => import("./marketing/WebsiteIntegrations"));
 const EmailTemplateManager = lazy(() => import("./marketing/EmailTemplateManager"));
@@ -169,7 +171,6 @@ const sidebarIconColors: Record<keyof typeof icons, string> = {
   "Website Social": "#059669",
   "Website Typography": "#0284c7",
   "Website Colors": "#f43f5e",
-  "Website Onboarding": "#059669",
   "Website Sections": "#a78bfa",
   "Website SEO": "#a78bfa",
   "Website Blog": "#9333ea",
@@ -214,6 +215,9 @@ type Person = {
 type NavItem = DashboardPageRoute & {
   icon: typeof LayoutDashboard;
 };
+type VisibleNavItem = NavItem & {
+  target: DashboardPageRoute;
+};
 const icons: Record<DashboardPageRoute["view"] | "Settings:security" | "Settings:integrations" | "Settings:preferences" | "Settings:term-libraries", typeof LayoutDashboard> = {
   Analytics: BarChart3,
   "Website Sidebars": PanelRight,
@@ -232,7 +236,6 @@ const icons: Record<DashboardPageRoute["view"] | "Settings:security" | "Settings
   "Website Backups": DatabaseBackup,
   "Website Integrations": SlidersHorizontal,
   "Website Email Templates": Mail,
-  "Website Onboarding": Globe,
   "Website Sections": Blocks,
   "Website SEO": Search,
   "Website Blog": BookOpen,
@@ -1025,6 +1028,72 @@ function App() {
   const can = (capability: string) => Boolean(person && person.role !== "crew" && hasCapability(person, capability));
   const ops = can("operations.schedule");
   const fieldWork = ops || can("workspace.my-day") || person?.role === "crew";
+  const agreementWorkspaceTabs = [
+    ...(can("revenue.agreements") || can("revenue.billing")
+      ? [{ view: "Agreements" as const, label: "Agreements", path: "/agreements", icon: FileText, tone: "amber" }]
+      : []),
+    ...(can("revenue.sales") || can("revenue.agreements")
+      ? [{ view: "Agreement Drafts" as const, label: "Drafts", path: "/agreements/drafts", icon: SquarePen, tone: "rose" }]
+      : []),
+    ...(can("revenue.agreement-templates.manage")
+      ? [{ view: "Agreement Templates" as const, label: "Templates", path: "/agreements/templates", icon: LibraryBig, tone: "violet" }]
+      : []),
+  ];
+  const inAgreementWorkspace = ["Agreements", "Agreement Drafts", "Agreement Templates"].includes(view);
+  const scheduleWorkspaceTabs = [
+    ...(can("operations.schedule")
+      ? [{ view: "Schedule" as const, label: "Schedule", path: "/schedule", icon: CalendarDays, tone: "cyan" }]
+      : []),
+    ...(can("operations.recurring")
+      ? [{ view: "Recurring" as const, label: "Recurring", path: "/recurring", icon: RefreshCw, tone: "green" }]
+      : []),
+  ];
+  const inScheduleWorkspace = ["Schedule", "Recurring"].includes(view);
+  const marketingWorkspaceGroups = [
+    {
+      label: "Content",
+      tone: "violet",
+      views: ["Website Editor", "CMS Pages", "Website Blog", "Website Forms", "Website Events", "Website Careers", "Website Team", "Media Library", "Website Galleries", "Website Sections"],
+    },
+    {
+      label: "Brand",
+      tone: "rose",
+      views: ["Website Identity", "Website Social", "Website Colors", "Website Typography"],
+    },
+    {
+      label: "Site",
+      tone: "green",
+      views: ["Website SEO", "Website Menus", "Website Sidebars"],
+    },
+    {
+      label: "System",
+      tone: "cyan",
+      views: ["Website Features", "Website Backups", "Website Integrations", "Website Email Templates", "Website Documents", "Website Head Tags"],
+    },
+    {
+      label: "Reporting",
+      tone: "blue",
+      views: ["Analytics", "Search Console"],
+    },
+  ] as const;
+  const marketingWorkspace = marketingWorkspaceGroups.find((workspace) =>
+    workspace.views.includes(view as never),
+  );
+  const marketingWorkspaceLabels: Partial<Record<DashboardPageRoute["view"], string>> = {
+    "Website Editor": "Website",
+    "Website Identity": "Branding",
+    "Website SEO": "SEO",
+    "Website Features": "Website modules",
+    Analytics: "Google Analytics",
+  };
+  const marketingWorkspaceTabs = marketingWorkspace && person
+    ? marketingWorkspace.views.flatMap((marketingView) => {
+        const page = nav.find((item) => item.view === marketingView);
+        return page && canAccessRoute({ kind: "page", page }, person.role, person.capabilities)
+          ? [{ ...page, label: marketingWorkspaceLabels[marketingView] ?? page.label, tone: marketingWorkspace.tone }]
+          : [];
+      })
+    : [];
   const propertyTypes = data["property-types"] || [];
   const visibleProperties = (data.properties || [])
     .filter((property: any) => {
@@ -1044,9 +1113,12 @@ function App() {
           )
         : left.name.localeCompare(right.name),
     );
-  const allowedNav = nav.filter((item) =>
-    item.navigation !== false && canAccessRoute({ kind: "page", page: item }, person?.role, person?.capabilities),
-  );
+  const allowedNav: VisibleNavItem[] = person
+    ? nav.flatMap((item) => {
+        const target = navigationTargetFor(item, person.role, person.capabilities);
+        return target ? [{ ...item, target }] : [];
+      })
+    : [];
   const activePage = nav.find(
     (item) =>
       item.view === view &&
@@ -1081,10 +1153,10 @@ function App() {
       setNotice("That area is not included in your selected access.");
     }
   }, [person?.role, person?.capabilities, view, settingsSection, recordRoute?.id]);
-  const activeNav = (item: NavItem) =>
+  const activeNav = (item: VisibleNavItem) =>
     !routeUnavailable &&
-    view === item.view &&
-    (item.view !== "Settings" || settingsSection === item.settingsSection);
+    navigationAnchorIncludes(item, view) &&
+    (item.target.view !== "Settings" || settingsSection === item.target.settingsSection);
   const accountWorkspace =
     recordRoute?.kind === "client" || recordRoute?.kind === "property";
   useEffect(() => {
@@ -1329,7 +1401,7 @@ function App() {
                         className={activeNav(item) ? "active" : ""}
                         aria-current={activeNav(item) ? "page" : undefined}
                         onClick={() => {
-                          navigate(item.view, item.settingsSection);
+                          navigate(item.target.view, item.target.settingsSection);
                           setMenu(false);
                         }}
                       >
@@ -1439,9 +1511,6 @@ function App() {
                   <Plus size={17} /> Internal Job
                 </button>
               )}
-              {view === "Recurring" && can("operations.recurring") && (
-                <span className="muted">Recurring Jobs begin with an approved recurring estimate.</span>
-              )}
               {view === "Projects" && can("operations.projects") && (
                 <button className="primary" onClick={() => openForm("project")}>
                   <Plus size={17} /> New project
@@ -1477,13 +1546,48 @@ function App() {
               {notice}
             </div>
           )}
-          {!routeUnavailable && marketingDesignCopy[view] && <nav className="marketing-design-tabs" aria-label="Design tools">
-            {(["Website Identity", "Website Social", "Website Colors", "Website Typography"] as const).map(designView => {
-              const page = allowedNav.find(item => item.view === designView);
-              if (!page) return null;
-              return <button key={designView} type="button" aria-current={view === designView ? "page" : undefined} onClick={() => navigate(designView)}>{marketingDesignCopy[designView]?.title}</button>;
-            })}
-          </nav>}
+          {!routeUnavailable && marketingWorkspace && marketingWorkspaceTabs.length > 1 && (
+            <nav className="workspace-tabs marketing-workspace-tabs" aria-label={`${marketingWorkspace.label} tools`}>
+              {marketingWorkspaceTabs.map((tab) => {
+                const Icon = tab.icon;
+                const active = view === tab.view;
+                return (
+                  <a key={tab.path} href={tab.path} className={active ? "active" : ""} aria-current={active ? "page" : undefined}>
+                    <span className={`workspace-tab-icon workspace-tab-icon--${tab.tone}`} aria-hidden="true"><Icon size={17} strokeWidth={1.8} /></span>
+                    {tab.label}
+                  </a>
+                );
+              })}
+            </nav>
+          )}
+          {!routeUnavailable && inAgreementWorkspace && agreementWorkspaceTabs.length > 1 && (
+            <nav className="workspace-tabs agreement-workspace-tabs" aria-label="Agreement workspace">
+              {agreementWorkspaceTabs.map((tab) => {
+                const Icon = tab.icon;
+                const active = view === tab.view;
+                return (
+                  <a key={tab.path} href={tab.path} className={active ? "active" : ""} aria-current={active ? "page" : undefined}>
+                    <span className={`workspace-tab-icon workspace-tab-icon--${tab.tone}`} aria-hidden="true"><Icon size={17} strokeWidth={1.8} /></span>
+                    {tab.label}
+                  </a>
+                );
+              })}
+            </nav>
+          )}
+          {!routeUnavailable && inScheduleWorkspace && scheduleWorkspaceTabs.length > 1 && (
+            <nav className="workspace-tabs schedule-workspace-tabs" aria-label="Schedule workspace">
+              {scheduleWorkspaceTabs.map((tab) => {
+                const Icon = tab.icon;
+                const active = view === tab.view;
+                return (
+                  <a key={tab.path} href={tab.path} className={active ? "active" : ""} aria-current={active ? "page" : undefined}>
+                    <span className={`workspace-tab-icon workspace-tab-icon--${tab.tone}`} aria-hidden="true"><Icon size={17} strokeWidth={1.8} /></span>
+                    {tab.label}
+                  </a>
+                );
+              })}
+            </nav>
+          )}
           {!routeUnavailable && recordRoute?.kind === "client" ? (
             <ClientWorkspace
               id={recordRoute.id}
@@ -1549,7 +1653,6 @@ function App() {
           {view === "Website Typography" && <Suspense fallback={<p role="status">Loading website fonts…</p>}><WebsiteTypography key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Website Colors" && <Suspense fallback={<p role="status">Loading website colors…</p>}><WebsiteColors key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Website Features" && person.role === "owner" && <Suspense fallback={<p role="status">Loading website modules…</p>}><WebsiteFeatures key={person.id}/></Suspense>}
-          {view === "Website Onboarding" && person.role === "owner" && <Suspense fallback={<p role="status">Loading onboarding…</p>}><ClientStackOnboarding key={person.id}/></Suspense>}
           {view === "Website Backups" && person.role === "owner" && <Suspense fallback={<p role="status">Loading website backups…</p>}><WebsiteBackups key={person.id}/></Suspense>}
           {view === "Website Integrations" && person.role === "owner" && <Suspense fallback={<p role="status">Loading website integrations…</p>}><WebsiteIntegrations key={person.id}/></Suspense>}
           {view === "Website Email Templates" && person.role === "owner" && <Suspense fallback={<p role="status">Loading email templates…</p>}><EmailTemplateManager key={person.id}/></Suspense>}
@@ -1569,10 +1672,8 @@ function App() {
           {view === "Website Blog" && <Suspense fallback={<p role="status">Loading blog…</p>}><BlogManager canUseMedia={can("marketing.content.media")} key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Website Team" && <Suspense fallback={<p role="status">Loading team…</p>}><TeamManager canUseMedia={can("marketing.content.media")} key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Website Menus" && <Suspense fallback={<p role="status">Loading website menus…</p>}><CmsMenus key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
-          {view === "Agreement Drafts" && <Suspense fallback={<p role="status">Loading agreement drafts…</p>}><AgreementDraftWorkspace key={`${recordRoute?.id || "list"}:${person.id}:${(person.capabilities || []).join(",")}`} id={recordRoute?.kind === "agreement-draft" ? recordRoute.id : undefined} canEdit={hasCapability(person,"revenue.sales")} canManageTemplates={hasCapability(person,"revenue.agreement-templates.manage")} canViewAgreements={hasCapability(person,"revenue.agreements")||hasCapability(person,"revenue.billing")} opened={id => applyRoute({kind:"page", page:nav.find(item => item.view === "Agreement Drafts")!, record:{kind:"agreement-draft", id}}, "replace")}/></Suspense>}
-          {view === "Agreement Templates" && <Suspense fallback={<p role="status">Loading templates…</p>}><TemplateLibrary key={`${person.id}:${(person.capabilities || []).join(",")}`} canUseClauses={hasCapability(person,"settings.term-libraries")} canViewAgreements={hasCapability(person,"revenue.agreements")||hasCapability(person,"revenue.billing")}/></Suspense>}
-          {view === "Agreements" && (hasCapability(person,"revenue.sales") || hasCapability(person,"revenue.agreements")) && <a href="/agreements/drafts">Agreement drafts</a>}
-          {view === "Agreements" && hasCapability(person,"revenue.agreement-templates.manage") && <nav aria-label="Agreement workspace"><span aria-current="page">Agreements</span> <a href="/agreements/templates">Templates</a></nav>}
+          {view === "Agreement Drafts" && <Suspense fallback={<p role="status">Loading agreement drafts…</p>}><AgreementDraftWorkspace key={`${recordRoute?.id || "list"}:${person.id}:${(person.capabilities || []).join(",")}`} id={recordRoute?.kind === "agreement-draft" ? recordRoute.id : undefined} canEdit={hasCapability(person,"revenue.sales")} canManageTemplates={hasCapability(person,"revenue.agreement-templates.manage")} opened={id => applyRoute({kind:"page", page:nav.find(item => item.view === "Agreement Drafts")!, record:{kind:"agreement-draft", id}}, "replace")}/></Suspense>}
+          {view === "Agreement Templates" && <Suspense fallback={<p role="status">Loading templates…</p>}><TemplateLibrary key={`${person.id}:${(person.capabilities || []).join(",")}`} canUseClauses={hasCapability(person,"settings.term-libraries")}/></Suspense>}
           {view === "Agreements" && (
             <ServiceAgreements
               role={person.role}
@@ -2201,30 +2302,33 @@ function App() {
             </section>
           )}
           {view === "Recurring" && (
-            <section className="panel">
-              <Table
-                rows={(data["recurring-jobs"] || []).map((job: any) => ({
-                  ...job,
-                  next_visit: scheduleDateTime(job.next_visit),
-                }))}
-                columns={[
-                  "title",
-                  "generation_status",
-                  "visits_remaining",
-                  "client_name",
-                  "property_name",
-                  "agreement_status",
-                  "visit_allowance",
-                  "visits_reserved",
-                  "cadence",
-                  "next_visit",
-                  "paused",
-                ]}
-                empty="No recurring services yet."
-              />
-              <p>Visit allowances include reserved work and charged visits. Cancelled or skipped visits release a slot only when uncharged. Blank counts indicate a service without a per-visit allowance for its next date.</p>
-              {(data["recurring-jobs"] || []).filter((item: any) => item.paused && item.agreement_status === "draft").map((item: any) => <button key={item.id} onClick={() => openForm("activate-recurring", item)}>Schedule and activate {item.title}</button>)}
-            </section>
+            <>
+              <RecurringCalendar jobs={data["recurring-jobs"] || []} />
+              <section className="panel">
+                <Table
+                  rows={(data["recurring-jobs"] || []).map((job: any) => ({
+                    ...job,
+                    next_visit: scheduleDateTime(job.next_visit),
+                  }))}
+                  columns={[
+                    "title",
+                    "generation_status",
+                    "visits_remaining",
+                    "client_name",
+                    "property_name",
+                    "agreement_status",
+                    "visit_allowance",
+                    "visits_reserved",
+                    "cadence",
+                    "next_visit",
+                    "paused",
+                  ]}
+                  empty="No recurring services yet."
+                />
+                <p>Visit allowances include reserved work and charged visits. Cancelled or skipped visits release a slot only when uncharged. Blank counts indicate a service without a per-visit allowance for its next date.</p>
+                {(data["recurring-jobs"] || []).filter((item: any) => item.paused && item.agreement_status === "draft").map((item: any) => <button key={item.id} onClick={() => openForm("activate-recurring", item)}>Schedule and activate {item.title}</button>)}
+              </section>
+            </>
           )}
           {view === "Projects" && (
             <ProjectPhases projects={data.projects || []} estimates={data.estimates || []} role={person?.role} capabilities={person?.capabilities} api={api} refresh={refresh} onError={setError} />

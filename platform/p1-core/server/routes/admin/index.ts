@@ -21,7 +21,6 @@ import editorLocksRoutes from "./editor-locks.routes";
 import crmRoutes from "./crm.routes";
 import careersRoutes from "./careers.routes";
 import clientSiteContentRoutes from "./client-site-content.routes";
-import clientStackOnboardingRoutes from "./client-stack-onboarding.routes";
 import {
   requireBlogEnabled,
   requireCareersEnabled,
@@ -57,7 +56,6 @@ router.use("/events", requireEventsEnabled, requireAdminPermission("content"), e
 router.use("/blog", requireBlogEnabled, requireBusinessCapability("marketing.content.blog"), blogRoutes);
 router.use("/", registrationRoutes);
 router.use("/cms", requireCmsEnabled, cmsRoutes);
-router.use("/client-stack-onboarding", requireRole("admin"), clientStackOnboardingRoutes);
 router.use("/cms", requireCmsEnabled, cmsMediaRoutes);
 router.use("/cms", requireCmsEnabled, cmsSectionsRoutes);
 router.use("/cms", requireCmsEnabled, cmsGalleriesRoutes);

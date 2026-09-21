@@ -2,7 +2,10 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
   canAccessRoute,
+  DASHBOARD_PAGES,
   defaultRouteForRole,
+  navigationAnchorIncludes,
+  navigationTargetFor,
   pathForRoute,
   routeFromPath,
 } from "../src/dashboard-routes";
@@ -141,6 +144,85 @@ test("agreement drafts have separate Sales write and Agreements read navigation,
   assert.equal(routeFromPath("/agreements/drafts/nope").kind, "not-found");
 });
 
+test("Revenue keeps internal sales and agreement destinations URL-addressable but out of the sidebar", () => {
+  const visibleRevenue = DASHBOARD_PAGES
+    .filter((page) => page.group === "Revenue" && page.navigation !== false)
+    .map((page) => page.label);
+  assert.deepEqual(visibleRevenue, ["Sales", "Agreements", "Billing", "Expenses"]);
+
+  for (const path of ["/agreements/drafts", "/agreements/templates"]) {
+    const route = routeFromPath(path);
+    assert.equal(route.kind, "page");
+    if (route.kind === "page") assert.equal(route.page.navigation, false);
+  }
+});
+test("Marketing keeps one sidebar entry per workspace while every tool remains a guarded deep link", () => {
+  const visibleMarketing = DASHBOARD_PAGES
+    .filter((page) => page.group === "Marketing" && page.navigation !== false)
+    .map((page) => ({ label: page.label, path: page.path }));
+  assert.deepEqual(visibleMarketing, [
+    { label: "Content", path: "/marketing/content/website" },
+    { label: "Brand", path: "/marketing/design/branding" },
+    { label: "Site", path: "/marketing/content/seo" },
+    { label: "System", path: "/marketing/system/features" },
+    { label: "Reporting", path: "/marketing/reporting/analytics" },
+  ]);
+
+  for (const path of [
+    "/marketing/content/pages",
+    "/marketing/content/blog",
+    "/marketing/content/forms",
+    "/marketing/content/media",
+    "/marketing/design/colors",
+    "/marketing/content/menus",
+    "/marketing/system/integrations",
+    "/marketing/reporting/search-console",
+  ]) {
+    const route = routeFromPath(path);
+    assert.equal(route.kind, "page");
+    if (route.kind === "page") assert.equal(route.page.navigation, false);
+  }
+
+  assert.equal(canAccessRoute(routeFromPath("/marketing/content/forms"), "member", ["marketing.content.forms"]), true);
+  assert.equal(canAccessRoute(routeFromPath("/marketing/content/forms"), "member", ["marketing.content.pages"]), false);
+  assert.equal(canAccessRoute(routeFromPath("/marketing/system/integrations"), "member", ["marketing.content.pages"]), false);
+});
+test("Recurring remains an authorized deep link while Schedule is the only Operations sidebar entry", () => {
+  const recurring = routeFromPath("/recurring");
+  assert.equal(recurring.kind, "page");
+  if (recurring.kind !== "page") return;
+  assert.equal(recurring.page.navigation, false);
+  assert.equal(canAccessRoute(recurring, "member", ["operations.recurring"]), true);
+  assert.equal(canAccessRoute(recurring, "member", ["operations.schedule"]), false);
+  assert.equal(
+    DASHBOARD_PAGES.some((page) => page.group === "Operations" && page.label === "Recurring" && page.navigation !== false),
+    false,
+  );
+});
+
+test("collapsed workspace anchors target the first authorized nested tool without widening access", () => {
+  const page = (view: string) => {
+    const result = DASHBOARD_PAGES.find((candidate) => candidate.view === view && candidate.navigation !== false);
+    assert.ok(result, `missing navigation anchor for ${view}`);
+    return result;
+  };
+  const cases = [
+    { anchor: "Website Editor", grants: ["marketing.content.forms"], expected: "Website Forms" },
+    { anchor: "Analytics", grants: ["marketing.search-console.view"], expected: "Search Console" },
+    { anchor: "Schedule", grants: ["operations.recurring"], expected: "Recurring" },
+    { anchor: "Agreements", grants: ["revenue.agreement-templates.manage"], expected: "Agreement Templates" },
+  ];
+  for (const testCase of cases) {
+    const target = navigationTargetFor(page(testCase.anchor), "member", testCase.grants);
+    assert.equal(target?.view, testCase.expected);
+    assert.equal(canAccessRoute({ kind: "page", page: target! }, "member", testCase.grants), true);
+  }
+  assert.equal(navigationTargetFor(page("Website Editor"), "member", ["marketing.content.seo"]), null);
+  assert.equal(navigationAnchorIncludes(page("Website Editor"), "Website Forms"), true);
+  assert.equal(navigationAnchorIncludes(page("Schedule"), "Recurring"), true);
+  assert.equal(navigationAnchorIncludes(page("Agreements"), "Agreement Templates"), true);
+  assert.equal(navigationAnchorIncludes(page("Website Editor"), "Website SEO"), false);
+});
 test("Developer resources is an Owner-only Website System destination", () => {
   const route=routeFromPath("/marketing/system/documents");
   assert.equal(route.kind,"page");
@@ -152,12 +234,8 @@ test("Developer resources is an Owner-only Website System destination", () => {
     assert.equal(canAccessRoute(route,role,["marketing.content.pages"]),false);
 });
 
-test("Onboarding stays under Website System with Owner-only navigation", () => {
-  const route=routeFromPath("/marketing/system/onboarding");
-  assert.equal(route.kind,"page");if(route.kind!=="page")return;
-  assert.equal(route.page.view,"Website Onboarding");assert.equal(route.page.section,"Website System");
-  assert.equal(canAccessRoute(route,"owner"),true);
-  for(const role of ["admin","member","client","crew",null]) assert.equal(canAccessRoute(route,role,["marketing.content.pages"]),false);
+test("retired client stack onboarding deep link is not a dashboard route", () => {
+  assert.equal(routeFromPath("/marketing/system/onboarding").kind, "not-found");
 });
 
 test("Email Templates is an Owner-only Website System destination", () => {

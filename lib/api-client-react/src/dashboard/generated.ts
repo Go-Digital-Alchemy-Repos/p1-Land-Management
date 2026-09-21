@@ -263,13 +263,6 @@ import type {
   MarketingTeamMember,
   NotifyMarketingEvent200,
   NotifyMarketingEventBody,
-  OnboardingDnsInput,
-  OnboardingDnsResult,
-  OnboardingEvidence,
-  OnboardingPlan,
-  OnboardingPlanInput,
-  OnboardingReadinessInput,
-  OnboardingReadinessResult,
   OperationReceipt,
   PhotoUploadReceipt,
   PrepareAgreementTemplateExport,
@@ -8649,105 +8642,6 @@ export const releaseWebsiteDocumentReservation = async (id: string, options?: Re
   {
     ...options,
     method: 'POST'
-
-
-  }
-);}
-
-
-
-export const getCreateOnboardingPlanUrl = () => {
-
-
-
-
-  return `/api/v1/marketing/cms/website-system/onboarding/domain-plan`
-}
-
-/**
- * @summary Owner-only client stack domain-plan
- */
-export const createOnboardingPlan = async (onboardingPlanInput: OnboardingPlanInput, options?: RequestInit): Promise<OnboardingPlan> => {
-
-  return customFetch<OnboardingPlan>(getCreateOnboardingPlanUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      onboardingPlanInput,)
-  }
-);}
-
-
-
-export const getVerifyOnboardingDnsUrl = () => {
-
-
-
-
-  return `/api/v1/marketing/cms/website-system/onboarding/dns-verification`
-}
-
-/**
- * @summary Owner-only client stack dns-verification
- */
-export const verifyOnboardingDns = async (onboardingDnsInput: OnboardingDnsInput, options?: RequestInit): Promise<OnboardingDnsResult> => {
-
-  return customFetch<OnboardingDnsResult>(getVerifyOnboardingDnsUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      onboardingDnsInput,)
-  }
-);}
-
-
-
-export const getEvaluateOnboardingReadinessUrl = () => {
-
-
-
-
-  return `/api/v1/marketing/cms/website-system/onboarding/readiness`
-}
-
-/**
- * @summary Owner-only client stack readiness
- */
-export const evaluateOnboardingReadiness = async (onboardingReadinessInput: OnboardingReadinessInput, options?: RequestInit): Promise<OnboardingReadinessResult> => {
-
-  return customFetch<OnboardingReadinessResult>(getEvaluateOnboardingReadinessUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(
-      onboardingReadinessInput,)
-  }
-);}
-
-
-
-export const getGetOnboardingEvidenceUrl = (stackId: string,) => {
-
-
-
-
-  return `/api/v1/marketing/cms/website-system/onboarding/${stackId}/evidence`
-}
-
-/**
- * @summary Owner-only client stack {stackId}/evidence
- */
-export const getOnboardingEvidence = async (stackId: string, options?: RequestInit): Promise<OnboardingEvidence[]> => {
-
-  return customFetch<OnboardingEvidence[]>(getGetOnboardingEvidenceUrl(stackId),
-  {
-    ...options,
-    method: 'GET'
 
 
   }

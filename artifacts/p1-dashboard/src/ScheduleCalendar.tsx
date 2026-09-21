@@ -4,6 +4,7 @@ import {
   scheduleDate,
   scheduleDays,
   shiftScheduleDate,
+  shiftScheduleMonth,
   scheduleTime,
 } from "./schedule-dates";
 import "./schedule-calendar.css";
@@ -25,7 +26,7 @@ export function ScheduleCalendar({
   request?: (path: string, body?: unknown) => Promise<any>;
   onChanged?: () => Promise<void>;
 }) {
-  const [mode, setMode] = useState<"day" | "week">("week"),
+  const [mode, setMode] = useState<"day" | "week" | "month">("week"),
     [selected, setSelected] = useState(() => scheduleDate(new Date())),
     [assigned, setAssigned] = useState("all"),
     [includeClosed, setIncludeClosed] = useState(false);
@@ -143,11 +144,21 @@ export function ScheduleCalendar({
           >
             Week
           </button>
+          <button
+            aria-pressed={mode === "month"}
+            onClick={() => setMode("month")}
+          >
+            Month
+          </button>
         </div>
         <button
           aria-label={"Previous " + mode}
           onClick={() =>
-            setSelected(shiftScheduleDate(selected, mode === "day" ? -1 : -7))
+            setSelected(
+              mode === "month"
+                ? shiftScheduleMonth(selected, -1)
+                : shiftScheduleDate(selected, mode === "day" ? -1 : -7),
+            )
           }
         >
           Previous
@@ -158,7 +169,11 @@ export function ScheduleCalendar({
         <button
           aria-label={"Next " + mode}
           onClick={() =>
-            setSelected(shiftScheduleDate(selected, mode === "day" ? 1 : 7))
+            setSelected(
+              mode === "month"
+                ? shiftScheduleMonth(selected, 1)
+                : shiftScheduleDate(selected, mode === "day" ? 1 : 7),
+            )
           }
         >
           Next
@@ -319,11 +334,11 @@ export function ScheduleCalendar({
           return (
             <section
               key={day}
-              className={
-                day === scheduleDate(new Date())
-                  ? "calendar-day today"
-                  : "calendar-day"
-              }
+              className={[
+                "calendar-day",
+                day === scheduleDate(new Date()) && "today",
+                mode === "month" && day.slice(0, 7) !== selected.slice(0, 7) && "outside-month",
+              ].filter(Boolean).join(" ")}
               aria-label={title(day)}
             >
               <h3>

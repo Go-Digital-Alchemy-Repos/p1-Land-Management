@@ -102,6 +102,19 @@ describe("buildNavGroups", () => {
     expect(hrefs).toContain("/admin/settings/email-templates");
   });
 
+  it("does not expose retired client-stack onboarding in navigation or command search", () => {
+    const navGroups = buildNavGroups(
+      { ...DEFAULT_SITE_FEATURES, eventsEnabled: true },
+      adminUser,
+      () => true,
+    );
+    const items = navGroups.flatMap((group) => group.items);
+    const commands = buildAdminCommandItems(navGroups);
+
+    expect(items.some((item) => item.href === "/admin/client-stack-onboarding")).toBe(false);
+    expect(commands.some((item) => item.href === "/admin/client-stack-onboarding")).toBe(false);
+  });
+
   it("uses the same command model to label nested responsive admin routes", () => {
     const navGroups = buildNavGroups(
       { ...DEFAULT_SITE_FEATURES, eventsEnabled: true },

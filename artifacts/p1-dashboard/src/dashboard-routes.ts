@@ -35,7 +35,6 @@ export type DashboardView =
   | "Website Typography"
   | "Website Colors"
   | "Website Features"
-  | "Website Onboarding"
   | "Website Backups"
   | "Website Integrations"
   | "Website Email Templates"
@@ -106,41 +105,40 @@ export const DASHBOARD_PAGES: readonly DashboardPageRoute[] = [
   { view: "Clients", label: "Clients", path: "/clients", group: "Customers" },
   { view: "Requests", label: "Requests", path: "/requests", group: "Customers" },
   { view: "Schedule", label: "Schedule", path: "/schedule", group: "Operations" },
-  { view: "Recurring", label: "Recurring", path: "/recurring", group: "Operations" },
+  { view: "Recurring", label: "Recurring", path: "/recurring", group: "Operations", navigation: false },
   { view: "Projects", label: "Projects", path: "/projects", group: "Operations" },
   { view: "Inspections", label: "Inspections", path: "/inspections", group: "Operations" },
   { view: "Sales", label: "Sales", path: "/sales", group: "Revenue" },
   { view: "Agreements", label: "Agreements", path: "/agreements", group: "Revenue" },
-  { view: "Agreement Drafts", label: "Agreement drafts", path: "/agreements/drafts", group: "Revenue" },
-  { view: "Agreement Templates", label: "Agreement templates", path: "/agreements/templates", group: "Revenue" },
+  { view: "Agreement Drafts", label: "Agreement drafts", path: "/agreements/drafts", group: "Revenue", navigation: false },
+  { view: "Agreement Templates", label: "Agreement templates", path: "/agreements/templates", group: "Revenue", navigation: false },
   { view: "Billing", label: "Billing", path: "/billing", group: "Revenue" },
   { view: "Expenses", label: "Expenses", path: "/expenses", group: "Revenue" },
-  { view: "Website Careers", label: "Careers", path: "/marketing/content/careers", group: "Marketing", section: "Content" },
-  { view: "Website Events", label: "Events", path: "/marketing/content/events", group: "Marketing", section: "Content" },
-  { view: "Website Forms", label: "Forms", path: "/marketing/content/forms", group: "Marketing", section: "Content" },
-  { view: "CMS Pages", label: "CMS Pages", path: "/marketing/content/pages", group: "Marketing", section: "Content" },
-  { view: "Website Editor", label: "Website", path: "/marketing/content/website", group: "Marketing", section: "Content" },
-  { view: "Media Library", label: "Media", path: "/marketing/content/media", group: "Marketing", section: "Content" },
-  { view: "Website Sidebars", label: "Sidebars", path: "/marketing/content/sidebars", group: "Marketing", section: "Content" },
-  { view: "Website Galleries", label: "Galleries", path: "/marketing/content/galleries", group: "Marketing", section: "Content" },
-  { view: "Website Sections", label: "Sections", path: "/marketing/content/sections", group: "Marketing", section: "Content" },
-  { view: "Website SEO", label: "SEO", path: "/marketing/content/seo", group: "Marketing", section: "Content" },
-  { view: "Website Blog", label: "Blog", path: "/marketing/content/blog", group: "Marketing", section: "Content" },
-  { view: "Website Team", label: "Team", path: "/marketing/content/team", group: "Marketing", section: "Content" },
-  { view: "Website Menus", label: "Menus", path: "/marketing/content/menus", group: "Marketing", section: "Content" },
-  { view: "Website Identity", label: "Branding", path: "/marketing/design/branding", group: "Marketing", section: "Design" },
-  { view: "Website Social", label: "Social media", path: "/marketing/design/social-media", group: "Marketing", section: "Design" },
-  { view: "Website Typography", label: "Typography", path: "/marketing/design/typography", group: "Marketing", section: "Design" },
-  { view: "Website Colors", label: "Color palette", path: "/marketing/design/colors", group: "Marketing", section: "Design" },
-  { view: "Website Features", label: "Website modules", path: "/marketing/system/features", group: "Marketing", section: "Website System" },
-  { view: "Website Onboarding", label: "Client stack onboarding", path: "/marketing/system/onboarding", group: "Marketing", section: "Website System" },
-  { view: "Website Backups", label: "Backups", path: "/marketing/system/backups", group: "Marketing", section: "Website System" },
-  { view: "Website Integrations", label: "Integrations", path: "/marketing/system/integrations", group: "Marketing", section: "Website System" },
-  { view: "Website Email Templates", label: "Email templates", path: "/marketing/system/email-templates", group: "Marketing", section: "Website System" },
-  { view: "Website Documents", label: "Developer resources", path: "/marketing/system/documents", group: "Marketing", section: "Website System" },
-  { view: "Website Head Tags", label: "Head tag additions", path: "/marketing/system/head-tags", group: "Marketing", section: "Website System" },
-  { view: "Analytics", label: "Google Analytics", path: "/marketing/reporting/analytics", group: "Marketing", section: "Reporting" },
-  { view: "Search Console", label: "Search Console", path: "/marketing/reporting/search-console", group: "Marketing", section: "Reporting" },
+  { view: "Website Editor", label: "Content", path: "/marketing/content/website", group: "Marketing" },
+  { view: "CMS Pages", label: "CMS Pages", path: "/marketing/content/pages", group: "Marketing", navigation: false, section: "Content" },
+  { view: "Website Blog", label: "Blog", path: "/marketing/content/blog", group: "Marketing", navigation: false, section: "Content" },
+  { view: "Website Forms", label: "Forms", path: "/marketing/content/forms", group: "Marketing", navigation: false, section: "Content" },
+  { view: "Website Events", label: "Events", path: "/marketing/content/events", group: "Marketing", navigation: false, section: "Content" },
+  { view: "Website Careers", label: "Careers", path: "/marketing/content/careers", group: "Marketing", navigation: false, section: "Content" },
+  { view: "Website Team", label: "Team", path: "/marketing/content/team", group: "Marketing", navigation: false, section: "Content" },
+  { view: "Media Library", label: "Media", path: "/marketing/content/media", group: "Marketing", navigation: false, section: "Content" },
+  { view: "Website Galleries", label: "Galleries", path: "/marketing/content/galleries", group: "Marketing", navigation: false, section: "Content" },
+  { view: "Website Sections", label: "Sections", path: "/marketing/content/sections", group: "Marketing", navigation: false, section: "Content" },
+  { view: "Website Identity", label: "Brand", path: "/marketing/design/branding", group: "Marketing" },
+  { view: "Website Social", label: "Social media", path: "/marketing/design/social-media", group: "Marketing", navigation: false, section: "Design" },
+  { view: "Website Typography", label: "Typography", path: "/marketing/design/typography", group: "Marketing", navigation: false, section: "Design" },
+  { view: "Website Colors", label: "Color palette", path: "/marketing/design/colors", group: "Marketing", navigation: false, section: "Design" },
+  { view: "Website SEO", label: "Site", path: "/marketing/content/seo", group: "Marketing" },
+  { view: "Website Menus", label: "Menus", path: "/marketing/content/menus", group: "Marketing", navigation: false, section: "Content" },
+  { view: "Website Sidebars", label: "Sidebars", path: "/marketing/content/sidebars", group: "Marketing", navigation: false, section: "Content" },
+  { view: "Website Features", label: "System", path: "/marketing/system/features", group: "Marketing" },
+  { view: "Website Backups", label: "Backups", path: "/marketing/system/backups", group: "Marketing", navigation: false, section: "Website System" },
+  { view: "Website Integrations", label: "Integrations", path: "/marketing/system/integrations", group: "Marketing", navigation: false, section: "Website System" },
+  { view: "Website Email Templates", label: "Email templates", path: "/marketing/system/email-templates", group: "Marketing", navigation: false, section: "Website System" },
+  { view: "Website Documents", label: "Developer resources", path: "/marketing/system/documents", group: "Marketing", navigation: false, section: "Website System" },
+  { view: "Website Head Tags", label: "Head tag additions", path: "/marketing/system/head-tags", group: "Marketing", navigation: false, section: "Website System" },
+  { view: "Analytics", label: "Reporting", path: "/marketing/reporting/analytics", group: "Marketing" },
+  { view: "Search Console", label: "Search Console", path: "/marketing/reporting/search-console", group: "Marketing", navigation: false, section: "Reporting" },
   { view: "Profile", label: "My profile", path: "/profile", group: "Workspace", navigation: false },
   { view: "Settings", label: "User Manager", path: "/settings/people", group: "Settings", settingsSection: "people" },
   { view: "Settings", label: "Security", path: "/settings/security", group: "Settings", settingsSection: "security" },
@@ -168,6 +166,43 @@ function validRecordId(value: string) {
 
 function pageFor(view: DashboardView) {
   return DASHBOARD_PAGES.find((page) => page.view === view && !page.settingsSection);
+}
+
+const navigationFallbackViews: Partial<Record<DashboardView, readonly DashboardView[]>> = {
+  Schedule: ["Recurring"],
+  Agreements: ["Agreement Drafts", "Agreement Templates"],
+  "Website Editor": ["CMS Pages", "Website Blog", "Website Forms", "Website Events", "Website Careers", "Website Team", "Media Library", "Website Galleries", "Website Sections"],
+  "Website Identity": ["Website Social", "Website Typography", "Website Colors"],
+  "Website SEO": ["Website Menus", "Website Sidebars"],
+  "Website Features": ["Website Backups", "Website Integrations", "Website Email Templates", "Website Documents", "Website Head Tags"],
+  Analytics: ["Search Console"],
+};
+
+/**
+ * A collapsed workspace remains discoverable when the account holds a nested
+ * tool grant but not its conventional landing-page grant. The caller retains
+ * the parent label/icon while using this returned, authorized page as its URL
+ * target; no non-granted route is exposed by the fallback.
+ */
+export function navigationTargetFor(
+  page: DashboardPageRoute,
+  role: string | null | undefined,
+  capabilities?: readonly string[],
+): DashboardPageRoute | null {
+  if (page.navigation === false) return null;
+  if (canAccessRoute({ kind: "page", page }, role, capabilities)) return page;
+  for (const view of navigationFallbackViews[page.view] || []) {
+    const fallback = pageFor(view);
+    if (fallback && canAccessRoute({ kind: "page", page: fallback }, role, capabilities)) return fallback;
+  }
+  return null;
+}
+
+export function navigationAnchorIncludes(
+  anchor: DashboardPageRoute,
+  view: DashboardView,
+) {
+  return anchor.view === view || Boolean(navigationFallbackViews[anchor.view]?.includes(view));
 }
 
 function recordId(pathname: string, prefix: string) {
@@ -289,7 +324,7 @@ export function canAccessRoute(route: DashboardRoute, role: string | null | unde
   const { view, settingsSection } = route.page;
   if ((route.record?.kind === "client" || route.record?.kind === "property") && !canAccessWorkspaceTab(route.record.kind, route.record.tab, role, capabilities)) return false;
   if (view === "Profile") return true;
-  if (view === "Website Backups" || view === "Website Integrations" || view === "Website Email Templates" || view === "Website Onboarding" || view === "Website Documents" || view === "Website Head Tags" || view === "Website Features") return role === "owner";
+  if (view === "Website Backups" || view === "Website Integrations" || view === "Website Email Templates" || view === "Website Documents" || view === "Website Head Tags" || view === "Website Features") return role === "owner";
   // Field and customer portals keep their existing record-scoped routes.
   if (role === "crew") return ["My Day", "Properties"].includes(view);
   if (role === "client") return ["Overview", "Properties", "Schedule", "Sales", "Billing", "Requests", "Inspections"].includes(view);
