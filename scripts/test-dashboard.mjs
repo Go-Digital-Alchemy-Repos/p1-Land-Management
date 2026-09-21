@@ -18,7 +18,7 @@ try {
     "-e",
     "POSTGRES_PASSWORD=p1-test-only",
     "-e",
-    "POSTGRES_DB=dashboard",
+    "POSTGRES_DB=dashboard_test",
     "-p",
     "127.0.0.1::5432",
     "-d",
@@ -35,7 +35,7 @@ try {
   const env = {
     ...process.env,
     DASHBOARD_DATABASE_URL:
-      "postgresql://postgres:p1-test-only@" + mapping + "/dashboard",
+      "postgresql://postgres:p1-test-only@" + mapping + "/dashboard_test",
     DASHBOARD_ORIGIN: "http://localhost:" + port,
     DASHBOARD_TEST_ORIGIN: "http://localhost:" + port,
     NODE_ENV: "test",
@@ -58,7 +58,7 @@ try {
       "https://core.example.test/api/auth/federation/callback",
     CORE_FEDERATION_TEST_ALLOW_INSECURE_ORIGIN: "true",
     COMMERCIAL_TEST_DATABASE_URL:
-      "postgresql://postgres:p1-test-only@" + mapping + "/dashboard",
+      "postgresql://postgres:p1-test-only@" + mapping + "/dashboard_test",
   });
   let ready = false;
   for (let i = 0; i < 30; i++) {
