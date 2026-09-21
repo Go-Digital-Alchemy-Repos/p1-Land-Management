@@ -29,9 +29,15 @@ The local machine has approximately 1.1 GiB free and Docker containerd reports
 storage I/O errors. No dependency installs, Docker pulls or destructive cleanup
 were performed. Small frontend validation was feasible using existing packages.
 The separate Dispatch/CMS branch is excluded, with its database/browser gate
-still held. Production deployment and a fresh read-only Sales check follow this
-review; the rollback source is `0377fcfa`.
+still held. The pre-promotion rollback source was `0377fcfa`.
 
-Before promotion, integrate then-current main, complete remaining validation,
-preserve a rollback source revision and verify the deployed SHA and live Sales
-tabs. A rollback is a normal reviewed revert; no data migration is needed.
+The scoped Sales navigation/presentation release was accepted and deployed in
+`eb550fbb2f351f70a488a54ee0a1547849fef9f7`. Railway deployment
+`0d647d4d-7cfc-448d-80d0-c5468b13f512` reached SUCCESS for Dashboard. Fresh
+production browser verification confirmed the direct `/sales/pipeline` deep
+link, the four-item Revenue navigation, Overview/Pipeline deep links and active
+states, real inquiry rendering, non-mutating card tool open/close behavior, and
+390px single-column layout without document overflow. This accepts only the
+Sales navigation/presentation slice; it does not accept CRM write ownership,
+cutover, device workflows, restore/recovery, or any broader release gate. A
+rollback is a normal reviewed revert; no data migration is needed.
