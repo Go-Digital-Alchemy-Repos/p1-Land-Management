@@ -4,6 +4,7 @@ import { createElement, lazy, Suspense, useState } from "react";
 import { useSiteIdentity } from "@/lib/use-site-identity";
 import { cmsValue, useCms } from "@/lib/cms";
 import { SiteSocialLinks } from "./SiteSocialLinks";
+import { footerBlurb } from "@/content/site-facts";
 import { Link } from "wouter";
 
 import { Button } from "@/components/ui/button";
@@ -24,7 +25,7 @@ export function SiteFooter() {
             {createElement("img", { src: identity.logoUrl, alt: identity.companyName, className: "h-12 w-auto brightness-0 invert" })}
           </Link>
           <p className="text-secondary-foreground/70 text-sm leading-relaxed max-w-xs">
-            Full-service land and property management for commercial, agricultural, industrial, municipal, and institutional properties 1 acre and larger across Upstate SC and the Charlotte, NC region.
+            {footerBlurb}
           </p>
           <SiteSocialLinks />
           <div className="space-y-2 pt-2">
@@ -99,7 +100,7 @@ export function SiteFooter() {
             <li>Sunday: Closed</li>
             <li className="pt-4">
               <Button asChild variant="outline" className="h-auto min-h-14 w-full whitespace-normal px-4 py-3 text-center leading-snug bg-transparent border-secondary-foreground/20 hover:bg-secondary-foreground/10 text-white">
-                <Link href="/contact">Get a Free Site Assessment</Link>
+                <Link href="/contact">Request a Site Visit</Link>
               </Button>
             </li>
           </ul>

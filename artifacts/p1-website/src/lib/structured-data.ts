@@ -10,6 +10,7 @@ import {
   AREAS_SERVED,
   OPENING_HOURS,
 } from "./site";
+import { footerBlurb, siteFacts } from "@/content/site-facts";
 
 type JsonLd = Record<string, unknown>;
 
@@ -38,19 +39,28 @@ export function localBusinessSchema(): JsonLd {
     "@context": "https://schema.org",
     "@type": "LandscapingBusiness",
     "@id": BUSINESS_ID,
-    name: BUSINESS_NAME,
-    description: BUSINESS_DESCRIPTION,
+    name: siteFacts.gbpName,
+    description: footerBlurb,
     url: SITE_URL,
     telephone: PHONE_E164,
     image: BUSINESS_IMAGE_URL,
     logo: LOGO_URL,
     sameAs: [GOOGLE_BUSINESS_URL],
-    priceRange: "$$",
     address: {
       "@type": "PostalAddress",
       addressRegion: ADDRESS.addressRegion,
       addressCountry: ADDRESS.addressCountry,
+      ...(siteFacts.hq.city ? { addressLocality: siteFacts.hq.city } : {}),
+      ...(siteFacts.hq.zip ? { postalCode: siteFacts.hq.zip } : {}),
+      ...(siteFacts.hq.street ? { streetAddress: siteFacts.hq.street } : {}),
     },
+    ...(siteFacts.hq.lat !== null && siteFacts.hq.lng !== null ? { geo: { "@type": "GeoCoordinates", latitude: siteFacts.hq.lat, longitude: siteFacts.hq.lng } } : {}),
+    slogan: "Land and grounds work for properties of an acre or more.",
+    ...(siteFacts.offices.length ? { department: siteFacts.offices.map((office) => ({
+      "@type": "LandscapingBusiness", name: `P1 ${office.town} office`, telephone: office.phone,
+      address: { "@type": "PostalAddress", streetAddress: office.street, addressLocality: office.town, addressRegion: office.state, postalCode: office.zip, addressCountry: "US" },
+      ...(office.lat !== undefined && office.lng !== undefined ? { geo: { "@type": "GeoCoordinates", latitude: office.lat, longitude: office.lng } } : {}),
+    })) } : {}),
     areaServed: areaServed(),
     openingHoursSpecification: openingHoursSpecification(),
     hasOfferCatalog: {
@@ -173,7 +183,10 @@ export function articleSchema(opts: {
       "@type": "WebPage",
       "@id": SITE_URL + opts.path,
     },
-    author: {
+    author: siteFacts.OWNER_NAME ? {
+      "@type": "Person",
+      name: siteFacts.OWNER_NAME,
+    } : {
       "@type": "Organization",
       "@id": BUSINESS_ID,
       name: BUSINESS_NAME,

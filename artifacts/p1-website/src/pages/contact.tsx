@@ -1,5 +1,3 @@
-import {usePublicFormVerification,isPublicFormPreview} from "@/components/forms/PublicFormVerification";
-import { PHONE_DISPLAY, PHONE_HREF } from "@/lib/site";
 import { acquisitionSource, trackAcquisition } from "@/lib/acquisition";
 import { useEffect, useRef, useState } from "react";
 import { Layout } from "@/components/layout/Layout";
@@ -12,41 +10,47 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
 import { CheckCircle2, Phone, Clock, MapPin } from "lucide-react";
+import { PHONE_DISPLAY, PHONE_HREF } from "@/lib/site";
+import { CredentialsStrip } from "@/components/content/CredentialsStrip";
 
-
-const SERVICES = [
-  "Land Clearing", "Grading & Site Prep", "Drainage", "Turf & Seeding",
-  "Tree Services", "Pond & Waterway", "Property Maintenance", "Property Reconstruction", "Not Sure"
-];
+const WORK_TYPES = [
+  ["maintenance", "Grounds maintenance contract"],
+  ["sitework", "Clearing, grading or drainage project"],
+  ["farm", "Farm or large acreage"],
+  ["pond", "Pond or waterway"],
+  ["snow", "Snow and ice"],
+  ["unsure", "Not sure yet"],
+] as const;
 
 const FAQS = [
   {
-    question: "What is your minimum property size?",
-    answer: "P1 specializes in commercial, industrial, agricultural, municipal, and institutional properties 1 acre and larger. We do not provide residential services.",
+    question: "What's your minimum property size?",
+    answer: "One acre. We work on commercial, industrial, agricultural, municipal and institutional property. We don't take residential lawns.",
   },
   {
-    question: "Do you serve both South Carolina and North Carolina?",
-    answer: "Yes. We serve Upstate South Carolina (Greenville, Spartanburg, and surrounding areas) and the Charlotte, NC region (Charlotte, Concord, Mooresville, Lake Norman, Gastonia, and surrounding areas).",
+    question: "Do you work in both North and South Carolina?",
+    answer: "Yes. We cover Upstate South Carolina and the Charlotte region, including York and Lancaster counties on the SC side of the line.",
   },
   {
-    question: "How quickly can you start a project?",
-    answer: "Timeline depends on project type and current schedule. After your estimate, we'll give you a realistic start date.",
+    question: "How soon can you start?",
+    answer: "It depends on the season and the size of the job. Your estimate includes a start date, and maintenance contracts can usually begin soon after you sign.",
   },
   {
     question: "Do you offer ongoing maintenance contracts?",
-    answer: "Yes. We offer weekly, bi-weekly, and monthly maintenance programs for commercial, industrial, agricultural, municipal, and institutional properties.",
+    answer: "Yes. Weekly, biweekly, monthly and seasonal schedules, priced per visit or per season.",
   },
   {
     question: "Are you licensed and insured?",
-    answer: "Ask our team for current insurance documentation and any license information relevant to your project before work begins.",
+    answer: "Yes, in both states. If your company needs a certificate of insurance or vendor paperwork, tell us in the form and we'll send it with the estimate.",
   },
 ];
 
 export default function Contact() {
   const [submitted, setSubmitted] = useState(false);
   const verification=usePublicFormVerification(isPublicFormPreview() || submitted);
+  const [acreage, setAcreage] = useState("");
+  const [workType, setWorkType] = useState("");
 
   const formStarted = useRef(false);
   const [pending, setPending] = useState(false);
@@ -54,6 +58,10 @@ export default function Contact() {
   const request = useRef<{ payload: string; key: string } | null>(null);
   const successHeading = useRef<HTMLHeadingElement>(null);
   useEffect(() => { if (submitted) successHeading.current?.focus(); }, [submitted]);
+  useEffect(() => {
+    const requested = new URLSearchParams(window.location.search).get("type");
+    if (WORK_TYPES.some(([value]) => value === requested)) setWorkType(requested || "");
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -65,7 +73,7 @@ export default function Contact() {
     const payload = JSON.stringify({
       name: get("name"), email: get("email"), phone: get("phone"),
       company: get("company"), address: get("address"), acreage: get("acreage"),
-      propertyType: get("propertyType"), services: fd.getAll("service"),
+      propertyType: get("propertyType"), services: [get("workType")],
       message: get("project"), website: get("website"),
       attribution: acquisitionSource(),
     });
@@ -84,7 +92,6 @@ export default function Contact() {
       setSubmitted(true);
       request.current = null;
     } catch (cause) {
-      verification.reset();
       trackAcquisition("form_error");
       setError("We couldn’t confirm your request. Please try again or call us. Your information is still here.");
     } finally {
@@ -95,8 +102,8 @@ export default function Contact() {
   return (
     <Layout>
       <SEO 
-        title="Get a Free Site Assessment | P1 Land & Property Management"
-        description="Request a free site assessment for clearing, grading, drainage, turf, pond, or property maintenance work in Upstate SC and Charlotte. Call (704) 221-8928."
+        title="Request a Site Visit or Estimate | P1"
+        description="Tell us about your property and we'll walk it with you. Free site visit and written estimate for sites of an acre or more in Upstate SC and Charlotte."
         jsonLd={[
           localBusinessSchema(), faqSchema(FAQS),
           breadcrumbSchema([
@@ -108,16 +115,9 @@ export default function Contact() {
 
       {/* PAGE HEADLINE */}
       <PageHero
-        eyebrow="Get In Touch"
-        title={
-          <>
-            Get a Free{" "}
-            <em className="font-semibold not-italic text-tan" style={{ fontStyle: "italic" }}>
-              On-Site Estimate
-            </em>
-          </>
-        }
-        subtitle="Tell us what you&#x27;re working on. We&#x27;ll talk through the job and find a time to take a look, based on your needs and our availability. Your site assessment and written estimate are free, with no obligation."
+        eyebrow="P1 Land & Property Management"
+        title="Tell us about the property"
+        subtitle="An address and a few sentences are enough. We'll call you back within one business day to set up a time to walk it. The visit and the written estimate are free."
       />
 
       <section className="py-10 md:py-16 bg-background">
@@ -125,16 +125,16 @@ export default function Contact() {
           
           {/* FORM COLUMN */}
           <div className="lg:col-span-7 bg-card border border-border p-8 md:p-12 rounded-xl shadow-lg">
-            <h2 className="text-3xl font-serif font-bold text-secondary mb-8">Get a Free Site Assessment</h2>
+            <h2 className="text-3xl font-serif font-bold text-secondary mb-8">Tell us about the property</h2>
             
             {submitted ? (
               <div className="py-16 text-center space-y-6 animate-in fade-in zoom-in duration-500">
                 <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
                   <CheckCircle2 className="w-10 h-10 text-primary" />
                 </div>
-                <h3 ref={successHeading} tabIndex={-1} className="text-2xl font-serif font-bold text-secondary">Your Request Has Been Received</h3>
+                <h3 ref={successHeading} tabIndex={-1} className="text-2xl font-serif font-bold text-secondary">Got it.</h3>
                 <p className="text-lg text-secondary/80 max-w-md mx-auto">
-                  Your estimate request has been saved. Our team will review your project and contact you to discuss the next step.
+                  Someone from P1 will call or email you within one business day to set up a time to walk the property.
                 </p>
                 <p className="text-base text-secondary/70 max-w-md mx-auto">
                   Prefer to talk now? Call us directly at{" "}
@@ -144,6 +144,10 @@ export default function Contact() {
               </div>
             ) : (
               <form onFocus={() => { if (!formStarted.current) { formStarted.current = true; trackAcquisition("form_start"); } }} onSubmit={handleSubmit} className="space-y-6 animate-in fade-in duration-500">
+                <fieldset className="space-y-3 rounded-lg border border-border p-4">
+                  <legend className="px-1 font-medium text-secondary">What kind of work is this? *</legend>
+                  <div className="grid gap-3 sm:grid-cols-2">{WORK_TYPES.map(([value, label]) => <label key={value} className="flex items-center gap-2 text-sm text-secondary"><input required name="workType" type="radio" value={value} checked={workType === value} onChange={() => setWorkType(value)} />{label}</label>)}</div>
+                </fieldset>
                 <div className="space-y-2">
                   <Label htmlFor="name">Your Name *</Label>
                   <Input id="name" name="name" autoComplete="name" required maxLength={150} className="bg-background" />
@@ -176,49 +180,42 @@ export default function Contact() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="acreage">Approximate Acreage (optional)</Label>
-                    <Select name="acreage">
+                    <Label htmlFor="acreage">Approximate acreage *</Label>
+                    <Select name="acreage" required value={acreage} onValueChange={setAcreage}>
                       <SelectTrigger id="acreage" className="bg-background">
                         <SelectValue placeholder="Select Acreage" />
                       </SelectTrigger>
                       <SelectContent>
+                        <SelectItem value="under-1">Under 1 acre</SelectItem>
                         <SelectItem value="1-5">1–5 acres</SelectItem>
                         <SelectItem value="5-20">5–20 acres</SelectItem>
                         <SelectItem value="20-100">20–100 acres</SelectItem>
                         <SelectItem value="100+">100+ acres</SelectItem>
                       </SelectContent>
                     </Select>
+                    {acreage === "under-1" && <p className="text-sm leading-relaxed text-secondary/80">We work on properties of an acre or more. If your site is smaller, we're probably not the right fit, but call us and we'll point you to someone good.</p>}
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="propertyType">Property Type (optional)</Label>
-                    <Select name="propertyType">
+                    <Label htmlFor="propertyType">Property type *</Label>
+                    <Select name="propertyType" required>
                       <SelectTrigger id="propertyType" className="bg-background">
                         <SelectValue placeholder="Select Property Type" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="commercial">Commercial</SelectItem>
-                        <SelectItem value="industrial">Industrial</SelectItem>
-                        <SelectItem value="agricultural">Agricultural</SelectItem>
-                        <SelectItem value="municipal">Municipal</SelectItem>
-                        <SelectItem value="institutional">Institutional</SelectItem>
+                        <SelectItem value="commercial">Commercial / office / retail</SelectItem>
+                        <SelectItem value="industrial">Industrial / manufacturing / distribution</SelectItem>
+                        <SelectItem value="agricultural">Farm / agricultural</SelectItem>
+                        <SelectItem value="municipal">Municipal / public</SelectItem>
+                        <SelectItem value="institutional">Institutional (school, church, hospital, campus)</SelectItem>
                         <SelectItem value="other">Other</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
 
-                <div className="space-y-3 pt-2">
-                  <Label id="services-label">Services Needed (optional)</Label>
-                  <div role="group" aria-labelledby="services-label" className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 bg-muted/50 rounded-lg border border-border">
-                    {SERVICES.map((service, i) => (
-                      <div key={i} className="flex items-center space-x-2">
-                        <Checkbox id={`service-${i}`} name="service" value={service} />
-                        <label htmlFor={`service-${i}`} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer">
-                          {service}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="timing">When do you need this done?</Label>
+                  <Select name="timing"><SelectTrigger id="timing" className="bg-background"><SelectValue placeholder="Select timing" /></SelectTrigger><SelectContent><SelectItem value="asap">As soon as possible</SelectItem><SelectItem value="30-days">Within 30 days</SelectItem><SelectItem value="1-3-months">1–3 months</SelectItem><SelectItem value="planning">Planning ahead</SelectItem></SelectContent></Select>
                 </div>
 
                 <div className="space-y-2">
@@ -230,7 +227,7 @@ export default function Contact() {
                 {error && <p role="alert" className="text-destructive font-medium">{error}</p>}
                 {verification.control}
                 <Button disabled={pending || !verification.ready} type="submit" size="lg" className="w-full text-lg h-14 font-bold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg">
-                  {pending ? "Sending request…" : "Get a Free Site Assessment"}
+                  {pending ? "Sending request…" : "Send It Over"}
                 </Button>
               </form>
             )}
@@ -254,32 +251,32 @@ export default function Contact() {
                   <MapPin className="w-6 h-6 text-primary mt-1" />
                   <div>
                     <p className="font-bold text-lg">Service Areas:</p>
-                    <p className="text-white/80">Upstate South Carolina<br/>Greater Charlotte, North Carolina</p>
+                    <p className="text-white/80">Upstate South Carolina and the Charlotte region</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
                   <Clock className="w-6 h-6 text-primary mt-1" />
                   <div>
                     <p className="font-bold text-lg">Hours:</p>
-                    <p className="text-white/80">Monday – Friday: 7:00 AM – 6:00 PM<br/>Saturday: By Appointment<br/>Sunday: Closed</p>
+                    <p className="text-white/80">Monday–Friday, 7 AM–6 PM · Saturday by appointment</p>
                   </div>
                 </div>
               </div>
               <div className="pt-6 border-t border-white/20">
                 <p className="font-bold italic text-white/90">
-                  "Tell us what needs attention. We'll talk through the job and help you plan the next step."
+                  "Photos from after a hard rain tell us more than photos on a dry day."
                 </p>
               </div>
             </div>
 
             <div className="space-y-6">
-              <h3 className="text-2xl font-serif font-bold text-secondary">What Happens After You Submit</h3>
+              <h3 className="text-2xl font-serif font-bold text-secondary">What happens next</h3>
               <ul className="space-y-4">
                 {[
-                  "One of our team members reviews your request and contacts you",
-                  "We schedule a free on-site visit at a time that works for you",
-                  "We walk the property, talk through the work, and give you a clear, written estimate",
-                  "No pressure, no obligation — just a straight answer on what your property needs and what it will cost"
+                  "We call you back within one business day to ask a few questions and set a time.",
+                  "We walk the property with you. Bring whoever knows where the problems are.",
+                  "You get a written estimate with the scope, the order of work, the timeline and the price.",
+                  "You decide. No pressure and no follow-up calls every other day."
                 ].map((item, i) => (
                   <li key={i} className="flex gap-3 text-secondary/80">
                     <div className="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 font-bold text-sm">
@@ -295,11 +292,13 @@ export default function Contact() {
         </div>
       </section>
 
+      <CredentialsStrip />
+
       {/* FAQ */}
       <section className="py-24 bg-muted border-t border-border">
         <div className="site-shell space-y-12">
           <h2 className="text-3xl md:text-4xl font-serif font-bold text-secondary text-center">
-            Frequently Asked Questions
+            FAQ: Contact P1
           </h2>
           
           <FaqAccordion items={FAQS} />
@@ -309,3 +308,4 @@ export default function Contact() {
     </Layout>
   );
 }
+import {usePublicFormVerification,isPublicFormPreview} from "@/components/forms/PublicFormVerification";
