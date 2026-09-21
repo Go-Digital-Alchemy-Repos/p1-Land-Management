@@ -90,6 +90,7 @@ import {
   canAccessRoute,
   DASHBOARD_PAGES,
   defaultRouteForRole,
+  navigationAnchorIncludes,
   navigationTargetFor,
   NAVIGATION_GROUPS,
   pathForRoute,
@@ -1154,7 +1155,7 @@ function App() {
   }, [person?.role, person?.capabilities, view, settingsSection, recordRoute?.id]);
   const activeNav = (item: VisibleNavItem) =>
     !routeUnavailable &&
-    view === item.target.view &&
+    navigationAnchorIncludes(item, view) &&
     (item.target.view !== "Settings" || settingsSection === item.target.settingsSection);
   const accountWorkspace =
     recordRoute?.kind === "client" || recordRoute?.kind === "property";

@@ -198,6 +198,13 @@ export function navigationTargetFor(
   return null;
 }
 
+export function navigationAnchorIncludes(
+  anchor: DashboardPageRoute,
+  view: DashboardView,
+) {
+  return anchor.view === view || Boolean(navigationFallbackViews[anchor.view]?.includes(view));
+}
+
 function recordId(pathname: string, prefix: string) {
   if (!pathname.startsWith(prefix)) return null;
   const value = pathname.slice(prefix.length);

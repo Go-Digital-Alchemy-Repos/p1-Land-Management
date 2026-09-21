@@ -4,6 +4,7 @@ import {
   canAccessRoute,
   DASHBOARD_PAGES,
   defaultRouteForRole,
+  navigationAnchorIncludes,
   navigationTargetFor,
   pathForRoute,
   routeFromPath,
@@ -217,6 +218,10 @@ test("collapsed workspace anchors target the first authorized nested tool withou
     assert.equal(canAccessRoute({ kind: "page", page: target! }, "member", testCase.grants), true);
   }
   assert.equal(navigationTargetFor(page("Website Editor"), "member", ["marketing.content.seo"]), null);
+  assert.equal(navigationAnchorIncludes(page("Website Editor"), "Website Forms"), true);
+  assert.equal(navigationAnchorIncludes(page("Schedule"), "Recurring"), true);
+  assert.equal(navigationAnchorIncludes(page("Agreements"), "Agreement Templates"), true);
+  assert.equal(navigationAnchorIncludes(page("Website Editor"), "Website SEO"), false);
 });
 test("Developer resources is an Owner-only Website System destination", () => {
   const route=routeFromPath("/marketing/system/documents");
