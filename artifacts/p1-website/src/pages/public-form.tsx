@@ -70,11 +70,27 @@ export default function PublicForm() {
     variant?: "default" | "destructive";
   }>();
   const [accepted, setAccepted] = useState(false);
-  const pending = useRef(false);
+  const pendingSlugs = useRef(new Set<string>());
+  const activeSlug = useRef(slug);
+  const routeVersion = useRef(0);
   const verification = usePublicFormVerification(preview || accepted);
-  const host = useMemo(() => ({ ui, toast: setNotice }), []);
+  const host = useMemo(
+    () => ({
+      ui,
+      // Ignore a stale renderer's completion notice after route navigation.
+      toast: (nextNotice: NonNullable<typeof notice>) => {
+        if (activeSlug.current === slug) setNotice(nextNotice);
+      },
+    }),
+    [slug],
+  );
 
   useEffect(() => {
+    const routeChanged = activeSlug.current !== slug;
+    activeSlug.current = slug;
+    routeVersion.current += 1;
+    if (routeChanged) verification.reset();
+    setNotice(undefined);
     if (!slugPattern.test(slug)) {
       setForm(undefined);
       setLoading(false);
@@ -124,11 +140,14 @@ export default function PublicForm() {
   }, [slug]);
 
   async function submit(values: Record<string, unknown>, idempotencyKey: string) {
-    if (preview || pending.current) throw Error("A submission is already in progress or this is a preview.");
+    const submissionSlug = slug;
+    const submissionVersion = routeVersion.current;
+    if (preview || pendingSlugs.current.has(submissionSlug))
+      throw Error("A submission is already in progress or this is a preview.");
     const verificationHeaders = verification.headers();
-    pending.current = true;
+    pendingSlugs.current.add(submissionSlug);
     try {
-      const response = await fetch(`/api/forms/${encodeURIComponent(slug)}/submit`, {
+      const response = await fetch(`/api/forms/${encodeURIComponent(submissionSlug)}/submit`, {
         method: "POST",
         credentials: "omit",
         redirect: "error",
@@ -150,12 +169,19 @@ export default function PublicForm() {
             : "Your inquiry has been received.",
       };
     } catch (cause) {
-      verification.reset();
+      if (
+        activeSlug.current === submissionSlug &&
+        routeVersion.current === submissionVersion
+      )
+        verification.reset();
       throw cause;
     } finally {
-      pending.current = false;
+      pendingSlugs.current.delete(submissionSlug);
     }
   }
+
+  const visibleForm = form?.slug === slug ? form : undefined;
+  const visibleRouteVersion = routeVersion.current;
 
   return (
     <Layout>
@@ -182,12 +208,35 @@ export default function PublicForm() {
               </div>
             ) : (
               <FormPresentationHostProvider value={host}>
-                {!accepted && <>{!preview && verification.control}<FormPresentation slug={slug} form={form} isLoading={loading} preview={preview} submit={submit} onSubmitSuccess={() => setAccepted(true)} /></>}
+                {!accepted && <>
+                  {!preview && verification.control}
+                  <FormPresentation
+                    key={slug}
+                    slug={slug}
+                    form={visibleForm}
+                    isLoading={loading}
+                    preview={preview}
+                    submit={submit}
+                    onSubmitSuccess={() => {
+                      if (
+                        activeSlug.current === slug &&
+                        routeVersion.current === visibleRouteVersion
+                      )
+                        setAccepted(true);
+                    }}
+                  />
+                </>}
                 {accepted && (
                   <div className="space-y-4" role="status">
                     <h2 className="text-2xl font-serif font-bold text-secondary">Thank you.</h2>
                     <p>P1 has received your inquiry and will follow up soon.</p>
-                    <Button variant="outline" onClick={() => setAccepted(false)}>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setNotice(undefined);
+                        setAccepted(false);
+                      }}
+                    >
                       Submit another request
                     </Button>
                   </div>

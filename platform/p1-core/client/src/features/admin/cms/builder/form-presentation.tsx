@@ -680,6 +680,22 @@ export function FormPresentation({
     }
   }
 
+  function validateBeforeSubmit() {
+    for (let index = 0; index < pages.length; index += 1) {
+      const error = validatePageFields(currentPageFields(pages[index]), values);
+      if (error) {
+        setCurrentPageIndex(index);
+        toast({
+          title: "Complete required fields",
+          description: error,
+          variant: "destructive",
+        });
+        return false;
+      }
+    }
+    return true;
+  }
+
   if (isLoading && !formOverride) {
     return (
       <div className={cn("flex items-center justify-center py-10", className)}>
@@ -751,6 +767,7 @@ export function FormPresentation({
         className={cn("space-y-4", compact ? "space-y-3" : "space-y-4")}
         onSubmit={(event) => {
           event.preventDefault();
+          if (!validateBeforeSubmit()) return;
           void submitForm();
         }}
       >
