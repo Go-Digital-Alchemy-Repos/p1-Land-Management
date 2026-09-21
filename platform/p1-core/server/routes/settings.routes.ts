@@ -6,9 +6,14 @@ import { isWebsiteIdentityKey } from "@shared/website-identity";
 import { isSocialSettingKey } from "@shared/social-media";
 import { isWebsiteFontKey } from "@shared/website-fonts";
 import { isWebsiteColorKey } from "@shared/website-colors";
-import { isWebsiteOwner, requireWebsiteOwner, websiteSettingScope } from "../middleware/website-owner";
+import {
+  isWebsiteOwner,
+  requireWebsiteOwner,
+  websiteSettingScope,
+} from "../middleware/website-owner";
 import { getBaseUrl } from "../utils/route-helpers";
 import { CRM_PIPELINE_SETTING_KEY } from "@shared/crm-pipeline-settings";
+import { LEGACY_STAFF_CRM_WRITE_FENCE_SETTING_KEY } from "@shared/crm-write-fence";
 import { Router, type NextFunction, type Request, type Response } from "express";
 import { z } from "zod";
 import { storage } from "../storage/index";
@@ -23,7 +28,10 @@ import {
 } from "../services/email.service";
 import * as r2Service from "../services/r2.service";
 import { SYSTEM_EMAIL_TEMPLATE_DEFAULTS } from "../services/system-email-templates.service";
-import { emailTemplateSaveSchema, emailTemplateRestoreSchema } from "@shared/email-template-contract";
+import {
+  emailTemplateSaveSchema,
+  emailTemplateRestoreSchema,
+} from "@shared/email-template-contract";
 import { isDesignEditableBrandingSetting } from "../utils/branding-settings-policy";
 
 const router = Router();
@@ -55,25 +63,50 @@ function requireAdminOrDesignEditor(req: Request, res: Response, next: NextFunct
   res.status(403).json({ message: "Forbidden" });
 }
 
-const integrationKeys = new Set<string>(Object.values(integrationRegistry).flatMap(provider => [...provider.publicKeys, ...provider.secretKeys]));
+const integrationKeys = new Set<string>(
+  Object.values(integrationRegistry).flatMap((provider) => [
+    ...provider.publicKeys,
+    ...provider.secretKeys,
+  ]),
+);
 function isWebsiteIntegrationSetting(key: unknown, category?: unknown) {
-  return isWebsiteScriptSetting(key, category) || isGoogleReportingSetting(key, category) || (typeof key === "string" && integrationKeys.has(key)) ||
-    (typeof category === "string" && websiteIntegrationProviders.some(provider => provider === category));
+  return (
+    isWebsiteScriptSetting(key, category) ||
+    isGoogleReportingSetting(key, category) ||
+    (typeof key === "string" && integrationKeys.has(key)) ||
+    (typeof category === "string" &&
+      websiteIntegrationProviders.some((provider) => provider === category))
+  );
 }
-const integrationMovedMessage = "Manage website integrations in Marketing > Website System > Integrations";
+const integrationMovedMessage =
+  "Manage website integrations in Marketing > Website System > Integrations";
 function rejectLegacyIntegration(req: Request, res: Response) {
   return isWebsiteOwner(req)
-    ? res.status(409).json({message: integrationMovedMessage})
-    : res.status(403).json({message: "Owner access required"});
+    ? res.status(409).json({ message: integrationMovedMessage })
+    : res.status(403).json({ message: "Owner access required" });
 }
 
 function requireSettingWritePermission(req: Request, res: Response, next: NextFunction) {
-  if (isWebsiteIntegrationSetting(req.body?.key, req.body?.category)) return rejectLegacyIntegration(req,res);
-  if (isWebsiteIdentityKey(req.body?.key)) return res.status(409).json({message:"Edit company identity in Marketing > Design > Branding"});
-  if (isSocialSettingKey(req.body?.key)) return res.status(409).json({message:"Edit social links in Marketing > Design > Social media"});
-  if (isWebsiteFontKey(req.body?.key)) return res.status(409).json({message:"Edit website fonts in Marketing > Design > Typography"});
-  if (isWebsiteColorKey(req.body?.key)) return res.status(409).json({message:"Edit website colors in Marketing > Design > Color palette"});
-  if (websiteSettingScope(req.body?.key, req.body?.category)) return requireWebsiteOwner(req,res,next);
+  if (isWebsiteIntegrationSetting(req.body?.key, req.body?.category))
+    return rejectLegacyIntegration(req, res);
+  if (isWebsiteIdentityKey(req.body?.key))
+    return res
+      .status(409)
+      .json({ message: "Edit company identity in Marketing > Design > Branding" });
+  if (isSocialSettingKey(req.body?.key))
+    return res
+      .status(409)
+      .json({ message: "Edit social links in Marketing > Design > Social media" });
+  if (isWebsiteFontKey(req.body?.key))
+    return res
+      .status(409)
+      .json({ message: "Edit website fonts in Marketing > Design > Typography" });
+  if (isWebsiteColorKey(req.body?.key))
+    return res
+      .status(409)
+      .json({ message: "Edit website colors in Marketing > Design > Color palette" });
+  if (websiteSettingScope(req.body?.key, req.body?.category))
+    return requireWebsiteOwner(req, res, next);
   if (req.user?.role === "admin") {
     next();
     return;
@@ -119,10 +152,15 @@ router.put(
   requireSettingWritePermission,
   asyncHandler(async (req, res) => {
     const data = upsertSettingSchema.parse(req.body);
-    if (data.key === CRM_PIPELINE_SETTING_KEY)
+    if (
+      data.key === CRM_PIPELINE_SETTING_KEY ||
+      data.key === LEGACY_STAFF_CRM_WRITE_FENCE_SETTING_KEY
+    )
       return res
         .status(400)
-        .json({ message: "Use /api/admin/crm/settings/pipeline to update pipeline settings" });
+        .json({
+          message: "Use the dedicated CRM settings endpoint to update CRM cutover settings",
+        });
     const existingPrivate = (await storage.settings.getAllSettings()).find(
       (s) => s.key === data.key,
     );
@@ -131,19 +169,42 @@ router.put(
       isRetiredPrivateProofSetting(existingPrivate?.key, existingPrivate?.category)
     )
       return res.status(403).json({ message: "This retired private proof setting is protected" });
-    if (isWebsiteIntegrationSetting(existingPrivate?.key, existingPrivate?.category)) return rejectLegacyIntegration(req,res);
-    if (data.key === "public_head_html" && hasReservedWebsiteScriptMarkers(data.value) && data.value !== existingPrivate?.value) {
-      return res.status(400).json({ message: "Manage Google Analytics and Turnstile through Head Tags > Managed scripts. Remove their script snippets from custom head markup." });
+    if (isWebsiteIntegrationSetting(existingPrivate?.key, existingPrivate?.category))
+      return rejectLegacyIntegration(req, res);
+    if (
+      data.key === "public_head_html" &&
+      hasReservedWebsiteScriptMarkers(data.value) &&
+      data.value !== existingPrivate?.value
+    ) {
+      return res
+        .status(400)
+        .json({
+          message:
+            "Manage Google Analytics and Turnstile through Head Tags > Managed scripts. Remove their script snippets from custom head markup.",
+        });
     }
-    const scope = websiteSettingScope(data.key,data.category) || websiteSettingScope(existingPrivate?.key,existingPrivate?.category);
-    if (scope && !isWebsiteOwner(req)) return res.status(403).json({message:"Owner access required"});
+    const scope =
+      websiteSettingScope(data.key, data.category) ||
+      websiteSettingScope(existingPrivate?.key, existingPrivate?.category);
+    if (scope && !isWebsiteOwner(req))
+      return res.status(403).json({ message: "Owner access required" });
     if (req.user?.role !== "admin" && !(scope && isWebsiteOwner(req))) {
       if (existingPrivate && (existingPrivate.category !== "branding" || existingPrivate.isSecret))
-        return res.status(403).json({message:"Forbidden"});
+        return res.status(403).json({ message: "Forbidden" });
     }
     const setting = scope
-      ? (await storage.settings.upsertSettings([data],undefined,{userId:req.user!.id,action:scope === "head-tags" ? "website_head_tags_updated" : "website_features_updated",details:scope === "head-tags" ? "public_head_html (legacy settings route)" : `${data.key} (legacy settings route)`}))[0]
-      : await storage.settings.upsertSetting(data.key,data.value,data.category,data.isSecret);
+      ? (
+          await storage.settings.upsertSettings([data], undefined, {
+            userId: req.user!.id,
+            action:
+              scope === "head-tags" ? "website_head_tags_updated" : "website_features_updated",
+            details:
+              scope === "head-tags"
+                ? "public_head_html (legacy settings route)"
+                : `${data.key} (legacy settings route)`,
+          })
+        )[0]
+      : await storage.settings.upsertSetting(data.key, data.value, data.category, data.isSecret);
 
     if (data.category === "cloudflare_r2") {
       r2Service.resetClient();
@@ -167,34 +228,58 @@ router.put(
   }),
 );
 
-router.post(
-  "/branding/upload",
-  requireAdminOrDesignEditor,
-  (_req, res) => { res.status(409).json({message:"Upload branding images in Marketing > Design > Branding"}); },
-);
+router.post("/branding/upload", requireAdminOrDesignEditor, (_req, res) => {
+  res.status(409).json({ message: "Upload branding images in Marketing > Design > Branding" });
+});
 
 router.delete(
   "/settings/:key",
   requireRole("admin"),
   asyncHandler(async (req, res) => {
-    if (paramString(req.params.key) === CRM_PIPELINE_SETTING_KEY)
+    if (
+      [CRM_PIPELINE_SETTING_KEY, LEGACY_STAFF_CRM_WRITE_FENCE_SETTING_KEY].includes(
+        paramString(req.params.key),
+      )
+    )
       return res
         .status(400)
-        .json({ message: "Use /api/admin/crm/settings/pipeline to restore pipeline defaults" });
+        .json({
+          message: "Use the dedicated CRM settings endpoint to update CRM cutover settings",
+        });
     const existing = (await storage.settings.getAllSettings()).find(
       (s) => s.key === paramString(req.params.key),
     );
-    if (isWebsiteIntegrationSetting(paramString(req.params.key), existing?.category)) return rejectLegacyIntegration(req,res);
+    if (isWebsiteIntegrationSetting(paramString(req.params.key), existing?.category))
+      return rejectLegacyIntegration(req, res);
     if (isRetiredPrivateProofSetting(paramString(req.params.key), existing?.category))
       return res.status(403).json({ message: "This retired private proof setting is protected" });
-    if (isWebsiteIdentityKey(paramString(req.params.key))) return res.status(409).json({message:"Clear company identity in Marketing > Design > Branding"});
-    if (isSocialSettingKey(paramString(req.params.key))) return res.status(409).json({message:"Clear social links in Marketing > Design > Social media"});
-    if (isWebsiteFontKey(paramString(req.params.key))) return res.status(409).json({message:"Clear website fonts in Marketing > Design > Typography"});
-    if (isWebsiteColorKey(paramString(req.params.key))) return res.status(409).json({message:"Clear website colors in Marketing > Design > Color palette"});
+    if (isWebsiteIdentityKey(paramString(req.params.key)))
+      return res
+        .status(409)
+        .json({ message: "Clear company identity in Marketing > Design > Branding" });
+    if (isSocialSettingKey(paramString(req.params.key)))
+      return res
+        .status(409)
+        .json({ message: "Clear social links in Marketing > Design > Social media" });
+    if (isWebsiteFontKey(paramString(req.params.key)))
+      return res
+        .status(409)
+        .json({ message: "Clear website fonts in Marketing > Design > Typography" });
+    if (isWebsiteColorKey(paramString(req.params.key)))
+      return res
+        .status(409)
+        .json({ message: "Clear website colors in Marketing > Design > Color palette" });
     const scope = websiteSettingScope(paramString(req.params.key), existing?.category);
     if (scope) {
-      if (!isWebsiteOwner(req)) return res.status(403).json({message:"Owner access required"});
-      return res.status(400).json({message:scope === "head-tags" ? "Clear website head markup in Marketing > Website System > Head tag additions" : "Change feature flags in Marketing > Website System > Website modules"});
+      if (!isWebsiteOwner(req)) return res.status(403).json({ message: "Owner access required" });
+      return res
+        .status(400)
+        .json({
+          message:
+            scope === "head-tags"
+              ? "Clear website head markup in Marketing > Website System > Head tag additions"
+              : "Change feature flags in Marketing > Website System > Website modules",
+        });
     }
     await storage.settings.deleteSetting(paramString(req.params.key));
     res.json({ message: "Setting deleted" });
@@ -210,7 +295,7 @@ router.post(
   requireRole("admin"),
   asyncHandler(async (req, res) => {
     testConnectionSchema.parse(req.body);
-    rejectLegacyIntegration(req,res);
+    rejectLegacyIntegration(req, res);
   }),
 );
 
@@ -228,8 +313,17 @@ router.post(
   requireRole("admin"),
   asyncHandler(async (req, res) => {
     const body = emailTemplateRestoreSchema.parse(req.body);
-    res.json(await storage.emailTemplates.restoreVersionedTemplates(SYSTEM_EMAIL_TEMPLATE_DEFAULTS, body.expectedVersion,
-      { userId: req.user!.id, action: "website_email_templates_restored", details: "System defaults restored; activation preserved" }));
+    res.json(
+      await storage.emailTemplates.restoreVersionedTemplates(
+        SYSTEM_EMAIL_TEMPLATE_DEFAULTS,
+        body.expectedVersion,
+        {
+          userId: req.user!.id,
+          action: "website_email_templates_restored",
+          details: "System defaults restored; activation preserved",
+        },
+      ),
+    );
   }),
 );
 
@@ -239,8 +333,14 @@ router.put(
   asyncHandler(async (req, res) => {
     const body = emailTemplateSaveSchema.parse(req.body);
     const slug = paramString(req.params.slug);
-    res.json(await storage.emailTemplates.saveVersionedTemplate(slug, body.template, body.expectedVersion,
-      { userId: req.user!.id, action: "website_email_template_updated", details: slug }));
+    res.json(
+      await storage.emailTemplates.saveVersionedTemplate(
+        slug,
+        body.template,
+        body.expectedVersion,
+        { userId: req.user!.id, action: "website_email_template_updated", details: slug },
+      ),
+    );
   }),
 );
 

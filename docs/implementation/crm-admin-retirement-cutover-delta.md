@@ -48,6 +48,33 @@ configuration or traffic. It found no implemented cross-system, permanent
 ownership fence covering these paths. The temporary import fence is correctly
 limited to its reviewed batch and must not be repurposed as one.
 
+## Review slice: legacy staff-write fence
+
+The current review branch adds a server-side, default-off transition fence for
+the authenticated legacy Core staff routes. It is intentionally a reversible
+cutover control, not a source-data deletion or a replacement Dashboard writer.
+
+- `GET` and admin-only `PUT`
+  `/api/admin/crm/settings/legacy-staff-write-fence` expose a versioned
+  `staffWritesFenced` setting. The missing setting means `false`; malformed
+  stored state fails closed rather than silently reopening writes.
+- Changing the setting commits its configuration and an `activity_logs` entry
+  atomically. Generic Core settings endpoints cannot set or delete the key.
+- When `true`, Core staff create/update/note/task routes for leads and clients,
+  plus the legacy pipeline-settings write and its Won conversion path, return
+  `409 legacy_staff_crm_writes_fenced` before the CRM mutation. Blocked attempts
+  receive an audit event containing only the operation name.
+- The fence deliberately does **not** cover `POST /api/crm/leads`, public forms,
+  or durable effects. Their Core-to-Dashboard handoff and submission identity
+  remain unchanged. The admin control endpoint remains available so an approved
+  operator can re-enable staff writes as forward recovery.
+
+Focused tests cover the default, permission boundary, atomic audit request,
+blocked-write behavior, forward recovery, malformed state, generic-setting
+bypass prevention, and inbound durable-submission replay. This review slice is
+not deployed and its setting must remain false until the cutover runbook and
+acceptance gates below are approved.
+
 ## Gates still open
 
 1. **Declare and enforce one future writer.** The Owner and Orchestrator must
