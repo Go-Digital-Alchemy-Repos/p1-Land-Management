@@ -64,3 +64,16 @@ No forms were submitted, no additional notification was sent, and no indexing
 request was made. Main remained `4ea32774`. Disk space remained approximately
 1 GiB and Docker image inventory still failed with a containerd I/O error; the
 fresh database integration release gate remains blocked.
+
+## Isolated database gate resolution — 2026-09-21
+
+The preceding storage note is a historical checkpoint, not the current release
+state. Docker subsequently became healthy and the host had sufficient free
+space without pruning containers, images, volumes, or user data. The scoped
+permission release then passed both isolated database gates: the agreement
+suite and the full 143-test Dashboard suite with an idempotent migration replay.
+The full runner retains explicit loopback, named-disposable database, random
+self-removing container, and provider-credential stripping safeguards. This
+clears only the local integration gate for the Dispatch agreement permission
+release; it does not clear CMS/CRM, physical-device, provider recovery,
+identity/account, inbox-delivery, Search Console, or global retirement gates.
