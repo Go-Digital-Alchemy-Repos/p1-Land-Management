@@ -44,6 +44,32 @@ async function rejectRetiredIdentity(email: unknown) {
   );
   if (retired.rowCount) throw new APIError("FORBIDDEN", { message: "Account is unavailable" });
 }
+async function rejectStaleEmailVerification(user: { id: string; email: string }, request: Request) {
+  await rejectRetiredIdentity(user.email);
+  // Better Auth verifies this signed JWT before invoking the callback. Its
+  // issued-at time is therefore trustworthy here and lets us invalidate a
+  // stateless pre-retirement link even after a later recovery.
+  const token = new URL(request.url).searchParams.get("token");
+  let issuedAt: number | undefined;
+  try {
+    const payload = token?.split(".")[1];
+    const decoded = payload
+      ? JSON.parse(Buffer.from(payload, "base64url").toString("utf8"))
+      : undefined;
+    issuedAt = typeof decoded?.iat === "number" ? decoded.iat : undefined;
+  } catch {
+    throw new APIError("FORBIDDEN", { message: "Verification link is unavailable" });
+  }
+  if (!issuedAt)
+    throw new APIError("FORBIDDEN", { message: "Verification link is unavailable" });
+  const stale = await pool.query(
+    `SELECT 1 FROM account_retirement
+     WHERE user_id=$1 AND extract(epoch FROM retired_at)::bigint >= $2`,
+    [user.id, Math.floor(issuedAt)],
+  );
+  if (stale.rowCount)
+    throw new APIError("FORBIDDEN", { message: "Verification link is unavailable" });
+}
 async function releaseFactorResetLock(client: PoolClient | undefined) {
   if (!client) return;
   try {
@@ -134,6 +160,7 @@ export const auth = betterAuth({
   emailVerification: {
     sendOnSignUp: true,
     autoSignInAfterVerification: false,
+    beforeEmailVerification: rejectStaleEmailVerification,
     sendVerificationEmail: async ({ user, url }) =>
       queueEmail(user.email, "Verify your P1 account", url),
   },

@@ -718,13 +718,24 @@ test(
     const targetCookie = `p1-dashboard.session_token=${encodeURIComponent(`${targetToken}.${createHmac("sha256", process.env.BETTER_AUTH_SECRET!).update(targetToken).digest("base64")}`)}`;
     const targetEmail = `${targetId}@retirement.synthetic.test`;
     for (const [id, name, email, active] of [[ownerId, "Retirement owner", `${ownerId}@retirement.synthetic.test`, true], [targetId, "Retirement target", targetEmail, false]] as const) {
-      await pool.query('INSERT INTO "user"(id,name,email,"emailVerified") VALUES($1,$2,$3,true)', [id, name, email]);
+      await pool.query('INSERT INTO "user"(id,name,email,"emailVerified") VALUES($1,$2,$3,$4)', [id, name, email, id === ownerId]);
       await pool.query("INSERT INTO staff_profile(user_id,role,active) VALUES($1,$2,$3)", [id, id === ownerId ? "owner" : "member", active]);
       await pool.query("INSERT INTO business_account_access(user_id,capabilities,form_notification_ids) VALUES($1,$2,$3)", [id, ["revenue.sales"], [randomUUID()]]);
     }
     await pool.query('INSERT INTO session(id,"expiresAt",token,"userId") VALUES($1,now()+interval \'1 hour\',$2,$3),($4,now()+interval \'1 hour\',$5,$6)', [randomUUID(), ownerToken, ownerId, randomUUID(), targetToken, targetId]);
     await pool.query("INSERT INTO audit_event(id,user_id,action,entity_id) VALUES($1,$2,'account.historical',$2)", [randomUUID(), targetId]);
     await pool.query("INSERT INTO invitation(id,email,role,token_hash,expires_at) VALUES($1,$2,'member',$3,now()+interval '1 hour')", [randomUUID(), targetEmail, `pending:${targetId}`]);
+    const resetToken = randomUUID();
+    const unrelatedVerificationId = randomUUID();
+    const unrelatedVerificationValue = randomUUID();
+    await pool.query(
+      'INSERT INTO verification(id,identifier,value,"expiresAt") VALUES($1,$2,$3,now()+interval \'1 hour\'),($4,$5,$6,now()+interval \'1 hour\')',
+      [randomUUID(), `reset-password:${resetToken}`, targetId, unrelatedVerificationId, `reset-password:${randomUUID()}`, unrelatedVerificationValue],
+    );
+    const encodeJwtPart = (value: object) => Buffer.from(JSON.stringify(value)).toString("base64url");
+    const issuedAt = Math.floor(Date.now() / 1000) - 5;
+    const signedParts = `${encodeJwtPart({ alg: "HS256" })}.${encodeJwtPart({ email: targetEmail, iat: issuedAt, exp: issuedAt + 3600 })}`;
+    const verificationToken = `${signedParts}.${createHmac("sha256", process.env.BETTER_AUTH_SECRET!).update(signedParts).digest("base64url")}`;
     const call = (path: string, cookie = ownerCookie, body?: unknown) => fetch(`${base}/api/v1${path}`, { method: "POST", headers: { cookie, Origin: base!, ...(body === undefined ? {} : { "Content-Type": "application/json" }) }, body: body === undefined ? undefined : JSON.stringify(body) });
     assert.equal((await call(`/user-management/users/${targetId}/retire`)).status, 200);
     assert.equal((await fetch(`${base}/api/v1/me`, { headers: { cookie: targetCookie } })).status, 401);
@@ -739,6 +750,13 @@ test(
     const users = await (await fetch(`${base}/api/v1/user-management/users`, { headers: { cookie: ownerCookie } })).json() as { items: { id: string }[] };
     assert.equal(users.items.some((user) => user.id === targetId), false);
     assert.equal((await pool.query('SELECT COUNT(*)::int AS n FROM session WHERE "userId"=$1', [targetId])).rows[0].n, 0);
+    assert.equal((await pool.query("SELECT COUNT(*)::int AS n FROM verification WHERE value=$1", [targetId])).rows[0].n, 0, "stored password-reset tokens are revoked");
+    assert.equal((await pool.query("SELECT COUNT(*)::int AS n FROM verification WHERE value=$1", [unrelatedVerificationValue])).rows[0].n, 1, "unrelated verification records are preserved");
+    const consumedReset = await fetch(`${base}/api/auth/reset-password`, { method: "POST", headers: { Origin: base!, "Content-Type": "application/json" }, body: JSON.stringify({ token: resetToken, newPassword: "replacement-password" }) });
+    assert.notEqual(consumedReset.status, 200, "a pre-retirement reset token cannot set a password");
+    const verified = await fetch(`${base}/api/auth/verify-email?token=${encodeURIComponent(verificationToken)}`, { headers: { Origin: base! } });
+    assert.notEqual(verified.status, 200, "a pre-retirement signed verification link is rejected");
+    assert.equal((await pool.query('SELECT "emailVerified" FROM "user" WHERE id=$1', [targetId])).rows[0].emailVerified, false);
     assert.deepEqual((await pool.query("SELECT capabilities,form_notification_ids FROM business_account_access WHERE user_id=$1", [targetId])).rows[0], { capabilities: [], form_notification_ids: [] });
     assert.equal((await pool.query("SELECT revoked_at IS NOT NULL AS revoked FROM invitation WHERE email=$1", [targetEmail])).rows[0].revoked, true);
     assert.equal((await pool.query("SELECT COUNT(*)::int AS n FROM audit_event WHERE user_id=$1", [targetId])).rows[0].n, 1, "historical attribution is preserved");
@@ -746,5 +764,6 @@ test(
     assert.equal((await call(`/user-management/users/${targetId}/retire/recover`)).status, 200);
     assert.equal((await fetch(`${base}/api/v1/me`, { headers: { cookie: targetCookie } })).status, 401, "recovery never restores a revoked session");
     assert.deepEqual((await pool.query("SELECT capabilities FROM business_account_access WHERE user_id=$1", [targetId])).rows[0].capabilities, ["revenue.sales"]);
+    assert.equal((await call(`/user-management/users/${targetId}/retire`)).status, 200, "a recovered account can be retired again");
   },
 );

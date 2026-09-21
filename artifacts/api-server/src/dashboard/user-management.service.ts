@@ -70,12 +70,25 @@ export async function retireManagedAccount(ownerId: string, targetId: string) {
     await c.query("INSERT INTO business_account_access(user_id) VALUES($1) ON CONFLICT DO NOTHING", [targetId]);
     await c.query(
       `INSERT INTO account_retirement(user_id,retired_by,original_role,original_active,prior_capabilities,prior_form_notification_ids)
-       VALUES($1,$2,$3,false,$4,$5)`, [targetId, ownerId, target.role, target.capabilities, target.form_notification_ids]
+       VALUES($1,$2,$3,false,$4,$5)
+       ON CONFLICT(user_id) DO UPDATE SET
+         retired_at=now(),retired_by=EXCLUDED.retired_by,original_role=EXCLUDED.original_role,
+         original_active=false,prior_capabilities=EXCLUDED.prior_capabilities,
+         prior_form_notification_ids=EXCLUDED.prior_form_notification_ids,
+         restored_at=NULL,restored_by=NULL`, [targetId, ownerId, target.role, target.capabilities, target.form_notification_ids]
     );
     await c.query("UPDATE business_account_access SET capabilities='{}',form_notification_ids='{}',version=version+1,updated_at=now() WHERE user_id=$1", [targetId]);
     await c.query('DELETE FROM session WHERE "userId"=$1', [targetId]);
+    // Better Auth binds password-reset and other account-bound verification
+    // records to the user id in `value`. Deleting by that opaque id is precise:
+    // it invalidates this account's existing tokens without touching another
+    // user's verification flow.
+    const revokedVerification = await c.query("DELETE FROM verification WHERE value=$1", [targetId]);
     await c.query("UPDATE invitation SET revoked_at=now() WHERE lower(email)=lower($1) AND accepted_at IS NULL AND revoked_at IS NULL", [target.email]);
-    await audit(c, ownerId, "account.retired", targetId, { originalRole: target.role });
+    await audit(c, ownerId, "account.retired", targetId, {
+      originalRole: target.role,
+      revokedVerificationTokens: revokedVerification.rowCount,
+    });
     return { retired: true };
   });
 }
