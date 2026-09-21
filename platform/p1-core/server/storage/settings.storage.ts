@@ -144,6 +144,31 @@ export class SettingsStorage {
     return value;
   }
 
+  /**
+   * Returns a non-sensitive CAS token for one setting without decrypting or
+   * exposing its value. Dedicated recovery controls use this only when a
+   * setting's category/secrecy boundary is itself invalid.
+   */
+  async getSettingBoundarySnapshot(key: string): Promise<{ version: string }> {
+    const [setting] = await this.database
+      .select()
+      .from(systemSettings)
+      .where(eq(systemSettings.key, key));
+    const canonical = setting
+      ? [
+          setting.id,
+          setting.key,
+          setting.category,
+          setting.value,
+          setting.isSecret,
+          setting.updatedAt?.toISOString(),
+        ]
+      : null;
+    return {
+      version: crypto.createHmac("sha256", getKey()).update(JSON.stringify(canonical)).digest("hex"),
+    };
+  }
+
   async getSettingsByCategory(category: string): Promise<SystemSetting[]> {
     return this.database.select().from(systemSettings).where(eq(systemSettings.category, category));
   }
@@ -249,6 +274,55 @@ export class SettingsStorage {
     this.invalidateAll();
     const byKey = new Map(rows.map((row) => [row.key, row]));
     return keys.map((key) => byKey.get(key)!);
+  }
+
+  /**
+   * Repairs one explicitly named public setting after a category/secrecy
+   * boundary mismatch. The caller supplies a fresh metadata-only CAS token;
+   * the setting value is never returned by the recovery read.
+   */
+  async repairPublicSettingBoundary(
+    entry: { key: string; value: string; category: string },
+    expectedVersion: string,
+    audit: { userId: string; action: string; details: string },
+  ): Promise<SystemSetting> {
+    const saved = await this.database.transaction(async (tx) => {
+      await tx.execute(sql`SET LOCAL lock_timeout = '5s'`);
+      await tx.execute(sql`LOCK TABLE system_settings IN SHARE ROW EXCLUSIVE MODE`);
+      const [current] = await tx.select().from(systemSettings).where(eq(systemSettings.key, entry.key));
+      const canonical = current
+        ? [
+            current.id,
+            current.key,
+            current.category,
+            current.value,
+            current.isSecret,
+            current.updatedAt?.toISOString(),
+          ]
+        : null;
+      const currentVersion = crypto
+        .createHmac("sha256", getKey())
+        .update(JSON.stringify(canonical))
+        .digest("hex");
+      if (currentVersion !== expectedVersion) throw new SettingsConflictError();
+      const [repaired] = await tx
+        .insert(systemSettings)
+        .values({ ...entry, isSecret: false, updatedAt: new Date() })
+        .onConflictDoUpdate({
+          target: systemSettings.key,
+          set: {
+            value: sql`excluded.value`,
+            category: sql`excluded.category`,
+            isSecret: false,
+            updatedAt: sql`excluded.updated_at`,
+          },
+        })
+        .returning();
+      await tx.insert(activityLogs).values(audit);
+      return repaired;
+    });
+    this.invalidateAll();
+    return saved;
   }
 
   async readPrivateJson(key: string, category: string): Promise<unknown> {
