@@ -23,14 +23,12 @@ async function openEditor(page: Page) {
 test("federated CMS editor saves, publishes, resolves a simultaneous-editor conflict, and restores a revision", async ({
   page,
 }) => {
-  const originalTitle = await page.request
-    .get(`/api/admin/client-site-content/${routeId}/${componentKey}`)
-    .then(async (response) =>
-      response.status() === 401 ? null : (await response.json()).draftContent.seoTitle,
-    );
   // The first request is intentionally unauthenticated; it proves this browser journey cannot
   // silently rely on the legacy Core session.
-  expect(originalTitle).toBeNull();
+  const unauthenticated = await page.request.get(
+    `/api/admin/client-site-content/${routeId}/${componentKey}`,
+  );
+  expect(unauthenticated.status()).toBe(401);
 
   await signInWithDashboard(page);
   await openEditor(page);
