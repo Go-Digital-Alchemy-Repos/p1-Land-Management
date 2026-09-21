@@ -654,6 +654,7 @@ export * from './rescheduleWork';
 export * from './resendManagedInvitation200';
 export * from './resolveFieldConflict';
 export * from './resolveFieldConflictDisposition';
+export * from './retireManagedUser200';
 export * from './retryMarketingFormDeliveryJob200';
 export * from './reviewAgreementDraftPricing';
 export * from './reviewAgreementDraftPricingAllocationsItem';

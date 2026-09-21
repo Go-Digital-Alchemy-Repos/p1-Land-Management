@@ -8,6 +8,7 @@ import {
   updateManagedUser,
   createManagedInvitation,
   revokeManagedUserSessions,
+  retireManagedUser,
   listManagedUserHistory,
   resendManagedInvitation,
   revokeManagedInvitation,
@@ -284,6 +285,30 @@ export function UserManager({
                         {account.role !== "owner" && (
                           <button disabled={busy} onClick={() => edit(account)}>
                             Manage
+                          </button>
+                        )}
+                        {!account.active && account.id !== currentUserId && (
+                          <button
+                            className="danger-action"
+                            disabled={busy}
+                            onClick={() => {
+                              if (
+                                !window.confirm(
+                                  `Retire ${account.name}? This removes sign-in access and hides the account while preserving audit history.`,
+                                )
+                              )
+                                return;
+                              void run(async () => {
+                                await retireManagedUser(account.id);
+                                await load();
+                                if (alive.current)
+                                  setNotice(
+                                    `${account.name} was retired. Audit history was preserved.`,
+                                  );
+                              });
+                            }}
+                          >
+                            Retire account
                           </button>
                         )}
                         <button

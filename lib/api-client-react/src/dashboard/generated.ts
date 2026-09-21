@@ -292,6 +292,7 @@ import type {
   RescheduleWork,
   ResendManagedInvitation200,
   ResolveFieldConflict,
+  RetireManagedUser200,
   RetryMarketingFormDeliveryJob200,
   ReviewAgreementDraftPricing,
   ReviewAgreementDraftTemplates,
@@ -3903,6 +3904,30 @@ export const getRevokeManagedUserSessionsUrl = (id: string,) => {
 export const revokeManagedUserSessions = async (id: string, options?: RequestInit): Promise<RevokeManagedUserSessions200> => {
 
   return customFetch<RevokeManagedUserSessions200>(getRevokeManagedUserSessionsUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+export const getRetireManagedUserUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/user-management/users/${id}/retire`
+}
+
+/**
+ * Owner-only retirement for an inactive, noncanonical account. The account remains attributable in audit history but loses sessions, invitations, recovery tokens and stored access.
+ */
+export const retireManagedUser = async (id: string, options?: RequestInit): Promise<RetireManagedUser200> => {
+
+  return customFetch<RetireManagedUser200>(getRetireManagedUserUrl(id),
   {
     ...options,
     method: 'POST'

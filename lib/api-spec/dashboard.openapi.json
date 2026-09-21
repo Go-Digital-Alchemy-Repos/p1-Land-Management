@@ -6879,6 +6879,40 @@
         ]
       }
     },
+    "/user-management/users/{id}/retire": {
+      "post": {
+        "operationId": "retireManagedUser",
+        "description": "Owner-only retirement for an inactive, noncanonical account. The account remains attributable in audit history but loses sessions, invitations, recovery tokens and stored access.",
+        "responses": {
+          "200": {
+            "description": "Account retired",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["retired"],
+                  "properties": {
+                    "retired": { "type": "boolean" }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Sign in required" },
+          "403": { "description": "Owner access required" },
+          "409": { "description": "Account is active, canonical, or already retired" }
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ]
+      }
+    },
     "/user-management/users/{id}/history": {
       "get": {
         "operationId": "listManagedUserHistory",
