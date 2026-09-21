@@ -10,6 +10,16 @@ import { logger } from "../utils/logger";
 
 type CmsFormFieldInput = z.input<typeof cmsFormFieldSchema>;
 
+// Match WORK_TYPES in the public contact page, including its submitted values.
+const ESTIMATE_SERVICE_OPTIONS: CmsFormField["options"] = [
+  { label: "Grounds maintenance contract", value: "maintenance", imageUrl: "" },
+  { label: "Clearing, grading or drainage project", value: "sitework", imageUrl: "" },
+  { label: "Farm or large acreage", value: "farm", imageUrl: "" },
+  { label: "Pond or waterway", value: "pond", imageUrl: "" },
+  { label: "Snow and ice", value: "snow", imageUrl: "" },
+  { label: "Not sure yet", value: "unsure", imageUrl: "" },
+];
+
 // Keep the editable system form usable by offering the same reviewed choices as
 // the public commercial assessment journey. These values are part of the
 // commercial-intake contract; existing editor-defined choices are never replaced.
@@ -86,7 +96,9 @@ const SYSTEM_FORMS: ManagedSystemForm[] = [
       field("address", "address", "Property location", "text", { required: true }),
       field("acreage", "acreage", "Approximate acreage", "text"),
       field("propertyType", "propertyType", "Property type", "text"),
-      field("services", "services", "Services", "checkbox"),
+      field("services", "services", "Services", "checkbox", {
+        options: ESTIMATE_SERVICE_OPTIONS,
+      }),
       field("message", "message", "Project details", "textarea", { required: true }),
     ],
     settings: settings({
@@ -150,7 +162,10 @@ const SYSTEM_FORMS: ManagedSystemForm[] = [
   },
 ];
 
-function hydrateMissingCommercialServiceOptions(fields: CmsFormField[]): CmsFormField[] {
+function hydrateMissingServiceOptions(
+  fields: CmsFormField[],
+  options: CmsFormField["options"],
+): CmsFormField[] {
   const servicesIndex = fields.findIndex(
     (field) => field.id === "services" && field.key === "services" && field.type === "checkbox",
   );
@@ -159,9 +174,7 @@ function hydrateMissingCommercialServiceOptions(fields: CmsFormField[]): CmsForm
   const services = fields[servicesIndex];
   if (Array.isArray(services.options) && services.options.length > 0) return fields;
 
-  return fields.map((field, index) =>
-    index === servicesIndex ? { ...field, options: COMMERCIAL_SERVICE_OPTIONS } : field,
-  );
+  return fields.map((field, index) => (index === servicesIndex ? { ...field, options } : field));
 }
 
 export async function ensureSystemForms() {
@@ -178,9 +191,12 @@ export async function ensureSystemForms() {
         isActive: existing.isActive ?? true,
         fields:
           Array.isArray(existing.fields) && existing.fields.length > 0
-            ? systemForm.slug === "p1-commercial-assessment"
-              ? hydrateMissingCommercialServiceOptions(existing.fields)
-              : existing.fields
+            ? hydrateMissingServiceOptions(
+                existing.fields,
+                systemForm.slug === "p1-estimate"
+                  ? ESTIMATE_SERVICE_OPTIONS
+                  : COMMERCIAL_SERVICE_OPTIONS,
+              )
             : systemForm.fields,
         settings: {
           ...systemForm.settings,
