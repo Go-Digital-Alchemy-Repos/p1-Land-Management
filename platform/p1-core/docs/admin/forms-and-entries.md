@@ -11,6 +11,9 @@ Use `Admin > Forms > Form Builder` to manage the form itself.
 - Select a field on the canvas to edit its settings.
 - Active forms can be embedded into pages, widgets, and modal CTA buttons.
 - Each form can control its own Mailchimp tag routing when Mailchimp sync is enabled.
+- The managed P1 Commercial Site Assessment form includes the reviewed commercial-service choices.
+  Startup restores that list only when its existing `services` checkbox has no choices; a nonempty
+  editor-defined list is preserved.
 
 ## Form Entries
 
