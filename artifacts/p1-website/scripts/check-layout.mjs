@@ -37,10 +37,29 @@ for (const page of pages(pageRoot)) {
 const hero = readFileSync(join(root, "src/components/layout/PageHero.tsx"), "utf8");
 assert.match(hero, /site-shell/, "PageHero must use the homepage’s shared outer frame");
 
-for (const layoutFile of ["SiteHeader.tsx", "SiteFooter.tsx", "FinalCTA.tsx"]) {
+for (const layoutFile of ["SiteHeader.tsx", "SiteFooter.tsx"]) {
   const source = readFileSync(join(root, "src/components/layout", layoutFile), "utf8");
   assert.match(source, /site-shell/, `${layoutFile} must use the shared public-page frame`);
   assert.doesNotMatch(source, /container\s+mx-auto/, `${layoutFile} must not use Tailwind's independent container width`);
 }
+
+const finalCta = readFileSync(join(root, "src/components/layout/FinalCTA.tsx"), "utf8");
+assert.match(
+  finalCta,
+  /<FinalCTABand\b/,
+  "FinalCTA.tsx must compose the visible FinalCTABand",
+);
+
+const finalCtaBand = readFileSync(join(root, "src/components/layout/FinalCTABand.tsx"), "utf8");
+assert.match(
+  finalCtaBand,
+  /\bsite-shell\b/,
+  "FinalCTABand.tsx must use the shared public-page frame",
+);
+assert.doesNotMatch(
+  finalCtaBand,
+  /container\s+mx-auto/,
+  "FinalCTABand.tsx must not use Tailwind's independent container width",
+);
 
 console.log("PASS all public route, header, footer and CTA frames use 1,240px width with 24px responsive gutters.");
