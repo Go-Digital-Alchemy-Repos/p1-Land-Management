@@ -195,6 +195,8 @@ window.fetch = async (input, options) => {
             ],
       nextCursor: null,
     };
+  else if (path.startsWith("/api/v1/agreement-preparation-jobs"))
+    data = { items: [], nextCursor: null };
   else if (path.endsWith("/activation-preview"))
     data = {
       agreementId: agreement.id,
@@ -260,7 +262,9 @@ window.fetch = async (input, options) => {
       recordedAt: "2099-01-01T00:00:00.000Z",
     };
   } else if (
-    path === "/api/v1/service-agreements/" + agreement.id + "/charges" &&
+    path.startsWith(
+      "/api/v1/service-agreements/" + agreement.id + "/charges?",
+    ) &&
     method === "GET"
   ) {
     data = {
@@ -363,8 +367,23 @@ window.fetch = async (input, options) => {
   });
 };
 const root = createRoot(document.getElementById("root")!);
+const fixtureCapabilities = () =>
+  role === "manager"
+    ? ["revenue.agreements", "revenue.billing"]
+    : role === "dispatch"
+      ? ["revenue.agreements"]
+      : [];
+const renderFixture = () =>
+  root.render(
+    <ServiceAgreements
+      role={role}
+      capabilities={fixtureCapabilities()}
+      properties={[{ id: property, name: "Meadow property" }]}
+      userId="fixture-user"
+    />,
+  );
 (window as any).switchAgreementRole = (next: string) => {
   role = next;
-  root.render(<ServiceAgreements role={role} />);
+  renderFixture();
 };
-root.render(<ServiceAgreements role={role} />);
+renderFixture();

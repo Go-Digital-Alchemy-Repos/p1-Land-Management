@@ -540,6 +540,24 @@ The lifecycle regression now explicitly creates a successor after cancellation: 
 
 This establishes current backend regressions, not the complete customer/staff/crew browser journey, long-document visual acceptance, real-device offline durability or external billing delivery. Those acceptance gates remain open.
 
+## Dispatch agreement read boundary — September 21
+
+The existing `revenue.agreements` stored grant now has an explicit Dispatch
+read-only interpretation. Dispatch can list and open the redacted operational
+agreement projection (scope, dates and status) but cannot see charge periods,
+amounts, queues or financial preparation. The native dashboard hides agreement
+creation/editing controls for Dispatch while retaining its operational list;
+the API independently rejects create, edit, activate and cancel requests from
+that role. Other non-Dispatch actors with the existing explicit grant retain
+their management behavior, and Owners remain unchanged.
+
+No capability vocabulary, stored grant, account, source record or migration was
+changed. The synthetic service-agreement browser accepted20 checks and its
+offline/role-transition browser accepted4; the local database/HTTP suite
+verified the Dispatch mutation denials and redacted read projection. This is a
+source acceptance checkpoint only: it is not a production deployment, physical
+device check, provider action or final agreement/crew release acceptance.
+
 ## Public navigation and reporting check — September 20
 
 Revision `a7550741` reached terminal SUCCESS on Website `54bc4eb7-b6c5-4d71-8393-a779217a247d`, Core `239f5c1e-816a-4f7f-85b9-254e7cc5fc10` and Dashboard `b42aa35b-8784-400f-a7f7-050edb4041f5`. Public-server compatibility suite passed97 tests without skips; analytics suite passed5. Live DOM inspection found exactly one `G-YX69CJ1QNJ` loader before and after SPA navigation. This does not prove provider-side event deduplication; collection-level verification remains open.
