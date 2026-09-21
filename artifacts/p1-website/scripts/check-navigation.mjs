@@ -29,30 +29,12 @@ assert.doesNotMatch(
   "The retired Services-menu item must not return.",
 );
 
-const serviceAreasLinks = [...header.matchAll(/<Link href="\/service-areas"[^>]*>/g)];
-assert.equal(
-  serviceAreasLinks.length,
-  2,
-  "Service Areas must appear once in each desktop and mobile Services menu.",
+assert.doesNotMatch(
+  header,
+  /href=["']\/service-areas["']/,
+  "Service Areas must not appear in the desktop or mobile Services menus.",
 );
-for (const link of serviceAreasLinks) {
-  const context = header.slice(Math.max(0, link.index - 220), link.index + 220);
-  assert.match(
-    context,
-    /className="font-bold text-primary[^"]*"/,
-    "Service Areas must retain the requested bold primary styling on its menu item or link.",
-  );
-}
-
-for (const servicesMap of header.matchAll(/\{services\.map\(\(s\) => \(/g)) {
-  const mapEnd = header.indexOf("))}", servicesMap.index);
-  const serviceAreas = header.indexOf('href="/service-areas"', servicesMap.index);
-  assert.ok(
-    mapEnd !== -1 && serviceAreas > mapEnd,
-    "Service Areas must remain after all service items in each Services menu.",
-  );
-}
 
 console.log(
-  "PASS main navigation keeps Commercial Site Management discoverable; Blog/Gallery absent; Service Areas is the final bold primary Services item.",
+  "PASS main navigation keeps Commercial Site Management discoverable; Blog, Gallery, and Service Areas are absent.",
 );
