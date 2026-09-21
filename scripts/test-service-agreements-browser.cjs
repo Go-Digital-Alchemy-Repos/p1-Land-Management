@@ -125,7 +125,7 @@ const fs = require("fs");
       })
       .click();
     await p
-      .getByLabel("Decision", { exact: true })
+      .getByRole("combobox", { name: "Decision", exact: true })
       .selectOption("correction_required");
     await p
       .getByLabel("Reason for this decision", { exact: true })

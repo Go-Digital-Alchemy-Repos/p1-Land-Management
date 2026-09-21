@@ -1,4 +1,5 @@
 import { allocationTermsMismatch } from "./estimate-allocation";
+import { canManageServiceAgreements } from "@workspace/api-zod/business-access";
 import { assessActivation } from "./service-agreement.activation";
 import { createHash } from "node:crypto";
 import type { Actor } from "./access";
@@ -22,6 +23,11 @@ import {
 } from "./service-agreement.persistence";
 function management(a: Actor) {
   requireCapability(a, "revenue.agreements");
+  if (!canManageServiceAgreements(a))
+    throw new HttpError(
+      403,
+      "Dispatch can review agreement scope and status but cannot change terms",
+    );
 }
 function version(row: { version: number }, expected: number) {
   if (row.version !== expected)
