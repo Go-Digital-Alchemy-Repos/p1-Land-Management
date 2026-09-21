@@ -10,6 +10,29 @@ import { logger } from "../utils/logger";
 
 type CmsFormFieldInput = z.input<typeof cmsFormFieldSchema>;
 
+// Keep the editable system form usable by offering the same reviewed choices as
+// the public commercial assessment journey. These values are part of the
+// commercial-intake contract; existing editor-defined choices are never replaced.
+const COMMERCIAL_SERVICE_OPTIONS: CmsFormField["options"] = [
+  { label: "Grounds & Vegetation Management", value: "grounds_vegetation", imageUrl: "" },
+  { label: "Stormwater & Drainage", value: "stormwater_drainage", imageUrl: "" },
+  { label: "Grading & Erosion", value: "grading_erosion", imageUrl: "" },
+  { label: "Tree & Land Management", value: "tree_land", imageUrl: "" },
+  {
+    label: "Roads, Access & Exterior Infrastructure",
+    value: "roads_access",
+    imageUrl: "",
+  },
+  { label: "Storm Cleanup & Repairs", value: "emergency_corrective", imageUrl: "" },
+  { label: "Recurring Site Management", value: "recurring_site_management", imageUrl: "" },
+  { label: "Commercial Snow & Ice Management", value: "commercial_snow_ice", imageUrl: "" },
+  {
+    label: "General site assessment / not sure yet",
+    value: "general_site_assessment",
+    imageUrl: "",
+  },
+];
+
 function field(
   id: string,
   key: string,
@@ -94,7 +117,10 @@ const SYSTEM_FORMS: ManagedSystemForm[] = [
       field("address", "address", "Property location or city/region", "text", { required: true }),
       field("propertyType", "propertyType", "Property type or industry", "text"),
       field("acreage", "acreage", "Acreage, range or unknown", "text"),
-      field("services", "services", "Services or assessment need", "checkbox", { required: true }),
+      field("services", "services", "Services or assessment need", "checkbox", {
+        required: true,
+        options: COMMERCIAL_SERVICE_OPTIONS,
+      }),
       field("projectStage", "projectStage", "Project stage", "select", {
         required: true,
         options: [
@@ -124,6 +150,20 @@ const SYSTEM_FORMS: ManagedSystemForm[] = [
   },
 ];
 
+function hydrateMissingCommercialServiceOptions(fields: CmsFormField[]): CmsFormField[] {
+  const servicesIndex = fields.findIndex(
+    (field) => field.id === "services" && field.key === "services" && field.type === "checkbox",
+  );
+  if (servicesIndex < 0) return fields;
+
+  const services = fields[servicesIndex];
+  if (Array.isArray(services.options) && services.options.length > 0) return fields;
+
+  return fields.map((field, index) =>
+    index === servicesIndex ? { ...field, options: COMMERCIAL_SERVICE_OPTIONS } : field,
+  );
+}
+
 export async function ensureSystemForms() {
   logger.app.info("Ensuring system forms");
 
@@ -138,7 +178,9 @@ export async function ensureSystemForms() {
         isActive: existing.isActive ?? true,
         fields:
           Array.isArray(existing.fields) && existing.fields.length > 0
-            ? existing.fields
+            ? systemForm.slug === "p1-commercial-assessment"
+              ? hydrateMissingCommercialServiceOptions(existing.fields)
+              : existing.fields
             : systemForm.fields,
         settings: {
           ...systemForm.settings,
