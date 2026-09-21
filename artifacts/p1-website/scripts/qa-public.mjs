@@ -149,6 +149,8 @@ try {
   }
   assert(render('/forms/not/a-form').html.includes('Looks Like This Ground'), 'Malformed standalone form path must remain a 404');
   const home = render('/');
+  assert(home.html.includes('data-component="cta-band"'), 'Homepage must retain its final CTA band');
+  assert(!home.html.includes('related-pages-heading'), 'Homepage must not render an empty related-links section');
   // These fields are registered for the editor but not rendered on the Home
   // document. Keep both their stable keys and reasons explicit so a newly hidden
   // global cannot silently escape the override audit.
@@ -193,6 +195,7 @@ assert(!Object.values(manifest).some((item) => /\.avif$/i.test(item.file)), 'Pub
 const entry = Object.keys(manifest).find(key => manifest[key].isEntry);
 assert(entry, 'Manifest entry');
 let worst = { route: '', bytes: 0 };
+const budgetFailures = [];
 for (const key of Object.keys(manifest).filter(key => /^src\/pages\/.*\.tsx$/.test(key))) {
   const files = new Set();
   const visit = name => {
@@ -205,8 +208,10 @@ for (const key of Object.keys(manifest).filter(key => /^src\/pages\/.*\.tsx$/.te
   visit(entry); visit(key);
   const bytes = [...files].filter(file => file.endsWith('.js')).reduce((sum, file) => sum + gzipSync(readFileSync(resolve(root, 'dist/public', file))).length, 0);
   if (bytes > worst.bytes) worst = { route: key, bytes };
-  assert(bytes <= 150 * 1024, `${key}: initial JS ${(bytes / 1024).toFixed(1)} KiB exceeds 150 KiB`);
+  if (bytes > 150 * 1024)
+    budgetFailures.push(`${key}: initial JS ${(bytes / 1024).toFixed(1)} KiB exceeds 150 KiB`);
 }
+assert.deepEqual(budgetFailures, [], budgetFailures.join('\n'));
 console.log(`PASS ${paths.length} routes: SSR, metadata, CMS text/image/link overrides, internal links, proof, FAQ accordion/JSON-LD and no React warnings.`);
 console.log(`PASS initial JS <=150 KiB gzip; largest ${worst.route}: ${(worst.bytes / 1024).toFixed(1)} KiB.`);
 

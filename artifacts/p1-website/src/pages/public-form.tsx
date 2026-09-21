@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ComponentProps } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState, type ComponentProps } from "react";
 import { useRoute } from "wouter";
 import { Layout } from "@/components/layout/Layout";
 import { PageHero } from "@/components/layout/PageHero";
@@ -14,12 +14,17 @@ import {
   usePublicFormVerification,
 } from "@/components/forms/PublicFormVerification";
 import { PHONE_DISPLAY, PHONE_HREF } from "@/lib/site";
-import { FormPresentation } from "../../../../platform/p1-core/client/src/features/admin/cms/builder/form-presentation";
 import { FormPresentationHostProvider } from "../../../../platform/p1-core/client/src/features/admin/cms/builder/form-presentation-host";
 import type { CmsForm } from "../../../../platform/p1-core/shared/schema/forms";
 
 const formPath = "/forms/:slug";
 const slugPattern = /^[A-Za-z0-9][A-Za-z0-9_-]{0,99}$/;
+const FormPresentation = lazy(async () => {
+  const module = await import(
+    "../../../../platform/p1-core/client/src/features/admin/cms/builder/form-presentation"
+  );
+  return { default: module.FormPresentation };
+});
 
 async function readJson(response: Response, maxBytes: number) {
   if (!response.headers.get("content-type")?.includes("application/json") || !response.body)
@@ -210,21 +215,28 @@ export default function PublicForm() {
               <FormPresentationHostProvider value={host}>
                 {!accepted && <>
                   {!preview && verification.control}
-                  <FormPresentation
-                    key={slug}
-                    slug={slug}
-                    form={visibleForm}
-                    isLoading={loading}
-                    preview={preview}
-                    submit={submit}
-                    onSubmitSuccess={() => {
-                      if (
-                        activeSlug.current === slug &&
-                        routeVersion.current === visibleRouteVersion
-                      )
-                        setAccepted(true);
-                    }}
-                  />
+                  {!visibleForm ? (
+                    <div className="py-10 text-center text-sm text-muted-foreground" role="status">
+                      {loading ? "Loading secure form…" : "This form is unavailable right now."}
+                    </div>
+                  ) : (
+                    <Suspense fallback={<div className="py-10 text-center text-sm text-muted-foreground" role="status">Loading secure form…</div>}>
+                      <FormPresentation
+                        key={slug}
+                        slug={slug}
+                        form={visibleForm}
+                        preview={preview}
+                        submit={submit}
+                        onSubmitSuccess={() => {
+                          if (
+                            activeSlug.current === slug &&
+                            routeVersion.current === visibleRouteVersion
+                          )
+                            setAccepted(true);
+                        }}
+                      />
+                    </Suspense>
+                  )}
                 </>}
                 {accepted && (
                   <div className="space-y-4" role="status">

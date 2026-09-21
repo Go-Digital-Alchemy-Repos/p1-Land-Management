@@ -1,5 +1,5 @@
 import type { PublicBlogResponsiveCover } from "../../../../platform/p1-core/shared/blog-cover-image-set";
-import manifest from "@/assets/image-manifest.json";
+import manifest from "virtual:p1-responsive-image-manifest";
 
 const urls = import.meta.glob<string>("../assets/optimized/**/*.webp", {
   eager: true,
@@ -8,7 +8,7 @@ const urls = import.meta.glob<string>("../assets/optimized/**/*.webp", {
 });
 const urlFor = (file: string) => urls[`../assets/${file}`];
 const images = new Map(
-  Object.values(manifest).map((image) => [urlFor(image.default), image]),
+  manifest.map((image) => [urlFor(`${image[2]}${image[3].at(-1)}.webp`), image]),
 );
 
 /** Props for locally managed images; unknown/CMS upload URLs retain their own behavior. */
@@ -19,13 +19,12 @@ export function responsiveImageProps(
   const image = typeof src === "string" ? images.get(src) : undefined;
   if (!image) return {};
   return {
-    srcSet: image.variants
-      .filter((variant) => variant.format === "webp")
-      .map((variant) => `${urlFor(variant.path)} ${variant.width}w`)
+    srcSet: image[3]
+      .map((width) => `${urlFor(`${image[2]}${width}.webp`)} ${width}w`)
       .join(", "),
     sizes,
-    width: image.width,
-    height: image.height,
+    width: image[0],
+    height: image[1],
     decoding: "async" as const,
   };
 }

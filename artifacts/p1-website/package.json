@@ -15,6 +15,8 @@
     "check:layout": "node scripts/check-layout.mjs",
     "check:navigation": "node scripts/check-navigation.mjs",
     "check:media": "node scripts/check-image-loading.mjs",
+    "check:responsive-images": "node scripts/check-responsive-image-manifest.mjs",
+    "check:location-pages": "node scripts/check-location-page-manifest.mjs",
     "optimize:images": "node scripts/optimize-images.mjs",
     "check:images": "node scripts/image-budget.mjs",
     "check:server": "node --test server/*.test.mjs",

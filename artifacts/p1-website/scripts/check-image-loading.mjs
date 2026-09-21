@@ -19,7 +19,7 @@ assert.match(servicesGrid, /responsiveImageProps\(image/, "Services Grid images 
 const pageHero = source("src/components/layout/PageHero.tsx");
 assert.match(pageHero, /src=\{image\}[\s\S]*?fetchPriority="high"[\s\S]*?decoding="async"/, "interior page heroes must retain high loading priority");
 
-const finalCta = source("src/components/layout/FinalCTA.tsx");
+const finalCta = source("src/components/layout/FinalCTABand.tsx");
 assert.match(finalCta, /src=\{ctaImg\}[\s\S]*?loading="lazy"[\s\S]*?decoding="async"/, "footer CTA imagery must defer");
 
 const responsiveImages = source("src/lib/responsive-images.ts");

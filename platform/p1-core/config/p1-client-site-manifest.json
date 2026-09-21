@@ -6,7 +6,7 @@
     "displayName": "P1 Land & Property Management",
     "source": {
       "repository": "https://github.com/Go-Digital-Alchemy-Repos/p1-Land-Management.git",
-      "revision": "6f3c031463898335722d81cd55f3c6ad8b7ac4b6"
+      "revision": "79c4716738a190320b72d7bd75b754859b8897ae"
     },
     "owners": [
       {
@@ -5974,7 +5974,7 @@
             "maxLength": 2000
           },
           {
-            "path": "f1t4h9sb",
+            "path": "f11n85y9",
             "label": "Text: ·",
             "type": "text",
             "required": false,
@@ -6401,14 +6401,14 @@
             "maxLength": 12000
           },
           {
-            "path": "f1ajn22e",
+            "path": "f1rmcz9u",
             "label": "Text: Still have questions? Call",
             "type": "text",
             "required": false,
             "maxLength": 2000
           },
           {
-            "path": "f1bq6l6h",
+            "path": "f1wbfjw1",
             "label": "Text: or",
             "type": "text",
             "required": false,
@@ -6640,7 +6640,7 @@
           "fo0rn06": "Where We Work",
           "f10o4f7f": "Serving Upstate SC and Greater Charlotte",
           "f10ey25k": "Upstate South Carolina",
-          "f1t4h9sb": " · ",
+          "f11n85y9": "·",
           "f1vvntc1": "Greenville",
           "f1iehudk": "/service-areas/greenville-sc",
           "fwkr4bx": "Spartanburg",
@@ -6701,8 +6701,8 @@
           "f103k8zw": "P1 serves Upstate South Carolina — including Greenville, Spartanburg, Anderson, and Lancaster County — and the greater Charlotte, NC region, including Charlotte, Concord, Mooresville and Lake Norman, Gastonia, and Union County.",
           "f19b2oet": "How do I get an estimate from P1?",
           "f10i1yj4": "Call (704) 221-8928 or request a free quote through our online contact form. We'll discuss your property and goals, schedule a site visit if needed, and provide a clear, written estimate — free of charge and with no obligation.",
-          "f1ajn22e": "Still have questions? Call ",
-          "f1bq6l6h": " or",
+          "f1rmcz9u": "Still have questions? Call",
+          "f1wbfjw1": "or",
           "f1u810sm": ".",
           "f1o2isa7": "+1 (704) 221-8928",
           "fatly8t": "request a free estimate online",
