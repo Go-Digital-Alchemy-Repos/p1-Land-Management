@@ -166,6 +166,38 @@ test("Revenue keeps internal sales and agreement destinations URL-addressable bu
   }
 });
 
+test("Marketing keeps one sidebar entry per workspace while every tool remains a guarded deep link", () => {
+  const visibleMarketing = DASHBOARD_PAGES
+    .filter((page) => page.group === "Marketing" && page.navigation !== false)
+    .map((page) => ({ label: page.label, path: page.path }));
+  assert.deepEqual(visibleMarketing, [
+    { label: "Content", path: "/marketing/content/website" },
+    { label: "Brand", path: "/marketing/design/branding" },
+    { label: "Site", path: "/marketing/content/seo" },
+    { label: "System", path: "/marketing/system/features" },
+    { label: "Reporting", path: "/marketing/reporting/analytics" },
+  ]);
+
+  for (const path of [
+    "/marketing/content/pages",
+    "/marketing/content/blog",
+    "/marketing/content/forms",
+    "/marketing/content/media",
+    "/marketing/design/colors",
+    "/marketing/content/menus",
+    "/marketing/system/integrations",
+    "/marketing/reporting/search-console",
+  ]) {
+    const route = routeFromPath(path);
+    assert.equal(route.kind, "page");
+    if (route.kind === "page") assert.equal(route.page.navigation, false);
+  }
+
+  assert.equal(canAccessRoute(routeFromPath("/marketing/content/forms"), "member", ["marketing.content.forms"]), true);
+  assert.equal(canAccessRoute(routeFromPath("/marketing/content/forms"), "member", ["marketing.content.pages"]), false);
+  assert.equal(canAccessRoute(routeFromPath("/marketing/system/integrations"), "member", ["marketing.content.pages"]), false);
+});
+
 test("Recurring remains an authorized deep link while Schedule is the only Operations sidebar entry", () => {
   const recurring = routeFromPath("/recurring");
   assert.equal(recurring.kind, "page");
