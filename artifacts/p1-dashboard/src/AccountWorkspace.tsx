@@ -1,7 +1,10 @@
 import { CrmArchive } from "./CrmArchive";
 import { ClientNotes } from "./ClientNotes";
 import { CrmTasks } from "./CrmTasks";
-import { hasCapability } from "@workspace/api-zod/business-access";
+import {
+  canManageServiceAgreements,
+  hasCapability,
+} from "@workspace/api-zod/business-access";
 import { canAccessWorkspaceTab } from "./dashboard-routes";
 import { lazy, Suspense, useEffect, useState, type FormEvent, type ReactNode } from "react";
 import {
@@ -347,7 +350,7 @@ export function ClientWorkspace({ id, tab, request, onTab, onProperty, role, cap
   if (!workspace) return <div className="workspace-loading">Loading client account…</div>;
   const client = workspace.client;
   const properties = (hasCapability({ role, capabilities }, "customers.properties") ? workspace.properties : referenceProperties.filter(property => property.client_id === id)) as WorkspaceProperty[];
-  const canManage = hasCapability({ role, capabilities }, "revenue.agreements");
+  const canManage = canManageServiceAgreements({ role, capabilities });
   const canSee = (section: string) => canAccessWorkspaceTab("client", section, role, capabilities);
   const attention = [...workspace.requests.filter((item: any) => item.status === "new"), ...workspace.projects.filter((item: any) => !["complete", "completed"].includes(item.status))];
   return <article className="account-workspace atlas-clients">

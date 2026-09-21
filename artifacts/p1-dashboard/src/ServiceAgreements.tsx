@@ -1,4 +1,7 @@
-import { hasCapability } from "@workspace/api-zod/business-access";
+import {
+  canManageServiceAgreements,
+  hasCapability,
+} from "@workspace/api-zod/business-access";
 import type {
   ServiceAgreement,
   ServiceAgreementFinancial,
@@ -65,9 +68,9 @@ function AgreementWorkspace({
     };
   }, []);
   const subject = { role, capabilities };
-  const manage = hasCapability(subject, "revenue.agreements"),
+  const manage = canManageServiceAgreements(subject),
     financial = hasCapability(subject, "revenue.billing"),
-    allowed = manage || financial;
+    allowed = hasCapability(subject, "revenue.agreements") || financial;
   const [rows, setRows] = useState<ServiceAgreement[]>([]),
     [cursor, setCursor] = useState<string | null>(null),
     [recurrences, setRecurrences] = useState<AgreementRecurrenceOption[]>([]),

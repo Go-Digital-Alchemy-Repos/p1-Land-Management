@@ -142,6 +142,10 @@ test(
         (await req("manager", "/service-agreements", body)).status,
         201,
       );
+      assert.equal(
+        (await req("dispatch", "/service-agreements", body)).status,
+        403,
+      );
       for (const role of ["manager", "finance", "dispatch"])
         assert.equal(
           (await req(role, "/service-agreements/" + id)).status,
@@ -150,6 +154,17 @@ test(
       const dispatch = await req("dispatch", "/service-agreements/" + id);
       assert.equal(Object.hasOwn(dispatch.data, "periods"), false);
       assert.equal(Object.hasOwn(dispatch.data, "unitAmountCents"), false);
+      assert.equal(
+        (
+          await req(
+            "dispatch",
+            "/service-agreements/" + id,
+            { version: 1, terms: body.terms },
+            "PATCH",
+          )
+        ).status,
+        403,
+      );
       assert.equal(
         (
           await req(
@@ -199,11 +214,29 @@ test(
       );
       assert.equal(
         (
+          await req("dispatch", "/service-agreements/" + id + "/activate", {
+            version: 1,
+          })
+        ).status,
+        403,
+      );
+      assert.equal(
+        (
           await req("manager", "/service-agreements/" + id + "/activate", {
             version: 1,
           })
         ).status,
         200,
+      );
+      assert.equal(
+        (
+          await req("dispatch", "/service-agreements/" + id + "/cancel", {
+            version: 2,
+            effectiveOn: today,
+            reason: "Dispatch must not cancel terms",
+          })
+        ).status,
+        403,
       );
       assert.equal(
         (

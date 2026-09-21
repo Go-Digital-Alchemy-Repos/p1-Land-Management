@@ -116,6 +116,20 @@ export function hasCapability(
   );
 }
 
+/**
+ * Dispatch retains the Agreements read projection, but agreement terms are
+ * created and changed only by an explicitly authorized non-Dispatch actor.
+ * The API applies the same predicate before every agreement mutation.
+ */
+export function canManageServiceAgreements(
+  subject: CapabilitySubject,
+): boolean {
+  return (
+    subject.role !== "dispatch" &&
+    hasCapability(subject, "revenue.agreements")
+  );
+}
+
 /** A group operation only affects its known leaf IDs, preserving unrelated choices. */
 export function selectAccessGroup(
   current: readonly string[],
