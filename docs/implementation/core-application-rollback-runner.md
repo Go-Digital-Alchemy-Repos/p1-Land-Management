@@ -40,6 +40,19 @@ Aggregate before/after row totals, changed table names, database/migration finge
 
 The execution checkpoint below records runtime results, changed-column review and source-image provenance. Remaining gates include original deployment-image availability, verified media object recovery, provider decryption/delivery, authenticated capabilities, preview/intake and job retry acceptance. No production operations are performed by this runner.
 
+### Railway image-availability observation — September 21
+
+A read-only Railway production inspection found active Core deployment
+`57250a61-7aab-42d0-a6e3-8c14f4860f76` at terminal `SUCCESS`, sourced from
+`a557e8bddcb3263bbb44a905cd0206e15abfef01`, with its image digest recorded in
+deployment metadata. The same deployment history retains image digests for recent
+removed deployments. This is provenance, not retrievability evidence: the available
+Railway CLI only offers a redeploy operation for the service's latest deployment and
+does not expose a read-only image-pull or an older-deployment/digest selection path.
+No redeploy or recovery action was attempted. Until an owned exact historical image
+can be selected and recovered in isolation, source rebuilds remain the only tested
+application-image input and the historical Railway-image gate stays open.
+
 ## Empty archive content exception
 
 The verified September18 archive contains zero `client_site_content` rows. The runner derives this from the privately read archive; callers cannot enable an empty-content bypass. Only exactly one named content table with an empty rows array enables the exception. A specified absent route must return404; a200 fails that branch. Archives with content rows retain the required200/revision/ETag/304 path. Successful empty-content runs report `passed-partial`, `contentRecoveryVerified:false`, and an explicit remaining populated-content recovery gap. This establishes narrow startup/rollback evidence only. Seven synthetic test methods cover the branch, including200/404 mismatches; no private content appears in output.
