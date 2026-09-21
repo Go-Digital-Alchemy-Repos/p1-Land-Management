@@ -17,16 +17,16 @@ const factorVerificationPaths = new Set([
   "/two-factor/verify-totp",
   "/two-factor/verify-backup-code",
 ]);
-// Factor resets must be serialized with a policy change for the same account.
+// Auth mutations must be serialized with retirement and MFA-policy changes.
 // This pool is intentionally separate from Better Auth's main database pool:
-// a held row lock must never consume the connection that Better Auth needs to
-// complete the factor operation itself.
+// a held lock must never consume the connection that Better Auth needs to
+// complete the endpoint itself.
 const factorResetLockPool = new pg.Pool({
   connectionString: process.env.DASHBOARD_DATABASE_URL,
   max: 4,
   idleTimeoutMillis: 10_000,
 });
-type FactorResetLockScope = { client?: PoolClient };
+type FactorResetLockScope = { client?: PoolClient; accountIds: Set<string> };
 const factorResetLockScope = new AsyncLocalStorage<FactorResetLockScope>();
 async function queueEmail(to: string, subject: string, text: string) {
   await pool.query("INSERT INTO outbox(id,kind,payload) VALUES($1,$2,$3)", [
@@ -35,17 +35,68 @@ async function queueEmail(to: string, subject: string, text: string) {
     { to, subject, text },
   ]);
 }
-async function rejectRetiredIdentity(email: unknown) {
+async function rejectRetiredAccount(userId: string) {
+  const retired = await pool.query(
+    "SELECT 1 FROM account_retirement WHERE user_id=$1 AND restored_at IS NULL",
+    [userId],
+  );
+  if (retired.rowCount)
+    throw new APIError("FORBIDDEN", { message: "Account is unavailable" });
+}
+async function ensureAuthLockClient() {
+  const scope = factorResetLockScope.getStore();
+  if (!scope) return null;
+  if (scope.client) return scope.client;
+  const client = await factorResetLockPool.connect();
+  try {
+    await client.query("BEGIN");
+    scope.client = client;
+    return client;
+  } catch (error) {
+    client.release();
+    throw error;
+  }
+}
+async function holdAuthAccountOperation(userId: string) {
+  const scope = factorResetLockScope.getStore();
+  if (!scope || scope.accountIds.has(userId)) return;
+  const client = await ensureAuthLockClient();
+  if (!client) return;
+  await client.query("SELECT pg_advisory_xact_lock(hashtextextended($1,0))", [
+    `dashboard-auth-account:${userId}`,
+  ]);
+  scope.accountIds.add(userId);
+}
+async function lockAndRejectRetiredIdentity(email: unknown) {
   const normalized = typeof email === "string" ? email.trim().toLowerCase() : "";
   if (!normalized) return;
-  const retired = await pool.query(
-    `SELECT 1 FROM "user" u JOIN account_retirement r ON r.user_id=u.id
-     WHERE lower(u.email)=$1 AND r.restored_at IS NULL`, [normalized],
+  const user = await pool.query('SELECT id FROM "user" WHERE lower(email)=$1', [
+    normalized,
+  ]);
+  if (!user.rowCount) return;
+  await holdAuthAccountOperation(user.rows[0].id);
+  await rejectRetiredAccount(user.rows[0].id);
+}
+async function lockAndRejectResetToken(token: unknown) {
+  if (typeof token !== "string" || !token) return;
+  const verification = await pool.query(
+    "SELECT value FROM verification WHERE identifier=$1",
+    [`reset-password:${token}`],
   );
-  if (retired.rowCount) throw new APIError("FORBIDDEN", { message: "Account is unavailable" });
+  if (!verification.rowCount) return;
+  await holdAuthAccountOperation(verification.rows[0].value);
+  await rejectRetiredAccount(verification.rows[0].value);
+}
+async function lockAndRejectAuthenticatedMutation(ctx: any) {
+  if (ctx.request.method === "GET") return;
+  const session = await auth.api.getSession({ headers: ctx.headers });
+  if (!session?.user?.id) return;
+  await holdAuthAccountOperation(session.user.id);
+  await rejectRetiredAccount(session.user.id);
 }
 async function rejectStaleEmailVerification(user: { id: string; email: string }, request: Request) {
-  await rejectRetiredIdentity(user.email);
+  await holdAuthAccountOperation(user.id);
+  await rejectRetiredAccount(user.id);
   // Better Auth verifies this signed JWT before invoking the callback. Its
   // issued-at time is therefore trustworthy here and lets us invalidate a
   // stateless pre-retirement link even after a later recovery.
@@ -86,7 +137,7 @@ async function releaseFactorResetLock(client: PoolClient | undefined) {
 export async function withFactorResetLockScope<T>(
   work: () => Promise<T>,
 ): Promise<T> {
-  return factorResetLockScope.run({}, async () => {
+  return factorResetLockScope.run({ accountIds: new Set() }, async () => {
     try {
       return await work();
     } finally {
@@ -111,9 +162,12 @@ async function requireAssuredFactorReset(ctx: any) {
     throw new APIError("INTERNAL_SERVER_ERROR", {
       message: "Unable to verify two-factor authentication policy",
     });
-  const client = await factorResetLockPool.connect();
+  const client = await ensureAuthLockClient();
+  if (!client)
+    throw new APIError("INTERNAL_SERVER_ERROR", {
+      message: "Unable to verify two-factor authentication policy",
+    });
   try {
-    await client.query("BEGIN");
     // Hold the profile-row lock through the Better Auth factor operation. The
     // owner policy update writes this same row, making the policy check and
     // factor reset one serializable decision instead of a check-then-act race.
@@ -142,6 +196,7 @@ async function requireAssuredFactorReset(ctx: any) {
   } catch (error) {
     await client.query("ROLLBACK").catch(() => undefined);
     client.release();
+    scope.client = undefined;
     throw error;
   }
 }
@@ -203,9 +258,23 @@ export const auth = betterAuth({
         );
     }),
     before: createAuthMiddleware(async (ctx) => {
+      if (["/sign-in/email", "/request-password-reset", "/sign-up/email", "/send-verification-email"].includes(ctx.path))
+        await lockAndRejectRetiredIdentity(ctx.body?.email);
+      if (ctx.path === "/reset-password")
+        await lockAndRejectResetToken(ctx.body?.token || ctx.query?.token);
+      if (![
+        "/sign-in/email",
+        "/request-password-reset",
+        "/sign-up/email",
+        "/send-verification-email",
+        "/reset-password",
+        // auth.api.getSession is used by the application identity gate and by
+        // this hook itself. It is read-only and must never recurse through the
+        // authenticated-mutation coordination path.
+        "/get-session",
+      ].includes(ctx.path))
+        await lockAndRejectAuthenticatedMutation(ctx);
       await requireAssuredFactorReset(ctx);
-      if (["/sign-in/email", "/request-password-reset", "/sign-up/email"].includes(ctx.path))
-        await rejectRetiredIdentity(ctx.body?.email);
       if (ctx.path === "/sign-up/email") {
         const email = String(ctx.body?.email || "").toLowerCase();
         const code = ctx.headers?.get("x-p1-setup-code") || "";

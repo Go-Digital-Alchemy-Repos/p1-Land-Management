@@ -1,7 +1,7 @@
 import { validateAddedFormSubscriptions } from "./form-notification-selection";
 import { test, after } from "node:test";
 import assert from "node:assert/strict";
-import { randomUUID, createHmac } from "node:crypto";
+import { randomUUID, createHmac, createHash } from "node:crypto";
 import { pool } from "./database";
 import {
   invitationInput,
@@ -749,6 +749,15 @@ test(
     assert.equal((await pool.query("SELECT COUNT(*)::int AS n FROM outbox WHERE payload->>'to'=$1 AND payload->>'subject'='Reset your P1 password'", [targetEmail])).rows[0].n, 0);
     const users = await (await fetch(`${base}/api/v1/user-management/users`, { headers: { cookie: ownerCookie } })).json() as { items: { id: string }[] };
     assert.equal(users.items.some((user) => user.id === targetId), false);
+    const hiddenPatch = await fetch(`${base}/api/v1/user-management/users/${targetId}`, {
+      method: "PATCH",
+      headers: { cookie: ownerCookie, Origin: base!, "Content-Type": "application/json" },
+      body: JSON.stringify({ firstName: "Blocked", lastName: "Target", version: 1, active: true, capabilities: [], formNotificationIds: [] }),
+    });
+    assert.equal(hiddenPatch.status, 409, "a direct PATCH cannot reactivate a tombstone");
+    assert.equal((await call(`/user-management/users/${targetId}/revoke-sessions`)).status, 409, "session management rejects a tombstone");
+    assert.equal((await call(`/user-management/users/${targetId}/password-recovery`)).status, 409, "password recovery rejects a tombstone");
+    assert.equal((await pool.query("SELECT active FROM staff_profile WHERE user_id=$1", [targetId])).rows[0].active, false);
     assert.equal((await pool.query('SELECT COUNT(*)::int AS n FROM session WHERE "userId"=$1', [targetId])).rows[0].n, 0);
     assert.equal((await pool.query("SELECT COUNT(*)::int AS n FROM verification WHERE value=$1", [targetId])).rows[0].n, 0, "stored password-reset tokens are revoked");
     assert.equal((await pool.query("SELECT COUNT(*)::int AS n FROM verification WHERE value=$1", [unrelatedVerificationValue])).rows[0].n, 1, "unrelated verification records are preserved");
@@ -765,5 +774,78 @@ test(
     assert.equal((await fetch(`${base}/api/v1/me`, { headers: { cookie: targetCookie } })).status, 401, "recovery never restores a revoked session");
     assert.deepEqual((await pool.query("SELECT capabilities FROM business_account_access WHERE user_id=$1", [targetId])).rows[0].capabilities, ["revenue.sales"]);
     assert.equal((await call(`/user-management/users/${targetId}/retire`)).status, 200, "a recovered account can be retired again");
+    const recoveredOwnerId = randomUUID();
+    await pool.query('INSERT INTO "user"(id,name,email,"emailVerified","twoFactorEnabled") VALUES($1,$2,$3,true,false)', [recoveredOwnerId, "Recovered noncanonical Owner", `${recoveredOwnerId}@retirement.synthetic.test`]);
+    await pool.query("INSERT INTO staff_profile(user_id,role,active) VALUES($1,'owner',false)", [recoveredOwnerId]);
+    await pool.query("INSERT INTO business_account_access(user_id) VALUES($1)", [recoveredOwnerId]);
+    assert.equal((await call(`/user-management/users/${recoveredOwnerId}/retire`)).status, 200);
+    const hiddenOwnerNotifications = await fetch(`${base}/api/v1/user-management/users/${recoveredOwnerId}/owner-notifications`, {
+      method: "PATCH",
+      headers: { cookie: ownerCookie, Origin: base!, "Content-Type": "application/json" },
+      body: JSON.stringify({ version: 1, formNotificationIds: [] }),
+    });
+    assert.equal(hiddenOwnerNotifications.status, 409, "owner notifications reject a tombstone");
+    assert.equal((await call(`/user-management/users/${recoveredOwnerId}/retire/recover`)).status, 200);
+    assert.equal((await call(`/user-management/users/${recoveredOwnerId}/retire/recover/reactivate-owner`)).status, 409, "a recovered Owner cannot reactivate before MFA enrollment");
+    await pool.query('UPDATE "user" SET "twoFactorEnabled"=true WHERE id=$1', [recoveredOwnerId]);
+    assert.equal((await call(`/user-management/users/${recoveredOwnerId}/retire/recover/reactivate-owner`)).status, 200);
+    assert.deepEqual((await pool.query("SELECT active,mfa_required FROM staff_profile WHERE user_id=$1", [recoveredOwnerId])).rows[0], { active: true, mfa_required: true });
+  },
+);
+
+test(
+  "retirement orders a concurrent sign-in before its final session revocation",
+  { skip: !base },
+  async () => {
+    const ownerId = randomUUID(), ownerToken = randomUUID(), invitationId = randomUUID();
+    const ownerCookie = `p1-dashboard.session_token=${encodeURIComponent(`${ownerToken}.${createHmac("sha256", process.env.BETTER_AUTH_SECRET!).update(ownerToken).digest("base64")}`)}`;
+    const email = `${randomUUID()}@retirement-race.synthetic.test`;
+    const invitationToken = randomUUID();
+    const authIp = `198.51.100.${Math.floor(Math.random() * 200) + 1}`;
+    await pool.query('INSERT INTO "user"(id,name,email,"emailVerified") VALUES($1,$2,$3,true)', [ownerId, "Retirement race Owner", `${ownerId}@retirement-race.synthetic.test`]);
+    await pool.query("INSERT INTO staff_profile(user_id,role,active) VALUES($1,'owner',true)", [ownerId]);
+    await pool.query('INSERT INTO session(id,"expiresAt",token,"userId") VALUES($1,now()+interval \'1 hour\',$2,$3)', [randomUUID(), ownerToken, ownerId]);
+    await pool.query("INSERT INTO invitation(id,email,role,token_hash,expires_at) VALUES($1,$2,'member',$3,now()+interval '1 hour')", [invitationId, email, createHash("sha256").update(invitationToken).digest("hex")]);
+    const signUp = await fetch(`${base}/api/auth/sign-up/email`, {
+      method: "POST",
+      headers: { Origin: base!, "Content-Type": "application/json", "x-p1-invitation": invitationToken, "x-forwarded-for": authIp },
+      body: JSON.stringify({ name: "Retirement race target", email, password: "correct-horse-battery-staple" }),
+    });
+    assert.equal(signUp.status, 200);
+    const targetId = (await pool.query('SELECT id FROM "user" WHERE email=$1', [email])).rows[0].id;
+    await pool.query('UPDATE "user" SET "emailVerified"=true WHERE id=$1', [targetId]);
+    await pool.query("INSERT INTO staff_profile(user_id,role,active) VALUES($1,'member',false)", [targetId]);
+    await pool.query("INSERT INTO business_account_access(user_id) VALUES($1)", [targetId]);
+    await pool.query('DELETE FROM session WHERE "userId"=$1', [targetId]);
+
+    const gate = await pool.connect();
+    try {
+      await gate.query("BEGIN");
+      await gate.query("SELECT pg_advisory_xact_lock(hashtextextended($1,0))", [`dashboard-auth-account:${targetId}`]);
+      const signIn = fetch(`${base}/api/auth/sign-in/email`, {
+        method: "POST",
+        headers: { Origin: base!, "Content-Type": "application/json", "x-forwarded-for": authIp },
+        body: JSON.stringify({ email, password: "correct-horse-battery-staple" }),
+      });
+      for (let attempt = 0; attempt < 50; attempt++) {
+        const waiting = await pool.query("SELECT count(*)::int AS n FROM pg_locks WHERE locktype='advisory' AND NOT granted");
+        if (waiting.rows[0].n) break;
+        await new Promise((resolve) => setTimeout(resolve, 5));
+      }
+      const retirement = fetch(`${base}/api/v1/user-management/users/${targetId}/retire`, {
+        method: "POST",
+        headers: { cookie: ownerCookie, Origin: base! },
+      });
+      await gate.query("COMMIT");
+      const signedIn = await signIn;
+      assert.equal(signedIn.status, 200, "sign-in obtained the shared lock before retirement");
+      assert.equal((await retirement).status, 200);
+      assert.equal((await pool.query('SELECT count(*)::int AS n FROM session WHERE "userId"=$1', [targetId])).rows[0].n, 0, "retirement revokes the session created by the interleaved sign-in");
+      const cookie = signedIn.headers.get("set-cookie");
+      assert.equal((await fetch(`${base}/api/v1/me`, { headers: { cookie: cookie || "" } })).status, 401, "the interleaved sign-in cannot access the application");
+    } finally {
+      await gate.query("ROLLBACK").catch(() => undefined);
+      gate.release();
+    }
   },
 );

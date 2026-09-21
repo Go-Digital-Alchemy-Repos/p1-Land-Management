@@ -32,6 +32,29 @@ async function audit(
     [randomUUID(), actorId, action, entityId, details],
   );
 }
+async function lockAuthAccountOperation(c: PoolClient, userId: string) {
+  // Auth endpoints hold this same transaction-scoped lock until their handler
+  // completes. It gives retirement a single ordering point with sign-in and
+  // authenticated Better Auth mutations, which use a separate connection.
+  await c.query("SELECT pg_advisory_xact_lock(hashtextextended($1,0))", [
+    `dashboard-auth-account:${userId}`,
+  ]);
+}
+async function mutableManagedTarget(c: PoolClient, targetId: string) {
+  const target = (
+    await c.query(
+      `SELECT p.role,p.active,r.user_id AS retired
+       FROM staff_profile p
+       LEFT JOIN account_retirement r ON r.user_id=p.user_id AND r.restored_at IS NULL
+       WHERE p.user_id=$1 FOR UPDATE OF p`,
+      [targetId],
+    )
+  ).rows[0];
+  if (!target) throw new HttpError(404, "Account not found");
+  if (target.retired)
+    throw new HttpError(409, "Retired accounts can only be changed through recovery");
+  return target;
+}
 export async function listManagedAccounts() {
   const result =
     await pool.query(`SELECT u.id,u.name,u.email,u."emailVerified" AS "emailVerified",
@@ -54,6 +77,7 @@ export async function listManagedAccounts() {
 export async function retireManagedAccount(ownerId: string, targetId: string) {
   return transaction(async (c) => {
     await ownerLock(c, ownerId);
+    await lockAuthAccountOperation(c, targetId);
     const target = (await c.query(
       `SELECT u.email,p.role,p.active,COALESCE(a.capabilities,'{}') AS capabilities,
        COALESCE(a.form_notification_ids,'{}') AS form_notification_ids,r.user_id AS retired
@@ -96,6 +120,7 @@ export async function retireManagedAccount(ownerId: string, targetId: string) {
 export async function recoverRetiredManagedAccount(ownerId: string, targetId: string) {
   return transaction(async (c) => {
     await ownerLock(c, ownerId);
+    await lockAuthAccountOperation(c, targetId);
     const retired = (await c.query(
       `SELECT r.prior_capabilities,r.prior_form_notification_ids,p.active,i.owner_id
        FROM account_retirement r JOIN staff_profile p ON p.user_id=r.user_id
@@ -111,6 +136,38 @@ export async function recoverRetiredManagedAccount(ownerId: string, targetId: st
     return { recovered: true };
   });
 }
+export async function reactivateRecoveredOwnerAccount(ownerId: string, targetId: string) {
+  return transaction(async (c) => {
+    await ownerLock(c, ownerId);
+    await lockAuthAccountOperation(c, targetId);
+    const target = (
+      await c.query(
+        `SELECT p.role,p.active,u."twoFactorEnabled" AS "twoFactorEnabled",i.owner_id
+         FROM account_retirement r
+         JOIN staff_profile p ON p.user_id=r.user_id
+         JOIN "user" u ON u.id=r.user_id
+         CROSS JOIN installation i
+         WHERE r.user_id=$1 AND r.restored_at IS NOT NULL
+         FOR UPDATE OF r,p,u`,
+        [targetId],
+      )
+    ).rows[0];
+    if (!target) throw new HttpError(404, "Recovered account not found");
+    if (target.owner_id === targetId)
+      throw new HttpError(409, "The canonical Owner account cannot be reactivated here");
+    if (target.role !== "owner")
+      throw new HttpError(409, "Only a recovered Owner account can use this reactivation path");
+    if (target.active) throw new HttpError(409, "Account is already active");
+    if (!target.twoFactorEnabled)
+      throw new HttpError(409, "The recovered Owner must enroll multi-factor authentication before reactivation");
+    await c.query("UPDATE staff_profile SET active=true,mfa_required=true WHERE user_id=$1", [targetId]);
+    await c.query('DELETE FROM session WHERE "userId"=$1', [targetId]);
+    await audit(c, ownerId, "account.retirement.reactivated", targetId, {
+      mfaRequired: true,
+    });
+    return { reactivated: true, mfaRequired: true };
+  });
+}
 export async function updateManagedAccount(
   ownerId: string,
   targetId: string,
@@ -119,13 +176,7 @@ export async function updateManagedAccount(
   const data = accountUpdateInput.parse(input);
   return transaction(async (c) => {
     await ownerLock(c, ownerId);
-    const target = (
-      await c.query(
-        "SELECT role FROM staff_profile WHERE user_id=$1 FOR UPDATE",
-        [targetId],
-      )
-    ).rows[0];
-    if (!target) throw new HttpError(404, "Account not found");
+    const target = await mutableManagedTarget(c, targetId);
     if (target.role === "owner")
       throw new HttpError(
         409,
@@ -289,13 +340,7 @@ export async function changeInvitation(
 export async function revokeManagedSessions(ownerId: string, targetId: string) {
   return transaction(async (c) => {
     await ownerLock(c, ownerId);
-    const target = (
-      await c.query(
-        "SELECT role FROM staff_profile WHERE user_id=$1 FOR UPDATE",
-        [targetId],
-      )
-    ).rows[0];
-    if (!target) throw new HttpError(404, "Account not found");
+    const target = await mutableManagedTarget(c, targetId);
     if (target.role === "owner")
       throw new HttpError(
         409,
@@ -313,14 +358,17 @@ export async function requestManagedPasswordRecovery(
 ) {
   return transaction(async (c) => {
     await ownerLock(c, ownerId);
-    const target = (
-      await c.query(
-        `SELECT u.email,p.active FROM staff_profile p JOIN "user" u ON u.id=p.user_id WHERE p.user_id=$1 FOR UPDATE OF p`,
-        [targetId],
-      )
-    ).rows[0];
-    if (!target) throw new HttpError(404, "Account not found");
-    if (!target.active)
+    const target = await c.query(
+      `SELECT u.email,p.active,r.user_id AS retired FROM "user" u
+       JOIN staff_profile p ON p.user_id=u.id
+       LEFT JOIN account_retirement r ON r.user_id=u.id AND r.restored_at IS NULL
+       WHERE u.id=$1 FOR UPDATE OF p`,
+      [targetId],
+    );
+    if (!target.rowCount) throw new HttpError(404, "Account not found");
+    if (target.rows[0].retired)
+      throw new HttpError(409, "Retired accounts can only be changed through recovery");
+    if (!target.rows[0].active)
       throw new HttpError(
         409,
         "Reactivate this account before requesting password recovery",
@@ -336,7 +384,7 @@ export async function requestManagedPasswordRecovery(
       );
     await auth.api.requestPasswordReset({
       body: {
-        email: target.email,
+        email: target.rows[0].email,
         redirectTo: new URL("/?reset=1", origin).href,
       },
     });
@@ -353,13 +401,7 @@ export async function updateOwnerNotifications(
   const data = ownerNotificationsInput.parse(input);
   return transaction(async (c) => {
     await ownerLock(c, ownerId);
-    const target = (
-      await c.query(
-        "SELECT role FROM staff_profile WHERE user_id=$1 FOR UPDATE",
-        [targetId],
-      )
-    ).rows[0];
-    if (!target) throw new HttpError(404, "Account not found");
+    const target = await mutableManagedTarget(c, targetId);
     if (target.role !== "owner")
       throw new HttpError(409, "Use the team account editor for this account");
     await c.query(

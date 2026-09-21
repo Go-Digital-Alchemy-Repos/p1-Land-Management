@@ -24,6 +24,7 @@ import {
   updateManagedAccount,
   retireManagedAccount,
   recoverRetiredManagedAccount,
+  reactivateRecoveredOwnerAccount,
 } from "./user-management.service";
 
 export const userManagementApi = Router();
@@ -64,6 +65,10 @@ userManagementApi.post(
 userManagementApi.post(
   "/user-management/users/:id/retire/recover",
   async (req, res) => res.json(await recoverRetiredManagedAccount((await actor(req)).id, z.string().min(1).parse(req.params.id))),
+);
+userManagementApi.post(
+  "/user-management/users/:id/retire/recover/reactivate-owner",
+  async (req, res) => res.json(await reactivateRecoveredOwnerAccount((await actor(req)).id, z.string().min(1).parse(req.params.id))),
 );
 userManagementApi.post(
   "/user-management/users/:id/revoke-sessions",
