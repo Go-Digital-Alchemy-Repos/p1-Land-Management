@@ -38,3 +38,14 @@ one Core CRM intake and two admin notifications. No duplicate submission, job
 key, CRM record, receipt, native lead or audit event was found. No replay, resend,
 retry or deletion was performed. This is persistence and notification transport
 evidence; recipient inbox confirmation remains outstanding.
+
+## Follow-up estimate choice repair
+
+Live QA also found empty Services choices on `/forms/p1-estimate`. Scoped commit
+`0377fcfab9912fdd945bb283ad4044e3ed09dae1` was independently reviewed, passed
+12 system-form tests and Core type checking, and was normal-pushed to main.
+All three Railway services reported SUCCESS for that exact revision. A fresh
+browser reload confirmed all six existing contact-page service choices render
+on the standalone estimate form. No second production inquiry was submitted.
+The separate Dispatch/CMS candidate must integrate this newer main before its
+remaining combined validation and production promotion.
