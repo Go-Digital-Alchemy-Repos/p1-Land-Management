@@ -708,3 +708,43 @@ test("notification selections validate only additions and require active known f
     /unavailable/,
   );
 });
+
+test(
+  "retired inactive accounts preserve attribution but lose sessions, recovery, invitations and normal visibility",
+  { skip: !base },
+  async () => {
+    const ownerId = randomUUID(), targetId = randomUUID(), ownerToken = randomUUID(), targetToken = randomUUID();
+    const ownerCookie = `p1-dashboard.session_token=${encodeURIComponent(`${ownerToken}.${createHmac("sha256", process.env.BETTER_AUTH_SECRET!).update(ownerToken).digest("base64")}`)}`;
+    const targetCookie = `p1-dashboard.session_token=${encodeURIComponent(`${targetToken}.${createHmac("sha256", process.env.BETTER_AUTH_SECRET!).update(targetToken).digest("base64")}`)}`;
+    const targetEmail = `${targetId}@retirement.synthetic.test`;
+    for (const [id, name, email, active] of [[ownerId, "Retirement owner", `${ownerId}@retirement.synthetic.test`, true], [targetId, "Retirement target", targetEmail, false]] as const) {
+      await pool.query('INSERT INTO "user"(id,name,email,"emailVerified") VALUES($1,$2,$3,true)', [id, name, email]);
+      await pool.query("INSERT INTO staff_profile(user_id,role,active) VALUES($1,$2,$3)", [id, id === ownerId ? "owner" : "member", active]);
+      await pool.query("INSERT INTO business_account_access(user_id,capabilities,form_notification_ids) VALUES($1,$2,$3)", [id, ["revenue.sales"], [randomUUID()]]);
+    }
+    await pool.query('INSERT INTO session(id,"expiresAt",token,"userId") VALUES($1,now()+interval \'1 hour\',$2,$3),($4,now()+interval \'1 hour\',$5,$6)', [randomUUID(), ownerToken, ownerId, randomUUID(), targetToken, targetId]);
+    await pool.query("INSERT INTO audit_event(id,user_id,action,entity_id) VALUES($1,$2,'account.historical',$2)", [randomUUID(), targetId]);
+    await pool.query("INSERT INTO invitation(id,email,role,token_hash,expires_at) VALUES($1,$2,'member',$3,now()+interval '1 hour')", [randomUUID(), targetEmail, `pending:${targetId}`]);
+    const call = (path: string, cookie = ownerCookie, body?: unknown) => fetch(`${base}/api/v1${path}`, { method: "POST", headers: { cookie, Origin: base!, ...(body === undefined ? {} : { "Content-Type": "application/json" }) }, body: body === undefined ? undefined : JSON.stringify(body) });
+    assert.equal((await call(`/user-management/users/${targetId}/retire`)).status, 200);
+    assert.equal((await fetch(`${base}/api/v1/me`, { headers: { cookie: targetCookie } })).status, 401);
+    const signIn = await fetch(`${base}/api/auth/sign-in/email`, { method: "POST", headers: { Origin: base!, "Content-Type": "application/json" }, body: JSON.stringify({ email: targetEmail, password: "invalid-password" }) });
+    assert.notEqual(signIn.status, 200);
+    const reset = await fetch(`${base}/api/auth/request-password-reset`, { method: "POST", headers: { Origin: base!, "Content-Type": "application/json" }, body: JSON.stringify({ email: targetEmail, redirectTo: base }) });
+    // The suite shares Better Auth's global rate limiter, so a prior request
+    // can reject this before the retirement hook runs. Either denial is safe;
+    // the observable recovery invariant is that no reset email is queued.
+    assert.notEqual(reset.status, 200);
+    assert.equal((await pool.query("SELECT COUNT(*)::int AS n FROM outbox WHERE payload->>'to'=$1 AND payload->>'subject'='Reset your P1 password'", [targetEmail])).rows[0].n, 0);
+    const users = await (await fetch(`${base}/api/v1/user-management/users`, { headers: { cookie: ownerCookie } })).json() as { items: { id: string }[] };
+    assert.equal(users.items.some((user) => user.id === targetId), false);
+    assert.equal((await pool.query('SELECT COUNT(*)::int AS n FROM session WHERE "userId"=$1', [targetId])).rows[0].n, 0);
+    assert.deepEqual((await pool.query("SELECT capabilities,form_notification_ids FROM business_account_access WHERE user_id=$1", [targetId])).rows[0], { capabilities: [], form_notification_ids: [] });
+    assert.equal((await pool.query("SELECT revoked_at IS NOT NULL AS revoked FROM invitation WHERE email=$1", [targetEmail])).rows[0].revoked, true);
+    assert.equal((await pool.query("SELECT COUNT(*)::int AS n FROM audit_event WHERE user_id=$1", [targetId])).rows[0].n, 1, "historical attribution is preserved");
+    assert.equal((await pool.query("SELECT COUNT(*)::int AS n FROM audit_event WHERE action='account.retired' AND entity_id=$1", [targetId])).rows[0].n, 1);
+    assert.equal((await call(`/user-management/users/${targetId}/retire/recover`)).status, 200);
+    assert.equal((await fetch(`${base}/api/v1/me`, { headers: { cookie: targetCookie } })).status, 401, "recovery never restores a revoked session");
+    assert.deepEqual((await pool.query("SELECT capabilities FROM business_account_access WHERE user_id=$1", [targetId])).rows[0].capabilities, ["revenue.sales"]);
+  },
+);
