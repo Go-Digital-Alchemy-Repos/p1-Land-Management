@@ -23,3 +23,37 @@ The archive-level recovery runner deliberately does not start Core. Application 
 There is no migration or `shared/schema.ts` difference between prior identity release `06acff2` and current source `864de7f`. Those revisions are candidate compatibility boundaries, not proof that their deployed images are recoverable or mutually compatible. Immutable image evidence and actual startup checks remain required.
 
 This plan does not authorize production restore, write freeze, admin retirement, or data deletion. It supplements the [acceptance tracker](consolidation-acceptance.md) and [archive recovery runner](core-recovery-runner.md).
+
+## Exact-image and media-recovery addendum — September 21
+
+The immediate prior Core deployment is currently marked `Removed` and exposes a
+`Rollback` action in the authenticated Railway deployment history. Railway documents
+that Pro-plan removed images are retained for 120 hours. That is useful time-bounded
+eligibility evidence, not permission to change production and not a local-image
+export. The inspected Railway CLI and dashboard provide rollback/redeploy controls,
+but no supported documented image download, registry-pull, or export control for a
+selected historical deployment. Do not test rollback merely to obtain an image.
+
+An **exact-image** local rehearsal therefore requires one of the following before it
+can replace the existing source-image evidence:
+
+1. A documented Railway export/pull path for the selected deployment image, with an
+   immutable local digest verified by `docker image inspect`; or
+2. An Owner/Orchestrator-approved isolated provider service that Railway can create
+   directly from the selected retained image, with production databases, buckets,
+   variables, domains, and outgoing provider access all omitted.
+
+Neither input is currently available to this runner. Creating a new provider service,
+or invoking production rollback/redeploy, is outside this rehearsal authorization.
+Until one is supplied, retain the exact-image gate as an access limitation rather
+than relabelling the source-rebuild result as an original-image rehearsal.
+
+The owned Blog media archive is a separate, already-local input. On September 21 a
+fresh private extraction of its gzip archive restored 20 objects; every file hash
+matched the digest encoded in its filename, the archive hash matched its retained
+evidence, and all files had PNG/WebP signatures. The archive is gzip-compressed and
+does not carry an encryption envelope, so no decryption step was applicable. The
+temporary extraction was moved to Trash after verification; the original archive was
+not changed. This confirms local archive integrity and retrieval only. It does not
+restore objects to Railway, prove current bucket metadata/object parity, or establish
+provider-side version recovery.
