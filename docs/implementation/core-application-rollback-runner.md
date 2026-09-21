@@ -53,6 +53,23 @@ No redeploy or recovery action was attempted. Until an owned exact historical im
 can be selected and recovered in isolation, source rebuilds remain the only tested
 application-image input and the historical Railway-image gate stays open.
 
+### Corrected Railway rollback-eligibility observation — September 21
+
+The CLI limitation above is not a Railway platform limitation. An authenticated,
+read-only production Dashboard check opened the actions for removed Core deployment
+`ddbfece9-5ba7-476e-8118-19711099fede` (the immediately previous deployment at the
+time of review) and found `View logs`, `Redeploy`, and `Rollback`. Railway's
+[rollback guide](https://docs.railway.com/guides/roll-back-bad-deploy) documents
+120-hour image retention on the observed Pro plan. This proves the UI currently
+recognizes that particular recent removed deployment as rollback-eligible; no action
+was selected.
+
+It does **not** prove a rehearsal, an image pull, safe compatibility with the current
+database, or availability after the retention period. Production rollback would be a
+state-changing action, so an Orchestrator-approved isolated recovery route is still
+required before the exact-image recovery gate can close. The UI check also does not
+extend the retention guarantee to older releases.
+
 ## Empty archive content exception
 
 The verified September18 archive contains zero `client_site_content` rows. The runner derives this from the privately read archive; callers cannot enable an empty-content bypass. Only exactly one named content table with an empty rows array enables the exception. A specified absent route must return404; a200 fails that branch. Archives with content rows retain the required200/revision/ETag/304 path. Successful empty-content runs report `passed-partial`, `contentRecoveryVerified:false`, and an explicit remaining populated-content recovery gap. This establishes narrow startup/rollback evidence only. Seven synthetic test methods cover the branch, including200/404 mismatches; no private content appears in output.
