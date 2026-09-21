@@ -141,6 +141,17 @@ test("agreement drafts have separate Sales write and Agreements read navigation,
   assert.equal(routeFromPath("/agreements/drafts/nope").kind, "not-found");
 });
 
+test("Pipeline is a Sales-only Revenue destination", () => {
+  const route = routeFromPath("/sales/pipeline");
+  assert.equal(route.kind, "page");
+  if (route.kind !== "page") return;
+  assert.equal(route.page.view, "Pipeline");
+  assert.equal(route.page.group, "Revenue");
+  assert.equal(canAccessRoute(route, "member", ["revenue.sales"]), true);
+  assert.equal(canAccessRoute(route, "member", ["revenue.agreements"]), false);
+  assert.equal(canAccessRoute(route, "client", ["revenue.sales"]), false);
+});
+
 test("Developer resources is an Owner-only Website System destination", () => {
   const route=routeFromPath("/marketing/system/documents");
   assert.equal(route.kind,"page");

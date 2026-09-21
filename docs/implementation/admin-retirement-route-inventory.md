@@ -25,9 +25,9 @@ All destination paths below are on the Business Center host. They are proposed m
 | `/admin/events`, `/admin/events/new`, `/admin/events/settings` | `/marketing/content/events` | Preserve feature-disabled behavior and creation/settings intent; no automatic assumption that `/new` maps to an open form. Event registration/related operations need parity review. |
 | `/admin/careers`, `/admin/careers/new`, `/admin/careers/settings` | `/marketing/content/careers` | Preserve disabled module state, applications/settings and create intent. |
 | `/admin/forms` | `/marketing/content/forms` | Submission details, delivery jobs/recovery, export and notification controls must remain usable. |
-| `/admin/crm` | `/sales` | Real pipeline/lead/activity/custom-field mappings and workflow acceptance remain; not a direct record-ID rename. |
+| `/admin/crm` | `/sales/pipeline` (board), with `/sales` as the inquiry, estimate and filter workspace | A native board now displays the six persisted inquiry stages and exposes the existing versioned follow-up, detail, note, task, source-history and Won-to-customer workflow. It is not a direct record-ID rename or a retirement authorization: browser acceptance, final source-delta reconciliation and permanent Dashboard write ownership remain open. |
 | `/admin/crm/clients` | `/clients` | Source CRM client IDs must map through approved reconciliation; retain unmatched records. |
-| `/admin/crm/settings` | No demonstrated one-to-one destination | Source pipeline/settings merge and configuration workflow require explicit implementation or approved disposition. Do not send to unrelated business preferences. |
+| `/admin/crm/settings` | `/sales/pipeline` (Owner-only Pipeline settings) | Native settings preserve the fixed six-stage presentation's label, color and order with revision protection. They do not adopt a legacy source configuration or establish Core write retirement. |
 | `/admin/blog` | `/marketing/content/blog` | Existing retained alias points to `/admin/cms/blog`; preserve alias in eventual redirect table. |
 | `/admin/docs`, `/admin/docs/:slug` | `/marketing/system/documents?doc=<encoded slug>` | Native selection supports `doc`; preserve slug, read/edit/sync/delete and version/reservation semantics. Cross-surface mutation acceptance remains. |
 | `/admin/settings`, `/admin/settings/integrations` | `/marketing/system/integrations` | Native Mailgun/Mailchimp/R2 configuration exists. Active Google environment configuration remains separate; no claim all provider cards have parity. |
@@ -56,6 +56,35 @@ All destination paths below are on the Business Center host. They are proposed m
 | `/admin/cms/sidebars` | `/marketing/content/sidebars` | Preserve assignment/order and public rendering. |
 
 The native route resolver recognizes exact Marketing page paths; it does not inherently accept arbitrary `/marketing/content/pages/:id` routes. Only the query selectors explicitly identified above are confirmed by this inspection. A blanket suffix-preserving redirect would create new 404s and lose editing context.
+
+## CRM/Sales capability reconciliation — September 21
+
+The native Sales model is the candidate replacement, not a parallel CRM. It uses
+Dashboard inquiries and the existing Sales/customer permissions; it does not copy
+Core CRM records merely to make the board look populated. The board at
+`/sales/pipeline` loads each persisted lifecycle status (`new`, `contacted`,
+`qualified`, `proposal`, `won`, `lost`) independently, so a slow or failed stage
+does not silently relabel another stage's records. Its cards open the already
+versioned follow-up editor for owner, stage and next action changes, plus the
+existing contact-detail history, notes, tasks, immutable imported-history viewer
+and Won-only customer onboarding. Manual inquiry creation, filters/search and
+estimates remain in `/sales`, avoiding a duplicate record store.
+
+| Former Core CRM capability | Native disposition | Evidence still required before retirement |
+| --- | --- | --- |
+| Six-stage pipeline, manual lead intake, lead details and next follow-up | `/sales/pipeline` board and existing `/sales` create flow; edits use the native versioned inquiry workflow | Browser test an actual permitted staff account, including conflict and retry handling. Drag-and-drop is not adopted; the explicit accessible stage selector is the native mutation path. |
+| Lead notes and tasks | Existing append-only notes and versioned lead-task components on each board card | Validate a realistic staff journey and final source-note/task delta; no source note/task rows were in the September 19 batch. |
+| Form/submission context and legacy history | Native submitted-context detail view plus immutable source archive | Reconcile all future source deltas under the approved frozen-source procedure; do not overwrite native edits. |
+| Won lead to operational customer | Existing Won-only customer-link/create workflow, then `/clients` | Verify staff/customer handoff and property/agreement continuation without creating an account or property from a source status alone. |
+| CRM clients and client settings | Existing `/clients` and Owner pipeline presentation settings | Production batch contained no source CRM clients. Complete approved mapping, account review and source ownership before routing users away. |
+| Estimates/proposals | Existing `/sales` estimate workspace | Exercise a lead-to-estimate/proposal journey in the acceptance environment; this mapping does not imply an unverified legacy proposal migration. |
+
+The September 19 preservation batch retained three source leads as immutable
+snapshots, linked one receipt-backed inquiry and created two distinct native
+inquiries. It did **not** complete incremental synchronization, a global source
+freeze, account reconciliation or the authoritative Core-to-Dashboard writer
+cutover. Those gates, not an unrelated Search Console permission, determine when
+the CRM-specific legacy navigation can be retired.
 
 ## Backend and public contracts that must remain
 

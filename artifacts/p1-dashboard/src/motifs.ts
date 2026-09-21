@@ -34,6 +34,7 @@ const pageIllustrations: Record<Exclude<DashboardView, "Settings">, string> = {
   Schedule: illustration("schedule"),
   "My Day": illustration("my-day"),
   Sales: illustration("sales"),
+  Pipeline: illustration("sales"),
   "Agreement Templates": "none",
   "Agreement Drafts": "none",
   Agreements: illustration("agreements"),

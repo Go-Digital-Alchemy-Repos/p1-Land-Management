@@ -1,4 +1,5 @@
 import { PipelineProvider, PipelineSettingsEditor } from "./PipelineSettings";
+import { SalesPipelineBoard } from "./SalesPipelineBoard";
 import { reconcileFieldResolutions } from "./field-resolution-receipts";
 import { FieldConflictReview } from "./FieldConflictReview";
 import { isTransientRefreshFailure, refreshEntries } from "./my-day-recovery";
@@ -146,6 +147,7 @@ const sidebarIconColors: Record<keyof typeof icons, string> = {
   "Agreement Templates": "#a16207",
   Billing: "#059669",
   Expenses: "#e11d48",
+  Pipeline: "#2563eb",
   Profile: "#9333ea",
   Settings: "#9333ea",
   "Settings:security": "#16a34a",
@@ -244,6 +246,7 @@ const icons: Record<DashboardPageRoute["view"] | "Settings:security" | "Settings
   Schedule: CalendarDays,
   "My Day": ClipboardList,
   Sales: FileText,
+  Pipeline: FileText,
   Agreements: FileText,
   "Agreement Templates": FileText,
   "Agreement Drafts": FileText,
@@ -2104,6 +2107,15 @@ function App() {
                   canOnboard={can("customers.clients")}
                 />
               )}
+            </PipelineProvider>
+          )}
+          {view === "Pipeline" && (
+            <PipelineProvider key={`${person.id}:${can("revenue.sales")}`} enabled={can("revenue.sales")}>
+              {person.role === "owner" && <PipelineSettingsEditor />}
+              <SalesPipelineBoard
+                canOnboard={can("customers.clients")}
+                onCreate={() => openForm("lead")}
+              />
             </PipelineProvider>
           )}
           {view === "Billing" && (

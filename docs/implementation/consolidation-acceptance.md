@@ -543,6 +543,24 @@ Google access grant, or reporting configuration was changed for this check.
 
 Released `b7a56cc0` reached SUCCESS on all three services. Fresh source inspection found no legacy override. After a verified backup and additive migration 0048, the live Owner Sales editor and default stage consumers loaded successfully. Five UI and three PostgreSQL tests cover validation, revision conflicts, first-write races, audit rollback, permissions, client isolation and draft retention. Browser mutation checks used only the disposable fixture. See `sales-pipeline-settings.md`. The existing New/Contacted/Qualified/Proposal/Won/Lost lifecycle and onboarding semantics remain unchanged. This closes presentation-settings parity, not permanent CRM write ownership or retirement.
 
+## Native Sales pipeline board — September 21
+
+The candidate Dashboard route `/sales/pipeline` now renders one visible column
+for each persisted inquiry status (New, Contacted, Qualified, Proposal, Won and
+Lost), rather than leaving the lifecycle presentation only in settings. It reuses
+the existing Sales inquiry API and the versioned follow-up, detail, note, task,
+imported-history and Won-to-customer components; it creates no second CRM store
+or transport contract. Manual inquiry entry, filter/search and estimates remain
+in `/sales`. A dashboard typecheck and focused component test verify route
+authorization and six-status loading against the existing API contract.
+
+This is an implementation checkpoint, not production CRM cutover evidence. Still
+required: real permitted-user browser acceptance (including mobile and
+accessibility), final source-delta reconciliation, permanent Dashboard write
+ownership/fencing, account-policy reconciliation and the reviewed redirect/
+rollback plan. Do not remove `/admin/crm` navigation or its dependent Core APIs
+until those CRM-specific gates pass.
+
 ## Agreement candidate regression — September 20
 
 Current candidate plus the successor regression passed six non-skipped tests across composed preparation integration, service-agreement lifecycle, billing, recurring-visit authorization and mounted HTTP roles. A fresh local PostgreSQL 18 database applied every current migration through 0048; the actual Dashboard HTTP application ran with synthetic credentials and no provider configuration. Both the temporary server and database/volume were removed after validation.
