@@ -166,6 +166,19 @@ test("Revenue keeps internal sales and agreement destinations URL-addressable bu
   }
 });
 
+test("Recurring remains an authorized deep link while Schedule is the only Operations sidebar entry", () => {
+  const recurring = routeFromPath("/recurring");
+  assert.equal(recurring.kind, "page");
+  if (recurring.kind !== "page") return;
+  assert.equal(recurring.page.navigation, false);
+  assert.equal(canAccessRoute(recurring, "member", ["operations.recurring"]), true);
+  assert.equal(canAccessRoute(recurring, "member", ["operations.schedule"]), false);
+  assert.equal(
+    DASHBOARD_PAGES.some((page) => page.group === "Operations" && page.label === "Recurring" && page.navigation !== false),
+    false,
+  );
+});
+
 test("Developer resources is an Owner-only Website System destination", () => {
   const route=routeFromPath("/marketing/system/documents");
   assert.equal(route.kind,"page");

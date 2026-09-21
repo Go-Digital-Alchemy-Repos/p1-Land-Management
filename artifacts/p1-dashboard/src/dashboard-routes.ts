@@ -106,7 +106,7 @@ export const DASHBOARD_PAGES: readonly DashboardPageRoute[] = [
   { view: "Clients", label: "Clients", path: "/clients", group: "Customers" },
   { view: "Requests", label: "Requests", path: "/requests", group: "Customers" },
   { view: "Schedule", label: "Schedule", path: "/schedule", group: "Operations" },
-  { view: "Recurring", label: "Recurring", path: "/recurring", group: "Operations" },
+  { view: "Recurring", label: "Recurring", path: "/recurring", group: "Operations", navigation: false },
   { view: "Projects", label: "Projects", path: "/projects", group: "Operations" },
   { view: "Inspections", label: "Inspections", path: "/inspections", group: "Operations" },
   { view: "Sales", label: "Sales", path: "/sales", group: "Revenue" },

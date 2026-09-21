@@ -17,6 +17,7 @@ import { OwnerMfaRecovery } from "./OwnerMfaRecovery";
 import { CommercialInbox } from "./CommercialInbox";
 import { PropertyFiles } from "./PropertyFiles";
 import { ScheduleCalendar } from "./ScheduleCalendar";
+import { RecurringCalendar } from "./RecurringCalendar";
 import { scheduleDateTime } from "./schedule-dates";
 import { AssessmentAvailability } from "./AssessmentAvailability";
 import { ClientContacts } from "./ClientContacts";
@@ -1037,6 +1038,15 @@ function App() {
       : []),
   ];
   const inAgreementWorkspace = ["Agreements", "Agreement Drafts", "Agreement Templates"].includes(view);
+  const scheduleWorkspaceTabs = [
+    ...(can("operations.schedule")
+      ? [{ view: "Schedule" as const, label: "Schedule", path: "/schedule", icon: CalendarDays, tone: "cyan" }]
+      : []),
+    ...(can("operations.recurring")
+      ? [{ view: "Recurring" as const, label: "Recurring", path: "/recurring", icon: RefreshCw, tone: "green" }]
+      : []),
+  ];
+  const inScheduleWorkspace = ["Schedule", "Recurring"].includes(view);
   const propertyTypes = data["property-types"] || [];
   const visibleProperties = (data.properties || [])
     .filter((property: any) => {
@@ -1451,9 +1461,6 @@ function App() {
                   <Plus size={17} /> Internal Job
                 </button>
               )}
-              {view === "Recurring" && can("operations.recurring") && (
-                <span className="muted">Recurring Jobs begin with an approved recurring estimate.</span>
-              )}
               {view === "Projects" && can("operations.projects") && (
                 <button className="primary" onClick={() => openForm("project")}>
                   <Plus size={17} /> New project
@@ -1499,6 +1506,20 @@ function App() {
           {!routeUnavailable && inAgreementWorkspace && agreementWorkspaceTabs.length > 1 && (
             <nav className="workspace-tabs agreement-workspace-tabs" aria-label="Agreement workspace">
               {agreementWorkspaceTabs.map((tab) => {
+                const Icon = tab.icon;
+                const active = view === tab.view;
+                return (
+                  <a key={tab.path} href={tab.path} className={active ? "active" : ""} aria-current={active ? "page" : undefined}>
+                    <span className={`workspace-tab-icon workspace-tab-icon--${tab.tone}`} aria-hidden="true"><Icon size={17} strokeWidth={1.8} /></span>
+                    {tab.label}
+                  </a>
+                );
+              })}
+            </nav>
+          )}
+          {!routeUnavailable && inScheduleWorkspace && scheduleWorkspaceTabs.length > 1 && (
+            <nav className="workspace-tabs schedule-workspace-tabs" aria-label="Schedule workspace">
+              {scheduleWorkspaceTabs.map((tab) => {
                 const Icon = tab.icon;
                 const active = view === tab.view;
                 return (
@@ -2233,30 +2254,33 @@ function App() {
             </section>
           )}
           {view === "Recurring" && (
-            <section className="panel">
-              <Table
-                rows={(data["recurring-jobs"] || []).map((job: any) => ({
-                  ...job,
-                  next_visit: scheduleDateTime(job.next_visit),
-                }))}
-                columns={[
-                  "title",
-                  "generation_status",
-                  "visits_remaining",
-                  "client_name",
-                  "property_name",
-                  "agreement_status",
-                  "visit_allowance",
-                  "visits_reserved",
-                  "cadence",
-                  "next_visit",
-                  "paused",
-                ]}
-                empty="No recurring services yet."
-              />
-              <p>Visit allowances include reserved work and charged visits. Cancelled or skipped visits release a slot only when uncharged. Blank counts indicate a service without a per-visit allowance for its next date.</p>
-              {(data["recurring-jobs"] || []).filter((item: any) => item.paused && item.agreement_status === "draft").map((item: any) => <button key={item.id} onClick={() => openForm("activate-recurring", item)}>Schedule and activate {item.title}</button>)}
-            </section>
+            <>
+              <RecurringCalendar jobs={data["recurring-jobs"] || []} />
+              <section className="panel">
+                <Table
+                  rows={(data["recurring-jobs"] || []).map((job: any) => ({
+                    ...job,
+                    next_visit: scheduleDateTime(job.next_visit),
+                  }))}
+                  columns={[
+                    "title",
+                    "generation_status",
+                    "visits_remaining",
+                    "client_name",
+                    "property_name",
+                    "agreement_status",
+                    "visit_allowance",
+                    "visits_reserved",
+                    "cadence",
+                    "next_visit",
+                    "paused",
+                  ]}
+                  empty="No recurring services yet."
+                />
+                <p>Visit allowances include reserved work and charged visits. Cancelled or skipped visits release a slot only when uncharged. Blank counts indicate a service without a per-visit allowance for its next date.</p>
+                {(data["recurring-jobs"] || []).filter((item: any) => item.paused && item.agreement_status === "draft").map((item: any) => <button key={item.id} onClick={() => openForm("activate-recurring", item)}>Schedule and activate {item.title}</button>)}
+              </section>
+            </>
           )}
           {view === "Projects" && (
             <ProjectPhases projects={data.projects || []} estimates={data.estimates || []} role={person?.role} capabilities={person?.capabilities} api={api} refresh={refresh} onError={setError} />

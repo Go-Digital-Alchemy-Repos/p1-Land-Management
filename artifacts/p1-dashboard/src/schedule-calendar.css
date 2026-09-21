@@ -30,6 +30,9 @@
 .calendar-days.day {
   grid-template-columns: 1fr;
 }
+.calendar-days.month .calendar-day {
+  min-height: 170px;
+}
 .calendar-day {
   background: hsl(var(--muted));
   border: 1px solid hsl(var(--border));
@@ -39,6 +42,9 @@
 }
 .calendar-day.today {
   border-color: hsl(var(--primary));
+}
+.calendar-day.outside-month {
+  opacity: 0.62;
 }
 .calendar-day h3 {
   font-size: 14px;
@@ -70,6 +76,24 @@
   color: hsl(var(--foreground));
   font-weight: 650;
 }
+.recurring-calendar-job {
+  display: grid;
+  gap: 5px;
+  margin: 8px 0;
+  padding: 9px;
+  border-left: 3px solid hsl(var(--primary));
+  background: hsl(var(--card));
+}
+.recurring-calendar-job strong,
+.recurring-calendar-job span,
+.recurring-calendar-job small {
+  overflow-wrap: anywhere;
+}
+.recurring-calendar-job span,
+.recurring-calendar-job small {
+  color: hsl(var(--foreground));
+  font-size: 12px;
+}
 .calendar-job.delayed {
   border-left-color: hsl(var(--warning));
 }
@@ -90,6 +114,9 @@
   .calendar-days.week {
     grid-template-columns: 1fr;
     overflow: visible;
+  }
+  .calendar-days.month {
+    grid-template-columns: repeat(7, minmax(96px, 1fr));
   }
   .calendar-day {
     min-height: 90px;
