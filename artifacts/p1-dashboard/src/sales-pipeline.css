@@ -1,0 +1,63 @@
+.sales-pipeline-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.sales-pipeline-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(15rem, 1fr));
+  gap: 1rem;
+  overflow-x: auto;
+  padding: 1rem;
+}
+.sales-pipeline-column {
+  align-content: start;
+  background: var(--surface-muted, #f7f7f8);
+  border: 1px solid var(--border, #dedee3);
+  border-radius: 0.75rem;
+  display: grid;
+  gap: 0.75rem;
+  min-height: 16rem;
+  padding: 0.75rem;
+}
+.sales-pipeline-column h3 {
+  align-items: baseline;
+  display: flex;
+  font-size: 1rem;
+  justify-content: space-between;
+  margin: 0;
+}
+.sales-pipeline-column h3 span {
+  color: var(--muted-foreground, #666);
+  font-size: 0.875rem;
+}
+.sales-pipeline-card {
+  background: var(--surface, #fff);
+  border: 1px solid var(--border, #dedee3);
+  border-radius: 0.625rem;
+  display: grid;
+  gap: 0.5rem;
+  overflow-wrap: anywhere;
+  padding: 0.75rem;
+}
+.sales-pipeline-card h4,
+.sales-pipeline-card p {
+  margin: 0;
+}
+.sales-pipeline-card-tools {
+  display: grid;
+  gap: 0.5rem;
+}
+.sales-pipeline-next {
+  font-weight: 600;
+}
+.sales-pipeline-empty {
+  color: var(--muted-foreground, #666);
+  margin: 0;
+}
+@media (max-width: 680px) {
+  .sales-pipeline-grid {
+    grid-template-columns: 1fr;
+    overflow-x: visible;
+  }
+}

@@ -150,11 +150,13 @@ test("Revenue keeps internal sales and agreement destinations URL-addressable bu
     .map((page) => page.label);
   assert.deepEqual(visibleRevenue, ["Sales", "Agreements", "Billing", "Expenses"]);
 
-  for (const path of ["/agreements/drafts", "/agreements/templates"]) {
+  for (const path of ["/sales/pipeline", "/agreements/drafts", "/agreements/templates"]) {
     const route = routeFromPath(path);
     assert.equal(route.kind, "page");
     if (route.kind === "page") assert.equal(route.page.navigation, false);
   }
+  assert.equal(canAccessRoute(routeFromPath("/sales/pipeline"), "member", ["revenue.sales"]), true);
+  assert.equal(canAccessRoute(routeFromPath("/sales/pipeline"), "member", ["revenue.agreements"]), false);
 });
 test("Marketing keeps one sidebar entry per workspace while every tool remains a guarded deep link", () => {
   const visibleMarketing = DASHBOARD_PAGES

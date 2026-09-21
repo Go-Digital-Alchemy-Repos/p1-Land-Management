@@ -1,4 +1,5 @@
 import { PipelineProvider, PipelineSettingsEditor } from "./PipelineSettings";
+import { SalesPipelineBoard } from "./SalesPipelineBoard";
 import { reconcileFieldResolutions } from "./field-resolution-receipts";
 import { FieldConflictReview } from "./FieldConflictReview";
 import { isTransientRefreshFailure, refreshEntries } from "./my-day-recovery";
@@ -144,6 +145,7 @@ const sidebarIconColors: Record<keyof typeof icons, string> = {
   Projects: "#7c3aed",
   Inspections: "#16a34a",
   Sales: "#2563eb",
+  Pipeline: "#2563eb",
   Agreements: "#d97706",
   "Agreement Drafts": "#ea580c",
   "Agreement Templates": "#a16207",
@@ -250,6 +252,7 @@ const icons: Record<DashboardPageRoute["view"] | "Settings:security" | "Settings
   Schedule: CalendarDays,
   "My Day": ClipboardList,
   Sales: FileText,
+  Pipeline: LayoutDashboard,
   Agreements: FileText,
   "Agreement Templates": FileText,
   "Agreement Drafts": FileText,
@@ -1049,6 +1052,13 @@ function App() {
       : []),
   ];
   const inScheduleWorkspace = ["Schedule", "Recurring"].includes(view);
+  const salesWorkspaceTabs = can("revenue.sales")
+    ? [
+        { view: "Sales" as const, label: "Overview", path: "/sales", icon: FileText, tone: "blue" },
+        { view: "Pipeline" as const, label: "Pipeline", path: "/sales/pipeline", icon: LayoutDashboard, tone: "blue" },
+      ]
+    : [];
+  const inSalesWorkspace = ["Sales", "Pipeline"].includes(view);
   const marketingWorkspaceGroups = [
     {
       label: "Content",
@@ -1577,6 +1587,20 @@ function App() {
           {!routeUnavailable && inScheduleWorkspace && scheduleWorkspaceTabs.length > 1 && (
             <nav className="workspace-tabs schedule-workspace-tabs" aria-label="Schedule workspace">
               {scheduleWorkspaceTabs.map((tab) => {
+                const Icon = tab.icon;
+                const active = view === tab.view;
+                return (
+                  <a key={tab.path} href={tab.path} className={active ? "active" : ""} aria-current={active ? "page" : undefined}>
+                    <span className={`workspace-tab-icon workspace-tab-icon--${tab.tone}`} aria-hidden="true"><Icon size={17} strokeWidth={1.8} /></span>
+                    {tab.label}
+                  </a>
+                );
+              })}
+            </nav>
+          )}
+          {!routeUnavailable && inSalesWorkspace && salesWorkspaceTabs.length > 1 && (
+            <nav className="workspace-tabs sales-workspace-tabs" aria-label="Sales workspace">
+              {salesWorkspaceTabs.map((tab) => {
                 const Icon = tab.icon;
                 const active = view === tab.view;
                 return (
@@ -2123,9 +2147,10 @@ function App() {
               )}
             </>
           )}
-          {view === "Sales" && (
+          {inSalesWorkspace && (
             <PipelineProvider key={`${person.id}:${can("revenue.sales")}`} enabled={can("revenue.sales")}>
               {person.role === "owner" && <PipelineSettingsEditor />}
+              {view === "Pipeline" ? <SalesPipelineBoard canOnboard={can("customers.clients")} onCreate={() => openForm("lead")} /> : <>
               {hasCapability(person, "revenue.sales") && <a href="/agreements/drafts">Agreement drafts</a>}
               {hasCapability(person, "revenue.sales") && <CommercialInbox staff={data.staff || []} canOnboard={can("customers.clients")} />}
               <section className="panel">
@@ -2209,6 +2234,7 @@ function App() {
                   canOnboard={can("customers.clients")}
                 />
               )}
+              </>}
             </PipelineProvider>
           )}
           {view === "Billing" && (

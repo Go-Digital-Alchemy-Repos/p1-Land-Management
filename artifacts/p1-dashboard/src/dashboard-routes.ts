@@ -6,6 +6,7 @@ export type DashboardView =
   | "Schedule"
   | "My Day"
   | "Sales"
+  | "Pipeline"
   | "Agreements"
   | "Agreement Drafts"
   | "Agreement Templates"
@@ -109,6 +110,7 @@ export const DASHBOARD_PAGES: readonly DashboardPageRoute[] = [
   { view: "Projects", label: "Projects", path: "/projects", group: "Operations" },
   { view: "Inspections", label: "Inspections", path: "/inspections", group: "Operations" },
   { view: "Sales", label: "Sales", path: "/sales", group: "Revenue" },
+  { view: "Pipeline", label: "Pipeline", path: "/sales/pipeline", group: "Revenue", navigation: false },
   { view: "Agreements", label: "Agreements", path: "/agreements", group: "Revenue" },
   { view: "Agreement Drafts", label: "Agreement drafts", path: "/agreements/drafts", group: "Revenue", navigation: false },
   { view: "Agreement Templates", label: "Agreement templates", path: "/agreements/templates", group: "Revenue", navigation: false },
@@ -169,6 +171,7 @@ function pageFor(view: DashboardView) {
 }
 
 const navigationFallbackViews: Partial<Record<DashboardView, readonly DashboardView[]>> = {
+  Sales: ["Pipeline"],
   Schedule: ["Recurring"],
   Agreements: ["Agreement Drafts", "Agreement Templates"],
   "Website Editor": ["CMS Pages", "Website Blog", "Website Forms", "Website Events", "Website Careers", "Website Team", "Media Library", "Website Galleries", "Website Sections"],
@@ -300,7 +303,7 @@ const viewCapability: Partial<Record<DashboardView, Capability>> = {
   Overview: "workspace.overview", "My Day": "workspace.my-day",
   Clients: "customers.clients", Properties: "customers.properties", Requests: "customers.requests",
   Schedule: "operations.schedule", Recurring: "operations.recurring", Projects: "operations.projects", Inspections: "operations.inspections",
-  Sales: "revenue.sales", Agreements: "revenue.agreements", Billing: "revenue.billing", Expenses: "revenue.expenses",
+  Sales: "revenue.sales", Pipeline: "revenue.sales", Agreements: "revenue.agreements", Billing: "revenue.billing", Expenses: "revenue.expenses",
 };
 export function defaultRouteForRole(role: string | null | undefined, capabilities?: readonly string[]) {
   const page = role === "crew" ? pageFor("My Day")! :
