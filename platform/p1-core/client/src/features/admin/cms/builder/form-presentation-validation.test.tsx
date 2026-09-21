@@ -12,7 +12,12 @@ const submit = vi.fn(async () => ({ message: "Received" }));
 
 const ui = {
   Button: (props: React.ButtonHTMLAttributes<HTMLButtonElement>) => <button {...props} />,
-  Input: (props: React.InputHTMLAttributes<HTMLInputElement>) => <input {...props} />,
+  Input: ({
+    autoPrependHttps: _autoPrependHttps,
+    ...props
+  }: React.InputHTMLAttributes<HTMLInputElement> & { autoPrependHttps?: boolean }) => (
+    <input {...props} />
+  ),
   Textarea: (props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) => <textarea {...props} />,
   Label: (props: React.LabelHTMLAttributes<HTMLLabelElement>) => <label {...props} />,
   Checkbox: ({ checked, onCheckedChange, ...props }: any) => (
@@ -40,7 +45,15 @@ async function mount(fields: any[]) {
       <FormPresentationHostProvider value={{ ui, toast }}>
         <FormPresentation
           slug="required-fields"
-          form={{ id: "required-fields", slug: "required-fields", name: "Required fields", fields, settings: {} } as any}
+          form={
+            {
+              id: "required-fields",
+              slug: "required-fields",
+              name: "Required fields",
+              fields,
+              settings: {},
+            } as any
+          }
           submit={submit}
         />
       </FormPresentationHostProvider>,
@@ -50,9 +63,9 @@ async function mount(fields: any[]) {
 
 async function submitForm() {
   await act(async () =>
-    host.querySelector("form")!.dispatchEvent(
-      new Event("submit", { bubbles: true, cancelable: true }),
-    ),
+    host
+      .querySelector("form")!
+      .dispatchEvent(new Event("submit", { bubbles: true, cancelable: true })),
   );
 }
 
@@ -85,18 +98,17 @@ it("blocks a single-page required text and checkbox form without sending a reque
 
   await submitForm();
   expect(submit).not.toHaveBeenCalled();
-  expect(toast).toHaveBeenLastCalledWith(expect.objectContaining({
-    title: "Complete required fields",
-    description: "name is required",
-  }));
+  expect(toast).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      title: "Complete required fields",
+      description: "name is required",
+    }),
+  );
 
   await fill(host.querySelector('input[type="text"]')!, "Owner");
   await act(async () => host.querySelector('input[type="checkbox"]')!.click());
   await submitForm();
-  expect(submit).toHaveBeenCalledWith(
-    { name: "Owner", services: ["mowing"] },
-    expect.any(String),
-  );
+  expect(submit).toHaveBeenCalledWith({ name: "Owner", services: ["mowing"] }, expect.any(String));
 });
 
 it("checks every required page before a final submission and submits when valid", async () => {
@@ -108,22 +120,33 @@ it("checks every required page before a final submission and submits when valid"
 
   await submitForm();
   expect(submit).not.toHaveBeenCalled();
-  expect(toast).toHaveBeenLastCalledWith(expect.objectContaining({ description: "contact is required" }));
+  expect(toast).toHaveBeenLastCalledWith(
+    expect.objectContaining({ description: "contact is required" }),
+  );
 
   await fill(host.querySelector('input[type="text"]')!, "Owner");
-  await act(async () => Array.from(host.querySelectorAll("button")).find((button) => button.textContent === "Next")!.click());
+  await act(async () =>
+    Array.from(host.querySelectorAll("button"))
+      .find((button) => button.textContent === "Next")!
+      .click(),
+  );
   await submitForm();
   expect(submit).not.toHaveBeenCalled();
-  expect(toast).toHaveBeenLastCalledWith(expect.objectContaining({ description: "details is required" }));
+  expect(toast).toHaveBeenLastCalledWith(
+    expect.objectContaining({ description: "details is required" }),
+  );
 
   const textarea = host.querySelector("textarea")!;
   await act(async () => {
-    Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, "value")!.set!.call(textarea, "Drainage work");
+    Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, "value")!.set!.call(
+      textarea,
+      "Drainage work",
+    );
     textarea.dispatchEvent(new Event("input", { bubbles: true }));
   });
   await submitForm();
   expect(submit).toHaveBeenCalledWith(
-    { contact: "Owner", details: "Drainage work" },
+    { contact: "Owner", "details-page": "", details: "Drainage work" },
     expect.any(String),
   );
 });
