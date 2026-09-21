@@ -133,7 +133,7 @@ export default function TurfInstallationSeeding() {
           </FeatureRow>
 
           <div className="space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
-            <div className="grid grid-cols-1 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
               {[
                 { title: "Bermuda Grass", desc: "Best for high-traffic commercial turf, sports fields, and sunny pastures" },
                 { title: "Tall Fescue", desc: "Ideal for transition zone lawns, commercial grounds, and shaded areas" },
