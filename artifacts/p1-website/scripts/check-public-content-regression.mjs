@@ -9,6 +9,7 @@ const { render } = await import(pathToFileURL(resolve(root, "dist/server/entry-s
 const routes = [...read("src/app-routes.tsx").matchAll(/<Route\s+path="([^"]+)"/g)]
   .map((match) => match[1])
   .filter((path) => !path.includes(":"));
+assert(routes.length > 0, "Public-route audit must discover at least one static route");
 
 const editorialDirectives = [
   "hero stat row",
@@ -31,7 +32,7 @@ for (const path of routes) {
   }
 }
 
-const home = render("/").html;
+const anchors = (html) => [...html.matchAll(/<a\b[^>]*>[\s\S]*?<\/a>/gi)].map((match) => match[0]);
 const serviceRoutes = [
   "/services/commercial-landscaping",
   "/services/commercial-snow-ice-management",
@@ -45,10 +46,21 @@ const serviceRoutes = [
   "/services/property-reconstruction",
 ];
 
-for (const route of serviceRoutes) {
-  const card = new RegExp(`<a\\b[^>]*href="${route}"[^>]*>[\\s\\S]*?<img\\b`, "i");
-  assert(card.test(home), `Homepage must retain the linked, image-bearing service card for ${route}`);
+function assertHomepageServiceCards(home) {
+  const homeAnchors = anchors(home);
+  for (const route of serviceRoutes) {
+    const card = homeAnchors.find((anchor) => anchor.includes(`href="${route}"`) && /<img\b/i.test(anchor));
+    assert(card, `Homepage must retain the linked, image-bearing service card for ${route}`);
+  }
 }
+
+const home = render("/").html;
+assertHomepageServiceCards(home);
+
+const firstServiceCard = anchors(home).find((anchor) => anchor.includes(`href="${serviceRoutes[0]}"`) && /<img\b/i.test(anchor));
+assert(firstServiceCard, "Homepage test fixture requires the first service card");
+const homeWithMissingCardImage = home.replace(firstServiceCard, firstServiceCard.replace(/<img\b[^>]*>/i, ""));
+assert.throws(() => assertHomepageServiceCards(homeWithMissingCardImage), /image-bearing service card/);
 
 for (const advantage of [
   "Equipment Matched to the Work",
