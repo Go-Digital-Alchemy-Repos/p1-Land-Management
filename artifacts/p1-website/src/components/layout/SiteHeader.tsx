@@ -2,11 +2,11 @@ import { useCms } from "@/lib/cms";
 import { PublishedMenu, type MenuFormRequest } from "../menus/PublishedMenu";
 const MenuFormDialog = lazy(() => import("../menus/MenuFormDialog"));
 import { createElement, lazy, Suspense, useRef, useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ArrowUpRight, ChevronDown, ChevronRight, Home, Mail, Menu, Phone, TreePine, UserRound } from "lucide-react";
+import { ArrowRight, ArrowUpRight, ChevronDown, ChevronRight, Home, Mail, Menu, Phone, TreePine, UserRound } from "lucide-react";
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -15,8 +15,30 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useSiteIdentity } from "@/lib/use-site-identity";
 
+const services = [
+  { name: "Commercial Site Management", href: "/commercial" },
+  { name: "Commercial Landscaping", href: "/services/commercial-landscaping" },
+  { name: "Commercial Snow & Ice", href: "/services/commercial-snow-ice-management" },
+  { name: "Industrial & Agricultural Land", href: "/services/industrial-agricultural" },
+  { name: "Land Clearing", href: "/services/land-clearing" },
+  { name: "Grading & Site Preparation", href: "/services/grading-site-preparation" },
+  { name: "Drainage Solutions", href: "/services/drainage" },
+  { name: "Turf Installation & Seeding", href: "/services/turf-installation-seeding" },
+  { name: "Tree Services", href: "/services/tree-services" },
+  { name: "Pond & Waterway Management", href: "/services/pond-waterway-management" },
+  { name: "Property Reconstruction", href: "/services/property-reconstruction" },
+] as const;
+
+const serviceGroups = [
+  { label: "Grounds care", hrefs: ["/commercial", "/services/commercial-landscaping", "/services/commercial-snow-ice-management"] },
+  { label: "Land development", hrefs: ["/services/industrial-agricultural", "/services/land-clearing", "/services/grading-site-preparation"] },
+  { label: "Water & establishment", hrefs: ["/services/drainage", "/services/turf-installation-seeding", "/services/pond-waterway-management"] },
+  { label: "Specialty services", hrefs: ["/services/tree-services", "/services/property-reconstruction"] },
+] as const;
+
 export function SiteHeader({ assessmentCta = false }: { assessmentCta?: boolean }) {
   const identity = useSiteIdentity();
+  const [location] = useLocation();
   const assignedMenu = useCms().snapshot.menus?.locations.main_navigation;
   const [formRequest, setFormRequest] = useState<MenuFormRequest | null>(null);
   const pendingMobileForm = useRef<MenuFormRequest | null>(null);
@@ -30,59 +52,72 @@ export function SiteHeader({ assessmentCta = false }: { assessmentCta?: boolean 
     target.scrollIntoView({ block: "start" });
   };
 
-  const services = [
-    { name: "Commercial Site Management", href: "/commercial" },
-    { name: "Commercial Landscaping", href: "/services/commercial-landscaping" },
-    { name: "Commercial Snow & Ice", href: "/services/commercial-snow-ice-management" },
-    { name: "Industrial & Agricultural Land", href: "/services/industrial-agricultural" },
-    { name: "Land Clearing", href: "/services/land-clearing" },
-    { name: "Grading & Site Preparation", href: "/services/grading-site-preparation" },
-    { name: "Drainage Solutions", href: "/services/drainage" },
-    { name: "Turf Installation & Seeding", href: "/services/turf-installation-seeding" },
-    { name: "Tree Services", href: "/services/tree-services" },
-    { name: "Pond & Waterway Management", href: "/services/pond-waterway-management" },
-    { name: "Property Reconstruction", href: "/services/property-reconstruction" },
-  ];
+  const isServicesLocation = location === "/commercial" || location === "/services" || location.startsWith("/services/");
+  const navLinkClass = (active: boolean) => `relative rounded-lg px-3 py-2 transition-colors duration-150 focus-visible:!outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${active ? "bg-primary/[0.08] font-semibold text-secondary" : "hover:bg-secondary/[0.05] hover:text-secondary"}`;
 
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/60 shadow-md shadow-black/5 bg-background">
+    <header className="sticky top-0 z-50 w-full border-b border-border/70 bg-background/95 shadow-[0_10px_30px_-26px_hsl(var(--secondary)/0.7)] backdrop-blur-xl">
       <div className="site-shell flex h-20 items-center justify-between">
         <Link href="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
           {createElement("img", { src: identity.logoUrl, alt: identity.companyName, className: "h-10 md:h-12 w-auto" })}
         </Link>
         
         {/* Desktop Nav */}
-        <nav aria-label="Main navigation" className="hidden lg:flex items-center gap-6 font-medium text-sm text-foreground/80">
+        <nav aria-label="Main navigation" className="hidden lg:flex items-center gap-1 rounded-xl border border-border/60 bg-muted/30 p-1 font-medium text-sm text-foreground/75">
           {assignedMenu ? <PublishedMenu items={assignedMenu.items} variant="desktop" onForm={setFormRequest} /> : <>
-          <Link href="/" className="group relative hover:text-primary transition-colors">
+          <Link href="/" aria-current={location === "/" ? "page" : undefined} className={navLinkClass(location === "/")}>
             Home
-            <span className="absolute -bottom-1.5 left-0 h-[2px] w-0 bg-clay transition-all duration-300 group-hover:w-full" />
           </Link>
-          <Link href="/about" className="group relative hover:text-primary transition-colors">
+          <Link href="/about" aria-current={location === "/about" ? "page" : undefined} className={navLinkClass(location === "/about")}>
             About
-            <span className="absolute -bottom-1.5 left-0 h-[2px] w-0 bg-clay transition-all duration-300 group-hover:w-full" />
           </Link>
 
           <DropdownMenu>
-            <DropdownMenuTrigger className="group relative flex items-center gap-1 hover:text-primary transition-colors outline-none">
-              Services <ChevronDown className="h-4 w-4" />
-              <span className="absolute -bottom-1.5 left-0 h-[2px] w-0 bg-clay transition-all duration-300 group-hover:w-full" />
+            <DropdownMenuTrigger className={`${navLinkClass(isServicesLocation)} group flex items-center gap-1.5 outline-none data-[state=open]:bg-background data-[state=open]:text-secondary data-[state=open]:shadow-sm`}>
+              Services <ChevronDown className="h-3.5 w-3.5 transition-transform duration-200 group-data-[state=open]:rotate-180 motion-reduce:transition-none" aria-hidden="true" />
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-[280px]">
-              {services.map((s) => (
-                <DropdownMenuItem key={s.href} asChild className="focus:bg-primary/5 focus:text-foreground focus-visible:outline-none">
-                  <Link href={s.href} className="cursor-pointer hover:bg-primary/5 focus:bg-primary/5 focus:outline-none focus-visible:outline-none">
-                    {s.name}
+            <DropdownMenuContent align="center" sideOffset={12} collisionPadding={16} className="site-services-menu w-[min(42rem,calc(100vw-2rem))] rounded-2xl border border-border/80 bg-background p-0 text-foreground shadow-[0_22px_60px_-24px_hsl(var(--secondary)/0.42)]">
+              <div className="flex items-start justify-between gap-6 border-b border-border/70 bg-muted/25 px-5 py-4">
+                <div>
+                  <p className="font-semibold text-secondary">Property services</p>
+                  <p className="mt-0.5 text-xs leading-5 text-muted-foreground">Plan, maintain, and improve large commercial properties.</p>
+                </div>
+                <DropdownMenuItem asChild className="shrink-0 rounded-lg p-0 outline-none focus:bg-transparent">
+                  <Link href="/services" className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-border bg-background px-3 text-xs font-bold text-primary shadow-sm transition-colors hover:border-primary/35 hover:bg-primary/[0.05] focus-visible:!outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
+                    View all <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
                   </Link>
                 </DropdownMenuItem>
-              ))}
+              </div>
+              <div className="grid grid-cols-2 gap-x-5 gap-y-5 p-4">
+                {serviceGroups.map((group) => (
+                  <div key={group.label}>
+                    <p className="px-2 pb-1.5 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">{group.label}</p>
+                    <div className="space-y-0.5">
+                      {services.filter((service) => group.hrefs.some((href) => href === service.href)).map((service) => {
+                        const active = location === service.href;
+                        return (
+                          <DropdownMenuItem key={service.href} asChild className="rounded-lg p-0 outline-none focus:bg-transparent">
+                            <Link
+                              href={service.href}
+                              aria-current={active ? "page" : undefined}
+                              className={`group/item flex min-h-10 cursor-pointer items-center justify-between gap-3 rounded-lg border-l-2 px-2.5 py-2 text-[13px] leading-5 transition-colors focus-visible:!outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset ${active ? "border-primary bg-primary/[0.08] font-semibold text-secondary" : "border-transparent text-foreground/80 hover:bg-muted/70 hover:text-secondary"}`}
+                            >
+                              <span>{service.name}</span>
+                              <ArrowUpRight className={`h-3.5 w-3.5 shrink-0 text-primary transition-all motion-reduce:transition-none ${active ? "opacity-100" : "-translate-x-1 opacity-0 group-hover/item:translate-x-0 group-hover/item:opacity-100"}`} aria-hidden="true" />
+                            </Link>
+                          </DropdownMenuItem>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Link href="/contact" className="group relative hover:text-primary transition-colors">
+          <Link href="/contact" aria-current={location === "/contact" ? "page" : undefined} className={navLinkClass(location === "/contact")}>
             Contact
-            <span className="absolute -bottom-1.5 left-0 h-[2px] w-0 bg-clay transition-all duration-300 group-hover:w-full" />
           </Link>
           </>}
         </nav>
