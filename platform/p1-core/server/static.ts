@@ -3,6 +3,7 @@ import { builderPreviewHtml } from "./middleware/builder-preview";
 import express, { type Express } from "express";
 import fs from "fs";
 import path from "path";
+import { adminLeafRedirect } from "./admin-leaf-redirect";
 import { storage } from "./storage";
 
 function escapeHtmlAttribute(value: string) {
@@ -57,6 +58,10 @@ export function serveStatic(app: Express) {
     cachedIndexTemplate = await fs.promises.readFile(indexPath, "utf-8");
     return cachedIndexTemplate;
   }
+
+  // The review-only redirect table is an exact UI-leaf allowlist. It remains
+  // disabled by default and must run before the retained admin SPA fallback.
+  app.use(adminLeafRedirect());
 
   app.use(
     "/admin",
