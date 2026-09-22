@@ -35,6 +35,26 @@ assert.doesNotMatch(
   "Service Areas must not appear in the desktop or mobile Services menus.",
 );
 
+for (const [group, href] of [
+  ["Grounds care", "/services/turf-installation-seeding"],
+  ["Land development", "/services/drainage"],
+  ["Specialty services", "/services/pond-waterway-management"],
+]) {
+  assert.match(
+    header,
+    new RegExp(
+      `label: "${group}"[^\\n]+"${href.replaceAll("/", "\\/")}"`,
+    ),
+    `${href} must remain in the ${group} Services-menu group.`,
+  );
+}
+
+assert.doesNotMatch(
+  header,
+  /label: "Water & establishment"/,
+  "The empty Water & Establishment Services-menu group must not return.",
+);
+
 console.log(
-  "PASS main navigation keeps Commercial Site Management discoverable; Blog, Gallery, and Service Areas are absent.",
+  "PASS main navigation keeps the approved service groups and excludes Blog, Gallery, and Service Areas.",
 );
