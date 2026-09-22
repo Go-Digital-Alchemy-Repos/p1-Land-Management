@@ -218,6 +218,12 @@ exact-image recovery proof. Recheck the active deployment and rollback
 eligibility immediately before any cutover; do not rely on a temporary
 retention window as a permanent recovery archive.
 
+The [isolated media rehearsal](media-provider-recovery-rehearsal.md) mapped all
+20 archived objects to their original Core media keys and verified byte-identical
+delivery through Core against disposable S3 storage. This is useful application
+and archive evidence, but Cloudflare R2 account/bucket recovery and any media
+created after the retained snapshot remain unverified.
+
 ## Decisions and operational evidence still required
 
 - Dashboard Sales is the Owner-requested future staff CRM. Document and verify
