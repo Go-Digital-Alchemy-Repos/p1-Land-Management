@@ -22,7 +22,7 @@ export default function ResetPasswordPage() {
 
   const resetMutation = useMutation({
     mutationFn: async () => {
-      await apiRequest("POST", "/api/admin/reset-password", { token, password });
+      await apiRequest("POST", "/api/auth/reset-password", { token, password });
     },
     onSuccess: () => {
       setSuccess(true);
