@@ -91,7 +91,7 @@ export function SiteHeader({ assessmentCta = false }: { assessmentCta?: boolean 
               <div className="grid grid-cols-3 gap-x-5 gap-y-5 p-4">
                 {serviceGroups.map((group) => (
                   <div key={group.label}>
-                    <p className="px-2 pb-1.5 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">{group.label}</p>
+                    <p className="px-2 pb-1.5 text-[10px] font-extrabold uppercase tracking-[0.15em] text-primary">{group.label}</p>
                     <div className="space-y-0.5">
                       {services.filter((service) => group.hrefs.some((href) => href === service.href)).map((service) => {
                         const active = location === service.href;
