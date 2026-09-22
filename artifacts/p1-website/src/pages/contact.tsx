@@ -9,8 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CheckCircle2, Phone, Clock, MapPin } from "lucide-react";
+import { Phone, Clock, MapPin } from "lucide-react";
 import { PHONE_DISPLAY, PHONE_HREF } from "@/lib/site";
 
 const WORK_TYPES = [
@@ -87,10 +86,10 @@ export default function Contact() {
         body: payload, signal: AbortSignal.timeout(20000),
       });
       const receipt = await response.json().catch(() => null);
-      if (!response.ok || !receipt?.submissionId) throw new Error("We couldn't confirm your request. Please try again, or call us directly. Your information is still here.");
+      if (!response.ok || !receipt?.submissionId) throw new Error("Receipt missing");
       setSubmitted(true);
       request.current = null;
-    } catch (cause) {
+    } catch {
       trackAcquisition("form_error");
       setError("We couldn’t confirm your request. Please try again or call us. Your information is still here.");
     } finally {
@@ -129,7 +128,7 @@ export default function Contact() {
             {submitted ? (
               <div className="py-16 text-center space-y-6 animate-in fade-in zoom-in duration-500">
                 <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
-                  <CheckCircle2 className="w-10 h-10 text-primary" />
+                  <span aria-hidden="true" className="text-4xl leading-none text-primary">✓</span>
                 </div>
                 <h3 ref={successHeading} tabIndex={-1} className="text-2xl font-serif font-bold text-secondary">Got it.</h3>
                 <p className="text-lg text-secondary/80 max-w-md mx-auto">
@@ -180,41 +179,33 @@ export default function Contact() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="acreage">Approximate acreage *</Label>
-                    <Select name="acreage" required value={acreage} onValueChange={setAcreage}>
-                      <SelectTrigger id="acreage" className="bg-background">
-                        <SelectValue placeholder="Select Acreage" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="under-1">Under 1 acre</SelectItem>
-                        <SelectItem value="1-5">1–5 acres</SelectItem>
-                        <SelectItem value="5-20">5–20 acres</SelectItem>
-                        <SelectItem value="20-100">20–100 acres</SelectItem>
-                        <SelectItem value="100+">100+ acres</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <select id="acreage" name="acreage" required value={acreage} onChange={(event) => setAcreage(event.target.value)} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                      <option value="" disabled>Select Acreage</option>
+                      <option value="under-1">Under 1 acre</option>
+                      <option value="1-5">1–5 acres</option>
+                      <option value="5-20">5–20 acres</option>
+                      <option value="20-100">20–100 acres</option>
+                      <option value="100+">100+ acres</option>
+                    </select>
                     {acreage === "under-1" && <p className="text-sm leading-relaxed text-secondary/80">We work on properties of an acre or more. If your site is smaller, we're probably not the right fit, but call us and we'll point you to someone good.</p>}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="propertyType">Property type *</Label>
-                    <Select name="propertyType" required>
-                      <SelectTrigger id="propertyType" className="bg-background">
-                        <SelectValue placeholder="Select Property Type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="commercial">Commercial / office / retail</SelectItem>
-                        <SelectItem value="industrial">Industrial / manufacturing / distribution</SelectItem>
-                        <SelectItem value="agricultural">Farm / agricultural</SelectItem>
-                        <SelectItem value="municipal">Municipal / public</SelectItem>
-                        <SelectItem value="institutional">Institutional (school, church, hospital, campus)</SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <select id="propertyType" name="propertyType" required defaultValue="" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                      <option value="" disabled>Select Property Type</option>
+                      <option value="commercial">Commercial / office / retail</option>
+                      <option value="industrial">Industrial / manufacturing / distribution</option>
+                      <option value="agricultural">Farm / agricultural</option>
+                      <option value="municipal">Municipal / public</option>
+                      <option value="institutional">Institutional (school, church, hospital, campus)</option>
+                      <option value="other">Other</option>
+                    </select>
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="timing">When do you need this done?</Label>
-                  <Select name="timing"><SelectTrigger id="timing" className="bg-background"><SelectValue placeholder="Select timing" /></SelectTrigger><SelectContent><SelectItem value="asap">As soon as possible</SelectItem><SelectItem value="30-days">Within 30 days</SelectItem><SelectItem value="1-3-months">1–3 months</SelectItem><SelectItem value="planning">Planning ahead</SelectItem></SelectContent></Select>
+                  <select id="timing" name="timing" defaultValue="" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><option value="">Select timing</option><option value="asap">As soon as possible</option><option value="30-days">Within 30 days</option><option value="1-3-months">1–3 months</option><option value="planning">Planning ahead</option></select>
                 </div>
 
                 <div className="space-y-2">

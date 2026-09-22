@@ -51,7 +51,8 @@ class RouteErrorBoundary extends Component<
 function ScrollToTop() {
   const [location] = useLocation();
   useEffect(() => {
-    window.scrollTo(0, 0);
+    // Let in-page links retain their target instead of overriding the anchor scroll.
+    if (!window.location.hash) window.scrollTo(0, 0);
     trackAcquisition("page_view");
     try {
       void trackGooglePage().catch(() => { /* Analytics must not break navigation. */ });
@@ -80,6 +81,7 @@ function WebsiteRedirectBoundary({ children }: { children: ReactNode }) {
   const search = useSearch();
   const first = useRef(true);
   const [readyPath, setReadyPath] = useState(pathname);
+  const lastFocusedPath = useRef(pathname);
   useEffect(() => {
     if (first.current) {
       first.current = false;
@@ -109,6 +111,37 @@ function WebsiteRedirectBoundary({ children }: { children: ReactNode }) {
       clearTimeout(timer);
     };
   }, [pathname, search]);
+  useEffect(() => {
+    if (readyPath !== pathname || lastFocusedPath.current === pathname) return;
+    lastFocusedPath.current = pathname;
+    // Hash navigation and open dialogs manage their own focus.
+    if (window.location.hash || document.querySelector('[role="dialog"], [role="alertdialog"]')) return;
+
+    let observer: MutationObserver | undefined;
+    const focusHeading = () => {
+      const heading = document.querySelector<HTMLElement>("#main-content h1");
+      if (!heading) return false;
+      // Avoid taking focus back after someone has already entered the new page.
+      if (document.activeElement?.closest("#main-content")) return true;
+      heading.tabIndex = -1;
+      heading.focus({ preventScroll: true });
+      return true;
+    };
+    const frame = requestAnimationFrame(() => {
+      if (focusHeading()) return;
+      // Lazy routes can show a loading fallback before their heading mounts.
+      observer = new MutationObserver(() => {
+        if (focusHeading()) observer?.disconnect();
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+    });
+    const timeout = window.setTimeout(() => observer?.disconnect(), 5000);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.clearTimeout(timeout);
+      observer?.disconnect();
+    };
+  }, [pathname, readyPath]);
   return readyPath === pathname ? (
     children
   ) : (
