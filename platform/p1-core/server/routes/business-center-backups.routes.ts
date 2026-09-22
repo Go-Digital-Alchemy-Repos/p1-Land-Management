@@ -3,7 +3,7 @@ import { z, ZodError } from "zod";
 import { requireWebsiteOwner } from "../middleware/website-owner";
 import { asyncHandler } from "../middleware/error-handler";
 import { storage } from "../storage";
-import { getBackupStatus, runSystemBackup } from "../services/system-backup.service";
+import { getBackupStatus, restoreSystemBackupFromKey, runSystemBackup } from "../services/system-backup.service";
 const router = Router();
 const empty = z.object({}).strict();
 const summarySchema = z.object({
@@ -20,6 +20,10 @@ const summarySchema = z.object({
   totalRowCount: z.number().int().nonnegative(),
   mediaAssetCount: z.number().int().nonnegative(),
 });
+const restoreRequest = z.object({
+  key: z.string().min(1).max(2048),
+  confirmation: z.string().min(1).max(2056),
+}).strict();
 function summary(manifest: Awaited<ReturnType<typeof runSystemBackup>>) {
   const {
     schemaVersion,
@@ -101,6 +105,28 @@ router.post(
     res.status(201).json(summary(manifest));
   }),
 );
+router.post(
+  "/restore",
+  asyncHandler(async (req, res) => {
+    const { key, confirmation } = restoreRequest.parse(req.body ?? {});
+    if (confirmation !== `RESTORE ${key}`) {
+      res.status(400).json({ message: "Type RESTORE followed by the exact archive key to confirm." });
+      return;
+    }
+    await storage.activity.log(
+      req.user!.id,
+      "website_restore_requested",
+      "Core database restore requested with explicit archive confirmation",
+    );
+    const manifest = await restoreSystemBackupFromKey(key);
+    await storage.activity.log(
+      req.user!.id,
+      "website_restore_completed",
+      "Core database restore completed; verify live content and restart other serving replicas",
+    );
+    res.json({ restored: true, manifest: summary({ ...manifest, key }) });
+  }),
+);
 router.use(
   (
     error: unknown,
@@ -126,7 +152,7 @@ router.use(
     next(
       Object.assign(
         new Error(
-          "Backup operation could not be confirmed. Refresh backup status before starting another backup.",
+          "Backup or restore outcome could not be confirmed. Refresh status and verify the live system before starting another operation.",
         ),
         { statusCode: 503 },
       ),
