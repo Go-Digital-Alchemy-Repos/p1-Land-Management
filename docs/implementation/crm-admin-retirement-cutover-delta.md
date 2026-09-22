@@ -200,6 +200,13 @@ retained legacy recovery forms to POST to their actual `/api/auth` handlers,
 with DOM submit tests. This preserves recovery during transition but does not make a
 blanket auth redirect safe.
 
+Railway reported the website, Core, and Dashboard deployments from that exact
+`11546bd4` revision as `SUCCESS` on September 22. Live `/healthz`,
+`/api/health/ready` (database connected), and the Dashboard `/api/healthz`
+each returned HTTP 200; the Dashboard health response retained `no-store`.
+These checks establish deployment and basic readiness, not an end-to-end
+password-reset or federated-login acceptance test.
+
 Railway's September 22 read-only deployment metadata exposes exact Core image
 digests and reports retained deployments as rollback-eligible. The latest
 successful image and its immediately preceding deployment share one digest;
