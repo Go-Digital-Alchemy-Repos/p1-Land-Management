@@ -22,7 +22,17 @@ leads; neither receipts nor lead archive mappings are orphaned. The fourth Core
 lead postdates the three-lead preservation batch, so this checkpoint updates the
 count but does not claim a cross-database atomic freeze or content equivalence.
 No customer payload, source identifier, credential, or connection string was
-printed or retained in this document. No production mutation was performed.
+printed or retained in this document. That checkpoint made no production
+mutation.
+
+After that read-only checkpoint, a controlled September 22 Owner-session test
+used the existing synthetic “P1 QA — not a customer” lead. The Dashboard saved
+an internal next action and Owner assignment, displayed the saved note in
+inquiry history, and moved an internal follow-up task from Open to Completed;
+the Completed filter showed it in history. No customer was contacted. This
+proves those native write paths for this synthetic record only. It does not
+prove role-separated staff use, company/contact/property linking, Won
+conversion, source-write quiescence, or historical content equivalence.
 
 The Owner has since authorized retiring the seven suspended test accounts and
 deferred mandatory Owner MFA; those decisions supersede the older decision
