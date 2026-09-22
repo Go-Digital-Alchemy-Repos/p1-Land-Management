@@ -56,6 +56,7 @@ export function ServiceAreaMap() {
         instance.addControl(new library.NavigationControl({ showCompass: false }), "top-right");
         instance.addControl(new library.AttributionControl({ compact: false }), "bottom-right");
         instance.getCanvas().setAttribute("aria-label", "Service locations map. Use arrow keys to pan and plus or minus to zoom.");
+        instance.getCanvas().setAttribute("aria-describedby", "service-map-help");
         markers.current = locations.map(location => {
           const link = document.createElement("a");
           link.href = location.path;

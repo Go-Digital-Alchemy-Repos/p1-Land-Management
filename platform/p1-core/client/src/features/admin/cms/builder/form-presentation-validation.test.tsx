@@ -150,3 +150,81 @@ it("checks every required page before a final submission and submits when valid"
     expect.any(String),
   );
 });
+
+it("exposes required and invalid state and focuses the first invalid control on Next and Submit", async () => {
+  await mount([
+    field("organization", "text"),
+    { ...field("details-page", "page", false), config: { pageTitle: "Details" } },
+    field("details", "textarea"),
+  ]);
+
+  const organization = host.querySelector<HTMLInputElement>('input[type="text"]')!;
+  expect(organization.getAttribute("aria-required")).toBe("true");
+  await act(async () =>
+    Array.from(host.querySelectorAll("button"))
+      .find((button) => button.textContent === "Next")!
+      .click(),
+  );
+  expect(document.activeElement).toBe(organization);
+  expect(organization.getAttribute("aria-invalid")).toBe("true");
+  expect(document.getElementById(organization.getAttribute("aria-describedby")!)?.textContent)
+    .toBe("organization is required");
+
+  await fill(organization, "P1");
+  await act(async () =>
+    Array.from(host.querySelectorAll("button"))
+      .find((button) => button.textContent === "Next")!
+      .click(),
+  );
+  const details = host.querySelector<HTMLTextAreaElement>("textarea")!;
+  expect(details.getAttribute("aria-required")).toBe("true");
+  await submitForm();
+  expect(document.activeElement).toBe(details);
+  expect(details.getAttribute("aria-invalid")).toBe("true");
+  expect(submit).not.toHaveBeenCalled();
+});
+
+it("focuses the first invalid choice group and makes image choices native keyboard buttons", async () => {
+  await mount([
+    { ...field("terrain", "image-choice"), options: [{ label: "Flat", value: "flat" }] },
+    { ...field("consent", "consent"), config: { consentCheckboxLabel: "Contact me" } },
+  ]);
+
+  const choice = host.querySelector<HTMLButtonElement>('button[aria-label="Flat"]')!;
+  expect(choice.type).toBe("button");
+  expect(choice.getAttribute("aria-pressed")).toBe("false");
+  expect(choice.closest('[role="group"]')?.getAttribute("aria-labelledby")).toBeTruthy();
+  expect(choice.closest('[role="group"]')?.textContent).toContain("required");
+  await submitForm();
+  expect(document.activeElement).toBe(choice);
+  expect(choice.closest('[role="group"]')?.getAttribute("aria-invalid")).toBe("true");
+  await act(async () => choice.click());
+  expect(choice.getAttribute("aria-pressed")).toBe("true");
+  await submitForm();
+  const consent = host.querySelector<HTMLInputElement>('input[type="checkbox"]')!;
+  expect(document.activeElement).toBe(consent);
+  expect(consent.getAttribute("aria-required")).toBe("true");
+  expect(consent.getAttribute("aria-invalid")).toBe("true");
+  expect(submit).not.toHaveBeenCalled();
+});
+
+it("returns focus to an earlier page when final validation finds its value invalid", async () => {
+  await mount([
+    { ...field("first-page-value", "text"), key: "shared" },
+    { ...field("next-page", "page", false), config: { pageTitle: "Next page" } },
+    { ...field("later-edit", "text", false), key: "shared" },
+  ]);
+  await fill(host.querySelector<HTMLInputElement>('input[type="text"]')!, "Entered");
+  await act(async () =>
+    Array.from(host.querySelectorAll("button"))
+      .find((button) => button.textContent === "Next")!
+      .click(),
+  );
+  // A later field can edit the same form value; final validation must return
+  // to the first page if that value becomes empty before submission.
+  await fill(host.querySelector<HTMLInputElement>('input[type="text"]')!, "");
+  await submitForm();
+  expect(host.textContent).toContain("Step 1 of 2");
+  expect(document.activeElement).toBe(host.querySelector<HTMLInputElement>('input[type="text"]'));
+  expect(submit).not.toHaveBeenCalled();
+});

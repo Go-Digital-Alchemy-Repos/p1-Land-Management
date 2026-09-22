@@ -131,21 +131,21 @@ function validatePageFields(fields: CmsFormField[], values: FormValues) {
     const value = values[field.key];
 
     if (field.type === "checkbox" || field.type === "multiselect") {
-      if (arrayValue(value).length === 0) return `${field.label} is required`;
+      if (arrayValue(value).length === 0) return { field, message: `${field.label} is required` };
       continue;
     }
 
     if (field.type === "consent") {
-      if (value !== true) return `${field.label} is required`;
+      if (value !== true) return { field, message: `${field.label} is required` };
       continue;
     }
 
     if (field.type === "name") {
       const record = objectValue(value);
       if (field.config?.nameFormat === "split") {
-        if (!text(record.firstName) && !text(record.lastName)) return `${field.label} is required`;
+        if (!text(record.firstName) && !text(record.lastName)) return { field, message: `${field.label} is required` };
       } else if (!text(record.fullName)) {
-        return `${field.label} is required`;
+        return { field, message: `${field.label} is required` };
       }
       continue;
     }
@@ -159,23 +159,23 @@ function validatePageFields(fields: CmsFormField[], values: FormValues) {
         !text(record.postalCode) &&
         !text(record.country)
       ) {
-        return `${field.label} is required`;
+        return { field, message: `${field.label} is required` };
       }
       continue;
     }
 
     if (field.type === "list") {
-      if (arrayValue(value).length === 0) return `${field.label} is required`;
+      if (arrayValue(value).length === 0) return { field, message: `${field.label} is required` };
       continue;
     }
 
     if (field.type === "image-choice" && field.config?.selectionMode === "multiple") {
-      if (arrayValue(value).length === 0) return `${field.label} is required`;
+      if (arrayValue(value).length === 0) return { field, message: `${field.label} is required` };
       continue;
     }
 
     if (!text(value)) {
-      return `${field.label} is required`;
+      return { field, message: `${field.label} is required` };
     }
   }
 
@@ -225,30 +225,32 @@ function ChoiceGroup({
 
         if (field.type === "image-choice") {
           return (
-            <div
+            <button
               key={option.value}
+              type="button"
+              aria-pressed={checked}
+              aria-label={plainText(option.label)}
               onClick={() => toggle(!checked)}
               className={cn(
-                "cursor-pointer rounded-xl border p-3 text-left transition-colors",
+                "w-full cursor-pointer rounded-xl border p-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
                 checked ? "border-primary ring-2 ring-primary/10" : "hover:border-primary/50",
               )}
             >
               {option.imageUrl ? (
                 <img
                   src={option.imageUrl}
-                  alt={plainText(option.label)}
+                  alt=""
                   className="mb-3 h-32 w-full rounded-lg object-cover"
                 />
               ) : null}
               <div className="flex items-center gap-3">
-                <Checkbox
-                  aria-label={plainText(option.label)}
-                  checked={checked}
-                  className="pointer-events-none"
-                />
+                <span aria-hidden="true" className={cn(
+                  "inline-flex h-4 w-4 shrink-0 items-center justify-center rounded border text-xs leading-none",
+                  checked ? "border-primary bg-primary text-primary-foreground" : "border-input",
+                )}>{checked ? "✓" : null}</span>
                 <span className="text-sm font-medium">{plainText(option.label)}</span>
               </div>
-            </div>
+            </button>
           );
         }
 
@@ -372,7 +374,10 @@ function renderFieldInput(
   setValue: (next: unknown) => void,
   compact: boolean,
   fieldId: string,
+  invalid: boolean,
 ) {
+  const required = field.required || undefined;
+  const describedBy = invalid ? `${fieldId}-error` : undefined;
   if (field.type === "html") {
     return (
       <div
@@ -407,6 +412,9 @@ function renderFieldInput(
     return (
       <Textarea
         id={fieldId}
+        aria-required={required}
+        aria-invalid={invalid || undefined}
+        aria-describedby={describedBy}
         value={text(value)}
         onChange={(event) => setValue(event.target.value)}
         placeholder={field.placeholder}
@@ -418,7 +426,7 @@ function renderFieldInput(
   if (field.type === "select") {
     return (
       <Select value={text(value)} onValueChange={setValue}>
-        <SelectTrigger id={fieldId} aria-labelledby={`${fieldId}-label`}>
+        <SelectTrigger id={fieldId} aria-labelledby={`${fieldId}-label`} aria-required={required} aria-invalid={invalid || undefined} aria-describedby={describedBy}>
           <SelectValue
             placeholder={
               plainText(field.placeholder) || `Select ${plainText(field.label).toLowerCase()}`
@@ -441,6 +449,9 @@ function renderFieldInput(
     return (
       <select
         id={fieldId}
+        aria-required={required}
+        aria-invalid={invalid || undefined}
+        aria-describedby={describedBy}
         multiple
         value={current}
         onChange={(event) =>
@@ -468,6 +479,9 @@ function renderFieldInput(
           <Checkbox
             id={fieldId}
             aria-label={plainText(field.config?.consentCheckboxLabel) || plainText(field.label)}
+            aria-required={required}
+            aria-invalid={invalid || undefined}
+            aria-describedby={describedBy}
             checked={value === true}
             onCheckedChange={(next) => setValue(Boolean(next))}
           />
@@ -508,6 +522,9 @@ function renderFieldInput(
     return (
       <Input
         id={fieldId}
+        aria-required={required}
+        aria-invalid={invalid || undefined}
+        aria-describedby={describedBy}
         value={text(record.fullName)}
         onChange={(event) => setValue({ fullName: event.target.value })}
         placeholder={field.placeholder || "Full name"}
@@ -586,6 +603,9 @@ function renderFieldInput(
   return (
     <Input
       id={fieldId}
+      aria-required={required}
+      aria-invalid={invalid || undefined}
+      aria-describedby={describedBy}
       type={inputType}
       value={text(value)}
       onChange={(event) => setValue(event.target.value)}
@@ -619,6 +639,14 @@ export function FormPresentation({
   const [values, setValues] = useState<FormValues>({});
   const [pageIndex, setCurrentPageIndex] = useState(0);
   const submissionKeyRef = useRef<string | null>(null);
+  const fieldNodes = useRef(new Map<string, HTMLDivElement>());
+  const [invalidField, setInvalidField] = useState<{
+    id: string;
+    pageIndex: number;
+    message: string;
+    attempt: number;
+  } | null>(null);
+  const validationAttempt = useRef(0);
 
   const effectiveForm = formOverride ?? form;
 
@@ -637,8 +665,25 @@ export function FormPresentation({
   useEffect(() => {
     setValues(buildInitialValues(fields));
     setCurrentPageIndex(0);
+    setInvalidField(null);
     submissionKeyRef.current = null;
   }, [fields, slug]);
+
+  useEffect(() => {
+    if (!invalidField || invalidField.pageIndex !== currentPageIndex) return;
+    const fieldNode = fieldNodes.current.get(invalidField.id);
+    if (!fieldNode) return;
+    const control = fieldNode.querySelector<HTMLElement>(
+      'input:not([type="hidden"]):not(:disabled), textarea:not(:disabled), select:not(:disabled), button:not(:disabled), [tabindex]:not([tabindex="-1"])',
+    );
+    (control ?? fieldNode).focus();
+  }, [currentPageIndex, invalidField]);
+
+  function reportInvalid(field: CmsFormField, message: string, index: number, title: string) {
+    setCurrentPageIndex(index);
+    setInvalidField({ id: field.id, pageIndex: index, message, attempt: ++validationAttempt.current });
+    toast({ title, description: message, variant: "destructive" });
+  }
 
   const description =
     plainText(descriptionOverride) ||
@@ -684,12 +729,7 @@ export function FormPresentation({
     for (let index = 0; index < pages.length; index += 1) {
       const error = validatePageFields(currentPageFields(pages[index]), values);
       if (error) {
-        setCurrentPageIndex(index);
-        toast({
-          title: "Complete required fields",
-          description: error,
-          variant: "destructive",
-        });
+        reportInvalid(error.field, error.message, index, "Complete required fields");
         return false;
       }
     }
@@ -779,31 +819,56 @@ export function FormPresentation({
             const grouped =
               ["checkbox", "radio", "image-choice", "address", "list"].includes(field.type) ||
               (field.type === "name" && field.config?.nameFormat === "split");
+            const requiredMark = field.required && !structural ? (
+              <>
+                <span aria-hidden="true" className="ml-1 text-destructive">*</span>
+                {grouped && field.type !== "radio" ? <span className="sr-only"> required</span> : null}
+              </>
+            ) : null;
             return (
               <div
                 key={field.id}
-                role={grouped ? "group" : undefined}
+                ref={(node) => {
+                  if (node) fieldNodes.current.set(field.id, node);
+                  else fieldNodes.current.delete(field.id);
+                }}
+                role={field.type === "radio" ? "radiogroup" : grouped ? "group" : undefined}
                 aria-labelledby={grouped ? `${fieldId}-label` : undefined}
+                aria-required={field.type === "radio" && field.required ? true : undefined}
+                aria-invalid={grouped && invalidField?.id === field.id ? true : undefined}
+                aria-describedby={grouped && invalidField?.id === field.id ? `${fieldId}-error` : undefined}
+                tabIndex={grouped ? -1 : undefined}
                 className={cn("space-y-1.5", fieldSpanClass(field, compact))}
               >
                 {!["html", "section"].includes(field.type) ? (
                   grouped ? (
                     <div id={`${fieldId}-label`} className="text-sm font-medium">
                       {plainText(field.label)}
+                      {requiredMark}
                     </div>
                   ) : (
                     <Label id={`${fieldId}-label`} htmlFor={fieldId}>
                       {plainText(field.label)}
+                      {requiredMark}
                     </Label>
                   )
                 ) : null}
                 {renderFieldInput(
                   field,
                   values[field.key],
-                  (next) => setValues((current) => ({ ...current, [field.key]: next })),
+                  (next) => {
+                    setValues((current) => ({ ...current, [field.key]: next }));
+                    if (invalidField?.id === field.id) setInvalidField(null);
+                  },
                   compact,
                   fieldId,
+                  invalidField?.id === field.id,
                 )}
+                {invalidField?.id === field.id ? (
+                  <p id={`${fieldId}-error`} className="text-sm text-destructive" role="alert">
+                    {invalidField.message}
+                  </p>
+                ) : null}
                 {!structural && field.helpText ? (
                   <p className="text-xs public-helper-text">{plainText(field.helpText)}</p>
                 ) : null}
@@ -817,7 +882,10 @@ export function FormPresentation({
             <Button
               type="button"
               variant="outline"
-              onClick={() => setCurrentPageIndex((current) => Math.max(0, current - 1))}
+              onClick={() => {
+                setInvalidField(null);
+                setCurrentPageIndex((current) => Math.max(0, current - 1));
+              }}
             >
               {previousButtonText}
             </Button>
@@ -829,13 +897,10 @@ export function FormPresentation({
               onClick={() => {
                 const error = validatePageFields(visibleFields, values);
                 if (error) {
-                  toast({
-                    title: "Complete this step",
-                    description: error,
-                    variant: "destructive",
-                  });
+                  reportInvalid(error.field, error.message, currentPageIndex, "Complete this step");
                   return;
                 }
+                setInvalidField(null);
                 setCurrentPageIndex((current) => Math.min(pages.length - 1, current + 1));
               }}
             >

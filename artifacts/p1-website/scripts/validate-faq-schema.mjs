@@ -18,12 +18,29 @@ import fs from "node:fs";
 import React from "react";
 import { renderToString } from "react-dom/server";
 import { Router } from "wouter";
+import { projectResponsiveImageManifest } from "./public-image-manifest.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const pagesDir = path.join(root, "src", "pages");
 
 const SEO_MODULE = path.join(root, "src", "components", "seo.tsx");
 const SEO_STUB_ID = "\0virtual:seo-capture";
+const responsiveImageManifestId = "\0p1-responsive-image-manifest";
+const responsiveImageManifest = projectResponsiveImageManifest(
+  JSON.parse(fs.readFileSync(path.join(root, "src/assets/image-manifest.json"), "utf8")),
+);
+const responsiveImageManifestPlugin = {
+  name: "p1-responsive-image-manifest",
+  enforce: "pre",
+  resolveId(source) {
+    return source === "virtual:p1-responsive-image-manifest" ? responsiveImageManifestId : null;
+  },
+  load(id) {
+    return id === responsiveImageManifestId
+      ? `export default ${JSON.stringify(responsiveImageManifest)};`
+      : null;
+  },
+};
 
 function walk(dir) {
   const out = [];
@@ -108,7 +125,7 @@ async function main() {
     server: { middlewareMode: true, hmr: false },
     appType: "custom",
     esbuild: { jsx: "automatic" },
-    plugins: [seoStubPlugin],
+    plugins: [seoStubPlugin, responsiveImageManifestPlugin],
     resolve: {
       alias: {
         "@": path.join(root, "src"),
