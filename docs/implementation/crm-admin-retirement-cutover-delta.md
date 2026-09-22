@@ -35,9 +35,10 @@ notification emails; do not resubmit the controlled QA inquiry.
 
 Both Core and Dashboard pipeline configuration tables have no stored override,
 so both systems use the same six stage labels, colors, and order from their
-source defaults. The native Owner-only pipeline settings deep link is prepared
-for review at `/sales/pipeline-settings`; no production settings migration is
-currently needed. Recheck both tables immediately before redirect activation.
+source defaults. The native Owner-only pipeline settings deep link is implemented
+on the closeout branch at `/sales/pipeline-settings`; no production settings
+migration is currently needed. Recheck both tables immediately before redirect
+activation.
 
 This is the current delta against the CRM and retained-admin acceptance gates in
 [the consolidation tracker](consolidation-acceptance.md) and the
@@ -84,7 +85,7 @@ Core staff-write fence has merged to `main`. The September 22 production read
 above confirms it is not activated. The temporary import fence remains limited
 to its reviewed batch and must not be repurposed as permanent ownership control.
 
-## Review slice: legacy staff-write fence
+## Released slice: legacy staff-write fence
 
 The current review branch adds a server-side, default-off transition fence for
 the authenticated legacy Core staff routes. It is intentionally a reversible
@@ -127,11 +128,12 @@ runbook and acceptance gates below pass.
 
 ## Gates still open
 
-1. **Declare and enforce one future writer.** The Owner and Orchestrator must
-   choose the system of record for new inquiries, edits, notes, tasks, Won
-   conversion, and operational-client creation. The approved implementation
-   needs an enforceable source-side policy, a bounded fallback, audit evidence,
-   and an unambiguous failure mode; a UI-only hide is insufficient.
+1. **Enforce the chosen staff writer.** Dashboard Sales is the intended staff
+   system of record for edits, notes, tasks, Won conversion, and operational
+   clients. Public intake and durable effects continue through Core. The
+   transition needs an enforceable source-side policy, a bounded fallback,
+   audit evidence, and an unambiguous failure mode; a UI-only hide is
+   insufficient.
 2. **Reconcile broader historical scope.** The successful batch had no source
    clients, notes, or tasks. Any remaining records require a reviewed mapping,
    field/workflow parity disposition, a fresh source snapshot, and exact
@@ -161,7 +163,7 @@ The CRM-related legacy pages cannot yet be retired:
 | --- | --- | --- |
 | `/admin/crm` | `/sales` | Pipeline, lead/activity/custom-field workflow, exclusive ownership, and cutover acceptance are incomplete. |
 | `/admin/crm/clients` | `/clients` | Reviewed Core-to-native client mapping and staff workflow acceptance are incomplete. |
-| `/admin/crm/settings` | `/sales/pipeline-settings` (review branch) | The native Owner-only editor has a direct destination; reconcile existing Core setting values and verify roles before redirecting old bookmarks. |
+| `/admin/crm/settings` | `/sales/pipeline-settings` (closeout branch) | The native Owner-only editor has a direct destination; recheck Core and Dashboard setting values and verify roles before redirecting old bookmarks. |
 
 After the CRM gates close, retirement remains a separate reversible release:
 
@@ -179,15 +181,17 @@ The broader route inventory also carries independent gates for authentication,
 CMS, media, backups, reporting, and provider recovery. Closing the CRM portion
 does not authorize global `/admin` retirement.
 
-## Owner and Orchestrator decisions required
+## Decisions and operational evidence still required
 
-- Select Dashboard or Core as the future authoritative CRM writer and name the
-  approved transitional behavior for each active Core path above.
+- Dashboard Sales is the Owner-requested future staff CRM. Document and verify
+  transitional behavior for each active Core path above, especially public
+  intake and durable effects.
 - Approve the scope and operator of the source/effects freeze, backup/recovery
   evidence, acceptance workflow, and emergency forward-recovery procedure.
 - Review each remaining historical mapping and decide the disposition of fields
   or workflows that do not have native equivalents.
-- Disposition inactive accounts and set the Owner MFA/recovery policy.
+- Complete an isolated account-recovery acceptance check. The seven inactive
+  accounts are retired and the Owner deferred mandatory MFA.
 - Approve the CRM redirect table only after the CRM and account gates are
   independently accepted.
 
