@@ -151,33 +151,35 @@ export function ScheduleCalendar({
             Month
           </button>
         </div>
-        <button
-          aria-label={"Previous " + mode}
-          onClick={() =>
-            setSelected(
-              mode === "month"
-                ? shiftScheduleMonth(selected, -1)
-                : shiftScheduleDate(selected, mode === "day" ? -1 : -7),
-            )
-          }
-        >
-          Previous
-        </button>
-        <button onClick={() => setSelected(scheduleDate(new Date()))}>
-          Today
-        </button>
-        <button
-          aria-label={"Next " + mode}
-          onClick={() =>
-            setSelected(
-              mode === "month"
-                ? shiftScheduleMonth(selected, 1)
-                : shiftScheduleDate(selected, mode === "day" ? 1 : 7),
-            )
-          }
-        >
-          Next
-        </button>
+        <div className="calendar-period-actions">
+          <button
+            aria-label={"Previous " + mode}
+            onClick={() =>
+              setSelected(
+                mode === "month"
+                  ? shiftScheduleMonth(selected, -1)
+                  : shiftScheduleDate(selected, mode === "day" ? -1 : -7),
+              )
+            }
+          >
+            Previous
+          </button>
+          <button onClick={() => setSelected(scheduleDate(new Date()))}>
+            Today
+          </button>
+          <button
+            aria-label={"Next " + mode}
+            onClick={() =>
+              setSelected(
+                mode === "month"
+                  ? shiftScheduleMonth(selected, 1)
+                  : shiftScheduleDate(selected, mode === "day" ? 1 : 7),
+              )
+            }
+          >
+            Next
+          </button>
+        </div>
         <label>
           Calendar date
           <input

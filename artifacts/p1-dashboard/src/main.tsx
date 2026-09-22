@@ -2386,7 +2386,7 @@ function App() {
           {view === "Recurring" && (
             <>
               <RecurringCalendar jobs={data["recurring-jobs"] || []} />
-              <section className="panel">
+              {Boolean(data["recurring-jobs"]?.length) && <section className="panel">
                 <Table
                   rows={(data["recurring-jobs"] || []).map((job: any) => ({
                     ...job,
@@ -2409,7 +2409,7 @@ function App() {
                 />
                 <p>Visit allowances include reserved work and charged visits. Cancelled or skipped visits release a slot only when uncharged. Blank counts indicate a service without a per-visit allowance for its next date.</p>
                 {canManageServiceAgreements(person) && (data["recurring-jobs"] || []).filter((item: any) => item.paused && item.agreement_status === "draft").map((item: any) => <button key={item.id} onClick={() => openForm("activate-recurring", item)}>Schedule and activate {item.title}</button>)}
-              </section>
+              </section>}
             </>
           )}
           {view === "Projects" && (

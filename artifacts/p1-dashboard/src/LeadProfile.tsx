@@ -26,6 +26,7 @@ import { LeadFollowUp } from "./LeadFollowUp";
 import { LeadNotes } from "./LeadNotes";
 import { LeadOnboarding } from "./LeadOnboarding";
 import { PipelineStage } from "./PipelineSettings";
+import { formatLeadDateTime } from "./lead-date";
 import type { LeadWorkspaceTab } from "./dashboard-routes";
 import "./lead-profile.css";
 
@@ -41,14 +42,6 @@ const tabs = [
   { id: "assessment", label: "Assessment", icon: ClipboardList, tone: "green" },
   { id: "handoff", label: "Client handoff", icon: Users, tone: "rose" },
 ] as const;
-
-function dateTime(value: string | null | undefined) {
-  return value
-    ? new Date(value).toLocaleString("en-US", {
-        month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit",
-      })
-    : "Not set";
-}
 
 function Detail({ label, value }: { label: string; value: ReactNode }) {
   return <div className="lead-profile-fact"><dt>{label}</dt><dd>{value || "Not provided"}</dd></div>;
@@ -167,7 +160,7 @@ export function LeadProfile({
           <section className="lead-profile-surface" aria-labelledby="lead-next-title">
             <div className="lead-profile-surface-heading"><div><p className="lead-profile-eyebrow">NEXT STEP</p><h2 id="lead-next-title">Keep this inquiry moving</h2></div><button type="button" onClick={() => onTab("follow-up")}>Edit follow-up</button></div>
             <p className="lead-profile-next-action">{followUp.next_action || "No next action recorded yet."}</p>
-            <dl className="lead-profile-facts lead-profile-facts--compact"><Detail label="Owner" value={owner} /><Detail label="Due" value={dateTime(followUp.next_action_due_at)} /><Detail label="Last activity" value={dateTime(followUp.last_activity_at)} /></dl>
+            <dl className="lead-profile-facts lead-profile-facts--compact"><Detail label="Owner" value={owner} /><Detail label="Due" value={followUp.next_action_due_at ? `${formatLeadDateTime(followUp.next_action_due_at)} ET` : "Not set"} /><Detail label="Last activity" value={followUp.last_activity_at ? `${formatLeadDateTime(followUp.last_activity_at)} ET` : "Not set"} /></dl>
           </section>
           <section className="lead-profile-surface" aria-labelledby="lead-story-title">
             <div className="lead-profile-surface-heading"><div><p className="lead-profile-eyebrow">REQUEST</p><h2 id="lead-story-title">What they told us</h2></div><button type="button" onClick={() => onTab("details")}>Review details</button></div>

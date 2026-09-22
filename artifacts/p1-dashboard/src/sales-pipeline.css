@@ -10,6 +10,7 @@
   overflow-x: auto;
   padding: 1rem;
 }
+.sales-pipeline-stage-picker { display: none; }
 .sales-pipeline-column {
   align-content: start;
   background: hsl(var(--muted));
@@ -62,10 +63,35 @@
   margin: 0;
 }
 @media (max-width: 680px) {
+  .sales-pipeline-stage-picker {
+    display: flex;
+    gap: .5rem;
+    overflow-x: auto;
+    padding: .75rem 1rem .25rem;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+  }
+  .sales-pipeline-stage-picker button {
+    align-items: center;
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: 999px;
+    display: inline-flex;
+    flex: none;
+    gap: .45rem;
+    min-height: 2.75rem;
+    padding: .5rem .85rem;
+    scroll-snap-align: start;
+    white-space: nowrap;
+  }
+  .sales-pipeline-stage-picker button[aria-pressed="true"] { border-color: hsl(var(--primary)); color: hsl(var(--primary)); font-weight: 700; }
+  .sales-pipeline-stage-picker button span { font-size: .8rem; }
   .sales-pipeline-grid {
     grid-template-columns: 1fr;
     overflow-x: visible;
   }
+  .sales-pipeline-column { display: none; min-height: 0; }
+  .sales-pipeline-column.is-mobile-active { display: grid; }
 }
 @media (prefers-reduced-motion: reduce) {
   .sales-pipeline-card { transition: none; }

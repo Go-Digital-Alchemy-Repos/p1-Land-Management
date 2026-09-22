@@ -1,5 +1,6 @@
 import { PipelineStage, usePipelineStages } from "./PipelineSettings";
 import { listSalesInquiries } from "@workspace/api-client-react/dashboard";
+import { formatLeadDateTime } from "./lead-date";
 import { ArrowUpRight, CalendarDays } from "lucide-react";
 import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import "./sales-pipeline.css";
@@ -45,7 +46,7 @@ function PipelineCard({
         {inquiry.owner_name ||
           (inquiry.owner_id ? "Previous owner" : "Unassigned")}
       </small>
-      {inquiry.next_action_due_at && <small className="sales-pipeline-due"><CalendarDays size={14} aria-hidden="true" /> Due {new Date(inquiry.next_action_due_at).toLocaleString()}</small>}
+      {inquiry.next_action_due_at && <small className="sales-pipeline-due"><CalendarDays size={14} aria-hidden="true" /> Due {formatLeadDateTime(inquiry.next_action_due_at)} ET</small>}
     </article>
   );
 }
@@ -66,6 +67,8 @@ export function SalesPipelineBoard({
   const [loadingMore, setLoadingMore] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [hasLoaded, setHasLoaded] = useState(false);
+  const [selectedStage, setSelectedStage] = useState(stageKeys[0] || "new");
+  const pickedStage = useRef(false);
   const generation = useRef(0);
   const controller = useRef<AbortController | null>(null);
 
@@ -100,6 +103,7 @@ export function SalesPipelineBoard({
         });
         setColumns(next);
         setHasLoaded(true);
+        if (!pickedStage.current) setSelectedStage(stageKeys.find((key) => next[key].items.length) || stageKeys[0] || "new");
       }
     } catch (cause) {
       if (generation.current === id && (cause as Error).name !== "AbortError")
@@ -195,18 +199,23 @@ export function SalesPipelineBoard({
         </p>
       )}
       {loading && <p role="status">Refreshing pipeline…</p>}
+      <nav className="sales-pipeline-stage-picker" aria-label="Pipeline stages">
+        {stages.map((stage) => <button key={stage.key} type="button" aria-pressed={selectedStage === stage.key} onClick={() => { pickedStage.current = true; setSelectedStage(stage.key); }}>
+          {stage.label} <span>{columns[stage.key]?.items.length || 0}{columns[stage.key]?.cursor ? "+" : ""}</span>
+        </button>)}
+      </nav>
       <div className="sales-pipeline-grid">
         {stages.map((stage) => {
           const column = columns[stage.key] || { items: [], cursor: null };
           return (
             <section
-              className="sales-pipeline-column"
+              className={`sales-pipeline-column${selectedStage === stage.key ? " is-mobile-active" : ""}`}
               key={stage.key}
               aria-label={`${stage.label} inquiries`}
             >
               <h3>
                 <PipelineStage value={stage.key} />{" "}
-                <span>{column.items.length}</span>
+                <span>{column.items.length}{column.cursor ? "+" : ""}</span>
               </h3>
               {column.items.map((inquiry) => (
                 <PipelineCard

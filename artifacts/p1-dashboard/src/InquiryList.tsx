@@ -2,6 +2,7 @@ import { PipelineStage, usePipelineStages } from "./PipelineSettings";
 import { ArrowUpRight, CalendarDays } from "lucide-react";
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { listSalesInquiries } from "@workspace/api-client-react/dashboard";
+import { formatLeadDateTime } from "./lead-date";
 import "./inquiry-list.css";
 type Inquiry = Awaited<ReturnType<typeof listSalesInquiries>>["items"][number];
 type Query = NonNullable<Parameters<typeof listSalesInquiries>[0]>;
@@ -243,7 +244,7 @@ export function InquiryList({
               <p>{lead.reported_company_name || lead.location || "Location not provided"}</p>
               {lead.next_action && <p className="inquiry-row-next">{lead.next_action}</p>}
               <small>Owner: {lead.owner_name || (lead.owner_id ? "Previous owner" : "Unassigned")}</small>
-              {lead.next_action_due_at && <small className="inquiry-row-due"><CalendarDays size={14} aria-hidden="true" /> Due {new Date(lead.next_action_due_at).toLocaleString()}</small>}
+              {lead.next_action_due_at && <small className="inquiry-row-due"><CalendarDays size={14} aria-hidden="true" /> Due {formatLeadDateTime(lead.next_action_due_at)} ET</small>}
             </div>
             <PipelineStage value={lead.status} />
           </article>

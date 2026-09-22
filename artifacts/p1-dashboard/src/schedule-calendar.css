@@ -8,6 +8,7 @@
 .calendar-toolbar label {
   min-width: 140px;
 }
+.calendar-period-actions { display: flex; gap: 8px; }
 .calendar-toolbar [aria-pressed="true"] {
   background: var(--green, hsl(var(--primary)));
   color: hsl(var(--primary-foreground));
@@ -89,6 +90,7 @@
 .recurring-calendar-job small {
   overflow-wrap: anywhere;
 }
+.recurring-calendar-empty { background: hsl(var(--muted)); border: 1px solid hsl(var(--border)); border-radius: var(--radius-md); color: hsl(var(--muted-foreground)); line-height: 1.5; margin: .5rem 1rem 1rem; padding: 1.25rem; }
 .recurring-calendar-job span,
 .recurring-calendar-job small {
   color: hsl(var(--foreground));
@@ -123,8 +125,16 @@
   }
   .calendar-toolbar {
     align-items: stretch;
+    display: grid;
+    grid-template-columns: 1fr;
   }
+  .calendar-toolbar > [role="group"] { display: flex; }
+  .calendar-toolbar > [role="group"] button { flex: 1; }
+  .calendar-period-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .calendar-period-actions button { min-width: 0; padding-inline: .5rem; }
   .calendar-toolbar label {
-    flex: 1;
+    min-width: 0;
+    width: 100%;
   }
+  .calendar-toolbar .calendar-checkbox { width: auto; }
 }
