@@ -1749,6 +1749,11 @@ td { padding: 16px var(--atlas-surface-inset); }
 .context-list > button:last-child,.context-list > div:last-child { border-bottom: 0; }
 .context-list > button:hover { background: hsl(var(--muted)); }
 .context-list > button > svg:last-child { margin-left: auto; }
+.context-list > .account-sales-origin { align-items: center; border-bottom: 1px solid hsl(var(--border)); display: flex; gap: .75rem; min-height: 4rem; padding: .75rem 1rem; text-decoration: none; }
+.context-list > .account-sales-origin:last-child { border-bottom: 0; }
+.context-list > .account-sales-origin:hover { background: hsl(var(--muted)); }
+.account-sales-origin > svg:last-child { margin-left: auto; }
+.account-sales-origin small { color: hsl(var(--muted-foreground)); display: block; font-size: .78rem; overflow-wrap: anywhere; white-space: normal; }
 .context-list span { min-width: 0; }
 .context-list strong { display: block; color: hsl(var(--foreground)); font-size: 12px; }
 .context-list small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10px; }

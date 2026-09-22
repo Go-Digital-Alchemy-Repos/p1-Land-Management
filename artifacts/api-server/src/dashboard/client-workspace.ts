@@ -41,7 +41,7 @@ clientWorkspaceApi.get("/clients/:id/workspace", async (req, res) => {
   requireCapability(user, "customers.clients");
   const clientId = identifier.parse(req.params.id);
   const client = await officeClient(clientId);
-  const [properties, contacts, agreements, schedule, requests, projects, notes, activity] = await Promise.all([
+  const [properties, contacts, agreements, schedule, requests, projects, notes, activity, salesOrigins] = await Promise.all([
     section(hasCapability(user, "customers.properties"),
       "SELECT p.id,p.name,p.address,p.address_line1,p.address_line2,p.city,p.state,p.postal_code,p.acreage,p.latitude,p.longitude,p.property_type_id,pt.name AS property_type_name,p.access_instructions,p.version,p.created_at FROM property p LEFT JOIN property_type pt ON pt.id=p.property_type_id WHERE p.client_id=$1 AND p.archived=false AND p.lifecycle='operational' ORDER BY p.name",
       [clientId],
@@ -74,6 +74,10 @@ clientWorkspaceApi.get("/clients/:id/workspace", async (req, res) => {
       "SELECT e.id,e.action,e.entity_id,e.created_at,u.name AS author_name FROM audit_event e LEFT JOIN \"user\" u ON u.id=e.user_id WHERE e.entity_id=$1::text OR e.entity_id IN (SELECT id::text FROM property WHERE client_id=$1::uuid) ORDER BY e.created_at DESC LIMIT 12",
       [clientId],
     ),
+    section(user.role !== "client" && user.role !== "crew" && hasCapability(user, "revenue.sales"),
+      "SELECT id,name,status,reported_company_name,created_at FROM lead WHERE converted_client_id=$1 ORDER BY created_at DESC,id DESC LIMIT 20",
+      [clientId],
+    ),
   ]);
   res.json({
     client,
@@ -85,6 +89,7 @@ clientWorkspaceApi.get("/clients/:id/workspace", async (req, res) => {
     projects: projects.rows,
     notes: notes.rows,
     activity: activity.rows,
+    salesOrigins: salesOrigins.rows,
   });
 });
 

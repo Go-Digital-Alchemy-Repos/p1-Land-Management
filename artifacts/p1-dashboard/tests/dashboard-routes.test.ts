@@ -76,6 +76,24 @@ test("dashboard routes fail closed for unknown and role-restricted destinations"
   assert.equal(defaultRouteForRole("client").page.path, "/");
 });
 
+test("lead profile links are deep-linkable and remain internal to Sales", () => {
+  const id = "55555555-5555-4555-8555-555555555555";
+  for (const tab of ["overview", "follow-up", "details", "activity", "assessment", "handoff"]) {
+    const path = `/sales/leads/${id}${tab === "overview" ? "" : `/${tab}`}`;
+    const route = routeFromPath(path);
+    assert.equal(route.kind, "page");
+    if (route.kind !== "page") continue;
+    assert.deepEqual(route.record, { kind: "lead", id, tab });
+    assert.equal(pathForRoute(route), path);
+    assert.equal(canAccessRoute(route, "sales", ["revenue.sales"]), true);
+    assert.equal(canAccessRoute(route, "member", ["customers.clients"]), false);
+    assert.equal(canAccessRoute(route, "client", ["revenue.sales"]), false);
+    assert.equal(canAccessRoute(route, "crew", ["revenue.sales"]), false);
+  }
+  assert.equal(routeFromPath(`/sales/leads/${id}/unknown`).kind, "not-found");
+  assert.equal(routeFromPath("/sales/leads/not-a-uuid").kind, "not-found");
+});
+
 test("team navigation follows explicit tool grants and ungranted accounts land on their profile", () => {
   for (const role of ["manager", "sales", "finance", "dispatch", "member"]) {
     assert.equal(canAccessRoute(routeFromPath("/sales"), role), false);

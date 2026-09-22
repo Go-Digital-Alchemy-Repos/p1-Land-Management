@@ -4,7 +4,7 @@
 .assessment-list button[aria-pressed="true"] { outline: 2px solid hsl(var(--primary)); }
 .assessment-create, .assessment-editor { display: grid; gap: .8rem; margin-top: 1rem; }
 .assessment-create label, .assessment-editor > label, .assessment-editor fieldset label { display: grid; gap: .35rem; }
-.assessment-editor fieldset { display: grid; gap: .65rem; border: 1px solid var(--border, hsl(var(--border))); padding: .8rem; }
+.assessment-editor fieldset { display: grid; gap: .65rem; border: 1px solid hsl(var(--border)); padding: .8rem; }
 .assessment-actions { display: flex; flex-wrap: wrap; gap: .7rem; }
 .assessment-archive { display: grid; gap: .7rem; border: 1px solid hsl(var(--warning)); padding: .9rem; }
 .assessment-archive label { display: grid; gap: .35rem; }

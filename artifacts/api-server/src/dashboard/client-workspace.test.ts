@@ -36,6 +36,7 @@ test(
       property: randomUUID(),
       otherProperty: randomUUID(),
       contact: randomUUID(),
+      lead: randomUUID(),
       scheduledWork: randomUUID(),
       draftWork: randomUUID(),
       privateInspection: randomUUID(),
@@ -69,7 +70,7 @@ test(
     }
 
     await pool.query("INSERT INTO business_account_access(user_id,capabilities) VALUES($1,$2)", [ids.manager,
-      ["customers.clients", "customers.properties", "customers.requests", "operations.schedule", "operations.projects", "operations.inspections", "revenue.agreements"]]);
+      ["customers.clients", "customers.properties", "customers.requests", "operations.schedule", "operations.projects", "operations.inspections", "revenue.agreements", "revenue.sales"]]);
     await pool.query("INSERT INTO client(id,name) VALUES($1,$2),($3,$4)", [
       ids.client,
       "Workspace client",
@@ -95,6 +96,10 @@ test(
       ids.clientUser,
       ids.client,
     ]);
+    await pool.query(
+      "INSERT INTO lead(id,name,email,location,description,status,converted_client_id) VALUES($1,'Original inquiry','source@example.test','Region','Source message','won',$2)",
+      [ids.lead, ids.client],
+    );
     await pool.query(
       "INSERT INTO contact(id,client_id,name,email,phone,kind) VALUES($1,$2,$3,$4,$5,'primary')",
       [
@@ -149,8 +154,10 @@ test(
     assert.equal(managerWorkspace.status, 200);
     const managerData = (await managerWorkspace.json()) as {
       contacts: { email: string }[];
+      salesOrigins: { id: string; name: string }[];
     };
     assert.equal(managerData.contacts[0]?.email, "private-contact@example.test");
+    assert.deepEqual(managerData.salesOrigins.map((row) => row.id), [ids.lead]);
 
     const note = await fetch(`${base}/api/v1/clients/${ids.client}/notes`, {
       method: "POST",
@@ -352,6 +359,7 @@ test(
     assert.equal(restrictedClient.status, 200);
     const clientOnly = await restrictedClient.json() as Record<string, any>;
     for (const section of ["properties", "agreements", "schedule", "requests", "projects", "activity"]) assert.deepEqual(clientOnly[section], [], section);
+    assert.deepEqual(clientOnly.salesOrigins, []);
     assert(clientOnly.contacts.length > 0);
     assert.equal((await fetch(`${base}/api/v1/properties/${ids.property}/workspace`, { headers: managerHeaders })).status, 403);
     await pool.query("UPDATE business_account_access SET capabilities=$2 WHERE user_id=$1", [ids.manager, ["customers.properties"]]);

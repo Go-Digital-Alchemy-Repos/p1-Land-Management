@@ -61,6 +61,7 @@ export type NavigationGroup =
   | "Settings";
 
 export type RecordRoute =
+  | { kind: "lead"; id: string; tab: LeadWorkspaceTab }
   | { kind: "client"; id: string; tab: ClientWorkspaceTab }
   | { kind: "property"; id: string; tab: PropertyWorkspaceTab }
   | { kind: "work-order"; id: string }
@@ -76,6 +77,14 @@ export type ClientWorkspaceTab =
   | "requests"
   | "projects"
   | "notes";
+
+export type LeadWorkspaceTab =
+  | "overview"
+  | "follow-up"
+  | "details"
+  | "activity"
+  | "assessment"
+  | "handoff";
 
 export type PropertyWorkspaceTab =
   | "overview"
@@ -231,6 +240,9 @@ function workspaceRecord<T extends string>(
 const CLIENT_TABS: readonly ClientWorkspaceTab[] = [
   "overview", "properties", "contacts", "agreements", "schedule", "requests", "projects", "notes",
 ];
+const LEAD_TABS: readonly LeadWorkspaceTab[] = [
+  "overview", "follow-up", "details", "activity", "assessment", "handoff",
+];
 const PROPERTY_TABS: readonly PropertyWorkspaceTab[] = [
   "overview", "schedule", "agreements", "requests", "projects", "inspections", "notes-files",
 ];
@@ -239,6 +251,11 @@ export function routeFromPath(pathname: string): DashboardRoute {
   const path = normalizedPath(pathname);
   const page = DASHBOARD_PAGES.find((candidate) => candidate.path === path);
   if (page) return { kind: "page", page };
+
+  const lead = workspaceRecord(path, "/sales/leads/", LEAD_TABS);
+  if (lead) {
+    return { kind: "page", page: pageFor("Sales")!, record: { kind: "lead", ...lead } };
+  }
 
   const client = workspaceRecord(path, "/clients/", CLIENT_TABS);
   if (client) {
@@ -268,6 +285,8 @@ export function routeFromPath(pathname: string): DashboardRoute {
 export function pathForRoute(route: Extract<DashboardRoute, { kind: "page" }>) {
   if (!route.record) return route.page.path;
   switch (route.record.kind) {
+    case "lead":
+      return `/sales/leads/${encodeURIComponent(route.record.id)}${route.record.tab === "overview" ? "" : `/${route.record.tab}`}`;
     case "client":
       return `/clients/${encodeURIComponent(route.record.id)}${route.record.tab === "overview" ? "" : `/${route.record.tab}`}`;
     case "property":
@@ -327,6 +346,10 @@ export function canAccessWorkspaceTab(kind: "client" | "property", tab: string, 
 export function canAccessRoute(route: DashboardRoute, role: string | null | undefined, capabilities?: readonly string[]) {
   if (route.kind !== "page" || !role) return false;
   const { view, settingsSection } = route.page;
+  if (route.record?.kind === "lead") {
+    return role !== "client" && role !== "crew" &&
+      hasCapability({ role, capabilities }, "revenue.sales");
+  }
   if ((route.record?.kind === "client" || route.record?.kind === "property") && !canAccessWorkspaceTab(route.record.kind, route.record.tab, role, capabilities)) return false;
   if (view === "Profile") return true;
   if (view === "Pipeline Settings" || view === "Website Backups" || view === "Website Integrations" || view === "Website Email Templates" || view === "Website Documents" || view === "Website Head Tags" || view === "Website Features") return role === "owner";

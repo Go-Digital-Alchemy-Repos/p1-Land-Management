@@ -1,12 +1,7 @@
-import { LeadOnboarding } from "./LeadOnboarding";
-import { CrmArchive } from "./CrmArchive";
-import { LeadDetails } from "./LeadDetails";
-import { LeadFollowUp } from "./LeadFollowUp";
-import { LeadNotes } from "./LeadNotes";
-import { CrmTasks } from "./CrmTasks";
 import { PipelineStage, usePipelineStages } from "./PipelineSettings";
 import { listSalesInquiries } from "@workspace/api-client-react/dashboard";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { ArrowUpRight, CalendarDays } from "lucide-react";
+import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import "./sales-pipeline.css";
 
 type Inquiry = Awaited<ReturnType<typeof listSalesInquiries>>["items"][number];
@@ -23,17 +18,21 @@ function emptyColumns(keys: string[]): Columns {
 
 function PipelineCard({
   inquiry,
-  canOnboard,
-  onChanged,
+  onOpen,
 }: {
   inquiry: Inquiry;
-  canOnboard: boolean;
-  onChanged: () => void;
+  onOpen: (id: string) => void;
 }) {
-  const [open, setOpen] = useState(false);
+  function open(event: MouseEvent<HTMLAnchorElement>) {
+    if (event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    onOpen(inquiry.id);
+  }
   return (
     <article className="sales-pipeline-card">
-      <h4>{inquiry.name}</h4>
+      <a className="sales-pipeline-card-link" href={`/sales/leads/${encodeURIComponent(inquiry.id)}`} onClick={open} aria-label={`${inquiry.name} — open inquiry profile`}>
+        <h4>{inquiry.name}</h4><ArrowUpRight size={17} aria-hidden="true" />
+      </a>
       <p>
         {inquiry.reported_company_name ||
           inquiry.location ||
@@ -45,44 +44,18 @@ function PipelineCard({
       <small>
         {inquiry.owner_name ||
           (inquiry.owner_id ? "Previous owner" : "Unassigned")}
-        {inquiry.next_action_due_at
-          ? ` · Due ${new Date(inquiry.next_action_due_at).toLocaleString()}`
-          : ""}
       </small>
-      <button
-        type="button"
-        aria-expanded={open}
-        aria-controls={`inquiry-tools-${inquiry.id}`}
-        onClick={() => setOpen((current) => !current)}
-      >
-        {open ? "Close inquiry workspace" : "Open inquiry workspace"}
-      </button>
-      {open && (
-        <div
-          id={`inquiry-tools-${inquiry.id}`}
-          className="sales-pipeline-card-tools"
-          aria-label={`Inquiry tools for ${inquiry.name}`}
-        >
-          <LeadFollowUp leadId={inquiry.id} onSaved={onChanged} />
-          <LeadDetails leadId={inquiry.id} onSaved={onChanged} />
-          <LeadNotes leadId={inquiry.id} />
-          <CrmTasks kind="lead" parentId={inquiry.id} />
-          <CrmArchive kind="lead" parentId={inquiry.id} />
-          {canOnboard && (
-            <LeadOnboarding leadId={inquiry.id} onSaved={onChanged} />
-          )}
-        </div>
-      )}
+      {inquiry.next_action_due_at && <small className="sales-pipeline-due"><CalendarDays size={14} aria-hidden="true" /> Due {new Date(inquiry.next_action_due_at).toLocaleString()}</small>}
     </article>
   );
 }
 
 export function SalesPipelineBoard({
-  canOnboard = false,
   onCreate,
+  onOpen,
 }: {
-  canOnboard?: boolean;
   onCreate: () => void;
+  onOpen: (id: string) => void;
 }) {
   const stages = usePipelineStages();
   const stageKeys = useMemo(() => stages.map((stage) => stage.key), [stages]);
@@ -204,8 +177,7 @@ export function SalesPipelineBoard({
         <div>
           <h2>Pipeline</h2>
           <p>
-            Manage every inquiry in its current sales stage. Changing a stage
-            uses the existing versioned follow-up workflow.
+            Scan each stage, then open an inquiry profile to record its next step.
           </p>
         </div>
         <div className="sales-pipeline-actions">
@@ -240,8 +212,7 @@ export function SalesPipelineBoard({
                 <PipelineCard
                   key={inquiry.id}
                   inquiry={inquiry}
-                  canOnboard={canOnboard}
-                  onChanged={() => void load()}
+                  onOpen={onOpen}
                 />
               ))}
               {!loading && !hasLoaded && (

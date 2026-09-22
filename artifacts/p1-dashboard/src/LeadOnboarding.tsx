@@ -11,23 +11,26 @@ type Input = Parameters<typeof onboardLeadCustomer>[1];
 export function LeadOnboarding({
   leadId,
   onSaved,
+  suggestedCustomer,
+  initiallyOpen = false,
 }: {
   leadId: string;
   onSaved?: () => void;
+  suggestedCustomer?: { name: string; email: string | null; phone: string | null };
+  initiallyOpen?: boolean;
 }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(initiallyOpen);
   return (
     <div className="lead-onboarding">
-      <button
+      {!open && <button
         type="button"
         aria-expanded={open}
-        disabled={open}
         onClick={() => setOpen(true)}
       >
         Customer onboarding
-      </button>
+      </button>}
       {open && (
-        <OnboardingForm key={leadId} leadId={leadId} onSaved={onSaved} />
+        <OnboardingForm key={leadId} leadId={leadId} onSaved={onSaved} onClose={() => setOpen(false)} suggestedCustomer={suggestedCustomer} />
       )}
     </div>
   );
@@ -35,9 +38,13 @@ export function LeadOnboarding({
 function OnboardingForm({
   leadId,
   onSaved,
+  onClose,
+  suggestedCustomer,
 }: {
   leadId: string;
   onSaved?: () => void;
+  onClose: () => void;
+  suggestedCustomer?: { name: string; email: string | null; phone: string | null };
 }) {
   const [state, setState] = useState<State | null>(null),
     [clients, setClients] = useState<Array<{ id: string; name: string }>>([]),
@@ -55,6 +62,9 @@ function OnboardingForm({
     gate = useRef(false),
     controller = useRef<AbortController | null>(null);
   const dirty = Boolean(clientId || name || email || phone || pending);
+  const potentialMatches = clients.filter((client) =>
+    name.trim() && client.name.trim().toLocaleLowerCase() === name.trim().toLocaleLowerCase(),
+  );
   useCmsUnsavedChanges(
     dirty,
     pending
@@ -106,6 +116,12 @@ function OnboardingForm({
       controller.current?.abort();
     };
   }, [leadId]);
+  useEffect(() => {
+    if (mode !== "create" || !suggestedCustomer) return;
+    setName((current) => current || suggestedCustomer.name);
+    setEmail((current) => current || suggestedCustomer.email || "");
+    setPhone((current) => current || suggestedCustomer.phone || "");
+  }, [mode, suggestedCustomer?.name, suggestedCustomer?.email, suggestedCustomer?.phone]);
   async function save() {
     if (gate.current || !state || stale) return;
     const body: Input = pending || {
@@ -162,7 +178,9 @@ function OnboardingForm({
           setPending(null);
           setStale(true);
           setError(
-            "Could not continue onboarding. Refresh the saved inquiry, review its stage, customer and prospect context, then try again.",
+            status === 409 && /matching active customer/i.test((e as Error).message)
+              ? "An active customer already matches this account. Refresh, then link the existing customer instead."
+              : "Could not continue onboarding. Refresh the saved inquiry, review its stage, customer and prospect context, then try again.",
           );
         } else
           setError(
@@ -215,7 +233,9 @@ function OnboardingForm({
               <legend>Customer selection</legend>
               <label>
                 Onboarding choice
-                <select value={mode} onChange={(e) => setMode(e.target.value)}>
+                <select value={mode} onChange={(e) => {
+                  setMode(e.target.value);
+                }}>
                   <option value="link">Link an existing customer</option>
                   <option value="create">Create a new customer</option>
                 </select>
@@ -238,6 +258,10 @@ function OnboardingForm({
                 </label>
               ) : (
                 <>
+                  {potentialMatches.length > 0 && <div role="status" className="lead-onboarding-matches">
+                    <strong>A customer with this name already exists.</strong>
+                    {potentialMatches.map((client) => <button key={client.id} type="button" onClick={() => { setMode("link"); setClientId(client.id); }}>Link {client.name} instead</button>)}
+                  </div>}
                   <label>
                     Customer name
                     <input
@@ -286,6 +310,9 @@ function OnboardingForm({
                   : mode === "link"
                     ? "Link customer"
                     : "Create and link customer"}
+            </button>
+            <button type="button" className="secondary" disabled={busy || Boolean(pending)} onClick={onClose}>
+              Cancel handoff
             </button>
           </form>
         )

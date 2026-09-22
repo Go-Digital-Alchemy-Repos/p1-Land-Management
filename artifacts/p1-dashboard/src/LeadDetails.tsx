@@ -22,31 +22,34 @@ const draftOf = (row: Details): Draft =>
 export function LeadDetails({
   leadId,
   onSaved,
+  initiallyOpen = false,
 }: {
   leadId: string;
   onSaved?: (row: Details) => void;
+  initiallyOpen?: boolean;
 }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(initiallyOpen);
   return (
     <div className="lead-follow-up">
-      <button
+      {!open && <button
         type="button"
-        disabled={open}
         aria-expanded={open}
         onClick={() => setOpen(true)}
       >
         Contact & inquiry details
-      </button>
-      {open && <Editor key={leadId} leadId={leadId} onSaved={onSaved} />}
+      </button>}
+      {open && <Editor key={leadId} leadId={leadId} onSaved={onSaved} onClose={() => setOpen(false)} />}
     </div>
   );
 }
 function Editor({
   leadId,
   onSaved,
+  onClose,
 }: {
   leadId: string;
   onSaved?: (row: Details) => void;
+  onClose: () => void;
 }) {
   const [saved, setSaved] = useState<Details | null>(null),
     [draft, setDraft] = useState<Draft | null>(null),
@@ -243,6 +246,9 @@ function Editor({
             disabled={busy || uncertain || !dirty || !draft.name.trim()}
           >
             Save inquiry details
+          </button>
+          <button type="button" className="secondary" disabled={busy || uncertain} onClick={() => { setDraft(draftOf(saved)); onClose(); }}>
+            Cancel editing
           </button>
           <small>Version {saved.version}</small>
         </form>

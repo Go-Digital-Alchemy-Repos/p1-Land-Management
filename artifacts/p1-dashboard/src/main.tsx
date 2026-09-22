@@ -1,5 +1,6 @@
 import { PipelineProvider, PipelineSettingsEditor } from "./PipelineSettings";
 import { SalesPipelineBoard } from "./SalesPipelineBoard";
+import { LeadProfile } from "./LeadProfile";
 import { reconcileFieldResolutions } from "./field-resolution-receipts";
 import { FieldConflictReview } from "./FieldConflictReview";
 import { isTransientRefreshFailure, refreshEntries } from "./my-day-recovery";
@@ -14,7 +15,6 @@ import { hasCapability, canManageServiceAgreements } from "@workspace/api-zod/bu
 import { UserManager } from "./UserManager";
 import { WorkReadiness } from "./WorkReadiness";
 import { OwnerMfaRecovery } from "./OwnerMfaRecovery";
-import { CommercialInbox } from "./CommercialInbox";
 import { PropertyFiles } from "./PropertyFiles";
 import { ScheduleCalendar } from "./ScheduleCalendar";
 import { RecurringCalendar } from "./RecurringCalendar";
@@ -194,6 +194,50 @@ const marketingPageCopy = {
   ...marketingDesignCopy,
   "Website SEO": { title: "SEO", description: "Manage search metadata, audit content, and maintain redirects and crawler settings." },
   "Website Features": { title: "System Configuration", description: "Control which website apps are active while preserving their stored data." },
+};
+const workspaceDescriptions: Partial<Record<DashboardPageRoute["view"], string>> = {
+  "My Day": "See your assignments, field notes and items that need attention today.",
+  Properties: "Find a property, review its operational context and open its workspace.",
+  Clients: "Find an account, then review its properties, people and active work.",
+  Requests: "Triage incoming requests and follow their progress through scheduling.",
+  Schedule: "Plan visits, assign work and review field updates in one calendar.",
+  Recurring: "Review repeat visits and the agreements that authorize them.",
+  Projects: "Track project phases, ownership and work awaiting review.",
+  Inspections: "Review inspection reports and follow up on recorded findings.",
+  Sales: "Prioritize inquiries, then work from each lead's complete profile.",
+  Pipeline: "Scan stages and open an inquiry profile to record its next step.",
+  "Pipeline Settings": "Review the stages used to organize the sales journey.",
+  Agreements: "Find active service agreements and work awaiting review.",
+  "Agreement Drafts": "Prepare client-specific terms, scope and costs from your agreement templates.",
+  "Agreement Templates": "Manage reusable terms, scope, cost breakdowns and published agreement packages.",
+  Billing: "Review charges, invoices and items that need a finance decision.",
+  Expenses: "Record costs and review expense history against the work.",
+  Analytics: "Compare website performance and acquisition over time.",
+  "Search Console": "Review search visibility, indexing and site health.",
+  "CMS Pages": "Manage page content, publication and revision history.",
+  "Website Blog": "Draft, review and publish articles for the public website.",
+  "Website Forms": "Maintain public forms and the fields used to capture inquiries.",
+  "Website Events": "Prepare and publish events shown on the public website.",
+  "Website Careers": "Keep open roles and applications current.",
+  "Website Team": "Maintain public team profiles and their presentation.",
+  "Media Library": "Find, organize and reuse approved website media.",
+  "Website Galleries": "Curate image groups for public pages.",
+  "Website Sections": "Build and reuse page sections without losing their draft history.",
+  "Website Editor": "Edit website pages and shared content, then review drafts before publishing.",
+  "Website Menus": "Organize public navigation while preserving published links.",
+  "Website Sidebars": "Compose reusable website sidebar content.",
+  "Website Backups": "Review website recovery points and backup status.",
+  "Website Integrations": "Manage website services and their connection status.",
+  "Website Email Templates": "Maintain the messages sent by website workflows.",
+  "Website Documents": "Find implementation resources for the website system.",
+  "Website Head Tags": "Review managed scripts and edit additional head markup.",
+};
+const settingsDescriptions: Record<SettingsSection, string> = {
+  people: "Review accounts, roles and access before making changes.",
+  security: "Review sign-in protections and account recovery options.",
+  integrations: "Check connected business systems and their current status.",
+  preferences: "Set workspace defaults that support daily work.",
+  "term-libraries": "Maintain the controlled terms used across records and reports.",
 };
 async function api(path: string, body?: unknown, method: "POST" | "PATCH" | "DELETE" = "POST") {
   const r = await fetch("/api/v1" + path, {
@@ -987,6 +1031,7 @@ function App() {
   const openPropertyWorkspace = (property: { id: string }) =>
     navigateRecord(propertyPage, { kind: "property", id: property.id, tab: "overview" });
   const clientPage = nav.find((item) => item.view === "Clients")!;
+  const salesPage = nav.find((item) => item.view === "Sales")!;
   const openClientWorkspace = (client: { id: string }) =>
     navigateRecord(clientPage, { kind: "client", id: client.id, tab: "overview" });
   const openWorkOrder = async (
@@ -1171,7 +1216,7 @@ function App() {
     navigationAnchorIncludes(item, view) &&
     (item.target.view !== "Settings" || settingsSection === item.target.settingsSection);
   const accountWorkspace =
-    recordRoute?.kind === "client" || recordRoute?.kind === "property";
+    recordRoute?.kind === "client" || recordRoute?.kind === "property" || recordRoute?.kind === "lead";
   useEffect(() => {
     if (!recordRoute) {
       recordOpenAttempted.current = null;
@@ -1501,8 +1546,8 @@ function App() {
                   : view === "My Day"
                     ? "Your assignments and field notes, wherever work takes you."
                     : view === "Settings"
-                      ? "Control access, account security, connections and workspace defaults."
-                      : view === "Agreement Drafts" ? "Prepare client-specific terms, scope and costs from your agreement templates." : view === "Agreement Templates" ? "Manage reusable terms, scope, cost breakdowns, and published agreement packages." : view === "CMS Pages" ? "Manage CMS page content, publication, and revision history." : marketingPageCopy[view]?.description ?? "Keep the details connected to the work."}
+                      ? settingsDescriptions[settingsSection]
+                      : marketingPageCopy[view]?.description ?? workspaceDescriptions[view] ?? "Review this workspace and its current work."}
               </p>
             </div>
             {!routeUnavailable && <div className="heading-actions">
@@ -1601,7 +1646,7 @@ function App() {
               })}
             </nav>
           )}
-          {!routeUnavailable && inSalesWorkspace && salesWorkspaceTabs.length > 1 && (
+          {!routeUnavailable && inSalesWorkspace && recordRoute?.kind !== "lead" && salesWorkspaceTabs.length > 1 && (
             <nav className="workspace-tabs sales-workspace-tabs" aria-label="Sales workspace">
               {salesWorkspaceTabs.map((tab) => {
                 const Icon = tab.icon;
@@ -1615,7 +1660,16 @@ function App() {
               })}
             </nav>
           )}
-          {!routeUnavailable && recordRoute?.kind === "client" ? (
+          {!routeUnavailable && recordRoute?.kind === "lead" ? (
+            <PipelineProvider enabled={can("revenue.sales")}>
+              <LeadProfile
+                id={recordRoute.id}
+                tab={recordRoute.tab}
+                canOnboard={can("customers.clients")}
+                onTab={(tab) => navigateRecord(salesPage, { kind: "lead", id: recordRoute.id, tab })}
+              />
+            </PipelineProvider>
+          ) : !routeUnavailable && recordRoute?.kind === "client" ? (
             <ClientWorkspace
               id={recordRoute.id}
               tab={recordRoute.tab}
@@ -2150,12 +2204,20 @@ function App() {
               )}
             </>
           )}
-          {inSalesWorkspace && (
+          {inSalesWorkspace && recordRoute?.kind !== "lead" && (
             <PipelineProvider key={`${person.id}:${can("revenue.sales")}`} enabled={can("revenue.sales")}>
               {person.role === "owner" && <PipelineSettingsEditor initiallyOpen={view === "Pipeline Settings"} />}
-              {view === "Pipeline" ? <SalesPipelineBoard canOnboard={can("customers.clients")} onCreate={() => openForm("lead")} /> : view === "Pipeline Settings" ? null : <>
+              {view === "Pipeline" ? <SalesPipelineBoard onCreate={() => openForm("lead")} onOpen={(id) => navigateRecord(salesPage, { kind: "lead", id, tab: "overview" })} /> : view === "Pipeline Settings" ? null : <>
               {hasCapability(person, "revenue.sales") && <a href="/agreements/drafts">Agreement drafts</a>}
-              {hasCapability(person, "revenue.sales") && <CommercialInbox staff={data.staff || []} canOnboard={can("customers.clients")} />}
+              {can("revenue.sales") && (
+                <InquiryList
+                  key={person.id}
+                  revision={inquiryRevision}
+                  owners={data.staff || []}
+                  onCreate={() => openForm("lead")}
+                  onOpen={(id) => navigateRecord(salesPage, { kind: "lead", id, tab: "overview" })}
+                />
+              )}
               <section className="panel">
                 <div className="panel-heading">
                   <h2>Estimates</h2>
@@ -2228,15 +2290,6 @@ function App() {
                   <p className="empty">Your estimates will appear here.</p>
                 )}
               </section>
-              {can("revenue.sales") && (
-                <InquiryList
-                  key={person.id}
-                  revision={inquiryRevision}
-                  owners={data.staff || []}
-                  onCreate={() => openForm("lead")}
-                  canOnboard={can("customers.clients")}
-                />
-              )}
               </>}
             </PipelineProvider>
           )}

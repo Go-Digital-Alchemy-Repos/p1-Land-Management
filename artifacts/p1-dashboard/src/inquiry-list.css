@@ -33,3 +33,25 @@
 .inquiry-list .schedule-row {
   overflow-wrap: anywhere;
 }
+.inquiry-row {
+  align-items: start;
+  border-top: 1px solid hsl(var(--border));
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem 1.5rem;
+  justify-content: space-between;
+  padding: 1.2rem clamp(1rem, 2vw, 1.5rem);
+}
+.inquiry-row:first-child { border-top: 0; }
+.inquiry-row:hover { background: hsl(var(--muted) / .55); }
+.inquiry-row-main { display: grid; gap: .4rem; min-width: min(100%, 18rem); }
+.inquiry-row-main a { align-items: center; display: inline-flex; font-size: 1.08rem; gap: .4rem; justify-self: start; text-decoration: none; }
+.inquiry-row-main a:hover { text-decoration: underline; text-underline-offset: .2em; }
+.inquiry-row-main p { margin: 0; overflow-wrap: anywhere; }
+.inquiry-row-main small { color: hsl(var(--muted-foreground)); }
+.inquiry-row-next { font-weight: 600; white-space: pre-wrap; }
+.inquiry-row-due { align-items: center; display: inline-flex; gap: .35rem; }
+@media (max-width: 600px) {
+  .inquiry-filters { grid-template-columns: 1fr; }
+  .inquiry-row { padding: 1rem; }
+}

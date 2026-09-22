@@ -5,15 +5,15 @@
 }
 .sales-pipeline-grid {
   display: grid;
-  grid-template-columns: repeat(6, minmax(15rem, 1fr));
+  grid-template-columns: repeat(6, minmax(16rem, 1fr));
   gap: 1rem;
   overflow-x: auto;
   padding: 1rem;
 }
 .sales-pipeline-column {
   align-content: start;
-  background: var(--surface-muted, #f7f7f8);
-  border: 1px solid var(--border, #dedee3);
+  background: hsl(var(--muted));
+  border: 1px solid hsl(var(--border));
   border-radius: 0.75rem;
   display: grid;
   gap: 0.75rem;
@@ -28,31 +28,37 @@
   margin: 0;
 }
 .sales-pipeline-column h3 span {
-  color: var(--muted-foreground, #666);
+  color: hsl(var(--muted-foreground));
   font-size: 0.875rem;
 }
 .sales-pipeline-card {
-  background: var(--surface, #fff);
-  border: 1px solid var(--border, #dedee3);
-  border-radius: 0.625rem;
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius-md);
   display: grid;
   gap: 0.5rem;
   overflow-wrap: anywhere;
-  padding: 0.75rem;
+  padding: 1rem;
+  transition: border-color .16s ease, box-shadow .16s ease;
 }
+.sales-pipeline-card:hover, .sales-pipeline-card:focus-within { border-color: hsl(var(--ring)); box-shadow: var(--shadow-sm); }
+.sales-pipeline-card-link { align-items: start; display: flex; font-size: 1.03rem; gap: .5rem; justify-content: space-between; text-decoration: none; }
+.sales-pipeline-card-link:hover { text-decoration: underline; text-underline-offset: .2em; }
+.sales-pipeline-card-link svg { flex: none; }
+.sales-pipeline-card small { color: hsl(var(--muted-foreground)); line-height: 1.35; }
+.sales-pipeline-due { align-items: center; display: inline-flex; gap: .35rem; }
 .sales-pipeline-card h4,
 .sales-pipeline-card p {
   margin: 0;
 }
-.sales-pipeline-card-tools {
-  display: grid;
-  gap: 0.5rem;
-}
 .sales-pipeline-next {
-  font-weight: 600;
+  border-top: 1px solid hsl(var(--border));
+  font-weight: 550;
+  line-height: 1.35;
+  padding-top: .65rem;
 }
 .sales-pipeline-empty {
-  color: var(--muted-foreground, #666);
+  color: hsl(var(--muted-foreground));
   margin: 0;
 }
 @media (max-width: 680px) {
@@ -60,4 +66,7 @@
     grid-template-columns: 1fr;
     overflow-x: visible;
   }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sales-pipeline-card { transition: none; }
 }

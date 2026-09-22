@@ -26,23 +26,24 @@ function localTime(value: string | null) {
 export function LeadFollowUp({
   leadId,
   onSaved,
+  initiallyOpen = false,
 }: {
   leadId: string;
   onSaved: (lead: FollowUp) => void;
+  initiallyOpen?: boolean;
 }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(initiallyOpen);
   return (
     <div className="lead-follow-up">
-      <button
+      {!open && <button
         type="button"
         aria-expanded={open}
-        disabled={open}
         onClick={() => setOpen(true)}
       >
         Manage inquiry
-      </button>
+      </button>}
       {open && (
-        <FollowUpEditor key={leadId} leadId={leadId} onSaved={onSaved} />
+        <FollowUpEditor key={leadId} leadId={leadId} onSaved={onSaved} onClose={() => setOpen(false)} />
       )}
     </div>
   );
@@ -50,9 +51,11 @@ export function LeadFollowUp({
 function FollowUpEditor({
   leadId,
   onSaved,
+  onClose,
 }: {
   leadId: string;
   onSaved: (lead: FollowUp) => void;
+  onClose: () => void;
 }) {
   const pipeline = usePipelineStages();
   const [saved, setSaved] = useState<FollowUp | null>(null),
@@ -281,6 +284,9 @@ function FollowUpEditor({
             }
           >
             {busy ? "Working…" : "Save follow-up"}
+          </button>
+          <button type="button" className="secondary" disabled={busy || uncertain} onClick={() => { apply(saved); onClose(); }}>
+            Cancel editing
           </button>
           <small>
             Version {saved.version}
