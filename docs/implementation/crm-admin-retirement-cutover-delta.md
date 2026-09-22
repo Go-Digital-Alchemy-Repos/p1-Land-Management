@@ -1,8 +1,43 @@
 # CRM and `/admin` retirement — current cutover delta
 
-Status: decision and evidence delta only. This document does not authorize a
-source freeze, account change, redirect, legacy-route removal, deployment or
-production data operation.
+Status: cutover evidence and release gates. The Owner's September 22 request to
+finish the CRM merge and retire `/admin` establishes Dashboard Sales as the
+intended staff-facing CRM. It does not establish that a source freeze, redirect,
+legacy-route removal, or production data migration has passed its release gates.
+
+## September 22 production checkpoint
+
+The reviewed, reversible legacy staff-write fence is now in `main`, but a
+read-only query of production `system_settings` found no fence row. Its effective
+state is therefore **off**; Core staff CRM writes remain available. This is not
+yet a Dashboard-only cutover.
+
+Separate read-only repeatable-read snapshots found four Core leads, zero Core
+clients, notes, or tasks; and four Dashboard leads, one Dashboard client, three
+Core-source archive mappings, and two commercial intake receipts. Comparing
+SHA-256 digests of Core identifiers with Dashboard mapping/receipt identifiers
+in memory showed all four Core leads covered by an archive mapping or intake
+receipt, with no uncovered lead. The two receipts point to two distinct native
+leads; neither receipts nor lead archive mappings are orphaned. The fourth Core
+lead postdates the three-lead preservation batch, so this checkpoint updates the
+count but does not claim a cross-database atomic freeze or content equivalence.
+No customer payload, source identifier, credential, or connection string was
+printed or retained in this document. No production mutation was performed.
+
+The Owner has since authorized retiring the seven suspended test accounts and
+deferred mandatory Owner MFA; those decisions supersede the older decision
+request below. A September 22 read-only production check found one active
+account, zero suspended/unretired accounts, and seven live retirement
+tombstones. None of those seven was active or held a live session, capability
+grant, or form-notification grant. Recovery behavior remains a separate
+controlled acceptance check. The Owner also confirmed receiving lead
+notification emails; do not resubmit the controlled QA inquiry.
+
+Both Core and Dashboard pipeline configuration tables have no stored override,
+so both systems use the same six stage labels, colors, and order from their
+source defaults. The native Owner-only pipeline settings deep link is prepared
+for review at `/sales/pipeline-settings`; no production settings migration is
+currently needed. Recheck both tables immediately before redirect activation.
 
 This is the current delta against the CRM and retained-admin acceptance gates in
 [the consolidation tracker](consolidation-acceptance.md) and the
@@ -43,10 +78,11 @@ Current source inspection identifies still-active Core CRM write surfaces:
 | Won conversion | `platform/p1-core/server/services/crm.service.ts` creates a Core client and notes when a lead reaches Won. | Conversion semantics, operational-client creation, and onboarding authority must be explicitly reconciled before a write fence. |
 | Forms/effects | Core forms-effect tests and storage retain `crm_leads` effects. | Public form and durable job behavior must stay available while ownership changes; disabling the UI or `/admin` does not retire this writer. |
 
-This inspection is source-level evidence, not proof of current production
-configuration or traffic. It found no implemented cross-system, permanent
-ownership fence covering these paths. The temporary import fence is correctly
-limited to its reviewed batch and must not be repurposed as one.
+The September 21 inspection was source-level evidence, not proof of current
+production configuration or traffic. Since then, the reversible authenticated
+Core staff-write fence has merged to `main`. The September 22 production read
+above confirms it is not activated. The temporary import fence remains limited
+to its reviewed batch and must not be repurposed as permanent ownership control.
 
 ## Review slice: legacy staff-write fence
 
@@ -85,9 +121,9 @@ that this setting alone establishes sole-writer enforcement.
 Focused tests cover the default, permission boundary, explicit activation gate,
 atomic audit request, blocked-write behavior, forward recovery including a
 boundary-mismatch repair, malformed state, generic-setting bypass prevention,
-and inbound durable-submission replay. This review slice is not deployed and its
-setting must remain false until the cutover runbook and acceptance gates below
-are approved.
+and inbound durable-submission replay. The code is merged and deployed, while
+the setting remains absent/default-off. It must remain off until the cutover
+runbook and acceptance gates below pass.
 
 ## Gates still open
 
@@ -111,12 +147,11 @@ are approved.
    prospect-context, follow-up, correction, archive-history, and Won workflow
    in the native Dashboard. The released Sales board alone is not this
    acceptance.
-5. **Complete account policy decisions.** The Owner must disposition the seven
-   inactive accounts (retain with rationale, suspend/close through an approved
-   recovery-safe process, or re-enable after review) and decide whether Owner
-   MFA is required. Preserve existing sessions/MFA secrets; validate recovery,
-   revocation, notifications, and role access after the decision. Do not infer
-   desired account state from the inventory.
+5. **Finish account recovery acceptance.** Production now shows seven retired
+   accounts, no remaining suspended/unretired account, and no surviving active
+   session or grant for a retired account. Confirm the documented recovery path
+   with an isolated fixture and preserve the canonical Owner's session and MFA
+   enrollment. The Owner deferred required Owner MFA.
 
 ## `/admin` consequence and safe sequence
 
@@ -126,7 +161,7 @@ The CRM-related legacy pages cannot yet be retired:
 | --- | --- | --- |
 | `/admin/crm` | `/sales` | Pipeline, lead/activity/custom-field workflow, exclusive ownership, and cutover acceptance are incomplete. |
 | `/admin/crm/clients` | `/clients` | Reviewed Core-to-native client mapping and staff workflow acceptance are incomplete. |
-| `/admin/crm/settings` | None demonstrated | Pipeline/settings configuration lacks a one-to-one approved native disposition. |
+| `/admin/crm/settings` | `/sales/pipeline-settings` (review branch) | The native Owner-only editor has a direct destination; reconcile existing Core setting values and verify roles before redirecting old bookmarks. |
 
 After the CRM gates close, retirement remains a separate reversible release:
 

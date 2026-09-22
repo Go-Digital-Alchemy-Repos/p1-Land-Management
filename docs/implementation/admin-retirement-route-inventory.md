@@ -27,7 +27,7 @@ All destination paths below are on the Business Center host. They are proposed m
 | `/admin/forms` | `/marketing/content/forms` | Submission details, delivery jobs/recovery, export and notification controls must remain usable. |
 | `/admin/crm` | `/sales` | Real pipeline/lead/activity/custom-field mappings and workflow acceptance remain; not a direct record-ID rename. |
 | `/admin/crm/clients` | `/clients` | Source CRM client IDs must map through approved reconciliation; retain unmatched records. |
-| `/admin/crm/settings` | No demonstrated one-to-one destination | Source pipeline/settings merge and configuration workflow require explicit implementation or approved disposition. Do not send to unrelated business preferences. |
+| `/admin/crm/settings` | `/sales/pipeline-settings` (review branch) | Native Owner-only deep link opens the existing pipeline editor. Reconcile source setting values and roles before redirect activation. |
 | `/admin/blog` | `/marketing/content/blog` | Existing retained alias points to `/admin/cms/blog`; preserve alias in eventual redirect table. |
 | `/admin/docs`, `/admin/docs/:slug` | `/marketing/system/documents?doc=<encoded slug>` | Native selection supports `doc`; preserve slug, read/edit/sync/delete and version/reservation semantics. Cross-surface mutation acceptance remains. |
 | `/admin/settings`, `/admin/settings/integrations` | `/marketing/system/integrations` | Native Mailgun/Mailchimp/R2 configuration exists. Active Google environment configuration remains separate; no claim all provider cards have parity. |
