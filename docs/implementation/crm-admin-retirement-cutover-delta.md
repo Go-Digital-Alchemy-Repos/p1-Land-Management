@@ -29,7 +29,8 @@ After that read-only checkpoint, a controlled September 22 Owner-session test
 used the existing synthetic “P1 QA — not a customer” lead. The Dashboard saved
 an internal next action and Owner assignment, displayed the saved note in
 inquiry history, and moved an internal follow-up task from Open to Completed;
-the Completed filter showed it in history. No customer was contacted. This
+the Completed filter showed it in history. A page reload retained the Owner
+assignment and next action. No customer was contacted. This
 proves those native write paths for this synthetic record only. It does not
 prove role-separated staff use, company/contact/property linking, Won
 conversion, source-write quiescence, or historical content equivalence.
@@ -190,6 +191,14 @@ After the CRM gates close, retirement remains a separate reversible release:
 The broader route inventory also carries independent gates for authentication,
 CMS, media, backups, reporting, and provider recovery. Closing the CRM portion
 does not authorize global `/admin` retirement.
+
+The September 22 authentication review found a distinct Core reset-token
+system. Core reset emails and federation callbacks still target `/admin`, and
+Core user creation can send a legacy sign-in URL; Dashboard Better Auth tokens
+and installation state are separate. The closeout branch fixes the two retained
+legacy recovery forms to POST to their actual `/api/auth` handlers, with DOM
+submit tests. This preserves recovery during transition but does not make a
+blanket auth redirect safe.
 
 ## Decisions and operational evidence still required
 
