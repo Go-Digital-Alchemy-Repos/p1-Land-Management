@@ -195,10 +195,21 @@ does not authorize global `/admin` retirement.
 The September 22 authentication review found a distinct Core reset-token
 system. Core reset emails and federation callbacks still target `/admin`, and
 Core user creation can send a legacy sign-in URL; Dashboard Better Auth tokens
-and installation state are separate. The closeout branch fixes the two retained
-legacy recovery forms to POST to their actual `/api/auth` handlers, with DOM
-submit tests. This preserves recovery during transition but does not make a
+and installation state are separate. Commit `11546bd4` on `main` fixes the two
+retained legacy recovery forms to POST to their actual `/api/auth` handlers,
+with DOM submit tests. This preserves recovery during transition but does not make a
 blanket auth redirect safe.
+
+Railway's September 22 read-only deployment metadata exposes exact Core image
+digests and reports retained deployments as rollback-eligible. The latest
+successful image and its immediately preceding deployment share one digest;
+an older retained deployment has a different digest. The provider's rollback
+action can restore a retained image and variables within its retention window,
+but no documented image export or isolated-target operation was found. The
+source-built isolated rehearsal remains valuable functional evidence, not
+exact-image recovery proof. Recheck the active deployment and rollback
+eligibility immediately before any cutover; do not rely on a temporary
+retention window as a permanent recovery archive.
 
 ## Decisions and operational evidence still required
 
