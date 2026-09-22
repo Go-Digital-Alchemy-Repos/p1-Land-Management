@@ -80,6 +80,7 @@ export function UserManager({
   const [ownerTarget, setOwnerTarget] = useState<Account | null>(null);
   const [search, setSearch] = useState(""),
     [error, setError] = useState(""),
+    [loadError, setLoadError] = useState(""),
     [notice, setNotice] = useState("");
   const [loading, setLoading] = useState(true),
     [busy, setBusy] = useState(false),
@@ -93,26 +94,37 @@ export function UserManager({
     gate = useRef(false),
     alive = useRef(true);
   async function load() {
-    const [users, invites] = await Promise.all([
-      listManagedUsers(),
-      listManagedInvitations(),
-    ]);
-    if (alive.current) {
-      setAccounts(users.items);
-      setInvitations(invites.items);
-      setInvitationCursor(invites.nextCursor);
+    try {
+      const [users, invites] = await Promise.all([
+        listManagedUsers(),
+        listManagedInvitations(),
+      ]);
+      if (alive.current) {
+        setAccounts(users.items);
+        setInvitations(invites.items);
+        setInvitationCursor(invites.nextCursor);
+        setLoadError("");
+      }
+      return users.items as Account[];
+    } catch (cause) {
+      if (alive.current) setLoadError("Could not load users and invitations. Retry before managing access.");
+      throw cause;
     }
-    return users.items as Account[];
+  }
+  async function loadDirectory() {
+    setLoading(true);
+    setLoadError("");
+    try {
+      await load();
+    } catch {
+      // load() sets the actionable error for initial and post-action reloads.
+    } finally {
+      if (alive.current) setLoading(false);
+    }
   }
   useEffect(() => {
     alive.current = true;
-    void load()
-      .catch((e) => {
-        if (alive.current) setError(e.message);
-      })
-      .finally(() => {
-        if (alive.current) setLoading(false);
-      });
+    void loadDirectory();
     return () => {
       alive.current = false;
     };
@@ -192,7 +204,7 @@ export function UserManager({
           </p>
         </div>
         <button
-          disabled={busy}
+          disabled={busy || loading || Boolean(loadError)}
           onClick={() => {
             setError("");
             setHistory([]);
@@ -224,6 +236,11 @@ export function UserManager({
       </label>
       {loading ? (
         <p role="status">Loading users…</p>
+      ) : loadError ? (
+        <div className="user-manager-load-error" role="alert">
+          <p>{loadError}</p>
+          <button type="button" onClick={() => void loadDirectory()}>Retry directory</button>
+        </div>
       ) : (
         <div className="table-wrap">
           <table>
@@ -358,7 +375,7 @@ export function UserManager({
           }}
         />
       )}
-      <h3>Invitations</h3>
+      {!loading && !loadError && <><h3>Invitations</h3>
       <div className="table-wrap">
         <table>
           <thead>
@@ -438,10 +455,11 @@ export function UserManager({
           Load older invitations
         </button>
       )}
-      {!loading && !invitations.length && <p>No invitations found.</p>}
+      {!invitations.length && <p>No invitations found.</p>}</>}
       <dialog
         className="user-editor"
         ref={dialog}
+        aria-labelledby="user-editor-title"
         onCancel={(event) => {
           if (busy) event.preventDefault();
           else setDraft(null);
@@ -458,7 +476,7 @@ export function UserManager({
             }}
           >
             <header>
-              <h2>{draft.id ? "Manage user" : "Invite user"}</h2>
+              <h2 id="user-editor-title">{draft.id ? "Manage user" : "Invite user"}</h2>
               <button
                 type="button"
                 disabled={busy}

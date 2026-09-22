@@ -41,9 +41,13 @@ clientWorkspaceApi.get("/clients/:id/workspace", async (req, res) => {
   requireCapability(user, "customers.clients");
   const clientId = identifier.parse(req.params.id);
   const client = await officeClient(clientId);
-  const [properties, contacts, agreements, schedule, requests, projects, notes, activity, salesOrigins] = await Promise.all([
+  const [properties, propertyChoices, contacts, agreements, schedule, requests, projects, notes, activity, salesOrigins] = await Promise.all([
     section(hasCapability(user, "customers.properties"),
       "SELECT p.id,p.name,p.address,p.address_line1,p.address_line2,p.city,p.state,p.postal_code,p.acreage,p.latitude,p.longitude,p.property_type_id,pt.name AS property_type_name,p.access_instructions,p.version,p.created_at FROM property p LEFT JOIN property_type pt ON pt.id=p.property_type_id WHERE p.client_id=$1 AND p.archived=false AND p.lifecycle='operational' ORDER BY p.name",
+      [clientId],
+    ),
+    section(!hasCapability(user, "customers.properties") && (hasCapability(user, "customers.requests") || hasCapability(user, "operations.projects")),
+      "SELECT id,name FROM property WHERE client_id=$1 AND archived=false AND lifecycle='operational' ORDER BY name",
       [clientId],
     ),
     section(true,
@@ -82,6 +86,7 @@ clientWorkspaceApi.get("/clients/:id/workspace", async (req, res) => {
   res.json({
     client,
     properties: properties.rows,
+    propertyChoices: propertyChoices.rows,
     contacts: contacts.rows,
     agreements: agreements.rows,
     schedule: schedule.rows,
