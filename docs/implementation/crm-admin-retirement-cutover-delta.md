@@ -32,8 +32,19 @@ inquiry history, and moved an internal follow-up task from Open to Completed;
 the Completed filter showed it in history. A page reload retained the Owner
 assignment and next action. No customer was contacted. This
 proves those native write paths for this synthetic record only. It does not
-prove role-separated staff use, company/contact/property linking, Won
-conversion, source-write quiescence, or historical content equivalence.
+prove role-separated staff use, company/contact/property linking,
+source-write quiescence, or historical content equivalence.
+
+With the Owner's September 22 instruction, the same synthetic inquiry was
+renamed **Test Lead** through the native correction form, moved to Won, and
+onboarded to a new **Test Lead** customer through the native customer-selection
+flow. The Won stage and customer link survived a full Sales reload, and the
+Client Command Center opened the new account with zero properties, agreements,
+or work. The test customer has no email or phone; no portal invitation or
+customer message was sent. This verifies one Owner-operated Won-to-client path,
+not historical CRM parity, prospect-context linking, operational property
+creation, or role-separated staff acceptance. Retain the clearly labeled QA
+records while the broader acceptance work continues.
 
 The Owner has since authorized retiring the seven suspended test accounts and
 deferred mandatory Owner MFA; those decisions supersede the older decision
@@ -46,10 +57,9 @@ notification emails; do not resubmit the controlled QA inquiry.
 
 Both Core and Dashboard pipeline configuration tables have no stored override,
 so both systems use the same six stage labels, colors, and order from their
-source defaults. The native Owner-only pipeline settings deep link is implemented
-on the closeout branch at `/sales/pipeline-settings`; no production settings
-migration is currently needed. Recheck both tables immediately before redirect
-activation.
+source defaults. The native Owner-only pipeline settings deep link was released
+at `/sales/pipeline-settings`; no production settings migration is currently
+needed. Recheck both tables immediately before redirect activation.
 
 This is the current delta against the CRM and retained-admin acceptance gates in
 [the consolidation tracker](consolidation-acceptance.md) and the
@@ -156,10 +166,11 @@ runbook and acceptance gates below pass.
    and document forward recovery for an uncertain distributed commit. The
    existing runner is not two-phase commit and intentionally does not delete
    source data on uncertainty.
-4. **Accept operational use.** Staff must complete a real, non-destructive
-   prospect-context, follow-up, correction, archive-history, and Won workflow
-   in the native Dashboard. The released Sales board alone is not this
-   acceptance.
+4. **Accept operational use.** Owner-session correction, follow-up, note/task
+   history, Won, and customer onboarding have passed on the synthetic Test Lead.
+   Prospect-context linking, archived-history equivalence, and role-separated
+   staff workflows still need controlled acceptance. The released Sales board
+   and one Owner-operated test are not full CRM cutover acceptance.
 5. **Finish account recovery acceptance.** Production now shows seven retired
    accounts, no remaining suspended/unretired account, and no surviving active
    session or grant for a retired account. Confirm the documented recovery path
