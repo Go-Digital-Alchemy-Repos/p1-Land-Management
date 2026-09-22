@@ -345,6 +345,8 @@ import type {
   UploadMarketingMediaBody,
   UploadWebsiteIdentityAsset201,
   UploadWebsiteIdentityAssetBody,
+  WebsiteBackupRestoreReceipt,
+  WebsiteBackupRestoreRequest,
   WebsiteBackupStatus,
   WebsiteBackupSummary,
   WebsiteColorsInput,
@@ -8945,7 +8947,7 @@ export const getGetWebsiteBackupStatusUrl = () => {
 }
 
 /**
- * Active attested Owner only. Core database backups include media inventory, not copied media bytes. Manual run applies configured retention. No automatic retry; inspect status after uncertain execution. No restore operation.
+ * Active attested Owner only. Core database backups include media inventory, not copied media bytes. Manual run applies configured retention. No automatic retry; inspect status after uncertain execution.
  */
 export const getWebsiteBackupStatus = async ( options?: RequestInit): Promise<WebsiteBackupStatus> => {
 
@@ -8969,7 +8971,7 @@ export const getRunWebsiteBackupUrl = () => {
 }
 
 /**
- * Active attested Owner only. Core database backups include media inventory, not copied media bytes. Manual run applies configured retention. No automatic retry; inspect status after uncertain execution. No restore operation.
+ * Active attested Owner only. Core database backups include media inventory, not copied media bytes. Manual run applies configured retention. No automatic retry; inspect status after uncertain execution.
  */
 export const runWebsiteBackup = async ( options?: RequestInit): Promise<WebsiteBackupSummary> => {
 
@@ -8979,6 +8981,31 @@ export const runWebsiteBackup = async ( options?: RequestInit): Promise<WebsiteB
     method: 'POST'
 
 
+  }
+);}
+
+
+
+export const getRestoreWebsiteBackupUrl = () => {
+
+
+
+
+  return `/api/v1/marketing/cms/website-system/backups/restore`
+}
+
+/**
+ * Active attested Owner only. Destructive Core database restore. The caller must confirm the exact archive key. An uncertain transport outcome must be verified from authoritative status and live state; never automatically retry.
+ */
+export const restoreWebsiteBackup = async (websiteBackupRestoreRequest: WebsiteBackupRestoreRequest, options?: RequestInit): Promise<WebsiteBackupRestoreReceipt> => {
+
+  return customFetch<WebsiteBackupRestoreReceipt>(getRestoreWebsiteBackupUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      websiteBackupRestoreRequest,)
   }
 );}
 

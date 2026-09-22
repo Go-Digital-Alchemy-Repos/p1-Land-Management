@@ -1,6 +1,6 @@
 # Website Backups: native status and manual-run contract
 
-Status: native status/run released and read-only verified at `47e8136e1885c0edd4696f8907a4f7b3b59629e7` on September 19. Native UI is implemented and independently reviewed; backup-service corrections passed final local validation. This slice does not establish restore parity, successful production backup creation, media recovery or readiness to retire the retained administration application.
+Status: native status/run released and read-only verified at `47e8136e1885c0edd4696f8907a4f7b3b59629e7` on September 19. A native restore operation is implemented on a subsequent review branch; it is not production restore acceptance. The original release did not establish restore parity, successful production backup creation, media recovery or readiness to retire the retained administration application.
 
 ## API and authorization
 
@@ -10,10 +10,13 @@ The consolidated Dashboard API exposes:
 | --- | --- | --- | --- |
 | GET | `/api/v1/marketing/cms/website-system/backups/status` | `getWebsiteBackupStatus()` | 200, `WebsiteBackupStatus` |
 | POST | `/api/v1/marketing/cms/website-system/backups/run` | `runWebsiteBackup()` | 201, `WebsiteBackupSummary` |
+| POST | `/api/v1/marketing/cms/website-system/backups/restore` | `restoreWebsiteBackup()` | 200, `WebsiteBackupRestoreReceipt` |
 
 The transport allowlists these exact method/path pairs as Owner-only. Core mounts `business-center-backups.routes.ts` at `/website-system/backups` behind the existing authenticated Business Center bridge. The router independently requires an active, attested Owner and responds with `Cache-Control: private, no-store`.
 
-Both operations reject query parameters. Manual run accepts an absent body or a strict empty object. Caller-supplied reason, storage settings, object key and restore options are rejected. The server always invokes `runSystemBackup("manual")`. No native restore or download operation is exposed by this contract.
+All operations reject query parameters. Manual run accepts an absent body or a strict empty object. Caller-supplied reason, storage settings and restore options are rejected. The server always invokes `runSystemBackup("manual")`. Restore accepts only `key` and an exact `RESTORE <key>` confirmation, rejects additional fields, and invokes the retained `restoreSystemBackupFromKey` service once. The service's configured-prefix guard, exact stack-identity check, advisory lock, transactional rollback and local post-commit cache invalidation remain unchanged. The response projects summary metadata rather than archive contents. There is no native download or legacy-identity override.
+
+Restore is destructive and can erase newer database writes. The UI exposes it only from refreshed retained history to the attested Owner, disables archives without stack identity for separate recovery review, requires typing the complete archive key, and warns about newer writes and media limitations. The server also requires exact confirmation independently of the UI. Request and completion audit writes contain fixed text; the pre-restore database audit row may itself be replaced by the restore and is not a durable external audit ledger. A timeout, completion-audit failure or other 503 leaves outcome uncertain; do not retry automatically. Refresh history and verify the live database and other serving replicas with the operations team. The transport allows up to five minutes for the restore response; this is not a guarantee the provider connection will remain open or that an in-flight Core operation will stop on timeout.
 
 ## Response projection
 

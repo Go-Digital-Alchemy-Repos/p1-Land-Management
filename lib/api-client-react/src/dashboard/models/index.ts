@@ -731,6 +731,8 @@ export * from './uploadMarketingMediaBody';
 export * from './uploadWebsiteIdentityAsset201';
 export * from './uploadWebsiteIdentityAssetBody';
 export * from './uploadWebsiteIdentityAssetBodySettingKey';
+export * from './websiteBackupRestoreReceipt';
+export * from './websiteBackupRestoreRequest';
 export * from './websiteBackupStatus';
 export * from './websiteBackupStorage';
 export * from './websiteBackupStorageSource';

@@ -17,6 +17,7 @@ export const cmsOperations: CmsOperation[] = [];
 for (const [method, path] of [
   ["GET", "/website-system/backups/status"],
   ["POST", "/website-system/backups/run"],
+  ["POST", "/website-system/backups/restore"],
   ["GET", "/website-system/integrations"],
   ["PUT", "/website-system/integrations/:provider"],
   ["POST", "/website-system/integrations/:provider/test"],
@@ -384,7 +385,7 @@ export async function callCms(
       {
         method: operation.method,
         redirect: "error",
-        signal: AbortSignal.timeout(30000),
+        signal: AbortSignal.timeout(operation.path === "/website-system/backups/restore" ? 300000 : 30000),
         headers: {
           "content-type": operation.multipart
             ? requestContentType!

@@ -2,10 +2,11 @@
 import React, { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { beforeEach, afterEach, it, expect, vi } from "vitest";
-const api = vi.hoisted(() => ({ get: vi.fn(), run: vi.fn() }));
+const api = vi.hoisted(() => ({ get: vi.fn(), run: vi.fn(), restore: vi.fn() }));
 vi.mock("@workspace/api-client-react/dashboard", () => ({
   getWebsiteBackupStatus: api.get,
   runWebsiteBackup: api.run,
+  restoreWebsiteBackup: api.restore,
 }));
 import WebsiteBackups from "../../../../artifacts/p1-dashboard/src/marketing/WebsiteBackups";
 const backup = {
@@ -37,6 +38,7 @@ beforeEach(async () => {
   vi.resetAllMocks();
   api.get.mockResolvedValue(snapshot);
   api.run.mockResolvedValue(backup);
+  api.restore.mockResolvedValue({ restored: true, manifest: backup });
   vi.spyOn(window, "confirm").mockReturnValue(true);
   (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
   container = document.createElement("div");
@@ -50,7 +52,7 @@ afterEach(async () => {
   vi.restoreAllMocks();
 });
 function button(label: string) {
-  return [...container.querySelectorAll("button")].find((button) => button.textContent === label)!;
+  return [...container.querySelectorAll("button")].find((button) => button.textContent?.trim() === label)!;
 }
 async function click(label: string) {
   await act(async () => button(label).click());
@@ -129,4 +131,52 @@ it("disables creation when storage is unavailable", async () => {
   await click("Refresh status");
   expect(button("Create manual backup").disabled).toBe(true);
   expect(container.textContent).toContain("No readable backup");
+});
+async function typeRestoreConfirmation(value: string) {
+  const input = container.querySelector<HTMLInputElement>("#backup-restore-confirmation")!;
+  await act(async () => {
+    Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(input, value);
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+  });
+}
+it("does not restore on entry, cancellation, or a partial archive-key confirmation", async () => {
+  expect(api.restore).not.toHaveBeenCalled();
+  await click("Restore this archive");
+  expect(container.querySelector('[role="dialog"]')).not.toBeNull();
+  expect(button("Restore database").disabled).toBe(true);
+  await typeRestoreConfirmation("RESTORE other");
+  expect(button("Restore database").disabled).toBe(true);
+  await click("Cancel");
+  expect(api.restore).not.toHaveBeenCalled();
+});
+it("keeps legacy archives behind a separate recovery review", async () => {
+  api.get.mockResolvedValueOnce({ ...snapshot, recent: [{ ...backup, clientStackId: null }] });
+  await click("Refresh status");
+  expect(button("Legacy archive requires separate recovery review").disabled).toBe(true);
+  expect(api.restore).not.toHaveBeenCalled();
+});
+it("sends one exact-key restore, then invalidates old history and prompts live verification", async () => {
+  await click("Restore this archive");
+  await typeRestoreConfirmation(`RESTORE ${backup.key}`);
+  expect(button("Restore database").disabled).toBe(false);
+  await click("Restore database");
+  expect(api.restore).toHaveBeenCalledTimes(1);
+  expect(api.restore.mock.calls[0][0]).toEqual({ key: backup.key, confirmation: `RESTORE ${backup.key}` });
+  expect(container.textContent).toContain("Restore completed");
+  expect(container.textContent).toContain("Other serving replicas");
+  expect(container.textContent).not.toContain("Recent backups");
+});
+it("treats a timed-out restore as uncertain and blocks another operation until reviewed", async () => {
+  api.restore.mockRejectedValueOnce(Error("timeout"));
+  await click("Restore this archive");
+  await typeRestoreConfirmation(`RESTORE ${backup.key}`);
+  await click("Restore database");
+  expect(api.restore).toHaveBeenCalledTimes(1);
+  expect(button("Create manual backup").disabled).toBe(true);
+  expect(container.textContent).toContain("Restore outcome could not be confirmed");
+  await click("Refresh status");
+  expect(button("Create manual backup").disabled).toBe(true);
+  await act(async () => container.querySelector<HTMLInputElement>('input[type="checkbox"]')!.click());
+  expect(button("Create manual backup").disabled).toBe(false);
+  expect(api.restore).toHaveBeenCalledTimes(1);
 });

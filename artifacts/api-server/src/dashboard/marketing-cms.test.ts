@@ -573,15 +573,25 @@ test("website integration bridge has only the three Owner operations", () => {
  assert.equal(cmsOperations.filter(op=>op.path.startsWith("/website-system/integrations")).length,3);
 });
 
- test("backup bridge exposes only Owner status and manual run", () => {
-   for (const [method,path] of [["GET","/website-system/backups/status"],["POST","/website-system/backups/run"]]) {
+ test("backup bridge exposes only Owner status, manual run, and exact restore", () => {
+   for (const [method,path] of [["GET","/website-system/backups/status"],["POST","/website-system/backups/run"],["POST","/website-system/backups/restore"]]) {
      const op=operation(method,path);assert.equal(op.ownerOnly,true);assert.deepEqual(op.capabilities,[]);
      assert.equal(cmsDestination(op,{},{}),path);
      assert.throws(()=>cmsDestination(op,{}, {key:"private"}));
    }
-   assert.equal(cmsOperations.filter(op=>op.path.startsWith("/website-system/backups")).length,2);
-   assert.equal(cmsOperations.some(op=>op.path.includes("backups/restore")),false);
+   assert.equal(cmsOperations.filter(op=>op.path.startsWith("/website-system/backups")).length,3);
+   assert.equal(cmsOperations.some(op=>op.path.includes("backups/download")),false);
  });
+test("restore bridge forwards only its exact request to the bounded Core destination", async () => {
+  const body={key:"clients/p1/backups/db/fixture.gz",confirmation:"RESTORE clients/p1/backups/db/fixture.gz"};
+  const result=await callCms(connection,operation("POST","/website-system/backups/restore"),{},{},body,"grant",async(url,options)=>{
+    assert.equal(url,"https://core.example.test/api/integrations/business-center/cms/website-system/backups/restore");
+    assert.equal(options?.method,"POST");
+    assert.deepEqual(JSON.parse(String(options?.body)),body);
+    return Response.json({restored:true,manifest:{key:body.key}});
+  });
+  assert.equal(result.status,200);
+});
 
 
 test("page, section and menu DELETE forward concurrency proofs", async () => {
