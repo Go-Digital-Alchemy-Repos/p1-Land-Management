@@ -146,6 +146,7 @@ const sidebarIconColors: Record<keyof typeof icons, string> = {
   Inspections: "#16a34a",
   Sales: "#2563eb",
   Pipeline: "#2563eb",
+  "Pipeline Settings": "#2563eb",
   Agreements: "#d97706",
   "Agreement Drafts": "#ea580c",
   "Agreement Templates": "#a16207",
@@ -253,6 +254,7 @@ const icons: Record<DashboardPageRoute["view"] | "Settings:security" | "Settings
   "My Day": ClipboardList,
   Sales: FileText,
   Pipeline: LayoutDashboard,
+  "Pipeline Settings": SlidersHorizontal,
   Agreements: FileText,
   "Agreement Templates": FileText,
   "Agreement Drafts": FileText,
@@ -1056,9 +1058,10 @@ function App() {
     ? [
         { view: "Sales" as const, label: "Overview", path: "/sales", icon: FileText, tone: "blue" },
         { view: "Pipeline" as const, label: "Pipeline", path: "/sales/pipeline", icon: LayoutDashboard, tone: "blue" },
+        ...(person?.role === "owner" ? [{ view: "Pipeline Settings" as const, label: "Settings", path: "/sales/pipeline-settings", icon: SlidersHorizontal, tone: "blue" }] : []),
       ]
     : [];
-  const inSalesWorkspace = ["Sales", "Pipeline"].includes(view);
+  const inSalesWorkspace = ["Sales", "Pipeline", "Pipeline Settings"].includes(view);
   const marketingWorkspaceGroups = [
     {
       label: "Content",
@@ -2149,8 +2152,8 @@ function App() {
           )}
           {inSalesWorkspace && (
             <PipelineProvider key={`${person.id}:${can("revenue.sales")}`} enabled={can("revenue.sales")}>
-              {person.role === "owner" && <PipelineSettingsEditor />}
-              {view === "Pipeline" ? <SalesPipelineBoard canOnboard={can("customers.clients")} onCreate={() => openForm("lead")} /> : <>
+              {person.role === "owner" && <PipelineSettingsEditor initiallyOpen={view === "Pipeline Settings"} />}
+              {view === "Pipeline" ? <SalesPipelineBoard canOnboard={can("customers.clients")} onCreate={() => openForm("lead")} /> : view === "Pipeline Settings" ? null : <>
               {hasCapability(person, "revenue.sales") && <a href="/agreements/drafts">Agreement drafts</a>}
               {hasCapability(person, "revenue.sales") && <CommercialInbox staff={data.staff || []} canOnboard={can("customers.clients")} />}
               <section className="panel">

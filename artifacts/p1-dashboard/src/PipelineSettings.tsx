@@ -105,7 +105,7 @@ export function PipelineStage({ value }: { value: string }) {
     </span>
   );
 }
-export function PipelineSettingsEditor() {
+export function PipelineSettingsEditor({ initiallyOpen = false }: { initiallyOpen?: boolean }) {
   const { state, error, reload, accept } = useContext(Context);
   const [open, setOpen] = useState(false),
     [draft, setDraft] = useState<Config | null>(null),
@@ -114,7 +114,8 @@ export function PipelineSettingsEditor() {
     [blocked, setBlocked] = useState(false),
     [message, setMessage] = useState(""),
     [discard, setDiscard] = useState(false);
-  const gate = useRef(false),
+  const initialOpenApplied = useRef(false),
+    gate = useRef(false),
     live = useRef(true);
   useEffect(() => {
     live.current = true;
@@ -137,6 +138,14 @@ export function PipelineSettingsEditor() {
     setMessage("");
     setBlocked(false);
   }
+  useEffect(() => {
+    if (!initiallyOpen) {
+      initialOpenApplied.current = false;
+    } else if (state && !error && !initialOpenApplied.current) {
+      initialOpenApplied.current = true;
+      begin();
+    }
+  }, [initiallyOpen, state, error]);
   async function save() {
     if (gate.current || !base || !parsed.success || blocked) return;
     gate.current = true;
