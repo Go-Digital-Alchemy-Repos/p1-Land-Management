@@ -1,6 +1,10 @@
 # Retained admin route inventory and retirement boundaries
 
-September 19, 2026. Source inspection only. This inventory does **not** authorize or establish safe retirement of `/admin`. Native destinations exist, but a destination is not proof of operation, account, deep-link or data parity. No redirects were added in this task.
+September 19, 2026, with September 22 closeout-branch updates. This inventory
+does **not** authorize or establish safe retirement of `/admin`. Native
+destinations exist, but a destination is not proof of operation, account,
+deep-link or data parity. A default-off, exact-leaf redirect table is now on
+the closeout branch; no production redirect is active.
 
 ## Inspected sources
 
@@ -19,15 +23,15 @@ All destination paths below are on the Business Center host. They are proposed m
 | Retained route(s) | Existing native destination | Remaining evidence/disposition |
 | --- | --- | --- |
 | `/admin` | `/` | Dashboard summary measures/actions are different; inventory Owner/editor landing and denied-tool behavior. |
-| `/admin/login`, `/admin/forgot-password`, `/admin/reset-password`, `/admin/setup` | Native authentication flow; no universal path substitution | Reconcile existing identity, recovery tokens, session/MFA/verification/suspension and setup state before routing users away. Never forward reset/setup secrets as ordinary query parameters. |
-| `/admin/users` | `/settings/people` | Native User Manager exists; reviewed real account/grant/notification reconciliation remains. |
+| `/admin/login`, `/admin/forgot-password`, `/admin/reset-password`, `/admin/setup` | Native authentication flow; no universal path substitution | Core reset emails and federation callbacks still land on `/admin` routes. Core reset tokens cannot be consumed by Dashboard Better Auth, and setup state is separate. `main` commit `11546bd4` repairs two legacy recovery forms that previously posted to nonexistent `/api/admin` endpoints; this keeps old tokens usable during transition but does not authorize redirecting them. Never forward reset/setup secrets as ordinary query parameters. |
+| `/admin/users` | `/settings/people` | Native User Manager exists and production now shows only the active Owner plus seven retired test-account tombstones. Core user creation can still send a legacy login URL; reconcile provisioning, permissions and recipient behavior before retiring this page. |
 | `/admin/analytics` | `/marketing/reporting/analytics`, `/marketing/reporting/search-console` | Preserve report controls/export; Google property/www access and active connection management remain. |
 | `/admin/events`, `/admin/events/new`, `/admin/events/settings` | `/marketing/content/events` | Preserve feature-disabled behavior and creation/settings intent; no automatic assumption that `/new` maps to an open form. Event registration/related operations need parity review. |
 | `/admin/careers`, `/admin/careers/new`, `/admin/careers/settings` | `/marketing/content/careers` | Preserve disabled module state, applications/settings and create intent. |
 | `/admin/forms` | `/marketing/content/forms` | Submission details, delivery jobs/recovery, export and notification controls must remain usable. |
 | `/admin/crm` | `/sales` | Real pipeline/lead/activity/custom-field mappings and workflow acceptance remain; not a direct record-ID rename. |
 | `/admin/crm/clients` | `/clients` | Source CRM client IDs must map through approved reconciliation; retain unmatched records. |
-| `/admin/crm/settings` | No demonstrated one-to-one destination | Source pipeline/settings merge and configuration workflow require explicit implementation or approved disposition. Do not send to unrelated business preferences. |
+| `/admin/crm/settings` | `/sales/pipeline-settings` (closeout branch) | Native Owner-only deep link opens the existing pipeline editor. Current production tables have no stored overrides; recheck values and roles before redirect activation. |
 | `/admin/blog` | `/marketing/content/blog` | Existing retained alias points to `/admin/cms/blog`; preserve alias in eventual redirect table. |
 | `/admin/docs`, `/admin/docs/:slug` | `/marketing/system/documents?doc=<encoded slug>` | Native selection supports `doc`; preserve slug, read/edit/sync/delete and version/reservation semantics. Cross-surface mutation acceptance remains. |
 | `/admin/settings`, `/admin/settings/integrations` | `/marketing/system/integrations` | Native Mailgun/Mailchimp/R2 configuration exists. Active Google environment configuration remains separate; no claim all provider cards have parity. |
@@ -39,7 +43,7 @@ All destination paths below are on the Business Center host. They are proposed m
 | `/admin/design/colors` | `/marketing/design/colors` | Preserve preview/publication/default/reset controls and contrast acceptance. |
 | `/admin/design/social-media` | `/marketing/design/social-media` | Preserve profile ordering/icon style/public delivery. |
 | `/admin/design/typography` | `/marketing/design/typography` | Preserve font selection/upload/public delivery and deployment-independent changes. |
-| `/admin/system/backups` | `/marketing/system/backups` | Native status/run released; destructive restore has **no native operation**. Recovery evidence and deliberate restore flow remain required. |
+| `/admin/system/backups` | `/marketing/system/backups` | Native status/run released. On September 22 the live page showed enabled/configured daily snapshots, a latest scheduled archive of 57 tables and 838 rows, and a clear warning that media bytes are separate. An Owner-only, exact-key-confirmed database restore is on the closeout branch and passes focused tests; it has not been exercised against production. Isolated restore, media-provider recovery and prior-image rollback evidence remain required. |
 | `/admin/client-stack-onboarding` | Retired; no replacement | The Owner retired the standalone client-stack onboarding tool on September 20, 2026. Preserve its historical evidence and migrations; do not recreate a multi-client workflow. |
 | `/admin/cms/website` | `/marketing/content/website` | Published P1 content contracts remain distinct from generic CMS pages. |
 | `/admin/cms/website/:routeId/:componentKey` | `/marketing/content/website?routeId=<encoded>&componentKey=<encoded>` | Native query selection exists; validate both keys, record permission and draft/preview restoration. |
@@ -86,4 +90,6 @@ Keep schedulers, durable jobs, editor reservations, media storage and cache inva
 5. Test redirect table locally/staging: exact known paths, encoded IDs/slugs, query filtering, no loops, no API redirects, old bookmarks and signed-token flows. Use reversible redirects during cutover validation.
 6. Confirm public SSR/content/media/preview/intake and native bridge workflows after candidate retirement behavior. Keep old application revision and source data available for rollback.
 
-The acceptance tracker now records the native Backups destination for status/run only. Nothing in this inventory closes destructive restore or overall retirement acceptance.
+The native restore implementation is code parity for the backup control, not
+production recovery acceptance. Nothing in this inventory closes overall
+retirement acceptance.

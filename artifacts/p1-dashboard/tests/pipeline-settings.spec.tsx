@@ -48,16 +48,24 @@ const button = (label: string) =>
   Array.from(host.querySelectorAll("button")).find(
     (b) => b.textContent === label,
   )!;
-async function render() {
+async function render(initiallyOpen = false) {
   await act(async () =>
     root.render(
       <PipelineProvider>
-        <PipelineSettingsEditor />
+        <PipelineSettingsEditor initiallyOpen={initiallyOpen} />
         <Consumer />
       </PipelineProvider>,
     ),
   );
 }
+it("opens the existing editor when entered through the settings deep link", async () => {
+  await render(true);
+  expect(host.querySelector('[aria-label="new label"]')).not.toBeNull();
+  expect(button("Edit pipeline")).toBeUndefined();
+  await click("Close editor");
+  expect(host.querySelector('[aria-label="new label"]')).toBeNull();
+  expect(button("Edit pipeline")).not.toBeUndefined();
+});
 async function click(label: string) {
   await act(async () => button(label).click());
 }
@@ -123,8 +131,9 @@ it("retains uncertain drafts and requires explicit discard before reload", async
 });
 it("failed initial reads show defaults but never enable an editor", async () => {
   api.getSalesPipelineSettings.mockRejectedValue(new Error("unavailable"));
-  await render();
+  await render(true);
   expect(button("Edit pipeline").disabled).toBe(true);
+  expect(host.querySelector('[aria-label="new label"]')).toBeNull();
   expect(host.textContent).toContain("Default stage labels are shown.");
   expect(api.saveSalesPipelineSettings).not.toHaveBeenCalled();
 });

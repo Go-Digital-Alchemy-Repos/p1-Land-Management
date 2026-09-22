@@ -75,6 +75,38 @@
   width: auto;
   margin-top: 4px;
 }
+.backup-restore-overlay {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgb(15 23 42 / 65%);
+}
+.backup-restore-dialog {
+  width: min(720px, 100%);
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+  box-shadow: 0 24px 72px rgb(15 23 42 / 25%);
+}
+.backup-confirmation-key {
+  display: block;
+  overflow-wrap: anywhere;
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 8px;
+  background: #f3f4f6;
+}
+.backup-restore-dialog input[type="text"] {
+  width: 100%;
+  min-height: 42px;
+  margin-top: 8px;
+}
+.backup-restore-dialog button:last-child {
+  color: #fff;
+  background: #a12622;
+}
 @media (max-width: 750px) {
   .backup-grid,
   .backup-details {

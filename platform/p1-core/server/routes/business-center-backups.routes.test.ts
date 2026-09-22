@@ -5,11 +5,13 @@ const state = vi.hoisted(() => ({
   identity: null as any,
   status: vi.fn(),
   run: vi.fn(),
+  restore: vi.fn(),
   log: vi.fn(),
 }));
 vi.mock("../services/system-backup.service", () => ({
   getBackupStatus: state.status,
   runSystemBackup: state.run,
+  restoreSystemBackupFromKey: state.restore,
 }));
 vi.mock("../storage", () => ({ storage: { activity: { log: state.log } } }));
 vi.mock("../utils/logger", () => ({ logger: { app: { warn: vi.fn(), error: vi.fn() } } }));
@@ -37,6 +39,7 @@ beforeEach(async () => {
   state.identity = { active: true, role: "owner", ownerAttested: true };
   state.log.mockResolvedValue(undefined);
   state.run.mockResolvedValue(manifest);
+  state.restore.mockResolvedValue(manifest);
   state.status.mockResolvedValue({
     enabled: false,
     configured: true,
@@ -74,7 +77,7 @@ const req = (path: string, method = "GET", body?: unknown) =>
     headers: { "content-type": "application/json" },
     body: body === undefined ? undefined : JSON.stringify(body),
   });
-it("gates both operations before service or audit access", async () => {
+it("gates all operations before service or audit access", async () => {
   for (const identity of [
     null,
     { active: false, role: "owner", ownerAttested: true },
@@ -84,9 +87,11 @@ it("gates both operations before service or audit access", async () => {
     state.identity = identity;
     expect((await req("/status")).status).toBe(403);
     expect((await req("/run", "POST")).status).toBe(403);
+    expect((await req("/restore", "POST", { key: manifest.key, confirmation: `RESTORE ${manifest.key}` })).status).toBe(403);
   }
   expect(state.status).not.toHaveBeenCalled();
   expect(state.run).not.toHaveBeenCalled();
+  expect(state.restore).not.toHaveBeenCalled();
   expect(state.log).not.toHaveBeenCalled();
 });
 it("projects metadata only and distinguishes disabled scheduling from configured storage", async () => {
@@ -120,12 +125,51 @@ it("permits unconfigured empty history without manufacturing a backup", async ()
   });
   expect(state.run).not.toHaveBeenCalled();
 });
-it("rejects query, injected reason/storage, and exposes no restore endpoint", async () => {
+it("rejects query, injected reason/storage, and unconfirmed or injected restore requests", async () => {
   expect((await req("/status?key=private")).status).toBe(400);
   for (const body of [{ reason: "scheduled" }, { storage: "other" }, { key: "private" }])
     expect((await req("/run", "POST", body)).status).toBe(400);
-  expect((await req("/restore", "POST", {})).status).toBe(404);
+  expect((await req("/restore", "POST", {})).status).toBe(400);
+  expect((await req("/restore?key=other", "POST", { key: manifest.key, confirmation: `RESTORE ${manifest.key}` })).status).toBe(400);
+  for (const body of [
+    { key: manifest.key, confirmation: "RESTORE other" },
+    { key: manifest.key, confirmation: `RESTORE ${manifest.key}`, allowLegacyBackup: true },
+    { key: manifest.key, confirmation: `RESTORE ${manifest.key}`, storage: "other" },
+  ]) expect((await req("/restore", "POST", body)).status).toBe(400);
   expect(state.run).not.toHaveBeenCalled();
+  expect(state.restore).not.toHaveBeenCalled();
+});
+it("restores once through the retained service with an exact archive-key confirmation", async () => {
+  const res = await req("/restore", "POST", { key: manifest.key, confirmation: `RESTORE ${manifest.key}` });
+  expect(res.status).toBe(200);
+  expect(res.headers.get("cache-control")).toBe("private, no-store");
+  expect(state.restore).toHaveBeenCalledExactlyOnceWith(manifest.key);
+  expect(state.log.mock.calls).toEqual([
+    ["owner", "website_restore_requested", "Core database restore requested with explicit archive confirmation"],
+    ["owner", "website_restore_completed", "Core database restore completed; verify live content and restart other serving replicas"],
+  ]);
+  const body = await res.json();
+  expect(body).toMatchObject({ restored: true, manifest: { key: manifest.key, tableCount: 2 } });
+  expect(JSON.stringify(body)).not.toContain("private_table");
+});
+it("preserves uncertain restore outcomes and never retries the retained service", async () => {
+  const body = { key: manifest.key, confirmation: `RESTORE ${manifest.key}` };
+  state.restore.mockRejectedValueOnce(new Error("Another backup or restore is already running"));
+  expect((await req("/restore", "POST", body)).status).toBe(409);
+  state.restore.mockRejectedValueOnce(new Error("private storage or identity failure"));
+  const response = await req("/restore", "POST", body);
+  expect(response.status).toBe(503);
+  expect(await response.text()).not.toContain("private storage");
+  expect(state.restore).toHaveBeenCalledTimes(2);
+});
+it("requires the request audit before restore and treats a completion-audit failure as uncertain", async () => {
+  const body = { key: manifest.key, confirmation: `RESTORE ${manifest.key}` };
+  state.log.mockRejectedValueOnce(Error("private audit"));
+  expect((await req("/restore", "POST", body)).status).toBe(503);
+  expect(state.restore).not.toHaveBeenCalled();
+  state.log.mockResolvedValueOnce(undefined).mockRejectedValueOnce(Error("private audit"));
+  expect((await req("/restore", "POST", body)).status).toBe(503);
+  expect(state.restore).toHaveBeenCalledTimes(1);
 });
 it("runs exactly once with authenticated intent and completion audit", async () => {
   const res = await req("/run", "POST");

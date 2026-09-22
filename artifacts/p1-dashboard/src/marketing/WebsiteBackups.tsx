@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Archive, Clock, Database, RefreshCw, ShieldCheck } from "lucide-react";
+import { Archive, Clock, Database, RefreshCw, RotateCcw, ShieldCheck } from "lucide-react";
 import {
   getWebsiteBackupStatus,
+  restoreWebsiteBackup,
   runWebsiteBackup,
 } from "@workspace/api-client-react/dashboard";
 import { scheduleDateTime } from "../schedule-dates";
@@ -63,15 +64,36 @@ export default function WebsiteBackups() {
   const [uncertain, setUncertain] = useState(false);
   const [inspected, setInspected] = useState(false);
   const [refreshed, setRefreshed] = useState(false);
+  const [restoreTarget, setRestoreTarget] = useState<Summary | null>(null);
+  const [restoreConfirmation, setRestoreConfirmation] = useState("");
+  const [restoreCompleted, setRestoreCompleted] = useState<Summary | null>(null);
+  const [restoreUncertain, setRestoreUncertain] = useState(false);
+  const [restoreRefreshed, setRestoreRefreshed] = useState(false);
+  const [restoreInspected, setRestoreInspected] = useState(false);
   const gate = useRef(false),
     live = useRef(true),
     request = useRef<AbortController | null>(null);
-  function options() {
+  const restoreDialog = useRef<HTMLElement | null>(null);
+  const restoreFocus = useRef<HTMLElement | null>(null);
+  function closeRestore() {
+    setRestoreTarget(null);
+    setRestoreConfirmation("");
+    queueMicrotask(() => restoreFocus.current?.focus());
+  }
+  function openRestore(backup: Summary, trigger: HTMLElement) {
+    restoreFocus.current = trigger;
+    setRestoreTarget(backup);
+    setRestoreConfirmation("");
+  }
+  useEffect(() => {
+    if (restoreTarget) restoreDialog.current?.querySelector<HTMLInputElement>("input")?.focus();
+  }, [restoreTarget]);
+  function options(timeoutMs = 30000) {
     request.current = new AbortController();
     return {
       signal: AbortSignal.any([
         request.current.signal,
-        AbortSignal.timeout(30000),
+        AbortSignal.timeout(timeoutMs),
       ]),
     };
   }
@@ -85,12 +107,17 @@ export default function WebsiteBackups() {
       setRefreshed(false);
       setInspected(false);
     }
+    if (restoreUncertain) {
+      setRestoreRefreshed(false);
+      setRestoreInspected(false);
+    }
     try {
       const next = await getWebsiteBackupStatus(options());
       if (live.current) {
         setStatus(next);
         setFresh(true);
         if (uncertain) setRefreshed(true);
+        if (restoreUncertain) setRestoreRefreshed(true);
       }
     } catch {
       if (live.current)
@@ -108,6 +135,7 @@ export default function WebsiteBackups() {
       !status?.configured ||
       !fresh ||
       (uncertain && !(refreshed && inspected))
+      || (restoreUncertain && !(restoreRefreshed && restoreInspected))
     )
       return;
     if (
@@ -143,6 +171,39 @@ export default function WebsiteBackups() {
       if (live.current) setBusy(false);
     }
   }
+  async function restore() {
+    if (
+      gate.current || !restoreTarget || !restoreTarget.clientStackId || !fresh || !status?.configured ||
+      restoreUncertain && !(restoreRefreshed && restoreInspected) ||
+      restoreConfirmation !== `RESTORE ${restoreTarget.key}`
+    ) return;
+    const key = restoreTarget.key;
+    gate.current = true;
+    setBusy(true);
+    setFresh(false);
+    setError("");
+    setRestoreCompleted(null);
+    setRestoreUncertain(false);
+    setRestoreRefreshed(false);
+    setRestoreInspected(false);
+    try {
+      const result = await restoreWebsiteBackup({ key, confirmation: restoreConfirmation }, options(300000));
+      if (live.current) {
+        setRestoreCompleted(result.manifest);
+        setStatus(null);
+        closeRestore();
+      }
+    } catch {
+      if (live.current) {
+        setRestoreUncertain(true);
+        closeRestore();
+        setError("Restore outcome could not be confirmed. It may still be running or may have completed. Do not retry or change content until you inspect refreshed history, verify the live site, and confirm recovery with the operations team.");
+      }
+    } finally {
+      gate.current = false;
+      if (live.current) setBusy(false);
+    }
+  }
   useEffect(() => {
     live.current = true;
     void refresh();
@@ -170,6 +231,7 @@ export default function WebsiteBackups() {
             !status?.configured ||
             !fresh ||
             (uncertain && !(refreshed && inspected))
+            || (restoreUncertain && !(restoreRefreshed && restoreInspected))
           }
           onClick={() => void create()}
         >
@@ -201,6 +263,23 @@ export default function WebsiteBackups() {
             request’s outcome before another backup.
           </label>
         </div>
+      )}
+      {restoreUncertain && (
+        <div className="backup-panel">
+          <h3>Verify the uncertain restore</h3>
+          <p>Refreshing history does not cancel an in-flight restore or prove which database state is live. Verify the live site, recovery logs, and other serving replicas before any further change.</p>
+          <label>
+            <input type="checkbox" disabled={!restoreRefreshed || busy} checked={restoreInspected} onChange={(event) => setRestoreInspected(event.target.checked)} />{" "}
+            I verified the restored database state and confirmed the earlier request’s outcome with the operations team.
+          </label>
+        </div>
+      )}
+      {restoreCompleted && (
+        <section className="backup-panel" role="status">
+          <h3><ShieldCheck color="#16803d" aria-hidden="true" /> Restore completed</h3>
+          <BackupDetails backup={restoreCompleted} />
+          <p>Refresh history and verify live CMS content. Other serving replicas may hold pre-restore settings caches and require a controlled restart or expiry.</p>
+        </section>
       )}
       {completed && (
         <section className="backup-panel" role="status">
@@ -277,6 +356,9 @@ export default function WebsiteBackups() {
                     rows
                   </summary>
                   <BackupDetails backup={backup} />
+                  <button type="button" disabled={busy || !fresh || !status.configured || !backup.clientStackId || restoreUncertain && !(restoreRefreshed && restoreInspected)} onClick={(event) => openRestore(backup, event.currentTarget)}>
+                    <RotateCcw size={16} aria-hidden="true" /> {backup.clientStackId ? "Restore this archive" : "Legacy archive requires separate recovery review"}
+                  </button>
                 </details>
               ))
             ) : (
@@ -285,13 +367,36 @@ export default function WebsiteBackups() {
           </section>
         </>
       ) : (
-        !busy && !completed && <p>Backup status has not loaded.</p>
+        !busy && !completed && !restoreCompleted && <p>Backup status has not loaded.</p>
       )}
       <p className="backup-note">
         Media counts describe database records, not backed-up media files.
         Separate media recovery and an isolated restore rehearsal are required.
-        Restore is not available from this page.
+        A database restore does not recover missing media files.
       </p>
+      {restoreTarget && (
+        <div className="backup-restore-overlay" role="presentation">
+          <section ref={restoreDialog} className="backup-panel backup-restore-dialog" role="dialog" aria-modal="true" aria-labelledby="backup-restore-title" onKeyDown={(event) => {
+            if (event.key === "Escape" && !busy) { event.preventDefault(); closeRestore(); }
+            if (event.key !== "Tab") return;
+            const controls = [...(restoreDialog.current?.querySelectorAll<HTMLElement>("input, button:not(:disabled)") ?? [])];
+            const first = controls[0], last = controls[controls.length - 1];
+            if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+            else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+          }}>
+            <h3 id="backup-restore-title">Restore this database archive?</h3>
+            <p>This replaces the live Core database. Changes made after {scheduleDateTime(restoreTarget.createdAt)} Eastern may be lost. Create and verify a fresh backup first, account for newer writes, and confirm the selected stack and archive provenance. Media files are separate.</p>
+            <BackupDetails backup={restoreTarget} />
+            <label htmlFor="backup-restore-confirmation">Type RESTORE followed by the complete archive key:</label>
+            <code className="backup-confirmation-key">RESTORE {restoreTarget.key}</code>
+            <input id="backup-restore-confirmation" type="text" autoComplete="off" spellCheck={false} value={restoreConfirmation} onChange={(event) => setRestoreConfirmation(event.target.value)} />
+            <div className="backup-toolbar">
+              <button type="button" disabled={busy} onClick={closeRestore}>Cancel</button>
+              <button type="button" disabled={busy || restoreConfirmation !== `RESTORE ${restoreTarget.key}`} onClick={() => void restore()}>Restore database</button>
+            </div>
+          </section>
+        </div>
+      )}
     </section>
   );
 }

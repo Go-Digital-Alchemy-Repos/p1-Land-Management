@@ -15693,7 +15693,7 @@
     "/marketing/cms/website-system/backups/status": {
       "get": {
         "operationId": "getWebsiteBackupStatus",
-        "description": "Active attested Owner only. Core database backups include media inventory, not copied media bytes. Manual run applies configured retention. No automatic retry; inspect status after uncertain execution. No restore operation.",
+        "description": "Active attested Owner only. Core database backups include media inventory, not copied media bytes. Manual run applies configured retention. No automatic retry; inspect status after uncertain execution.",
         "responses": {
           "200": {
             "description": "Success",
@@ -15726,7 +15726,7 @@
     "/marketing/cms/website-system/backups/run": {
       "post": {
         "operationId": "runWebsiteBackup",
-        "description": "Active attested Owner only. Core database backups include media inventory, not copied media bytes. Manual run applies configured retention. No automatic retry; inspect status after uncertain execution. No restore operation.",
+        "description": "Active attested Owner only. Core database backups include media inventory, not copied media bytes. Manual run applies configured retention. No automatic retry; inspect status after uncertain execution.",
         "responses": {
           "201": {
             "description": "Success",
@@ -15753,6 +15753,35 @@
           "503": {
             "description": "Status unavailable or execution outcome uncertain; refresh before another run"
           }
+        }
+      }
+    },
+    "/marketing/cms/website-system/backups/restore": {
+      "post": {
+        "operationId": "restoreWebsiteBackup",
+        "description": "Active attested Owner only. Destructive Core database restore. The caller must confirm the exact archive key. An uncertain transport outcome must be verified from authoritative status and live state; never automatically retry.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/WebsiteBackupRestoreRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Restore completed",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/WebsiteBackupRestoreReceipt" }
+              }
+            }
+          },
+          "400": { "description": "Invalid key or exact-key confirmation" },
+          "401": { "description": "Authentication required" },
+          "403": { "description": "Active attested Owner required" },
+          "409": { "description": "Another backup or restore is already running" },
+          "503": { "description": "Restore outcome uncertain; verify authoritative status and live state" }
         }
       }
     },
@@ -32580,6 +32609,24 @@
             "type": "integer",
             "minimum": 0
           }
+        }
+      },
+      "WebsiteBackupRestoreRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["key", "confirmation"],
+        "properties": {
+          "key": { "type": "string", "minLength": 1, "maxLength": 2048 },
+          "confirmation": { "type": "string", "minLength": 1, "maxLength": 2056 }
+        }
+      },
+      "WebsiteBackupRestoreReceipt": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["restored", "manifest"],
+        "properties": {
+          "restored": { "type": "boolean", "enum": [true] },
+          "manifest": { "$ref": "#/components/schemas/WebsiteBackupSummary" }
         }
       },
       "WebsiteBackupStorage": {

@@ -1,6 +1,6 @@
 # Website Backups: native status and manual-run contract
 
-Status: native status/run released and read-only verified at `47e8136e1885c0edd4696f8907a4f7b3b59629e7` on September 19. Native UI is implemented and independently reviewed; backup-service corrections passed final local validation. This slice does not establish restore parity, successful production backup creation, media recovery or readiness to retire the retained administration application.
+Status: native status/run released and read-only verified at `47e8136e1885c0edd4696f8907a4f7b3b59629e7` on September 19. A native restore operation is implemented on the September 22 closeout branch; it is not production restore acceptance. The live Dashboard status on September 22 showed an enabled, configured daily schedule and a latest scheduled snapshot with 57 tables and 838 rows. This proves a reported archive exists, not that its media bytes, provider secrets or application rollback are recoverable. The original release did not establish restore parity, media recovery or readiness to retire the retained administration application.
 
 ## API and authorization
 
@@ -10,10 +10,13 @@ The consolidated Dashboard API exposes:
 | --- | --- | --- | --- |
 | GET | `/api/v1/marketing/cms/website-system/backups/status` | `getWebsiteBackupStatus()` | 200, `WebsiteBackupStatus` |
 | POST | `/api/v1/marketing/cms/website-system/backups/run` | `runWebsiteBackup()` | 201, `WebsiteBackupSummary` |
+| POST | `/api/v1/marketing/cms/website-system/backups/restore` | `restoreWebsiteBackup()` | 200, `WebsiteBackupRestoreReceipt` |
 
 The transport allowlists these exact method/path pairs as Owner-only. Core mounts `business-center-backups.routes.ts` at `/website-system/backups` behind the existing authenticated Business Center bridge. The router independently requires an active, attested Owner and responds with `Cache-Control: private, no-store`.
 
-Both operations reject query parameters. Manual run accepts an absent body or a strict empty object. Caller-supplied reason, storage settings, object key and restore options are rejected. The server always invokes `runSystemBackup("manual")`. No native restore or download operation is exposed by this contract.
+All operations reject query parameters. Manual run accepts an absent body or a strict empty object. Caller-supplied reason, storage settings and restore options are rejected. The server always invokes `runSystemBackup("manual")`. Restore accepts only `key` and an exact `RESTORE <key>` confirmation, rejects additional fields, and invokes the retained `restoreSystemBackupFromKey` service once. The service's configured-prefix guard, exact stack-identity check, advisory lock, transactional rollback and local post-commit cache invalidation remain unchanged. The response projects summary metadata rather than archive contents. There is no native download or legacy-identity override.
+
+Restore is destructive and can erase newer database writes. The UI exposes it only from refreshed retained history to the attested Owner, disables archives without stack identity for separate recovery review, requires typing the complete archive key, and warns about newer writes and media limitations. The server also requires exact confirmation independently of the UI. Request and completion audit writes contain fixed text; the pre-restore database audit row may itself be replaced by the restore and is not a durable external audit ledger. A timeout, completion-audit failure or other 503 leaves outcome uncertain; do not retry automatically. Refresh history and verify the live database and other serving replicas with the operations team. The transport allows up to five minutes for the restore response; this is not a guarantee the provider connection will remain open or that an in-flight Core operation will stop on timeout.
 
 ## Response projection
 
@@ -81,3 +84,21 @@ Authenticated Owner navigation loaded the native screen and ten real history ent
 Desktop and 390px mobile visual checks passed; document width was 390px and only one h1 existed. No captured browser console errors. Public, Core and Dashboard health endpoints returned 200. Unauthenticated native status returned 401; non-Owner denial is covered by local route/transport tests, not impersonation of a real account. No create, retention delete, restore, upload or configuration mutation was performed in production.
 
 The readable manifest now provides a concrete recovery source to investigate. It does not prove the archive has been independently copied, restored or reconciled, and zero media records does not establish recoverability of public media assets. These are the next recovery acceptance boundaries.
+
+## September 22 native restore review slice
+
+The closeout branch adds the guarded native restore operation documented above.
+Independent integration validation passed Core and Dashboard typechecks/builds,
+the API typecheck/build, 11 native restore UI tests, 11 Core router tests, 21
+bridge transport tests, and 29 exact-route redirect tests. A disposable local
+PostgreSQL 17 database at the required `core_backup_test` name ran all 11
+database restore tests successfully; the disposable container was removed.
+The test did not use production data or provider storage.
+
+The live Owner screen still runs the earlier released code. Its September 22
+read-only status showed a scheduled September 22 archive with 57 tables, 838
+rows and 20 media **records**. No production restore or fresh manual backup was
+run in this review. Keep `/admin/system/backups` available until the new
+operation is released and isolated live-contract, prior-image, media-provider
+and rollback checks are accepted. A database-only restore does not refresh
+other running Core replicas' settings caches automatically.

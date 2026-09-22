@@ -7,6 +7,7 @@ export type DashboardView =
   | "My Day"
   | "Sales"
   | "Pipeline"
+  | "Pipeline Settings"
   | "Agreements"
   | "Agreement Drafts"
   | "Agreement Templates"
@@ -111,6 +112,7 @@ export const DASHBOARD_PAGES: readonly DashboardPageRoute[] = [
   { view: "Inspections", label: "Inspections", path: "/inspections", group: "Operations" },
   { view: "Sales", label: "Sales", path: "/sales", group: "Revenue" },
   { view: "Pipeline", label: "Pipeline", path: "/sales/pipeline", group: "Revenue", navigation: false },
+  { view: "Pipeline Settings", label: "Pipeline settings", path: "/sales/pipeline-settings", group: "Revenue", navigation: false },
   { view: "Agreements", label: "Agreements", path: "/agreements", group: "Revenue" },
   { view: "Agreement Drafts", label: "Agreement drafts", path: "/agreements/drafts", group: "Revenue", navigation: false },
   { view: "Agreement Templates", label: "Agreement templates", path: "/agreements/templates", group: "Revenue", navigation: false },
@@ -327,7 +329,7 @@ export function canAccessRoute(route: DashboardRoute, role: string | null | unde
   const { view, settingsSection } = route.page;
   if ((route.record?.kind === "client" || route.record?.kind === "property") && !canAccessWorkspaceTab(route.record.kind, route.record.tab, role, capabilities)) return false;
   if (view === "Profile") return true;
-  if (view === "Website Backups" || view === "Website Integrations" || view === "Website Email Templates" || view === "Website Documents" || view === "Website Head Tags" || view === "Website Features") return role === "owner";
+  if (view === "Pipeline Settings" || view === "Website Backups" || view === "Website Integrations" || view === "Website Email Templates" || view === "Website Documents" || view === "Website Head Tags" || view === "Website Features") return role === "owner";
   // Field and customer portals keep their existing record-scoped routes.
   if (role === "crew") return ["My Day", "Properties"].includes(view);
   if (role === "client") return ["Overview", "Properties", "Schedule", "Sales", "Billing", "Requests", "Inspections"].includes(view);
