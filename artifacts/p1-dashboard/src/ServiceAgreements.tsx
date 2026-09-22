@@ -17,6 +17,7 @@ import { AgreementEditor } from "./AgreementEditor";
 import { AgreementDetail } from "./AgreementDetail";
 import { AgreementQueue } from "./AgreementQueue";
 import { AgreementPreparationQueue } from "./AgreementPreparationQueue";
+import { AgreementComposer } from "./AgreementComposer";
 import "./service-agreements.css";
 export function ServiceAgreements({
   role,
@@ -285,6 +286,7 @@ function AgreementWorkspace({
           </>
         )}
       </fieldset>
+      {(["owner", "manager", "sales"] as string[]).includes(role) && <AgreementComposer role={role} />}
     </section>
   );
 }

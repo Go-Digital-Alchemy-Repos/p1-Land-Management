@@ -5,6 +5,20 @@
   align-items: flex-start;
   gap: 16px;
 }
+.agreement-composer { display: grid; gap: 16px; margin-top: 24px; }
+.agreement-composer-card { display: grid; gap: 12px; padding: 20px; border: 1px solid #dbe2d3; border-radius: 16px; background: #fff; }
+.agreement-composer-card h3,.agreement-composer-card h4 { margin: 0; }
+.agreement-composer-card label { display: grid; gap: 6px; font-weight: 650; }
+.agreement-composer-card input,.agreement-composer-card select,.agreement-composer-card textarea { width: 100%; }
+.agreement-composer-card textarea { min-height: 260px; font-family: inherit; line-height: 1.55; }
+.agreement-composer-grid { display: grid; grid-template-columns: minmax(280px, .8fr) minmax(320px, 1.2fr); gap: 16px; }
+.agreement-composer-list { display: grid; gap: 8px; max-height: 360px; overflow: auto; }
+.agreement-composer-list button { display: grid; gap: 3px; padding: 12px; text-align: left; border: 1px solid #dbe2d3; background: #fff; border-radius: 10px; }
+.agreement-composer-list button[aria-pressed="true"] { border-color: #9eb77c; background: #f0f4e5; box-shadow: inset 3px 0 #77924d; }
+.agreement-line-form { display: grid; grid-template-columns: minmax(180px, 2fr) repeat(3, minmax(100px, 1fr)) auto; gap: 10px; align-items: end; }
+.agreement-composer-editor table { width: 100%; border-collapse: collapse; }
+.agreement-composer-editor th,.agreement-composer-editor td { padding: 9px; border-bottom: 1px solid #e6ece1; text-align: left; }
+@media (max-width: 760px) { .agreement-composer-grid,.agreement-line-form { grid-template-columns: 1fr; } .agreement-composer-editor { overflow: auto; } }
 .agreement-workspace {
   border: 0;
   padding: 22px 24px 24px;

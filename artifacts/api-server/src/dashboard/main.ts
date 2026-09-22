@@ -29,6 +29,7 @@ import { clientWorkspaceApi } from "./client-workspace";
 import { propertyTypesApi } from "./property-types";
 import { salesApi } from "./sales";
 import { estimatePublicApi, jobsLifecycleApi } from "./jobs-lifecycle";
+import { agreementCompositionApi } from "./agreement-composition";
 import { pool, database } from "./database";
 import { sql } from "drizzle-orm";
 import { HttpError } from "./policy";
@@ -101,6 +102,7 @@ app.use(
   clientWorkspaceApi,
   propertyTypesApi,
   jobsLifecycleApi,
+  agreementCompositionApi,
   api,
   operationsApi,
   workReadinessApi,

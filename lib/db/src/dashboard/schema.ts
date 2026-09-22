@@ -406,10 +406,83 @@ export const agreementTemplate = pgTable("agreement_template", {
   version: integer().default(1).notNull(),
   body: text().notNull(),
   active: boolean().default(true).notNull(),
+  sourceSlug: text("source_slug").unique(),
   createdBy: text("created_by").notNull().references(() => user.id),
   createdAt: timestamp("created_at", { withTimezone: true, mode: "string" }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" }).defaultNow().notNull(),
 });
+
+// A private composition draft snapshots one MSA template for one client. It is
+// intentionally not an operational service agreement or an estimate; staff
+// can edit it without creating work, billing, or customer notifications.
+export const agreementCompositionDraft = pgTable(
+  "agreement_composition_draft",
+  {
+    id: uuid().primaryKey().notNull(),
+    clientId: uuid("client_id").notNull().references(() => client.id),
+    propertyId: uuid("property_id").references(() => property.id),
+    templateId: uuid("template_id").notNull().references(() => agreementTemplate.id),
+    templateVersion: integer("template_version").notNull(),
+    templateSnapshot: text("template_snapshot").notNull(),
+    title: text().notNull(),
+    body: text().notNull(),
+    version: integer().default(1).notNull(),
+    status: text().default("draft").notNull(),
+    createdBy: text("created_by").notNull().references(() => user.id),
+    updatedBy: text("updated_by").notNull().references(() => user.id),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true, mode: "string" }).defaultNow().notNull(),
+  },
+  (t) => [
+    index("agreement_composition_draft_client_idx").on(t.clientId, t.status, t.updatedAt, t.id),
+    check("agreement_composition_draft_template_version_check", sql`template_version > 0`),
+    check("agreement_composition_draft_template_snapshot_check", sql`length(btrim(template_snapshot)) BETWEEN 1 AND 50000`),
+    check("agreement_composition_draft_title_check", sql`length(btrim(title)) BETWEEN 1 AND 500`),
+    check("agreement_composition_draft_body_check", sql`length(btrim(body)) BETWEEN 1 AND 50000`),
+    check("agreement_composition_draft_version_check", sql`version > 0`),
+    check("agreement_composition_draft_status_check", sql`status IN ('draft','archived')`),
+  ],
+);
+
+export const agreementCompositionLineItem = pgTable(
+  "agreement_composition_line_item",
+  {
+    id: uuid().primaryKey().notNull(),
+    draftId: uuid("draft_id").notNull().references(() => agreementCompositionDraft.id, { onDelete: "cascade" }),
+    position: integer().notNull(),
+    description: text().notNull(),
+    unit: text(),
+    quantity: numeric({ precision: 12, scale: 2 }).notNull(),
+    unitPriceCents: bigint("unit_price_cents", { mode: "number" }).notNull(),
+  },
+  (t) => [
+    unique("agreement_composition_line_item_draft_id_position_key").on(t.draftId, t.position),
+    check("agreement_composition_line_item_position_check", sql`position >= 0`),
+    check("agreement_composition_line_item_description_check", sql`length(btrim(description)) BETWEEN 1 AND 2000`),
+    check("agreement_composition_line_item_unit_check", sql`unit IS NULL OR length(btrim(unit)) BETWEEN 1 AND 100`),
+    check("agreement_composition_line_item_quantity_check", sql`quantity > 0 AND quantity <= 1000000`),
+    check("agreement_composition_line_item_unit_price_cents_check", sql`unit_price_cents >= 0 AND unit_price_cents <= 10000000000`),
+  ],
+);
+
+export const agreementCompositionEvent = pgTable(
+  "agreement_composition_event",
+  {
+    id: uuid().primaryKey().notNull(),
+    draftId: uuid("draft_id").notNull().references(() => agreementCompositionDraft.id, { onDelete: "cascade" }),
+    actorId: text("actor_id").notNull().references(() => user.id),
+    action: text().notNull(),
+    priorVersion: integer("prior_version"),
+    resultingVersion: integer("resulting_version").notNull(),
+    details: jsonb().default({}).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" }).defaultNow().notNull(),
+  },
+  (t) => [
+    index("agreement_composition_event_draft_idx").on(t.draftId, t.createdAt, t.id),
+    check("agreement_composition_event_action_check", sql`action IN ('created','updated','line_item_added','line_item_updated','line_item_removed','archived')`),
+    check("agreement_composition_event_resulting_version_check", sql`resulting_version > 0`),
+  ],
+);
 
 export const assessmentSlot = pgTable(
   "assessment_slot",
