@@ -85,7 +85,7 @@ export function LeadProfile({
       setFollowUp(nextFollowUp.lead);
       setOwners(nextFollowUp.owners);
       setDrafts(nextDrafts?.items ?? null);
-          setCommercial(intake);
+      setCommercial(intake);
     } catch (cause) {
       if (current === generation.current)
         setError((cause as { status?: number }).status === 404
