@@ -150,13 +150,25 @@ test("Revenue keeps internal sales and agreement destinations URL-addressable bu
     .map((page) => page.label);
   assert.deepEqual(visibleRevenue, ["Sales", "Agreements", "Billing", "Expenses"]);
 
-  for (const path of ["/sales/pipeline", "/agreements/drafts", "/agreements/templates"]) {
+  for (const path of ["/sales/pipeline", "/sales/pipeline-settings", "/agreements/drafts", "/agreements/templates"]) {
     const route = routeFromPath(path);
     assert.equal(route.kind, "page");
     if (route.kind === "page") assert.equal(route.page.navigation, false);
   }
   assert.equal(canAccessRoute(routeFromPath("/sales/pipeline"), "member", ["revenue.sales"]), true);
   assert.equal(canAccessRoute(routeFromPath("/sales/pipeline"), "member", ["revenue.agreements"]), false);
+});
+test("pipeline settings has an exact Owner-only deep link", () => {
+  const route = routeFromPath("/sales/pipeline-settings/");
+  assert.equal(route.kind, "page");
+  if (route.kind !== "page") return;
+  assert.equal(route.page.view, "Pipeline Settings");
+  assert.equal(pathForRoute(route), "/sales/pipeline-settings");
+  assert.equal(canAccessRoute(route, "owner"), true);
+  for (const role of ["member", "sales", "manager", "client", "crew", null]) {
+    assert.equal(canAccessRoute(route, role, ["revenue.sales"]), false);
+  }
+  assert.equal(routeFromPath("/sales/pipeline-settings/extra").kind, "not-found");
 });
 test("Marketing keeps one sidebar entry per workspace while every tool remains a guarded deep link", () => {
   const visibleMarketing = DASHBOARD_PAGES
