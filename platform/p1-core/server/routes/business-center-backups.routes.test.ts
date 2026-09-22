@@ -162,6 +162,15 @@ it("preserves uncertain restore outcomes and never retries the retained service"
   expect(await response.text()).not.toContain("private storage");
   expect(state.restore).toHaveBeenCalledTimes(2);
 });
+it("requires the request audit before restore and treats a completion-audit failure as uncertain", async () => {
+  const body = { key: manifest.key, confirmation: `RESTORE ${manifest.key}` };
+  state.log.mockRejectedValueOnce(Error("private audit"));
+  expect((await req("/restore", "POST", body)).status).toBe(503);
+  expect(state.restore).not.toHaveBeenCalled();
+  state.log.mockResolvedValueOnce(undefined).mockRejectedValueOnce(Error("private audit"));
+  expect((await req("/restore", "POST", body)).status).toBe(503);
+  expect(state.restore).toHaveBeenCalledTimes(1);
+});
 it("runs exactly once with authenticated intent and completion audit", async () => {
   const res = await req("/run", "POST");
   expect(res.status).toBe(201);
