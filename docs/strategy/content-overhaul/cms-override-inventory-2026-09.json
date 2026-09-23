@@ -15548,5 +15548,23 @@
       "/services/commercial-landscaping"
     ],
     "knownStagingLimitation": "Blog HTML returns 503 because the older staging Core lacks the blog publication endpoint; the overlay flag does not control this projection."
+  },
+  "stagingCoreValidation": {
+    "databaseBackup": {
+      "path": "/Users/mikedickerman/.codex/backups/p1-wp2-staging/2026-09-23/core-staging-before-wp2.dump",
+      "format": "pg_dump -Fc",
+      "bytes": 286678,
+      "sha256": "738c1ba86b2400d8a6886f85199d890c72029c23184c7821abff90aa5643b55e",
+      "pgRestoreListLines": 366
+    },
+    "attemptedDeploymentId": "574b2ddd-bbb6-479f-af1f-bf3424426430",
+    "result": "startup-blocked-before-migrations",
+    "blocker": "Staging lacks P1_FORM_NOTIFICATION_RECIPIENTS; no recipient was configured.",
+    "appliedMigrationsAfterAttempt": 3,
+    "priorDeploymentId": "78fa0eca-840e-4df7-bfaa-73ecf514ea32",
+    "priorDeploymentReadyHttpStatus": 200,
+    "cmsStatusVerified": false,
+    "authenticatedWrite423Verified": false,
+    "dashboardCmsUiVerified": false
   }
 }
