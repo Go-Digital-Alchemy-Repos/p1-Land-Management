@@ -7,7 +7,7 @@
     "dev": "vite --config vite.config.ts",
     "sitemap": "node scripts/generate-sitemap.mjs",
     "prebuild": "node scripts/generate-sitemap.mjs && node scripts/check-responsive-image-manifest.mjs && node scripts/check-location-page-manifest.mjs",
-    "build": "vite build --config vite.config.ts && node scripts/prerender.mjs && node scripts/generate-cms-manifest.mjs && node scripts/check-public-content-regression.mjs",
+    "build": "vite build --config vite.config.ts && node scripts/prerender.mjs && node scripts/generate-cms-manifest.mjs && node scripts/check-public-content-regression.mjs && node scripts/snapshot-structure.mjs --check",
     "serve": "node server/index.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "check:analytics": "node --experimental-strip-types --test src/lib/google-analytics.test.ts",
@@ -21,7 +21,8 @@
     "check:images": "node scripts/image-budget.mjs",
     "check:server": "node --test server/*.test.mjs",
     "check:route-recovery": "node --experimental-strip-types --test src/lib/route-recovery.test.ts",
-    "check:public-content": "node scripts/check-public-content-regression.mjs"
+    "check:public-content": "node scripts/check-public-content-regression.mjs",
+    "check:structure": "node scripts/snapshot-structure.mjs --check"
   },
   "devDependencies": {
     "sharp": "0.35.4",
@@ -70,6 +71,7 @@
     "date-fns": "^3.6.0",
     "embla-carousel-react": "^8.6.0",
     "framer-motion": "catalog:",
+    "htmlparser2": "12.0.0",
     "input-otp": "^1.4.2",
     "lucide-react": "catalog:",
     "next-themes": "^0.4.6",
