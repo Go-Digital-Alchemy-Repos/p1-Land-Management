@@ -12,14 +12,17 @@ import { labels, message } from "./template-draft";
 import "./template-library.css";
 export default function TemplateLibrary({
   canUseClauses = false,
+  canManageStandardTemplates = false,
 }: {
   canUseClauses?: boolean;
+  canManageStandardTemplates?: boolean;
 }) {
   const [editorRevision, setEditorRevision] = useState(0);
   const [rows, setRows] = useState<AgreementTemplate[]>([]),
     [selected, setSelected] = useState<AgreementTemplate | null>(null),
     [newKind, setNewKind] = useState<AgreementTemplateKind | null>(null),
     [kind, setKind] = useState<AgreementTemplateKind>("msa");
+  const [sources, setSources] = useState<Array<{ slug: string; name: string; installed: boolean }>>([]);
   const [query, setQuery] = useState(""),
     [status, setStatus] = useState("all"),
     [loading, setLoading] = useState(true),
@@ -38,12 +41,20 @@ export default function TemplateLibrary({
     const controller = new AbortController();
     setLoading(true);
     setError("");
-    void listAgreementTemplates(
-      { kind: "all", state: "all" },
-      { signal: controller.signal },
-    )
-      .then((data) => {
-        if (!controller.signal.aborted) setRows(data);
+    void Promise.all([
+      listAgreementTemplates({ kind: "all", state: "all" }, { signal: controller.signal }),
+      canManageStandardTemplates
+        ? fetch("/api/v1/agreement-template-sources", { signal: controller.signal, credentials: "same-origin" }).then(async (response) => {
+            if (!response.ok) throw new Error("Could not load standard agreement templates");
+            return response.json() as Promise<Array<{ slug: string; name: string; installed: boolean }>>;
+          })
+        : Promise.resolve([]),
+    ])
+      .then(([data, standardSources]) => {
+        if (!controller.signal.aborted) {
+          setRows(data);
+          setSources(standardSources);
+        }
       })
       .catch((error) => {
         if (!controller.signal.aborted) setError(message(error));
@@ -52,7 +63,30 @@ export default function TemplateLibrary({
         if (!controller.signal.aborted) setLoading(false);
       });
     return () => controller.abort();
-  }, [attempt]);
+  }, [attempt, canManageStandardTemplates]);
+  async function installStandard(source: { slug: string; name: string }) {
+    if (gate.current) return;
+    gate.current = true;
+    setLoading(true);
+    setError("");
+    try {
+      const response = await fetch(`/api/v1/agreement-template-sources/${source.slug}/install`, {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "content-type": "application/json" },
+      });
+      if (!response.ok) throw new Error("Could not install standard agreement template");
+      if (alive.current) {
+        setNotice(`${source.name} is installed as a published, versioned template.`);
+        setAttempt((value) => value + 1);
+      }
+    } catch (error) {
+      if (alive.current) setError(message(error));
+    } finally {
+      gate.current = false;
+      if (alive.current) setLoading(false);
+    }
+  }
   async function open(id: string) {
     if (gate.current) return;
     gate.current = true;
@@ -115,6 +149,18 @@ export default function TemplateLibrary({
         draft before publishing it for client proposals.
       </p>
       {error && <p role="alert">{error}</p>}
+      {canManageStandardTemplates && sources.length > 0 && (
+        <section className="template-standard-sources" aria-label="Standard agreement templates">
+          <h2>Standard agreement templates</h2>
+          <p>Install an owner-supplied form once, then use the normal revision workflow to tailor it without changing its published source version.</p>
+          {sources.map((source) => (
+            <div key={source.slug}>
+              <strong>{source.name}</strong>
+              {source.installed ? <span> Installed</span> : <button disabled={loading} onClick={() => void installStandard(source)}>Install template</button>}
+            </div>
+          ))}
+        </section>
+      )}
       <div className="template-actions">
         <label>
           Template type

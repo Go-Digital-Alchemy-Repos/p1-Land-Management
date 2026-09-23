@@ -154,6 +154,7 @@ try {
       "src/dashboard/jobs-lifecycle.test.ts",
       "src/dashboard/estimate-pdf.test.ts",
       "src/dashboard/agreement-template.test.ts",
+      "src/dashboard/agreement-standard-templates.test.ts",
       "src/dashboard/agreement-composition.test.ts",
       "src/dashboard/agreement-pricing.test.ts",
       "src/dashboard/composed-estimate-preparation.test.ts",

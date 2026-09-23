@@ -1765,7 +1765,7 @@ function App() {
           {view === "Website Team" && <Suspense fallback={<p role="status">Loading team…</p>}><TeamManager canUseMedia={can("marketing.content.media")} key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Website Menus" && <Suspense fallback={<p role="status">Loading website menus…</p>}><CmsMenus key={`${person.id}:${(person.capabilities || []).join(",")}`}/></Suspense>}
           {view === "Agreement Drafts" && <Suspense fallback={<p role="status">Loading agreement drafts…</p>}><AgreementDraftWorkspace key={`${recordRoute?.id || "list"}:${person.id}:${(person.capabilities || []).join(",")}`} id={recordRoute?.kind === "agreement-draft" ? recordRoute.id : undefined} canEdit={hasCapability(person,"revenue.sales")} canManageTemplates={hasCapability(person,"revenue.agreement-templates.manage")} opened={id => applyRoute({kind:"page", page:nav.find(item => item.view === "Agreement Drafts")!, record:{kind:"agreement-draft", id}}, "replace")}/></Suspense>}
-          {view === "Agreement Templates" && <Suspense fallback={<p role="status">Loading templates…</p>}><TemplateLibrary key={`${person.id}:${(person.capabilities || []).join(",")}`} canUseClauses={hasCapability(person,"settings.term-libraries")}/></Suspense>}
+          {view === "Agreement Templates" && <Suspense fallback={<p role="status">Loading templates…</p>}><TemplateLibrary key={`${person.id}:${(person.capabilities || []).join(",")}`} canUseClauses={hasCapability(person,"settings.term-libraries")} canManageStandardTemplates={hasCapability(person,"revenue.agreement-templates.manage")}/></Suspense>}
           {view === "Agreements" && (
             <ServiceAgreements
               role={person.role}
