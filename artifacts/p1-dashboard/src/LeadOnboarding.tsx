@@ -95,6 +95,7 @@ function OnboardingForm({
       if (alive.current) {
         setState(next);
         setClients(refs.clients);
+        setReviewing(false);
         setStale(false);
       }
     } catch {
