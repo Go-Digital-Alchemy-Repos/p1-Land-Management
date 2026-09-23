@@ -155,7 +155,9 @@ export function AddressAutocomplete({
   };
 
   return (
-    <div className="address-autocomplete">
+    <div className="address-autocomplete" onBlur={(event) => {
+      if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false);
+    }}>
       <label htmlFor={inputId}>{label}</label>
       <input
         ref={inputRef}
@@ -164,7 +166,6 @@ export function AddressAutocomplete({
         value={currentValue}
         onChange={(event) => update(event.target.value)}
         onKeyDown={keyDown}
-        onBlur={() => setOpen(false)}
         onFocus={() => {
           if (items.length) setOpen(true);
         }}
@@ -186,21 +187,21 @@ export function AddressAutocomplete({
           {items.length > 0 && (
             <div id={listId} role="listbox" aria-label="Address suggestions">
               {items.map((item, index) => (
-                <div
+                <button
+                  type="button"
                   id={`${listId}-${index}`}
                   key={`${item.id}-${index}`}
                   role="option"
                   aria-selected={active === index}
                   className="address-autocomplete-option"
                   onPointerDown={(event) => {
-                    event.preventDefault();
-                    choose(item);
+                    if (event.pointerType === "mouse") event.preventDefault();
                   }}
                   onClick={() => choose(item)}
                 >
                   <strong>{item.businessName || item.line1}</strong>
                   <span>{item.label}</span>
-                </div>
+                </button>
               ))}
             </div>
           )}
