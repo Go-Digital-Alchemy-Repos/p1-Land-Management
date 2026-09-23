@@ -15,6 +15,7 @@ import {
 import { pool, transaction } from "./database";
 import { actor } from "./access";
 import { requireRole, requireCapability, HttpError } from "./policy";
+import { features } from "./features";
 const tokenSchema = z.object({
   access_token: z.string(),
   refresh_token: z.string(),
@@ -353,6 +354,8 @@ export async function postBillingDraft(
       )
     ).rows[0];
     if (!b) throw new HttpError(404, "Billing draft not found");
+    if ((await c.query("SELECT 1 FROM billing_draft_external_invoice WHERE billing_draft_id=$1 AND voided_at IS NULL", [key])).rowCount)
+      throw new HttpError(409, "invoiced_externally");
     if (b.status === "posted") return b;
     if (!b.customer)
       throw new HttpError(409, "Map this client to QuickBooks before posting");
@@ -450,6 +453,7 @@ export async function refreshInvoiceOwnership(i: any) {
   });
 }
 export async function reconcileQuickBooks() {
+  if (!features.quickbooks) return;
   const connected = await pool.query(
     "SELECT 1 FROM integration_connection WHERE provider='quickbooks'",
   );

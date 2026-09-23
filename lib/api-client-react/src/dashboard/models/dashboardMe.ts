@@ -6,6 +6,7 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { BusinessCapability } from './businessCapability';
+import type { DashboardFeatures } from './dashboardFeatures';
 import type { DashboardMeRole } from './dashboardMeRole';
 
 export interface DashboardMe {
@@ -29,4 +30,5 @@ export interface DashboardMe {
   role: DashboardMeRole;
   /** Explicit known tool grants; empty for inactive, unassured, client or unreviewed accounts. Owner receives all current tool grants. */
   capabilities: BusinessCapability[];
+  features: DashboardFeatures;
 }

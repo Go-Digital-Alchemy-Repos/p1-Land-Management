@@ -7,6 +7,7 @@
  */
 import type { BillingDraftKind } from './billingDraftKind';
 import type { BillingDraftStatus } from './billingDraftStatus';
+import type { BillingExternalInvoiceSummary } from './billingExternalInvoiceSummary';
 
 export interface BillingDraft {
   id: string;
@@ -26,4 +27,7 @@ export interface BillingDraft {
   ownership_verified?: boolean;
   created_at: string;
   property_name: string;
+  /** @minimum 1 */
+  version: number;
+  externalInvoice: BillingExternalInvoiceSummary | null;
 }

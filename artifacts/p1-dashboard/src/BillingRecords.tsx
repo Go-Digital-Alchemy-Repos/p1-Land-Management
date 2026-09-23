@@ -10,7 +10,32 @@ type Invoice = {
   ownership_verified?: boolean;
 };
 
-type Filter = "all" | "review" | "posted" | "invoices";
+type Filter = "all" | "review" | "invoiced" | "posted" | "invoices";
+type ExternalInvoice = { id: string; reference: string | null; invoicedOn: string; recordedBy: string; recordedAt: string };
+type Draft = BillingDraft & { version: number; externalInvoice?: ExternalInvoice | null; posting_request_id?: string | null };
+type MarkInput = { operationId: string; expectedVersion: number; expectedAmountCents: number; reference?: string; invoicedOn: string; note?: string };
+type VoidInput = { operationId: string; reason: string };
+
+function localDate() {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+}
+
+function externalInvoiceError(error: unknown) {
+  const code = error instanceof Error ? error.message : "";
+  if (code.includes("billing_draft_changed")) return "This draft changed. Refresh Billing and review the amount again.";
+  if (code.includes("already_invoiced_externally")) return "This draft is already marked as invoiced. Refresh Billing to see the latest record.";
+  if (code.includes("already_posted")) return "This draft has already been posted.";
+  if (code.includes("posting_outcome_requires_review")) return "A posting attempt already exists for this draft. Finance must review its outcome before recording an outside invoice.";
+  if (code.includes("already_voided")) return "This invoiced mark was already removed. Refresh Billing.";
+  if (code.includes("operation_id_conflict")) return "This action could not be retried. Refresh Billing and try again.";
+  return "Could not update the invoice mark. Try again or refresh Billing.";
+}
+
+function invoiceMarkLabel(invoice: ExternalInvoice) {
+  const date = new Date(`${invoice.invoicedOn}T12:00:00`).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  return `Invoiced outside dashboard${invoice.reference ? ` · #${invoice.reference}` : ""} · ${date}`;
+}
 
 function money(cents: number) {
   return new Intl.NumberFormat("en-US", {
@@ -28,30 +53,54 @@ export function BillingRecords({
   invoices,
   canManage,
   onPost,
+  quickbooksEnabled = true,
+  onMarkExternal,
+  onVoidExternal,
 }: {
-  drafts: BillingDraft[];
+  drafts: Draft[];
   invoices: Invoice[];
   canManage: boolean;
-  onPost: (id: string) => Promise<void>;
+  onPost?: (id: string) => Promise<void>;
+  quickbooksEnabled?: boolean;
+  onMarkExternal?: (id: string, input: MarkInput) => Promise<void>;
+  onVoidExternal?: (id: string, input: VoidInput) => Promise<void>;
 }) {
   const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState<Filter>("all");
+  const [filter, setFilter] = useState<Filter>(quickbooksEnabled ? "all" : "review");
   const [reviewId, setReviewId] = useState<string | null>(null);
   const [posting, setPosting] = useState(false);
   const [postError, setPostError] = useState("");
   const postInFlight = useRef(false);
+  const [externalId, setExternalId] = useState<string | null>(null);
+  const [externalMode, setExternalMode] = useState<"mark" | "void">("mark");
+  const [externalReference, setExternalReference] = useState("");
+  const [externalDate, setExternalDate] = useState(localDate);
+  const [externalNote, setExternalNote] = useState("");
+  const [externalOperationId, setExternalOperationId] = useState(() => crypto.randomUUID());
+  const [externalBusy, setExternalBusy] = useState(false);
+  const [externalError, setExternalError] = useState("");
+  const openExternal = (id: string, mode: "mark" | "void") => {
+    setExternalId(id);
+    setExternalMode(mode);
+    setExternalReference("");
+    setExternalDate(localDate());
+    setExternalNote("");
+    setExternalOperationId(crypto.randomUUID());
+    setExternalError("");
+  };
   const term = search.trim().toLocaleLowerCase();
   const matchingDrafts = drafts.filter(
     (draft) =>
       (filter === "all" ||
-        (filter === "review" && draft.status !== "posted") ||
+        (filter === "review" && draft.status !== "posted" && !draft.externalInvoice) ||
+        (filter === "invoiced" && Boolean(draft.externalInvoice)) ||
         (filter === "posted" && draft.status === "posted")) &&
       `${draft.title} ${draft.property_name} ${draft.kind} ${draft.status}`
         .toLocaleLowerCase()
         .includes(term),
   );
   const matchingInvoices =
-    filter === "all" || filter === "invoices"
+    quickbooksEnabled && (filter === "all" || filter === "invoices")
       ? invoices.filter((invoice) =>
           `${invoice.document_number || invoice.id} ${invoice.client_name || ""}`
             .toLocaleLowerCase()
@@ -83,10 +132,11 @@ export function BillingRecords({
             >
               <option value="all">All records</option>
               {canManage && (
-                <option value="review">Needs posting review</option>
+                <option value="review">{quickbooksEnabled ? "Needs posting review" : "Needs invoicing"}</option>
               )}
+              {canManage && <option value="invoiced">Invoiced outside dashboard</option>}
               <option value="posted">Posted charges</option>
-              <option value="invoices">QuickBooks invoices</option>
+              {quickbooksEnabled && <option value="invoices">QuickBooks invoices</option>}
             </select>
           </label>
         </div>
@@ -94,7 +144,7 @@ export function BillingRecords({
       {!drafts.length && !invoices.length ? (
         <p className="empty">
           {canManage
-            ? "No billing drafts or invoices yet."
+            ? "No billing drafts yet."
             : "No invoices yet."}
         </p>
       ) : !matchingDrafts.length && !matchingInvoices.length ? (
@@ -113,7 +163,7 @@ export function BillingRecords({
                   </span>
                   <span className="billing-record-summary">
                     <strong>{money(draft.amount_cents)}</strong>
-                    <span className="badge">{label(draft.status)}</span>
+                    <span className="badge">{draft.externalInvoice ? invoiceMarkLabel(draft.externalInvoice) : label(draft.status)}</span>
                   </span>
                 </summary>
                 <div className="billing-record-detail">
@@ -137,6 +187,12 @@ export function BillingRecords({
                       </div>
                     )}
                   </dl>
+                  {draft.externalInvoice && <p className="billing-record-warning" role="status">
+                    Invoiced outside dashboard{draft.externalInvoice.reference ? ` · #${draft.externalInvoice.reference}` : ""} · {new Date(`${draft.externalInvoice.invoicedOn}T12:00:00`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                  </p>}
+                  {!quickbooksEnabled && draft.posting_request_id && !draft.externalInvoice && <p className="billing-record-warning" role="status">
+                    A prior accounting posting attempt needs finance review before this draft can be marked invoiced outside the dashboard.
+                  </p>}
                   {canManage &&
                     draft.status === "posted" &&
                     !draft.ownership_verified && (
@@ -146,7 +202,17 @@ export function BillingRecords({
                       </p>
                     )}
                   <div className="billing-record-actions">
-                    {canManage && draft.status !== "posted" && (
+                    {canManage && onMarkExternal && draft.status !== "posted" && !draft.posting_request_id && !draft.externalInvoice && (
+                      <button type="button" className="secondary" disabled={externalBusy} onClick={() => openExternal(draft.id, "mark")}>
+                        Mark as invoiced
+                      </button>
+                    )}
+                    {canManage && onVoidExternal && draft.externalInvoice && (
+                      <button type="button" className="secondary" disabled={externalBusy} onClick={() => openExternal(draft.id, "void")}>
+                        Undo invoiced mark
+                      </button>
+                    )}
+                    {quickbooksEnabled && onPost && canManage && draft.status !== "posted" && !draft.externalInvoice && (
                       <button
                         type="button"
                         className="secondary"
@@ -170,7 +236,30 @@ export function BillingRecords({
                       </a>
                     )}
                   </div>
-                  {reviewId === draft.id && reviewDraft && (
+                  {externalId === draft.id && <form className="billing-post-review" onSubmit={(event) => {
+                    event.preventDefault();
+                    if (externalBusy) return;
+                    setExternalBusy(true);
+                    setExternalError("");
+                    const action = externalMode === "mark"
+                      ? onMarkExternal?.(draft.id, { operationId: externalOperationId, expectedVersion: draft.version, expectedAmountCents: draft.amount_cents, reference: externalReference.trim() || undefined, invoicedOn: externalDate, note: externalNote || undefined })
+                      : onVoidExternal?.(draft.id, { operationId: externalOperationId, reason: externalNote.trim() });
+                    void action?.then(() => setExternalId(null)).catch((error: unknown) => setExternalError(externalInvoiceError(error))).finally(() => setExternalBusy(false));
+                  }}>
+                    <h3>{externalMode === "mark" ? "Mark as invoiced outside dashboard" : "Undo invoiced mark"}</h3>
+                    <p>{draft.title} · {draft.property_name} · {money(draft.amount_cents)}</p>
+                    {externalMode === "mark" ? <>
+                      <label>Invoice number or reference (optional)<input value={externalReference} maxLength={120} onChange={(event) => setExternalReference(event.target.value)} /></label>
+                      <label>Date invoiced<input type="date" required value={externalDate} onChange={(event) => setExternalDate(event.target.value)} /></label>
+                      <label>Note (optional)<textarea value={externalNote} maxLength={2000} onChange={(event) => setExternalNote(event.target.value)} /></label>
+                    </> : <label>Reason for undoing this mark<textarea required value={externalNote} maxLength={2000} onChange={(event) => setExternalNote(event.target.value)} /></label>}
+                    {externalError && <p role="alert" className="error">{externalError}</p>}
+                    <div className="billing-record-actions">
+                      <button type="button" className="secondary" disabled={externalBusy} onClick={() => setExternalId(null)}>Cancel</button>
+                      <button type="submit" className="primary" disabled={externalBusy || (externalMode === "void" && !externalNote.trim())}>{externalBusy ? "Saving…" : externalMode === "mark" ? "Mark as invoiced" : "Undo invoiced mark"}</button>
+                    </div>
+                  </form>}
+                  {quickbooksEnabled && onPost && reviewId === draft.id && reviewDraft && (
                     <div
                       className="billing-post-review"
                       role="group"

@@ -6,15 +6,17 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { AgreementPreparationHealth } from './agreementPreparationHealth';
+import type { DashboardFeatures } from './dashboardFeatures';
 import type { IntegrationActionQueueItem } from './integrationActionQueueItem';
 import type { IntegrationConfiguration } from './integrationConfiguration';
 import type { QuickBooksIntegrationConfiguration } from './quickBooksIntegrationConfiguration';
 
 export interface IntegrationHealth {
-  quickbooks: QuickBooksIntegrationConfiguration;
+  quickbooks?: QuickBooksIntegrationConfiguration;
   email: IntegrationConfiguration;
   sms: IntegrationConfiguration;
   /** @maxItems 50 */
   jobs: IntegrationActionQueueItem[];
   agreementPreparation: AgreementPreparationHealth;
+  features: DashboardFeatures;
 }

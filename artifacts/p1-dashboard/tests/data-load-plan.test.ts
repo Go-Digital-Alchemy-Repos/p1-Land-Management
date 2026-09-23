@@ -15,3 +15,11 @@ test("Sales uses minimal references instead of full Customers or security data",
   assert(owner.paths.includes("account-mfa-policies"));
   assert(owner.paths.includes("integrations"));
 });
+test("dormant QuickBooks never loads invoices or client Billing", () => {
+  const client = dataLoadPlan({ role: "client" });
+  assert(!client.paths.includes("billing"));
+  assert(!client.paths.includes("quickbooks/invoices"));
+  assert(!dataLoadPlan({ role: "owner" }).paths.includes("quickbooks/invoices"));
+  assert(dataLoadPlan({ role: "client" }, true).paths.includes("billing"));
+  assert(dataLoadPlan({ role: "owner" }, true).paths.includes("quickbooks/invoices"));
+});

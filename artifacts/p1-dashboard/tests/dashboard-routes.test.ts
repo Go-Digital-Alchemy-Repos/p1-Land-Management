@@ -90,6 +90,18 @@ test("dashboard routes fail closed for unknown and role-restricted destinations"
   assert.equal(defaultRouteForRole("client").page.path, "/");
 });
 
+test("client Billing disappears from navigation and direct links while QuickBooks is dormant", () => {
+  const route = routeFromPath("/billing");
+  assert.equal(route.kind, "page");
+  assert.equal(canAccessRoute(route, "client"), false);
+  assert.equal(canAccessRoute(route, "client", [], true), true);
+  if (route.kind === "page") {
+    assert.equal(navigationTargetFor(route.page, "client"), null);
+    assert.equal(navigationTargetFor(route.page, "client", [], true)?.path, "/billing");
+  }
+  assert.equal(canAccessRoute(route, "finance", ["revenue.billing"]), true);
+});
+
 test("lead profile links are deep-linkable and remain internal to Sales", () => {
   const id = "55555555-5555-4555-8555-555555555555";
   for (const tab of ["overview", "follow-up", "details", "activity", "assessment", "handoff"]) {
