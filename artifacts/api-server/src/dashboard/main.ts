@@ -22,6 +22,7 @@ import {
   stopCoreFederationRetention,
 } from "./core-federation";
 import express from "express";
+import { randomUUID } from "node:crypto";
 import { toNodeHandler } from "better-auth/node";
 import { resolve } from "node:path";
 import {
@@ -36,6 +37,8 @@ import { filesApi } from "./files";
 import { profileApi } from "./profile";
 import { qboApi, qboWebhook } from "./quickbooks";
 import { externalInvoiceApi } from "./external-invoice.routes";
+import { overviewNeedsYouApi } from "./overview-needs-you.routes";
+import { dashboardSearchApi } from "./search.routes";
 import { dormantQuickBooksApi, dormantQuickBooksWebhook } from "./quickbooks-dormant";
 import { features } from "./features";
 import { notificationsApi, smsWebhook } from "./notifications";
@@ -59,6 +62,9 @@ if ((process.env.BETTER_AUTH_SECRET?.length || 0) < 32)
 const app = express();
 app.disable("x-powered-by");
 app.use((req, res, next) => {
+  const requestId = randomUUID();
+  res.locals.requestId = requestId;
+  res.setHeader("X-Request-ID", requestId);
   res.set({
     "X-Content-Type-Options": "nosniff",
     "X-Robots-Tag": "noindex, nofollow",
@@ -151,6 +157,8 @@ app.use(
   profileApi,
   filesApi,
   externalInvoiceApi,
+  overviewNeedsYouApi,
+  dashboardSearchApi,
   features.quickbooks ? qboApi : dormantQuickBooksApi,
   notificationsApi,
   salesApi,
@@ -245,6 +253,7 @@ app.use(
     console.error(
       JSON.stringify({
         event: "request.failed",
+        requestId: res.locals.requestId,
         type: error instanceof Error ? error.name : "unknown",
       }),
     );

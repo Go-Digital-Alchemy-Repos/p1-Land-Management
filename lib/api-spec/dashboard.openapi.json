@@ -11,6 +11,27 @@
     }
   ],
   "paths": {
+    "/overview/needs-you": {
+      "get": {
+        "operationId": "getOverviewNeedsYou",
+        "description": "Priority counts scoped to the authenticated user's destination grants and records.",
+        "responses": {
+          "200": { "description": "Up to six priority rows", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/NeedsYouItem" } } } } },
+          "401": { "description": "Authentication required" }
+        }
+      }
+    },
+    "/search": {
+      "get": {
+        "operationId": "searchDashboard",
+        "description": "Search only records visible to the authenticated user. Minimum two characters; rate limited; at most 20 results.",
+        "parameters": [{ "name": "q", "in": "query", "required": true, "schema": { "type": "string", "minLength": 2, "maxLength": 120 } }],
+        "responses": {
+          "200": { "description": "Scoped search results", "content": { "application/json": { "schema": { "type": "array", "maxItems": 20, "items": { "$ref": "#/components/schemas/DashboardSearchResult" } } } } },
+          "429": { "description": "Rate limit exceeded" }
+        }
+      }
+    },
     "/marketing/cms/design/social-media": {
       "get": {
         "operationId": "getWebsiteSocial",
@@ -34448,6 +34469,28 @@
             "type": "string",
             "maxLength": 2000
           }
+        }
+      },
+      "NeedsYouItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "count", "href"],
+        "properties": {
+          "kind": { "type": "string", "enum": ["completed-work", "old-requests", "agreement-charges", "unassigned-work", "new-inquiries", "client-estimates"] },
+          "count": { "type": "integer", "minimum": 1 },
+          "href": { "type": "string" }
+        }
+      },
+      "DashboardSearchResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "id", "title", "subtitle", "href"],
+        "properties": {
+          "kind": { "type": "string", "enum": ["client", "property", "work-order", "agreement", "lead", "request"] },
+          "id": { "type": "string", "format": "uuid" },
+          "title": { "type": "string" },
+          "subtitle": { "type": "string" },
+          "href": { "type": "string" }
         }
       },
       "VoidExternalInvoice": {

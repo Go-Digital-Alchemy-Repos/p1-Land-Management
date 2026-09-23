@@ -19,7 +19,7 @@ export function FieldConflictReview() {
   const alive = useRef(true),
     gate = useRef(false);
   useCmsUnsavedChanges(
-    Boolean(note) || busy || uncertain,
+    Boolean(note) || uncertain || (busy && Boolean(selected)),
     "Leave this field review? Unsaved notes will be lost; an unconfirmed resolution must be checked before further action.",
   );
   async function load() {

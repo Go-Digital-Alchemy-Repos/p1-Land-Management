@@ -19,6 +19,9 @@ export function ScheduleCalendar({
   onSelect,
   request,
   onChanged,
+  initialDate,
+  statusFilter,
+  unassignedOnly = false,
 }: {
   work: ScheduledWork[];
   staff: { id: string; name: string }[];
@@ -26,9 +29,12 @@ export function ScheduleCalendar({
   onSelect: (id: string) => void;
   request?: (path: string, body?: unknown) => Promise<any>;
   onChanged?: () => Promise<void>;
+  initialDate?: string;
+  statusFilter?: string;
+  unassignedOnly?: boolean;
 }) {
   const [mode, setMode] = useState<"day" | "week" | "month">("week"),
-    [selected, setSelected] = useState(() => scheduleDate(new Date())),
+    [selected, setSelected] = useState(() => initialDate && /^\d{4}-\d{2}-\d{2}$/.test(initialDate) ? initialDate : scheduleDate(new Date())),
     [assigned, setAssigned] = useState("all"),
     [includeClosed, setIncludeClosed] = useState(false);
   const days = scheduleDays(selected, mode);
@@ -99,6 +105,8 @@ export function ScheduleCalendar({
     (w) =>
       (includeClosed ||
         !["reviewed", "cancelled", "skipped"].includes(w.status)) &&
+      (!statusFilter || w.status === statusFilter) &&
+      (!unassignedOnly || !w.assigned_to) &&
       (!canManage ||
         assigned === "all" ||
         (assigned === "unassigned"

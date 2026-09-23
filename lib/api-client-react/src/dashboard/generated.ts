@@ -105,6 +105,7 @@ import type {
   DashboardMe,
   DashboardProperty,
   DashboardPropertyEditReceipt,
+  DashboardSearchResult,
   DeleteMarketingBlog200,
   DeleteMarketingBlogComment200,
   DeleteMarketingBlogTaxonomy200,
@@ -262,6 +263,7 @@ import type {
   MarketingSidebarReferences,
   MarketingTeamInput,
   MarketingTeamMember,
+  NeedsYouItem,
   NotifyMarketingEvent200,
   NotifyMarketingEventBody,
   OperationReceipt,
@@ -314,6 +316,7 @@ import type {
   SaveWebsiteSocial200,
   SaveWebsiteTypography200,
   SchedulePage,
+  SearchDashboardParams,
   ServiceAgreement,
   ServiceAgreementFinancial,
   ServiceAgreementPage,
@@ -400,6 +403,61 @@ import type {
 } from './models';
 
 import { customFetch } from '../custom-fetch';
+
+export const getGetOverviewNeedsYouUrl = () => {
+
+
+
+
+  return `/api/v1/overview/needs-you`
+}
+
+/**
+ * Priority counts scoped to the authenticated user's destination grants and records.
+ */
+export const getOverviewNeedsYou = async ( options?: RequestInit): Promise<NeedsYouItem[]> => {
+
+  return customFetch<NeedsYouItem[]>(getGetOverviewNeedsYouUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getSearchDashboardUrl = (params: SearchDashboardParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/v1/search?${stringifiedParams}` : `/api/v1/search`
+}
+
+/**
+ * Search only records visible to the authenticated user. Minimum two characters; rate limited; at most 20 results.
+ */
+export const searchDashboard = async (params: SearchDashboardParams, options?: RequestInit): Promise<DashboardSearchResult[]> => {
+
+  return customFetch<DashboardSearchResult[]>(getSearchDashboardUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
 
 export const getGetWebsiteSocialUrl = () => {
 
@@ -1878,7 +1936,7 @@ export const getGetIntegrationHealthUrl = () => {
 }
 
 /**
- * Returns manager-only configuration indicators and the current office action queue. It does not expose provider credentials, trigger provider calls, post invoices, or change delivery state.
+ * Returns Owner-only configuration indicators and a safe action queue. QuickBooks status is absent while the server feature is dormant. Raw provider errors and credentials are never exposed.
  */
 export const getIntegrationHealth = async ( options?: RequestInit): Promise<IntegrationHealth> => {
 

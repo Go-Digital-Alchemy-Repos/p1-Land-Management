@@ -38,6 +38,7 @@ export function ServiceRequestTriage({
   api,
   onRefresh,
   onGenerateEstimate,
+  initialRequestId,
 }: {
   records: RequestRow[];
   role: string | null | undefined;
@@ -45,9 +46,10 @@ export function ServiceRequestTriage({
   api: Api;
   onRefresh: () => Promise<void>;
   onGenerateEstimate?: (request: RequestRow) => void;
+  initialRequestId?: string;
 }) {
   const policy = serviceRequestUiPolicy(role, capabilities);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(initialRequestId || null);
   const [detail, setDetail] = useState<RequestRow | null>(null);
   const [verifiedRecord, setVerifiedRecord] = useState<RequestRow | null>(null);
   const [detailStatus, setDetailStatus] = useState<"idle" | "loading" | "ready" | "failed">("idle");
@@ -168,7 +170,7 @@ export function ServiceRequestTriage({
         ) : (
           <div className="request-card-list">
             {records.map((record) => (
-              <article className="request-card" key={record.id}>
+              <article className="request-card" key={record.id} id={record.id === initialRequestId ? "selected-request" : undefined}>
                 <div>
                   <p className="eyebrow">
                     {record.property_name || "Property"}
@@ -318,7 +320,7 @@ export function ServiceRequestTriage({
                     className="secondary"
                     disabled={busy || !reason.trim() || !target}
                   >
-                    {busy ? "Saving…" : "Record triage update"}
+                    {busy ? "Saving…" : "Save review note"}
                   </button>
                 </form>
               )}
@@ -327,10 +329,10 @@ export function ServiceRequestTriage({
                 <div className="request-conversion">
                   <div className="request-conversion-heading">
                     <div>
-                      <h4>Create a planning draft</h4>
+                      <h4>Turn into a job</h4>
                       <p>
-                        Draft only. This does not assign a crew, select a date,
-                        publish material, bill, or notify anyone.
+                        This saves a draft. Nobody is notified and nothing is
+                        scheduled or billed until you do it.
                       </p>
                     </div>
                     <button
@@ -339,7 +341,7 @@ export function ServiceRequestTriage({
                       onClick={() => setConversionOpen((open) => !open)}
                       disabled={busy}
                     >
-                      {conversionOpen ? "Close draft" : "Prepare draft"}
+                      {conversionOpen ? "Close" : "Start job draft"}
                     </button>
                   </div>
                   {conversionOpen && (
