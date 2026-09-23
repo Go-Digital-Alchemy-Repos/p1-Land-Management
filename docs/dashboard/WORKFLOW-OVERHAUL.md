@@ -1,6 +1,6 @@
 # Dashboard workflow overhaul: review record
 
-The approved direction is a single light-theme dashboard release. Existing colorful icons, business rules, stored records, permission boundaries and public website styling remain in place. The [clickable synthetic preview](../../artifacts/p1-dashboard/preview/workflows.html) is a design-review artifact; it does not connect to the API or stand in for staging acceptance.
+The approved direction is a single light-theme dashboard release. Existing colorful icons, business rules, stored records, permission boundaries and public website styling remain in place. The [clickable synthetic preview](../../artifacts/p1-dashboard/preview/workflows.html) is a design-review artifact; it does not connect to the API or stand in for authenticated staging acceptance. Staging alone may expose it at `/design-preview/` when `DASHBOARD_DESIGN_PREVIEW=enabled`; both HTML and script return 404 without that explicit flag. Production must leave the flag unset.
 
 ## Route and role audit
 
