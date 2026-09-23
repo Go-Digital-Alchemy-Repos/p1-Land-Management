@@ -23,6 +23,7 @@ import {
   Users,
 } from "lucide-react";
 import { ClientContacts } from "./ClientContacts";
+import { AddressAutocomplete } from "./AddressAutocomplete";
 import { AgreementEditor } from "./AgreementEditor";
 import type { ClientWorkspaceTab, PropertyWorkspaceTab } from "./dashboard-routes";
 
@@ -250,7 +251,9 @@ function PropertyEditor({
     <div><h3>{property ? "Edit property" : "Add property"}</h3><p>Keep the address and site access details ready for operations.</p></div>
     <label>Property name<input autoFocus={focusName} required maxLength={10000} value={name} onChange={(event) => setName(event.target.value)} /></label>
     <label>Property type<select value={propertyTypeId} onChange={(event) => setPropertyTypeId(event.target.value)}><option value="">Not classified</option>{propertyTypes.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
-    <label>Address line 1<input required maxLength={200} autoComplete="address-line1" value={addressParts.addressLine1} onChange={(event) => setAddressParts((current) => ({ ...current, addressLine1: event.target.value }))} /></label>
+    <AddressAutocomplete label="Address line 1" required maxLength={200} autoComplete="address-line1" format="line1" completeOnly value={addressParts.addressLine1}
+      onValueChange={(addressLine1) => setAddressParts((current) => ({ ...current, addressLine1 }))}
+      onAddressSelect={(address) => setAddressParts((current) => ({ ...current, addressLine1: address.line1, city: address.city, state: address.state, postalCode: address.postalCode }))} />
     <label>Address line 2 <span className="optional-field">Optional</span><input maxLength={200} autoComplete="address-line2" value={addressParts.addressLine2} onChange={(event) => setAddressParts((current) => ({ ...current, addressLine2: event.target.value }))} /></label>
     <div className="account-address-grid"><label>City<input required maxLength={100} autoComplete="address-level2" value={addressParts.city} onChange={(event) => setAddressParts((current) => ({ ...current, city: event.target.value }))} /></label><label>State<input required maxLength={2} autoComplete="address-level1" pattern="[A-Za-z]{2}" placeholder="NC" value={addressParts.state} onChange={(event) => setAddressParts((current) => ({ ...current, state: event.target.value }))} /></label><label>ZIP code<input required autoComplete="postal-code" inputMode="numeric" pattern="[0-9]{5}(-[0-9]{4})?" placeholder="28105" value={addressParts.postalCode} onChange={(event) => setAddressParts((current) => ({ ...current, postalCode: event.target.value }))} /></label></div>
     <label>Acreage<input type="number" min="0" step="0.01" value={acreage} onChange={(event) => setAcreage(event.target.value)} /></label>

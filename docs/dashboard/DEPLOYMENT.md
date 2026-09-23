@@ -34,6 +34,8 @@ Production URL: https://dashboard.p1landmanagement.com. Cloudflare DNS task owns
 
 Web start: `node dist/dashboard/main.js`; predeploy: `node dist/dashboard/migrate.js`; health: `/api/healthz`; port 8080. Worker start: `node dist/dashboard/worker.js`; deploy only after web migrations succeed. Required web environment: private `DASHBOARD_DATABASE_URL`, `DASHBOARD_ORIGIN`, random `BETTER_AUTH_SECRET`, random `INTEGRATION_ENCRYPTION_KEY`, NODE_ENV and storage credentials. Workers share database and provider/crypto secrets through Railway variable references. Keep staging synthetic and avoid persistent duplicate provider resources.
 
+Address suggestions use the optional server-only `GEOAPIFY_API_KEY` on the dashboard web service. Keep the key out of browser bundles, source control, logs and reports. The authenticated `/api/v1/address-suggestions` endpoint sends the typed query to Geoapify, limits results to US locations, and throttles each signed-in user. If the key or provider is unavailable, staff can continue entering addresses manually; address creation and editing must not depend on the provider. The dashboard credits Geoapify and OpenStreetMap where suggestions appear. Monitor provider usage against the account quota before expanding traffic.
+
 Verify deployment status, health, setup behavior, TLS, authenticated no-store headers, deep links, static assets, provider redirects, uploads and webhook signatures before declaring release. Inspect logs without printing credentials or customer content. Roll back application deployment through Railway to the previously verified image; retain additive schema changes. Rehearse compatibility before production data is present.
 
 ## Service-request lifecycle release

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { AddressAutocomplete } from "./AddressAutocomplete";
 import {
   contextTransport,
   ContextError,
@@ -619,15 +620,8 @@ export function CommercialContextPanel({
                       onChange={(e) => field("propertyName", e.target.value)}
                     />
                   </label>
-                  <label>
-                    Property address or region
-                    <input
-                      required
-                      maxLength={500}
-                      value={draft.address}
-                      onChange={(e) => field("address", e.target.value)}
-                    />
-                  </label>
+                  <AddressAutocomplete label="Property address or region" required maxLength={500}
+                    value={draft.address} onValueChange={(next) => field("address", next)} />
                   <label>
                     Location precision
                     <select

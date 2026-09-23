@@ -13,6 +13,7 @@ import type {
   MarketingCareerJobInput,
 } from "../../../../lib/api-client-react/src/dashboard/models";
 import { useCmsUnsavedChanges } from "./useCmsUnsavedChanges";
+import { AddressAutocomplete } from "../AddressAutocomplete";
 export const careerError = (error: unknown) =>
   (error as { data?: { message?: string; error?: string } }).data?.message ||
   (error as { data?: { error?: string } }).data?.error ||
@@ -250,7 +251,10 @@ export default function CareerJobEditor({
                       "salaryPeriod",
                     ].includes(key),
                   )
-                  .map((key) => (
+                  .map((key) => key === "locationAddress" ? (
+                    <AddressAutocomplete key={key} label={label(key)} value={String(value.locationAddress || "")}
+                      onValueChange={(next) => change("locationAddress", next)} />
+                  ) : (
                     <label key={key}>
                       {label(key)}
                       {[
