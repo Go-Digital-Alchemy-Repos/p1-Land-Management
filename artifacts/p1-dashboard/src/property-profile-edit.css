@@ -1,0 +1,51 @@
+.property-profile-title-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 9px;
+}
+
+.account-hero-title .property-profile-title-row h1 {
+  margin-bottom: 0;
+}
+
+.property-profile-edit-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 36px;
+  padding: 6px 12px;
+  border: 1px solid hsl(var(--border));
+  border-radius: 10px;
+  background: hsl(var(--card));
+  color: hsl(var(--foreground));
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.property-profile-edit-trigger:hover {
+  border-color: hsl(var(--primary));
+  color: hsl(var(--primary));
+}
+
+.property-profile-edit-trigger:focus-visible {
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: 2px;
+}
+
+.property-profile-edit-panel {
+  max-width: 900px;
+  margin: 0 0 28px;
+  overflow: hidden;
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius-cards);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.property-profile-edit-panel .account-resource-form {
+  border-bottom: 0;
+}

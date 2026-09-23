@@ -19,6 +19,7 @@ import {
   MapPin,
   MessageSquare,
   Plus,
+  SquarePen,
   Users,
 } from "lucide-react";
 import { ClientContacts } from "./ClientContacts";
@@ -34,6 +35,7 @@ import type {
   DashboardProperty,
   ServiceAgreementFinancial,
 } from "../../../lib/api-client-react/src/dashboard/models";
+import "./property-profile-edit.css";
 
 const ClientPropertyMap = lazy(async () => ({ default: (await import("./PropertyMap")).PropertyMap }));
 const PropertyLocationMap = lazy(async () => ({ default: (await import("./PropertyMap")).PropertyLocationMap }));
@@ -212,6 +214,7 @@ function PropertyEditor({
   request,
   onSaved,
   onCancel,
+  focusName = false,
 }: {
   clientId: string;
   property?: WorkspaceProperty;
@@ -219,6 +222,7 @@ function PropertyEditor({
   request: Request;
   onSaved: () => void;
   onCancel: () => void;
+  focusName?: boolean;
 }) {
   const [name, setName] = useState(property?.name || "");
   const [addressParts, setAddressParts] = useState(() => splitPropertyAddress(property));
@@ -244,11 +248,11 @@ function PropertyEditor({
   }
   return <form className="account-resource-form" onSubmit={save}>
     <div><h3>{property ? "Edit property" : "Add property"}</h3><p>Keep the address and site access details ready for operations.</p></div>
-    <label>Property name<input required maxLength={10000} value={name} onChange={(event) => setName(event.target.value)} /></label>
+    <label>Property name<input autoFocus={focusName} required maxLength={10000} value={name} onChange={(event) => setName(event.target.value)} /></label>
     <label>Property type<select value={propertyTypeId} onChange={(event) => setPropertyTypeId(event.target.value)}><option value="">Not classified</option>{propertyTypes.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
     <label>Address line 1<input required maxLength={200} autoComplete="address-line1" value={addressParts.addressLine1} onChange={(event) => setAddressParts((current) => ({ ...current, addressLine1: event.target.value }))} /></label>
     <label>Address line 2 <span className="optional-field">Optional</span><input maxLength={200} autoComplete="address-line2" value={addressParts.addressLine2} onChange={(event) => setAddressParts((current) => ({ ...current, addressLine2: event.target.value }))} /></label>
-    <div className="account-address-grid"><label>City<input required maxLength={100} autoComplete="address-level2" value={addressParts.city} onChange={(event) => setAddressParts((current) => ({ ...current, city: event.target.value }))} /></label><label>State<input required maxLength={2} autoComplete="address-level1" pattern="[A-Za-z]{2}" placeholder="NC" value={addressParts.state} onChange={(event) => setAddressParts((current) => ({ ...current, state: event.target.value }))} /></label><label>ZIP code<input required autoComplete="postal-code" inputMode="numeric" pattern="\\d{5}(-\\d{4})?" placeholder="28105" value={addressParts.postalCode} onChange={(event) => setAddressParts((current) => ({ ...current, postalCode: event.target.value }))} /></label></div>
+    <div className="account-address-grid"><label>City<input required maxLength={100} autoComplete="address-level2" value={addressParts.city} onChange={(event) => setAddressParts((current) => ({ ...current, city: event.target.value }))} /></label><label>State<input required maxLength={2} autoComplete="address-level1" pattern="[A-Za-z]{2}" placeholder="NC" value={addressParts.state} onChange={(event) => setAddressParts((current) => ({ ...current, state: event.target.value }))} /></label><label>ZIP code<input required autoComplete="postal-code" inputMode="numeric" pattern="[0-9]{5}(-[0-9]{4})?" placeholder="28105" value={addressParts.postalCode} onChange={(event) => setAddressParts((current) => ({ ...current, postalCode: event.target.value }))} /></label></div>
     <label>Acreage<input type="number" min="0" step="0.01" value={acreage} onChange={(event) => setAcreage(event.target.value)} /></label>
     <label className="account-resource-editor">Access instructions<RichTextEditor value={accessInstructions} onChange={setAccessInstructions} maxLength={10000} ariaLabel="Access instructions" placeholder="Gate codes, arrival details, and site access guidance." /></label>
     <div className="account-resource-actions"><button type="button" className="secondary" disabled={busy} onClick={onCancel}>Cancel</button><button className="primary" disabled={busy}>{busy ? "Saving…" : property ? "Save property" : "Add property"}</button></div>
@@ -438,7 +442,9 @@ export function PropertyWorkspace({
   const [propertyTypes, setPropertyTypes] = useState<any[]>([]);
   const [error, setError] = useState("");
   const [typeSaving, setTypeSaving] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
   const canManage = hasCapability({ role, capabilities }, "customers.properties");
+  const canEditProfile = canManage && (role === "owner" || role === "manager");
   const load = () => {
     setWorkspace(null);
     setError("");
@@ -452,6 +458,7 @@ export function PropertyWorkspace({
   };
   useEffect(() => {
     let active = true;
+    setEditOpen(false);
     setWorkspace(null); setError(""); setPropertyTypes([]);
     const requests = [request(`/properties/${id}/workspace`)];
     if (canManage) requests.push(request("/property-types"));
@@ -485,7 +492,8 @@ export function PropertyWorkspace({
   const canSee = (section: string) => canAccessWorkspaceTab("property", section, role, capabilities);
   const upcoming = upcomingWork(workspace.schedule);
   const tabSurface = (title: string, detail: string, items: any[], columns: any[], empty: any) => <DataSurface title={title} detail={detail}><Rows items={items} columns={columns} empty={empty} /></DataSurface>;
-  return <article className="account-workspace atlas-properties"><section className="page-hero account-hero"><div className="page-hero-content"><p className="eyebrow">PROPERTY WORKSPACE</p><div className="account-hero-title"><div><h1>{property.name}</h1><p>{canOpenClient ? <button className="breadcrumb-link" onClick={() => onClient(property.client_id)}>{property.client_name}</button> : <span>{property.client_name}</span>}<span> / </span>{property.address}{property.acreage ? ` · ${property.acreage} acres` : ""}</p></div><span className="atlas-chip"><MapPin size={15} />Operational</span></div></div></section><WorkspaceTabs tabs={visiblePropertyTabs} active={tab} basePath={`/properties/${encodeURIComponent(id)}`} onChange={onTab} />
+  return <article className="account-workspace atlas-properties"><section className="page-hero account-hero"><div className="page-hero-content"><p className="eyebrow">PROPERTY WORKSPACE</p><div className="account-hero-title"><div><div className="property-profile-title-row"><h1>{property.name}</h1>{canEditProfile && <button type="button" className="property-profile-edit-trigger" aria-label={`Edit ${property.name} profile`} aria-expanded={editOpen} onClick={() => setEditOpen((open) => !open)}><SquarePen size={17} aria-hidden="true" /><span>Edit</span></button>}</div><p>{canOpenClient ? <button className="breadcrumb-link" onClick={() => onClient(property.client_id)}>{property.client_name}</button> : <span>{property.client_name}</span>}<span> / </span>{property.address}{property.acreage ? ` · ${property.acreage} acres` : ""}</p></div><span className="atlas-chip"><MapPin size={15} />Operational</span></div></div></section><WorkspaceTabs tabs={visiblePropertyTabs} active={tab} basePath={`/properties/${encodeURIComponent(id)}`} onChange={onTab} />
+    {editOpen && canEditProfile && <section id="property-profile-edit-panel" className="property-profile-edit-panel" aria-label="Edit property details"><PropertyEditor clientId={property.client_id || ""} property={property} propertyTypes={propertyTypes} request={request} focusName onSaved={() => { setEditOpen(false); void load(); }} onCancel={() => setEditOpen(false)} /></section>}
     {tab === "overview" && <div className="account-overview property-overview"><aside className="context-rail property-context-rail"><DataSurface title="Property map" detail="Road and regional context."><Suspense fallback={<div className="property-map-loading" role="status">Loading property map…</div>}><PropertyLocationMap property={property} /></Suspense></DataSurface><DataSurface title="Property classification" detail="Used to organize the property portfolio."><div className="property-type-control">{canManage ? <label>Property type<select value={property.property_type_id || ""} disabled={typeSaving} onChange={(event) => void updatePropertyType(event.target.value)}><option value="">Not classified</option>{propertyTypes.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label> : <p>{property.property_type_name || "Not classified"}</p>}{typeSaving && <small>Saving classification…</small>}</div></DataSurface><DataSurface title="Operational context" detail={canOpenClient ? "Access and relationship details." : "Property relationship details."}><div className="property-context"><strong>Client</strong>{canOpenClient ? <button className="table-link" onClick={() => onClient(property.client_id)}>{property.client_name} <ArrowUpRight size={14} /></button> : <p>{property.client_name}</p>}{hasCapability({ role, capabilities }, "customers.properties") && property.access_instructions && <><strong>Access instructions</strong><p>{property.access_instructions}</p></>}</div></DataSurface>{canOpenClient && <DataSurface title="Primary contacts" detail="Account contacts."><div className="context-list">{workspace.contacts.slice(0, 3).map((item: any) => <div key={item.id}><Users size={16} /><span><strong>{item.name}</strong><small><ContactDetails prefix={item.position} email={item.email} phone={item.phone} /></small></span></div>)}{!workspace.contacts.length && <p className="muted">No contacts are recorded.</p>}</div></DataSurface>}</aside><div className="account-primary-column"><div className="atlas-stat-grid"><Stat available={canSee("schedule")} label="Upcoming work" value={upcoming.length} icon={<CalendarDays size={18} />} /><Stat available={canSee("agreements")} label="Active agreements" value={workspace.agreements.filter((item: any) => item.status === "active").length} icon={<FileText size={18} />} /><Stat available={canSee("requests")} label="Open requests" value={workspace.requests.filter((item: any) => isOpenRequestStatus(item.status)).length} icon={<ClipboardList size={18} />} /><Stat available={canSee("inspections")} label="Inspections" value={workspace.inspections.length} icon={<ClipboardList size={18} />} /></div>{tabSurface("Upcoming work", "Scheduled service at this property.", upcoming.slice(0, 5), [{ label: "Work", render: (item: any) => <strong>{item.title}</strong> }, { label: "Scheduled", render: (item: any) => stamp(item.scheduled_at) }, { label: "Status", render: (item: any) => <Status value={item.status} /> }], { title: "No upcoming work", text: "Future scheduled work orders will appear here." })}</div></div>}
     {tab === "schedule" && tabSurface("Property schedule", "Scheduled and in-progress work.", workspace.schedule, [{ label: "Work", render: (item: any) => <strong>{item.title}</strong> }, { label: "Scope", render: (item: any) => item.scope || "—" }, { label: "Scheduled", render: (item: any) => stamp(item.scheduled_at) }, { label: "Status", render: (item: any) => <Status value={item.status} /> }], { title: "No work scheduled", text: "Future work will appear here." })}
     {tab === "agreements" && tabSurface("Service agreements", "Terms attached to this property.", workspace.agreements, [{ label: "Agreement", render: (item: any) => <strong>{item.title}</strong> }, { label: "Term", render: (item: any) => `${item.starts_on} — ${item.ends_on}` }, { label: "Status", render: (item: any) => <Status value={item.status} /> }], { title: "No agreements", text: "No service agreements are linked to this property." })}
