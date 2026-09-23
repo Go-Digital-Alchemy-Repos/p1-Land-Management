@@ -1,0 +1,61 @@
+.address-autocomplete {
+  position: relative;
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.data-surface:has(.address-autocomplete),
+.property-profile-edit-panel:has(.address-autocomplete) {
+  overflow: visible;
+}
+.address-autocomplete > label {
+  font-size: 12px;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+}
+.address-autocomplete-popover {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% - 2px);
+  left: 0;
+  right: 0;
+  max-height: 280px;
+  overflow: auto;
+  border: 1px solid hsl(var(--border));
+  border-radius: 12px;
+  background: hsl(var(--card));
+  box-shadow: var(--shadow-md);
+}
+.address-autocomplete-option {
+  display: grid;
+  gap: 3px;
+  padding: 10px 12px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.address-autocomplete-option + .address-autocomplete-option {
+  border-top: 1px solid hsl(var(--border));
+}
+.address-autocomplete-option:hover,
+.address-autocomplete-option[aria-selected="true"] {
+  background: hsl(var(--muted));
+}
+.address-autocomplete-option span {
+  color: hsl(var(--muted-foreground));
+  font-size: 12px;
+}
+.address-autocomplete-popover p {
+  margin: 0;
+  padding: 10px 12px;
+  font-size: 12px;
+  color: hsl(var(--muted-foreground));
+}
+.address-autocomplete-credit {
+  color: hsl(var(--muted-foreground));
+  font-size: 10px;
+  line-height: 1.4;
+}
+.address-autocomplete-credit a {
+  color: inherit;
+  text-decoration: underline;
+}

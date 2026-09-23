@@ -13,6 +13,7 @@ import { Pencil, Copy, Users, XCircle, Plus } from "lucide-react";
 import { EventRegistrationSettings } from "./EventRegistrationSettings";
 import { EventAttendees } from "./EventAttendees";
 import { EventDirectoryManager } from "./EventDirectoryManager";
+import { AddressAutocomplete } from "../AddressAutocomplete";
 import { EventReferences } from "./EventReferences";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -442,7 +443,10 @@ function Editor({
                         ["locationName", "Location name"],
                         ["locationAddress", "Location address"],
                       ] as const
-                    ).map(([key, label]) => (
+                    ).map(([key, label]) => key === "locationAddress" ? (
+                      <AddressAutocomplete key={key} label={label} value={value.locationAddress || ""}
+                        onValueChange={(next) => patch({ locationAddress: next || null })} />
+                    ) : (
                       <label key={key}>
                         {label}
                         <input

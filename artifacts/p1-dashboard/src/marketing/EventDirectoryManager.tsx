@@ -14,6 +14,7 @@ import type {
   MarketingEventOrganizer,
 } from "../../../../lib/api-client-react/src/dashboard/models";
 import { MediaLibrary } from "./MediaLibrary";
+import { AddressAutocomplete } from "../AddressAutocomplete";
 import { useCmsUnsavedChanges } from "./useCmsUnsavedChanges";
 type Entry = MarketingEventVenue | MarketingEventOrganizer;
 type Draft = { name: string; [key: string]: unknown };
@@ -128,7 +129,13 @@ function EntryEditor({
       >
         <fieldset disabled={busy}>
           <legend>{kind === "venue" ? "Venue" : "Organizer"} details</legend>
-          {fields.map(([key, label]) => (
+          {fields.map(([key, label]) => kind === "venue" && key === "address" ? (
+            <AddressAutocomplete key={key} label={label} value={String(value.address ?? "")}
+              onValueChange={(next) => patch("address", next)}
+              onAddressSelect={(address) => setValue((old) => ({ ...old, address: address.line1,
+                city: address.city || old.city, region: address.state || old.region,
+                postalCode: address.postalCode || old.postalCode, country: "United States" }))} />
+          ) : (
             <label key={key}>
               {label}
               <input

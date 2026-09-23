@@ -35,6 +35,7 @@ import { ProjectPhases } from "./ProjectPhases";
 import { formatPhoneNumber } from "./phone";
 import { ContactDetails, EmailLink } from "./contact-links";
 import { AccountProfile } from "./AccountProfile";
+import { AddressAutocomplete, type AddressSuggestion } from "./AddressAutocomplete";
 import React, { lazy, useEffect, useRef, useState } from "react";
 import { LazySurface as Suspense } from "./LazySurface";
 import { createRoot } from "react-dom/client";
@@ -253,6 +254,14 @@ async function api(path: string, body?: unknown, method: "POST" | "PATCH" | "DEL
   const data = await r.json();
   if (!r.ok) throw Object.assign(new Error(data.error || "Request failed"), { status: r.status });
   return data;
+}
+function fillStructuredAddress(address: AddressSuggestion, input: HTMLInputElement) {
+  const form = input.form;
+  if (!form) return;
+  for (const [name, value] of [["city", address.city], ["state", address.state], ["postalCode", address.postalCode]]) {
+    const field = form.elements.namedItem(name);
+    if (field instanceof HTMLInputElement) field.value = value;
+  }
 }
 type Person = {
   id: string;
@@ -2873,7 +2882,7 @@ function App() {
                   <>
                     {clientSelect(false)}
                     {field("propertyName", "Property name")}
-                    {field("address", "Address")}
+                    <AddressAutocomplete name="address" label="Address" required />
                     <p>
                       Leave client blank to create a new client from this
                       inquiry.
@@ -2907,7 +2916,7 @@ function App() {
                 {form === "client" && (
                   <>
                     {field("name", "Business name")}
-                    {field("address", "Business address")}
+                    <AddressAutocomplete name="address" label="Business address" required />
                     {field("phone", "Business phone", "tel")}
                     <fieldset>
                       <legend>Primary contact</legend>
@@ -2925,14 +2934,7 @@ function App() {
                       Business name
                       <input name="name" required defaultValue={selected.name} />
                     </label>
-                    <label>
-                      Business address
-                      <input
-                        name="address"
-                        required
-                        defaultValue={selected.billing_address || ""}
-                      />
-                    </label>
+                    <AddressAutocomplete name="address" label="Business address" required defaultValue={selected.billing_address || ""} />
                     <label>
                       Business phone
                       <input
@@ -3019,10 +3021,7 @@ function App() {
                     </label>
                     <fieldset className="property-address-fields">
                       <legend>Property address</legend>
-                      <label>
-                        Address line 1
-                        <input name="addressLine1" autoComplete="address-line1" required />
-                      </label>
+                      <AddressAutocomplete name="addressLine1" label="Address line 1" autoComplete="address-line1" required format="line1" completeOnly onAddressSelect={fillStructuredAddress} />
                       <label>
                         Address line 2 <span className="optional-field">Optional</span>
                         <input name="addressLine2" autoComplete="address-line2" />
