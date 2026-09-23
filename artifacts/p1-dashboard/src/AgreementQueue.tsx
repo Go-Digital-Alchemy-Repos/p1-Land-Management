@@ -286,7 +286,7 @@ export function AgreementQueue({
       aria-label="Agreement billing action queue"
     >
       <div className="panel-heading">
-        <h3>Billing preparation & review</h3>
+        <h3>Ready to invoice</h3>
         <button disabled={busy} onClick={() => void load()}>
           Refresh billing queue
         </button>
@@ -349,7 +349,7 @@ export function AgreementQueue({
                   disabled={busy}
                   onClick={() => void openCancellationReview(row)}
                 >
-                  Review cancellation impact
+                  Review charge
                 </button>
               )}
             </div>
@@ -387,10 +387,11 @@ export function AgreementQueue({
           ) : (
             <button
               className="primary"
+              title="Creating an invoice draft does not send or charge the customer."
               disabled={busy}
               onClick={() => void prepare()}
             >
-              Prepare billing draft
+              Create invoice draft
             </button>
           )}
         </section>
@@ -398,9 +399,9 @@ export function AgreementQueue({
       {cancellationReview && selected?.chargeId && (
         <section
           className="agreement-plan"
-          aria-label="Cancellation impact review"
+          aria-label="Cancelled work with charges to settle"
         >
-          <h4>Cancellation impact review</h4>
+          <h4>Cancelled work with charges to settle</h4>
           <p>
             This records a finance decision against the current draft snapshot.
             It does not post, credit, amend, send, or collect a payment.
@@ -439,8 +440,8 @@ export function AgreementQueue({
               {cancellationReview.allowedOutcomes.map((outcome) => (
                 <option key={outcome} value={outcome}>
                   {outcome === "keep_due"
-                    ? "Keep this draft due"
-                    : "Correction required"}
+                    ? "Still owed"
+                    : "Needs a fix before invoicing"}
                 </option>
               ))}
             </select>

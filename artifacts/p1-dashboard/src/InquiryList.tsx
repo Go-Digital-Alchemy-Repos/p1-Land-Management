@@ -25,10 +25,12 @@ export function InquiryList({
   onOpen,
   revision,
   owners,
+  initialStatus = "",
 }: {
   onCreate: () => void;
   onOpen: (id: string) => void;
   revision: number;
+  initialStatus?: string;
   owners: Array<{
     id: string;
     name: string;
@@ -39,8 +41,8 @@ export function InquiryList({
   const pipeline = usePipelineStages();
   const [items, setItems] = useState<Inquiry[]>([]),
     [cursor, setCursor] = useState<string | null>(null),
-    [filters, setFilters] = useState(emptyFilters),
-    [applied, setApplied] = useState(emptyFilters),
+    [filters, setFilters] = useState(() => ({ ...emptyFilters, status: initialStatus })),
+    [applied, setApplied] = useState(() => ({ ...emptyFilters, status: initialStatus })),
     [busy, setBusy] = useState(false),
     [loaded, setLoaded] = useState(false),
     [error, setError] = useState(""),
@@ -108,7 +110,7 @@ export function InquiryList({
   }
   useEffect(() => {
     alive.current = true;
-    void load(false, emptyFilters, false);
+    void load(false, { ...emptyFilters, status: initialStatus }, false);
     return () => {
       alive.current = false;
       controller.current?.abort();

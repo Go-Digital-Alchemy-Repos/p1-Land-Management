@@ -146,6 +146,7 @@ try {
       "src/dashboard/user-management.test.ts",
       "src/dashboard/impersonation.test.ts",
       "src/dashboard/external-invoice.test.ts",
+      "src/dashboard/overview-search.test.ts",
       "src/dashboard/contacts.test.ts",
       "src/dashboard/client-workspace.test.ts",
       "src/dashboard/client-notes.test.ts",

@@ -6,6 +6,10 @@ import { FieldConflictReview } from "./FieldConflictReview";
 import { isTransientRefreshFailure, refreshEntries } from "./my-day-recovery";
 import { DESIGN_COPY } from "../../../platform/p1-core/shared/design-page-copy";
 import { InquiryList } from "./InquiryList";
+import { NeedsYouList, OverviewMetrics, type NeedsYouItem } from "./OverviewActions";
+import { GlobalSearch } from "./GlobalSearch";
+import { messageForApiError } from "./messages";
+import { ToastRegion } from "./ToastRegion";
 import ComposedEstimateActions from "./agreements/ComposedEstimateActions";
 import { ComposedProposal } from "./ComposedProposal";
 import BillingEstimatePicker from "./BillingAllocationPicker";
@@ -245,13 +249,20 @@ const settingsDescriptions: Record<SettingsSection, string> = {
   "term-libraries": "Maintain the controlled terms used across records and reports.",
 };
 async function api(path: string, body?: unknown, method: "POST" | "PATCH" | "DELETE" = "POST") {
-  const r = await fetch("/api/v1" + path, {
-    method: body === undefined ? "GET" : method,
-    headers: body === undefined ? {} : { "Content-Type": "application/json" },
-    body: body === undefined ? undefined : JSON.stringify(body),
+  let r: Response;
+  try {
+    r = await fetch("/api/v1" + path, {
+      method: body === undefined ? "GET" : method,
+      headers: body === undefined ? {} : { "Content-Type": "application/json" },
+      body: body === undefined ? undefined : JSON.stringify(body),
+    });
+  } catch {
+    throw Object.assign(new Error("Could not connect. Check your connection and try again."), { status: 503 });
+  }
+  const data = await r.json().catch(() => {
+    throw Object.assign(new Error(messageForApiError(null, r.headers.get("x-request-id"))), { status: r.status });
   });
-  const data = await r.json();
-  if (!r.ok) throw Object.assign(new Error(data.error || "Request failed"), { status: r.status });
+  if (!r.ok) throw Object.assign(new Error(messageForApiError(data.error, r.headers.get("x-request-id"))), { status: r.status, code: data.error });
   return data;
 }
 type Person = {
@@ -356,6 +367,10 @@ function operatingDate(value: string | Date) {
     .map((type) => parts.find((part) => part.type === type)?.value)
     .join("-");
 }
+function nextOperatingDate(day: string) {
+  const [year, month, date] = day.split("-").map(Number);
+  return new Date(Date.UTC(year, month - 1, date + 1)).toISOString().slice(0, 10);
+}
 
 function PropertyTypesLibrary({
   propertyTypes,
@@ -406,6 +421,13 @@ function App() {
   const [fieldDay, setFieldDay] = useState(() => operatingDate(new Date()));
   const [downloadedAt, setDownloadedAt] = useState<string | null>(null);
   const [persistentStorage, setPersistentStorage] = useState(false);
+  const [pendingPhotos, setPendingPhotos] = useState(0);
+  const [pendingEntries, setPendingEntries] = useState(0);
+  const [syncing, setSyncing] = useState(false);
+  const [offlineIssue, setOfflineIssue] = useState("");
+  const [showDayPicker, setShowDayPicker] = useState(false);
+  const [showInstallHelp, setShowInstallHelp] = useState(false);
+  const syncInFlight = useRef(false);
   const [billingOperationId, setBillingOperationId] = useState(() =>
     crypto.randomUUID(),
   );
@@ -431,6 +453,9 @@ function App() {
     [count, setCount] = useState(0),
     [menu, setMenu] = useState(false);
   const [propertySearch, setPropertySearch] = useState("");
+  const [needsYou, setNeedsYou] = useState<NeedsYouItem[]>([]);
+  const [needsYouState, setNeedsYouState] = useState<"loading" | "ready" | "failed">("loading");
+  const [routeQuery, setRouteQuery] = useState(() => location.search);
   const [propertyTypeFilter, setPropertyTypeFilter] = useState("");
   const [propertySort, setPropertySort] = useState<"name" | "type">("name");
   const sharedDataRequired = [
@@ -460,6 +485,16 @@ function App() {
     if (historyMode === "replace" && location.pathname !== path) {
       history.replaceState(null, "", path);
     }
+    setRouteQuery(location.search);
+  };
+  const navigateHref = (href: string) => {
+    const destination = new URL(href, location.origin);
+    const route = routeFromPath(destination.pathname);
+    if (route.kind !== "page" || destination.origin !== location.origin) return;
+    if (!window.dispatchEvent(new Event("p1:before-navigation", { cancelable: true }))) return;
+    history.pushState(null, "", destination.pathname + destination.search);
+    applyRoute(route, "replace");
+    setRouteQuery(destination.search);
   };
   const navigate = (nextView: DashboardPageRoute["view"], section?: SettingsSection) => {
     const destination = nav.find(
@@ -480,7 +515,7 @@ function App() {
         api("/setup"),
         api("/me").catch(async (error: Error & { status?: number }) => {
           if (error.status === 403 &&
-              /^(User switch expired|Impersonation is no longer available)/.test(error.message)) {
+              /^(User switch expired|Impersonation is no longer available)/.test(String((error as Error & { code?: string }).code || ""))) {
             await api("/impersonation/stop", {});
             return api("/me");
           }
@@ -535,6 +570,7 @@ function App() {
   useEffect(() => {
     const onPopState = () => {
       const next = routeFromLocation();
+      setRouteQuery(location.search);
       if (next.kind === "not-found") {
         if (!window.dispatchEvent(new Event("p1:before-navigation", {cancelable:true}))) return;
         setRouteMissing(true);
@@ -561,8 +597,9 @@ function App() {
       setDownloadedAt(savedDay?.savedAt || null);
       if (!person.impersonation) {
         setPersistentStorage((await offline.storageStatus()).persistent);
-        setCount((await offline.pending(person.id)).length +
-          (await offline.pendingPhotos(person.id)).length);
+        const [entries, photos] = await Promise.all([offline.pending(person.id), offline.pendingPhotos(person.id)]);
+        setPendingEntries(entries.length); setPendingPhotos(photos.length);
+        setCount(entries.length + photos.length);
       } else setCount(0);
       if (!navigator.onLine) {
         const day = await offline.readDay(person.id);
@@ -619,6 +656,44 @@ function App() {
     void refresh();
     return () => { refreshGeneration.current++; };
   }, [person?.id, person?.role, person?.capabilities, isOnline]);
+  useEffect(() => {
+    if (!person || person.impersonation || view !== "My Day" || !isOnline || dataLoadStatus !== "ready") return;
+    let active = true;
+    const today = operatingDate(new Date());
+    void offline.saveDay(person.id, (data.work || []).filter((work: any) => work.scheduled_at && operatingDate(work.scheduled_at) === today))
+      .then(() => offline.readDay(person.id))
+      .then((saved) => { if (active) { setDownloadedAt(saved?.savedAt || null); setOfflineIssue(""); } })
+      .catch(() => { if (active) setOfflineIssue("Today's assignments could not be saved on this device. Check pending work and try again."); });
+    return () => { active = false; };
+  }, [person?.id, person?.impersonation, view, isOnline, dataLoadStatus, data.work]);
+  useEffect(() => {
+    if (!person || person.impersonation || view !== "My Day") return;
+    let timer: number | undefined;
+    const schedule = () => {
+      if (!navigator.onLine || syncInFlight.current) return;
+      clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        void Promise.all([offline.pending(person.id), offline.pendingPhotos(person.id)])
+          .then(([entries, photos]) => {
+            if (entries.length || photos.length) void sync().catch(() => undefined);
+          })
+          .catch(() => setOfflineIssue("Pending work could not be checked. Tap Sync now to retry."));
+      }, 5000);
+    };
+    window.addEventListener("online", schedule);
+    window.addEventListener("focus", schedule);
+    schedule();
+    return () => { clearTimeout(timer); window.removeEventListener("online", schedule); window.removeEventListener("focus", schedule); };
+  }, [person?.id, person?.impersonation, view]);
+  useEffect(() => {
+    if (!person || view !== "Overview" || !isOnline || dataLoadStatus !== "ready") return;
+    let active = true;
+    setNeedsYouState("loading");
+    void api("/overview/needs-you").then((items: NeedsYouItem[]) => {
+      if (active) { setNeedsYou(items); setNeedsYouState("ready"); }
+    }).catch(() => { if (active) setNeedsYouState("failed"); });
+    return () => { active = false; };
+  }, [person?.id, person?.role, view, isOnline, dataLoadStatus, data]);
   async function run(fn: () => Promise<void>) {
     setError("");
     setNotice("");
@@ -630,12 +705,20 @@ function App() {
   }
   async function sync() {
     if (!person) return;
+    if (syncInFlight.current) return;
+    syncInFlight.current = true;
+    setSyncing(true);
+    setOfflineIssue("");
+    try {
     if (person.impersonation)
       throw new Error("Offline field sync is unavailable while acting as another user.");
     // Reconcile reviewed receipts first; a denied photo or unrelated entry must
     // not trap an already-resolved operation on the device.
     const reviewedCount = await reconcileFieldResolutions(person.id);
-    setCount((await offline.pending(person.id)).length + (await offline.pendingPhotos(person.id)).length);
+    const currentEntries = await offline.pending(person.id);
+    const currentPhotos = await offline.pendingPhotos(person.id);
+    setPendingEntries(currentEntries.length); setPendingPhotos(currentPhotos.length);
+    setCount(currentEntries.length + currentPhotos.length);
     for (const photo of await offline.pendingPhotos(person.id)) {
       const r = await fetch("/api/v1/files/" + photo.id, {
         method: "POST",
@@ -666,6 +749,27 @@ function App() {
       );
     } else setNotice(reviewedCount ? "Office-reviewed entries cleared from this device. Original entries remain in property history." : "Everything is up to date.");
     await refresh();
+    const [remainingEntries, remainingPhotos] = await Promise.all([offline.pending(person.id), offline.pendingPhotos(person.id)]);
+    setPendingEntries(remainingEntries.length); setPendingPhotos(remainingPhotos.length);
+    setCount(remainingEntries.length + remainingPhotos.length);
+    } catch (cause) {
+      const [photos, entries] = await Promise.all([
+        offline.pendingPhotos(person.id).catch(() => []),
+        offline.pending(person.id).catch(() => []),
+      ]);
+      setPendingPhotos(photos.length);
+      setPendingEntries(entries.length);
+      setCount(photos.length + entries.length);
+      setOfflineIssue(photos.length
+        ? `Upload failed for ${photos.length} ${photos.length === 1 ? "photo" : "photos"}. Tap Sync now to retry.`
+        : entries.length
+          ? `Upload failed for ${entries.length} ${entries.length === 1 ? "note" : "notes"}. Tap Sync now to retry.`
+          : "Upload failed. Tap Sync now to retry.");
+      throw cause;
+    } finally {
+      syncInFlight.current = false;
+      setSyncing(false);
+    }
   }
   async function submitImpersonatedField(event: offline.FieldOperation) {
     if (!navigator.onLine) throw new Error("Reconnect to record field work while switching users.");
@@ -1172,14 +1276,28 @@ function App() {
       : []),
   ];
   const inScheduleWorkspace = ["Schedule", "Recurring"].includes(view);
-  const visibleScheduleWork = ["Schedule", "My Day"].includes(view)
-    ? visibleWorkOrders(
-        data.work || [],
-        view as "Schedule" | "My Day",
-        recordRoute?.kind === "work-order" ? recordRoute.id : null,
-        fieldDay,
-      )
-    : [];
+  const routeFilters = new URLSearchParams(routeQuery);
+  const overviewToday = operatingDate(new Date());
+  const dispatchOverview = Boolean(ops && !can("customers.properties") && !can("revenue.sales"));
+  const overviewVisits = (data.work || []).filter((work: any) =>
+    work.status === "scheduled" && work.scheduled_at &&
+    (person?.role === "client"
+      ? Date.parse(work.scheduled_at) >= Date.now()
+      : [overviewToday, ...(dispatchOverview ? [nextOperatingDate(overviewToday)] : [])]
+          .includes(operatingDate(work.scheduled_at)))
+  );
+  const visibleScheduleWork = view === "Schedule" && (routeFilters.has("status") || routeFilters.has("date") || routeFilters.has("unassigned"))
+    ? (data.work || []).filter((work: any) =>
+        (!routeFilters.get("status") || work.status === routeFilters.get("status")) &&
+        (!routeFilters.get("date") || (work.scheduled_at && operatingDate(work.scheduled_at) === routeFilters.get("date"))) &&
+        (!routeFilters.has("unassigned") || !work.assigned_to))
+    : ["Schedule", "My Day"].includes(view)
+      ? visibleWorkOrders(data.work || [], view as "Schedule" | "My Day", recordRoute?.kind === "work-order" ? recordRoute.id : null, fieldDay)
+      : [];
+  const visibleRequests = (data.requests || []).filter((request: any) =>
+    (!routeFilters.get("status") || request.status === (person?.role === "client" && routeFilters.get("status") === "new" ? "received" : routeFilters.get("status"))) &&
+    (!routeFilters.get("age") || (routeFilters.get("age") === "48h" && Date.parse(request.created_at) <= Date.now() - 48 * 60 * 60 * 1000)) &&
+    (!routeFilters.get("request") || request.id === routeFilters.get("request")));
   const salesWorkspaceTabs = can("revenue.sales")
     ? [
         { view: "Sales" as const, label: "Overview", path: "/sales", icon: FileText, tone: "blue" },
@@ -1190,27 +1308,27 @@ function App() {
   const inSalesWorkspace = ["Sales", "Pipeline", "Pipeline Settings"].includes(view);
   const marketingWorkspaceGroups = [
     {
-      label: "Content",
+      label: "Website content",
       tone: "violet",
       views: ["Website Editor", "CMS Pages", "Website Blog", "Website Forms", "Website Events", "Website Careers", "Website Team", "Media Library", "Website Galleries", "Website Sections"],
     },
     {
-      label: "Brand",
+      label: "Brand & design",
       tone: "rose",
       views: ["Website Identity", "Website Social", "Website Colors", "Website Typography"],
     },
     {
-      label: "Site",
+      label: "SEO & menus",
       tone: "green",
       views: ["Website SEO", "Website Menus", "Website Sidebars"],
     },
     {
-      label: "System",
+      label: "Website settings",
       tone: "cyan",
       views: ["Website Features", "Website Backups", "Website Integrations", "Website Email Templates", "Website Documents", "Website Head Tags"],
     },
     {
-      label: "Reporting",
+      label: "Traffic & search",
       tone: "blue",
       views: ["Analytics", "Search Console"],
     },
@@ -1562,7 +1680,7 @@ function App() {
           <div className="season">
             <Leaf size={19} />
             <div>
-              Built around the land.<small>P1 Land & Property Management</small>
+              Built around the land.<small>P1 Land Management</small>
             </div>
           </div>
           <button onClick={() => void run(logout)}>
@@ -1587,6 +1705,7 @@ function App() {
                 : marketingPageCopy[view]?.title ?? view}
             </strong>
           </div>
+          <GlobalSearch userId={person.id} onNavigate={navigateHref} />
           <button
             className="user account-menu-trigger"
             onClick={() => navigate("Profile")}
@@ -1678,16 +1797,7 @@ function App() {
               )}
             </div>}
           </div>}
-          {error && (
-            <div role="alert" className="error">
-              {error}
-            </div>
-          )}
-          {notice && (
-            <div role="status" className="notice">
-              {notice}
-            </div>
-          )}
+          <ToastRegion notice={notice} error={error} />
           {!routeUnavailable && marketingWorkspace && marketingWorkspaceTabs.length > 1 && (
             <nav className="workspace-tabs marketing-workspace-tabs" aria-label={`${marketingWorkspace.label} tools`}>
               {marketingWorkspaceTabs.map((tab) => {
@@ -1867,52 +1977,22 @@ function App() {
           )}
           {view === "Overview" && (
             <>
-              <div className="metrics">
-                {[
-                  [
-                    "Properties",
-                    data.properties?.length || 0,
-                    "In your workspace",
-                  ],
-                  [
-                    "Scheduled work",
-                    data.work?.filter((w: any) => w.status === "scheduled")
-                      .length || 0,
-                    "Ready for the crew",
-                  ],
-                  [
-                    "Awaiting review",
-                    data.work?.filter((w: any) => w.status === "completed")
-                      .length || 0,
-                    "Completion to confirm",
-                  ],
-                  [
-                    "Service requests",
-                    data.requests?.filter((r: any) => r.status === "new")
-                      .length || 0,
-                    "Conversations to follow up",
-                  ],
-                ].map(([label, value, sub]) => (
-                  <section key={label} className="metric">
-                    <p>
-                      {label}
-                      <ArrowUpRight size={17} />
-                    </p>
-                    <strong>{value}</strong>
-                    <small>{sub}</small>
-                  </section>
-                ))}
-              </div>
+              <OverviewMetrics onNavigate={navigateHref} items={[
+                ...(person.role === "client" || can("customers.properties") ? [{ label: "Properties", value: data.properties?.length || 0, detail: "In your workspace", href: "/properties" }] : []),
+                ...(person.role === "client" || ops ? [{ label: "Scheduled work", value: data.work?.filter((w: any) => w.status === "scheduled").length || 0, detail: "Open schedule", href: "/schedule?status=scheduled" }] : []),
+                ...(ops ? [{ label: "Finished, needs review", value: data.work?.filter((w: any) => w.status === "completed").length || 0, detail: "Ready for office review", href: "/schedule?status=completed" }] : []),
+                ...(person.role === "client" || can("customers.requests") ? [{ label: "Service requests", value: data.requests?.filter((r: any) => r.status === (person.role === "client" ? "received" : "new")).length || 0, detail: "Conversations to follow up", href: "/requests?status=new" }] : []),
+              ]} />
               <div className="overview-grid">
-                <section className="panel">
+                {(ops || person.role === "client") && <section className="panel">
                   <div className="panel-heading">
-                    <h2>On the schedule</h2>
-                    <button onClick={() => setView("Schedule")}>
+                    <h2>{person.role === "client" ? "Your next visit" : dispatchOverview ? "Today and tomorrow" : "Today's schedule"}</h2>
+                    <button onClick={() => navigateHref(person.role === "client" ? "/properties" : "/schedule?status=scheduled")}>
                       View all <ArrowUpRight size={15} />
                     </button>
                   </div>
-                  {data.work?.length ? (
-                    data.work.slice(0, 5).map((w: any) => (
+                  {overviewVisits.length ? (
+                    overviewVisits.slice(0, person.role === "client" ? 1 : 5).map((w: any) => (
                       <div className="schedule-row" key={w.id}>
                         <div className="job-icon">
                           <ClipboardList size={20} />
@@ -1926,38 +2006,28 @@ function App() {
                         <span className={"badge " + w.status}>
                           {w.status.replaceAll("_", " ")}
                         </span>
-                        <button
+                        {person.role !== "client" && <button
                           className="quiet-action"
                           onClick={() => void openWorkOrder(w.id, schedulePage)}
                         >
                           Open work order
-                        </button>
+                        </button>}
                       </div>
                     ))
                   ) : (
                     <Empty
-                      title="A fresh start for your operations"
-                      text="Add a client and property, then schedule your first work order."
+                      title={person.role === "client" ? "No upcoming visit" : "No work is scheduled"}
+                      text={person.role === "client" ? "Your next scheduled visit will appear here." : "Scheduled work will appear here when a date is set."}
                     />
                   )}
-                </section>
-                <section className="next-panel">
-                  <p className="eyebrow">THE NEXT RIGHT THING</p>
-                  <h2>
-                    Keep the work
-                    <br />
-                    moving forward.
-                  </h2>
-                  <p>
-                    Review completed jobs, follow up on requests, and keep every
-                    property’s history up to date.
-                  </p>
-                  <button onClick={() => setView("Requests")}>
-                    Open requests <ArrowUpRight size={18} />
-                  </button>
-                </section>
+                </section>}
+                <NeedsYouList items={needsYou} loading={needsYouState === "loading"} error={needsYouState === "failed"} onNavigate={navigateHref} />
               </div>
-              <section className="panel">
+              {can("revenue.sales") && !ops && <section className="panel">
+                <div className="panel-heading"><h2>Sales pipeline</h2><button onClick={() => navigateHref("/sales/pipeline")}>Open pipeline <ArrowUpRight size={15} /></button></div>
+                <p>{needsYou.find((item) => item.kind === "new-inquiries")?.count || 0} new commercial inquiries need a first review.</p>
+              </section>}
+              {(person.role === "client" || can("customers.properties")) && <section className="panel">
                 <div className="panel-heading">
                   <h2>Your properties</h2>
                   <button onClick={() => setView("Properties")}>
@@ -1968,7 +2038,7 @@ function App() {
                   properties={data.properties || []}
                   onOpen={openPropertyWorkspace}
                 />
-              </section>
+              </section>}
             </>
           )}
           {view === "Properties" && (
@@ -2044,26 +2114,18 @@ function App() {
               {view === "My Day" && !person.impersonation && (
                 <div className="offline-toolbar">
                   <div>
-                    <strong>{count} pending field entries</strong>
-                    <small>
-                      {downloadedAt
-                        ? "Downloaded " + date(downloadedAt)
-                        : "Download assignments before leaving cell coverage."}
-                    </small>
+                    <strong role="status">{syncing ? "Uploading field work…" : offlineIssue || (count ? `${pendingPhotos} ${pendingPhotos === 1 ? "photo" : "photos"} and ${pendingEntries} ${pendingEntries === 1 ? "note" : "notes"} waiting to upload` : downloadedAt ? `Today's work is saved on this phone · updated ${new Date(downloadedAt).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}` : "Saving today's work for offline use…")}</strong>
+                    {!persistentStorage && <small>To keep offline work safe, <button type="button" className="text-link" onClick={() => setShowInstallHelp((value) => !value)}>add P1 to your home screen</button>.{showInstallHelp && <span> On iPhone, tap Share then Add to Home Screen. On Android, open the browser menu then Install app.</span>}</small>}
                   </div>
-                  <label>
+                  {showDayPicker && <label>
                     Work date
                     <input
                       type="date"
                       value={fieldDay}
                       onChange={(event) => setFieldDay(event.target.value)}
                     />
-                  </label>
-                  <small>
-                    {persistentStorage
-                      ? "Persistent storage granted"
-                      : "Browser storage may be cleared by this device"}
-                  </small>
+                  </label>}
+                  <button type="button" className="secondary" onClick={() => setShowDayPicker((value) => !value)}>Different day</button>
                   <button
                     disabled={!isOnline}
                     onClick={() =>
@@ -2090,17 +2152,29 @@ function App() {
                     <Download size={17} /> Download My Day
                   </button>
                   <button disabled={!isOnline} onClick={() => void run(sync)}>
-                    <RefreshCw size={17} /> Sync Now
+                    <RefreshCw size={17} /> Sync now
                   </button>
                 </div>
               )}
               {view === "Schedule" && (
+                <div className="route-filter-bar" aria-label="Schedule filters">
+                  <label>Status <select value={routeFilters.get("status") || ""} onChange={(event) => navigateHref(event.target.value ? `/schedule?status=${encodeURIComponent(event.target.value)}` : "/schedule")}>
+                    <option value="">All work</option><option value="scheduled">Scheduled</option><option value="completed">Finished, needs review</option>
+                  </select></label>
+                  {(routeFilters.has("date") || routeFilters.has("unassigned")) && <button type="button" className="secondary" onClick={() => navigateHref("/schedule")}>Clear filters</button>}
+                </div>
+              )}
+              {view === "Schedule" && (
                 <ScheduleCalendar
+                  key={`schedule:${routeFilters.get("date") || ""}`}
                   request={api}
                   onChanged={refresh}
                   work={data.work || []}
                   staff={(data.staff || []).filter((candidate: any) => candidate.canAssignWork)}
                   canManage={ops}
+                  initialDate={routeFilters.get("date") || undefined}
+                  statusFilter={routeFilters.get("status") || undefined}
+                  unassignedOnly={routeFilters.get("unassigned") === "1"}
                   onSelect={(id) => {
                     void openWorkOrder(id, schedulePage);
                   }}
@@ -2291,8 +2365,9 @@ function App() {
               {hasCapability(person, "revenue.sales") && <a href="/agreements/drafts">Agreement drafts</a>}
               {can("revenue.sales") && (
                 <InquiryList
-                  key={person.id}
+                  key={`${person.id}:${routeFilters.get("status") || ""}`}
                   revision={inquiryRevision}
+                  initialStatus={routeFilters.get("status") || ""}
                   owners={data.staff || []}
                   onCreate={() => openForm("lead")}
                   onOpen={(id) => navigateRecord(salesPage, { kind: "lead", id, tab: "overview" })}
@@ -2307,7 +2382,7 @@ function App() {
                     </button>
                   )}
                 </div>
-                {(data.estimates || []).map((e: any) => (
+                {(data.estimates || []).filter((e: any) => !routeFilters.get("estimate") || e.status === routeFilters.get("estimate")).map((e: any) => (
                   <div
                     className="schedule-row"
                     key={e.id}
@@ -2366,7 +2441,7 @@ function App() {
                       ))}
                   </div>
                 ))}
-                {!data.estimates?.length && (
+                {!(data.estimates || []).some((e: any) => !routeFilters.get("estimate") || e.status === routeFilters.get("estimate")) && (
                   <p className="empty">Your estimates will appear here.</p>
                 )}
               </section>
@@ -2382,12 +2457,13 @@ function App() {
                 <h2>{can("revenue.billing") ? quickbooksEnabled ? "Billing drafts & invoices" : "Billing drafts" : "Your invoices"}</h2>
                 {can("revenue.billing") && (
                   <button
+                    title="An invoice draft does not send or charge the customer."
                     onClick={() => (
                       setBillingOperationId(crypto.randomUUID()),
                       openForm("billing")
                     )}
                   >
-                    <Plus size={16} /> Prepare billing
+                    <Plus size={16} /> Create invoice draft
                   </button>
                 )}
               </div>
@@ -2479,14 +2555,19 @@ function App() {
             </section>
           )}
           {view === "Requests" && (
+            <>
+            {routeFilters.toString() && <div className="route-filter-bar"><span>Showing filtered requests</span><button type="button" className="secondary" onClick={() => navigateHref("/requests")}>Show all requests</button></div>}
             <ServiceRequestTriage
-              records={data.requests || []}
+              key={routeFilters.get("request") || "all"}
+              records={visibleRequests}
+              initialRequestId={routeFilters.get("request") || undefined}
               role={person?.role}
               capabilities={person?.capabilities}
               api={api}
               onRefresh={refresh}
               onGenerateEstimate={(request) => openForm("estimate-request", request)}
             />
+            </>
           )}
           {view === "Settings" && settingsSection === "security" && (
             <section className="panel">
@@ -2662,7 +2743,7 @@ function App() {
           )}
           </>}
           <footer className="footer">
-            P1 LAND & PROPERTY MANAGEMENT <span>Built for the work ahead.</span>
+            P1 LAND MANAGEMENT <span>Built for the work ahead.</span>
           </footer>
         </main>
       </div>
@@ -3057,7 +3138,7 @@ function App() {
                         </label>
                         <label>
                           ZIP code
-                          <input name="postalCode" autoComplete="postal-code" inputMode="numeric" pattern="\\d{5}(-\\d{4})?" placeholder="28105" required />
+                          <input name="postalCode" autoComplete="postal-code" inputMode="numeric" pattern="[0-9]{5}(-[0-9]{4})?" placeholder="28105" required />
                         </label>
                       </div>
                     </fieldset>

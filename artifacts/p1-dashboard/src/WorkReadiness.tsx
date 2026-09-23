@@ -50,7 +50,7 @@ export function WorkReadiness({
   }
   return (
     <section aria-label="Job readiness" className="work-readiness">
-      <h4>Dispatch requirements</h4>
+      <h4>Before the crew rolls</h4>
       {JSON.stringify(items) !== JSON.stringify(work.prerequisites) && (
         <p role="status">Unsaved changes. Save before dispatch.</p>
       )}

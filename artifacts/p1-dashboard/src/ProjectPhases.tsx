@@ -506,7 +506,7 @@ export function ProjectPhases({
                           });
                         }}
                       >
-                        {billingAttempt ? "Retry same draft" : "Prepare draft"}
+                        {billingAttempt ? "Retry same invoice draft" : "Create invoice draft"}
                       </button>
                       {billingAttempt && (
                         <button
