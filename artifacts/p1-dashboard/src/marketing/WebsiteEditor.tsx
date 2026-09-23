@@ -20,6 +20,7 @@ import type {
 import { useCmsUnsavedChanges } from "./useCmsUnsavedChanges";
 import "./website-editor.css";
 import { MediaLibrary } from "./MediaLibrary";
+import { CmsPausedBanner, CMS_PAUSED_SHORT, useCmsEditingPaused } from "./useCmsEditingStatus";
 
 function message(error: unknown) {
   const payload = (error as { data?: { message?: string; error?: string } })
@@ -139,10 +140,12 @@ function ContentEditor({
   entry,
   canUseMedia,
   canUseBlog,
+  paused,
 }: {
   entry: WebsiteContentEntry;
   canUseMedia: boolean;
   canUseBlog: boolean;
+  paused: boolean;
 }) {
   const [imageField, setImageField] = useState<string | null>(null);
   const picker = useRef<HTMLDialogElement>(null);
@@ -204,7 +207,7 @@ function ContentEditor({
   }, []);
   const working = useRef(false);
   const perform = async (work: () => Promise<void>, mutation = true) => {
-    if (working.current || (mutation && data?.ownedBlog)) return;
+    if (working.current || (mutation && (data?.ownedBlog || paused))) return;
     working.current = true;
     setBusy(true);
     setImageField(null);
@@ -245,6 +248,7 @@ function ContentEditor({
     <section
       className="website-content-editor"
       aria-label="Website content editor"
+      title={paused ? CMS_PAUSED_SHORT : undefined}
     >
       <dialog
         ref={picker}
@@ -353,10 +357,11 @@ function ContentEditor({
               </button>
             ) : null
           }
-          busy={busy || !!data.ownedBlog}
-          saveDisabled={!dirty && data.draftRevision > 0}
+          busy={busy || !!data.ownedBlog || paused}
+          mutationDisabledReason={paused ? CMS_PAUSED_SHORT : undefined}
+          saveDisabled={paused || (!dirty && data.draftRevision > 0)}
           publishDisabled={
-            dirty ||
+            paused || dirty ||
             data.draftRevision === 0 ||
             data.publishedRevision === data.draftRevision
           }
@@ -440,6 +445,7 @@ export default function WebsiteEditor({
   canUseMedia?: boolean;
   canUseBlog?: boolean;
 }) {
+  const paused = useCmsEditingPaused();
   const [entries, setEntries] = useState<WebsiteContentEntry[]>([]),
     [selected, setSelected] = useState<WebsiteContentEntry | null>(null),
     [error, setError] = useState(""),
@@ -488,6 +494,7 @@ export default function WebsiteEditor({
   };
   return (
     <div className="website-editor structured-website-presentation">
+      <CmsPausedBanner paused={paused} />
       {!selected && <h1>Website Content</h1>}
       <p className="muted">
         Edit P1 page content, page SEO, shared navigation and business details.
@@ -504,6 +511,7 @@ export default function WebsiteEditor({
             entry={selected}
             canUseMedia={canUseMedia}
             canUseBlog={canUseBlog}
+            paused={paused}
           />
         </>
       ) : (

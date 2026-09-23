@@ -32,6 +32,7 @@ export type CmsIdentity = {
   googleBusinessUrl: string | null;
 };
 export type CmsSnapshot = {
+  contentOverlayEnabled?: boolean;
   blog?: Pick<PublicBlogPublication, "posts"> & {
     revision: string | null;
     staticRoutes: Array<{ slug: string; postId: string }> | null;
@@ -136,10 +137,13 @@ export function CmsProvider({
   children: ReactNode;
 }) {
   const [preview, setPreview] = useState<CmsPreviewOverlay | null>(null);
-  const active = applyPreviewOverlay(snapshot, preview);
+  const active = snapshot.contentOverlayEnabled
+    ? applyPreviewOverlay(snapshot, preview)
+    : snapshot;
   useEffect(() => {
     setPreview(null);
     if (
+      !snapshot.contentOverlayEnabled ||
       !new URLSearchParams(location.search).has("cmsPreview") ||
       window.parent === window
     )

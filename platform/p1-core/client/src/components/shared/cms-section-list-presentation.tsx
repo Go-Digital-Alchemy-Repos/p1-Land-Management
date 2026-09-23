@@ -43,6 +43,7 @@ export function SectionListPresentation({
   setCategoryFilter,
   restoring,
   busy = false,
+  mutationDisabledReason,
   onRestore,
   onEdit,
   onDelete,
@@ -57,6 +58,7 @@ export function SectionListPresentation({
   setCategoryFilter: (v: string) => void;
   restoring: boolean;
   busy?: boolean;
+  mutationDisabledReason?: string;
   onRestore: () => void;
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
@@ -113,13 +115,15 @@ export function SectionListPresentation({
             type="button"
             variant="outline"
             onClick={() => onRestore()}
-            disabled={busy || restoring}
+            disabled={busy || restoring || !!mutationDisabledReason}
+            aria-disabled={!!mutationDisabledReason}
+            title={mutationDisabledReason}
             data-testid="button-restore-starter-sections"
           >
             <RefreshCcw className="h-4 w-4 mr-2" />
             {restoring ? "Updating Starter Library..." : "Restore Starter Sections"}
           </Button>
-          <Button onClick={() => onEdit("new")} disabled={busy} data-testid="button-new-section">
+          <Button onClick={() => onEdit("new")} disabled={busy || !!mutationDisabledReason} aria-disabled={!!mutationDisabledReason} title={mutationDisabledReason} data-testid="button-new-section">
             <Plus className="h-4 w-4 mr-2" />
             New Section
           </Button>
@@ -188,12 +192,14 @@ export function SectionListPresentation({
                   type="button"
                   variant="outline"
                   onClick={() => onRestore()}
-                  disabled={busy || restoring}
+                  disabled={busy || restoring || !!mutationDisabledReason}
+                  aria-disabled={!!mutationDisabledReason}
+                  title={mutationDisabledReason}
                 >
                   <RefreshCcw className="h-4 w-4 mr-2" />
                   {restoring ? "Updating Starter Library..." : "Restore Starter Sections"}
                 </Button>
-                <Button onClick={() => onEdit("new")} disabled={busy} variant="outline">
+                <Button onClick={() => onEdit("new")} disabled={busy || !!mutationDisabledReason} aria-disabled={!!mutationDisabledReason} title={mutationDisabledReason} variant="outline">
                   <Plus className="h-4 w-4 mr-2" />
                   Create First Section
                 </Button>
@@ -262,7 +268,9 @@ export function SectionListPresentation({
                     variant="outline"
                     size="sm"
                     className="text-destructive hover:text-destructive text-xs"
-                    disabled={busy}
+                    disabled={busy || !!mutationDisabledReason}
+                    aria-disabled={!!mutationDisabledReason}
+                    title={mutationDisabledReason}
                     aria-label={`Delete ${section.name}`}
                     onClick={() => onDelete(section.id)}
                     data-testid={`button-delete-section-${section.id}`}

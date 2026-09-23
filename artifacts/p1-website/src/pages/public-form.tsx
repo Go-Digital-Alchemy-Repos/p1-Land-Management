@@ -14,6 +14,7 @@ import {
   usePublicFormVerification,
 } from "@/components/forms/PublicFormVerification";
 import { PHONE_DISPLAY, PHONE_HREF } from "@/lib/site";
+import { useCms } from "@/lib/cms";
 import { FormPresentationHostProvider } from "../../../../platform/p1-core/client/src/features/admin/cms/builder/form-presentation-host";
 import type { CmsForm } from "../../../../platform/p1-core/shared/schema/forms";
 
@@ -63,9 +64,10 @@ const ui = {
 } as unknown as NonNullable<ComponentProps<typeof FormPresentationHostProvider>["value"]>["ui"];
 
 export default function PublicForm() {
+  const { snapshot } = useCms();
   const [, params] = useRoute(formPath);
   const slug = params?.slug || "";
-  const preview = isPublicFormPreview();
+  const preview = isPublicFormPreview(snapshot.contentOverlayEnabled);
   const [form, setForm] = useState<CmsForm>();
   const [loading, setLoading] = useState(Boolean(slug));
   const [error, setError] = useState("");

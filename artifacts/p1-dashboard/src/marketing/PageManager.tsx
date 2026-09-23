@@ -32,11 +32,13 @@ import { BuilderPreview } from "./BuilderPreview";
 import { customFetch } from "../../../../lib/api-client-react/src/custom-fetch";
 import { pageLeaseTransport, usePageReservation } from "./usePageReservation";
 import { useCmsUnsavedChanges } from "./useCmsUnsavedChanges";
+import { CmsPausedBanner, CMS_PAUSED_SHORT, useCmsEditingPaused } from "./useCmsEditingStatus";
 import "./section-manager.css";
 
 const PageTemplatePicker = lazy(() => import("./PageTemplatePicker"));
 
 type Access = {
+  cmsPaused?: boolean;
   canPreviewData?: (
     kind: "forms" | "blog" | "galleries" | "team" | "events" | "careers" | "branding" | "social",
   ) => boolean;
@@ -262,7 +264,7 @@ function Editor({
       </section>
     );
   const blocks = editableBlocks(draft.content);
-  const disabled = busy || !lock.owned;
+  const disabled = busy || !lock.owned || !!access.cmsPaused;
   const savedActionsDisabled = disabled || dirty;
   async function save() {
     if (disabled) return;
@@ -354,6 +356,7 @@ function Editor({
       dirty={dirty}
       busy={busy}
       saveDisabled={disabled}
+      mutationDisabledReason={access.cmsPaused ? CMS_PAUSED_SHORT : undefined}
       onBack={close}
       onSave={() => void save()}
       banners={
@@ -950,6 +953,7 @@ export function readPageIntent(search: string): {
 }
 
 export default function PageManager(access: Access) {
+  const cmsPaused = useCmsEditingPaused();
   const [initialIntent] = useState(() => readPageIntent(location.search));
   const [intentError, setIntentError] = useState(initialIntent.error);
   const [rows, setRows] = useState<MarketingPage[] | null>(null);
@@ -985,7 +989,7 @@ export default function PageManager(access: Access) {
     id: string,
     kind: "duplicate" | "publish" | "unpublish" | "delete",
   ) {
-    if (listBusy) return;
+    if (listBusy || cmsPaused) return;
     setListBusy(true);
     setError("");
     const editorInstanceId = crypto.randomUUID();
@@ -1093,16 +1097,22 @@ export default function PageManager(access: Access) {
   };
   if (editing)
     return (
-      <Editor
-        key={editing}
-        id={editing}
-        onClose={() => select(null)}
-        onCreated={select}
-        {...access}
-      />
+      <>
+        <CmsPausedBanner paused={cmsPaused} />
+        <Editor
+          key={editing}
+          id={editing}
+          onClose={() => select(null)}
+          onCreated={select}
+          {...access}
+          cmsPaused={cmsPaused}
+        />
+      </>
     );
   return (
-    <PageListPresentation
+    <>
+      <CmsPausedBanner paused={cmsPaused} />
+      <PageListPresentation
       pages={(rows || []).filter(
         (row) =>
           (!status || row.status === status) &&
@@ -1116,6 +1126,7 @@ export default function PageManager(access: Access) {
       onEdit={select}
       onAction={(id, kind) => void listAction(id, kind)}
       busy={listBusy}
+      mutationDisabledReason={cmsPaused ? CMS_PAUSED_SHORT : undefined}
       locks={locks}
       filters={
         <div className="cms-page-filters">
@@ -1143,6 +1154,7 @@ export default function PageManager(access: Access) {
           </label>
         </div>
       }
-    />
+      />
+    </>
   );
 }

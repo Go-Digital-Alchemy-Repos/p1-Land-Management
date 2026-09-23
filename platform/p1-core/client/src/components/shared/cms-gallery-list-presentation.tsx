@@ -23,6 +23,7 @@ export function GalleryListPresentation({
   onAction,
   primitives,
   busy = false,
+  mutationDisabledReason,
 }: {
   galleries: GalleryListRow[];
   isLoading: boolean;
@@ -36,6 +37,7 @@ export function GalleryListPresentation({
   onAction: (id: string, action: "publish" | "unpublish" | "duplicate" | "delete") => void;
   primitives: GalleryPrimitives;
   busy?: boolean;
+  mutationDisabledReason?: string;
 }) {
   const {
     Button,
@@ -60,7 +62,7 @@ export function GalleryListPresentation({
               Create reusable photo galleries for pages and blog posts.
             </p>
           </div>
-          <Button disabled={busy} onClick={() => onSelect("new")}>
+          <Button disabled={busy || !!mutationDisabledReason} aria-disabled={!!mutationDisabledReason} title={mutationDisabledReason} onClick={() => onSelect("new")}>
             <Plus className="mr-2 h-4 w-4" />
             New Gallery
           </Button>
@@ -187,7 +189,9 @@ export function GalleryListPresentation({
                                 size="icon"
                                 onClick={() => onAction(gallery.id, "unpublish")}
                                 aria-label={`Unpublish ${gallery.title}`}
-                                disabled={busy}
+                                disabled={busy || !!mutationDisabledReason}
+                                aria-disabled={!!mutationDisabledReason}
+                                title={mutationDisabledReason}
                               >
                                 <EyeOff className="h-4 w-4 text-amber-600" />
                               </Button>
@@ -197,7 +201,9 @@ export function GalleryListPresentation({
                                 size="icon"
                                 onClick={() => onAction(gallery.id, "publish")}
                                 aria-label={`Publish ${gallery.title}`}
-                                disabled={busy}
+                                disabled={busy || !!mutationDisabledReason}
+                                aria-disabled={!!mutationDisabledReason}
+                                title={mutationDisabledReason}
                               >
                                 <Eye className="h-4 w-4 text-green-600" />
                               </Button>
@@ -207,7 +213,9 @@ export function GalleryListPresentation({
                               size="icon"
                               onClick={() => onAction(gallery.id, "duplicate")}
                               aria-label={`Duplicate ${gallery.title}`}
-                              disabled={busy}
+                              disabled={busy || !!mutationDisabledReason}
+                              aria-disabled={!!mutationDisabledReason}
+                              title={mutationDisabledReason}
                             >
                               <Copy className="h-4 w-4" />
                             </Button>
@@ -216,7 +224,9 @@ export function GalleryListPresentation({
                               size="icon"
                               onClick={() => onAction(gallery.id, "delete")}
                               aria-label={`Delete ${gallery.title}`}
-                              disabled={busy}
+                              disabled={busy || !!mutationDisabledReason}
+                              aria-disabled={!!mutationDisabledReason}
+                              title={mutationDisabledReason}
                             >
                               <Trash2 className="h-4 w-4 text-destructive" />
                             </Button>

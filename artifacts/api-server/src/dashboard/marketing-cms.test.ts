@@ -38,6 +38,9 @@ test("Blog publication transport restricts revision previews and publication act
 
 test("CMS allowlist uses current leaf grants, exact paths and bounded query parameters", () => {
   assert(cmsOperations.length > 40);
+  assert.deepEqual(operation("GET", "/status"), {
+    method: "GET", path: "/status", capabilities: [],
+  });
   for (const method of ["GET","PUT"]) assert.deepEqual(operation(method,"/design/branding").capabilities,["marketing.design.branding"]);
   assert.equal(operation("POST","/design/branding/assets").multipart,true);
   assert.deepEqual(operation("POST","/design/branding/assets").capabilities,["marketing.design.branding"]);
@@ -78,6 +81,7 @@ test("CMS allowlist uses current leaf grants, exact paths and bounded query para
   assert(
     cmsOperations.every(
       (item) =>
+        item.path === "/status" && item.method === "GET" ||
         item.ownerOnly ||
         (item.capabilities.length && item.capabilities.every(isCapability)),
     ),

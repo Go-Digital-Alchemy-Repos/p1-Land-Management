@@ -377,6 +377,7 @@ export function SidebarEditorPresentation({
   onRemoveWidget,
   busy = false,
   readOnly = false,
+  mutationDisabledReason,
   reservation,
   preserveSettingsOnTypeChange = false,
   defaultHelp,
@@ -399,6 +400,7 @@ export function SidebarEditorPresentation({
   onRemoveWidget: (id: string) => void;
   busy?: boolean;
   readOnly?: boolean;
+  mutationDisabledReason?: string;
   reservation?: ReactNode;
   preserveSettingsOnTypeChange?: boolean;
   defaultHelp?: ReactNode;
@@ -442,6 +444,8 @@ export function SidebarEditorPresentation({
               if (!busy && !readOnly) onSave();
             }}
             disabled={!name.trim() || busy || readOnly}
+            aria-disabled={!!mutationDisabledReason}
+            title={mutationDisabledReason}
             data-testid="button-save-sidebar"
           >
             {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

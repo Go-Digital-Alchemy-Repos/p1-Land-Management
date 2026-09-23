@@ -18,6 +18,7 @@ import type {
   MarketingSidebarReferences,
 } from "../../../../lib/api-client-react/src/dashboard/models";
 import { useCmsUnsavedChanges } from "./useCmsUnsavedChanges";
+import { CmsPausedBanner, CMS_PAUSED_SHORT, useCmsEditingPaused } from "./useCmsEditingStatus";
 import { useSidebarReservation } from "./useSidebarReservation";
 import "./sidebar-manager.css";
 const labels: Record<MarketingSidebarWidget["type"], string> = {
@@ -69,10 +70,12 @@ function SidebarEditor({
   id,
   onClose,
   onCreated,
+  cmsPaused,
 }: {
   id: string;
   onClose: () => void;
   onCreated: (id: string) => void;
+  cmsPaused: boolean;
 }) {
   const [draft, setDraft] = useState<MarketingSidebarInput | null>(
       id === "new" ? blank : null,
@@ -150,7 +153,7 @@ function SidebarEditor({
     });
   }
   async function save() {
-    if (!draft || busy || !lock.owned) return;
+    if (!draft || busy || !lock.owned || cmsPaused) return;
     setBusy(true);
     setError("");
     setNotice("");
@@ -190,7 +193,8 @@ function SidebarEditor({
           widgets={draft.widgets as SidebarWidget[]}
           forms={forms}
           busy={busy}
-          readOnly={!lock.owned}
+          readOnly={!lock.owned || cmsPaused}
+          mutationDisabledReason={cmsPaused ? CMS_PAUSED_SHORT : undefined}
           preserveSettingsOnTypeChange
           defaultHelp="The default is used where no specific sidebar is selected. Saving a new default replaces the previous default."
           setName={(name) => setDraft({ ...draft, name })}
@@ -258,7 +262,9 @@ function SidebarEditor({
 
       {id !== "new" && (
         <button
-          disabled={busy || !lock.owned}
+          disabled={busy || !lock.owned || cmsPaused}
+          aria-disabled={cmsPaused}
+          title={cmsPaused ? CMS_PAUSED_SHORT : undefined}
           onClick={async () => {
             if (
               !confirm(
@@ -286,6 +292,7 @@ function SidebarEditor({
   );
 }
 export default function SidebarManager() {
+  const cmsPaused = useCmsEditingPaused();
   const [rows, setRows] = useState<MarketingSidebar[]>([]),
     [editing, setEditing] = useState<string | null>(null),
     [search, setSearch] = useState(""),
@@ -308,15 +315,20 @@ export default function SidebarManager() {
   }, [editing]);
   if (editing)
     return (
-      <SidebarEditor
-        key={editing}
-        id={editing}
-        onClose={() => setEditing(null)}
-        onCreated={setEditing}
-      />
+      <>
+        <CmsPausedBanner paused={cmsPaused} />
+        <SidebarEditor
+          key={editing}
+          id={editing}
+          onClose={() => setEditing(null)}
+          onCreated={setEditing}
+          cmsPaused={cmsPaused}
+        />
+      </>
     );
   return (
     <section className="sidebar-manager sidebar-presentation">
+      <CmsPausedBanner paused={cmsPaused} />
       {error && <p role="alert">{error}</p>}
       <SidebarListPresentation
         ui={sidebarPrimitives}
@@ -327,6 +339,7 @@ export default function SidebarManager() {
         )}
         isLoading={loading}
         onCreate={() => setEditing("new")}
+        mutationDisabledReason={cmsPaused ? CMS_PAUSED_SHORT : undefined}
         onEdit={setEditing}
         tools={
           <label>

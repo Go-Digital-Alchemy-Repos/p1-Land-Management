@@ -10,6 +10,7 @@ import websiteHeadPublic from "./website-head-public.routes";
 import p1GoogleAnalyticsRoutes from "./p1-google-analytics.routes";
 import p1AnalyticsRoutes from "./p1-analytics.routes";
 import type { Express, Request, Response, NextFunction } from "express";
+import { cmsEditingStatus } from "../middleware/cms-editing";
 import { logger } from "../utils/logger";
 import federationRoutes from "./federation.routes";
 import authRoutes from "./auth.routes";
@@ -77,6 +78,7 @@ export function registerApiRoutes(app: Express) {
   app.use("/api/blog", requireBlogEnabled, blogRoutes);
   app.use("/api/events", requireEventsEnabled, guestRegistrationRoutes);
   app.use("/api/events", requireEventsEnabled, registrationRoutes);
+  app.get("/api/cms/status", (_req, res) => res.json(cmsEditingStatus));
   app.use("/api/cms", requireCmsEnabled, cmsPublicRoutes);
   app.use("/api/client-site-content", requireCmsEnabled, clientSiteContentRoutes);
   app.use("/api/client-forms", clientFormsRoutes);

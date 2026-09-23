@@ -11,7 +11,7 @@ export function defaultContentTtl(manifest) {
   return Math.max(5000, Math.ceil(15 * 60 * 1000 / refreshesPerWindow));
 }
 
-export function createContentStore({ manifest, origin, cacheDir, timeout = 1800, ttl = defaultContentTtl(manifest), fetcher = fetch }) {
+export function createContentStore({ manifest, origin, cacheDir, timeout = 1800, ttl = defaultContentTtl(manifest), fetcher = fetch, overlayEnabled = process.env.P1_CMS_CONTENT_OVERLAY === 'enabled' }) {
   const cache = new Map();
   const pending = new Map();
   let generation = 0;
@@ -103,12 +103,26 @@ export function createContentStore({ manifest, origin, cacheDir, timeout = 1800,
 
   return {
     routes,
-    invalidate() { generation++; for (const value of cache.values()) value.checkedAt = 0; },
+    invalidate() {
+      if (!overlayEnabled) return;
+      generation++;
+      for (const value of cache.values()) value.checkedAt = 0;
+    },
     async snapshot(routePath) {
       const route = routes.get(routePath);
       if (!route) return null;
+      if (!overlayEnabled) {
+        return {
+          route: routePath,
+          content: components.get(`${route.id}-content`)?.defaultContent ?? {},
+          global: components.get('site-chrome')?.defaultContent ?? {},
+          revision: 0,
+          globalRevision: 0,
+          contentOverlayEnabled: false,
+        };
+      }
       const [page, global] = await Promise.all([component(route.id, `${route.id}-content`), component('home', 'site-chrome')]);
-      return { route: routePath, content: page.content, global: global.content, revision: page.revision, globalRevision: global.revision, publishedAt: page.publishedAt };
+      return { route: routePath, content: page.content, global: global.content, revision: page.revision, globalRevision: global.revision, publishedAt: page.publishedAt, contentOverlayEnabled: true };
     },
   };
 }

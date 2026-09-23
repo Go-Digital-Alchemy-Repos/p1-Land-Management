@@ -18,6 +18,7 @@ export function SidebarListPresentation({
   onEdit,
   onDelete,
   tools,
+  mutationDisabledReason,
 }: {
   ui: SidebarPrimitives;
   sidebars: SidebarListRecord[];
@@ -26,6 +27,7 @@ export function SidebarListPresentation({
   onEdit: (id: string) => void;
   onDelete?: (id: string) => void;
   tools?: ReactNode;
+  mutationDisabledReason?: string;
 }) {
   const { Button, Card, CardHeader, CardTitle, CardContent, CardDescription, Badge } = ui;
   return (
@@ -39,7 +41,7 @@ export function SidebarListPresentation({
             Create reusable right-side sidebars for pages and blog posts.
           </p>
         </div>
-        <Button onClick={() => onCreate()} data-testid="button-create-sidebar">
+        <Button onClick={() => onCreate()} disabled={!!mutationDisabledReason} aria-disabled={!!mutationDisabledReason} title={mutationDisabledReason} data-testid="button-create-sidebar">
           <Plus className="mr-2 h-4 w-4" />
           Create Sidebar
         </Button>
@@ -58,7 +60,7 @@ export function SidebarListPresentation({
             <p className="text-sm text-muted-foreground mt-1 mb-4">
               Create a default blog sidebar or page-specific sidebar to get started.
             </p>
-            <Button onClick={() => onCreate()}>
+            <Button onClick={() => onCreate()} disabled={!!mutationDisabledReason} aria-disabled={!!mutationDisabledReason} title={mutationDisabledReason}>
               <Plus className="mr-2 h-4 w-4" />
               Create Your First Sidebar
             </Button>
@@ -95,6 +97,9 @@ export function SidebarListPresentation({
                     {onDelete && (
                       <Button
                         aria-label={`Delete ${sidebar.name}`}
+                        disabled={!!mutationDisabledReason}
+                        aria-disabled={!!mutationDisabledReason}
+                        title={mutationDisabledReason}
                         variant="outline"
                         size="sm"
                         className="text-destructive hover:text-destructive"

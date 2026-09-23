@@ -28,6 +28,7 @@ import {
   requireCrmEnabled,
   requireEventsEnabled,
 } from "../../middleware/site-features";
+import { requireCmsEditing, requireCmsEditingForContent } from "../../middleware/cms-editing";
 
 const router = Router();
 
@@ -41,6 +42,7 @@ router.use(
   "/client-site-content",
   requireCmsEnabled,
   requireBusinessCapability("marketing.content.website"),
+  requireCmsEditing,
   clientSiteContentRoutes,
 );
 
@@ -53,9 +55,9 @@ router.use("/", dashboardRoutes);
 router.use("/users", requireRole("admin"), usersRoutes);
 
 router.use("/events", requireEventsEnabled, requireAdminPermission("content"), eventsRoutes);
-router.use("/blog", requireBlogEnabled, requireBusinessCapability("marketing.content.blog"), blogRoutes);
+router.use("/blog", requireBlogEnabled, requireBusinessCapability("marketing.content.blog"), requireCmsEditing, blogRoutes);
 router.use("/", registrationRoutes);
-router.use("/cms", requireCmsEnabled, cmsRoutes);
+router.use("/cms", requireCmsEnabled, requireCmsEditingForContent, cmsRoutes);
 router.use("/cms", requireCmsEnabled, cmsMediaRoutes);
 router.use("/cms", requireCmsEnabled, cmsSectionsRoutes);
 router.use("/cms", requireCmsEnabled, cmsGalleriesRoutes);
