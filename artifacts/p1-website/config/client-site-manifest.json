@@ -6,7 +6,7 @@
     "displayName": "P1 Land & Property Management",
     "source": {
       "repository": "https://github.com/Go-Digital-Alchemy-Repos/p1-Land-Management.git",
-      "revision": "ca874a7b501ec732bbadfa993c1ef5959f9fe39c"
+      "revision": "6c9cf25a66d8c0fe76bc61a6b1c6ee54f7c63469"
     },
     "owners": [
       {
@@ -5519,8 +5519,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1fcz82p",
-            "label": "Image: /assets/equestrian-estate-hero-1280-DQjfgIRy.webp",
+            "path": "f1v8poq5",
+            "label": "Image: /assets/farm-industrial-maintenance-1280-CyeQRXrm.webp",
             "type": "image",
             "required": false,
             "maxLength": 2000
@@ -6575,7 +6575,7 @@
           "f19vd1b5": "Industrial & Agricultural Land",
           "f1gjkqsu": "Pasture, fence-line, and grounds care for farms and industrial sites.",
           "f1gkmumd": "/services/industrial-agricultural",
-          "f1fcz82p": "/assets/equestrian-estate-hero-1280-DQjfgIRy.webp",
+          "f1v8poq5": "/assets/farm-industrial-maintenance-1280-CyeQRXrm.webp",
           "f16l1lvf": "Industrial & Agricultural Land",
           "f11u2429": "Land Clearing & Mulching",
           "f3f76n0": "Selective clearing and forestry mulching that opens up acreage responsibly.",
@@ -11644,8 +11644,8 @@
             "maxLength": 2000
           },
           {
-            "path": "f1fcz82p",
-            "label": "Image: /assets/equestrian-estate-hero-1280-DQjfgIRy.webp",
+            "path": "f1v8poq5",
+            "label": "Image: /assets/farm-industrial-maintenance-1280-CyeQRXrm.webp",
             "type": "image",
             "required": false,
             "maxLength": 2000
@@ -12040,7 +12040,7 @@
           "f19vd1b5": "Industrial & Agricultural Land",
           "f1gjkqsu": "Pasture, fence-line, and grounds care for farms and industrial sites.",
           "f1gkmumd": "/services/industrial-agricultural",
-          "f1fcz82p": "/assets/equestrian-estate-hero-1280-DQjfgIRy.webp",
+          "f1v8poq5": "/assets/farm-industrial-maintenance-1280-CyeQRXrm.webp",
           "f16l1lvf": "Industrial & Agricultural Land",
           "f11u2429": "Land Clearing & Mulching",
           "f3f76n0": "Selective clearing and forestry mulching that opens up acreage responsibly.",

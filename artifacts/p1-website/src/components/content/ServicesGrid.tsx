@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { commercialHero as serviceCommercial } from "@/lib/service-images";
 import { snowHero as serviceCommercialSnowIce } from "@/lib/service-images";
-import { industrialHero as serviceIndustrial } from "@/lib/service-images";
+import serviceIndustrial from "@/assets/optimized/features/farm-industrial-maintenance-1280.webp";
 import { clearingHero as serviceClearing } from "@/lib/service-images";
 import { gradingHero as serviceGrading } from "@/lib/service-images";
 import { drainageHero as serviceDrainage } from "@/lib/service-images";
