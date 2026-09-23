@@ -1,8 +1,8 @@
-# P1 Land & Property Management
+# P1 Land Management
 
 > Full-service land and property management for commercial, agricultural, industrial, municipal, and institutional properties 1 acre and larger. Serving Upstate South Carolina and the greater Charlotte, North Carolina region.
 
-P1 Land & Property Management is a Carolinas-based land management contractor. One contractor for the entire life of your land — from initial clearing and reconstruction through ongoing weekly and seasonal care.
+P1 Land Management is a Carolinas-based land management contractor. One contractor for the entire life of your land — from initial clearing and reconstruction through ongoing weekly and seasonal care.
 
 - Phone: +1 (704) 221-8928
 - Contact: https://www.p1landmanagement.com/contact
@@ -13,7 +13,7 @@ P1 Land & Property Management is a Carolinas-based land management contractor. O
 ## Services
 
 - [Commercial Landscaping](https://www.p1landmanagement.com/services/commercial-landscaping): Year-round exterior grounds maintenance for commercial, industrial, municipal, and institutional sites
-- [Commercial Snow & Ice Management](https://www.p1landmanagement.com/commercial-snow-ice-management): Seasonal plowing, anti-icing, and documented storm response for qualifying commercial sites
+- [Commercial Snow & Ice Management](https://www.p1landmanagement.com/services/commercial-snow-ice-management): Seasonal plowing, anti-icing, and documented storm response for qualifying commercial sites
 - [Industrial & Agricultural](https://www.p1landmanagement.com/services/industrial-agricultural): Land maintenance for industrial sites, farms, pasture, and working acreage
 - [Land Clearing](https://www.p1landmanagement.com/services/land-clearing): Lot clearing, forestry mulching, right-of-way, and rural acreage
 - [Grading & Site Preparation](https://www.p1landmanagement.com/services/grading-site-preparation): Fine grading and site prep for commercial, industrial, agricultural, and institutional development

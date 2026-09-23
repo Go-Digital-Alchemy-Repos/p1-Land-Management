@@ -1,10 +1,21 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
 const root = resolve(import.meta.dirname, "..");
 const read = (path) => readFileSync(resolve(root, path), "utf8");
+function assertNoRawMarkdownImports(directory = resolve(root, "src")) {
+  for (const entry of readdirSync(directory, { withFileTypes: true })) {
+    const file = resolve(directory, entry.name);
+    if (entry.isDirectory()) {
+      assertNoRawMarkdownImports(file);
+    } else if (entry.isFile() && /\.[cm]?[jt]sx?$/.test(entry.name)) {
+      assert(!/\.md\?raw\b/.test(readFileSync(file, "utf8")), `${file}: raw Markdown imports are not allowed under src/`);
+    }
+  }
+}
+assertNoRawMarkdownImports();
 const { render } = await import(pathToFileURL(resolve(root, "dist/server/entry-server.js")));
 const routes = [...read("src/app-routes.tsx").matchAll(/<Route\s+path="([^"]+)"/g)]
   .map((match) => match[1])
