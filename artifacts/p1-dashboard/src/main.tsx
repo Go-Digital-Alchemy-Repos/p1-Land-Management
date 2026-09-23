@@ -19,6 +19,7 @@ import { PropertyFiles } from "./PropertyFiles";
 import { ScheduleCalendar } from "./ScheduleCalendar";
 import { RecurringCalendar } from "./RecurringCalendar";
 import { RecurringServiceCards } from "./RecurringServiceCards";
+import { ExpenseRecords } from "./ExpenseRecords";
 import { scheduleDateTime } from "./schedule-dates";
 import { AssessmentAvailability } from "./AssessmentAvailability";
 import { ClientContacts } from "./ClientContacts";
@@ -2473,20 +2474,7 @@ function App() {
               {!isOnline && <p role="status">Connect to review current expenses.</p>}
               {dataLoadStatus === "loading" && <p role="status">Loading expenses…</p>}
               {dataLoadStatus === "failed" && <button type="button" className="secondary" onClick={() => void refresh()}>Retry expenses</button>}
-              {isOnline && dataLoadStatus === "ready" && <Table
-                rows={(data.expenses || []).map((e: any) => ({
-                  ...e,
-                  amount: money(e.amount_cents),
-                }))}
-                columns={[
-                  "property_name",
-                  "description",
-                  "category",
-                  "amount",
-                  "incurred_on",
-                ]}
-                empty="No expenses yet."
-              />}
+              {isOnline && dataLoadStatus === "ready" && <ExpenseRecords records={data.expenses || []} />}
             </section>
           )}
           {view === "Requests" && (
