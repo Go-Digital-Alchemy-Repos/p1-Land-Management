@@ -18,6 +18,37 @@ Configure `BOOTSTRAP_OWNER_EMAIL`, SHA-256 `BOOTSTRAP_CODE_HASH` and ISO `BOOTST
 
 Endpoint-specific role lists are authoritative and must be tested. Role-aware UI is convenience, not authorization. All authenticated API responses are uncached; cookies are dashboard-host scoped. File reads authenticate and check property/publication grants. Uploads authenticate and authorize the exact target work order before parsing image bodies, with a four-upload per-process concurrency limit and byte/pixel bounds.
 
+## Owner user switching
+
+The Owner can open **Switch user** in the Dashboard to act in another active,
+verified, non-Owner account's actual role and grants. The Owner's authenticated
+browser session remains the credential; no target password, recovery token, or
+native bearer token is issued or copied. The overlay lasts at most 30 minutes
+and ends with **Return to Owner**, Owner sign-out, session revocation, or
+expiry. The target must remain active and unretired, and the Owner session must
+remain active and satisfy its MFA policy on every request. The target's own MFA
+policy still applies to the target's independent sign-in. Better Auth account
+security mutations are unavailable while switched because they would otherwise
+modify the Owner credential rather than the target credential.
+
+The effective target identity is used for Dashboard API role and client/crew
+scope checks. Every impersonated API mutation first records the actual Owner,
+target, method and path in `audit_event`; ordinary record audit entries may
+also name the effective target. A persistent banner identifies the active
+target and warns that writes are real. Field entries and photos are sent
+directly while switched; device-local offline queues are unavailable so they
+cannot be confused with a real crew account. Federation/CMS actions still require their separate Core
+identity and grant checks; switching does not grant a Core role.
+
+The Owner can seed six login-free demo personas (Manager, Dispatch, Sales,
+Finance, Crew and Client). They use reserved `example.test` addresses and have
+no `account` provider row or password. Their first and last names, one client,
+one operational property and one scheduled crew assignment are clearly
+synthetic. This idempotent seed runs only on the Owner's explicit action, not
+on migration or deployment. Demo personas are active Dashboard accounts for
+switching; they must never be treated as customer contacts, recipients, or
+real field assignments. The Owner account itself supplies the Owner role.
+
 ## One P1 operations identity across web and native clients
 
 The dashboard's Better Auth account is the sole identity for the P1 operations web application and its future iOS and Android clients. An invited or bootstrap user therefore creates one verified email/password account; the same credentials sign them in on each supported form factor. Roles, client/property grants, verified-email status, session revocation, and owner MFA are enforced by the dashboard API for every client, rather than copied into a mobile-specific user store.

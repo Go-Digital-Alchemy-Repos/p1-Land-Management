@@ -170,6 +170,7 @@ api.get("/me", async (req, res) => {
     [s.user.id, s.session.id],
   );
   const mfaRequired = !!(
+    !s.impersonation &&
     p.rows[0]?.active &&
     p.rows[0].mfa_required &&
     (!s.user.twoFactorEnabled || !p.rows[0].assured)
@@ -191,6 +192,12 @@ api.get("/me", async (req, res) => {
     // Deprecated compatibility alias for existing native clients.
     ownerMfaRequired: mfaRequired,
     role: p.rows[0]?.active ? p.rows[0].role : null,
+    impersonation: s.impersonation ? {
+      ownerId: s.impersonation.ownerId,
+      ownerName: s.impersonation.ownerName,
+      demo: s.impersonation.demo,
+      expiresAt: s.impersonation.expiresAt,
+    } : null,
     capabilities: !p.rows[0]?.active || mfaRequired || ["client", "crew"].includes(p.rows[0].role) ? [] : p.rows[0].role === "owner" ? [...CAPABILITIES] :
       (await pool.query("SELECT capabilities FROM business_account_access WHERE user_id=$1", [s.user.id])).rows[0]?.capabilities ?? [],
   });

@@ -38,6 +38,8 @@ for (const operation of cmsOperations) {
       }
       const connection = marketingConnection();
       const session = await identity(req);
+      if (session.impersonation)
+        throw new HttpError(403, "Return to Owner to use website administration");
       if (session.user.id !== a.id) throw new HttpError(401, "Sign in again");
       res.set("Cache-Control", "private, no-store");
       const grantId = randomUUID();

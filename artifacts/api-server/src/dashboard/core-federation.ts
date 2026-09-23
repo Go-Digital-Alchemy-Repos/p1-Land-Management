@@ -322,6 +322,8 @@ coreFederationApi.get(
       // account, role and current-session MFA assurance.
       const authenticated = await actor(req);
       const session = await identity(req);
+      if (session.impersonation)
+        throw new HttpError(403, "Return to Owner to connect website administration");
       if (authenticated.id !== session.user.id)
         throw new HttpError(401, "Sign in with a verified account");
       const code = await transaction(async (client) => {
@@ -379,6 +381,8 @@ coreFederationApi.post("/federation/resume", async (req, res) => {
   // Dashboard session completed ordinary login and any required MFA step.
   const authenticated = await actor(req);
   const session = await identity(req);
+  if (session.impersonation)
+    throw new HttpError(403, "Return to Owner to connect website administration");
   if (authenticated.id !== session.user.id)
     throw new HttpError(401, "Sign in with a verified account");
   try {

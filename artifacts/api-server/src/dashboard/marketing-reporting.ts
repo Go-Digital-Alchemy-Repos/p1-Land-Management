@@ -15,6 +15,8 @@ for (const [name, report] of Object.entries(reports)) {
     try {
       const connection = marketingConnection();
       const session = await identity(req);
+      if (session.impersonation)
+        throw new HttpError(403, "Return to Owner to use website reporting");
       if (session.user.id !== a.id) throw new HttpError(401, "Sign in again");
       grantId = randomUUID();
       // Core rechecks the actual user, session, MFA and current grants.
