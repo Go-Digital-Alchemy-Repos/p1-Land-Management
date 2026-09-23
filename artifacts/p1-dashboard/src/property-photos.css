@@ -1,0 +1,118 @@
+.property-photos .data-surface-header {
+  flex-wrap: wrap;
+}
+
+.property-photos-input {
+  display: none;
+}
+
+.property-photos-status,
+.property-photos-feedback {
+  padding: 20px 24px;
+}
+
+.property-photos-feedback button {
+  margin-left: 12px;
+  text-decoration: underline;
+}
+
+.property-photos .property-photos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr));
+  gap: 16px;
+  padding: 20px;
+}
+
+.property-photo-card {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--atlas-line);
+  border-radius: 16px;
+  background: hsl(var(--card));
+  color: var(--atlas-ink);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.property-photo-card:hover,
+.property-photo-card:focus-visible {
+  border-color: hsl(var(--primary));
+  box-shadow: 0 5px 24px hsl(var(--foreground) / .12);
+}
+
+.property-photo-card img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.property-photo-card span {
+  display: block;
+  padding: 12px 14px 14px;
+}
+
+.property-photo-card strong,
+.property-photo-card small {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.property-photo-card strong { font-size: 13px; }
+.property-photo-card small { margin-top: 5px; color: hsl(var(--muted-foreground)); line-height: 1.4; }
+
+.property-photo-dialog {
+  width: min(920px, calc(100vw - 28px));
+  max-height: calc(100dvh - 28px);
+  padding: 0;
+  border: 0;
+  border-radius: 18px;
+  background: hsl(var(--card));
+  color: var(--atlas-ink);
+  box-shadow: 0 24px 80px hsl(var(--foreground) / .24);
+  overflow: auto;
+}
+
+.property-photo-dialog::backdrop { background: hsl(215 50% 10% / .78); }
+
+.property-photo-dialog > img {
+  display: block;
+  width: 100%;
+  max-height: min(68dvh, 740px);
+  object-fit: contain;
+  background: hsl(215 25% 10%);
+}
+
+.property-photo-close {
+  position: sticky;
+  top: 12px;
+  float: right;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin: 12px 12px -56px 0;
+  border-radius: 50%;
+  background: hsl(var(--card));
+  color: var(--atlas-ink);
+  box-shadow: 0 3px 12px hsl(var(--foreground) / .2);
+}
+
+.property-photo-detail { padding: 20px 24px 24px; }
+.property-photo-detail h3 { margin: 0 0 10px; font-size: 18px; overflow-wrap: anywhere; }
+.property-photo-detail p { margin: 0; line-height: 1.5; overflow-wrap: anywhere; }
+.property-photo-detail form { display: grid; gap: 8px; }
+.property-photo-detail label { font-weight: 700; font-size: 13px; }
+.property-photo-detail textarea { width: 100%; min-height: 80px; padding: 12px; resize: vertical; border: 1px solid var(--atlas-line); border-radius: 10px; background: hsl(var(--card)); color: var(--atlas-ink); font-size: 16px; }
+.property-photo-detail-actions { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.property-photo-detail-actions small { color: hsl(var(--muted-foreground)); }
+
+@media (max-width: 520px) {
+  .property-photos .property-photos-grid { gap: 12px; padding: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .property-photo-card span { padding: 10px; }
+  .property-photo-detail { padding: 16px; }
+}

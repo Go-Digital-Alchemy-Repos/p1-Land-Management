@@ -15,6 +15,7 @@ import {
   FolderKanban,
   LayoutDashboard,
   NotebookPen,
+  Images,
   type LucideIcon,
   MapPin,
   MessageSquare,
@@ -24,6 +25,7 @@ import {
 } from "lucide-react";
 import { ClientContacts } from "./ClientContacts";
 import { AddressAutocomplete } from "./AddressAutocomplete";
+import { PropertyPhotos } from "./PropertyPhotos";
 import { AgreementEditor } from "./AgreementEditor";
 import type { ClientWorkspaceTab, PropertyWorkspaceTab } from "./dashboard-routes";
 
@@ -79,6 +81,7 @@ const propertyTabs: WorkspaceTab<PropertyWorkspaceTab>[] = [
   { id: "requests", label: "Requests", icon: MessageSquare, tone: "rose" },
   { id: "projects", label: "Projects", icon: FolderKanban, tone: "violet" },
   { id: "inspections", label: "Inspections", icon: ClipboardList, tone: "green" },
+  { id: "photos", label: "Property Photos", icon: Images, tone: "blue" },
   { id: "notes-files", label: "Notes & files", icon: NotebookPen, tone: "amber" },
 ];
 
@@ -503,6 +506,7 @@ export function PropertyWorkspace({
     {tab === "requests" && tabSurface("Service requests", "Requests and follow-up for this property.", workspace.requests, [{ label: "Request", render: (item: any) => item.description }, { label: "Received", render: (item: any) => stamp(item.created_at) }, { label: "Status", render: (item: any) => <Status value={item.status} /> }], { title: "No requests", text: "Requests will appear here." })}
     {tab === "projects" && tabSurface("Projects", "Property projects and phases.", workspace.projects, [{ label: "Project", render: (item: any) => <strong>{item.name}</strong> }, { label: "Scope", render: (item: any) => item.scope }, { label: "Status", render: (item: any) => <Status value={item.status} /> }], { title: "No projects", text: "Projects will appear here." })}
     {tab === "inspections" && tabSurface("Inspections", "Inspection records and observations.", workspace.inspections, [{ label: "Inspection", render: (item: any) => <strong>{item.title}</strong> }, { label: "Findings", render: (item: any) => `${Array.isArray(item.findings) ? item.findings.length : 0} observations` }, { label: "Date", render: (item: any) => stamp(item.created_at) }], { title: "No inspections", text: "Inspection records will appear here." })}
+    {tab === "photos" && <PropertyPhotos propertyId={id} canUpload={canManage} />}
     {tab === "notes-files" && <div className="notes-layout">{canOpenClient && tabSurface("Internal notes", "Office-only account context for this property.", workspace.notes, [{ label: "Note", render: (item: any) => <><strong>{item.author_name || "Historical author unavailable"}</strong><p>{item.body}</p><small>{stamp(item.created_at)}</small></> }], { title: "No internal notes", text: "Notes scoped to this property will appear here." })}{tabSurface("Files", "Published property documents and photos.", workspace.files, [{ label: "File", render: (item: any) => <strong>{item.name}</strong> }, { label: "Type", render: (item: any) => item.mime }, { label: "Added", render: (item: any) => stamp(item.created_at) }], { title: "No files", text: "Files will appear here when they are available." })}</div>}
   </article>;
 }

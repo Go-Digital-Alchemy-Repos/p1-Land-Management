@@ -239,6 +239,103 @@ filesApi.get("/properties/:id/files", async (req, res) => {
     ).rows,
   );
 });
+
+/** Site-reference photos are private to office staff and currently assigned crews. */
+filesApi.get("/properties/:id/photos", async (req, res) => {
+  const a = await actor(req);
+  if (a.role === "client") throw new HttpError(403, "Access denied");
+  if (a.role !== "crew") requireCapability(a, "customers.properties");
+  const propertyId = z.string().uuid().parse(req.params.id);
+  await propertyAccess(a, propertyId);
+  res.setHeader("Cache-Control", "private, no-store");
+  const photos = await pool.query(
+    "SELECT id,name,description,created_at FROM file_record WHERE property_id=$1 AND classification='property-photo' AND work_order_id IS NULL AND status='ready' ORDER BY created_at DESC,id DESC",
+    [propertyId],
+  );
+  res.json(photos.rows);
+});
+
+filesApi.post(
+  "/properties/:propertyId/photos/:id",
+  async (req: Request, _res: Response, next: NextFunction) => {
+    const a = await actor(req);
+    requireCapability(a, "customers.properties");
+    const propertyId = z.string().uuid().parse(req.params.propertyId);
+    z.string().uuid().parse(req.params.id);
+    await propertyAccess(a, propertyId);
+    next();
+  },
+  async (req: Request, res: Response) => {
+    if (activeUploads >= uploadLimit) throw new HttpError(429, "Uploads are busy; retry shortly");
+    activeUploads++;
+    try {
+      await new Promise<void>((resolve, reject) => {
+        const abort = () => { cleanup(); reject(new HttpError(400, "Upload interrupted")); };
+        const cleanup = () => { req.off("aborted", abort); res.off("close", abort); };
+        req.once("aborted", abort); res.once("close", abort);
+        raw({ type: ["image/jpeg", "image/png", "image/webp"], limit: "15mb" })(req, res, (error) => { cleanup(); error ? reject(error) : resolve(); });
+      });
+      if (res.destroyed) throw new HttpError(400, "Upload interrupted");
+      const a = await actor(req);
+      requireCapability(a, "customers.properties");
+      const propertyId = z.string().uuid().parse(req.params.propertyId);
+      const id = z.string().uuid().parse(req.params.id);
+      const name = attachmentName(req.headers["x-p1-file-name"]);
+      await propertyAccess(a, propertyId);
+      const original = req.body as Buffer;
+      const sourceMime = String(req.headers["content-type"] || "").split(";", 1)[0].toLowerCase();
+      if (!Buffer.isBuffer(original) || !validImage(original, sourceMime)) throw new HttpError(400, "Upload a JPEG, PNG, or WebP image");
+      let bytes: Buffer;
+      try {
+        bytes = await sharp(original, { limitInputPixels: 40000000 }).rotate()
+          .resize({ width: 2400, height: 2400, fit: "inside", withoutEnlargement: true })
+          .webp({ quality: 85 }).toBuffer();
+      } catch {
+        throw new HttpError(400, "Image cannot be decoded or exceeds the image size limit");
+      }
+      const objectKey = `properties/${propertyId}/reference/${id}-${createHash("sha256").update(bytes).digest("hex")}`;
+      const ready = await transaction(async (c) => {
+        await requireOperationalProperty(c, propertyId);
+        await c.query(
+          "INSERT INTO file_record(id,property_id,user_id,object_key,name,mime,bytes,classification) VALUES($1,$2,$3,$4,$5,'image/webp',$6,'property-photo') ON CONFLICT(id) DO NOTHING",
+          [id, propertyId, a.id, objectKey, name, bytes.length],
+        );
+        const stored = (await c.query("SELECT property_id,user_id,object_key,name,classification,work_order_id,status FROM file_record WHERE id=$1 FOR UPDATE", [id])).rows[0];
+        if (!stored || stored.property_id !== propertyId || stored.user_id !== a.id || stored.object_key !== objectKey || stored.name !== name || stored.classification !== "property-photo" || stored.work_order_id !== null)
+          throw new HttpError(409, "Photo operation ID conflict");
+        return stored.status === "ready";
+      });
+      if (ready) return res.json({ id, status: "accepted" });
+      await storage().send(new PutObjectCommand({ Bucket: process.env.S3_BUCKET, Key: objectKey, Body: bytes, ContentType: "image/webp" }));
+      await operationalChildQuery("file_record", id, "UPDATE file_record SET status='ready' WHERE id=$1", [id]);
+      return res.status(201).json({ id, status: "accepted" });
+    } finally { activeUploads--; }
+  },
+  (error: unknown, _req: Request, res: Response, next: NextFunction) => {
+    if (error && typeof error === "object" && "type" in error && error.type === "entity.too.large") return res.status(413).json({ error: "Image exceeds the 15 MiB upload limit" });
+    return next(error);
+  },
+);
+
+filesApi.patch("/properties/:propertyId/photos/:id", async (req, res) => {
+  const a = await actor(req);
+  requireCapability(a, "customers.properties");
+  const propertyId = z.string().uuid().parse(req.params.propertyId);
+  const id = z.string().uuid().parse(req.params.id);
+  const { description } = z.object({ description: z.string().trim().max(500).nullable() }).strict().parse(req.body);
+  await propertyAccess(a, propertyId);
+  const photo = await transaction(async (c) => {
+    await requireOperationalChild(c, "file_record", id);
+    const result = await c.query(
+      "UPDATE file_record SET description=$3 WHERE id=$1 AND property_id=$2 AND classification='property-photo' AND work_order_id IS NULL AND status='ready' RETURNING id,description",
+      [id, propertyId, description || null],
+    );
+    if (!result.rowCount) throw new HttpError(404, "Photo not found");
+    await c.query("INSERT INTO audit_event(id,user_id,action,entity_id) VALUES($1,$2,'property_photo.description_updated',$3)", [randomUUID(), a.id, id]);
+    return result.rows[0];
+  });
+  res.json(photo);
+});
 filesApi.get("/requests/:id/attachments", async (req, res) => {
   const a = await actor(req);
   if (a.role !== "client") requireCapability(a, "customers.requests");
@@ -305,7 +402,11 @@ filesApi.get("/files/:id/content", async (req, res) => {
     )
   ).rows[0];
   if (!f) throw new HttpError(404, "File not found");
-  if (f.request_id) {
+  if (f.classification === "property-photo") {
+    if (a.role === "client") throw new HttpError(404, "File not found");
+    if (a.role !== "crew") requireCapability(a, "customers.properties");
+    await propertyAccess(a, f.property_id);
+  } else if (f.request_id) {
     if (a.role !== "client") requireCapability(a, "customers.requests");
     await requestAttachmentAccess(a, f.request_id);
   } else {
@@ -314,7 +415,7 @@ filesApi.get("/files/:id/content", async (req, res) => {
   }
   if (!f.request_id && a.role === "client" && !f.published)
     throw new HttpError(404, "File not found");
-  if (!f.request_id && (a.role === "crew" || (assignedWorkOnly(a) && !hasCapability(a, "customers.properties")))) {
+  if (f.classification !== "property-photo" && !f.request_id && (a.role === "crew" || (assignedWorkOnly(a) && !hasCapability(a, "customers.properties")))) {
     const w = await pool.query(
       "SELECT 1 FROM work_order WHERE id=$1 AND assigned_to=$2",
       [f.work_order_id, a.id],

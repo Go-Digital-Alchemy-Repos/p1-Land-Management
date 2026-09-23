@@ -53,6 +53,20 @@ test("dashboard routes preserve canonical modules, settings, and supported recor
   assert.equal(pathForRoute(agreement), `/agreements/${agreementId}`);
 });
 
+test("property photo deep links are available to assigned crews and property staff, not clients", () => {
+  const id = "11111111-1111-4111-8111-111111111111";
+  const route = routeFromPath(`/properties/${id}/photos`);
+  assert.equal(route.kind, "page");
+  if (route.kind !== "page") return;
+  assert.deepEqual(route.record, { kind: "property", id, tab: "photos" });
+  assert.equal(pathForRoute(route), `/properties/${id}/photos`);
+  assert.equal(canAccessRoute(route, "owner"), true);
+  assert.equal(canAccessRoute(route, "member", ["customers.properties"]), true);
+  assert.equal(canAccessRoute(route, "member", ["customers.clients"]), false);
+  assert.equal(canAccessRoute(route, "crew"), true);
+  assert.equal(canAccessRoute(route, "client"), false);
+});
+
 test("dashboard routes fail closed for unknown and role-restricted destinations", () => {
   assert.equal(routeFromPath("/settings/security/extra").kind, "not-found");
   assert.equal(routeFromPath("/clients/invalid/nope").kind, "not-found");

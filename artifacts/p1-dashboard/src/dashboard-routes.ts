@@ -93,6 +93,7 @@ export type PropertyWorkspaceTab =
   | "requests"
   | "projects"
   | "inspections"
+  | "photos"
   | "notes-files";
 
 export type DashboardPageRoute = {
@@ -244,7 +245,7 @@ const LEAD_TABS: readonly LeadWorkspaceTab[] = [
   "overview", "follow-up", "details", "activity", "assessment", "handoff",
 ];
 const PROPERTY_TABS: readonly PropertyWorkspaceTab[] = [
-  "overview", "schedule", "agreements", "requests", "projects", "inspections", "notes-files",
+  "overview", "schedule", "agreements", "requests", "projects", "inspections", "photos", "notes-files",
 ];
 
 export function routeFromPath(pathname: string): DashboardRoute {
@@ -334,12 +335,12 @@ export function defaultRouteForRole(role: string | null | undefined, capabilitie
 
 export function canAccessWorkspaceTab(kind: "client" | "property", tab: string, role: string | null | undefined, capabilities?: readonly string[]) {
   if (!role) return false;
-  if (role === "crew") return kind === "property" && ["overview", "schedule"].includes(tab);
-  if (role === "client") return kind === "property";
+  if (role === "crew") return kind === "property" && ["overview", "schedule", "photos"].includes(tab);
+  if (role === "client") return kind === "property" && tab !== "photos";
   if (tab === "overview") return true;
   const subject = { role, capabilities };
   if (tab === "agreements") return hasCapability(subject, "revenue.agreements") || hasCapability(subject, "revenue.billing");
-  const tools: Record<string, Capability> = { properties: "customers.properties", contacts: "customers.clients", notes: "customers.clients", "notes-files": "customers.properties", schedule: "operations.schedule", requests: "customers.requests", projects: "operations.projects", inspections: "operations.inspections" };
+  const tools: Record<string, Capability> = { properties: "customers.properties", contacts: "customers.clients", notes: "customers.clients", "notes-files": "customers.properties", photos: "customers.properties", schedule: "operations.schedule", requests: "customers.requests", projects: "operations.projects", inspections: "operations.inspections" };
   return Boolean(tools[tab] && hasCapability(subject, tools[tab]));
 }
 

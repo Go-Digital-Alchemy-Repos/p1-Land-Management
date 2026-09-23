@@ -23,7 +23,7 @@ The generated work-order contract covers office planning, versioned status trans
 The generated recurring-schedule contract covers office creation and future-generation pause/resume. Owner, manager, and dispatch can configure weekly or monthly cadence, interval, America/New_York local time, assigned crew, and independent fixed-monthly or per-visit billing metadata. The worker remains responsible for creating occurrences; pausing never rewrites existing work orders, sends notifications, or alters billing records.
 | Sales | /leads, /estimates, estimate decision/revision and lead conversion routes in sales.ts |
 | Financial | /expenses, /billing, /billing/:id/post, /quickbooks/connect, /quickbooks/callback, /quickbooks/import-preview, /quickbooks/import, /quickbooks/invoices |
-| Media | POST /files/:id with image body, x-p1-property, x-p1-work, x-p1-classification; GET/POST /profile/avatar; protected content/publication routes in files.ts |
+| Media | POST /files/:id with image body, x-p1-property, x-p1-work, x-p1-classification; staff-managed Property Photos list/upload/description at /properties/:id/photos; GET/POST /profile/avatar; protected content/publication routes in files.ts |
 | Communications | Notification, delivery and consent routes in notifications.ts |
 
 ## Client onboarding and maintenance
