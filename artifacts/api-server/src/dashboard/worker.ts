@@ -1,6 +1,8 @@
 import { pool, transaction } from "./database";
 import { generateRecurring } from "./recurrence";
 import { reconcileQuickBooks } from "./quickbooks";
+import { features } from "./features";
+import { cancelDormantQuickBooksJob, cancelDormantQuickBooksJobs, enqueueQuickBooksReconciliation } from "./quickbooks-jobs";
 import { deliverSms } from "./notifications";
 import {
   runAgreementPreparationOnce,
@@ -20,6 +22,7 @@ async function deliver(job: {
     return await deliverSms({ ...job.payload, userId: job.payload.userId });
   }
   if (job.kind === "quickbooks.reconcile") {
+    if (!features.quickbooks) return undefined;
     await reconcileQuickBooks();
     return undefined;
   }
@@ -56,12 +59,11 @@ let lastRecurring = 0,
   lastReconcile = 0,
   lastPreparationScan = 0;
 try {
-  console.info(JSON.stringify({ event: "worker.started" }));
+  console.info(JSON.stringify({ event: "worker.started", quickbooksEnabled: features.quickbooks }));
+  await cancelDormantQuickBooksJobs(pool);
   while (!stopping) {
     if (Date.now() - lastReconcile > 900000) {
-      await pool.query(
-        "INSERT INTO outbox(id,kind,payload) SELECT gen_random_uuid(),'quickbooks.reconcile','{}'::jsonb WHERE EXISTS(SELECT 1 FROM integration_connection WHERE provider='quickbooks') AND NOT EXISTS(SELECT 1 FROM outbox WHERE kind='quickbooks.reconcile' AND status IN ('pending','processing'))",
-      );
+      await enqueueQuickBooksReconciliation(pool);
       lastReconcile = Date.now();
     }
     if (Date.now() - lastRecurring > 60000) {
@@ -100,6 +102,10 @@ try {
     });
     if (!job) {
       await new Promise((r) => setTimeout(r, 1000));
+      continue;
+    }
+    if (job.kind === "quickbooks.reconcile" && await cancelDormantQuickBooksJob(pool, job.id)) {
+      console.info(JSON.stringify({ event: "delivery.cancelled", jobId: job.id, reason: "feature_disabled" }));
       continue;
     }
     try {

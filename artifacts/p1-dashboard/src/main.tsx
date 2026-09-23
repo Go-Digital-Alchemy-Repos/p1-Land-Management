@@ -264,6 +264,7 @@ type Person = {
   mfaRequired?: boolean;
   avatarUrl?: string | null;
   impersonation?: Impersonation | null;
+  features?: { quickbooks: boolean };
 };
 type NavItem = DashboardPageRoute & {
   icon: typeof LayoutDashboard;
@@ -566,12 +567,12 @@ function App() {
       if (!navigator.onLine) {
         const day = await offline.readDay(person.id);
         if (generation === refreshGeneration.current) {
-          setData({ work: dataLoadPlan(person).paths.includes("work-orders") ? day?.data || [] : [], savedAt: day?.savedAt });
+          setData({ work: dataLoadPlan(person, person.features?.quickbooks === true).paths.includes("work-orders") ? day?.data || [] : [], savedAt: day?.savedAt });
           setDataLoadStatus("ready");
         }
         return;
       }
-      const { paths, references } = dataLoadPlan(person);
+      const { paths, references } = dataLoadPlan(person, person.features?.quickbooks === true);
       const referenceData = references ? await getWorkspaceReferences() : {};
       const values = await refreshEntries(
         [...new Set(paths)].map(async (p) => [
@@ -602,7 +603,7 @@ function App() {
       }
     } catch (e) {
       if (generation !== refreshGeneration.current) return;
-      if (view === "My Day" && person.role !== "client" && dataLoadPlan(person).paths.includes("work-orders") && isTransientRefreshFailure(e)) {
+      if (view === "My Day" && person.role !== "client" && dataLoadPlan(person, person.features?.quickbooks === true).paths.includes("work-orders") && isTransientRefreshFailure(e)) {
         // Re-read after the failed requests: revocation may have cleared this cache.
         const day = await offline.readDay(person.id);
         if (generation !== refreshGeneration.current) return;
@@ -1147,6 +1148,7 @@ function App() {
     setForm(null);
   };
   const can = (capability: string) => Boolean(person && person.role !== "crew" && hasCapability(person, capability));
+  const quickbooksEnabled = person?.features?.quickbooks === true;
   const ops = can("operations.schedule");
   const fieldWork = ops || can("workspace.my-day") || person?.role === "crew";
   const agreementWorkspaceTabs = [
@@ -1226,7 +1228,7 @@ function App() {
   const marketingWorkspaceTabs = marketingWorkspace && person
     ? marketingWorkspace.views.flatMap((marketingView) => {
         const page = nav.find((item) => item.view === marketingView);
-        return page && canAccessRoute({ kind: "page", page }, person.role, person.capabilities)
+        return page && canAccessRoute({ kind: "page", page }, person.role, person.capabilities, quickbooksEnabled)
           ? [{ ...page, label: marketingWorkspaceLabels[marketingView] ?? page.label, tone: marketingWorkspace.tone }]
           : [];
       })
@@ -1252,7 +1254,7 @@ function App() {
     );
   const allowedNav: VisibleNavItem[] = person
     ? nav.flatMap((item) => {
-        const target = navigationTargetFor(item, person.role, person.capabilities);
+        const target = navigationTargetFor(item, person.role, person.capabilities, quickbooksEnabled);
         return target ? [{ ...item, target }] : [];
       })
     : [];
@@ -1265,7 +1267,7 @@ function App() {
   const routeForbidden =
     Boolean(person?.role) &&
     locationRoute.kind === "page" &&
-    !canAccessRoute(locationRoute, person?.role, person?.capabilities);
+    !canAccessRoute(locationRoute, person?.role, person?.capabilities, quickbooksEnabled);
   const routeUnavailable = routeMissing || routeForbidden;
   const [expandedGroups, setExpandedGroups] = useState<Set<NavigationGroup>>(
     () => new Set(["Workspace"]),
@@ -1284,9 +1286,9 @@ function App() {
     if (
       person?.role &&
       current.kind === "page" &&
-      !canAccessRoute(current, person.role, person.capabilities)
+      !canAccessRoute(current, person.role, person.capabilities, quickbooksEnabled)
     ) {
-      applyRoute(defaultRouteForRole(person.role, person.capabilities), "replace");
+      applyRoute(defaultRouteForRole(person.role, person.capabilities, quickbooksEnabled), "replace");
       setNotice("That area is not included in your selected access.");
     }
   }, [person?.role, person?.capabilities, view, settingsSection, recordRoute?.id]);
@@ -1792,7 +1794,7 @@ function App() {
                     ? "This area is not available for your workspace role. Your account permissions and data have not changed."
                     : "Check the link or return to your workspace. Your account permissions and data have not changed."}
                 </p>
-                <button onClick={() => navigate(defaultRouteForRole(person.role, person.capabilities).page.view)}>
+                <button onClick={() => navigate(defaultRouteForRole(person.role, person.capabilities, quickbooksEnabled).page.view)}>
                   Return to workspace
                 </button>
               </div>
@@ -2377,7 +2379,7 @@ function App() {
               {dataLoadStatus === "loading" && <p role="status">Loading billing records…</p>}
               {dataLoadStatus === "failed" && <button type="button" className="secondary" onClick={() => void refresh()}>Retry billing records</button>}
               <div className="panel-heading">
-                <h2>{can("revenue.billing") ? "Billing drafts & invoices" : "Your invoices"}</h2>
+                <h2>{can("revenue.billing") ? quickbooksEnabled ? "Billing drafts & invoices" : "Billing drafts" : "Your invoices"}</h2>
                 {can("revenue.billing") && (
                   <button
                     onClick={() => (
@@ -2391,17 +2393,29 @@ function App() {
               </div>
               {can("revenue.billing") && (
                 <p className="integration-note">
-                  QuickBooks connection is required before invoices can be
-                  posted. Drafts do not send or charge customers.
+                  {quickbooksEnabled
+                    ? "QuickBooks connection is required before invoices can be posted. Drafts do not send or charge customers."
+                    : "Invoice drafts are for internal review. Send invoices from your accounting system for now."}
                 </p>
               )}
               {isOnline && dataLoadStatus === "ready" && <BillingRecords
                 drafts={data.billing || []}
                 invoices={data["quickbooks/invoices"] || []}
                 canManage={can("revenue.billing")}
-                onPost={async (id) => {
+                quickbooksEnabled={quickbooksEnabled}
+                onPost={quickbooksEnabled ? async (id) => {
                   await api("/billing/" + id + "/post", {});
                   await refresh();
+                } : undefined}
+                onMarkExternal={quickbooksEnabled ? undefined : async (id, input) => {
+                  await api("/billing/" + id + "/external-invoice", input);
+                  await refresh();
+                  setNotice("Marked as invoiced.");
+                }}
+                onVoidExternal={async (id, input) => {
+                  await api("/billing/" + id + "/external-invoice/void", input);
+                  await refresh();
+                  setNotice("Invoiced mark removed.");
                 }}
               />}
             </section>
@@ -2561,7 +2575,7 @@ function App() {
               <section className="panel">
                 <div className="panel-heading">
                   <h2>Integrations</h2>
-                  <button
+                  {quickbooksEnabled && <button
                     onClick={() =>
                       void run(async () => {
                         const r = await api("/quickbooks/connect", {});
@@ -2570,9 +2584,9 @@ function App() {
                     }
                   >
                     Connect QuickBooks
-                  </button>
+                  </button>}
                 </div>
-                <div className="panel-heading">
+                {quickbooksEnabled && <div className="panel-heading">
                   <button
                     onClick={() =>
                       void run(async () => {
@@ -2585,12 +2599,12 @@ function App() {
                   >
                     Preview QuickBooks import
                   </button>
-                </div>
+                </div>}
                 {[
-                  [
+                  ...(quickbooksEnabled ? [[
                     "QuickBooks Online",
                     data.integrations?.quickbooks?.configured,
-                  ],
+                  ]] : []),
                   ["Mailgun email", data.integrations?.email?.configured],
                   ["Twilio SMS", data.integrations?.sms?.configured],
                 ].map(([name, configured]) => (
@@ -2604,8 +2618,13 @@ function App() {
                   </div>
                 ))}
                 <Table
-                  rows={data.integrations?.jobs || []}
-                  columns={["kind", "status", "attempts", "last_error"]}
+                  rows={(data.integrations?.jobs || []).map((job: any) => ({
+                    ...job,
+                    kind: job.kind === "email" ? "Email delivery" : job.kind === "sms" ? "Text message" : job.kind === "quickbooks.reconcile" ? "Accounting sync" : "Background task",
+                    status: job.status === "failed" ? "Needs attention in settings" : job.status === "pending" ? "Delivery pending" : job.status === "processing" ? "Delivery in progress" : job.status,
+                    errorId: job.status === "failed" ? job.id : "",
+                  }))}
+                  columns={["kind", "status", "errorId"]}
                   empty="No pending delivery jobs."
                 />
               </section>
@@ -2691,7 +2710,7 @@ function App() {
                   await refresh();
                 }}
               />
-            ) : form === "import" ? (
+            ) : form === "import" && quickbooksEnabled ? (
               <div className="import-preview">
                 <p>
                   {selected.customers.length} customers ·{" "}

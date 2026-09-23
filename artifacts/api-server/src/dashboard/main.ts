@@ -35,6 +35,9 @@ import { operationsApi } from "./operations";
 import { filesApi } from "./files";
 import { profileApi } from "./profile";
 import { qboApi, qboWebhook } from "./quickbooks";
+import { externalInvoiceApi } from "./external-invoice.routes";
+import { dormantQuickBooksApi, dormantQuickBooksWebhook } from "./quickbooks-dormant";
+import { features } from "./features";
 import { notificationsApi, smsWebhook } from "./notifications";
 import { clientWorkspaceApi } from "./client-workspace";
 import { propertyTypesApi } from "./property-types";
@@ -96,7 +99,8 @@ app.all("/api/auth/*splat", (req, res, next) => {
     await withFactorResetLockScope(() => authHandler(req, res));
   })().catch(next);
 });
-app.use("/api/webhooks", qboWebhook, smsWebhook);
+console.info(JSON.stringify({ event: "features.resolved", quickbooks: features.quickbooks }));
+app.use("/api/webhooks", features.quickbooks ? qboWebhook : dormantQuickBooksWebhook, smsWebhook);
 app.use("/api/integrations/core/v1", commercialIngress, coreFederationIngress);
 app.use(express.json({ limit: "1mb" }));
 app.use("/api/public", estimatePublicApi);
@@ -146,7 +150,8 @@ app.use(
   serviceAgreementApi,
   profileApi,
   filesApi,
-  qboApi,
+  externalInvoiceApi,
+  features.quickbooks ? qboApi : dormantQuickBooksApi,
   notificationsApi,
   salesApi,
   leadNotesApi,

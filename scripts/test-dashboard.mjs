@@ -67,6 +67,11 @@ try {
     COMMERCIAL_TEST_DATABASE_URL:
       "postgresql://postgres:p1-test-only@" + mapping + "/dashboard_test",
   });
+  // Preserve legacy QuickBooks acceptance coverage. The focused dormant-mode
+  // fixture starts its own server with the feature absent instead.
+  if (process.argv[2]?.includes("quickbooks-dormant.test.ts"))
+    delete env.P1_FEATURE_QUICKBOOKS;
+  else env.P1_FEATURE_QUICKBOOKS = "enabled";
   let ready = false;
   for (let i = 0; i < 30; i++) {
     try {
@@ -140,6 +145,7 @@ try {
       "src/dashboard/marketing-cms.test.ts",
       "src/dashboard/user-management.test.ts",
       "src/dashboard/impersonation.test.ts",
+      "src/dashboard/external-invoice.test.ts",
       "src/dashboard/contacts.test.ts",
       "src/dashboard/client-workspace.test.ts",
       "src/dashboard/client-notes.test.ts",
@@ -179,12 +185,26 @@ try {
   );
   process.stdout.write(result.stdout);
   process.stderr.write(result.stderr);
+  const checkExternalInvoiceRecovery = !process.argv[2] || process.argv[2].includes("external-invoice.test.ts");
+  const externalInvoiceCount = async () => Number((await execFile("docker", [
+    "exec", dbName, "psql", "-U", "postgres", "-d", "dashboard_test", "-Atc",
+    "SELECT count(*) FROM billing_draft_external_invoice",
+  ])).stdout.trim());
+  const recordedBeforeReplay = checkExternalInvoiceRecovery ? await externalInvoiceCount() : null;
+  if (checkExternalInvoiceRecovery && !recordedBeforeReplay)
+    throw new Error("External-invoice fixture did not create a durable record");
   // Verify that the migration runner is idempotent against a populated database.
   await execFile(
     process.execPath,
     ["--import", "tsx", "src/dashboard/migrate.ts"],
     { cwd, env },
   );
+  if (checkExternalInvoiceRecovery) {
+    const recordedAfterReplay = await externalInvoiceCount();
+    if (recordedAfterReplay !== recordedBeforeReplay)
+      throw new Error("External-invoice records changed during migration replay");
+    console.log(`External-invoice recovery replay retained ${recordedAfterReplay} synthetic record(s).`);
+  }
   console.log("Migration replay passed. All data was synthetic.");
 } catch (error) {
   console.error([error.stdout, error.stderr].filter(Boolean).join("\n") || error.message);

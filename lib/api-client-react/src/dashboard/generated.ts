@@ -49,6 +49,7 @@ import type {
   BackfillMarketingCommercialForms200,
   BackfillMarketingCommercialFormsBody,
   BillingDraft,
+  BillingExternalInvoiceRecord,
   BookAssessmentSlot,
   CancelServiceAgreement,
   ChangeAgreementDraftContext,
@@ -285,6 +286,7 @@ import type {
   PublicationReceipt,
   ReadinessResult,
   ReadinessUpdate,
+  RecordExternalInvoice,
   RecurringJob,
   RecurringServicePause,
   ReplaceMarketingMediaBody,
@@ -345,6 +347,7 @@ import type {
   UploadMarketingMediaBody,
   UploadWebsiteIdentityAsset201,
   UploadWebsiteIdentityAssetBody,
+  VoidExternalInvoice,
   WebsiteBackupRestoreReceipt,
   WebsiteBackupRestoreRequest,
   WebsiteBackupStatus,
@@ -2700,7 +2703,7 @@ export const getListBillingDraftsUrl = () => {
 }
 
 /**
- * Office roles receive operational billing drafts. Clients receive only posted, ownership-verified drafts for accessible properties. QuickBooks remains authoritative for posted accounting balances and payments.
+ * Office roles receive operational billing drafts with nullable outside-dashboard invoice marks. Clients receive only posted, ownership-verified drafts when QuickBooks is enabled. QuickBooks remains authoritative for posted accounting balances and payments.
  */
 export const listBillingDrafts = async ( options?: RequestInit): Promise<BillingDraft[]> => {
 
@@ -9322,6 +9325,58 @@ export const saveSalesPipelineSettings = async (saveSalesPipelineSettings: SaveS
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     body: JSON.stringify(
       saveSalesPipelineSettings,)
+  }
+);}
+
+
+
+export const getRecordExternalInvoiceUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/billing/${id}/external-invoice`
+}
+
+/**
+ * Records an outside-dashboard invoice for a draft. Requires the reviewed draft version and amount; never posts or sends an invoice.
+ */
+export const recordExternalInvoice = async (id: string,
+    recordExternalInvoice: RecordExternalInvoice, options?: RequestInit): Promise<void | BillingExternalInvoiceRecord> => {
+
+  return customFetch<void | BillingExternalInvoiceRecord>(getRecordExternalInvoiceUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      recordExternalInvoice,)
+  }
+);}
+
+
+
+export const getVoidExternalInvoiceUrl = (id: string,) => {
+
+
+
+
+  return `/api/v1/billing/${id}/external-invoice/void`
+}
+
+/**
+ * Voids the active outside-dashboard invoice mark with a reason. Retry-safe; retains audit history.
+ */
+export const voidExternalInvoice = async (id: string,
+    voidExternalInvoice: VoidExternalInvoice, options?: RequestInit): Promise<BillingExternalInvoiceRecord> => {
+
+  return customFetch<BillingExternalInvoiceRecord>(getVoidExternalInvoiceUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      voidExternalInvoice,)
   }
 );}
 

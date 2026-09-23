@@ -15,6 +15,8 @@ const drafts = [
     amount_cents: 12500,
     kind: "service" as const,
     status: "draft" as const,
+    version: 1,
+    externalInvoice: null,
     created_at: "2026-09-22T12:00:00Z",
   },
   {
@@ -25,6 +27,8 @@ const drafts = [
     amount_cents: 30000,
     kind: "deposit" as const,
     status: "posted" as const,
+    version: 1,
+    externalInvoice: null,
     created_at: "2026-09-21T12:00:00Z",
     ownership_verified: false,
   },
@@ -117,4 +121,23 @@ it("filters records and hides staff posting from client views", async () => {
   });
   expect(host.querySelectorAll("article.billing-record")).toHaveLength(1);
   expect(host.textContent).toContain("Invoice 1001");
+});
+
+it("hides provider surfaces in dormant mode and offers a focused outside-invoice form", async () => {
+  const onMarkExternal = vi.fn().mockResolvedValue(undefined);
+  await act(async () => root.render(<BillingRecords
+    drafts={drafts} invoices={invoices} canManage quickbooksEnabled={false}
+    onMarkExternal={onMarkExternal} onVoidExternal={vi.fn()} />));
+  expect(host.textContent).not.toContain("QuickBooks");
+  expect(host.textContent).not.toContain("Invoice 1001");
+  expect(host.textContent).toContain("Needs invoicing");
+  const mark = Array.from(host.querySelectorAll("button")).find((button) => button.textContent === "Mark as invoiced")!;
+  await act(async () => mark.click());
+  expect(host.textContent).toContain("First visit · North site · $125.00");
+  const form = host.querySelector<HTMLFormElement>("form.billing-post-review")!;
+  await act(async () => form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true })));
+  expect(onMarkExternal).toHaveBeenCalledTimes(1);
+  expect(onMarkExternal.mock.calls[0][0]).toBe("synthetic-draft");
+  expect(onMarkExternal.mock.calls[0][1]).toMatchObject({ expectedVersion: 1, expectedAmountCents: 12500 });
+  expect(onMarkExternal.mock.calls[0][1].operationId).toMatch(/^[a-f0-9-]{36}$/);
 });

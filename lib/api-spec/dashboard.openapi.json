@@ -2869,7 +2869,7 @@
     "/integrations": {
       "get": {
         "operationId": "getIntegrationHealth",
-        "description": "Returns manager-only configuration indicators and the current office action queue. It does not expose provider credentials, trigger provider calls, post invoices, or change delivery state.",
+        "description": "Returns Owner-only configuration indicators and a safe action queue. QuickBooks status is absent while the server feature is dormant. Raw provider errors and credentials are never exposed.",
         "responses": {
           "200": {
             "description": "Integration and worker health snapshot",
@@ -4251,7 +4251,7 @@
     "/billing": {
       "get": {
         "operationId": "listBillingDrafts",
-        "description": "Office roles receive operational billing drafts. Clients receive only posted, ownership-verified drafts for accessible properties. QuickBooks remains authoritative for posted accounting balances and payments.",
+        "description": "Office roles receive operational billing drafts with nullable outside-dashboard invoice marks. Clients receive only posted, ownership-verified drafts when QuickBooks is enabled. QuickBooks remains authoritative for posted accounting balances and payments.",
         "responses": {
           "200": {
             "description": "Authorized billing drafts",
@@ -6891,24 +6891,36 @@
                 "schema": {
                   "type": "object",
                   "additionalProperties": false,
-                  "required": ["retired"],
+                  "required": [
+                    "retired"
+                  ],
                   "properties": {
-                    "retired": { "type": "boolean" }
+                    "retired": {
+                      "type": "boolean"
+                    }
                   }
                 }
               }
             }
           },
-          "401": { "description": "Sign in required" },
-          "403": { "description": "Owner access required" },
-          "409": { "description": "Account is active, canonical, or already retired" }
+          "401": {
+            "description": "Sign in required"
+          },
+          "403": {
+            "description": "Owner access required"
+          },
+          "409": {
+            "description": "Account is active, canonical, or already retired"
+          }
         },
         "parameters": [
           {
             "in": "path",
             "name": "id",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           }
         ]
       }
@@ -15764,7 +15776,9 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/WebsiteBackupRestoreRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/WebsiteBackupRestoreRequest"
+              }
             }
           }
         },
@@ -15773,15 +15787,27 @@
             "description": "Restore completed",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/WebsiteBackupRestoreReceipt" }
+                "schema": {
+                  "$ref": "#/components/schemas/WebsiteBackupRestoreReceipt"
+                }
               }
             }
           },
-          "400": { "description": "Invalid key or exact-key confirmation" },
-          "401": { "description": "Authentication required" },
-          "403": { "description": "Active attested Owner required" },
-          "409": { "description": "Another backup or restore is already running" },
-          "503": { "description": "Restore outcome uncertain; verify authoritative status and live state" }
+          "400": {
+            "description": "Invalid key or exact-key confirmation"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Active attested Owner required"
+          },
+          "409": {
+            "description": "Another backup or restore is already running"
+          },
+          "503": {
+            "description": "Restore outcome uncertain; verify authoritative status and live state"
+          }
         }
       }
     },
@@ -16322,6 +16348,102 @@
           },
           "409": {
             "description": "Revision conflict; reload before saving"
+          }
+        }
+      }
+    },
+    "/billing/{id}/external-invoice": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "post": {
+        "operationId": "recordExternalInvoice",
+        "description": "Records an outside-dashboard invoice for a draft. Requires the reviewed draft version and amount; never posts or sends an invoice.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecordExternalInvoice"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "External invoice record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BillingExternalInvoiceRecord"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Idempotent retry"
+          },
+          "403": {
+            "description": "Billing capability required"
+          },
+          "404": {
+            "description": "Draft not found"
+          }
+        }
+      }
+    },
+    "/billing/{id}/external-invoice/void": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "post": {
+        "operationId": "voidExternalInvoice",
+        "description": "Voids the active outside-dashboard invoice mark with a reason. Retry-safe; retains audit history.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VoidExternalInvoice"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "External invoice record",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BillingExternalInvoiceRecord"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflicting operation, stale draft, or already voided record"
+          },
+          "403": {
+            "description": "Billing capability required"
+          },
+          "404": {
+            "description": "Draft not found"
           }
         }
       }
@@ -18550,7 +18672,8 @@
           "mfaRequired",
           "ownerMfaRequired",
           "role",
-          "capabilities"
+          "capabilities",
+          "features"
         ],
         "properties": {
           "id": {
@@ -18606,6 +18729,9 @@
               "$ref": "#/components/schemas/BusinessCapability"
             },
             "description": "Explicit known tool grants; empty for inactive, unassured, client or unreviewed accounts. Owner receives all current tool grants."
+          },
+          "features": {
+            "$ref": "#/components/schemas/DashboardFeatures"
           }
         }
       },
@@ -19231,11 +19357,11 @@
         "type": "object",
         "additionalProperties": false,
         "required": [
-          "quickbooks",
           "email",
           "sms",
           "jobs",
-          "agreementPreparation"
+          "agreementPreparation",
+          "features"
         ],
         "properties": {
           "quickbooks": {
@@ -19256,6 +19382,9 @@
           },
           "agreementPreparation": {
             "$ref": "#/components/schemas/AgreementPreparationHealth"
+          },
+          "features": {
+            "$ref": "#/components/schemas/DashboardFeatures"
           }
         }
       },
@@ -21308,7 +21437,9 @@
           "kind",
           "status",
           "created_at",
-          "property_name"
+          "property_name",
+          "version",
+          "externalInvoice"
         ],
         "properties": {
           "id": {
@@ -21377,6 +21508,20 @@
           },
           "property_name": {
             "type": "string"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "externalInvoice": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/BillingExternalInvoiceSummary"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         }
       },
@@ -32614,19 +32759,40 @@
       "WebsiteBackupRestoreRequest": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["key", "confirmation"],
+        "required": [
+          "key",
+          "confirmation"
+        ],
         "properties": {
-          "key": { "type": "string", "minLength": 1, "maxLength": 2048 },
-          "confirmation": { "type": "string", "minLength": 1, "maxLength": 2056 }
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          },
+          "confirmation": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2056
+          }
         }
       },
       "WebsiteBackupRestoreReceipt": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["restored", "manifest"],
+        "required": [
+          "restored",
+          "manifest"
+        ],
         "properties": {
-          "restored": { "type": "boolean", "enum": [true] },
-          "manifest": { "$ref": "#/components/schemas/WebsiteBackupSummary" }
+          "restored": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          },
+          "manifest": {
+            "$ref": "#/components/schemas/WebsiteBackupSummary"
+          }
         }
       },
       "WebsiteBackupStorage": {
@@ -34128,6 +34294,178 @@
           },
           "config": {
             "$ref": "#/components/schemas/SalesPipelineConfig"
+          }
+        }
+      },
+      "DashboardFeatures": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "quickbooks"
+        ],
+        "properties": {
+          "quickbooks": {
+            "type": "boolean"
+          }
+        }
+      },
+      "BillingExternalInvoiceSummary": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "reference",
+          "invoicedOn",
+          "recordedBy",
+          "recordedAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reference": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "invoicedOn": {
+            "type": "string",
+            "format": "date"
+          },
+          "recordedBy": {
+            "type": "string"
+          },
+          "recordedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "BillingExternalInvoiceRecord": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "billingDraftId",
+          "reference",
+          "invoicedOn",
+          "note",
+          "recordedBy",
+          "recordedAt",
+          "voidedBy",
+          "voidedAt",
+          "voidReason"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "billingDraftId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reference": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 120
+          },
+          "invoicedOn": {
+            "type": "string",
+            "format": "date"
+          },
+          "note": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 2000
+          },
+          "recordedBy": {
+            "type": "string"
+          },
+          "recordedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "voidedBy": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "voidedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "voidReason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "RecordExternalInvoice": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "operationId",
+          "expectedVersion",
+          "expectedAmountCents",
+          "invoicedOn"
+        ],
+        "properties": {
+          "operationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "expectedVersion": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "expectedAmountCents": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "reference": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "invoicedOn": {
+            "type": "string",
+            "format": "date"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        }
+      },
+      "VoidExternalInvoice": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "operationId",
+          "reason"
+        ],
+        "properties": {
+          "operationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
           }
         }
       }

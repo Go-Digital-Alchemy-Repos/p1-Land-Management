@@ -27,6 +27,7 @@ import {
 } from "./assessments";
 import { onboardClient, updateClient } from "./client-onboarding";
 import { agreementPreparationHealth } from "./agreement-preparation";
+import { features } from "./features";
 import { geocodePropertyAddress } from "./property-geocoding";
 import { notifyCapability } from "./job-notifications";
 import { fieldConflictsApi } from "./field-conflicts.routes";
@@ -192,6 +193,7 @@ api.get("/me", async (req, res) => {
     // Deprecated compatibility alias for existing native clients.
     ownerMfaRequired: mfaRequired,
     role: p.rows[0]?.active ? p.rows[0].role : null,
+    features: { quickbooks: features.quickbooks },
     impersonation: s.impersonation ? {
       ownerId: s.impersonation.ownerId,
       ownerName: s.impersonation.ownerName,
@@ -971,11 +973,25 @@ api.post("/estimates/:id/decision", async (req, res) => {
 });
 api.get("/billing", async (req, res) => {
   const a = await actor(req);
+  if (a.role === "client" && !features.quickbooks)
+    throw new HttpError(404, "feature_disabled");
   if (a.role !== "client") requireCapability(a, "revenue.billing");
   res.json(
     (
       await pool.query(
-        `SELECT b.*,p.name AS property_name FROM billing_draft b JOIN property p ON p.id=b.property_id AND p.lifecycle='operational' ${a.role === "client" ? "WHERE b.status='posted' AND b.ownership_verified=true AND EXISTS(SELECT 1 FROM client_access ca WHERE ca.client_id=p.client_id AND ca.user_id=$1)" : ""} ORDER BY b.created_at DESC`,
+        `SELECT b.*,p.name AS property_name,
+          CASE WHEN x.id IS NULL THEN NULL ELSE json_build_object(
+            'id',x.id,'reference',x.reference,'invoicedOn',x.invoiced_on,
+            'recordedBy',x.recorded_by,'recordedAt',x.recorded_at
+          ) END AS "externalInvoice"
+         FROM billing_draft b
+         JOIN property p ON p.id=b.property_id AND p.lifecycle='operational'
+         LEFT JOIN LATERAL (
+           SELECT id,reference,invoiced_on,recorded_by,recorded_at
+           FROM billing_draft_external_invoice
+           WHERE billing_draft_id=b.id AND voided_at IS NULL
+         ) x ON true
+         ${a.role === "client" ? "WHERE b.status='posted' AND b.ownership_verified=true AND EXISTS(SELECT 1 FROM client_access ca WHERE ca.client_id=p.client_id AND ca.user_id=$1)" : ""} ORDER BY b.created_at DESC`,
         a.role === "client" ? [a.id] : [],
       )
     ).rows,
@@ -1107,10 +1123,12 @@ api.get("/integrations", async (req, res) => {
   const a = await actor(req);
   requireRole(a.role, ["owner"]);
   const r = await pool.query(
-    "SELECT id,kind,status,attempts,last_error,created_at FROM outbox WHERE status<>'sent' ORDER BY created_at DESC LIMIT 50",
+    "SELECT id,kind,status,attempts,CASE WHEN status='failed' THEN 'Needs attention in settings' ELSE NULL END AS last_error,created_at FROM outbox WHERE status<>'sent' AND ($1::boolean OR kind NOT LIKE 'quickbooks.%') ORDER BY created_at DESC LIMIT 50",
+    [features.quickbooks],
   );
   res.json({
-    quickbooks: {
+    features: { quickbooks: features.quickbooks },
+    ...(features.quickbooks ? { quickbooks: {
       configured: Boolean(
         (
           await pool.query(
@@ -1119,7 +1137,7 @@ api.get("/integrations", async (req, res) => {
         ).rowCount,
       ),
       status: "Connection requires sandbox verification",
-    },
+    } } : {}),
     email: { configured: Boolean(process.env.MAILGUN_API_KEY) },
     sms: {
       configured: Boolean(

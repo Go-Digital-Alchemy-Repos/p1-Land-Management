@@ -818,6 +818,7 @@ export const billingDraft = pgTable(
     postingRequestId: uuid("posting_request_id"),
     postingPayload: jsonb("posting_payload"),
     ownershipVerified: boolean("ownership_verified").default(false).notNull(),
+    version: integer().default(1).notNull(),
   },
   (table) => [
     foreignKey({ columns: [table.estimateAllocationId, table.estimateId], foreignColumns: [estimateAllocation.id, estimateAllocation.estimateId], name: "billing_draft_allocation_parent" }),
@@ -840,10 +841,34 @@ export const billingDraft = pgTable(
       sql`kind = ANY (ARRAY['service'::text, 'deposit'::text, 'progress'::text, 'final'::text])`,
     ),
     check("billing_draft_amount_cents_check", sql`amount_cents > 0`),
+    check("billing_draft_version_check", sql`version > 0`),
     check(
       "billing_draft_status_check",
       sql`status = ANY (ARRAY['draft'::text, 'approved'::text, 'posted'::text, 'failed'::text])`,
     ),
+  ],
+);
+
+export const billingDraftExternalInvoice = pgTable(
+  "billing_draft_external_invoice",
+  {
+    id: uuid().primaryKey().notNull(),
+    billingDraftId: uuid("billing_draft_id").notNull().references(() => billingDraft.id),
+    reference: text(),
+    invoicedOn: date("invoiced_on").notNull(),
+    note: text(),
+    recordedBy: text("recorded_by").notNull().references(() => user.id),
+    recordedAt: timestamp("recorded_at", { withTimezone: true, mode: "string" }).defaultNow().notNull(),
+    voidedBy: text("voided_by").references(() => user.id),
+    voidedAt: timestamp("voided_at", { withTimezone: true, mode: "string" }),
+    voidReason: text("void_reason"),
+    operationId: uuid("operation_id").notNull().unique(),
+    operationFingerprint: text("operation_fingerprint").notNull(),
+    voidOperationId: uuid("void_operation_id").unique(),
+  },
+  (table) => [
+    uniqueIndex("billing_draft_external_invoice_active").on(table.billingDraftId).where(sql`${table.voidedAt} IS NULL`),
+    index("billing_draft_external_invoice_draft").on(table.billingDraftId, table.recordedAt),
   ],
 );
 

@@ -202,12 +202,13 @@ export function navigationTargetFor(
   page: DashboardPageRoute,
   role: string | null | undefined,
   capabilities?: readonly string[],
+  quickbooksEnabled = false,
 ): DashboardPageRoute | null {
   if (page.navigation === false) return null;
-  if (canAccessRoute({ kind: "page", page }, role, capabilities)) return page;
+  if (canAccessRoute({ kind: "page", page }, role, capabilities, quickbooksEnabled)) return page;
   for (const view of navigationFallbackViews[page.view] || []) {
     const fallback = pageFor(view);
-    if (fallback && canAccessRoute({ kind: "page", page: fallback }, role, capabilities)) return fallback;
+    if (fallback && canAccessRoute({ kind: "page", page: fallback }, role, capabilities, quickbooksEnabled)) return fallback;
   }
   return null;
 }
@@ -326,9 +327,9 @@ const viewCapability: Partial<Record<DashboardView, Capability>> = {
   Schedule: "operations.schedule", Recurring: "operations.recurring", Projects: "operations.projects", Inspections: "operations.inspections",
   Sales: "revenue.sales", Pipeline: "revenue.sales", Agreements: "revenue.agreements", Billing: "revenue.billing", Expenses: "revenue.expenses",
 };
-export function defaultRouteForRole(role: string | null | undefined, capabilities?: readonly string[]) {
+export function defaultRouteForRole(role: string | null | undefined, capabilities?: readonly string[], quickbooksEnabled = false) {
   const page = role === "crew" ? pageFor("My Day")! :
-    DASHBOARD_PAGES.find(page => page.navigation !== false && canAccessRoute({ kind: "page", page }, role, capabilities)) ?? pageFor("Profile")!;
+    DASHBOARD_PAGES.find(page => page.navigation !== false && canAccessRoute({ kind: "page", page }, role, capabilities, quickbooksEnabled)) ?? pageFor("Profile")!;
   return { kind: "page", page } as const;
 }
 
@@ -343,7 +344,7 @@ export function canAccessWorkspaceTab(kind: "client" | "property", tab: string, 
   return Boolean(tools[tab] && hasCapability(subject, tools[tab]));
 }
 
-export function canAccessRoute(route: DashboardRoute, role: string | null | undefined, capabilities?: readonly string[]) {
+export function canAccessRoute(route: DashboardRoute, role: string | null | undefined, capabilities?: readonly string[], quickbooksEnabled = false) {
   if (route.kind !== "page" || !role) return false;
   const { view, settingsSection } = route.page;
   if (route.record?.kind === "lead") {
@@ -355,7 +356,7 @@ export function canAccessRoute(route: DashboardRoute, role: string | null | unde
   if (view === "Pipeline Settings" || view === "Website Backups" || view === "Website Integrations" || view === "Website Email Templates" || view === "Website Documents" || view === "Website Head Tags" || view === "Website Features") return role === "owner";
   // Field and customer portals keep their existing record-scoped routes.
   if (role === "crew") return ["My Day", "Properties"].includes(view);
-  if (role === "client") return ["Overview", "Properties", "Schedule", "Sales", "Billing", "Requests", "Inspections"].includes(view);
+  if (role === "client") return ["Overview", "Properties", "Schedule", "Sales", ...(quickbooksEnabled ? ["Billing"] : []), "Requests", "Inspections"].includes(view);
   if (settingsSection === "people" || settingsSection === "integrations" || settingsSection === "security") return role === "owner";
   const subject = { role, capabilities };
   if (settingsSection === "preferences") return hasCapability(subject, "settings.preferences");

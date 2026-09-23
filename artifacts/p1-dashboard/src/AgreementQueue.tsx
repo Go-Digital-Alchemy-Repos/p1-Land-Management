@@ -250,7 +250,7 @@ export function AgreementQueue({
       setMessage(
         receipt.outcome === "keep_due"
           ? "The current cancellation snapshot was kept due. The draft remains subject to ordinary billing review."
-          : "Correction was recorded. Posting remains blocked until finance resolves it in QuickBooks and records a new review.",
+          : "Correction was recorded. Posting remains blocked until finance resolves it and records a new review.",
       );
       setCancellationPreview(null);
       setCancellationReview(null);

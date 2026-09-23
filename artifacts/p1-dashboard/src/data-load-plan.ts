@@ -1,9 +1,9 @@
 import { hasCapability, type Capability, type CapabilitySubject } from "@workspace/api-zod/business-access";
 
 /** Each area loads its own data. Reference lists are separate, minimized API responses. */
-export function dataLoadPlan(subject: CapabilitySubject): { paths: string[]; references: boolean } {
+export function dataLoadPlan(subject: CapabilitySubject, quickbooksEnabled = false): { paths: string[]; references: boolean } {
   if (subject.role === "crew") return { paths: ["work-orders", "properties"], references: false };
-  if (subject.role === "client") return { paths: ["work-orders", "properties", "clients", "estimates", "billing", "quickbooks/invoices", "requests", "assessment-slots", "inspections"], references: false };
+  if (subject.role === "client") return { paths: ["work-orders", "properties", "clients", "estimates", ...(quickbooksEnabled ? ["billing", "quickbooks/invoices"] : []), "requests", "assessment-slots", "inspections"], references: false };
   const paths = new Set<string>();
   let references = false;
   const add = (grant: Capability, values: string[], needsReferences = true) => {
@@ -22,7 +22,7 @@ export function dataLoadPlan(subject: CapabilitySubject): { paths: string[]; ref
   add("revenue.sales", ["estimates", "agreement-templates"]);
   add("revenue.agreements", ["estimates", "agreement-templates"]);
   add("revenue.agreement-templates.manage", ["agreement-templates"], false);
-  add("revenue.billing", ["billing", "estimates", "quickbooks/invoices"]);
+  add("revenue.billing", ["billing", "estimates", ...(quickbooksEnabled ? ["quickbooks/invoices"] : [])]);
   add("revenue.expenses", ["expenses"]);
   if (subject.role === "owner") { paths.add("integrations"); paths.add("account-mfa-policies"); }
   return { paths: [...paths], references };
