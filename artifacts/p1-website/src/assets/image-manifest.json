@@ -726,35 +726,35 @@
     ]
   },
   "features/grading-drainage.png": {
-    "sourceBytes": 2306125,
-    "sourceHash": "4e02ad0b21271c86e74082f299153c6a40a480a6884228ebeec55837055e55a4",
-    "width": 1280,
-    "height": 896,
+    "sourceBytes": 2923774,
+    "sourceHash": "bb0e0045c49f4ca81f6040b1c0a5b1aa5390857c010c65a1b71added4a78238b",
+    "width": 1448,
+    "height": 1086,
     "default": "optimized/features/grading-drainage-1280.webp",
     "variants": [
       {
         "path": "optimized/features/grading-drainage-480.webp",
         "format": "webp",
         "width": 480,
-        "height": 336,
-        "bytes": 38188,
+        "height": 360,
+        "bytes": 50738,
         "quality": 78
       },
       {
         "path": "optimized/features/grading-drainage-768.webp",
         "format": "webp",
         "width": 768,
-        "height": 538,
-        "bytes": 93946,
-        "quality": 78
+        "height": 576,
+        "bytes": 95806,
+        "quality": 68
       },
       {
         "path": "optimized/features/grading-drainage-1280.webp",
         "format": "webp",
         "width": 1280,
-        "height": 896,
-        "bytes": 246504,
-        "quality": 78
+        "height": 960,
+        "bytes": 221890,
+        "quality": 73
       }
     ]
   },
