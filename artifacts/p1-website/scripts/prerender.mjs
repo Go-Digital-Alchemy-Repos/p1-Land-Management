@@ -57,6 +57,22 @@ if (!existsSync(entryPath)) {
 }
 const { renderStaticDefaults: render } = await import(pathToFileURL(entryPath).href);
 
+// Structure-baseline calibration can pin seasonal SSR content without changing
+// normal production prerenders. This is set only by the calibration command.
+if (process.env.P1_STRUCTURE_CLOCK) {
+  const instant = Date.parse(process.env.P1_STRUCTURE_CLOCK);
+  if (!Number.isFinite(instant)) throw new Error("Invalid P1_STRUCTURE_CLOCK");
+  const NativeDate = Date;
+  globalThis.Date = class FixedDate extends NativeDate {
+    constructor(...args) {
+      super(...(args.length ? args : [instant]));
+    }
+    static now() {
+      return instant;
+    }
+  };
+}
+
 const templatePath = resolve(root, "dist/public/index.html");
 if (!existsSync(templatePath)) {
   throw new Error(
