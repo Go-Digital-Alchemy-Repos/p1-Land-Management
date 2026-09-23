@@ -16,6 +16,9 @@ for (const name of [
   "scripts",
   "artifacts/api-server",
   "artifacts/p1-dashboard",
+  // Dashboard Marketing still imports retained Core presentation components and
+  // their generated utility CSS. Keep those sources in the release snapshot.
+  "platform/p1-core/client/src",
   "platform/p1-core/shared",
 ])
   await cp(join(root, name), join(dest, name), {
