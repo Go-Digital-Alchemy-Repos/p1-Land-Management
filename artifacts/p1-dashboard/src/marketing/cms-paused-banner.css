@@ -1,0 +1,11 @@
+.cms-paused-banner {
+  margin: 0 0 1.25rem;
+  padding: 0.875rem 1rem;
+  border: 1px solid #bfd1e3;
+  border-left: 4px solid #2a669e;
+  border-radius: 0.75rem;
+  background: #f3f7fb;
+  color: #203a52;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}

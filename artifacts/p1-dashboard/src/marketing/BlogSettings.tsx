@@ -18,6 +18,7 @@ import type {
   MarketingBlogCommentSettings,
 } from "../../../../lib/api-client-react/src/dashboard/models";
 import { useCmsUnsavedChanges } from "./useCmsUnsavedChanges";
+import { CMS_PAUSED_SHORT, useCmsEditingPaused } from "./useCmsEditingStatus";
 import { FolderTree, Tag, MessageSquare, ShieldCheck } from "lucide-react";
 
 // A pending write must finish before a tab/filter can unmount its result.
@@ -76,6 +77,7 @@ const fresh: MarketingBlogTaxonomyInput = {
   sortOrder: 0,
 };
 export function BlogTaxonomies() {
+  const cmsPaused = useCmsEditingPaused();
   const [rows, setRows] = useState<MarketingBlogTaxonomy[]>([]),
     [draft, setDraft] = useState(fresh),
     [saved, setSaved] = useState(fresh),
@@ -147,7 +149,9 @@ export function BlogTaxonomies() {
       <h2>Categories and tags</h2>
       {error && <p role="alert">{error}</p>}
       <button
-        disabled={busy || !loaded || loading || uncertain}
+        disabled={cmsPaused || busy || !loaded || loading || uncertain}
+        aria-disabled={cmsPaused}
+        title={cmsPaused ? CMS_PAUSED_SHORT : undefined}
         onClick={() => choose()}
       >
         New category or tag
@@ -223,7 +227,7 @@ export function BlogTaxonomies() {
       <form
         onSubmit={async (e) => {
           e.preventDefault();
-          if (gate.current || !loaded || loading || uncertain) return;
+          if (cmsPaused || gate.current || !loaded || loading || uncertain) return;
           gate.current = true;
           setBusy(true);
           setError("");
@@ -251,7 +255,7 @@ export function BlogTaxonomies() {
           }
         }}
       >
-        <fieldset disabled={busy || !loaded || loading || uncertain}>
+        <fieldset disabled={cmsPaused || busy || !loaded || loading || uncertain}>
           <legend>{id ? "Edit taxonomy" : "New taxonomy"}</legend>
           <label>
             Name
@@ -360,6 +364,7 @@ const labels: Record<string, string> = {
   enableRateLimit: "Enable rate limit",
 };
 export function BlogCommentSettings() {
+  const cmsPaused = useCmsEditingPaused();
   const [draft, setDraft] = useState<MarketingBlogCommentSettings | null>(null),
     [saved, setSaved] = useState<MarketingBlogCommentSettings | null>(null),
     [error, setError] = useState(""),
@@ -404,7 +409,7 @@ export function BlogCommentSettings() {
         <form
           onSubmit={async (e) => {
             e.preventDefault();
-            if (gate.current) return;
+            if (cmsPaused || gate.current) return;
             gate.current = true;
             setBusy(true);
             setError("");
@@ -422,7 +427,7 @@ export function BlogCommentSettings() {
             }
           }}
         >
-          <fieldset disabled={busy}>
+          <fieldset disabled={cmsPaused || busy} title={cmsPaused ? CMS_PAUSED_SHORT : undefined}>
             {[
               {
                 title: "Comment availability",
@@ -515,9 +520,11 @@ export function BlogCommentSettings() {
 function CommentCard({
   row,
   onChanged,
+  cmsPaused,
 }: {
   row: MarketingBlogComment;
   onChanged: (next: MarketingBlogComment | null) => void;
+  cmsPaused: boolean;
 }) {
   const [body, setBody] = useState(row.body),
     [note, setNote] = useState(row.moderationNote || ""),
@@ -529,7 +536,7 @@ function CommentCard({
     body !== row.body || note !== (row.moderationNote || ""),
   );
   async function run(action: () => Promise<MarketingBlogComment | null>) {
-    if (gate.current) return;
+    if (cmsPaused || gate.current) return;
     gate.current = true;
     setBusy(true);
     setError("");
@@ -558,7 +565,7 @@ function CommentCard({
         <p>{new Date(row.createdAt).toLocaleString("en-US")}</p>
       )}
       {error && <p role="alert">{error}</p>}
-      <fieldset disabled={busy}>
+      <fieldset disabled={cmsPaused || busy} title={cmsPaused ? CMS_PAUSED_SHORT : undefined}>
         <label>
           Comment body
           <textarea value={body} onChange={(e) => setBody(e.target.value)} />
@@ -620,6 +627,7 @@ function CommentCard({
   );
 }
 export function BlogComments() {
+  const cmsPaused = useCmsEditingPaused();
   const [rows, setRows] = useState<MarketingBlogComment[]>([]),
     [error, setError] = useState(""),
     [status, setStatus] = useState("all"),
@@ -710,6 +718,7 @@ export function BlogComments() {
             <CommentCard
               key={row.id}
               row={row}
+              cmsPaused={cmsPaused}
               onChanged={(next) => {
                 setCounts(null);
                 setCountRevision((v) => v + 1);

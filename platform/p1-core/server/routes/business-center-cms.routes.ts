@@ -40,6 +40,7 @@ import editorLocks from "./admin/editor-locks.routes";
 import blog from "./admin/blog.routes";
 import media from "./admin/cms-media.routes";
 import website from "./admin/client-site-content.routes";
+import { cmsEditingStatus, requireCmsEditing, requireCmsEditingForContent } from "../middleware/cms-editing";
 
 /** Retained CMS handlers, with their canonical tool gates, own validation and writes.
  * No arbitrary Core URL, local cookie, role or client-supplied identity is accepted.
@@ -64,6 +65,7 @@ router.use(async (req, res, next) => {
       .json({ message: "Website access unavailable" });
   }
 });
+router.get("/status", (_req, res) => res.json(cmsEditingStatus));
 router.get("/notification-forms", async (req, res, next) => {
   const identity = req.dashboardIdentity;
   if (!identity?.active || identity.role !== "owner" || !identity.ownerAttested) {
@@ -95,7 +97,7 @@ router.use("/design/colors", websiteColors);
 router.use("/design/typography", websiteTypography);
 router.use("/design/social-media", websiteSocial);
 router.use("/editor-locks", editorLocks);
-router.use("/blog", requireBlogEnabled, blog);
+router.use("/blog", requireBlogEnabled, requireBusinessCapability("marketing.content.blog"), requireCmsEditing, blog);
 router.use(eventAttendees);
 router.use("/events", requireEventsEnabled, events);
 router.use(
@@ -116,7 +118,7 @@ router.use(
   careers,
 );
 router.use(requireCmsEnabled);
-router.use("/website", website);
-router.use(forms, pages, sections, galleries, menus, sidebars, seo, redirects, audit, team, media);
+router.use("/website", requireBusinessCapability("marketing.content.website"), requireCmsEditing, website);
+router.use(requireCmsEditingForContent, forms, pages, sections, galleries, menus, sidebars, seo, redirects, audit, team, media);
 router.use((_req, res) => res.status(404).json({ message: "CMS operation not found" }));
 export default router;

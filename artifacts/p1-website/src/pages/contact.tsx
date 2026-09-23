@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Phone, Clock, MapPin } from "lucide-react";
 import { PHONE_DISPLAY, PHONE_HREF } from "@/lib/site";
+import { useCms } from "@/lib/cms";
 
 const WORK_TYPES = [
   ["maintenance", "Grounds maintenance contract"],
@@ -45,8 +46,9 @@ const FAQS = [
 ];
 
 export default function Contact() {
+  const { snapshot } = useCms();
   const [submitted, setSubmitted] = useState(false);
-  const verification=usePublicFormVerification(isPublicFormPreview() || submitted);
+  const verification=usePublicFormVerification(isPublicFormPreview(snapshot.contentOverlayEnabled) || submitted);
   const [acreage, setAcreage] = useState("");
   const [workType, setWorkType] = useState("");
 

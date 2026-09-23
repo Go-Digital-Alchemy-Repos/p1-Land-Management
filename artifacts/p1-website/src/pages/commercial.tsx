@@ -9,6 +9,7 @@ import { commercialPayload, commercialErrors, commercialErrorSummary, inquiryAtt
 import { responsiveImageProps } from '@/lib/responsive-images';
 import { breadcrumbSchema } from '@/lib/structured-data';
 import { ContextualLinks } from '@/components/content/ContextualLinks';
+import { useCms } from '@/lib/cms';
 import hero from '@/assets/service-commercial.png';
 import dataCenterCampus from '@/assets/data-center-campus.png';
 
@@ -26,11 +27,12 @@ const fieldClass = 'mt-2 w-full rounded-sm border border-slate-400 bg-white px-3
 const ctaClass = 'inline-flex min-h-12 items-center justify-center rounded-sm bg-primary px-6 py-4 text-center font-bold text-primary-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4';
 
 function AssessmentForm() {
+  const { snapshot } = useCms();
   const [busy, setBusy] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [failure, setFailure] = useState('');
   const [receipt, setReceipt] = useState('');
-  const verification=usePublicFormVerification(isPublicFormPreview() || Boolean(receipt));
+  const verification=usePublicFormVerification(isPublicFormPreview(snapshot.contentOverlayEnabled) || Boolean(receipt));
   const attempt = useRef<{ payload: string; key: string } | null>(null);
   const started = useRef(false);
   const inFlight = useRef(false);

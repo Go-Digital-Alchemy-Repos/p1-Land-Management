@@ -61,8 +61,9 @@ async function readConfig(response: Response) {
   }
   return JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes));
 }
-export function isPublicFormPreview() {
+export function isPublicFormPreview(contentOverlayEnabled = false) {
   return (
+    contentOverlayEnabled &&
     typeof window !== "undefined" &&
     new URLSearchParams(window.location.search).has("cmsPreview")
   );

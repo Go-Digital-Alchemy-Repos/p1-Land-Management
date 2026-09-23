@@ -74,7 +74,7 @@ test('production HTTP routes and proxy boundaries against local upstream', { tim
   const reservation = http.createServer(); const port = await listen(reservation);
   await new Promise(resolveClose => reservation.close(resolveClose));
   const child = spawn(process.execPath, ['server/index.mjs'], {
-    cwd: root, env: { ...process.env, NODE_ENV: 'production', PORT: String(port), P1_CORE_ORIGIN: `http://127.0.0.1:${upstreamPort}`, P1_CONTENT_CACHE_DIR: '' },
+    cwd: root, env: { ...process.env, NODE_ENV: 'production', PORT: String(port), P1_CORE_ORIGIN: `http://127.0.0.1:${upstreamPort}`, P1_CONTENT_CACHE_DIR: '', P1_CMS_CONTENT_OVERLAY: 'enabled' },
     stdio: ['ignore', 'pipe', 'pipe'],
   });
   t.after(async () => { if (child.exitCode === null) { child.kill('SIGTERM'); await once(child, 'exit'); } });
@@ -382,7 +382,7 @@ test('staging manifest blocks indexing across public and proxied responses regar
   const reservation = http.createServer(); const port = await listen(reservation);
   await new Promise(resolveClose => reservation.close(resolveClose));
   const child = spawn(process.execPath, [resolve(temporary, 'server/index.mjs')], {
-    cwd: temporary, env: { ...process.env, NODE_ENV: 'production', PORT: String(port), P1_CORE_ORIGIN: `http://127.0.0.1:${upstreamPort}`, P1_CONTENT_CACHE_DIR: '' },
+    cwd: temporary, env: { ...process.env, NODE_ENV: 'production', PORT: String(port), P1_CORE_ORIGIN: `http://127.0.0.1:${upstreamPort}`, P1_CONTENT_CACHE_DIR: '', P1_CMS_CONTENT_OVERLAY: 'enabled' },
     stdio: ['ignore', 'pipe', 'pipe'],
   });
   t.after(async () => { if (child.exitCode === null) { child.kill('SIGTERM'); await once(child, 'exit'); } });
@@ -404,4 +404,52 @@ test('staging manifest blocks indexing across public and proxied responses regar
   assert.equal(robots.headers['content-type'], 'text/plain; charset=utf-8');
   assert.equal(robots.headers['x-robots-tag'], 'noindex, nofollow');
   assert.equal((await request(port, '/robots.txt', {}, 'HEAD')).body, '');
+});
+
+test('canonical manifest can serve non-indexable staging with the content overlay disabled', { timeout: 20000 }, async t => {
+  const upstreamRequests = [];
+  const upstream = http.createServer((req, res) => {
+    upstreamRequests.push(req.url);
+    res.statusCode = 404;
+    res.end('No staged override');
+  });
+  const upstreamPort = await listen(upstream);
+  t.after(() => new Promise(resolveClose => upstream.close(resolveClose)));
+  const reservation = http.createServer();
+  const port = await listen(reservation);
+  await new Promise(resolveClose => reservation.close(resolveClose));
+  const env = {
+    ...process.env,
+    NODE_ENV: 'production',
+    PORT: String(port),
+    P1_CORE_ORIGIN: `http://127.0.0.1:${upstreamPort}`,
+    P1_CONTENT_CACHE_DIR: '',
+    P1_WEBSITE_STAGING: 'enabled',
+  };
+  delete env.P1_CMS_CONTENT_OVERLAY;
+  const child = spawn(process.execPath, ['server/index.mjs'], {
+    cwd: root, env, stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  t.after(async () => {
+    if (child.exitCode === null) { child.kill('SIGTERM'); await once(child, 'exit'); }
+  });
+  let diagnostics = '';
+  child.stderr.on('data', chunk => { diagnostics += chunk; });
+  await new Promise((resolveReady, reject) => {
+    const timer = setTimeout(() => reject(new Error(`Staging startup timed out: ${diagnostics}`)), 10000);
+    child.once('exit', code => { clearTimeout(timer); reject(new Error(`Staging server exited ${code}: ${diagnostics}`)); });
+    child.stdout.on('data', chunk => {
+      if (String(chunk).includes('P1 website listening')) { clearTimeout(timer); resolveReady(); }
+    });
+  });
+  const response = await request(port, '/?cmsPreview=1', { Host: 'p1-website-staging.up.railway.app' });
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.location, undefined);
+  assert.equal(response.headers['x-robots-tag'], 'noindex, nofollow');
+  assert(response.body.includes('name="robots" content="noindex, nofollow"'));
+  assert(!response.body.includes('QA Published Home'));
+  assert.equal(upstreamRequests.filter(path => path.startsWith('/api/client-site-content/')).length, 0);
+  const snapshot = await request(port, '/api/p1/page-content?path=%2F', { Host: 'p1-website-staging.up.railway.app' });
+  assert.equal(snapshot.status, 200);
+  assert.equal(JSON.parse(snapshot.body).contentOverlayEnabled, false);
 });

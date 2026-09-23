@@ -11,6 +11,7 @@ export function MenuCardPresentation({
   onEdit,
   onDelete,
   disabled = false,
+  deleteDisabledReason,
   editLabel = "Edit",
 }: {
   name: string;
@@ -20,6 +21,7 @@ export function MenuCardPresentation({
   onEdit: () => void;
   onDelete: () => void;
   disabled?: boolean;
+  deleteDisabledReason?: string;
   editLabel?: string;
 }) {
   const count = countMenuItems(items);
@@ -49,7 +51,9 @@ export function MenuCardPresentation({
           </button>
           <button
             type="button"
-            disabled={disabled}
+            disabled={disabled || !!deleteDisabledReason}
+            aria-disabled={!!deleteDisabledReason}
+            title={deleteDisabledReason}
             className="menu-location-manage rounded-md border px-3 py-1.5 text-sm text-destructive"
             data-testid={`button-delete-menu-${id}`}
             aria-label={`Delete ${name}`}

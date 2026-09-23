@@ -27,6 +27,7 @@ export function PageEditorPresentation({
   dirty,
   busy,
   saveDisabled,
+  mutationDisabledReason,
   onBack,
   onSave,
   actions,
@@ -46,6 +47,7 @@ export function PageEditorPresentation({
   dirty: boolean;
   busy: boolean;
   saveDisabled?: boolean;
+  mutationDisabledReason?: string;
   onBack: () => void;
   onSave: () => void;
   actions: ReactNode;
@@ -101,7 +103,9 @@ export function PageEditorPresentation({
             type="button"
             className="cms-page-primary"
             onClick={onSave}
-            disabled={saveDisabled ?? busy}
+            disabled={!!mutationDisabledReason || (saveDisabled ?? busy)}
+            aria-disabled={!!mutationDisabledReason}
+            title={mutationDisabledReason}
           >
             {busy ? "Saving…" : "Save Page"}
           </button>
@@ -244,6 +248,7 @@ export function PageListPresentation({
   onAction,
   locks = {},
   busy = false,
+  mutationDisabledReason,
 }: {
   pages: PageListRow[];
   loading: boolean;
@@ -254,6 +259,7 @@ export function PageListPresentation({
   onAction?: (id: string, action: "duplicate" | "publish" | "unpublish" | "delete") => void;
   locks?: Record<string, { name: string; owned: boolean }>;
   busy?: boolean;
+  mutationDisabledReason?: string;
 }) {
   return (
     <div className="cms-page-presentation">
@@ -262,7 +268,7 @@ export function PageListPresentation({
           <h1>Pages</h1>
           <p>Manage your public-facing website pages</p>
         </div>
-        <button type="button" className="cms-page-primary" onClick={onNew} disabled={busy}>
+        <button type="button" className="cms-page-primary" onClick={onNew} disabled={busy || !!mutationDisabledReason} aria-disabled={!!mutationDisabledReason} title={mutationDisabledReason}>
           <Plus size={16} />
           New Page
         </button>
@@ -277,7 +283,7 @@ export function PageListPresentation({
             <Globe size={40} />
             <h2>No pages yet</h2>
             <p>Create your first CMS page to get started</p>
-            <button type="button" onClick={onNew} disabled={busy}>
+            <button type="button" onClick={onNew} disabled={busy || !!mutationDisabledReason} aria-disabled={!!mutationDisabledReason} title={mutationDisabledReason}>
               <Plus size={16} />
               Create Page
             </button>
@@ -346,7 +352,9 @@ export function PageListPresentation({
                           <>
                             <button
                               type="button"
-                              disabled={blocked}
+                              disabled={blocked || !!mutationDisabledReason}
+                              aria-disabled={!!mutationDisabledReason}
+                              title={mutationDisabledReason}
                               aria-label={`Duplicate ${page.title}`}
                               onClick={() => onAction(page.id, "duplicate")}
                             >
@@ -354,7 +362,9 @@ export function PageListPresentation({
                             </button>
                             <button
                               type="button"
-                              disabled={blocked}
+                              disabled={blocked || !!mutationDisabledReason}
+                              aria-disabled={!!mutationDisabledReason}
+                              title={mutationDisabledReason}
                               aria-label={
                                 page.status === "published" || page.status === "scheduled"
                                   ? `Move ${page.title} to draft`
@@ -377,7 +387,9 @@ export function PageListPresentation({
                             </button>
                             <button
                               type="button"
-                              disabled={blocked}
+                              disabled={blocked || !!mutationDisabledReason}
+                              aria-disabled={!!mutationDisabledReason}
+                              title={mutationDisabledReason}
                               aria-label={`Delete ${page.title}`}
                               onClick={() => onAction(page.id, "delete")}
                             >

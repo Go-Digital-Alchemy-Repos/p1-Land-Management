@@ -1,5 +1,6 @@
 import { CmsUploadDropzone } from "../../../../platform/p1-core/client/src/components/shared/cms-upload-dropzone";
 import { GalleryListPresentation } from "../../../../platform/p1-core/client/src/components/shared/cms-gallery-list-presentation";
+import { CmsPausedBanner, CMS_PAUSED_SHORT, useCmsEditingPaused } from "./useCmsEditingStatus";
 import React from "react";
 import {
   GalleryEditorPresentation,
@@ -80,11 +81,13 @@ function Editor({
   onClose,
   onCreated,
   canUseMedia,
+  cmsPaused,
 }: {
   id: string;
   onClose: () => void;
   onCreated: (id: string) => void;
   canUseMedia: boolean;
+  cmsPaused: boolean;
 }) {
   const [draft, setDraft] = useState<MarketingGalleryInput | null>(
       id === "new" ? blank : null,
@@ -176,6 +179,7 @@ function Editor({
     if (!dirty || confirm("Discard unsaved gallery changes?")) onClose();
   }
   async function run(action: () => Promise<MarketingGallery>) {
+    if (cmsPaused) return;
     setBusy(true);
     setError("");
     setNotice("");
@@ -214,6 +218,7 @@ function Editor({
   }
   return (
     <section className="gallery-manager">
+      <CmsPausedBanner paused={cmsPaused} />
       {error && <p role="alert">{error}</p>}
       {notice && <p role="status">{notice}</p>}
       <FormsMediaProvider canUseMedia={canUseMedia}>
@@ -229,10 +234,11 @@ function Editor({
           }}
           isNew={id === "new"}
           busy={busy}
+          mutationDisabledReason={cmsPaused ? CMS_PAUSED_SHORT : undefined}
           canUseMedia={canUseMedia}
           onBack={close}
           onSave={() => {
-            if (busy || !draft.title.trim()) return;
+            if (cmsPaused || busy || !draft.title.trim()) return;
             if (draft.items.some((item) => !item.imageUrl.trim())) {
               setError(
                 "Add an image URL or remove the empty image before saving.",
@@ -337,13 +343,17 @@ function Editor({
       {id !== "new" && (
         <div className="gallery-actions">
           <button
-            disabled={busy || dirty}
+            disabled={cmsPaused || busy || dirty}
+            aria-disabled={cmsPaused}
+            title={cmsPaused ? CMS_PAUSED_SHORT : undefined}
             onClick={() => void run(() => duplicateMarketingGallery(id))}
           >
             Duplicate saved gallery
           </button>
           <button
-            disabled={busy || dirty || draft.status === "published"}
+            disabled={cmsPaused || busy || dirty || draft.status === "published"}
+            aria-disabled={cmsPaused}
+            title={cmsPaused ? CMS_PAUSED_SHORT : undefined}
             onClick={() => {
               if (confirm("Publish this saved gallery?"))
                 void run(() => publishMarketingGallery(id));
@@ -352,7 +362,9 @@ function Editor({
             Publish saved gallery
           </button>
           <button
-            disabled={busy || dirty || draft.status !== "published"}
+            disabled={cmsPaused || busy || dirty || draft.status !== "published"}
+            aria-disabled={cmsPaused}
+            title={cmsPaused ? CMS_PAUSED_SHORT : undefined}
             onClick={() => {
               if (confirm("Unpublish this gallery?"))
                 void run(() => unpublishMarketingGallery(id));
@@ -361,7 +373,9 @@ function Editor({
             Unpublish gallery
           </button>
           <button
-            disabled={busy}
+            disabled={cmsPaused || busy}
+            aria-disabled={cmsPaused}
+            title={cmsPaused ? CMS_PAUSED_SHORT : undefined}
             onClick={async () => {
               if (
                 !confirm(
@@ -441,6 +455,7 @@ export default function GalleryManager({
 }: {
   canUseMedia: boolean;
 }) {
+  const cmsPaused = useCmsEditingPaused();
   const [initialIntent] = useState(() => readGalleryIntent(location.search));
   const [intentError, setIntentError] = useState(initialIntent.error);
   const [rows, setRows] = useState<MarketingGallery[]>([]),
@@ -493,16 +508,19 @@ export default function GalleryManager({
         onClose={() => select(null)}
         onCreated={select}
         canUseMedia={canUseMedia}
+        cmsPaused={cmsPaused}
       />
     );
   return (
     <section className="gallery-manager">
+      <CmsPausedBanner paused={cmsPaused} />
       {intentError && <p role="alert">{intentError}</p>}
       {error && <p role="alert">{error}</p>}
       <GalleryListPresentation
         galleries={rows}
         isLoading={loading}
         busy={listBusy}
+        mutationDisabledReason={cmsPaused ? CMS_PAUSED_SHORT : undefined}
         search={filters.search || ""}
         setSearch={(search) => setFilters({ ...filters, search })}
         status={filters.status || "all"}
@@ -524,7 +542,7 @@ export default function GalleryManager({
         }
         onSelect={select}
         onAction={async (id, action) => {
-          if (listBusy) return;
+          if (listBusy || cmsPaused) return;
           if (
             action !== "duplicate" &&
             !confirm(

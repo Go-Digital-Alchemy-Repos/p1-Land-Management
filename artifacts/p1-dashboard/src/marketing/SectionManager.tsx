@@ -23,11 +23,13 @@ import type {
 } from "../../../../lib/api-client-react/src/dashboard/models";
 import { useSectionReservation } from "./useSectionReservation";
 import { useCmsUnsavedChanges } from "./useCmsUnsavedChanges";
+import { CmsPausedBanner, CMS_PAUSED_SHORT, useCmsEditingPaused } from "./useCmsEditingStatus";
 import "./sections-presentation.css";
 import "./section-manager.css";
 type Access = {
   canUseMedia: boolean;
   canPreviewData?: (kind: BuilderPreviewKind) => boolean;
+  cmsPaused?: boolean;
 };
 const ui = {
   ...builderPrimitives,
@@ -95,6 +97,7 @@ function Editor({
   onCreated,
   canUseMedia,
   canPreviewData,
+  cmsPaused = false,
 }: Access & {
   id: string;
   onClose: () => void;
@@ -155,7 +158,7 @@ function Editor({
     );
   const blocks = draft.blocks ?? [];
   const editable = editableSectionBlocks(blocks);
-  const disabled = busy || !lock.owned;
+  const disabled = busy || !lock.owned || cmsPaused;
   const save = async () => {
     if (saving.current || disabled) return;
     if (!draft.name.trim()) {
@@ -262,6 +265,7 @@ function Editor({
   );
   return (
     <section className="cms-section-presentation">
+      <CmsPausedBanner paused={cmsPaused} />
       <SectionEditorPresentation
         isNew={id === "new"}
         name={draft.name}
@@ -453,6 +457,7 @@ export default function SectionManager({
   canUseMedia,
   canPreviewData,
 }: Access) {
+  const cmsPaused = useCmsEditingPaused();
   const [initialIntent] = useState(() => readSectionIntent(location.search));
   const [intentError, setIntentError] = useState(initialIntent.error);
   const [rows, setRows] = useState<MarketingSection[]>([]),
@@ -509,10 +514,12 @@ export default function SectionManager({
         onCreated={select}
         canUseMedia={canUseMedia}
         canPreviewData={canPreviewData}
+        cmsPaused={cmsPaused}
       />
     );
   return (
     <section className="cms-section-presentation">
+      <CmsPausedBanner paused={cmsPaused} />
       {intentError && <p role="alert">{intentError}</p>}
       {error && <p role="alert">{error}</p>}
       {notice && <p role="status">{notice}</p>}
@@ -525,6 +532,7 @@ export default function SectionManager({
         setCategoryFilter={setCategory}
         restoring={busy}
         busy={busy || !!deletingId}
+        mutationDisabledReason={cmsPaused ? CMS_PAUSED_SHORT : undefined}
         onEdit={select}
         onDelete={setDeletingId}
         ui={ui as unknown as SectionPrimitives}
@@ -536,6 +544,7 @@ export default function SectionManager({
           }).format(new Date(date))
         }
         onRestore={() => {
+          if (cmsPaused) return;
           if (
             !confirm(
               "Refresh the starter library? This overwrites starter sections and removes outdated starter records. Custom sections remain.",
@@ -555,7 +564,7 @@ export default function SectionManager({
             .finally(() => setBusy(false));
         }}
       />
-      {deletingId && (
+      {deletingId && !cmsPaused && (
         <DeleteSectionDialog
           id={deletingId}
           version={rows.find((row) => row.id === deletingId)?.version ?? 0}

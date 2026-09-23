@@ -48,10 +48,13 @@ const {
   pathToFileURL(path.join(root, "dist/server/entry-server.js")).href
 );
 const origin = process.env.P1_CORE_ORIGIN?.replace(/\/$/, "");
+const contentOverlayEnabled = process.env.P1_CMS_CONTENT_OVERLAY === "enabled";
+console.info(`cms.contentOverlay=${contentOverlayEnabled ? "enabled" : "disabled"}`);
 const content = createContentStore({
   manifest,
   origin,
   cacheDir: process.env.P1_CONTENT_CACHE_DIR,
+  overlayEnabled: contentOverlayEnabled,
 });
 const websiteIdentity = createWebsiteIdentityStore({
   origin,
@@ -148,6 +151,9 @@ const retiredRoutes = new Map([["/testimonials", "/contact"]]);
 // configured canonical host; Railway's generated service alias must not create
 // a second indexable copy of the site.
 const indexableDeployment = (() => {
+  // An explicit staging deployment stays on its own host for acceptance tests,
+  // even when it was built with the canonical public-site manifest.
+  if (process.env.P1_WEBSITE_STAGING === "enabled") return false;
   try {
     return new URL(manifest.origins?.publicSite).origin === canonical;
   } catch {
@@ -546,7 +552,7 @@ const server = http.createServer(async (req, res) => {
         "text/plain; charset=utf-8",
         "no-cache",
       );
-    if (url.searchParams.has("cmsPreview")) {
+    if (contentOverlayEnabled && url.searchParams.has("cmsPreview")) {
       res.setHeader("X-Robots-Tag", "noindex, nofollow");
       if (content.routes.has(pathname)) {
         // Only public preview documents may be framed by the consolidated editor.
@@ -633,7 +639,7 @@ const server = http.createServer(async (req, res) => {
       const [palette, fonts, markup] = await Promise.all([
         websiteColors.snapshot(),
         websiteFonts.snapshot(),
-        url.searchParams.has("cmsPreview") ? "" : headTags.snapshot(),
+        contentOverlayEnabled && url.searchParams.has("cmsPreview") ? "" : headTags.snapshot(),
       ]);
       return send(
         req,
@@ -644,7 +650,7 @@ const server = http.createServer(async (req, res) => {
           palette + fonts + markup,
         ),
         "text/html; charset=utf-8",
-        url.searchParams.has("cmsPreview") ? "private, no-store" : "no-cache",
+        contentOverlayEnabled && url.searchParams.has("cmsPreview") ? "private, no-store" : "no-cache",
       );
     }
     const file = path.resolve(publicDir, "." + pathname);

@@ -29,6 +29,7 @@ import type {
   WebsiteEditorReservation,
 } from "../../../../lib/api-client-react/src/dashboard/models";
 import "./cms-menus.css";
+import { CmsPausedBanner, CMS_PAUSED_SHORT, useCmsEditingPaused } from "./useCmsEditingStatus";
 
 type Item = WebsiteMenuItem;
 type Menu = WebsiteMenuInput & { id?: string; version?: number };
@@ -136,6 +137,7 @@ function removeItem(items: Item[], id: string): Item[] {
 }
 
 export default function CmsMenus() {
+  const cmsPaused = useCmsEditingPaused();
   const [menus, setMenus] = useState<Menu[]>([]),
     [references, setReferences] = useState<References>({
       pages: [],
@@ -277,7 +279,7 @@ export default function CmsMenus() {
     });
   };
   const save = () =>
-    perform(async () => {
+    cmsPaused ? Promise.resolve() : perform(async () => {
       if (!draft || (!draft.id && createUnconfirmed)) return;
       if (draft.id) {
         const current = await heartbeatWebsiteMenuReservation(draft.id, {
@@ -336,6 +338,7 @@ export default function CmsMenus() {
     });
   return (
     <div className="cms-menus">
+      <CmsPausedBanner paused={cmsPaused} />
       {!draft && (
         <header>
           <div>
@@ -345,7 +348,9 @@ export default function CmsMenus() {
             </p>
           </div>
           <button
-            disabled={busy || loading || Boolean(loadError) || createUnconfirmed}
+            disabled={cmsPaused || busy || loading || Boolean(loadError) || createUnconfirmed}
+            aria-disabled={cmsPaused}
+            title={cmsPaused ? CMS_PAUSED_SHORT : undefined}
             onClick={() => {
               if (!createUnconfirmed && discard()) {
                 const next = { name: "", location: "unassigned", items: [] };
@@ -373,7 +378,7 @@ export default function CmsMenus() {
             onManage={(location, id) => {
               const menu = menus.find((m) => m.id === id);
               if (menu) edit(menu);
-              else if (!createUnconfirmed && discard()) {
+              else if (!cmsPaused && !createUnconfirmed && discard()) {
                 setDraft({ name: locations[location], location, items: [] });
                 setBaseline("");
                 setError("");
@@ -441,9 +446,11 @@ export default function CmsMenus() {
                 locationLabel={locations[menu.location] || menu.location}
                 items={menu.items as MenuTreeItem[]}
                 disabled={busy}
+                deleteDisabledReason={cmsPaused ? CMS_PAUSED_SHORT : undefined}
                 editLabel={`Edit ${menu.name}`}
                 onEdit={() => edit(menu)}
                 onDelete={() => {
+                  if (cmsPaused) return;
                   if (
                     window.confirm(
                       `Delete ${menu.name}? This removes this CMS menu.`,
@@ -491,8 +498,10 @@ export default function CmsMenus() {
               <button
                 type="submit"
                 disabled={
-                  busy || locked || !dirty || (!draft.id && createUnconfirmed)
+                  cmsPaused || busy || locked || !dirty || (!draft.id && createUnconfirmed)
                 }
+                aria-disabled={cmsPaused}
+                title={cmsPaused ? CMS_PAUSED_SHORT : undefined}
               >
                 {busy ? "Saving…" : "Save website menu"}
               </button>
@@ -528,7 +537,7 @@ export default function CmsMenus() {
               </button>
             </p>
           )}
-          <fieldset disabled={busy || locked}>
+          <fieldset disabled={cmsPaused || busy || locked}>
             <div className="cms-menu-fields">
               <label>
                 Menu name

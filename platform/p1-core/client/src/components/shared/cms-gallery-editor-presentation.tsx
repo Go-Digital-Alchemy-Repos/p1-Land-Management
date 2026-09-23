@@ -39,6 +39,7 @@ export interface GalleryEditorPresentationProps {
   setDraft: (update: (current: GalleryDraft) => GalleryDraft) => void;
   isNew: boolean;
   busy: boolean;
+  mutationDisabledReason?: string;
   canUseMedia: boolean;
   onBack: () => void;
   onSave: () => void;
@@ -64,6 +65,7 @@ export function GalleryEditorPresentation({
   setDraft,
   isNew,
   busy,
+  mutationDisabledReason,
   canUseMedia,
   onBack,
   onSave,
@@ -159,7 +161,7 @@ export function GalleryEditorPresentation({
               <Monitor className="mr-2 h-4 w-4" />
               Preview Gallery
             </Button>
-            <Button onClick={onSave} disabled={busy || !title.trim()}>
+            <Button onClick={onSave} disabled={busy || !title.trim() || !!mutationDisabledReason} aria-disabled={!!mutationDisabledReason} title={mutationDisabledReason}>
               {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
               Save Gallery
             </Button>

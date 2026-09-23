@@ -43,6 +43,7 @@ import type {
 import { CmsRichTextEditor } from "./CmsRichTextEditor";
 import { MediaLibrary } from "./MediaLibrary";
 import { useCmsUnsavedChanges } from "./useCmsUnsavedChanges";
+import { CmsPausedBanner, CMS_PAUSED_SHORT, useCmsEditingPaused } from "./useCmsEditingStatus";
 import { useBlogReservation } from "./useBlogReservation";
 import "./blog-manager.css";
 import {
@@ -169,11 +170,13 @@ function PostEditor({
   canUseMedia,
   onClose,
   onCreated,
+  cmsPaused,
 }: {
   id: string;
   canUseMedia: boolean;
   onClose: () => void;
   onCreated: (id: string) => void;
+  cmsPaused: boolean;
 }) {
   const [form, setForm] = useState<BlogForm | null>(
       id === "new" ? { ...empty } : null,
@@ -210,7 +213,7 @@ function PostEditor({
     id === "new" || !publicationPost || requiresAdoption ? null : id,
   );
   const unavailable =
-    busy || uploading || blocked || requiresAdoption || !lock.owned;
+    cmsPaused || busy || uploading || blocked || requiresAdoption || !lock.owned;
   async function accept(post: MarketingBlogPublicationPost) {
     // Create/adopt grants a lease to the requesting instance. Release it before
     // the editor changes identity and acquires its normal mounted lease.
@@ -899,7 +902,9 @@ function PostEditor({
                 <PublicationButton
                   variant="outline"
                   type="button"
-                  disabled={busy || blocked || !reason.trim()}
+                  disabled={cmsPaused || busy || blocked || !reason.trim()}
+                  aria-disabled={cmsPaused}
+                  title={cmsPaused ? CMS_PAUSED_SHORT : undefined}
                   onClick={() => void adopt()}
                 >
                   Adopt legacy post
@@ -1086,7 +1091,7 @@ function PostEditor({
     </section>
   );
 }
-function BlogPosts({ canUseMedia = false }: { canUseMedia?: boolean }) {
+function BlogPosts({ canUseMedia = false, cmsPaused }: { canUseMedia?: boolean; cmsPaused: boolean }) {
   const [posts, setPosts] = useState<MarketingBlogPublicationPost[]>([]),
     [editing, setEditing] = useState<string | null>(() =>
       new URLSearchParams(location.search).get("post"),
@@ -1123,6 +1128,7 @@ function BlogPosts({ canUseMedia = false }: { canUseMedia?: boolean }) {
         key={editing}
         id={editing}
         canUseMedia={canUseMedia}
+        cmsPaused={cmsPaused}
         onClose={() => select(null)}
         onCreated={select}
       />
@@ -1142,7 +1148,7 @@ function BlogPosts({ canUseMedia = false }: { canUseMedia?: boolean }) {
         editor.
       </p>
       {error && <p role="alert">{error}</p>}
-      <button type="button" onClick={() => select("new")}>
+      <button type="button" disabled={cmsPaused} aria-disabled={cmsPaused} title={cmsPaused ? CMS_PAUSED_SHORT : undefined} onClick={() => select("new")}>
         New post
       </button>
       <div className="blog-fields">
@@ -1202,6 +1208,7 @@ const blogToolTabs = {
   settings: "Comment settings",
 } as const;
 export default function BlogManager({ canUseMedia }: { canUseMedia: boolean }) {
+  const cmsPaused = useCmsEditingPaused();
   const [tab, setTab] = useState<string>(() => {
     const key = new URLSearchParams(location.search).get("tab") || "posts";
     return Object.prototype.hasOwnProperty.call(blogToolTabs, key)
@@ -1209,6 +1216,7 @@ export default function BlogManager({ canUseMedia }: { canUseMedia: boolean }) {
   });
   return (
     <div className="blog-manager">
+      <CmsPausedBanner paused={cmsPaused} />
       {tab !== "Posts" && <h1>Blog</h1>}
       <nav aria-label="Blog tools">
         {["Posts", "Categories and tags", "Comments", "Comment settings"].map(
@@ -1238,7 +1246,7 @@ export default function BlogManager({ canUseMedia }: { canUseMedia: boolean }) {
         )}
       </nav>
       {tab === "Posts" ? (
-        <BlogPosts canUseMedia={canUseMedia} />
+        <BlogPosts canUseMedia={canUseMedia} cmsPaused={cmsPaused} />
       ) : tab === "Categories and tags" ? (
         <BlogTaxonomies />
       ) : tab === "Comments" ? (

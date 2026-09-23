@@ -27,6 +27,7 @@ export function StructuredWebsiteEditorPresentation({
   busy = false,
   saveDisabled = false,
   publishDisabled = false,
+  mutationDisabledReason,
   preview,
   toolbar,
   fieldTools,
@@ -48,6 +49,7 @@ export function StructuredWebsiteEditorPresentation({
   busy?: boolean;
   saveDisabled?: boolean;
   publishDisabled?: boolean;
+  mutationDisabledReason?: string;
   preview: ReactNode;
   toolbar?: ReactNode;
   fieldTools?: ReactNode;
@@ -127,14 +129,16 @@ export function StructuredWebsiteEditorPresentation({
                     );
                   })}
                   <div className="flex gap-2 flex-wrap">
-                    <Button type="submit" disabled={busy || saveDisabled}>
+                    <Button type="submit" disabled={busy || saveDisabled || !!mutationDisabledReason} aria-disabled={!!mutationDisabledReason} title={mutationDisabledReason}>
                       Save draft
                     </Button>
                     <Button
                       type="button"
                       variant="outline"
                       onClick={onPublish}
-                      disabled={busy || publishDisabled}
+                      disabled={busy || publishDisabled || !!mutationDisabledReason}
+                      aria-disabled={!!mutationDisabledReason}
+                      title={mutationDisabledReason}
                     >
                       Publish
                     </Button>
@@ -165,7 +169,9 @@ export function StructuredWebsiteEditorPresentation({
                       variant="ghost"
                       aria-label={`Restore r${revision.revision}`}
                       onClick={() => onRestore(revision.revision)}
-                      disabled={busy}
+                      disabled={busy || !!mutationDisabledReason}
+                      aria-disabled={!!mutationDisabledReason}
+                      title={mutationDisabledReason}
                     >
                       Restore
                     </Button>
