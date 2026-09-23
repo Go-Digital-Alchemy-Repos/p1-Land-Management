@@ -6,7 +6,7 @@
     "displayName": "P1 Land & Property Management",
     "source": {
       "repository": "https://github.com/Go-Digital-Alchemy-Repos/p1-Land-Management.git",
-      "revision": "18f4aeab69f69c563320dbcfba33cc155c4cf721"
+      "revision": "ca874a7b501ec732bbadfa993c1ef5959f9fe39c"
     },
     "owners": [
       {
@@ -14246,8 +14246,8 @@
             "maxLength": 12000
           },
           {
-            "path": "fct718z",
-            "label": "Image: /assets/grading-drainage-1280-DnvwKFBi.webp",
+            "path": "fde9nlh",
+            "label": "Image: /assets/grading-drainage-1280-BDJ_zb_K.webp",
             "type": "image",
             "required": false,
             "maxLength": 2000
@@ -14537,7 +14537,7 @@
           "f177cd9e": "Agricultural field leveling — improving drainage and accessibility for farm use",
           "f1bxzgd8": "Grading for Drainage",
           "fgvlevs": "Water follows the slope of the land. When that slope sends runoff toward a building or low spot, regrading may be part of the repair. We consider water movement when shaping slopes, swales, and transitions.",
-          "fct718z": "/assets/grading-drainage-1280-DnvwKFBi.webp",
+          "fde9nlh": "/assets/grading-drainage-1280-BDJ_zb_K.webp",
           "f9umvkm": "Graded swale channeling water across a property",
           "fp5z1kp": "Grading for Turf Establishment",
           "ff20t5y": "Good turf starts with well-prepared ground. We check the grade, drainage, and soil before planting, then explain the watering and care needed while the grass takes root.",
