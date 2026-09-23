@@ -82,6 +82,7 @@ function AgreementWorkspace({
     } | null>(null),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
+    [detailFailure, setDetailFailure] = useState<{ id: string; message: string } | null>(null),
     [queueRevision, setQueueRevision] = useState(0),
     [online, setOnline] = useState(navigator.onLine);
   const [childBusy, setChildBusy] = useState(false);
@@ -92,7 +93,8 @@ function AgreementWorkspace({
     setChildBusy(value);
   }
   const pending = useRef(false),
-    generation = useRef(0);
+    generation = useRef(0),
+    lastRouteAttempt = useRef<string | undefined>(undefined);
   useEffect(() => {
     const update = () => setOnline(navigator.onLine);
     window.addEventListener("online", update);
@@ -150,15 +152,31 @@ function AgreementWorkspace({
     };
   }, [role]);
   useEffect(() => {
-    if (selectedAgreementId && selectedAgreementId !== selected?.id && !busy) {
+    if (!selectedAgreementId) {
+      lastRouteAttempt.current = undefined;
+      setDetailFailure(null);
+      return;
+    }
+    if (
+      selectedAgreementId !== selected?.id &&
+      lastRouteAttempt.current !== selectedAgreementId &&
+      !busy &&
+      !childBusy &&
+      !pending.current &&
+      !childPending.current
+    ) {
+      // A failed deep link waits for an explicit retry instead of refetching on every busy change.
+      lastRouteAttempt.current = selectedAgreementId;
+      setSelected(null);
+      setEditor(null);
       void open(selectedAgreementId);
     }
-  }, [selectedAgreementId, selected?.id, busy]);
+  }, [selectedAgreementId, selected?.id, busy, childBusy]);
   async function open(id: string) {
     if (pending.current || childPending.current) return;
     pending.current = true;
     setBusy(true);
-    setError("");
+    setDetailFailure(null);
     const n = ++generation.current;
     try {
       const row = await getServiceAgreement(id);
@@ -167,7 +185,8 @@ function AgreementWorkspace({
         setEditor(null);
       }
     } catch (e) {
-      if (n === generation.current) setError((e as Error).message);
+      if (n === generation.current)
+        setDetailFailure({ id, message: (e as Error).message });
     } finally {
       if (n === generation.current) {
         pending.current = false;
@@ -195,6 +214,7 @@ function AgreementWorkspace({
         </div>
         <div className="agreement-actions">
           <button
+            className="secondary"
             disabled={busy || childBusy || !!editor || !online}
             onClick={() => void load()}
           >
@@ -202,6 +222,7 @@ function AgreementWorkspace({
           </button>
           {manage && (
             <button
+              className="primary"
               disabled={busy || childBusy || !!editor || !online}
               onClick={() => setEditor({})}
             >
@@ -236,7 +257,7 @@ function AgreementWorkspace({
             <div className="agreement-columns">
               <div className="agreement-list">
                 <h3>Agreements</h3>
-                {!busy && !rows.length && (
+                {!busy && !error && !selectedAgreementId && !rows.length && (
                   <p>No service agreements have been recorded.</p>
                 )}
                 {rows.map((row) => (
@@ -276,6 +297,15 @@ function AgreementWorkspace({
                   onRenew={(a) => setEditor({ predecessor: a })}
                   onReload={() => void open(selected.id)}
                 />
+              ) : detailFailure ? (
+                <div>
+                  <p role="alert" className="error">
+                    Could not load this agreement: {detailFailure.message}
+                  </p>
+                  <button disabled={busy} onClick={() => void open(detailFailure.id)}>
+                    Retry agreement details
+                  </button>
+                </div>
               ) : (
                 <p>Select an agreement to review its terms.</p>
               )}

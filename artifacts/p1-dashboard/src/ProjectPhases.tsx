@@ -55,6 +55,11 @@ export function ProjectPhases({
 }) {
   const [projectId, setProjectId] = useState("");
   const [phases, setPhases] = useState<Phase[]>([]);
+  const [phaseLoad, setPhaseLoad] = useState<{
+    projectId: string;
+    status: "idle" | "loading" | "ready" | "error";
+    message?: string;
+  }>({ projectId: "", status: "idle" });
   const [busy, setBusy] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
   const [title, setTitle] = useState("");
@@ -64,6 +69,8 @@ export function ProjectPhases({
   const [amount, setAmount] = useState("");
   const [billingTitle, setBillingTitle] = useState("");
   const [overrides, setOverrides] = useState<Record<string, string>>({});
+  const [publishingPhase, setPublishingPhase] = useState<string | null>(null);
+  const [publishSummary, setPublishSummary] = useState("");
   const [billingAttempt, setBillingAttempt] = useState<{
     phaseId: string;
     body: ProjectPhaseBillingIntentInput;
@@ -93,13 +100,23 @@ export function ProjectPhases({
     const sequence = ++loadSequence.current;
     if (!value) {
       setPhases([]);
+      setPhaseLoad({ projectId: "", status: "idle" });
       return;
     }
+    setPhaseLoad({ projectId: value, status: "loading" });
     try {
       const rows = await api(`/projects/${value}/phases`);
-      if (sequence === loadSequence.current) setPhases(rows);
+      if (sequence === loadSequence.current) {
+        setPhases(rows);
+        setPhaseLoad({ projectId: value, status: "ready" });
+      }
     } catch (error) {
-      if (sequence === loadSequence.current) onError((error as Error).message);
+      if (sequence === loadSequence.current)
+        setPhaseLoad({
+          projectId: value,
+          status: "error",
+          message: (error as Error).message,
+        });
     }
   };
   useEffect(() => {
@@ -135,7 +152,11 @@ export function ProjectPhases({
         {canManage && (
           <button
             className="secondary"
-            disabled={!projectId || busy}
+            disabled={
+              !projectId || busy ||
+              phaseLoad.projectId !== projectId ||
+              phaseLoad.status !== "ready"
+            }
             onClick={() => setShowCreate((value) => !value)}
           >
             Add phase
@@ -160,6 +181,8 @@ export function ProjectPhases({
                 setBillingPhase(null);
                 setEstimateId("");
                 setBillingAllocation(null);
+                setPublishingPhase(null);
+                setPublishSummary("");
                 setProjectId(event.target.value);
               }}
             >
@@ -208,7 +231,18 @@ export function ProjectPhases({
               </button>
             </div>
           )}
-          <div className="phase-list">
+          {phaseLoad.projectId === projectId && phaseLoad.status === "loading" && (
+            <p role="status" className="muted">Loading project phases…</p>
+          )}
+          {phaseLoad.projectId === projectId && phaseLoad.status === "error" && (
+            <div role="alert" className="error">
+              Project phases could not be loaded. {phaseLoad.message}{" "}
+              <button type="button" onClick={() => void load()}>
+                Retry loading phases
+              </button>
+            </div>
+          )}
+          {phaseLoad.projectId === projectId && phaseLoad.status === "ready" && <div className="phase-list">
             {phases.map((phase) => {
               const target = next[phase.status];
               const needsOverride = Boolean(
@@ -281,20 +315,17 @@ export function ProjectPhases({
                         <button
                           className="secondary"
                           disabled={busy}
-                          onClick={() =>
-                            void run(() =>
-                              api(`/project-phases/${phase.id}/publish`, {
-                                expectedVersion: phase.version,
-                                summary:
-                                  phase.published_summary ||
-                                  `P1 has reviewed the ${phase.title} phase.`,
-                              }),
-                            )
-                          }
+                          onClick={() => {
+                            setPublishingPhase(phase.id);
+                            setPublishSummary(
+                              phase.published_summary ||
+                                `P1 has reviewed the ${phase.title} phase.`,
+                            );
+                          }}
                         >
                           {phase.published_at
                             ? "Update client note"
-                            : "Publish client note"}
+                            : "Review client note"}
                         </button>
                       )}
                     {canBill && phase.status === "accepted" && (
@@ -314,6 +345,52 @@ export function ProjectPhases({
                       </button>
                     )}
                   </div>
+                  {canManage && publishingPhase === phase.id && (
+                    <form
+                      className="phase-form"
+                      onSubmit={(event) => {
+                        event.preventDefault();
+                        const summary = publishSummary.trim();
+                        if (!summary) return;
+                        void run(async () => {
+                          await api(`/project-phases/${phase.id}/publish`, {
+                            expectedVersion: phase.version,
+                            summary,
+                          });
+                          setPublishingPhase(null);
+                          setPublishSummary("");
+                        });
+                      }}
+                    >
+                      <label style={{ gridColumn: "1 / -1" }}>
+                        Client-visible update for {phase.title}
+                        <textarea
+                          value={publishSummary}
+                          onChange={(event) => setPublishSummary(event.target.value)}
+                          maxLength={10000}
+                          rows={4}
+                          required
+                          disabled={busy}
+                        />
+                      </label>
+                      <p className="muted" style={{ gridColumn: "1 / -1" }}>
+                        Review the exact text before making it visible to the client.
+                      </p>
+                      <button className="primary" type="submit" disabled={busy || !publishSummary.trim()}>
+                        {phase.published_at ? "Save published note" : "Publish client note"}
+                      </button>
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() => {
+                          setPublishingPhase(null);
+                          setPublishSummary("");
+                        }}
+                      >
+                        Cancel
+                      </button>
+                    </form>
+                  )}
                   {billingPhase === phase.id && (
                     <div className="phase-form billing-form">
                       <fieldset disabled={busy || Boolean(billingAttempt)}>
@@ -458,7 +535,7 @@ export function ProjectPhases({
                 notes remain unchanged.
               </p>
             )}
-          </div>
+          </div>}
         </>
       )}
     </section>

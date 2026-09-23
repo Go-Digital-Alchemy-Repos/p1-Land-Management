@@ -402,6 +402,8 @@ function App() {
   const [billingOperationId, setBillingOperationId] = useState(() =>
     crypto.randomUUID(),
   );
+  const [billingReviewId, setBillingReviewId] = useState<string | null>(null);
+  const [billingPosting, setBillingPosting] = useState(false);
   const [person, setPerson] = useState<Person | null>(null),
     [boot, setBoot] = useState<any>(null),
     [loading, setLoading] = useState(true),
@@ -417,6 +419,7 @@ function App() {
     [routeMissing, setRouteMissing] = useState(initialRoute.kind === "not-found"),
     [inquiryRevision, setInquiryRevision] = useState(0),
     [data, setData] = useState<any>({}),
+    [dataLoadStatus, setDataLoadStatus] = useState<"loading" | "ready" | "failed">("loading"),
     [form, setForm] = useState<string | null>(null),
     [selected, setSelected] = useState<any>(null),
     [isOnline, setOnline] = useState(navigator.onLine),
@@ -531,6 +534,7 @@ function App() {
     const generation = ++refreshGeneration.current;
     if (!person?.role || person.mfaRequired) { setData({}); return; }
     setError("");
+    setDataLoadStatus("loading");
     try {
       const savedDay = await offline.readDay(person.id);
       setDownloadedAt(savedDay?.savedAt || null);
@@ -541,7 +545,10 @@ function App() {
       );
       if (!navigator.onLine) {
         const day = await offline.readDay(person.id);
-        if (generation === refreshGeneration.current) setData({ work: dataLoadPlan(person).paths.includes("work-orders") ? day?.data || [] : [], savedAt: day?.savedAt });
+        if (generation === refreshGeneration.current) {
+          setData({ work: dataLoadPlan(person).paths.includes("work-orders") ? day?.data || [] : [], savedAt: day?.savedAt });
+          setDataLoadStatus("ready");
+        }
         return;
       }
       const { paths, references } = dataLoadPlan(person);
@@ -569,7 +576,10 @@ function App() {
           );
         }
       }
-      if (generation === refreshGeneration.current) setData({ ...d, work });
+      if (generation === refreshGeneration.current) {
+        setData({ ...d, work });
+        setDataLoadStatus("ready");
+      }
     } catch (e) {
       if (generation !== refreshGeneration.current) return;
       if (view === "My Day" && person.role !== "client" && dataLoadPlan(person).paths.includes("work-orders") && isTransientRefreshFailure(e)) {
@@ -579,6 +589,7 @@ function App() {
         setData(day ? { work: day.data, savedAt: day.savedAt } : {});
         if (day) setNotice("Using downloaded assignments while the server is unavailable. Pending entries remain on this device.");
       } else setData({});
+      setDataLoadStatus("failed");
       setError((e as Error).message);
     }
   }
@@ -2295,6 +2306,9 @@ function App() {
           )}
           {view === "Billing" && (
             <section className="panel">
+              {!isOnline && <p role="status">Connect to review current billing records.</p>}
+              {dataLoadStatus === "loading" && <p role="status">Loading billing records…</p>}
+              {dataLoadStatus === "failed" && <button type="button" className="secondary" onClick={() => void refresh()}>Retry billing records</button>}
               <div className="panel-heading">
                 <h2>{can("revenue.billing") ? "Billing drafts & invoices" : "Your invoices"}</h2>
                 {can("revenue.billing") && (
@@ -2332,23 +2346,42 @@ function App() {
                   )}
                   {can("revenue.billing") && b.status !== "posted" && (
                     <button
-                      onClick={() =>
-                        void run(async () => {
-                          await api("/billing/" + b.id + "/post", {});
-                          await refresh();
-                        })
-                      }
+                      disabled={billingPosting || dataLoadStatus !== "ready"}
+                      onClick={() => setBillingReviewId(b.id)}
                     >
-                      Post to QuickBooks
+                      Review QuickBooks posting
                     </button>
                   )}
                   {b.payment_url && (
-                    <a href={b.payment_url} target="_blank" rel="noreferrer">
+                    <a href={b.payment_url} target="_blank" rel="noreferrer" aria-label={`Pay invoice for ${b.title}`}>
                       Pay invoice
                     </a>
                   )}
                 </div>
               ))}
+              {can("revenue.billing") && billingReviewId && (() => {
+                const draft = (data.billing || []).find((entry: any) => entry.id === billingReviewId && entry.status !== "posted");
+                return draft ? <div className="phase-form" role="group" aria-label="Review QuickBooks posting">
+                  <h3>Review before posting</h3>
+                  <p><strong>{draft.title}</strong> · {draft.property_name} · {money(draft.amount_cents)}</p>
+                  <p>This sends the billing draft to QuickBooks. Check the client, property, and amount before continuing.</p>
+                  <div className="heading-actions">
+                    <button type="button" className="secondary" disabled={billingPosting} onClick={() => setBillingReviewId(null)}>Cancel</button>
+                    <button type="button" className="primary" disabled={billingPosting || dataLoadStatus !== "ready"} onClick={() => {
+                      setBillingPosting(true);
+                      void run(async () => {
+                        try {
+                          await api("/billing/" + draft.id + "/post", {});
+                          setBillingReviewId(null);
+                          await refresh();
+                        } finally {
+                          setBillingPosting(false);
+                        }
+                      });
+                    }}>{billingPosting ? "Posting…" : "Post to QuickBooks"}</button>
+                  </div>
+                </div> : null;
+              })()}
               {(data["quickbooks/invoices"] || []).map((invoice: any) => (
                 <div className="schedule-row" key={"qbo-" + invoice.id}>
                   <div>
@@ -2368,13 +2401,14 @@ function App() {
                       href={invoice.payment_url}
                       target="_blank"
                       rel="noreferrer"
+                      aria-label={`Pay invoice ${invoice.document_number || invoice.id}`}
                     >
                       Pay invoice
                     </a>
                   )}
                 </div>
               ))}
-              {!data.billing?.length &&
+              {isOnline && dataLoadStatus === "ready" && !data.billing?.length &&
                 !data["quickbooks/invoices"]?.length && (
                   <Empty
                     title="Billing, connected to the work"
@@ -2419,17 +2453,18 @@ function App() {
             <InspectionReports
               inspections={data.inspections || []}
               canPublish={can("operations.inspections")}
-              onPublish={(id) =>
-                void run(async () => {
-                  await api("/inspections/" + id + "/publish", {});
-                  await refresh();
-                })
-              }
+              onPublish={async (id) => {
+                await api("/inspections/" + id + "/publish", {});
+                await refresh();
+              }}
             />
           )}
           {view === "Expenses" && (
             <section className="panel">
-              <Table
+              {!isOnline && <p role="status">Connect to review current expenses.</p>}
+              {dataLoadStatus === "loading" && <p role="status">Loading expenses…</p>}
+              {dataLoadStatus === "failed" && <button type="button" className="secondary" onClick={() => void refresh()}>Retry expenses</button>}
+              {isOnline && dataLoadStatus === "ready" && <Table
                 rows={(data.expenses || []).map((e: any) => ({
                   ...e,
                   amount: money(e.amount_cents),
@@ -2442,7 +2477,7 @@ function App() {
                   "incurred_on",
                 ]}
                 empty="No expenses yet."
-              />
+              />}
             </section>
           )}
           {view === "Requests" && (
