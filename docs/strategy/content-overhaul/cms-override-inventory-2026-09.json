@@ -15530,5 +15530,23 @@
   "ownerDecisions": {
     "status": "pending",
     "decisions": []
+  },
+  "stagingPauseVerification": {
+    "websiteDeploymentId": "597976de-d332-4c4c-8dff-283755c562d3",
+    "overlay": "disabled",
+    "stagingHostNoindex": true,
+    "routeSnapshots": {
+      "checked": 54,
+      "http200": 54,
+      "overlayDisabled": 54,
+      "revisionZero": 54
+    },
+    "sampleHtmlPathsHttp200": [
+      "/",
+      "/about",
+      "/contact",
+      "/services/commercial-landscaping"
+    ],
+    "knownStagingLimitation": "Blog HTML returns 503 because the older staging Core lacks the blog publication endpoint; the overlay flag does not control this projection."
   }
 }
