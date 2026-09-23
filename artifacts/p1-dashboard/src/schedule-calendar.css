@@ -91,6 +91,7 @@
   overflow-wrap: anywhere;
 }
 .recurring-calendar-empty { background: hsl(var(--muted)); border: 1px solid hsl(var(--border)); border-radius: var(--radius-md); color: hsl(var(--muted-foreground)); line-height: 1.5; margin: .5rem 1rem 1rem; padding: 1.25rem; }
+.recurring-agenda { display: none; }
 .recurring-calendar-job span,
 .recurring-calendar-job small {
   color: hsl(var(--foreground));
@@ -120,6 +121,12 @@
   .calendar-days.month {
     grid-template-columns: repeat(7, minmax(96px, 1fr));
   }
+  .calendar-days.month.recurring-calendar-days { display: none; }
+  .recurring-agenda { display: grid; gap: 12px; padding: 16px; }
+  .recurring-agenda-day { display: grid; gap: 8px; border: 1px solid hsl(var(--border)); border-radius: var(--radius-cards); padding: 14px; background: hsl(var(--card)); }
+  .recurring-agenda-day h3 { margin: 0; font-size: 14px; }
+  .recurring-agenda-day article { display: grid; gap: 4px; padding-top: 8px; border-top: 1px solid hsl(var(--border)); }
+  .recurring-agenda-day article span { color: hsl(var(--muted-foreground)); font-size: 12px; }
   .calendar-day {
     min-height: 90px;
   }

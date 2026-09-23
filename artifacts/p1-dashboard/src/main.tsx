@@ -18,6 +18,7 @@ import { OwnerMfaRecovery } from "./OwnerMfaRecovery";
 import { PropertyFiles } from "./PropertyFiles";
 import { ScheduleCalendar } from "./ScheduleCalendar";
 import { RecurringCalendar } from "./RecurringCalendar";
+import { RecurringServiceCards } from "./RecurringServiceCards";
 import { scheduleDateTime } from "./schedule-dates";
 import { AssessmentAvailability } from "./AssessmentAvailability";
 import { ClientContacts } from "./ClientContacts";
@@ -2419,8 +2420,13 @@ function App() {
           )}
           {view === "Recurring" && (
             <>
+              {!isOnline && <p role="status">Connect to review current recurring services.</p>}
+              {dataLoadStatus === "loading" && <p role="status">Loading recurring services…</p>}
+              {dataLoadStatus === "failed" && <button type="button" className="secondary" onClick={() => void refresh()}>Retry recurring services</button>}
+              {isOnline && dataLoadStatus === "ready" && <>
               <RecurringCalendar jobs={data["recurring-jobs"] || []} />
               {Boolean(data["recurring-jobs"]?.length) && <section className="panel">
+                <div className="recurring-desktop-list">
                 <Table
                   rows={(data["recurring-jobs"] || []).map((job: any) => ({
                     ...job,
@@ -2441,9 +2447,12 @@ function App() {
                   ]}
                   empty="No recurring services yet."
                 />
+                </div>
+                <RecurringServiceCards jobs={data["recurring-jobs"] || []} canActivate={canManageServiceAgreements(person)} onActivate={(job) => openForm("activate-recurring", job)} />
                 <p>Visit allowances include reserved work and charged visits. Cancelled or skipped visits release a slot only when uncharged. Blank counts indicate a service without a per-visit allowance for its next date.</p>
-                {canManageServiceAgreements(person) && (data["recurring-jobs"] || []).filter((item: any) => item.paused && item.agreement_status === "draft").map((item: any) => <button key={item.id} onClick={() => openForm("activate-recurring", item)}>Schedule and activate {item.title}</button>)}
+                <div className="recurring-desktop-list">{canManageServiceAgreements(person) && (data["recurring-jobs"] || []).filter((item: any) => item.paused && item.agreement_status === "draft").map((item: any) => <button key={item.id} onClick={() => openForm("activate-recurring", item)}>Schedule and activate {item.title}</button>)}</div>
               </section>}
+              </>}
             </>
           )}
           {view === "Projects" && (

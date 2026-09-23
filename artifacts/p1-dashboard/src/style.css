@@ -1840,12 +1840,27 @@ td { padding: 16px var(--atlas-surface-inset); }
 .billing-form > fieldset > label:first-of-type,.billing-form > fieldset > section,.billing-form > p { grid-column: 1 / -1; }
 .phase-override { display: grid; gap: 6px; padding: 10px; border-left: 3px solid hsl(var(--warning)); background: hsl(var(--warning-surface)); color: hsl(var(--warning)); font-size: 12px; font-weight: 700; }
 .warning { color: hsl(var(--warning)); font-weight: 700; }
+.recurring-mobile-list { display: none; }
 
 @media (max-width: 900px) {
   .account-overview,.notes-layout { grid-template-columns: 1fr; }
   .property-overview > .account-primary-column,.property-context-rail { grid-column: auto; grid-row: auto; }
   .context-rail { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .atlas-stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 700px) {
+  .recurring-desktop-list { display: none; }
+  .recurring-mobile-list { display: grid; gap: 10px; padding: 16px; }
+  .recurring-service-card { border: 1px solid hsl(var(--border)); border-radius: var(--radius-cards); background: hsl(var(--card)); }
+  .recurring-service-card summary { display: grid; gap: 5px; min-height: 64px; padding: 14px 18px; cursor: pointer; }
+  .recurring-service-card summary:focus-visible { outline: 3px solid hsl(var(--primary)); outline-offset: 2px; }
+  .recurring-service-card summary span, .recurring-service-card summary small { color: hsl(var(--muted-foreground)); }
+  .recurring-service-card dl { display: grid; gap: 8px; margin: 0; padding: 0 18px 14px; }
+  .recurring-service-card dl div { display: flex; justify-content: space-between; gap: 16px; }
+  .recurring-service-card dt { color: hsl(var(--muted-foreground)); }
+  .recurring-service-card dd { margin: 0; text-align: right; overflow-wrap: anywhere; }
+  .recurring-service-card details > button { width: calc(100% - 36px); margin: 0 18px 18px; }
 }
 @media (max-width: 700px) {
   .client-contacts-intro,
