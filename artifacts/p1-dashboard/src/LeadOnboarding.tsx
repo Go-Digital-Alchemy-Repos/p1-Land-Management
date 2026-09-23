@@ -57,6 +57,7 @@ function OnboardingForm({
     [error, setError] = useState(""),
     [message, setMessage] = useState(""),
     [pending, setPending] = useState<Input | null>(null),
+    [reviewing, setReviewing] = useState(false),
     [stale, setStale] = useState(false);
   const alive = useRef(true),
     gate = useRef(false),
@@ -151,6 +152,7 @@ function OnboardingForm({
         setName("");
         setEmail("");
         setPhone("");
+        setReviewing(false);
         setState({
           ...state,
           clientId: result.clientId,
@@ -226,15 +228,17 @@ function OnboardingForm({
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              void save();
+              if (reviewing) void save();
+              else setReviewing(true);
             }}
           >
-            <fieldset disabled={busy || Boolean(pending) || stale}>
+            <fieldset disabled={busy || Boolean(pending) || stale || reviewing}>
               <legend>Customer selection</legend>
               <label>
                 Onboarding choice
                 <select value={mode} onChange={(e) => {
                   setMode(e.target.value);
+                  setReviewing(false);
                 }}>
                   <option value="link">Link an existing customer</option>
                   <option value="create">Create a new customer</option>
@@ -246,7 +250,7 @@ function OnboardingForm({
                   <select
                     required
                     value={clientId}
-                    onChange={(e) => setClientId(e.target.value)}
+                    onChange={(e) => { setClientId(e.target.value); setReviewing(false); }}
                   >
                     <option value="">Choose a customer</option>
                     {clients.map((c) => (
@@ -268,7 +272,7 @@ function OnboardingForm({
                       required
                       maxLength={300}
                       value={name}
-                      onChange={(e) => setName(e.target.value)}
+                      onChange={(e) => { setName(e.target.value); setReviewing(false); }}
                     />
                   </label>
                   <label>
@@ -277,7 +281,7 @@ function OnboardingForm({
                       type="email"
                       maxLength={320}
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      onChange={(e) => { setEmail(e.target.value); setReviewing(false); }}
                     />
                   </label>
                   <label>
@@ -285,16 +289,18 @@ function OnboardingForm({
                     <input
                       maxLength={100}
                       value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
+                      onChange={(e) => { setPhone(e.target.value); setReviewing(false); }}
                     />
                   </label>
                 </>
               )}
             </fieldset>
-            <p>
-              Review the customer choice before saving. Property setup, portal
-              invitations and accounting connections are separate steps.
-            </p>
+            {reviewing ? <section aria-label="Review customer handoff" className="lead-onboarding-review">
+              <h4>Confirm this customer handoff</h4>
+              <p>{mode === "link" ? "Link the existing customer" : "Create and link a new customer"}: <strong>{mode === "link" ? clients.find((client) => client.id === clientId)?.name : name.trim()}</strong></p>
+              {mode === "create" && <p>Contact: {email.trim() || "No email"} · {phone.trim() || "No phone"}</p>}
+              <p>The original inquiry remains in Sales. Property setup, portal invitations and accounting connections are separate steps.</p>
+            </section> : <p>Review the customer choice before saving. Property setup, portal invitations and accounting connections are separate steps.</p>}
             <button
               type="submit"
               disabled={
@@ -307,12 +313,12 @@ function OnboardingForm({
                 ? "Saving…"
                 : pending
                   ? "Retry customer onboarding"
-                  : mode === "link"
-                    ? "Link customer"
-                    : "Create and link customer"}
+                  : reviewing
+                    ? mode === "link" ? "Confirm customer link" : "Confirm new customer"
+                    : "Review handoff"}
             </button>
-            <button type="button" className="secondary" disabled={busy || Boolean(pending)} onClick={onClose}>
-              Cancel handoff
+            <button type="button" className="secondary" disabled={busy || Boolean(pending)} onClick={reviewing ? () => setReviewing(false) : onClose}>
+              {reviewing ? "Edit choice" : "Cancel handoff"}
             </button>
           </form>
         )

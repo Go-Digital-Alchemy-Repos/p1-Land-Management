@@ -430,6 +430,13 @@ function App() {
   const [propertySearch, setPropertySearch] = useState("");
   const [propertyTypeFilter, setPropertyTypeFilter] = useState("");
   const [propertySort, setPropertySort] = useState<"name" | "type">("name");
+  const sharedDataRequired = [
+    "Overview", "Properties", "Clients", "My Day", "Schedule", "Sales",
+    "Billing", "Recurring", "Projects", "Inspections", "Expenses", "Requests",
+  ].includes(view) || (view === "Settings" && ["integrations", "term-libraries"].includes(settingsSection));
+  const workspaceDataGate = !isOnline && (view !== "My Day" || !data.savedAt)
+    ? "offline"
+    : dataLoadStatus;
   const [authMode, setAuthMode] = useState("login"),
     [mfa, setMfa] = useState<any>(null);
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -1735,6 +1742,18 @@ function App() {
                   Return to workspace
                 </button>
               </div>
+            </section>
+          ) : sharedDataRequired && workspaceDataGate !== "ready" ? (
+            <section className="panel" aria-label="Workspace records">
+              <h2>{workspaceDataGate === "loading" ? "Loading workspace records" : "Workspace records are unavailable"}</h2>
+              <p role={workspaceDataGate === "loading" ? "status" : undefined}>
+                {workspaceDataGate === "offline"
+                  ? "Reconnect to verify current records for this workspace."
+                  : workspaceDataGate === "loading"
+                    ? "Checking the latest records for this workspace."
+                    : "The records could not be verified. Retry before making a decision from this screen."}
+              </p>
+              {workspaceDataGate === "failed" && <button type="button" onClick={() => void refresh()}>Retry workspace records</button>}
             </section>
           ) : <>
           {view === "Profile" && (

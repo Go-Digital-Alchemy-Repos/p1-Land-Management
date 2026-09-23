@@ -320,6 +320,26 @@ test(
     );
     assert.equal(clientPropertyUpdate.status, 403);
 
+    // A long visit history must not crowd the next appointment out of the
+    // bounded workspace response used by the overview's upcoming summary.
+    for (let index = 0; index < 13; index++) {
+      await pool.query(
+        "INSERT INTO work_order(id,property_id,title,status,scheduled_at,published) VALUES($1,$2,$3,'scheduled',$4,true)",
+        [randomUUID(), ids.property, `Past visit ${index}`, `2000-01-${String(index + 1).padStart(2, "0")}T12:00:00Z`],
+      );
+    }
+    const futureWorkId = randomUUID();
+    await pool.query(
+      "INSERT INTO work_order(id,property_id,title,status,scheduled_at,published) VALUES($1,$2,'Next visit','scheduled',now()+interval '2 days',true)",
+      [futureWorkId, ids.property],
+    );
+    const clientUpcoming = await fetch(`${base}/api/v1/clients/${ids.client}/workspace`, { headers: managerHeaders });
+    const propertyUpcoming = await fetch(`${base}/api/v1/properties/${ids.property}/workspace`, { headers: managerHeaders });
+    assert.equal(clientUpcoming.status, 200);
+    assert.equal(propertyUpcoming.status, 200);
+    assert.equal(((await clientUpcoming.json()) as { schedule: { id: string }[] }).schedule[0]?.id, futureWorkId);
+    assert.equal(((await propertyUpcoming.json()) as { schedule: { id: string }[] }).schedule[0]?.id, futureWorkId);
+
     const projectId = randomUUID();
     await pool.query(
       "INSERT INTO project(id,property_id,name,scope) VALUES($1,$2,'Workspace project','Original scope')",

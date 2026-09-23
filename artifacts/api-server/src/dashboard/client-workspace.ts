@@ -59,7 +59,7 @@ clientWorkspaceApi.get("/clients/:id/workspace", async (req, res) => {
       [clientId],
     ),
     section(hasCapability(user, "operations.schedule"),
-      "SELECT w.id,w.property_id,w.title,w.status,w.scheduled_at,p.name AS property_name FROM work_order w JOIN property p ON p.id=w.property_id WHERE p.client_id=$1 AND p.lifecycle='operational' AND w.status NOT IN ('cancelled','skipped','reviewed') ORDER BY w.scheduled_at NULLS LAST,w.created_at DESC LIMIT 12",
+      "SELECT w.id,w.property_id,w.title,w.status,w.scheduled_at,p.name AS property_name FROM work_order w JOIN property p ON p.id=w.property_id WHERE p.client_id=$1 AND p.lifecycle='operational' AND w.status NOT IN ('cancelled','skipped','reviewed') ORDER BY CASE WHEN w.status='scheduled' AND w.scheduled_at>=now() THEN 0 ELSE 1 END,CASE WHEN w.status='scheduled' AND w.scheduled_at>=now() THEN w.scheduled_at END ASC NULLS LAST,w.scheduled_at DESC NULLS LAST,w.created_at DESC LIMIT 12",
       [clientId],
     ),
     section(hasCapability(user, "customers.requests"),
@@ -130,7 +130,7 @@ clientWorkspaceApi.get("/properties/:id/workspace", async (req, res) => {
   const crewSafe = user.role === "crew";
   const [schedule, agreements, requests, projects, inspections, files, contacts, notes] = await Promise.all([
     section(clientSafe || crewSafe || hasCapability(user, "operations.schedule"),
-      `SELECT id,title,status,scheduled_at,scope FROM work_order WHERE property_id=$1 ${clientSafe ? "AND status<>'draft'" : user.role === "crew" ? "AND assigned_to=$2" : ""} ORDER BY scheduled_at NULLS LAST,created_at DESC LIMIT 12`,
+      `SELECT id,title,status,scheduled_at,scope FROM work_order WHERE property_id=$1 ${clientSafe ? "AND status<>'draft'" : user.role === "crew" ? "AND assigned_to=$2" : ""} ORDER BY CASE WHEN status='scheduled' AND scheduled_at>=now() THEN 0 ELSE 1 END,CASE WHEN status='scheduled' AND scheduled_at>=now() THEN scheduled_at END ASC NULLS LAST,scheduled_at DESC NULLS LAST,created_at DESC LIMIT 12`,
       user.role === "crew" ? [propertyId, user.id] : [propertyId],
     ),
     (crewSafe || (!clientSafe && !(hasCapability(user, "revenue.agreements") || hasCapability(user, "revenue.billing"))))

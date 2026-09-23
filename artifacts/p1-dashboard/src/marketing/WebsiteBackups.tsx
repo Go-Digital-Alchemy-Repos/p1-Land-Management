@@ -73,7 +73,7 @@ export default function WebsiteBackups() {
   const gate = useRef(false),
     live = useRef(true),
     request = useRef<AbortController | null>(null);
-  const restoreDialog = useRef<HTMLElement | null>(null);
+  const restoreDialog = useRef<HTMLDialogElement | null>(null);
   const restoreFocus = useRef<HTMLElement | null>(null);
   function closeRestore() {
     setRestoreTarget(null);
@@ -86,7 +86,11 @@ export default function WebsiteBackups() {
     setRestoreConfirmation("");
   }
   useEffect(() => {
-    if (restoreTarget) restoreDialog.current?.querySelector<HTMLInputElement>("input")?.focus();
+    if (!restoreTarget) return;
+    const dialog = restoreDialog.current;
+    if (!dialog) return;
+    if (!dialog.open) dialog.showModal();
+    dialog.querySelector<HTMLInputElement>("input")?.focus();
   }, [restoreTarget]);
   function options(timeoutMs = 30000) {
     request.current = new AbortController();
@@ -376,13 +380,9 @@ export default function WebsiteBackups() {
       </p>
       {restoreTarget && (
         <div className="backup-restore-overlay" role="presentation">
-          <section ref={restoreDialog} className="backup-panel backup-restore-dialog" role="dialog" aria-modal="true" aria-labelledby="backup-restore-title" onKeyDown={(event) => {
-            if (event.key === "Escape" && !busy) { event.preventDefault(); closeRestore(); }
-            if (event.key !== "Tab") return;
-            const controls = [...(restoreDialog.current?.querySelectorAll<HTMLElement>("input, button:not(:disabled)") ?? [])];
-            const first = controls[0], last = controls[controls.length - 1];
-            if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
-            else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+          <dialog ref={restoreDialog} className="backup-panel backup-restore-dialog" aria-labelledby="backup-restore-title" onCancel={(event) => {
+            event.preventDefault();
+            if (!busy) closeRestore();
           }}>
             <h3 id="backup-restore-title">Restore this database archive?</h3>
             <p>This replaces the live Core database. Changes made after {scheduleDateTime(restoreTarget.createdAt)} Eastern may be lost. Create and verify a fresh backup first, account for newer writes, and confirm the selected stack and archive provenance. Media files are separate.</p>
@@ -394,7 +394,7 @@ export default function WebsiteBackups() {
               <button type="button" disabled={busy} onClick={closeRestore}>Cancel</button>
               <button type="button" disabled={busy || restoreConfirmation !== `RESTORE ${restoreTarget.key}`} onClick={() => void restore()}>Restore database</button>
             </div>
-          </section>
+          </dialog>
         </div>
       )}
     </section>

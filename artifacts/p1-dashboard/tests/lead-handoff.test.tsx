@@ -41,3 +41,23 @@ it("prefills a new customer for review and offers a matching existing account", 
   expect(choice?.value).toBe("link");
   expect(host.querySelectorAll("select")[1]?.value).toBe("22222222-2222-4222-8222-222222222222");
 });
+
+it("requires a visible handoff review before linking an existing customer", async () => {
+  api.onboardLeadCustomer.mockResolvedValue({ clientId: "22222222-2222-4222-8222-222222222222", version: 2 });
+  await act(async () => root.render(<LeadOnboarding leadId="11111111-1111-4111-8111-111111111111" />));
+  await act(async () => host.querySelector<HTMLButtonElement>(".lead-onboarding > button")?.click());
+  await act(async () => { await Promise.resolve(); });
+  const customer = host.querySelectorAll<HTMLSelectElement>("select")[1];
+  await act(async () => {
+    customer.value = "22222222-2222-4222-8222-222222222222";
+    customer.dispatchEvent(new Event("change", { bubbles: true }));
+  });
+  const form = host.querySelector("form");
+  await act(async () => { form?.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true })); });
+  expect(api.onboardLeadCustomer).not.toHaveBeenCalled();
+  expect(host.querySelector('[aria-label="Review customer handoff"]')?.textContent).toContain("P1 QA");
+  expect(host.textContent).toContain("Confirm customer link");
+  await act(async () => { form?.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true })); });
+  expect(api.onboardLeadCustomer).toHaveBeenCalledTimes(1);
+  expect(api.onboardLeadCustomer.mock.calls[0][1].customer).toEqual({ existingId: "22222222-2222-4222-8222-222222222222" });
+});
