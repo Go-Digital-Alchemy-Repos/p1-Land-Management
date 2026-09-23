@@ -102,6 +102,7 @@ export async function retireManagedAccount(ownerId: string, targetId: string) {
          restored_at=NULL,restored_by=NULL`, [targetId, ownerId, target.role, target.capabilities, target.form_notification_ids]
     );
     await c.query("UPDATE business_account_access SET capabilities='{}',form_notification_ids='{}',version=version+1,updated_at=now() WHERE user_id=$1", [targetId]);
+    await c.query('UPDATE dashboard_impersonation SET expires_at=now() WHERE target_id=$1', [targetId]);
     await c.query('DELETE FROM session WHERE "userId"=$1', [targetId]);
     // Better Auth binds password-reset and other account-bound verification
     // records to the user id in `value`. Deleting by that opaque id is precise:
@@ -131,6 +132,7 @@ export async function recoverRetiredManagedAccount(ownerId: string, targetId: st
     if (retired.active) throw new HttpError(409, "Retired account state is invalid");
     await c.query("UPDATE account_retirement SET restored_at=now(),restored_by=$2 WHERE user_id=$1", [targetId, ownerId]);
     await c.query("UPDATE business_account_access SET capabilities=$2,form_notification_ids=$3,version=version+1,updated_at=now() WHERE user_id=$1", [targetId, retired.prior_capabilities, retired.prior_form_notification_ids]);
+    await c.query('UPDATE dashboard_impersonation SET expires_at=now() WHERE target_id=$1', [targetId]);
     await c.query('DELETE FROM session WHERE "userId"=$1', [targetId]);
     await audit(c, ownerId, "account.retirement.recovered", targetId);
     return { recovered: true };
@@ -161,6 +163,7 @@ export async function reactivateRecoveredOwnerAccount(ownerId: string, targetId:
     if (!target.twoFactorEnabled)
       throw new HttpError(409, "The recovered Owner must enroll multi-factor authentication before reactivation");
     await c.query("UPDATE staff_profile SET active=true,mfa_required=true WHERE user_id=$1", [targetId]);
+    await c.query('UPDATE dashboard_impersonation SET expires_at=now() WHERE target_id=$1', [targetId]);
     await c.query('DELETE FROM session WHERE "userId"=$1', [targetId]);
     await audit(c, ownerId, "account.retirement.reactivated", targetId, {
       mfaRequired: true,
@@ -222,6 +225,7 @@ export async function updateManagedAccount(
       data.active,
     ]);
     // Session revocation also invalidates session-bound federation grants.
+    await c.query('UPDATE dashboard_impersonation SET expires_at=now() WHERE target_id=$1', [targetId]);
     await c.query('DELETE FROM session WHERE "userId"=$1', [targetId]);
     await audit(c, ownerId, "account.access.updated", targetId, {
       active: data.active,
@@ -346,6 +350,7 @@ export async function revokeManagedSessions(ownerId: string, targetId: string) {
         409,
         "Manage your own sessions through account security",
       );
+    await c.query('UPDATE dashboard_impersonation SET expires_at=now() WHERE target_id=$1', [targetId]);
     await c.query('DELETE FROM session WHERE "userId"=$1', [targetId]);
     await audit(c, ownerId, "account.sessions.revoked", targetId);
     return { ok: true };

@@ -120,10 +120,11 @@ try {
   if (!ready) throw new Error("Test server did not become ready: " + logs);
   const result = await execFile(
     process.execPath,
-    [
+    process.argv[2] ? ["--import", "tsx", "--test", process.argv[2]] : [
       "--import",
       "tsx",
       "--test",
+      "--test-concurrency=1",
       "src/dashboard/policy.test.ts",
       "src/dashboard/business-access.test.ts",
       "src/dashboard/sales-access.test.ts",
@@ -138,6 +139,7 @@ try {
       "src/dashboard/marketing-reporting.test.ts",
       "src/dashboard/marketing-cms.test.ts",
       "src/dashboard/user-management.test.ts",
+      "src/dashboard/impersonation.test.ts",
       "src/dashboard/contacts.test.ts",
       "src/dashboard/client-workspace.test.ts",
       "src/dashboard/client-notes.test.ts",

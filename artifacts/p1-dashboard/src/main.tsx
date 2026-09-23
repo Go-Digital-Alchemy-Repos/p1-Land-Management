@@ -13,6 +13,7 @@ import { formatEstimateExpiry } from "@workspace/api-zod/estimate-document";
 import { dataLoadPlan } from "./data-load-plan";
 import { hasCapability, canManageServiceAgreements } from "@workspace/api-zod/business-access";
 import { UserManager } from "./UserManager";
+import { OwnerImpersonation, type Impersonation } from "./OwnerImpersonation";
 import { WorkReadiness } from "./WorkReadiness";
 import { OwnerMfaRecovery } from "./OwnerMfaRecovery";
 import { PropertyFiles } from "./PropertyFiles";
@@ -262,6 +263,7 @@ type Person = {
   twoFactorEnabled: boolean;
   mfaRequired?: boolean;
   avatarUrl?: string | null;
+  impersonation?: Impersonation | null;
 };
 type NavItem = DashboardPageRoute & {
   icon: typeof LayoutDashboard;
@@ -475,7 +477,14 @@ function App() {
     try {
       const [b, p] = await Promise.all([
         api("/setup"),
-        api("/me").catch(() => null),
+        api("/me").catch(async (error: Error & { status?: number }) => {
+          if (error.status === 403 &&
+              /^(User switch expired|Impersonation is no longer available)/.test(error.message)) {
+            await api("/impersonation/stop", {});
+            return api("/me");
+          }
+          return null;
+        }),
       ]);
       setBoot(b);
       setPerson(p);
@@ -493,7 +502,7 @@ function App() {
           location.assign(continuation.redirect);
           return;
         }
-        localStorage.setItem(
+        if (!p.impersonation) localStorage.setItem(
           "p1-last-account",
           JSON.stringify({ id: p.id, name: p.name, role: p.role }),
         );
@@ -545,13 +554,15 @@ function App() {
     setError("");
     setDataLoadStatus("loading");
     try {
-      const savedDay = await offline.readDay(person.id);
+      if (person.impersonation && !navigator.onLine)
+        throw new Error("Reconnect to use an impersonated account.");
+      const savedDay = person.impersonation ? null : await offline.readDay(person.id);
       setDownloadedAt(savedDay?.savedAt || null);
-      setPersistentStorage((await offline.storageStatus()).persistent);
-      setCount(
-        (await offline.pending(person.id)).length +
-          (await offline.pendingPhotos(person.id)).length,
-      );
+      if (!person.impersonation) {
+        setPersistentStorage((await offline.storageStatus()).persistent);
+        setCount((await offline.pending(person.id)).length +
+          (await offline.pendingPhotos(person.id)).length);
+      } else setCount(0);
       if (!navigator.onLine) {
         const day = await offline.readDay(person.id);
         if (generation === refreshGeneration.current) {
@@ -618,6 +629,8 @@ function App() {
   }
   async function sync() {
     if (!person) return;
+    if (person.impersonation)
+      throw new Error("Offline field sync is unavailable while acting as another user.");
     // Reconcile reviewed receipts first; a denied photo or unrelated entry must
     // not trap an already-resolved operation on the device.
     const reviewedCount = await reconcileFieldResolutions(person.id);
@@ -653,8 +666,26 @@ function App() {
     } else setNotice(reviewedCount ? "Office-reviewed entries cleared from this device. Original entries remain in property history." : "Everything is up to date.");
     await refresh();
   }
+  async function submitImpersonatedField(event: offline.FieldOperation) {
+    if (!navigator.onLine) throw new Error("Reconnect to record field work while switching users.");
+    const result = await syncFieldEvents({ events: [event] });
+    const receipt = result.results[0];
+    if (receipt?.status === "conflict")
+      throw new Error("This field entry conflicts with a newer work order. Review it as the assigned user.");
+    if (receipt?.status !== "accepted" && receipt?.status !== "resolved")
+      throw new Error("Field entry was not accepted. Please try again.");
+    setNotice("Field entry recorded as the selected user.");
+  }
   async function logout() {
     if (!person) return;
+    if (person.impersonation) {
+      if (!navigator.onLine) throw new Error("Reconnect to sign out securely.");
+      await auth.signOut();
+      localStorage.removeItem("p1-last-account");
+      setPerson(null);
+      setData({});
+      return;
+    }
     if (
       (await offline.pending(person.id)).length +
       (await offline.pendingPhotos(person.id)).length
@@ -805,14 +836,30 @@ function App() {
           file.size > 15 * 1024 * 1024
         )
           throw new Error("Use a JPEG, PNG, or WebP photo under 15 MB");
-        await offline.savePhoto(person!.id, {
-          id: crypto.randomUUID(),
-          propertyId: selected.property_id,
-          workOrderId: selected.id,
-          classification: b.classification,
-          blob: file,
-        });
-        setNotice("Photo saved on this device. Sync when connected.");
+        if (person?.impersonation) {
+          if (!navigator.onLine) throw new Error("Reconnect to upload a photo while switching users.");
+          const response = await fetch("/api/v1/files/" + crypto.randomUUID(), {
+            method: "POST",
+            headers: {
+              "Content-Type": file.type,
+              "x-p1-property": selected.property_id,
+              "x-p1-work": selected.id,
+              "x-p1-classification": b.classification,
+            },
+            body: file,
+          });
+          if (!response.ok) throw new Error((await response.json()).error || "Photo upload failed");
+          setNotice("Photo uploaded as the selected user.");
+        } else {
+          await offline.savePhoto(person!.id, {
+            id: crypto.randomUUID(),
+            propertyId: selected.property_id,
+            workOrderId: selected.id,
+            classification: b.classification,
+            blob: file,
+          });
+          setNotice("Photo saved on this device. Sync when connected.");
+        }
       }
       if (form === "recurring")
         await api("/recurring-services", {
@@ -940,7 +987,7 @@ function App() {
         });
       if (form === "field") {
         if (!person) return;
-        await offline.enqueue(person.id, {
+        const entry: offline.FieldOperation = {
           id: crypto.randomUUID(),
           workOrderId: selected.id,
           baseVersion: selected.version,
@@ -960,8 +1007,12 @@ function App() {
             ...(b.action ? { action: b.action as any } : {}),
           },
           capturedAt: new Date().toISOString(),
-        });
-        setNotice("Saved on this device. Use Sync Now when connected.");
+        };
+        if (person.impersonation) await submitImpersonatedField(entry);
+        else {
+          await offline.enqueue(person.id, entry);
+          setNotice("Saved on this device. Use Sync Now when connected.");
+        }
       }
       if (form === "lead" || form === "convert") setInquiryRevision(value => value + 1);
       setForm(null);
@@ -1553,6 +1604,9 @@ function App() {
             </div>
           </button>
         </header>
+        {(person.role === "owner" || person.impersonation) && <div className="impersonation-toolbar">
+          <OwnerImpersonation name={person.name} role={person.role} active={person.impersonation} request={api} />
+        </div>}
         <main className="content">
           {!accountWorkspace && view !== "Website Documents" && (routeUnavailable || !["Website Forms", "Media Library", "CMS Pages", "Website Sections", "Website Editor", "Website Galleries", "Website Head Tags", "Website Blog", "Website Menus", "Website Team", "Website Sidebars", "Website Careers", "Website Events", "Website Integrations", "Website Email Templates"].includes(view)) && <div className={view === "Overview" ? "page-heading page-hero" : "page-heading"}>
             <div>
@@ -1985,7 +2039,7 @@ function App() {
           )}
           {["Schedule", "My Day"].includes(view) && (
             <>
-              {view === "My Day" && (
+              {view === "My Day" && !person.impersonation && (
                 <div className="offline-toolbar">
                   <div>
                     <strong>{count} pending field entries</strong>
@@ -2084,30 +2138,24 @@ function App() {
                                   <button
                                     onClick={() =>
                                       void run(async () => {
-                                        const pending = await offline.pending(
-                                          person.id,
-                                        );
-                                        if (
-                                          !pending.some(
-                                            (event) =>
-                                              event.workOrderId === w.id &&
-                                              event.kind === "time" &&
-                                              event.payload.action === "start",
-                                          )
-                                        ) {
-                                          await offline.enqueue(person.id, {
-                                            id: crypto.randomUUID(),
-                                            workOrderId: w.id,
-                                            baseVersion: w.version,
-                                            kind: "time",
-                                            payload: { action: "start" },
-                                            capturedAt:
-                                              new Date().toISOString(),
-                                          });
+                                        const entry: offline.FieldOperation = {
+                                          id: crypto.randomUUID(),
+                                          workOrderId: w.id,
+                                          baseVersion: w.version,
+                                          kind: "time",
+                                          payload: { action: "start" },
+                                          capturedAt: new Date().toISOString(),
+                                        };
+                                        if (person.impersonation) await submitImpersonatedField(entry);
+                                        else {
+                                          const pending = await offline.pending(person.id);
+                                          if (!pending.some((event) =>
+                                            event.workOrderId === w.id && event.kind === "time" &&
+                                            event.payload.action === "start")) {
+                                            await offline.enqueue(person.id, entry);
+                                          }
+                                          setNotice("Work start saved on this device. Sync Now sends it with your field entries.");
                                         }
-                                        setNotice(
-                                          "Work start saved on this device. Sync Now sends it with your field entries.",
-                                        );
                                         await refresh();
                                       })
                                     }
@@ -3170,7 +3218,7 @@ function App() {
                   </>
                 )}
                 <button className="primary" type="submit">
-                  {form === "field" ? "Save on this device" : "Save"}{" "}
+                  {form === "field" ? (person?.impersonation ? "Record field entry" : "Save on this device") : "Save"}{" "}
                   <CheckCircle2 size={17} />
                 </button>
               </form>

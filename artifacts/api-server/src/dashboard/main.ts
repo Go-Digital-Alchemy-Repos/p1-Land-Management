@@ -7,6 +7,8 @@ import { marketingReportingApi } from "./marketing-reporting";
 import { marketingCmsApi } from "./marketing-cms";
 import { workspaceReferencesApi } from "./workspace-references";
 import { userManagementApi } from "./user-management.routes";
+import { impersonationApi, auditImpersonatedMutation } from "./impersonation.routes";
+import { activeImpersonation } from "./access";
 import { serviceAgreementApi } from "./service-agreement.routes";
 import { workReadinessApi } from "./work-readiness.routes";
 import { prospectContextApi } from "./prospect-context.routes";
@@ -77,7 +79,22 @@ app.get("/api/healthz", async (_req, res, next) => {
 });
 const authHandler = toNodeHandler(auth);
 app.all("/api/auth/*splat", (req, res, next) => {
-  void withFactorResetLockScope(() => authHandler(req, res)).catch(next);
+  void (async () => {
+    // Better Auth still sees the Owner credential while the dashboard is
+    // acting as a target. Do not let an impersonated page mutate that Owner
+    // credential or factor; sign-out remains available as an escape hatch.
+    if (req.method !== "GET" && !req.path.endsWith("/sign-out")) {
+      try {
+        if (await activeImpersonation(req)) {
+          res.status(403).json({ error: "Return to Owner before changing account security" });
+          return;
+        }
+      } catch (error) {
+        if (!(error instanceof HttpError && error.status === 401)) throw error;
+      }
+    }
+    await withFactorResetLockScope(() => authHandler(req, res));
+  })().catch(next);
 });
 app.use("/api/webhooks", qboWebhook, smsWebhook);
 app.use("/api/integrations/core/v1", commercialIngress, coreFederationIngress);
@@ -107,6 +124,10 @@ app.use(
     }
     next();
   },
+  (req, _res, next) => {
+    void auditImpersonatedMutation(req).then(() => next(), next);
+  },
+  impersonationApi,
   userManagementApi,
   workspaceReferencesApi,
   coreFederationApi,
