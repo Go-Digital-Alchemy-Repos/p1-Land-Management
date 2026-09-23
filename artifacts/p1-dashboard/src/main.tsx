@@ -17,9 +17,11 @@ import { WorkReadiness } from "./WorkReadiness";
 import { OwnerMfaRecovery } from "./OwnerMfaRecovery";
 import { PropertyFiles } from "./PropertyFiles";
 import { ScheduleCalendar } from "./ScheduleCalendar";
+import { visibleWorkOrders } from "./schedule-work";
 import { RecurringCalendar } from "./RecurringCalendar";
 import { RecurringServiceCards } from "./RecurringServiceCards";
 import { ExpenseRecords } from "./ExpenseRecords";
+import { BillingRecords } from "./BillingRecords";
 import { scheduleDateTime } from "./schedule-dates";
 import { AssessmentAvailability } from "./AssessmentAvailability";
 import { ClientContacts } from "./ClientContacts";
@@ -404,8 +406,6 @@ function App() {
   const [billingOperationId, setBillingOperationId] = useState(() =>
     crypto.randomUUID(),
   );
-  const [billingReviewId, setBillingReviewId] = useState<string | null>(null);
-  const [billingPosting, setBillingPosting] = useState(false);
   const [person, setPerson] = useState<Person | null>(null),
     [boot, setBoot] = useState<any>(null),
     [loading, setLoading] = useState(true),
@@ -1112,6 +1112,14 @@ function App() {
       : []),
   ];
   const inScheduleWorkspace = ["Schedule", "Recurring"].includes(view);
+  const visibleScheduleWork = ["Schedule", "My Day"].includes(view)
+    ? visibleWorkOrders(
+        data.work || [],
+        view as "Schedule" | "My Day",
+        recordRoute?.kind === "work-order" ? recordRoute.id : null,
+        fieldDay,
+      )
+    : [];
   const salesWorkspaceTabs = can("revenue.sales")
     ? [
         { view: "Sales" as const, label: "Overview", path: "/sales", icon: FileText, tone: "blue" },
@@ -2023,21 +2031,10 @@ function App() {
                   }}
                 />
               )}
-              <section className="panel">
-                {data.work?.some(
-                  (work: any) =>
-                    view !== "My Day" ||
-                    (work.scheduled_at &&
-                      operatingDate(work.scheduled_at) === fieldDay),
-                ) ? (
-                  data.work
-                    .filter(
-                      (work: any) =>
-                        view !== "My Day" ||
-                        (work.scheduled_at &&
-                          operatingDate(work.scheduled_at) === fieldDay),
-                    )
-                    .map((w: any) => (
+              {(view === "My Day" || visibleScheduleWork.length > 0) && (
+                <section className="panel">
+                {visibleScheduleWork.length ? (
+                  visibleScheduleWork.map((w: any) => (
                       <article
                         className="work-card"
                         key={w.id}
@@ -2185,7 +2182,8 @@ function App() {
                     text="Scheduled assignments will appear here."
                   />
                 )}
-              </section>
+                </section>
+              )}
               {view === "Schedule" && ops && <FieldConflictReview />}
               {view === "Schedule" && ops && (
                 <AssessmentAvailability request={api} onChange={refresh} />
@@ -2330,93 +2328,15 @@ function App() {
                   posted. Drafts do not send or charge customers.
                 </p>
               )}
-              {(data.billing || []).map((b: any) => (
-                <div className="schedule-row" key={b.id}>
-                  <div>
-                    <strong>{b.title}</strong>
-                    <small>
-                      {b.property_name} · {b.kind}
-                    </small>
-                  </div>
-                  <strong>{money(b.amount_cents)}</strong>
-                  <span className="badge">{b.status}</span>
-                  {can("revenue.billing") && b.status === "posted" && !b.ownership_verified && (
-                    <small role="status">
-                      Accounting customer needs reconciliation · hidden from
-                      client
-                    </small>
-                  )}
-                  {can("revenue.billing") && b.status !== "posted" && (
-                    <button
-                      disabled={billingPosting || dataLoadStatus !== "ready"}
-                      onClick={() => setBillingReviewId(b.id)}
-                    >
-                      Review QuickBooks posting
-                    </button>
-                  )}
-                  {b.payment_url && (
-                    <a href={b.payment_url} target="_blank" rel="noreferrer" aria-label={`Pay invoice for ${b.title}`}>
-                      Pay invoice
-                    </a>
-                  )}
-                </div>
-              ))}
-              {can("revenue.billing") && billingReviewId && (() => {
-                const draft = (data.billing || []).find((entry: any) => entry.id === billingReviewId && entry.status !== "posted");
-                return draft ? <div className="phase-form" role="group" aria-label="Review QuickBooks posting">
-                  <h3>Review before posting</h3>
-                  <p><strong>{draft.title}</strong> · {draft.property_name} · {money(draft.amount_cents)}</p>
-                  <p>This sends the billing draft to QuickBooks. Check the client, property, and amount before continuing.</p>
-                  <div className="heading-actions">
-                    <button type="button" className="secondary" disabled={billingPosting} onClick={() => setBillingReviewId(null)}>Cancel</button>
-                    <button type="button" className="primary" disabled={billingPosting || dataLoadStatus !== "ready"} onClick={() => {
-                      setBillingPosting(true);
-                      void run(async () => {
-                        try {
-                          await api("/billing/" + draft.id + "/post", {});
-                          setBillingReviewId(null);
-                          await refresh();
-                        } finally {
-                          setBillingPosting(false);
-                        }
-                      });
-                    }}>{billingPosting ? "Posting…" : "Post to QuickBooks"}</button>
-                  </div>
-                </div> : null;
-              })()}
-              {(data["quickbooks/invoices"] || []).map((invoice: any) => (
-                <div className="schedule-row" key={"qbo-" + invoice.id}>
-                  <div>
-                    <strong>
-                      Invoice {invoice.document_number || invoice.id}
-                    </strong>
-                    <small>{invoice.client_name}</small>
-                    {can("revenue.billing") && !invoice.ownership_verified && (
-                      <small>
-                        Customer mapping needs review · hidden from client
-                      </small>
-                    )}
-                  </div>
-                  <strong>{money(invoice.balance_cents)} outstanding</strong>
-                  {invoice.payment_url && invoice.ownership_verified && (
-                    <a
-                      href={invoice.payment_url}
-                      target="_blank"
-                      rel="noreferrer"
-                      aria-label={`Pay invoice ${invoice.document_number || invoice.id}`}
-                    >
-                      Pay invoice
-                    </a>
-                  )}
-                </div>
-              ))}
-              {isOnline && dataLoadStatus === "ready" && !data.billing?.length &&
-                !data["quickbooks/invoices"]?.length && (
-                  <Empty
-                    title="Billing, connected to the work"
-                    text="Approved estimates provide the basis for deposits, progress billing, and final balances."
-                  />
-                )}
+              {isOnline && dataLoadStatus === "ready" && <BillingRecords
+                drafts={data.billing || []}
+                invoices={data["quickbooks/invoices"] || []}
+                canManage={can("revenue.billing")}
+                onPost={async (id) => {
+                  await api("/billing/" + id + "/post", {});
+                  await refresh();
+                }}
+              />}
             </section>
           )}
           {view === "Recurring" && (

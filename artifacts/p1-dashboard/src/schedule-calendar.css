@@ -28,6 +28,7 @@
   overflow-x: auto;
   padding-bottom: 8px;
 }
+.schedule-month-agenda { display: none; }
 .calendar-days.day {
   grid-template-columns: 1fr;
 }
@@ -119,8 +120,12 @@
     overflow: visible;
   }
   .calendar-days.month {
-    grid-template-columns: repeat(7, minmax(96px, 1fr));
+    display: none;
   }
+  .schedule-month-agenda { display: grid; gap: 12px; padding: 0 16px 16px; }
+  .schedule-agenda-day { background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-radius: var(--radius-cards); padding: 14px; }
+  .schedule-agenda-day h3 { display: flex; justify-content: space-between; gap: 12px; margin: 0; font-size: 14px; }
+  .schedule-agenda-day h3 small { color: hsl(var(--muted-foreground)); font-weight: 400; }
   .calendar-days.month.recurring-calendar-days { display: none; }
   .recurring-agenda { display: grid; gap: 12px; padding: 16px; }
   .recurring-agenda-day { display: grid; gap: 8px; border: 1px solid hsl(var(--border)); border-radius: var(--radius-cards); padding: 14px; background: hsl(var(--card)); }
