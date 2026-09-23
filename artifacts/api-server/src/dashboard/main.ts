@@ -147,16 +147,13 @@ const dashboardStaticDir = resolve(
 // Synthetic design-review artifact. Explicitly enabled only in the staging
 // service; it never reads dashboard data or accepts writes.
 const designPreviewDir = resolve("../p1-dashboard/preview");
-app.get("/design-preview", (_req, res) => {
+app.get(["/design-preview", "/design-preview/"], (req, res) => {
   if (process.env.DASHBOARD_DESIGN_PREVIEW !== "enabled") {
     res.sendStatus(404);
     return;
   }
-  res.redirect(302, "/design-preview/");
-});
-app.get("/design-preview/", (_req, res) => {
-  if (process.env.DASHBOARD_DESIGN_PREVIEW !== "enabled") {
-    res.sendStatus(404);
+  if (req.path !== "/design-preview/") {
+    res.redirect(302, "/design-preview/");
     return;
   }
   res.set("Cache-Control", "no-store");
