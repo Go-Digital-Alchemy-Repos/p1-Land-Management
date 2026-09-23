@@ -36,6 +36,7 @@ test(
       property: randomUUID(),
       otherProperty: randomUUID(),
       contact: randomUUID(),
+      lead: randomUUID(),
       scheduledWork: randomUUID(),
       draftWork: randomUUID(),
       privateInspection: randomUUID(),
@@ -69,7 +70,7 @@ test(
     }
 
     await pool.query("INSERT INTO business_account_access(user_id,capabilities) VALUES($1,$2)", [ids.manager,
-      ["customers.clients", "customers.properties", "customers.requests", "operations.schedule", "operations.projects", "operations.inspections", "revenue.agreements"]]);
+      ["customers.clients", "customers.properties", "customers.requests", "operations.schedule", "operations.projects", "operations.inspections", "revenue.agreements", "revenue.sales"]]);
     await pool.query("INSERT INTO client(id,name) VALUES($1,$2),($3,$4)", [
       ids.client,
       "Workspace client",
@@ -91,10 +92,15 @@ test(
         "Other private instructions",
       ],
     );
+    await pool.query("UPDATE property SET notes='Private property notes' WHERE id=$1", [ids.property]);
     await pool.query("INSERT INTO client_access(user_id,client_id) VALUES($1,$2)", [
       ids.clientUser,
       ids.client,
     ]);
+    await pool.query(
+      "INSERT INTO lead(id,name,email,location,description,status,converted_client_id) VALUES($1,'Original inquiry','source@example.test','Region','Source message','won',$2)",
+      [ids.lead, ids.client],
+    );
     await pool.query(
       "INSERT INTO contact(id,client_id,name,email,phone,kind) VALUES($1,$2,$3,$4,$5,'primary')",
       [
@@ -149,8 +155,10 @@ test(
     assert.equal(managerWorkspace.status, 200);
     const managerData = (await managerWorkspace.json()) as {
       contacts: { email: string }[];
+      salesOrigins: { id: string; name: string }[];
     };
     assert.equal(managerData.contacts[0]?.email, "private-contact@example.test");
+    assert.deepEqual(managerData.salesOrigins.map((row) => row.id), [ids.lead]);
 
     const note = await fetch(`${base}/api/v1/clients/${ids.client}/notes`, {
       method: "POST",
@@ -231,6 +239,13 @@ test(
     };
     assert.equal("access_instructions" in crewData.property, false);
     assert.equal("client_id" in crewData.property, false);
+    const crewList = await fetch(`${base}/api/v1/properties`, { headers: headers.get(ids.crew)! });
+    assert.equal(crewList.status, 200);
+    const crewRows = (await crewList.json()) as Record<string, unknown>[];
+    assert.deepEqual(crewRows.map((item) => item.id), [ids.property]);
+    assert.equal("access_instructions" in crewRows[0], false);
+    assert.equal("notes" in crewRows[0], false);
+    assert.equal("client_id" in crewRows[0], false);
     assert.deepEqual(crewData.contacts, []);
     assert.deepEqual(crewData.notes, []);
     assert.deepEqual(crewData.schedule.map((item) => item.id), [ids.scheduledWork]);
@@ -305,6 +320,26 @@ test(
     );
     assert.equal(clientPropertyUpdate.status, 403);
 
+    // A long visit history must not crowd the next appointment out of the
+    // bounded workspace response used by the overview's upcoming summary.
+    for (let index = 0; index < 13; index++) {
+      await pool.query(
+        "INSERT INTO work_order(id,property_id,title,status,scheduled_at,published) VALUES($1,$2,$3,'scheduled',$4,true)",
+        [randomUUID(), ids.property, `Past visit ${index}`, `2000-01-${String(index + 1).padStart(2, "0")}T12:00:00Z`],
+      );
+    }
+    const futureWorkId = randomUUID();
+    await pool.query(
+      "INSERT INTO work_order(id,property_id,title,status,scheduled_at,published) VALUES($1,$2,'Next visit','scheduled',now()+interval '2 days',true)",
+      [futureWorkId, ids.property],
+    );
+    const clientUpcoming = await fetch(`${base}/api/v1/clients/${ids.client}/workspace`, { headers: managerHeaders });
+    const propertyUpcoming = await fetch(`${base}/api/v1/properties/${ids.property}/workspace`, { headers: managerHeaders });
+    assert.equal(clientUpcoming.status, 200);
+    assert.equal(propertyUpcoming.status, 200);
+    assert.equal(((await clientUpcoming.json()) as { schedule: { id: string }[] }).schedule[0]?.id, futureWorkId);
+    assert.equal(((await propertyUpcoming.json()) as { schedule: { id: string }[] }).schedule[0]?.id, futureWorkId);
+
     const projectId = randomUUID();
     await pool.query(
       "INSERT INTO project(id,property_id,name,scope) VALUES($1,$2,'Workspace project','Original scope')",
@@ -347,11 +382,21 @@ test(
       scope: "Reviewed operational scope",
       version: 2,
     });
+    await pool.query("UPDATE business_account_access SET capabilities=$2 WHERE user_id=$1", [ids.manager, ["customers.clients", "customers.requests", "operations.projects"]]);
+    const scopedClientResponse = await fetch(`${base}/api/v1/clients/${ids.client}/workspace`, { headers: managerHeaders });
+    assert.equal(scopedClientResponse.status, 200);
+    const scopedClient = await scopedClientResponse.json() as Record<string, any>;
+    assert.deepEqual(scopedClient.properties, []);
+    assert.deepEqual(scopedClient.propertyChoices, [{ id: ids.property, name: "Updated workspace property" }]);
+    assert.equal("access_instructions" in scopedClient.propertyChoices[0], false);
+    assert.equal("address" in scopedClient.propertyChoices[0], false);
     await pool.query("UPDATE business_account_access SET capabilities=$2 WHERE user_id=$1", [ids.manager, ["customers.clients"]]);
     const restrictedClient = await fetch(`${base}/api/v1/clients/${ids.client}/workspace`, { headers: managerHeaders });
     assert.equal(restrictedClient.status, 200);
     const clientOnly = await restrictedClient.json() as Record<string, any>;
     for (const section of ["properties", "agreements", "schedule", "requests", "projects", "activity"]) assert.deepEqual(clientOnly[section], [], section);
+    assert.deepEqual(clientOnly.propertyChoices, []);
+    assert.deepEqual(clientOnly.salesOrigins, []);
     assert(clientOnly.contacts.length > 0);
     assert.equal((await fetch(`${base}/api/v1/properties/${ids.property}/workspace`, { headers: managerHeaders })).status, 403);
     await pool.query("UPDATE business_account_access SET capabilities=$2 WHERE user_id=$1", [ids.manager, ["customers.properties"]]);

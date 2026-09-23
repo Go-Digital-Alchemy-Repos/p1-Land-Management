@@ -49,6 +49,10 @@ export function ServiceRequestTriage({
   const policy = serviceRequestUiPolicy(role, capabilities);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [detail, setDetail] = useState<RequestRow | null>(null);
+  const [verifiedRecord, setVerifiedRecord] = useState<RequestRow | null>(null);
+  const [detailStatus, setDetailStatus] = useState<"idle" | "loading" | "ready" | "failed">("idle");
+  const [detailError, setDetailError] = useState("");
+  const [detailReload, setDetailReload] = useState(0);
   const [reason, setReason] = useState("");
   const [target, setTarget] = useState("");
   const [conversionOpen, setConversionOpen] = useState(false);
@@ -64,13 +68,14 @@ export function ServiceRequestTriage({
     () => records.find((record) => record.id === selectedId) || null,
     [records, selectedId],
   );
-  const current = detail || selected;
+  const verifiedDetail = detailStatus === "ready" && verifiedRecord === selected ? detail : null;
+  const current = verifiedDetail || selected;
   const targets = serviceRequestTransitionTargets(current?.status || "");
   // Normal client work moves through a client-approved estimate. The legacy
   // planning-draft control remains in the component only for compatibility,
   // but is not exposed by the Jobs lifecycle.
   const canConvert = false;
-  const canGenerateEstimate = hasCapability({role: role || null, capabilities}, "revenue.sales") && Boolean(current) && !["closed", "cancelled", "converted"].includes(current!.status);
+  const canGenerateEstimate = hasCapability({role: role || null, capabilities}, "revenue.sales") && Boolean(verifiedDetail) && !["closed", "cancelled", "converted"].includes(verifiedDetail!.status);
 
   useEffect(() => {
     if (policy !== "manage") return;
@@ -82,20 +87,31 @@ export function ServiceRequestTriage({
   }, [policy, records, selectedId]);
 
   useEffect(() => {
-    if (!selectedId || (policy !== "manage")) return;
+    if (!selectedId || !selected || (policy !== "manage")) return;
     let active = true;
     setError("");
+    setDetailError("");
+    setDetailStatus("loading");
+    setDetail(null);
+    setVerifiedRecord(null);
     void api(`/service-requests/${selectedId}`)
       .then((next) => {
-        if (active) setDetail(next);
+        if (active) {
+          setDetail(next);
+          setVerifiedRecord(selected);
+          setDetailStatus("ready");
+        }
       })
       .catch((cause) => {
-        if (active) setError((cause as Error).message);
+        if (active) {
+          setDetailError((cause as Error).message);
+          setDetailStatus("failed");
+        }
       });
     return () => {
       active = false;
     };
-  }, [api, policy, selectedId]);
+  }, [api, policy, selectedId, records, detailReload]);
 
   useEffect(() => {
     if (!current) return;
@@ -236,13 +252,21 @@ export function ServiceRequestTriage({
                 <span className="badge">{readable(current.status)}</span>
               </div>
 
+              {!verifiedDetail && detailStatus === "loading" && <p className="muted" role="status">Loading request details…</p>}
+              {!verifiedDetail && detailStatus === "failed" && (
+                <div className="request-detail-verification">
+                  <p role="alert" className="error">Could not verify request details: {detailError}</p>
+                  <button type="button" className="secondary" onClick={() => setDetailReload((value) => value + 1)}>Retry request details</button>
+                </div>
+              )}
+
               {canGenerateEstimate && (
-                <button type="button" className="primary" onClick={() => onGenerateEstimate?.(current!)}>
+                <button type="button" className="primary" onClick={() => onGenerateEstimate?.(verifiedDetail!)}>
                   Generate estimate
                 </button>
               )}
 
-              {policy === "manage" && targets.length > 0 && (
+              {policy === "manage" && verifiedDetail && targets.length > 0 && (
                 <form
                   className="request-transition"
                   onSubmit={(event) => {

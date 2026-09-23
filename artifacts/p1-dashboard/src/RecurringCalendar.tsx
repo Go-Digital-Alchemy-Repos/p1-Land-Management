@@ -34,6 +34,8 @@ export function RecurringCalendar({ jobs }: { jobs: RecurringCalendarJob[] }) {
   const [selected, setSelected] = useState(() => scheduleDate(new Date()));
   const days = scheduleDays(selected, "month");
   const planned = jobs.filter((job) => job.next_date && !job.paused);
+  const hasVisibleVisit = planned.some((job) => days.includes(job.next_date!));
+  const visitDays = days.filter((day) => planned.some((job) => job.next_date === day));
 
   return (
     <section className="panel schedule-calendar recurring-calendar" aria-label="Recurring calendar">
@@ -42,13 +44,15 @@ export function RecurringCalendar({ jobs }: { jobs: RecurringCalendarJob[] }) {
         <span>America/New_York</span>
       </div>
       <div className="calendar-toolbar">
-        <button aria-label="Previous month" onClick={() => setSelected(shiftScheduleMonth(selected, -1))}>
-          Previous
-        </button>
-        <button onClick={() => setSelected(scheduleDate(new Date()))}>Today</button>
-        <button aria-label="Next month" onClick={() => setSelected(shiftScheduleMonth(selected, 1))}>
-          Next
-        </button>
+        <div className="calendar-period-actions">
+          <button aria-label="Previous month" onClick={() => setSelected(shiftScheduleMonth(selected, -1))}>
+            Previous
+          </button>
+          <button onClick={() => setSelected(scheduleDate(new Date()))}>Today</button>
+          <button aria-label="Next month" onClick={() => setSelected(shiftScheduleMonth(selected, 1))}>
+            Next
+          </button>
+        </div>
         <label>
           Calendar date
           <input
@@ -61,7 +65,16 @@ export function RecurringCalendar({ jobs }: { jobs: RecurringCalendarJob[] }) {
       <p className="muted">
         Each service appears on its next planned visit. The date advances after its next occurrence is generated or rescheduled.
       </p>
-      <div className="calendar-days month recurring-calendar-days">
+      {hasVisibleVisit && <div className="recurring-agenda" aria-label="Planned visits this month">
+        {visitDays.map((day) => <section key={day} className="recurring-agenda-day">
+          <h3>{dayTitle(day)}</h3>
+          {planned.filter((job) => job.next_date === day).map((job) => <article key={job.id}>
+            <strong>{localTime(job.local_time)} · {job.title}</strong>
+            <span>{job.property_name || "Property"}{job.client_name ? ` · ${job.client_name}` : ""}</span>
+          </article>)}
+        </section>)}
+      </div>}
+      {hasVisibleVisit ? <div className="calendar-days month recurring-calendar-days">
         {days.map((day) => {
           const entries = planned.filter((job) => job.next_date === day);
           return (
@@ -88,7 +101,7 @@ export function RecurringCalendar({ jobs }: { jobs: RecurringCalendarJob[] }) {
             </section>
           );
         })}
-      </div>
+      </div> : <p className="recurring-calendar-empty">No recurring visits are planned for this month. Choose another month to review upcoming work.</p>}
       {jobs.some((job) => job.paused) && (
         <p className="muted">Paused services are listed below and are not placed on the calendar.</p>
       )}

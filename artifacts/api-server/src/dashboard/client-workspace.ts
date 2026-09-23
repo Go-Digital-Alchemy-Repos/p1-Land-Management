@@ -41,9 +41,13 @@ clientWorkspaceApi.get("/clients/:id/workspace", async (req, res) => {
   requireCapability(user, "customers.clients");
   const clientId = identifier.parse(req.params.id);
   const client = await officeClient(clientId);
-  const [properties, contacts, agreements, schedule, requests, projects, notes, activity] = await Promise.all([
+  const [properties, propertyChoices, contacts, agreements, schedule, requests, projects, notes, activity, salesOrigins] = await Promise.all([
     section(hasCapability(user, "customers.properties"),
       "SELECT p.id,p.name,p.address,p.address_line1,p.address_line2,p.city,p.state,p.postal_code,p.acreage,p.latitude,p.longitude,p.property_type_id,pt.name AS property_type_name,p.access_instructions,p.version,p.created_at FROM property p LEFT JOIN property_type pt ON pt.id=p.property_type_id WHERE p.client_id=$1 AND p.archived=false AND p.lifecycle='operational' ORDER BY p.name",
+      [clientId],
+    ),
+    section(!hasCapability(user, "customers.properties") && (hasCapability(user, "customers.requests") || hasCapability(user, "operations.projects")),
+      "SELECT id,name FROM property WHERE client_id=$1 AND archived=false AND lifecycle='operational' ORDER BY name",
       [clientId],
     ),
     section(true,
@@ -55,7 +59,7 @@ clientWorkspaceApi.get("/clients/:id/workspace", async (req, res) => {
       [clientId],
     ),
     section(hasCapability(user, "operations.schedule"),
-      "SELECT w.id,w.property_id,w.title,w.status,w.scheduled_at,p.name AS property_name FROM work_order w JOIN property p ON p.id=w.property_id WHERE p.client_id=$1 AND p.lifecycle='operational' AND w.status NOT IN ('cancelled','skipped','reviewed') ORDER BY w.scheduled_at NULLS LAST,w.created_at DESC LIMIT 12",
+      "SELECT w.id,w.property_id,w.title,w.status,w.scheduled_at,p.name AS property_name FROM work_order w JOIN property p ON p.id=w.property_id WHERE p.client_id=$1 AND p.lifecycle='operational' AND w.status NOT IN ('cancelled','skipped','reviewed') ORDER BY CASE WHEN w.status='scheduled' AND w.scheduled_at>=now() THEN 0 ELSE 1 END,CASE WHEN w.status='scheduled' AND w.scheduled_at>=now() THEN w.scheduled_at END ASC NULLS LAST,w.scheduled_at DESC NULLS LAST,w.created_at DESC LIMIT 12",
       [clientId],
     ),
     section(hasCapability(user, "customers.requests"),
@@ -74,10 +78,15 @@ clientWorkspaceApi.get("/clients/:id/workspace", async (req, res) => {
       "SELECT e.id,e.action,e.entity_id,e.created_at,u.name AS author_name FROM audit_event e LEFT JOIN \"user\" u ON u.id=e.user_id WHERE e.entity_id=$1::text OR e.entity_id IN (SELECT id::text FROM property WHERE client_id=$1::uuid) ORDER BY e.created_at DESC LIMIT 12",
       [clientId],
     ),
+    section(user.role !== "client" && user.role !== "crew" && hasCapability(user, "revenue.sales"),
+      "SELECT id,name,status,reported_company_name,created_at FROM lead WHERE converted_client_id=$1 ORDER BY created_at DESC,id DESC LIMIT 20",
+      [clientId],
+    ),
   ]);
   res.json({
     client,
     properties: properties.rows,
+    propertyChoices: propertyChoices.rows,
     contacts: contacts.rows,
     agreements: agreements.rows,
     schedule: schedule.rows,
@@ -85,6 +94,7 @@ clientWorkspaceApi.get("/clients/:id/workspace", async (req, res) => {
     projects: projects.rows,
     notes: notes.rows,
     activity: activity.rows,
+    salesOrigins: salesOrigins.rows,
   });
 });
 
@@ -120,7 +130,7 @@ clientWorkspaceApi.get("/properties/:id/workspace", async (req, res) => {
   const crewSafe = user.role === "crew";
   const [schedule, agreements, requests, projects, inspections, files, contacts, notes] = await Promise.all([
     section(clientSafe || crewSafe || hasCapability(user, "operations.schedule"),
-      `SELECT id,title,status,scheduled_at,scope FROM work_order WHERE property_id=$1 ${clientSafe ? "AND status<>'draft'" : user.role === "crew" ? "AND assigned_to=$2" : ""} ORDER BY scheduled_at NULLS LAST,created_at DESC LIMIT 12`,
+      `SELECT id,title,status,scheduled_at,scope FROM work_order WHERE property_id=$1 ${clientSafe ? "AND status<>'draft'" : user.role === "crew" ? "AND assigned_to=$2" : ""} ORDER BY CASE WHEN status='scheduled' AND scheduled_at>=now() THEN 0 ELSE 1 END,CASE WHEN status='scheduled' AND scheduled_at>=now() THEN scheduled_at END ASC NULLS LAST,scheduled_at DESC NULLS LAST,created_at DESC LIMIT 12`,
       user.role === "crew" ? [propertyId, user.id] : [propertyId],
     ),
     (crewSafe || (!clientSafe && !(hasCapability(user, "revenue.agreements") || hasCapability(user, "revenue.billing"))))

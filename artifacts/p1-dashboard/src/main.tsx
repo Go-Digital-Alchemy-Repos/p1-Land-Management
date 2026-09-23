@@ -1,5 +1,6 @@
 import { PipelineProvider, PipelineSettingsEditor } from "./PipelineSettings";
 import { SalesPipelineBoard } from "./SalesPipelineBoard";
+import { LeadProfile } from "./LeadProfile";
 import { reconcileFieldResolutions } from "./field-resolution-receipts";
 import { FieldConflictReview } from "./FieldConflictReview";
 import { isTransientRefreshFailure, refreshEntries } from "./my-day-recovery";
@@ -14,10 +15,13 @@ import { hasCapability, canManageServiceAgreements } from "@workspace/api-zod/bu
 import { UserManager } from "./UserManager";
 import { WorkReadiness } from "./WorkReadiness";
 import { OwnerMfaRecovery } from "./OwnerMfaRecovery";
-import { CommercialInbox } from "./CommercialInbox";
 import { PropertyFiles } from "./PropertyFiles";
 import { ScheduleCalendar } from "./ScheduleCalendar";
+import { visibleWorkOrders } from "./schedule-work";
 import { RecurringCalendar } from "./RecurringCalendar";
+import { RecurringServiceCards } from "./RecurringServiceCards";
+import { ExpenseRecords } from "./ExpenseRecords";
+import { BillingRecords } from "./BillingRecords";
 import { scheduleDateTime } from "./schedule-dates";
 import { AssessmentAvailability } from "./AssessmentAvailability";
 import { ClientContacts } from "./ClientContacts";
@@ -194,6 +198,50 @@ const marketingPageCopy = {
   ...marketingDesignCopy,
   "Website SEO": { title: "SEO", description: "Manage search metadata, audit content, and maintain redirects and crawler settings." },
   "Website Features": { title: "System Configuration", description: "Control which website apps are active while preserving their stored data." },
+};
+const workspaceDescriptions: Partial<Record<DashboardPageRoute["view"], string>> = {
+  "My Day": "See your assignments, field notes and items that need attention today.",
+  Properties: "Find a property, review its operational context and open its workspace.",
+  Clients: "Find an account, then review its properties, people and active work.",
+  Requests: "Triage incoming requests and follow their progress through scheduling.",
+  Schedule: "Plan visits, assign work and review field updates in one calendar.",
+  Recurring: "Review repeat visits and the agreements that authorize them.",
+  Projects: "Track project phases, ownership and work awaiting review.",
+  Inspections: "Review inspection reports and follow up on recorded findings.",
+  Sales: "Prioritize inquiries, then work from each lead's complete profile.",
+  Pipeline: "Scan stages and open an inquiry profile to record its next step.",
+  "Pipeline Settings": "Review the stages used to organize the sales journey.",
+  Agreements: "Find active service agreements and work awaiting review.",
+  "Agreement Drafts": "Prepare client-specific terms, scope and costs from your agreement templates.",
+  "Agreement Templates": "Manage reusable terms, scope, cost breakdowns and published agreement packages.",
+  Billing: "Review charges, invoices and items that need a finance decision.",
+  Expenses: "Record costs and review expense history against the work.",
+  Analytics: "Compare website performance and acquisition over time.",
+  "Search Console": "Review search visibility, indexing and site health.",
+  "CMS Pages": "Manage page content, publication and revision history.",
+  "Website Blog": "Draft, review and publish articles for the public website.",
+  "Website Forms": "Maintain public forms and the fields used to capture inquiries.",
+  "Website Events": "Prepare and publish events shown on the public website.",
+  "Website Careers": "Keep open roles and applications current.",
+  "Website Team": "Maintain public team profiles and their presentation.",
+  "Media Library": "Find, organize and reuse approved website media.",
+  "Website Galleries": "Curate image groups for public pages.",
+  "Website Sections": "Build and reuse page sections without losing their draft history.",
+  "Website Editor": "Edit website pages and shared content, then review drafts before publishing.",
+  "Website Menus": "Organize public navigation while preserving published links.",
+  "Website Sidebars": "Compose reusable website sidebar content.",
+  "Website Backups": "Review website recovery points and backup status.",
+  "Website Integrations": "Manage website services and their connection status.",
+  "Website Email Templates": "Maintain the messages sent by website workflows.",
+  "Website Documents": "Find implementation resources for the website system.",
+  "Website Head Tags": "Review managed scripts and edit additional head markup.",
+};
+const settingsDescriptions: Record<SettingsSection, string> = {
+  people: "Review accounts, roles and access before making changes.",
+  security: "Review sign-in protections and account recovery options.",
+  integrations: "Check connected business systems and their current status.",
+  preferences: "Set workspace defaults that support daily work.",
+  "term-libraries": "Maintain the controlled terms used across records and reports.",
 };
 async function api(path: string, body?: unknown, method: "POST" | "PATCH" | "DELETE" = "POST") {
   const r = await fetch("/api/v1" + path, {
@@ -373,6 +421,7 @@ function App() {
     [routeMissing, setRouteMissing] = useState(initialRoute.kind === "not-found"),
     [inquiryRevision, setInquiryRevision] = useState(0),
     [data, setData] = useState<any>({}),
+    [dataLoadStatus, setDataLoadStatus] = useState<"loading" | "ready" | "failed">("loading"),
     [form, setForm] = useState<string | null>(null),
     [selected, setSelected] = useState<any>(null),
     [isOnline, setOnline] = useState(navigator.onLine),
@@ -381,6 +430,13 @@ function App() {
   const [propertySearch, setPropertySearch] = useState("");
   const [propertyTypeFilter, setPropertyTypeFilter] = useState("");
   const [propertySort, setPropertySort] = useState<"name" | "type">("name");
+  const sharedDataRequired = [
+    "Overview", "Properties", "Clients", "My Day", "Schedule", "Sales",
+    "Billing", "Recurring", "Projects", "Inspections", "Expenses", "Requests",
+  ].includes(view) || (view === "Settings" && ["integrations", "term-libraries"].includes(settingsSection));
+  const workspaceDataGate = !isOnline && (view !== "My Day" || !data.savedAt)
+    ? "offline"
+    : dataLoadStatus;
   const [authMode, setAuthMode] = useState("login"),
     [mfa, setMfa] = useState<any>(null);
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -487,6 +543,7 @@ function App() {
     const generation = ++refreshGeneration.current;
     if (!person?.role || person.mfaRequired) { setData({}); return; }
     setError("");
+    setDataLoadStatus("loading");
     try {
       const savedDay = await offline.readDay(person.id);
       setDownloadedAt(savedDay?.savedAt || null);
@@ -497,7 +554,10 @@ function App() {
       );
       if (!navigator.onLine) {
         const day = await offline.readDay(person.id);
-        if (generation === refreshGeneration.current) setData({ work: dataLoadPlan(person).paths.includes("work-orders") ? day?.data || [] : [], savedAt: day?.savedAt });
+        if (generation === refreshGeneration.current) {
+          setData({ work: dataLoadPlan(person).paths.includes("work-orders") ? day?.data || [] : [], savedAt: day?.savedAt });
+          setDataLoadStatus("ready");
+        }
         return;
       }
       const { paths, references } = dataLoadPlan(person);
@@ -525,7 +585,10 @@ function App() {
           );
         }
       }
-      if (generation === refreshGeneration.current) setData({ ...d, work });
+      if (generation === refreshGeneration.current) {
+        setData({ ...d, work });
+        setDataLoadStatus("ready");
+      }
     } catch (e) {
       if (generation !== refreshGeneration.current) return;
       if (view === "My Day" && person.role !== "client" && dataLoadPlan(person).paths.includes("work-orders") && isTransientRefreshFailure(e)) {
@@ -535,6 +598,7 @@ function App() {
         setData(day ? { work: day.data, savedAt: day.savedAt } : {});
         if (day) setNotice("Using downloaded assignments while the server is unavailable. Pending entries remain on this device.");
       } else setData({});
+      setDataLoadStatus("failed");
       setError((e as Error).message);
     }
   }
@@ -987,6 +1051,7 @@ function App() {
   const openPropertyWorkspace = (property: { id: string }) =>
     navigateRecord(propertyPage, { kind: "property", id: property.id, tab: "overview" });
   const clientPage = nav.find((item) => item.view === "Clients")!;
+  const salesPage = nav.find((item) => item.view === "Sales")!;
   const openClientWorkspace = (client: { id: string }) =>
     navigateRecord(clientPage, { kind: "client", id: client.id, tab: "overview" });
   const openWorkOrder = async (
@@ -1054,6 +1119,14 @@ function App() {
       : []),
   ];
   const inScheduleWorkspace = ["Schedule", "Recurring"].includes(view);
+  const visibleScheduleWork = ["Schedule", "My Day"].includes(view)
+    ? visibleWorkOrders(
+        data.work || [],
+        view as "Schedule" | "My Day",
+        recordRoute?.kind === "work-order" ? recordRoute.id : null,
+        fieldDay,
+      )
+    : [];
   const salesWorkspaceTabs = can("revenue.sales")
     ? [
         { view: "Sales" as const, label: "Overview", path: "/sales", icon: FileText, tone: "blue" },
@@ -1171,7 +1244,7 @@ function App() {
     navigationAnchorIncludes(item, view) &&
     (item.target.view !== "Settings" || settingsSection === item.target.settingsSection);
   const accountWorkspace =
-    recordRoute?.kind === "client" || recordRoute?.kind === "property";
+    recordRoute?.kind === "client" || recordRoute?.kind === "property" || recordRoute?.kind === "lead";
   useEffect(() => {
     if (!recordRoute) {
       recordOpenAttempted.current = null;
@@ -1501,8 +1574,8 @@ function App() {
                   : view === "My Day"
                     ? "Your assignments and field notes, wherever work takes you."
                     : view === "Settings"
-                      ? "Control access, account security, connections and workspace defaults."
-                      : view === "Agreement Drafts" ? "Prepare client-specific terms, scope and costs from your agreement templates." : view === "Agreement Templates" ? "Manage reusable terms, scope, cost breakdowns, and published agreement packages." : view === "CMS Pages" ? "Manage CMS page content, publication, and revision history." : marketingPageCopy[view]?.description ?? "Keep the details connected to the work."}
+                      ? settingsDescriptions[settingsSection]
+                      : marketingPageCopy[view]?.description ?? workspaceDescriptions[view] ?? "Review this workspace and its current work."}
               </p>
             </div>
             {!routeUnavailable && <div className="heading-actions">
@@ -1601,7 +1674,7 @@ function App() {
               })}
             </nav>
           )}
-          {!routeUnavailable && inSalesWorkspace && salesWorkspaceTabs.length > 1 && (
+          {!routeUnavailable && inSalesWorkspace && recordRoute?.kind !== "lead" && salesWorkspaceTabs.length > 1 && (
             <nav className="workspace-tabs sales-workspace-tabs" aria-label="Sales workspace">
               {salesWorkspaceTabs.map((tab) => {
                 const Icon = tab.icon;
@@ -1615,7 +1688,16 @@ function App() {
               })}
             </nav>
           )}
-          {!routeUnavailable && recordRoute?.kind === "client" ? (
+          {!routeUnavailable && recordRoute?.kind === "lead" ? (
+            <PipelineProvider enabled={can("revenue.sales")}>
+              <LeadProfile
+                id={recordRoute.id}
+                tab={recordRoute.tab}
+                canOnboard={can("customers.clients")}
+                onTab={(tab) => navigateRecord(salesPage, { kind: "lead", id: recordRoute.id, tab })}
+              />
+            </PipelineProvider>
+          ) : !routeUnavailable && recordRoute?.kind === "client" ? (
             <ClientWorkspace
               id={recordRoute.id}
               tab={recordRoute.tab}
@@ -1660,6 +1742,18 @@ function App() {
                   Return to workspace
                 </button>
               </div>
+            </section>
+          ) : sharedDataRequired && workspaceDataGate !== "ready" ? (
+            <section className="panel" aria-label="Workspace records">
+              <h2>{workspaceDataGate === "loading" ? "Loading workspace records" : "Workspace records are unavailable"}</h2>
+              <p role={workspaceDataGate === "loading" ? "status" : undefined}>
+                {workspaceDataGate === "offline"
+                  ? "Reconnect to verify current records for this workspace."
+                  : workspaceDataGate === "loading"
+                    ? "Checking the latest records for this workspace."
+                    : "The records could not be verified. Retry before making a decision from this screen."}
+              </p>
+              {workspaceDataGate === "failed" && <button type="button" onClick={() => void refresh()}>Retry workspace records</button>}
             </section>
           ) : <>
           {view === "Profile" && (
@@ -1956,21 +2050,10 @@ function App() {
                   }}
                 />
               )}
-              <section className="panel">
-                {data.work?.some(
-                  (work: any) =>
-                    view !== "My Day" ||
-                    (work.scheduled_at &&
-                      operatingDate(work.scheduled_at) === fieldDay),
-                ) ? (
-                  data.work
-                    .filter(
-                      (work: any) =>
-                        view !== "My Day" ||
-                        (work.scheduled_at &&
-                          operatingDate(work.scheduled_at) === fieldDay),
-                    )
-                    .map((w: any) => (
+              {(view === "My Day" || visibleScheduleWork.length > 0) && (
+                <section className="panel">
+                {visibleScheduleWork.length ? (
+                  visibleScheduleWork.map((w: any) => (
                       <article
                         className="work-card"
                         key={w.id}
@@ -2118,7 +2201,8 @@ function App() {
                     text="Scheduled assignments will appear here."
                   />
                 )}
-              </section>
+                </section>
+              )}
               {view === "Schedule" && ops && <FieldConflictReview />}
               {view === "Schedule" && ops && (
                 <AssessmentAvailability request={api} onChange={refresh} />
@@ -2150,12 +2234,20 @@ function App() {
               )}
             </>
           )}
-          {inSalesWorkspace && (
+          {inSalesWorkspace && recordRoute?.kind !== "lead" && (
             <PipelineProvider key={`${person.id}:${can("revenue.sales")}`} enabled={can("revenue.sales")}>
               {person.role === "owner" && <PipelineSettingsEditor initiallyOpen={view === "Pipeline Settings"} />}
-              {view === "Pipeline" ? <SalesPipelineBoard canOnboard={can("customers.clients")} onCreate={() => openForm("lead")} /> : view === "Pipeline Settings" ? null : <>
+              {view === "Pipeline" ? <SalesPipelineBoard onCreate={() => openForm("lead")} onOpen={(id) => navigateRecord(salesPage, { kind: "lead", id, tab: "overview" })} /> : view === "Pipeline Settings" ? null : <>
               {hasCapability(person, "revenue.sales") && <a href="/agreements/drafts">Agreement drafts</a>}
-              {hasCapability(person, "revenue.sales") && <CommercialInbox staff={data.staff || []} canOnboard={can("customers.clients")} />}
+              {can("revenue.sales") && (
+                <InquiryList
+                  key={person.id}
+                  revision={inquiryRevision}
+                  owners={data.staff || []}
+                  onCreate={() => openForm("lead")}
+                  onOpen={(id) => navigateRecord(salesPage, { kind: "lead", id, tab: "overview" })}
+                />
+              )}
               <section className="panel">
                 <div className="panel-heading">
                   <h2>Estimates</h2>
@@ -2228,20 +2320,14 @@ function App() {
                   <p className="empty">Your estimates will appear here.</p>
                 )}
               </section>
-              {can("revenue.sales") && (
-                <InquiryList
-                  key={person.id}
-                  revision={inquiryRevision}
-                  owners={data.staff || []}
-                  onCreate={() => openForm("lead")}
-                  canOnboard={can("customers.clients")}
-                />
-              )}
               </>}
             </PipelineProvider>
           )}
           {view === "Billing" && (
             <section className="panel">
+              {!isOnline && <p role="status">Connect to review current billing records.</p>}
+              {dataLoadStatus === "loading" && <p role="status">Loading billing records…</p>}
+              {dataLoadStatus === "failed" && <button type="button" className="secondary" onClick={() => void refresh()}>Retry billing records</button>}
               <div className="panel-heading">
                 <h2>{can("revenue.billing") ? "Billing drafts & invoices" : "Your invoices"}</h2>
                 {can("revenue.billing") && (
@@ -2261,79 +2347,26 @@ function App() {
                   posted. Drafts do not send or charge customers.
                 </p>
               )}
-              {(data.billing || []).map((b: any) => (
-                <div className="schedule-row" key={b.id}>
-                  <div>
-                    <strong>{b.title}</strong>
-                    <small>
-                      {b.property_name} · {b.kind}
-                    </small>
-                  </div>
-                  <strong>{money(b.amount_cents)}</strong>
-                  <span className="badge">{b.status}</span>
-                  {can("revenue.billing") && b.status === "posted" && !b.ownership_verified && (
-                    <small role="status">
-                      Accounting customer needs reconciliation · hidden from
-                      client
-                    </small>
-                  )}
-                  {can("revenue.billing") && b.status !== "posted" && (
-                    <button
-                      onClick={() =>
-                        void run(async () => {
-                          await api("/billing/" + b.id + "/post", {});
-                          await refresh();
-                        })
-                      }
-                    >
-                      Post to QuickBooks
-                    </button>
-                  )}
-                  {b.payment_url && (
-                    <a href={b.payment_url} target="_blank" rel="noreferrer">
-                      Pay invoice
-                    </a>
-                  )}
-                </div>
-              ))}
-              {(data["quickbooks/invoices"] || []).map((invoice: any) => (
-                <div className="schedule-row" key={"qbo-" + invoice.id}>
-                  <div>
-                    <strong>
-                      Invoice {invoice.document_number || invoice.id}
-                    </strong>
-                    <small>{invoice.client_name}</small>
-                    {can("revenue.billing") && !invoice.ownership_verified && (
-                      <small>
-                        Customer mapping needs review · hidden from client
-                      </small>
-                    )}
-                  </div>
-                  <strong>{money(invoice.balance_cents)} outstanding</strong>
-                  {invoice.payment_url && invoice.ownership_verified && (
-                    <a
-                      href={invoice.payment_url}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      Pay invoice
-                    </a>
-                  )}
-                </div>
-              ))}
-              {!data.billing?.length &&
-                !data["quickbooks/invoices"]?.length && (
-                  <Empty
-                    title="Billing, connected to the work"
-                    text="Approved estimates provide the basis for deposits, progress billing, and final balances."
-                  />
-                )}
+              {isOnline && dataLoadStatus === "ready" && <BillingRecords
+                drafts={data.billing || []}
+                invoices={data["quickbooks/invoices"] || []}
+                canManage={can("revenue.billing")}
+                onPost={async (id) => {
+                  await api("/billing/" + id + "/post", {});
+                  await refresh();
+                }}
+              />}
             </section>
           )}
           {view === "Recurring" && (
             <>
+              {!isOnline && <p role="status">Connect to review current recurring services.</p>}
+              {dataLoadStatus === "loading" && <p role="status">Loading recurring services…</p>}
+              {dataLoadStatus === "failed" && <button type="button" className="secondary" onClick={() => void refresh()}>Retry recurring services</button>}
+              {isOnline && dataLoadStatus === "ready" && <>
               <RecurringCalendar jobs={data["recurring-jobs"] || []} />
-              <section className="panel">
+              {Boolean(data["recurring-jobs"]?.length) && <section className="panel">
+                <div className="recurring-desktop-list">
                 <Table
                   rows={(data["recurring-jobs"] || []).map((job: any) => ({
                     ...job,
@@ -2354,9 +2387,12 @@ function App() {
                   ]}
                   empty="No recurring services yet."
                 />
+                </div>
+                <RecurringServiceCards jobs={data["recurring-jobs"] || []} canActivate={canManageServiceAgreements(person)} onActivate={(job) => openForm("activate-recurring", job)} />
                 <p>Visit allowances include reserved work and charged visits. Cancelled or skipped visits release a slot only when uncharged. Blank counts indicate a service without a per-visit allowance for its next date.</p>
-                {canManageServiceAgreements(person) && (data["recurring-jobs"] || []).filter((item: any) => item.paused && item.agreement_status === "draft").map((item: any) => <button key={item.id} onClick={() => openForm("activate-recurring", item)}>Schedule and activate {item.title}</button>)}
-              </section>
+                <div className="recurring-desktop-list">{canManageServiceAgreements(person) && (data["recurring-jobs"] || []).filter((item: any) => item.paused && item.agreement_status === "draft").map((item: any) => <button key={item.id} onClick={() => openForm("activate-recurring", item)}>Schedule and activate {item.title}</button>)}</div>
+              </section>}
+              </>}
             </>
           )}
           {view === "Projects" && (
@@ -2366,30 +2402,18 @@ function App() {
             <InspectionReports
               inspections={data.inspections || []}
               canPublish={can("operations.inspections")}
-              onPublish={(id) =>
-                void run(async () => {
-                  await api("/inspections/" + id + "/publish", {});
-                  await refresh();
-                })
-              }
+              onPublish={async (id) => {
+                await api("/inspections/" + id + "/publish", {});
+                await refresh();
+              }}
             />
           )}
           {view === "Expenses" && (
             <section className="panel">
-              <Table
-                rows={(data.expenses || []).map((e: any) => ({
-                  ...e,
-                  amount: money(e.amount_cents),
-                }))}
-                columns={[
-                  "property_name",
-                  "description",
-                  "category",
-                  "amount",
-                  "incurred_on",
-                ]}
-                empty="No expenses yet."
-              />
+              {!isOnline && <p role="status">Connect to review current expenses.</p>}
+              {dataLoadStatus === "loading" && <p role="status">Loading expenses…</p>}
+              {dataLoadStatus === "failed" && <button type="button" className="secondary" onClick={() => void refresh()}>Retry expenses</button>}
+              {isOnline && dataLoadStatus === "ready" && <ExpenseRecords records={data.expenses || []} />}
             </section>
           )}
           {view === "Requests" && (

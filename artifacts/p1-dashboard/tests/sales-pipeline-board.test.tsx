@@ -65,8 +65,9 @@ afterEach(async () => {
 
 it("groups the existing Sales inquiries by all six persisted lifecycle stages", async () => {
   const create = vi.fn();
+  const open = vi.fn();
   await act(async () => {
-    root.render(<SalesPipelineBoard canOnboard onCreate={create} />);
+    root.render(<SalesPipelineBoard onCreate={create} onOpen={open} />);
     await Promise.resolve();
   });
   expect(api.listSalesInquiries).toHaveBeenCalledTimes(6);
@@ -88,6 +89,11 @@ it("groups the existing Sales inquiries by all six persisted lifecycle stages", 
     host.querySelector<HTMLButtonElement>("button")!.click(),
   );
   expect(create).toHaveBeenCalledOnce();
+  const link = host.querySelector<HTMLAnchorElement>('.sales-pipeline-card-link');
+  expect(link?.getAttribute('href')).toBe('/sales/leads/11111111-1111-4111-8111-111111111111');
+  await act(async () => link?.click());
+  expect(open).toHaveBeenCalledWith('11111111-1111-4111-8111-111111111111');
+  expect(host.textContent).not.toContain('Open inquiry workspace');
 });
 
 it("retries a failed refresh and appends the next page without duplicating a card", async () => {
@@ -131,7 +137,7 @@ it("retries a failed refresh and appends the next page without duplicating a car
   });
   const create = vi.fn();
   await act(async () => {
-    root.render(<SalesPipelineBoard canOnboard onCreate={create} />);
+    root.render(<SalesPipelineBoard onCreate={create} onOpen={vi.fn()} />);
     await Promise.resolve();
   });
   expect(host.querySelector('[role="alert"]')?.textContent).toContain(
@@ -190,7 +196,7 @@ it("keeps a refreshed pipeline when an older page resolves after its request was
     );
   });
   await act(async () => {
-    root.render(<SalesPipelineBoard onCreate={vi.fn()} />);
+    root.render(<SalesPipelineBoard onCreate={vi.fn()} onOpen={vi.fn()} />);
     await Promise.resolve();
   });
   const older = [...host.querySelectorAll<HTMLButtonElement>("button")].find(
@@ -250,7 +256,7 @@ it("aborts an in-flight older page on unmount without rendering its late respons
     },
   );
   await act(async () => {
-    root.render(<SalesPipelineBoard onCreate={vi.fn()} />);
+    root.render(<SalesPipelineBoard onCreate={vi.fn()} onOpen={vi.fn()} />);
     await Promise.resolve();
   });
   await act(async () => {
@@ -297,7 +303,7 @@ it("uses the Owner-configured stage order, labels, and colors", async () => {
   await act(async () => {
     root.render(
       <PipelineProvider>
-        <SalesPipelineBoard onCreate={vi.fn()} />
+        <SalesPipelineBoard onCreate={vi.fn()} onOpen={vi.fn()} />
       </PipelineProvider>,
     );
     await Promise.resolve();

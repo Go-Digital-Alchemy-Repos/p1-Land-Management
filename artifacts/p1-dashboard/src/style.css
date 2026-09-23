@@ -1265,8 +1265,19 @@ textarea {
   .profile-avatar-wrap { grid-template-columns: auto auto; align-items: center; }
   .avatar-dropzone { width: 100%; }
   .inline-form { grid-template-columns: 1fr; }
+  .page-heading {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .heading-actions {
+    display: flex;
+    width: 100%;
+  }
   .heading-actions button {
-    font-size: 11px;
+    width: 100%;
+    min-height: 44px;
+    justify-content: center;
+    font-size: 14px;
   }
   .metrics {
     gap: 10px;
@@ -1749,6 +1760,11 @@ td { padding: 16px var(--atlas-surface-inset); }
 .context-list > button:last-child,.context-list > div:last-child { border-bottom: 0; }
 .context-list > button:hover { background: hsl(var(--muted)); }
 .context-list > button > svg:last-child { margin-left: auto; }
+.context-list > .account-sales-origin { align-items: center; border-bottom: 1px solid hsl(var(--border)); display: flex; gap: .75rem; min-height: 4rem; padding: .75rem 1rem; text-decoration: none; }
+.context-list > .account-sales-origin:last-child { border-bottom: 0; }
+.context-list > .account-sales-origin:hover { background: hsl(var(--muted)); }
+.account-sales-origin > svg:last-child { margin-left: auto; }
+.account-sales-origin small { color: hsl(var(--muted-foreground)); display: block; font-size: .78rem; overflow-wrap: anywhere; white-space: normal; }
 .context-list span { min-width: 0; }
 .context-list strong { display: block; color: hsl(var(--foreground)); font-size: 12px; }
 .context-list small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10px; }
@@ -1801,10 +1817,13 @@ td { padding: 16px var(--atlas-surface-inset); }
 .service-agreements .agreement-columns { gap: 22px; }
 .service-agreements .agreement-list > button { border-color: hsl(var(--border)); background: hsl(var(--card)); }
 .service-agreements .agreement-list > button[aria-pressed="true"] { outline: 0; border-color: hsl(var(--border)); background: hsl(var(--muted)); box-shadow: inset 3px 0 hsl(var(--foreground) / .10); }
+.service-agreements .agreement-actions button { min-height: 42px; padding: 9px 14px; border: 1px solid hsl(var(--border)); border-radius: var(--radius-buttons); background: hsl(var(--card)); font-size: 12px; }
+.service-agreements .agreement-actions button.primary { border-color: hsl(var(--primary)); background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); }
 .service-agreements .agreement-queue { margin: 0; padding: 22px 24px 24px; border-top-color: var(--atlas-line); }
 
 .project-phases .panel-heading { align-items: flex-start; }
 .project-phases .panel-heading .muted { margin: 6px 0 0; }
+.project-phases-heading button.secondary { min-height: 42px; padding: 9px 16px; border: 1px solid hsl(var(--border)); border-radius: var(--radius-buttons); background: hsl(var(--card)); font-size: 12px; }
 .project-phase-select { display: grid; max-width: 480px; gap: 6px; margin: 20px var(--space-6) 0; }
 .project-phases > .phase-form { margin: 16px var(--space-6) 0; }
 .project-phases > .phase-list { display: grid; gap: 10px; padding: 16px var(--space-6) var(--space-6); }
@@ -1821,12 +1840,69 @@ td { padding: 16px var(--atlas-surface-inset); }
 .billing-form > fieldset > label:first-of-type,.billing-form > fieldset > section,.billing-form > p { grid-column: 1 / -1; }
 .phase-override { display: grid; gap: 6px; padding: 10px; border-left: 3px solid hsl(var(--warning)); background: hsl(var(--warning-surface)); color: hsl(var(--warning)); font-size: 12px; font-weight: 700; }
 .warning { color: hsl(var(--warning)); font-weight: 700; }
+.recurring-mobile-list { display: none; }
+.expense-record-controls { display: grid; grid-template-columns: minmax(0, 1fr) minmax(180px, 240px); gap: 12px; padding: 18px var(--atlas-surface-inset); }
+.expense-record-controls label { display: grid; gap: 6px; font-size: 12px; font-weight: 650; }
+.expense-record-controls input, .expense-record-controls select { width: 100%; }
+.expense-record-list { display: grid; gap: 10px; padding: 0 var(--atlas-surface-inset) 20px; }
+.expense-record { border: 1px solid hsl(var(--border)); border-radius: var(--radius-cards); background: hsl(var(--card)); }
+.expense-record summary { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 64px; padding: 14px 18px; cursor: pointer; }
+.expense-record summary:focus-visible { outline: 3px solid hsl(var(--primary)); outline-offset: 2px; }
+.expense-record summary > span:first-child { display: grid; gap: 4px; min-width: 0; }
+.expense-record summary small { color: hsl(var(--muted-foreground)); }
+.expense-record-amount { margin-left: auto; font-weight: 700; white-space: nowrap; }
+.expense-record dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 0; padding: 0 18px 18px; }
+.expense-record dl div { display: grid; gap: 2px; }
+.expense-record dt { color: hsl(var(--muted-foreground)); font-size: 11px; }
+.expense-record dd { margin: 0; overflow-wrap: anywhere; }
+.billing-record-controls { display: grid; grid-template-columns: minmax(0, 1fr) minmax(180px, 240px); gap: 12px; padding: 18px var(--atlas-surface-inset); }
+.billing-record-controls label { display: grid; gap: 6px; font-size: 12px; font-weight: 650; }
+.billing-record-controls input,.billing-record-controls select { width: 100%; }
+.billing-record-list { display: grid; gap: 10px; padding: 0 var(--atlas-surface-inset) 20px; }
+.billing-record { min-width: 0; border: 1px solid hsl(var(--border)); border-radius: var(--radius-cards); background: hsl(var(--card)); }
+.billing-record summary { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 64px; padding: 14px 18px; cursor: pointer; }
+.billing-record summary:focus-visible { outline: 3px solid hsl(var(--primary)); outline-offset: 2px; }
+.billing-record-heading { display: grid; gap: 4px; min-width: 0; }
+.billing-record-heading strong,.billing-record-heading small { overflow-wrap: anywhere; }
+.billing-record-heading small { color: hsl(var(--muted-foreground)); }
+.billing-record-summary { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.billing-record-detail { display: grid; gap: 14px; padding: 0 18px 18px; }
+.billing-record-detail dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 0; }
+.billing-record-detail dl div { display: grid; gap: 2px; min-width: 0; }
+.billing-record-detail dt { color: hsl(var(--muted-foreground)); font-size: 11px; }
+.billing-record-detail dd { margin: 0; overflow-wrap: anywhere; }
+.billing-record-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.billing-record-actions a { color: hsl(var(--primary)); font-weight: 650; }
+.billing-record-warning { margin: 0; color: hsl(var(--warning)); }
+.billing-post-review { display: grid; gap: 12px; padding: 16px; border: 1px solid hsl(var(--border)); border-radius: var(--radius-cards); background: hsl(var(--muted)); }
+.billing-post-review h3,.billing-post-review p { margin: 0; }
 
 @media (max-width: 900px) {
   .account-overview,.notes-layout { grid-template-columns: 1fr; }
   .property-overview > .account-primary-column,.property-context-rail { grid-column: auto; grid-row: auto; }
   .context-rail { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .atlas-stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 700px) {
+  .billing-record-controls,.billing-record-detail dl { grid-template-columns: 1fr; }
+  .billing-record summary { align-items: flex-start; }
+  .billing-record-summary { flex-direction: column; align-items: flex-end; gap: 6px; }
+  .billing-record-actions button { width: 100%; justify-content: center; }
+  .expense-record-controls, .expense-record dl { grid-template-columns: 1fr; }
+  .expense-record summary { align-items: flex-start; }
+  .expense-record-amount { align-self: center; }
+  .recurring-desktop-list { display: none; }
+  .recurring-mobile-list { display: grid; gap: 10px; padding: 16px; }
+  .recurring-service-card { border: 1px solid hsl(var(--border)); border-radius: var(--radius-cards); background: hsl(var(--card)); }
+  .recurring-service-card summary { display: grid; gap: 5px; min-height: 64px; padding: 14px 18px; cursor: pointer; }
+  .recurring-service-card summary:focus-visible { outline: 3px solid hsl(var(--primary)); outline-offset: 2px; }
+  .recurring-service-card summary span, .recurring-service-card summary small { color: hsl(var(--muted-foreground)); }
+  .recurring-service-card dl { display: grid; gap: 8px; margin: 0; padding: 0 18px 14px; }
+  .recurring-service-card dl div { display: flex; justify-content: space-between; gap: 16px; }
+  .recurring-service-card dt { color: hsl(var(--muted-foreground)); }
+  .recurring-service-card dd { margin: 0; text-align: right; overflow-wrap: anywhere; }
+  .recurring-service-card details > button { width: calc(100% - 36px); margin: 0 18px 18px; }
 }
 @media (max-width: 700px) {
   .client-contacts-intro,
@@ -1878,8 +1954,9 @@ td { padding: 16px var(--atlas-surface-inset); }
   .note-list article { padding: 16px; }
   .note-list time { width: 100%; margin-left: 0; }
   .service-agreements .agreement-workspace,.service-agreements .agreement-queue { padding: 16px; }
+  .service-agreements .agreement-actions { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
   .project-phases .panel-heading,.project-phases .phase-form { display: grid; grid-template-columns: 1fr; }
-  .project-phases .panel-heading .secondary { justify-self: start; }
+  .project-phases .panel-heading .secondary { justify-self: stretch; }
   .billing-form > fieldset { grid-template-columns: 1fr; }
 }
 

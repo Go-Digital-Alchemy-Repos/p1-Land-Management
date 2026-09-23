@@ -77,12 +77,13 @@ test(
         },
         body: body ? JSON.stringify(body) : undefined,
       });
+    const reviewedName = `Reviewed customer ${randomUUID()}`;
     const lead = await makeLead(),
       create = {
         operationId: randomUUID(),
         expectedVersion: 1,
         customer: {
-          create: { name: "Reviewed customer", email: null, phone: null },
+          create: { name: reviewedName, email: null, phone: null },
         },
       };
     for (const who of ["sales", "customers", "crew", "client"]) {
@@ -119,7 +120,7 @@ test(
       )
     ).rows[0];
     assert.deepEqual(client, {
-      name: "Reviewed customer",
+      name: reviewedName,
       email: null,
       phone: null,
       quickbooks_id: null,
@@ -137,7 +138,7 @@ test(
     assert.equal(state.description, "Original message");
     const read = await call("both", lead);
     assert.equal(read.headers.get("cache-control"), "private, no-store");
-    assert.equal(((await read.json()) as any).clientName, "Reviewed customer");
+    assert.equal(((await read.json()) as any).clientName, reviewedName);
     assert.equal((await call("owner", lead, create)).status, 409);
     assert.equal(
       (
@@ -160,6 +161,14 @@ test(
     );
     const second = await makeLead();
     assert.equal((await call("both", second, create)).status, 409);
+    const duplicate = await makeLead();
+    const duplicateResponse = await call("both", duplicate, {
+      ...create,
+      operationId: randomUUID(),
+    });
+    assert.equal(duplicateResponse.status, 409);
+    assert.match(JSON.stringify(await duplicateResponse.json()), /matching active customer/i);
+    assert.equal((await counts()).clients, afterCounts.clients);
     const link = {
       operationId: randomUUID(),
       expectedVersion: 1,
@@ -272,7 +281,11 @@ test(
     const failureCounts = await counts();
     try {
       assert.equal(
-        (await call("both", failLead, { ...create, operationId: randomUUID() }))
+        (await call("both", failLead, {
+          ...create,
+          operationId: randomUUID(),
+          customer: { create: { ...create.customer.create, name: `Failure-only ${randomUUID()}` } },
+        }))
           .status,
         500,
       );

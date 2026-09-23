@@ -19,8 +19,27 @@ export function InspectionReports({
 }: {
   inspections: Inspection[];
   canPublish: boolean;
-  onPublish: (id: string) => void;
+  onPublish: (id: string) => Promise<void>;
 }) {
+  const [reviewId, setReviewId] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [error, setError] = useState("");
+  const publishing = useRef(false);
+  async function publish(id: string) {
+    if (publishing.current) return;
+    publishing.current = true;
+    setBusyId(id);
+    setError("");
+    try {
+      await onPublish(id);
+      setReviewId(null);
+    } catch (cause) {
+      setError((cause as Error).message);
+    } finally {
+      publishing.current = false;
+      setBusyId(null);
+    }
+  }
   return (
     <section className="panel inspection-reports" aria-label="Inspection reports">
       <div className="panel-heading">
@@ -68,9 +87,15 @@ export function InspectionReports({
                   {finding.note && <p>{finding.note}</p>}
                 </section>
               ))}
-              {canPublish && !inspection.published && (
-                <button className="primary" onClick={() => onPublish(inspection.id)}>
-                  Review and publish report
+              {canPublish && !inspection.published && (reviewId === inspection.id ?
+                <div className="phase-form" role="group" aria-label={`Publish review for ${inspection.title}`}>
+                  <p>These {findings.length} observations will become visible to the client. Review the details above before publishing.</p>
+                  {error && <p role="alert" className="error">{error}</p>}
+                  <button type="button" className="secondary" disabled={Boolean(busyId)} onClick={() => { setReviewId(null); setError(""); }}>Cancel</button>
+                  <button type="button" className="primary" disabled={Boolean(busyId)} onClick={() => void publish(inspection.id)}>{busyId === inspection.id ? "Publishing…" : "Publish report to client"}</button>
+                </div> :
+                <button className="primary" onClick={() => { setReviewId(inspection.id); setError(""); }}>
+                  Review report
                 </button>
               )}
             </article>
@@ -80,3 +105,4 @@ export function InspectionReports({
     </section>
   );
 }
+import { useRef, useState } from "react";

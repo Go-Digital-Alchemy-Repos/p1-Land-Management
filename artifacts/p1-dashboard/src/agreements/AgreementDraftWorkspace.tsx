@@ -44,6 +44,7 @@ export default function AgreementDraftWorkspace({
     const controller = new AbortController();
     setLoading(true);
     setError("");
+    if (id) setRow(null);
     void (
       id
         ? getAgreementDraft(id, { signal: controller.signal }).then((set) => {
@@ -90,7 +91,7 @@ export default function AgreementDraftWorkspace({
       if (alive.current) setLoading(false);
     }
   }
-  if (id && row)
+  if (id && row?.id.toLowerCase() === id.toLowerCase() && !loading && !error)
     return (
       <AgreementDraftEditor
         key={`${row.id}:${row.version}:${editorRevision}`}
@@ -103,6 +104,12 @@ export default function AgreementDraftWorkspace({
         }}
       />
     );
+  if (id)
+    return <section className="template-library" aria-label="Agreement draft">
+      <a href="/agreements/drafts">← All agreement drafts</a>
+      {loading && <p role="status">Loading agreement draft…</p>}
+      {error && <><p role="alert">Could not load this agreement draft: {error}</p><button type="button" onClick={() => setAttempt((n) => n + 1)}>Retry draft</button></>}
+    </section>;
   if (!id && creating && canEdit)
     return (
       <AgreementDraftCreate

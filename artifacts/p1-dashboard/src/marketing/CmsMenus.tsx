@@ -145,6 +145,7 @@ export default function CmsMenus() {
     [baseline, setBaseline] = useState("");
   const [lock, setLock] = useState<Lock | null>(null),
     [error, setError] = useState(""),
+    [loadError, setLoadError] = useState(""),
     [notice, setNotice] = useState("");
   const [loading, setLoading] = useState(true),
     [busy, setBusy] = useState(false);
@@ -156,25 +157,36 @@ export default function CmsMenus() {
   const dirty = Boolean(draft && JSON.stringify(draft) !== baseline);
   const locked = Boolean(draft?.id && !lock?.ownedByCurrentUser);
   const readAll = async () => {
-    const [next, refs] = await Promise.all([
-      listWebsiteMenus({ signal: controller.current.signal }),
-      getWebsiteMenuReferences({ signal: controller.current.signal }),
-    ]);
-    if (alive.current) {
-      setMenus(next);
-      setReferences(refs);
+    try {
+      const [next, refs] = await Promise.all([
+        listWebsiteMenus({ signal: controller.current.signal }),
+        getWebsiteMenuReferences({ signal: controller.current.signal }),
+      ]);
+      if (alive.current) {
+        setMenus(next);
+        setReferences(refs);
+        setLoadError("");
+      }
+    } catch (cause) {
+      if (alive.current) setLoadError("Could not load saved website menus. Retry before making changes.");
+      throw cause;
+    }
+  };
+  const reloadMenus = async () => {
+    setLoading(true);
+    setLoadError("");
+    try {
+      await readAll();
+    } catch {
+      // readAll sets the actionable load state without implying an empty menu list.
+    } finally {
+      if (alive.current) setLoading(false);
     }
   };
   useEffect(() => {
     alive.current = true;
     controller.current = new AbortController();
-    void readAll()
-      .catch((e) => {
-        if (alive.current) setError(e.message);
-      })
-      .finally(() => {
-        if (alive.current) setLoading(false);
-      });
+    void reloadMenus();
     return () => {
       alive.current = false;
       controller.current.abort();
@@ -333,7 +345,7 @@ export default function CmsMenus() {
             </p>
           </div>
           <button
-            disabled={busy || createUnconfirmed}
+            disabled={busy || loading || Boolean(loadError) || createUnconfirmed}
             onClick={() => {
               if (!createUnconfirmed && discard()) {
                 const next = { name: "", location: "unassigned", items: [] };
@@ -347,7 +359,7 @@ export default function CmsMenus() {
           </button>
         </header>
       )}
-      {!draft && !loading && (
+      {!draft && !loading && !loadError && (
         <div className="menu-presentation">
           <MenuLocationsPresentation
             description="Saving a menu assigned to Main Navigation or a P1 Footer location publishes its links, usually within 30 seconds. An empty assigned menu hides those links; an unassigned location keeps the existing website navigation. Other locations are retained but are not rendered by this website."
@@ -414,6 +426,11 @@ export default function CmsMenus() {
       {(!draft || createUnconfirmed) &&
         (loading ? (
           <p role="status">Loading website menus…</p>
+        ) : loadError ? (
+          <section className="menu-create-recovery" role="alert">
+            <p>{loadError}</p>
+            <button type="button" onClick={() => void reloadMenus()}>Retry menu directory</button>
+          </section>
         ) : (
           <div className="menu-presentation grid gap-4">
             {menus.map((menu) => (

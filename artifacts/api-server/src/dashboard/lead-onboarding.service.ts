@@ -120,8 +120,25 @@ export async function onboardLeadCustomer(
       ).rows[0];
       if (!customer) throw new HttpError(409, "Choose an active customer");
     } else if ("create" in b.customer) {
-      clientId = randomUUID();
       const values = b.customer.create;
+      // Serialize competing handoffs for the same identity before checking for an
+      // active account. The operator can link that account instead of creating a
+      // second customer record from another Won inquiry.
+      const keys = [
+        `customer-name:${values.name.trim().toLocaleLowerCase()}`,
+        ...(values.email ? [`customer-email:${values.email.trim().toLocaleLowerCase()}`] : []),
+      ].sort();
+      for (const key of keys)
+        await c.query("SELECT pg_advisory_xact_lock(hashtextextended($1,0))", [key]);
+      const duplicate = (
+        await c.query(
+          "SELECT id FROM client WHERE NOT archived AND (lower(btrim(name))=lower($1) OR ($2::text IS NOT NULL AND lower(btrim(email))=lower($2))) LIMIT 1",
+          [values.name, values.email],
+        )
+      ).rows[0];
+      if (duplicate)
+        throw new HttpError(409, "A matching active customer exists; link it instead");
+      clientId = randomUUID();
       await c.query(
         "INSERT INTO client(id,name,email,phone) VALUES($1,$2,$3,$4)",
         [clientId, values.name, values.email, values.phone],

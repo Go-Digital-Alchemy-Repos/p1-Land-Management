@@ -1,12 +1,8 @@
 import { PipelineStage, usePipelineStages } from "./PipelineSettings";
-import { LeadOnboarding } from "./LeadOnboarding";
-import { CrmArchive } from "./CrmArchive";
-import { LeadDetails } from "./LeadDetails";
-import { useEffect, useRef, useState } from "react";
+import { ArrowUpRight, CalendarDays } from "lucide-react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { listSalesInquiries } from "@workspace/api-client-react/dashboard";
-import { LeadFollowUp } from "./LeadFollowUp";
-import { LeadNotes } from "./LeadNotes";
-import { CrmTasks } from "./CrmTasks";
+import { formatLeadDateTime } from "./lead-date";
 import "./inquiry-list.css";
 type Inquiry = Awaited<ReturnType<typeof listSalesInquiries>>["items"][number];
 type Query = NonNullable<Parameters<typeof listSalesInquiries>[0]>;
@@ -26,12 +22,12 @@ const emptyFilters: Filters = {
 };
 export function InquiryList({
   onCreate,
-  canOnboard = false,
+  onOpen,
   revision,
   owners,
 }: {
   onCreate: () => void;
-  canOnboard?: boolean;
+  onOpen: (id: string) => void;
   revision: number;
   owners: Array<{
     id: string;
@@ -48,8 +44,7 @@ export function InquiryList({
     [busy, setBusy] = useState(false),
     [loaded, setLoaded] = useState(false),
     [error, setError] = useState(""),
-    [loadedRevision, setLoadedRevision] = useState(revision),
-    [needsRefresh, setNeedsRefresh] = useState(false);
+    [loadedRevision, setLoadedRevision] = useState(revision);
   const alive = useRef(true),
     gate = useRef(false),
     controller = useRef<AbortController | null>(null);
@@ -99,7 +94,6 @@ export function InquiryList({
         setLoaded(true);
         if (!append) {
           setLoadedRevision(revision);
-          setNeedsRefresh(false);
         }
       }
     } catch {
@@ -120,32 +114,10 @@ export function InquiryList({
       controller.current?.abort();
     };
   }, []);
-  function acknowledge(
-    snapshot: Parameters<
-      React.ComponentProps<typeof LeadFollowUp>["onSaved"]
-    >[0],
-  ) {
-    if (
-      items.some(
-        (row) => row.id === snapshot.id && row.version < snapshot.version,
-      )
-    )
-      setNeedsRefresh(true);
-    setItems((old) =>
-      old.map((row) =>
-        row.id === snapshot.id && row.version <= snapshot.version
-          ? {
-              ...row,
-              ...snapshot,
-              owner_name:
-                row.owner_id === snapshot.owner_id
-                  ? row.owner_name
-                  : owners.find((owner) => owner.id === snapshot.owner_id)
-                      ?.name || null,
-            }
-          : row,
-      ),
-    );
+  function open(event: MouseEvent<HTMLAnchorElement>, id: string) {
+    if (event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    onOpen(id);
   }
   return (
     <section className="panel inquiry-list" aria-label="Sales inquiry list">
@@ -249,7 +221,7 @@ export function InquiryList({
           Filter changes are not applied yet.
         </p>
       )}
-      {(revision !== loadedRevision || needsRefresh) && (
+      {revision !== loadedRevision && (
         <p className="inquiry-list-notice" role="status">
           An inquiry was saved. Refresh this list to see the latest results.
         </p>
@@ -266,41 +238,16 @@ export function InquiryList({
       )}
       <div inert={busy}>
         {items.map((lead) => (
-          <div className="schedule-row" key={lead.id}>
-            <div>
-              <strong>{lead.name}</strong>
-              <small>{lead.reported_company_name || lead.location}</small>
-              <p>{lead.description}</p>
-              <small>
-                Owner:{" "}
-                {lead.owner_name ||
-                  (lead.owner_id ? "Previous owner" : "Unassigned")}
-                {lead.next_action_due_at
-                  ? " · Due " +
-                    new Date(lead.next_action_due_at).toLocaleString()
-                  : ""}
-              </small>
+          <article className="inquiry-row" key={lead.id}>
+            <div className="inquiry-row-main">
+              <a href={`/sales/leads/${encodeURIComponent(lead.id)}`} onClick={(event) => open(event, lead.id)} aria-label={`${lead.name} — open inquiry profile`}><strong>{lead.name}</strong><ArrowUpRight size={16} aria-hidden="true" /></a>
+              <p>{lead.reported_company_name || lead.location || "Location not provided"}</p>
+              {lead.next_action && <p className="inquiry-row-next">{lead.next_action}</p>}
+              <small>Owner: {lead.owner_name || (lead.owner_id ? "Previous owner" : "Unassigned")}</small>
+              {lead.next_action_due_at && <small className="inquiry-row-due"><CalendarDays size={14} aria-hidden="true" /> Due {formatLeadDateTime(lead.next_action_due_at)} ET</small>}
             </div>
             <PipelineStage value={lead.status} />
-            {canOnboard && <LeadOnboarding leadId={lead.id} onSaved={() => setNeedsRefresh(true)} />}
-            <LeadFollowUp leadId={lead.id} onSaved={acknowledge} />
-            <LeadDetails
-              leadId={lead.id}
-              onSaved={(snapshot) => {
-                if (lead.version < snapshot.version) setNeedsRefresh(true);
-                setItems((old) =>
-                  old.map((row) =>
-                    row.id === snapshot.id && row.version <= snapshot.version
-                      ? { ...row, ...snapshot }
-                      : row,
-                  ),
-                );
-              }}
-            />
-            <LeadNotes leadId={lead.id} />
-            <CrmArchive kind="lead" parentId={lead.id} />
-            <CrmTasks kind="lead" parentId={lead.id} />
-          </div>
+          </article>
         ))}
       </div>
       {loaded && !items.length && (

@@ -403,11 +403,10 @@ api.get("/properties", async (req, res) => {
   }
   const rows = (await pool.query(sql + " ORDER BY p.name", args)).rows;
   res.json(
-    rows.map((p) =>
-      a.role === "client"
-        ? {
+    rows.map((p) => {
+      if (a.role === "client" || a.role === "crew") return {
             id: p.id,
-            client_id: p.client_id,
+            ...(a.role === "client" ? { client_id: p.client_id } : {}),
             name: p.name,
             address: p.address,
             address_line1: p.address_line1,
@@ -420,9 +419,9 @@ api.get("/properties", async (req, res) => {
             longitude: p.longitude,
             property_type_id: p.property_type_id,
             property_type_name: p.property_type_name,
-          }
-        : p,
-    ),
+          };
+      return p;
+    }),
   );
 });
 api.post("/properties", async (req, res) => {

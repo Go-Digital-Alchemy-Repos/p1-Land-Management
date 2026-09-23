@@ -7,6 +7,7 @@ import {
   shiftScheduleMonth,
   scheduleTime,
 } from "./schedule-dates";
+import { scheduleQueryRanges } from "./schedule-work";
 import "./schedule-calendar.css";
 export type ScheduledWork = Awaited<
   ReturnType<typeof getSchedule>
@@ -44,14 +45,17 @@ export function ScheduleCalendar({
     setError("");
     setRemote([]);
     setChosen(null);
-    async function pages(unscheduled: boolean) {
+    async function pages(
+      unscheduled: boolean,
+      range: { from: string; through: string },
+    ) {
       const result: ScheduledWork[] = [];
       let cursor: string | null = null;
       let count = 0;
       do {
         const q = new URLSearchParams({
-          from: days[0],
-          through: days[days.length - 1],
+          from: range.from,
+          through: range.through,
           unscheduled: String(unscheduled),
         });
         if (cursor) q.set("cursor", cursor);
@@ -65,12 +69,21 @@ export function ScheduleCalendar({
       } while (cursor && active);
       return result;
     }
+    const ranges = scheduleQueryRanges(days);
     void Promise.all([
-      pages(false),
-      canManage ? pages(true) : Promise.resolve([]),
+      Promise.all(ranges.map((range) => pages(false, range))),
+      canManage ? pages(true, ranges[0]) : Promise.resolve([]),
     ])
-      .then((groups) => {
-        if (active) setRemote(groups.flat());
+      .then(([scheduled, unscheduled]) => {
+        if (active) {
+          const byId = new Map(
+            [...scheduled.flat(), ...unscheduled].map((item) => [
+              item.id,
+              item,
+            ]),
+          );
+          setRemote(Array.from(byId.values()));
+        }
       })
       .catch((e) => {
         if (active) setError(e.message);
@@ -99,19 +112,30 @@ export function ScheduleCalendar({
       month: "short",
       day: "numeric",
     }).format(new Date(day + "T12:00:00Z"));
+  const entriesForDay = (day: string) =>
+    visible
+      .filter((w) => w.scheduled_at && scheduleDate(w.scheduled_at) === day)
+      .sort(
+        (a, b) => Date.parse(a.scheduled_at!) - Date.parse(b.scheduled_at!),
+      );
+  const monthAgendaDays = days.filter(
+    (day) =>
+      day.slice(0, 7) === selected.slice(0, 7) && entriesForDay(day).length,
+  );
   function card(w: ScheduledWork) {
     return (
       <button
         className={"calendar-job " + w.status}
         key={w.id}
         onClick={() => {
-          setChosen(w);
-          if (!request) onSelect(w.id);
+          if (request && canManage) setChosen(w);
+          else onSelect(w.id);
         }}
         aria-label={`${w.scheduled_at ? scheduleTime(w.scheduled_at) : "Unscheduled"} ${w.title}, ${w.property_name}, ${w.status.replaceAll("_", " ")}`}
       >
         <strong>
-          {w.scheduled_at ? scheduleTime(w.scheduled_at) : "Unscheduled"} · {w.property_name}
+          {w.scheduled_at ? scheduleTime(w.scheduled_at) : "Unscheduled"} ·{" "}
+          {w.property_name}
         </strong>
         <span className="calendar-job-title">{w.title}</span>
         <span>
@@ -151,33 +175,35 @@ export function ScheduleCalendar({
             Month
           </button>
         </div>
-        <button
-          aria-label={"Previous " + mode}
-          onClick={() =>
-            setSelected(
-              mode === "month"
-                ? shiftScheduleMonth(selected, -1)
-                : shiftScheduleDate(selected, mode === "day" ? -1 : -7),
-            )
-          }
-        >
-          Previous
-        </button>
-        <button onClick={() => setSelected(scheduleDate(new Date()))}>
-          Today
-        </button>
-        <button
-          aria-label={"Next " + mode}
-          onClick={() =>
-            setSelected(
-              mode === "month"
-                ? shiftScheduleMonth(selected, 1)
-                : shiftScheduleDate(selected, mode === "day" ? 1 : 7),
-            )
-          }
-        >
-          Next
-        </button>
+        <div className="calendar-period-actions">
+          <button
+            aria-label={"Previous " + mode}
+            onClick={() =>
+              setSelected(
+                mode === "month"
+                  ? shiftScheduleMonth(selected, -1)
+                  : shiftScheduleDate(selected, mode === "day" ? -1 : -7),
+              )
+            }
+          >
+            Previous
+          </button>
+          <button onClick={() => setSelected(scheduleDate(new Date()))}>
+            Today
+          </button>
+          <button
+            aria-label={"Next " + mode}
+            onClick={() =>
+              setSelected(
+                mode === "month"
+                  ? shiftScheduleMonth(selected, 1)
+                  : shiftScheduleDate(selected, mode === "day" ? 1 : 7),
+              )
+            }
+          >
+            Next
+          </button>
+        </div>
         <label>
           Calendar date
           <input
@@ -236,7 +262,12 @@ export function ScheduleCalendar({
           </p>
           {chosen.scope && <p>{chosen.scope}</p>}
           {
-            <button onClick={() => onSelect(chosen.id)}>
+            <button
+              onClick={() => {
+                setChosen(null);
+                onSelect(chosen.id);
+              }}
+            >
               Open existing work details
             </button>
           }
@@ -323,22 +354,19 @@ export function ScheduleCalendar({
       )}
       <div className={"calendar-days " + mode}>
         {days.map((day) => {
-          const entries = visible
-            .filter(
-              (w) => w.scheduled_at && scheduleDate(w.scheduled_at) === day,
-            )
-            .sort(
-              (a, b) =>
-                Date.parse(a.scheduled_at!) - Date.parse(b.scheduled_at!),
-            );
+          const entries = entriesForDay(day);
           return (
             <section
               key={day}
               className={[
                 "calendar-day",
                 day === scheduleDate(new Date()) && "today",
-                mode === "month" && day.slice(0, 7) !== selected.slice(0, 7) && "outside-month",
-              ].filter(Boolean).join(" ")}
+                mode === "month" &&
+                  day.slice(0, 7) !== selected.slice(0, 7) &&
+                  "outside-month",
+              ]
+                .filter(Boolean)
+                .join(" ")}
               aria-label={title(day)}
             >
               <h3>
@@ -356,6 +384,33 @@ export function ScheduleCalendar({
           );
         })}
       </div>
+      {mode === "month" && (
+        <div className="schedule-month-agenda" aria-label="Monthly visits">
+          {monthAgendaDays.length ? (
+            monthAgendaDays.map((day) => {
+              const entries = entriesForDay(day);
+              return (
+                <section
+                  className="schedule-agenda-day"
+                  key={day}
+                  aria-label={title(day)}
+                >
+                  <h3>
+                    {title(day)}{" "}
+                    <small>
+                      {entries.length}{" "}
+                      {entries.length === 1 ? "visit" : "visits"}
+                    </small>
+                  </h3>
+                  {entries.map(card)}
+                </section>
+              );
+            })
+          ) : (
+            <p className="empty">No visits this month.</p>
+          )}
+        </div>
+      )}
       {canManage && (
         <details>
           <summary>

@@ -63,6 +63,16 @@ afterEach(async () => {
   container.remove();
   vi.restoreAllMocks();
 });
+it("shows a retry when the menu directory fails instead of claiming there are no menus", async () => {
+  state.api.listWebsiteMenus.mockRejectedValueOnce(Error("Temporary service failure"));
+  await act(async () => { root.render(<CmsMenus />); await Promise.resolve(); });
+  expect(container.textContent).toContain("Could not load saved website menus");
+  expect(container.textContent).not.toContain("No website menus yet.");
+  const retry = Array.from(container.querySelectorAll("button")).find((button) => button.textContent === "Retry menu directory");
+  expect(retry).toBeTruthy();
+  await act(async () => { retry?.click(); await Promise.resolve(); });
+  expect(container.textContent).toContain("Main Menu");
+});
 it("sends the opened menu version and retains the draft after a stale rejection", async () => {
   await act(async () => root.render(<CmsMenus />));
   const edit = Array.from(container.querySelectorAll("button")).find(
