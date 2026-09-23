@@ -448,7 +448,7 @@ api.post("/properties", async (req, res) => {
   ).parse(req.body);
   const address = normalizePropertyAddress(b);
   const key = randomUUID();
-  const coordinates = await geocodePropertyAddress(address.address);
+  const coordinates = await geocodePropertyAddress(address.address, address);
   await transaction(async (c) => {
     if (b.propertyTypeId) {
       const propertyType = await c.query("SELECT id FROM property_type WHERE id=$1", [b.propertyTypeId]);
@@ -501,7 +501,7 @@ api.post("/properties/:id", async (req, res) => {
   // still checked again by the update below, so a concurrent edit cannot
   // overwrite newer data with this lookup's result.
   const current = await pool.query(
-    "SELECT address FROM property WHERE id=$1 AND archived=false AND lifecycle='operational' AND version=$2",
+    "SELECT address,latitude,longitude FROM property WHERE id=$1 AND archived=false AND lifecycle='operational' AND version=$2",
     [propertyId, b.version],
   );
   if (!current.rowCount)
@@ -510,8 +510,9 @@ api.post("/properties/:id", async (req, res) => {
       "Property changed or is unavailable; refresh before saving",
     );
   const addressChanged = current.rows[0].address !== address.address;
-  const coordinates = addressChanged
-    ? await geocodePropertyAddress(address.address)
+  const refreshCoordinates = addressChanged || current.rows[0].latitude == null || current.rows[0].longitude == null;
+  const coordinates = refreshCoordinates
+    ? await geocodePropertyAddress(address.address, address)
     : null;
   const result = await transaction(async (c) => {
     if (b.propertyTypeId) {
@@ -534,7 +535,7 @@ api.post("/properties/:id", async (req, res) => {
         b.propertyTypeId !== undefined,
         b.propertyTypeId ?? null,
         b.version,
-        addressChanged,
+        refreshCoordinates,
         coordinates?.latitude ?? null,
         coordinates?.longitude ?? null,
         coordinates ? "approximate" : null,

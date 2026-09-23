@@ -15,7 +15,7 @@ if (testOrigin && !testOrigin.startsWith("http://localhost:"))
 after(() => pool.end());
 
 test(
-  "property address edits update a pin or remove an obsolete location without geocoding unchanged addresses",
+  "property address edits update pins, clear obsolete locations, and retry missing coordinates",
   { skip: !testOrigin },
   async () => {
     const manager = randomUUID();
@@ -57,6 +57,7 @@ test(
 
     const originalSession = auth.api.getSession;
     const originalFetch = globalThis.fetch;
+    const originalGeoapifyKey = process.env.GEOAPIFY_API_KEY;
     let calls = 0;
     (auth.api as any).getSession = async ({ headers }: any) => {
       const userId = headers.get("x-test-user");
@@ -242,6 +243,43 @@ test(
         { property_type_id: propertyType, version: 6 },
       );
 
+      // This valid street is absent from Census. A first provider miss leaves
+      // it unmapped, then saving the unchanged address retries the lookup.
+      process.env.GEOAPIFY_API_KEY = "synthetic-test-key";
+      globalThis.fetch = (async (input: string | URL | Request) => {
+        const url = String(input);
+        return new Response(JSON.stringify(url.includes("census.gov")
+          ? { result: { addressMatches: [] } }
+          : { results: [] }), { status: 200 });
+      }) as typeof fetch;
+      const stallingsAddress = {
+        name: "Industrial map property",
+        addressLine1: "12063 Guion Lane",
+        city: "Stallings",
+        state: "NC",
+        postalCode: "28104",
+        acreage: null,
+      };
+      response = await update({ ...stallingsAddress, version: 6 });
+      assert.equal(response.status, 200);
+      assert.equal((await pool.query("SELECT latitude FROM property WHERE id=$1", [property])).rows[0].latitude, null);
+      globalThis.fetch = (async (input: string | URL | Request) => {
+        const url = String(input);
+        return new Response(JSON.stringify(url.includes("census.gov")
+          ? { result: { addressMatches: [] } }
+          : { results: [{
+              housenumber: "12063", street: "Guion Lane", city: "Stallings",
+              state_code: "NC", postcode: "28105", country_code: "us",
+              lat: 35.09989, lon: -80.678539, rank: { match_type: "full_match" },
+            }] }), { status: 200 });
+      }) as typeof fetch;
+      response = await update({ ...stallingsAddress, version: 7 });
+      assert.equal(response.status, 200);
+      assert.deepEqual(
+        (await pool.query("SELECT latitude,longitude,version FROM property WHERE id=$1", [property])).rows[0],
+        { latitude: 35.09989, longitude: -80.678539, version: 8 },
+      );
+
       const customType = `Portfolio test ${randomUUID().slice(0, 8)}`;
       response = await originalFetch(
         `${url.slice(0, url.lastIndexOf("/properties/"))}/property-types`,
@@ -293,6 +331,8 @@ test(
       assert.equal(response.status, 409);
     } finally {
       globalThis.fetch = originalFetch;
+      if (originalGeoapifyKey === undefined) delete process.env.GEOAPIFY_API_KEY;
+      else process.env.GEOAPIFY_API_KEY = originalGeoapifyKey;
       (auth.api as any).getSession = originalSession;
       await new Promise<void>((resolve, reject) =>
         server.close((error) => (error ? reject(error) : resolve())),
