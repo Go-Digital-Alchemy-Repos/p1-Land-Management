@@ -3138,7 +3138,7 @@ function App() {
                         </label>
                         <label>
                           ZIP code
-                          <input name="postalCode" autoComplete="postal-code" inputMode="numeric" pattern="\\d{5}(-\\d{4})?" placeholder="28105" required />
+                          <input name="postalCode" autoComplete="postal-code" inputMode="numeric" pattern="[0-9]{5}(-[0-9]{4})?" placeholder="28105" required />
                         </label>
                       </div>
                     </fieldset>

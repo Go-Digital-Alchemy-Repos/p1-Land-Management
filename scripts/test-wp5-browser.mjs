@@ -27,7 +27,7 @@ async function ready() {
   }
   throw new Error("Dashboard preview server did not become ready");
 }
-function fixture(role) {
+function fixture(role, queue = undefined) {
   const userId = role === "crew" ? "00000000-0000-4000-8000-000000000002" : "00000000-0000-4000-8000-000000000001";
   const workId = "00000000-0000-4000-8000-000000000003";
   return { userId, workId, async route(request) {
@@ -36,7 +36,10 @@ function fixture(role) {
     if (url.pathname === "/api/v1/setup") body = { initialized: true };
     else if (url.pathname === "/api/v1/me") body = {
       id: userId, name: role === "crew" ? "Test Crew" : "Test Owner",
-      email: `${role}@example.test`, role, capabilities: [], twoFactorEnabled: false,
+      email: `${role}@example.test`, role,
+      capabilities: role === "dispatch" ? ["workspace.overview", "operations.schedule"] :
+        role === "sales" ? ["workspace.overview", "revenue.sales"] : [],
+      twoFactorEnabled: false,
       features: { quickbooks: false },
     };
     else if (url.pathname === "/api/v1/work-orders") body = role === "crew" ? [{
@@ -44,8 +47,13 @@ function fixture(role) {
       property_id: "00000000-0000-4000-8000-000000000004",
       status: "scheduled", scheduled_at: new Date().toISOString(), assigned_to: userId,
     }] : [];
-    else if (url.pathname === "/api/v1/overview/needs-you") body =
-      [{ kind: "new-inquiries", count: 2, href: "/sales?status=new" }];
+    else if (url.pathname === "/api/v1/overview/needs-you") body = queue ?? (
+      role === "client"
+        ? [{ kind: "client-estimates", count: 1, href: "/sales?estimate=sent" }]
+        : role === "dispatch"
+          ? [{ kind: "unassigned-work", count: 2, href: "/schedule?unassigned=1" }]
+          : [{ kind: "new-inquiries", count: 2, href: "/sales?status=new" }]
+    );
     else if (url.pathname === "/api/v1/search") body =
       [{ kind: "property", id: "00000000-0000-4000-8000-000000000004",
         title: "Synthetic property", subtitle: "Example Road",
@@ -100,6 +108,28 @@ try {
   await ownerPage.keyboard.press("Enter");
   assert.match(ownerPage.url(), /\/properties\/00000000-0000-4000-8000-000000000004$/);
   await owner.close();
+
+  for (const [role, text] of [
+    ["dispatch", "Tomorrow: 2 jobs have no crew"],
+    ["sales", "2 new commercial inquiries"],
+    ["client", "An estimate is waiting for your approval"],
+  ]) {
+    const context = await browser.newContext({ viewport: { width: 375, height: 812 } });
+    const page = await context.newPage();
+    const data = fixture(role);
+    await page.route("**/api/v1/**", (route) => data.route(route));
+    await page.goto(origin + "/", { waitUntil: "networkidle" });
+    await page.getByText(text, { exact: true }).waitFor({ timeout: 5000 });
+    if (role === "client") assert.equal(await page.getByText(/finished jobs are waiting/).count(), 0);
+    await context.close();
+  }
+  const emptyContext = await browser.newContext({ viewport: { width: 375, height: 812 } });
+  const emptyPage = await emptyContext.newPage();
+  const emptyFixture = fixture("owner", []);
+  await emptyPage.route("**/api/v1/**", (route) => emptyFixture.route(route));
+  await emptyPage.goto(origin + "/", { waitUntil: "networkidle" });
+  await emptyPage.getByText("You're caught up. Nothing needs you right now.").waitFor();
+  await emptyContext.close();
 
   const crew = await browser.newContext({ viewport: { width: 375, height: 812 } });
   const crewPage = await crew.newPage();
