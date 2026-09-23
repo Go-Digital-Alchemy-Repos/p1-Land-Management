@@ -17,8 +17,13 @@ for (const slug of services) {
   for (const grid of grids) {
     const card = [...grid.html.matchAll(/<a\b[^>]*>[\s\S]*?<\/a>/g)].find(([tag]) => tag.includes(`href="${route}"`) && tag.includes('<img'));
     assert(card, `${grid.route}: card for ${slug}`);
-    assert.equal(src(card[0].match(/<img\b[^>]*>/)[0]), heroSrc, `${grid.route}: ${slug} must match its hero`);
+    const cardSrc = src(card[0].match(/<img\b[^>]*>/)[0]);
+    if (slug === 'industrial-agricultural') {
+      assert.match(cardSrc, /farm-industrial-maintenance-1280-[^/]+\.webp$/, `${grid.route}: industrial card must use the requested maintenance image`);
+    } else {
+      assert.equal(cardSrc, heroSrc, `${grid.route}: ${slug} must match its hero`);
+    }
   }
   if (slug !== 'commercial-snow-ice-management') assert([...gallery.matchAll(/<img\b[^>]*>/g)].some(([tag]) => src(tag) === heroSrc), `${slug}: gallery must match its hero`);
 }
-console.log('PASS 10 service heroes match both service grids; all 9 gallery service images match their heroes.');
+console.log('PASS industrial grid cards use the requested maintenance image; 9 other grid cards and all 9 gallery service images match their heroes.');
