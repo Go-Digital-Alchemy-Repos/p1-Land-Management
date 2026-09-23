@@ -6,7 +6,7 @@
     "displayName": "P1 Land & Property Management",
     "source": {
       "repository": "https://github.com/Go-Digital-Alchemy-Repos/p1-Land-Management.git",
-      "revision": "6c9cf25a66d8c0fe76bc61a6b1c6ee54f7c63469"
+      "revision": "ca4dfdd57d28d00144ef03a3877f92045a0db9eb"
     },
     "owners": [
       {
@@ -5225,22 +5225,22 @@
             "maxLength": 2000
           },
           {
-            "path": "fzw6d7c",
-            "label": "Image description: Heavy equipment shaping large acreage",
-            "type": "imageAlt",
+            "path": "f1kg8kfx",
+            "label": "Image: /assets/turf-prep-1280-CiVNGsL4.webp",
+            "type": "image",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f104xy60",
+            "label": "Image: /assets/hero-commercial-snow-ice-1280-_3Y3jnUX.webp",
+            "type": "image",
             "required": false,
             "maxLength": 2000
           },
           {
             "path": "f11v7ef6",
             "label": "Text: The Land Specialists",
-            "type": "text",
-            "required": false,
-            "maxLength": 2000
-          },
-          {
-            "path": "f17vwxxs",
-            "label": "Text: First impressions",
             "type": "text",
             "required": false,
             "maxLength": 2000
@@ -5400,6 +5400,27 @@
             "maxLength": 2000
           },
           {
+            "path": "f1v22gsa",
+            "label": "Text: Commercial grounds",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "fgselle",
+            "label": "Text: Fall lawn care",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
+            "path": "f166hu4q",
+            "label": "Text: Snow and ice planning",
+            "type": "text",
+            "required": false,
+            "maxLength": 2000
+          },
+          {
             "path": "f17tscht",
             "label": "Text: Nearly 30 Years of Experience",
             "type": "text",
@@ -5482,13 +5503,6 @@
             "type": "textarea",
             "required": false,
             "maxLength": 12000
-          },
-          {
-            "path": "f104xy60",
-            "label": "Image: /assets/hero-commercial-snow-ice-1280-_3Y3jnUX.webp",
-            "type": "image",
-            "required": false,
-            "maxLength": 2000
           },
           {
             "path": "f4pcymu",
@@ -6533,9 +6547,9 @@
           "seoDescription": "Commercial landscaping & grounds maintenance, plus grading, drainage, clearing & ponds for large commercial & industrial sites in Upstate SC & Charlotte NC.",
           "seoImage": "/opengraph.jpg",
           "fveqwxt": "/assets/hero-bg-1280-CsM162Zk.webp",
-          "fzw6d7c": "Heavy equipment shaping large acreage",
+          "f1kg8kfx": "/assets/turf-prep-1280-CiVNGsL4.webp",
+          "f104xy60": "/assets/hero-commercial-snow-ice-1280-_3Y3jnUX.webp",
           "f11v7ef6": "The Land Specialists",
-          "f17vwxxs": "First impressions",
           "frt3wyk": "start at the curb.",
           "f2w9m52": "Commercial landscaping and exterior grounds maintenance that keep your property looking professional, welcoming, and well cared for.",
           "f179vaag": "Get a Free Site Assessment",
@@ -6558,6 +6572,9 @@
           "f14gqnzz": "/services/land-clearing",
           "f1amwadv": "05",
           "foa1vas": "Land Clearing",
+          "f1v22gsa": "Commercial grounds",
+          "fgselle": "Fall lawn care",
+          "f166hu4q": "Snow and ice planning",
           "f17tscht": "Nearly 30 Years of Experience",
           "f11c77d4": "Upstate SC + Charlotte NC",
           "f1bqkijr": "1-Acre Minimum",
@@ -6570,7 +6587,6 @@
           "fj88j4j": "/assets/service-commercial-1280-L65U2NEr.webp",
           "fzgodm2": "Commercial Landscaping",
           "f1sn6cpk": "Seasonal plowing, anti-icing, and documented storm response for large commercial sites.",
-          "f104xy60": "/assets/hero-commercial-snow-ice-1280-_3Y3jnUX.webp",
           "f4pcymu": "Commercial Snow & Ice",
           "f19vd1b5": "Industrial & Agricultural Land",
           "f1gjkqsu": "Pasture, fence-line, and grounds care for farms and industrial sites.",

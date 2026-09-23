@@ -13,7 +13,7 @@ import { HttpError } from "./policy";
 const testUrl = process.env.COMMERCIAL_TEST_DATABASE_URL;
 if (testUrl) {
   const url = new URL(testUrl);
-  if (url.hostname !== "127.0.0.1" || url.pathname !== "/commercial_bridge_test" || testUrl !== process.env.DASHBOARD_DATABASE_URL)
+  if (url.hostname !== "127.0.0.1" || !["/commercial_bridge_test", "/dashboard_test"].includes(url.pathname) || testUrl !== process.env.DASHBOARD_DATABASE_URL)
     throw Error("Disposable local database required");
 }
 after(() => pool.end());
