@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { parseDocument } from "htmlparser2";
@@ -46,6 +47,20 @@ function stableImageSrc(src) {
   );
 }
 
+const imageDigests = new Map();
+function imageDigest(src) {
+  if (!src?.startsWith("/")) return null;
+  const pathname = src.split(/[?#]/, 1)[0];
+  if (!imageDigests.has(pathname)) {
+    const bytes = readFileSync(resolve(root, "dist/public", `.${pathname}`));
+    imageDigests.set(
+      pathname,
+      createHash("sha256").update(bytes).digest("hex"),
+    );
+  }
+  return imageDigests.get(pathname);
+}
+
 function nodePath(parentPath, index) {
   return `${parentPath}/${index}`;
 }
@@ -86,6 +101,7 @@ function capture(path) {
       images.push({
         position,
         src: stableImageSrc(node.attribs?.src),
+        contentSha256: imageDigest(node.attribs?.src),
         width: node.attribs?.width ?? null,
         height: node.attribs?.height ?? null,
       });
