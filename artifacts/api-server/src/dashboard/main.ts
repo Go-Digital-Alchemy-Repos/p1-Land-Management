@@ -37,6 +37,7 @@ import { notificationsApi, smsWebhook } from "./notifications";
 import { clientWorkspaceApi } from "./client-workspace";
 import { propertyTypesApi } from "./property-types";
 import { crmTasksApi } from "./crm-tasks";
+import { agreementStandardTemplateApi } from "./agreement-standard-template.routes";
 import { leadOnboardingApi } from "./lead-onboarding";
 import { crmArchiveApi } from "./crm-archive";
 import { leadNotesApi } from "./lead-notes";
@@ -135,6 +136,7 @@ app.use(
   pipelineSettingsApi,
   leadDetailsApi,
   crmTasksApi,
+  agreementStandardTemplateApi,
 );
 app.use("/api", (_req, res) => {
   res.status(404).json({ error: "Endpoint not found" });
