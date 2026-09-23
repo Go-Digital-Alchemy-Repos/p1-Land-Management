@@ -9,7 +9,10 @@ import { localBusinessSchema, faqSchema } from "@/lib/structured-data";
 import { responsiveImageProps } from "@/lib/responsive-images";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
 import heroImg from "@/assets/hero-bg.png";
+import fallHeroImg from "@/assets/features/turf-prep.png";
+import winterHeroImg from "@/assets/hero-commercial-snow-ice.png";
 import featureImg from "@/assets/features/grading-construction.png";
 import propertyPlanningImg from "@/assets/commercial-property.png";
 import {
@@ -22,9 +25,18 @@ import {
   Truck,
   Ruler,
   CalendarCheck,
+  ChevronLeft,
+  ChevronRight,
+  Pause,
+  Play,
 } from "lucide-react";
 
 const TAN = "hsl(32 42% 62%)";
+const heroSlides = [
+  { image: heroImg, label: "Commercial grounds", kicker: "The Land Specialists" },
+  { image: fallHeroImg, label: "Fall lawn care", kicker: "Prepare for Fall" },
+  { image: winterHeroImg, label: "Snow and ice planning", kicker: "Plan Ahead for Winter" },
+] as const;
 
 const values = [
   { n: "01", title: "Equipment Matched to the Work", desc: "We check access and bring the equipment suited to your clearing, grading, or maintenance job.", icon: Truck },
@@ -80,6 +92,32 @@ function Kicker({ children, onDark = false }: { children: React.ReactNode; onDar
 }
 
 export default function Home() {
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [playing, setPlaying] = useState(true);
+  const [interacting, setInteracting] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(false);
+  const [pageVisible, setPageVisible] = useState(true);
+
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const syncMotion = () => setReducedMotion(media.matches);
+    syncMotion();
+    media.addEventListener("change", syncMotion);
+    return () => media.removeEventListener("change", syncMotion);
+  }, []);
+
+  useEffect(() => {
+    const syncVisibility = () => setPageVisible(!document.hidden);
+    document.addEventListener("visibilitychange", syncVisibility);
+    return () => document.removeEventListener("visibilitychange", syncVisibility);
+  }, []);
+
+  useEffect(() => {
+    if (!playing || interacting || reducedMotion || !pageVisible) return;
+    const timer = window.setInterval(() => setActiveSlide((current) => (current + 1) % heroSlides.length), 8000);
+    return () => window.clearInterval(timer);
+  }, [playing, interacting, reducedMotion, pageVisible]);
+
   return (
     <Layout>
       <SEO
@@ -89,9 +127,21 @@ export default function Home() {
       />
 
       {/* HERO */}
-      <section className="relative overflow-hidden bg-navy-deep">
+      <section
+        className="relative overflow-hidden bg-navy-deep"
+        aria-label="Featured services"
+        onMouseEnter={() => setInteracting(true)}
+        onMouseLeave={() => setInteracting(false)}
+        onFocusCapture={() => setInteracting(true)}
+        onBlurCapture={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget)) setInteracting(false);
+        }}
+      >
         <div className="absolute inset-0">
-          <img src={heroImg} alt="Heavy equipment shaping large acreage" fetchPriority="high" decoding="async" {...responsiveImageProps(heroImg, "100vw")} className="h-full w-full object-cover" style={{ opacity: 0.5 }} />
+          <img src={heroImg} alt="" fetchPriority="high" decoding="async" {...responsiveImageProps(heroImg, "100vw")} className={`absolute inset-0 h-full w-full object-cover motion-safe:transition-opacity motion-safe:duration-700 ${activeSlide === 0 ? "opacity-50" : "opacity-0"}`} />
+          {heroSlides.slice(1).map((slide, index) => (
+            <img key={slide.label} src={slide.image} alt="" loading="lazy" decoding="async" {...responsiveImageProps(slide.image, "100vw")} className={`absolute inset-0 h-full w-full object-cover motion-safe:transition-opacity motion-safe:duration-700 ${activeSlide === index + 1 ? "opacity-50" : "opacity-0"}`} />
+          ))}
         </div>
         <div
           className="absolute inset-0"
@@ -103,35 +153,54 @@ export default function Home() {
         <div className="absolute inset-x-0 bottom-0 h-24" style={{ background: "linear-gradient(to bottom, transparent, hsl(40 20% 98%))" }} />
 
         <div className="site-shell relative grid grid-cols-1 gap-8 lg:grid-cols-12 pb-28 pt-24 lg:pt-28">
-          <div className="min-w-0 lg:col-span-8">
+          <div className="min-w-0 lg:col-span-8" key={activeSlide} data-hero-message>
             <div className="mb-7 flex items-center gap-4">
-              <Kicker onDark>The Land Specialists</Kicker>
+              <Kicker onDark>{heroSlides[activeSlide].kicker}</Kicker>
             </div>
             <h1 style={{ color: "hsl(var(--public-text-h1, var(--public-text-inverse, 0 0% 100%)))" }} className="max-w-3xl font-display text-[clamp(2.6rem,6.4vw,5.4rem)] font-light leading-[0.98] tracking-[-0.02em] text-white">
-              First impressions{" "}
-              <em className="font-semibold not-italic text-tan" style={{ fontStyle: "italic" }}>
-                start at the curb.
-              </em>
+              {activeSlide === 0 ? <>
+                First impressions{" "}
+                <em className="font-semibold not-italic text-tan" style={{ fontStyle: "italic" }}>
+                  start at the curb.
+                </em>
+              </> : activeSlide === 1 ? <>
+                A stronger lawn <em className="font-semibold text-tan">starts this fall.</em>
+              </> : <>
+                Get ahead of <em className="font-semibold text-tan">snow and ice.</em>
+              </>}
             </h1>
             <p className="mt-7 max-w-xl text-lg leading-relaxed" style={{ color: "hsl(var(--public-text-heading-subtext, 40 20% 92%) / 0.82)" }}>
-              Commercial landscaping and exterior grounds maintenance that keep your property looking professional, welcoming, and well cared for.
+              {activeSlide === 0
+                ? "Commercial landscaping and exterior grounds maintenance that keep your property looking professional, welcoming, and well cared for."
+                : activeSlide === 1
+                  ? "Plan aeration, overseeding, and fall grounds care for a healthier, more resilient commercial property."
+                  : "Arrange commercial snow and ice service before the first storm. Keep access routes, parking areas, and operations in mind now."}
             </p>
             <div className="mt-9 flex flex-wrap items-center gap-4">
               <Button asChild size="lg" className="group h-12 rounded-[3px] border-0 bg-primary px-4 sm:px-7 font-sans text-[15px] font-bold text-primary-foreground hover:bg-primary/90" style={{ boxShadow: "0 18px 40px -14px hsl(206 70% 48%)" }}>
-                <Link href="/contact">
-                  Get a Free Site Assessment
+                <Link href={activeSlide === 0 ? "/contact" : activeSlide === 1 ? "/contact?type=maintenance" : "/contact?type=snow"}>
+                  {activeSlide === 0 ? "Get a Free Site Assessment" : "Request a Site Visit & Free Quote"}
                   <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </Link>
               </Button>
-              <a href="tel:7042218928" className="inline-flex items-center gap-2 rounded-[3px] border px-7 py-2.5 font-sans text-[15px] font-bold text-white transition-colors hover:bg-white/10" style={{ borderColor: "hsl(40 30% 90% / 0.35)" }}>
-                <Phone className="h-4 w-4" />
-                Call (704) 221-8928
-              </a>
+              {activeSlide === 0 ? <a href="tel:7042218928" className="inline-flex items-center gap-2 rounded-[3px] border px-7 py-2.5 font-sans text-[15px] font-bold text-white transition-colors hover:bg-white/10" style={{ borderColor: "hsl(40 30% 90% / 0.35)" }}>
+                  <Phone className="h-4 w-4" />
+                  Call (704) 221-8928
+                </a> : <Link href={activeSlide === 1 ? "/services/turf-installation-seeding" : "/services/commercial-snow-ice-management"} className="inline-flex min-h-12 items-center gap-2 rounded-[3px] border px-5 font-sans text-[15px] font-bold text-white transition-colors hover:bg-white/10" style={{ borderColor: "hsl(40 30% 90% / 0.35)" }}>
+                  {activeSlide === 1 ? "Explore Turf & Seeding" : "Explore Snow & Ice"}
+                  <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                </Link>}
             </div>
           </div>
 
           <div className="min-w-0 hidden lg:col-span-4 lg:flex lg:items-end lg:justify-end">
             <IndexOfWork />
+          </div>
+          <div className="lg:col-span-12 flex flex-wrap items-center gap-2 text-white" aria-label="Featured service slides">
+            <button type="button" onClick={() => setActiveSlide((current) => (current + heroSlides.length - 1) % heroSlides.length)} aria-label="Previous slide" className="flex h-11 w-11 items-center justify-center rounded-full border border-white/40 hover:bg-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"><ChevronLeft className="h-5 w-5" aria-hidden="true" /></button>
+            {heroSlides.map((slide, index) => <button key={slide.label} type="button" onClick={() => setActiveSlide(index)} aria-label={`Show slide ${index + 1}: ${slide.label}`} aria-current={activeSlide === index ? "true" : undefined} className={`h-11 rounded-full border px-3 text-xs font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${activeSlide === index ? "border-white bg-white text-navy-deep" : "border-white/40 text-white hover:bg-white/15"}`}>{String(index + 1).padStart(2, "0")}<span className="sr-only sm:not-sr-only sm:ml-2">{slide.label}</span></button>)}
+            <button type="button" onClick={() => setActiveSlide((current) => (current + 1) % heroSlides.length)} aria-label="Next slide" className="flex h-11 w-11 items-center justify-center rounded-full border border-white/40 hover:bg-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"><ChevronRight className="h-5 w-5" aria-hidden="true" /></button>
+            {!reducedMotion && <button type="button" onClick={() => setPlaying((current) => !current)} aria-label={playing ? "Pause automatic slides" : "Play automatic slides"} className="ml-2 flex h-11 w-11 items-center justify-center rounded-full border border-white/40 hover:bg-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">{playing ? <Pause className="h-4 w-4" aria-hidden="true" /> : <Play className="h-4 w-4" aria-hidden="true" />}</button>}
           </div>
         </div>
       </section>
