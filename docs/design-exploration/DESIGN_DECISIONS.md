@@ -278,3 +278,7 @@ Diagrams need technical review and genuine site data.
 ### Status
 MOCKUP ONLY — NOT IMPLEMENTED
 
+
+## October 2 owner feedback — Concept 3 refinement
+
+The Owner prefers Concept 3 and requires the actual P1 logo and current content to be retained. The earlier A-based recommendation is superseded as the exploration preference. Seven additional isolated pages now show the Concept 3 composition with the unchanged vector logo and captured live text. See [refinement](concept-3-refinement/README.md). Content claims remain subject to existing factual review; no production implementation is authorised.

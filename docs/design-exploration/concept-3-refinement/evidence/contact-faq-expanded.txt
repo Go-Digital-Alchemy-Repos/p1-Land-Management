@@ -1,0 +1,180 @@
+- generic: Concept 3 · P1 original logo + current content · MOCKUP ONLY
+- link "All seven pages →":
+  - /url: index.html
+- link "Skip to content":
+  - /url: "#main"
+- banner:
+  - link "P1 Land & Property Management":
+    - /url: home.html
+    - img "P1 Land & Property Management"
+  - generic "Menu"
+- main:
+  - generic: P1 Land & Property Management
+  - heading "Tell Us About the Property" [level=1]
+  - paragraph: An address and a few sentences are enough. We'll call you back within one business day to set up a time to walk it. The visit and the written estimate are free.
+  - heading "Tell Us About the Property" [level=2]
+  - group "What kind of work is this? *":
+    - generic: What kind of work is this? *
+    - radio "Grounds maintenance contract"
+    - text: Grounds maintenance contract
+    - radio "Clearing, grading or drainage project" [checked]
+    - text: Clearing, grading or drainage project
+    - radio "Farm or large acreage"
+    - text: Farm or large acreage
+    - radio "Pond or waterway"
+    - text: Pond or waterway
+    - radio "Snow and ice"
+    - text: Snow and ice
+    - radio "Not sure yet"
+    - text: Not sure yet
+  - generic: Your Name *
+  - textbox "Your Name *": Sample design review
+  - generic: Phone Number (optional)
+  - textbox "Phone Number (optional)"
+  - generic: Email Address *
+  - textbox "Email Address *": <redacted>
+  - generic: Company Name
+  - textbox "Company Name"
+  - generic: Property Address / City *
+  - textbox "Property Address / City *": Greenville, SC
+  - generic: Approximate acreage *
+  - combobox "Approximate acreage *":
+    - option "Select Acreage"
+    - option "Under 1 acre"
+    - option "1–5 acres" [selected]
+    - option "5–20 acres"
+    - option "20–100 acres"
+    - option "100+ acres"
+  - generic: Property type *
+  - combobox "Property type *":
+    - option "Select Property Type"
+    - option "Commercial / office / retail" [selected]
+    - option "Industrial / manufacturing / distribution"
+    - option "Farm / agricultural"
+    - option "Municipal / public"
+    - option "Institutional (school, church, hospital, campus)"
+    - option "Other"
+  - generic: When do you need this done?
+  - combobox "When do you need this done?":
+    - option "Select timing" [selected]
+    - option "As soon as possible"
+    - option "Within 30 days"
+    - option "1–3 months"
+    - option "Planning ahead"
+  - generic: Tell us about your project *
+  - textbox "Tell us about your project *":
+    - /placeholder: Any specific issues or timeline requirements?
+    - text: Sample inquiry for local mockup review.
+  - paragraph: We use these details to respond to your project inquiry. Please avoid including sensitive information.
+  - button "Send It Over"
+  - status: Mockup preview only. Nothing was sent to P1.
+  - heading "Contact Details" [level=3]
+  - link "(704) 221-8928":
+    - /url: tel:+17042218928
+  - paragraph: Call us direct
+  - paragraph: To protect our team from spam, please use the secure estimate form on this page.
+  - paragraph: "Service Areas:"
+  - paragraph: Upstate South Carolina and the Charlotte region
+  - paragraph: "Hours:"
+  - paragraph: Monday–Friday, 7 AM–6 PM · Saturday by appointment
+  - paragraph: "\"Photos from after a hard rain tell us more than photos on a dry day.\""
+  - heading "What Happens Next" [level=3]
+  - list:
+    - generic: "1"
+    - text: We call you back within one business day to ask a few questions and set a time.
+    - generic: "2"
+    - text: We walk the property with you. Bring whoever knows where the problems are.
+    - generic: "3"
+    - text: You get a written estimate with the scope, the order of work, the timeline and the price.
+    - generic: "4"
+    - text: You decide. No pressure and no follow-up calls every other day.
+  - 'heading "FAQ: Contact P1" [level=2]'
+  - generic "What's your minimum property size?+" [active]
+  - paragraph: One acre. We work on commercial, industrial, agricultural, municipal and institutional property. We don't take residential lawns.
+  - generic "Do you work in both North and South Carolina?+"
+  - generic "How soon can you start?+"
+  - generic "Do you offer ongoing maintenance contracts?+"
+  - generic "Are you licensed and insured?+"
+- contentinfo:
+  - link "P1 Land & Property Management":
+    - /url: home.html
+    - img "P1 Land & Property Management"
+  - paragraph: P1 Land & Property Management clears, grades, drains, seeds and maintains commercial, industrial and farm property of an acre or more across Upstate South Carolina and the Charlotte region. Licensed and insured in North and South Carolina.
+  - link "(704) 221-8928":
+    - /url: tel:+17042218928
+  - link "Find us on Google":
+    - /url: https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4m6!3m5!1s0x8855cd2b88976525:0x49c378cdfdecac9a!8m2!3d34.8311381!4d-80.6194367!16s%2Fg%2F11nw0vxpb_?entry=ttu&g_ep=EgoyMDI2MDkxMy4wIKXMDSoASAFQAw%3D%3D
+  - link "Send a secure inquiry":
+    - /url: contact.html
+  - heading "Services" [level=4]
+  - list:
+    - link "Commercial Landscaping":
+      - /url: https://www.p1landmanagement.com/services/commercial-landscaping
+    - link "Commercial Snow & Ice":
+      - /url: https://www.p1landmanagement.com/services/commercial-snow-ice-management
+    - link "Industrial & Agricultural":
+      - /url: https://www.p1landmanagement.com/services/industrial-agricultural
+    - link "Land Clearing":
+      - /url: https://www.p1landmanagement.com/services/land-clearing
+    - link "Grading & Site Prep":
+      - /url: grading.html
+    - link "Drainage Solutions":
+      - /url: drainage.html
+    - link "Turf & Seeding":
+      - /url: https://www.p1landmanagement.com/services/turf-installation-seeding
+    - link "Tree Services":
+      - /url: https://www.p1landmanagement.com/services/tree-services
+    - link "Pond & Waterway":
+      - /url: https://www.p1landmanagement.com/services/pond-waterway-management
+    - link "Property Reconstruction":
+      - /url: https://www.p1landmanagement.com/services/property-reconstruction
+    - link "All Services →":
+      - /url: services.html
+  - heading "Service Areas" [level=4]
+  - list:
+    - listitem: Upstate South Carolina
+    - link "Greenville":
+      - /url: https://www.p1landmanagement.com/service-areas/greenville-sc
+    - link "Spartanburg":
+      - /url: https://www.p1landmanagement.com/service-areas/spartanburg-sc
+    - link "Anderson":
+      - /url: https://www.p1landmanagement.com/service-areas/anderson-sc
+    - link "Lancaster County":
+      - /url: https://www.p1landmanagement.com/service-areas/lancaster-county-sc
+    - link "York County":
+      - /url: https://www.p1landmanagement.com/service-areas/york-county-sc
+    - listitem: Greater Charlotte NC
+    - link "Charlotte, NC":
+      - /url: https://www.p1landmanagement.com/service-areas/charlotte-north-carolina
+    - link "Concord":
+      - /url: https://www.p1landmanagement.com/service-areas/concord-nc
+    - link "Mooresville & Lake Norman":
+      - /url: https://www.p1landmanagement.com/service-areas/mooresville-lake-norman-nc
+    - link "Gastonia":
+      - /url: https://www.p1landmanagement.com/service-areas/gastonia-nc
+    - link "Union County":
+      - /url: https://www.p1landmanagement.com/service-areas/union-county-nc
+    - link "All Areas →":
+      - /url: https://www.p1landmanagement.com/service-areas
+  - heading "Company" [level=4]
+  - list:
+    - link "About Us":
+      - /url: about.html
+    - link "Service Gallery":
+      - /url: https://www.p1landmanagement.com/gallery
+    - link "Blog & Resources":
+      - /url: https://www.p1landmanagement.com/blog
+    - link "Contact / Site Assessment":
+      - /url: contact.html
+  - heading "Hours" [level=4]
+  - list:
+    - listitem: "Mon – Fri: 7 AM – 6 PM"
+    - listitem: "Saturday: By Appointment"
+    - listitem: "Sunday: Closed"
+    - link "Request a Site Visit":
+      - /url: contact.html
+  - generic: © 2026 P1 Land & Property Management. Serving Upstate South Carolina & the Charlotte, NC region. All rights reserved.
+- link "Call P1":
+  - /url: tel:+17042218928
+- link "Request a Site Visit":
+  - /url: contact.html

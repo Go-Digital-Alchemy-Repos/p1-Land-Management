@@ -1,5 +1,7 @@
 # P1 design exploration
 
+Latest owner feedback: Concept 3 is preferred. See the [brand-and-content refinement](concept-3-refinement/README.md) and [seven-page visual index](concept-3-refinement/index.html). This preference does not authorise implementation.
+
 **MOCKUP ONLY — NOT IMPLEMENTED**
 
 Start with [Final presentation](FINAL_PRESENTATION.md) and the [complete visual review](mockups/index.html).

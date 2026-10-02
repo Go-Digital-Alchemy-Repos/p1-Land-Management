@@ -1,7 +1,12 @@
 from pathlib import Path
 import json,re
 D=Path(__file__).resolve().parent; E=D/'evidence'
-def write(name,body): (D/name).write_text(body)
+def write(name,body):
+ if (D/'concept-3-refinement/README.md').exists():
+  if name in ['README.md','FINAL_PRESENTATION.md']:
+   i=body.find('\n');body=body[:i+1]+'\nLatest owner feedback: Concept 3 is preferred. See the [brand-and-content refinement](concept-3-refinement/README.md) and [seven-page visual index](concept-3-refinement/index.html). This preference does not authorise implementation.\n'+body[i+1:]
+  if name=='DESIGN_DECISIONS.md':body+='\n## October 2 owner feedback — Concept 3 refinement\n\nThe Owner prefers Concept 3 and requires the actual P1 logo and current content. This supersedes the earlier A-based exploration recommendation. See [the seven-page refinement](concept-3-refinement/README.md). No production implementation is authorised.\n'
+ (D/name).write_text(body)
 status='**MOCKUP ONLY — NOT IMPLEMENTED**\n\n'
 urls=json.loads((E/'live-routes.json').read_text())
 # Evidence is from this run only; each route retains its own captured DOM and screenshots.

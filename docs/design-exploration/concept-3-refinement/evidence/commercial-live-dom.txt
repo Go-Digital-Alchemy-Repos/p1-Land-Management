@@ -1,0 +1,318 @@
+- link "Skip to main content":
+  - /url: "#main-content"
+- banner:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - navigation "Main navigation":
+    - link "Home":
+      - /url: /
+    - link "About":
+      - /url: /about
+    - button "Services":
+      - text: Services
+    - link "Contact":
+      - /url: /contact
+  - link "(704) 221-8928":
+    - /url: tel:+17042218928
+    - text: (704) 221-8928
+  - link "Request a Site Visit":
+    - /url: "#assessment-request"
+- main:
+  - img "Illustrative aerial view of maintained commercial grounds"
+  - paragraph: Commercial & Industrial / Exterior Site Operations
+  - heading "Grounds and Land Care for Large Commercial & Industrial Properties" [level=1]
+  - paragraph: One Team to Call for Your Property's Exterior Care.
+  - paragraph: Nearly 30 years of experience in grounds care, drainage, and earthwork. We help you plan the work around deliveries, access, and daily operations, from site preparation to regular maintenance.
+  - link "Get a Free Site Assessment":
+    - /url: "#assessment-request"
+  - link "Discuss Your Property":
+    - /url: tel:+17042218928
+  - paragraph: Serving Upstate South Carolina and greater Charlotte. We'll confirm coverage for your property when we talk.
+  - paragraph: One Team to Call
+  - heading "A Plan for the Whole Property" [level=2]
+  - paragraph: A washed-out road may need both grading and drainage. Overgrown ground may need clearing before regular mowing can begin. We look at how those jobs fit together and explain what should happen first.
+  - paragraph: We'll explain what our crew will handle and where a specialist may be needed.
+  - generic "Grounds, drainage, clearing, access roads, and repairs in one property plan":
+    - list:
+      - listitem: Grounds & vegetation
+      - listitem: Water & drainage
+      - listitem: Land & trees
+      - listitem: Roads & access
+      - listitem: Repairs & restoration
+    - paragraph: One Team. A Clear Work Plan.
+    - paragraph: Clear priorities, regular updates, and a plan in writing
+  - paragraph: How We Can Help
+  - heading "Walk the Property. Plan the Work." [level=2]
+  - paragraph: We'll look at the whole site, talk through what needs attention now, and plan regular care alongside larger repairs.
+  - article:
+    - paragraph: "01"
+    - heading "Grounds & Vegetation Management" [level=3]
+    - paragraph: Bring acreage, overgrowth and perimeter vegetation into a practical maintenance plan.
+    - link "recurring grounds care":
+      - /url: /services/commercial-landscaping
+  - article:
+    - paragraph: "02"
+    - heading "Stormwater & Drainage" [level=3]
+    - paragraph: Keep ponds, ditches, and drainage working together to move water where it needs to go.
+    - link "Drainage services":
+      - /url: /services/drainage
+  - article:
+    - paragraph: "03"
+    - heading "Grading & Erosion" [level=3]
+    - paragraph: Repair washouts, restore damaged ground, and correct uneven grades.
+    - link "Grading and site preparation":
+      - /url: /services/grading-site-preparation
+  - article:
+    - paragraph: "04"
+    - heading "Tree & Land Management" [level=3]
+    - paragraph: Plan clearing, tree work and brush management around the areas you use and the land you want to retain.
+    - link "Tree and land services":
+      - /url: /services/tree-services
+  - article:
+    - paragraph: "05"
+    - heading "Roads, Access & Exterior Infrastructure" [level=3]
+    - paragraph: Maintain gravel access roads and site grades around the way you use your property.
+    - link "Property reconstruction":
+      - /url: /services/property-reconstruction
+  - article:
+    - paragraph: "06"
+    - heading "Storm Cleanup & Repairs" [level=3]
+    - paragraph: Tell us about storm debris, washouts, or damaged ground. We'll confirm availability and the work needed. This form is not emergency dispatch.
+    - link "Property repairs":
+      - /url: /services/property-reconstruction
+  - article:
+    - paragraph: "07"
+    - heading "Recurring Site Management" [level=3]
+    - paragraph: Set a regular maintenance schedule, decide what to check, and agree how we'll keep you updated.
+    - link "Recurring grounds management":
+      - /url: /services/commercial-landscaping
+  - article:
+    - paragraph: "08"
+    - heading "Commercial Snow & Ice Management" [level=3]
+    - paragraph: Plan seasonal plowing, anti-icing and documented storm response around your site, access priorities and winter risk.
+    - link "Snow and ice management":
+      - /url: /services/commercial-snow-ice-management
+  - paragraph: From the Ground Up
+  - heading "From Site Preparation to Regular Upkeep" [level=2]
+  - list:
+    - paragraph: PHASE 01
+    - heading "Site Preparation" [level=3]
+    - paragraph: Plan clearing, grading, and drainage around your construction schedule and project requirements.
+    - paragraph: PHASE 02
+    - heading "Getting the Grounds Established" [level=3]
+    - paragraph: Get new grounds established, clear leftover debris, and decide what ongoing care will include.
+    - paragraph: PHASE 03
+    - heading "Ongoing Care" [level=3]
+    - paragraph: Keep a regular maintenance schedule and review new problems as they arise. Larger repairs get a separate estimate for your approval.
+  - paragraph: Data centers & complex campuses
+  - heading "The Land Outside a Secure Facility Still Needs a Clear Plan." [level=2]
+  - paragraph: Perimeter vegetation, ponds, trees, and service roads all affect how the grounds work. We look at them together when planning maintenance for a secure facility.
+  - paragraph: We'll confirm access, work hours, safety rules, and the records your site team needs before scheduling the crew.
+  - link "Explore data center & secure facility grounds":
+    - /url: /commercial/data-centers-secure-facilities
+  - img "Aerial view of a data-center campus with maintained green space, tree buffers and a stormwater pond"
+  - list:
+    - listitem: Perimeter vegetation & buffers
+    - listitem: Drainage, erosion & ponds
+    - listitem: Service roads & access areas
+    - listitem: Restoration & storm cleanup
+  - heading "Site Management Shaped Around Your Property." [level=2]
+  - paragraph:
+    - text: We work with manufacturing and automotive-supplier campuses,
+    - link "data centers, distribution and logistics facilities":
+      - /url: /commercial/data-centers-secure-facilities
+    - text: ", industrial parks, biopharmaceutical and corporate campuses, mixed-use developments, utility properties and managed commercial acreage."
+  - heading "Regular Care That Fits Your Site" [level=3]
+  - list:
+    - generic: "01"
+    - generic: Choose the areas to check and set a service schedule.
+    - generic: "02"
+    - generic: Agree which photos, observations, and updates are useful to your team.
+    - generic: "03"
+    - generic: Talk through new issues before deciding on additional work.
+    - generic: "04"
+    - generic: Approve repairs and agree who will handle them and when.
+  - paragraph: Your agreement sets out reporting and response arrangements.
+  - paragraph: P1 Commercial Site Assessment
+  - heading "Start with a Site Walk" [level=2]
+  - heading "1. Tell Us About the Property" [level=3]
+  - paragraph: Tell us where it is, what you need and its current stage. A city or region is enough to start if the address is not yet confirmed.
+  - heading "2. Walk the Site Together" [level=3]
+  - paragraph: We'll find a time to walk the property around your operating schedule and our availability. Together, we'll look at what needs attention first.
+  - heading "3. Plan the Next Steps" [level=3]
+  - paragraph: After the visit, we'll talk through what we found and recommend the next steps. You'll know what the proposed work includes before making a decision.
+  - paragraph: Before work starts, we'll confirm access, scheduling, vendor paperwork, and any specialist or technical studies needed. Security clearance, uptime, and emergency response commitments need a separate written agreement.
+  - region "Get a Free Site Assessment":
+    - paragraph: Start the conversation
+    - heading "Get a Free Site Assessment" [level=2]
+    - paragraph: Tell us about your property and what needs attention. We'll get in touch to talk through the work.
+    - paragraph:
+      - link "(704) 221-8928":
+        - /url: tel:+17042218928
+    - paragraph: To protect our team from spam, please use the secure form on this page.
+    - link "Review our service areas":
+      - /url: /service-areas
+    - generic: Your name (required)
+    - textbox "Your name (required)"
+    - generic: Company / organization (required)
+    - textbox "Company / organization (required)"
+    - group "How can we reach you?":
+      - generic: How can we reach you?
+      - paragraph: Provide an email address or phone number. Both are welcome, but only one is required.
+      - text: Email
+      - textbox "Email"
+      - text: Phone
+      - textbox "Phone"
+    - generic: Property location — address or city / region (required)
+    - textbox "Property location — address or city / region (required)"
+    - group "What does your site need? (select at least one)":
+      - generic: What does your site need? (select at least one)
+      - checkbox "Grounds & Vegetation Management"
+      - text: Grounds & Vegetation Management
+      - checkbox "Stormwater & Drainage"
+      - text: Stormwater & Drainage
+      - checkbox "Grading & Erosion"
+      - text: Grading & Erosion
+      - checkbox "Tree & Land Management"
+      - text: Tree & Land Management
+      - checkbox "Roads, Access & Exterior Infrastructure"
+      - text: Roads, Access & Exterior Infrastructure
+      - checkbox "Storm Cleanup & Repairs"
+      - text: Storm Cleanup & Repairs
+      - checkbox "Recurring Site Management"
+      - text: Recurring Site Management
+      - checkbox "Commercial Snow & Ice Management"
+      - text: Commercial Snow & Ice Management
+      - checkbox "General site assessment / not sure yet"
+      - text: General site assessment / not sure yet
+    - text: Type of need (required)
+    - combobox "Type of need (required)":
+      - option "Select one" [selected]
+      - option "One-time project or repair"
+      - option "Regular maintenance"
+      - option "Both"
+    - text: Property / project stage (required)
+    - combobox "Property / project stage (required)":
+      - option "Select one" [selected]
+      - option "Preparing for construction"
+      - option "Finishing a new site"
+      - option "Caring for an established property"
+      - option "Not sure yet"
+    - generic "Add property details (optional)"
+    - text: Anything else we should know? (optional)
+    - textbox "Anything else we should know? (optional)"
+    - paragraph: Share the need and useful timing. Please do not include access codes, facility-security plans or sensitive documents.
+    - paragraph: We'll use these details to follow up on your inquiry and arrange a free site assessment. We'll confirm access and available dates with you.
+    - generic "Form verification":
+      - status: Preparing verification…
+    - button "Get a Free Site Assessment" [disabled]
+    - paragraph:
+      - text: Prefer to talk?
+      - link "(704) 221-8928":
+        - /url: tel:+17042218928
+  - region "Commercial Property Resources":
+    - paragraph: Explore More With P1
+    - heading "Commercial Property Resources" [level=2]
+    - paragraph: Explore more ways we can help care for your commercial property.
+    - navigation "Related Services and Resources":
+      - list:
+        - link "Recurring Grounds Care Regular mowing, seasonal grounds care, and maintenance around your operations.":
+          - /url: /services/commercial-landscaping
+          - generic: Recurring Grounds Care
+          - generic: Regular mowing, seasonal grounds care, and maintenance around your operations.
+        - link "Commercial Snow and Ice Management Plan snow clearing and ice treatment for your commercial site.":
+          - /url: /services/commercial-snow-ice-management
+          - generic: Commercial Snow and Ice Management
+          - generic: Plan snow clearing and ice treatment for your commercial site.
+        - link "Data Center and Secure Facility Grounds Grounds care planned around facility access and site rules.":
+          - /url: /commercial/data-centers-secure-facilities
+          - generic: Data Center and Secure Facility Grounds
+          - generic: Grounds care planned around facility access and site rules.
+    - navigation "Explore Service Areas":
+      - heading "Explore Service Areas" [level=3]
+      - paragraph: Local coverage across the Carolinas.
+      - list:
+        - link "Charlotte, NC":
+          - /url: /service-areas/charlotte-north-carolina
+          - text: Charlotte, NC
+- contentinfo:
+  - link "P1 Land & Property Management":
+    - /url: /
+    - img "P1 Land & Property Management"
+  - paragraph: P1 Land & Property Management clears, grades, drains, seeds and maintains commercial, industrial and farm property of an acre or more across Upstate South Carolina and the Charlotte region. Licensed and insured in North and South Carolina.
+  - link "(704) 221-8928":
+    - /url: tel:+17042218928
+    - text: (704) 221-8928
+  - link "Find us on Google":
+    - /url: https://www.google.com/maps/place/P1+Land+Management/@34.8311425,-80.622017,17z/data=!3m1!4b1!4m6!3m5!1s0x8855cd2b88976525:0x49c378cdfdecac9a!8m2!3d34.8311381!4d-80.6194367!16s%2Fg%2F11nw0vxpb_?entry=ttu&g_ep=EgoyMDI2MDkxMy4wIKXMDSoASAFQAw%3D%3D
+  - link "Send a secure inquiry":
+    - /url: /contact
+  - heading "Services" [level=4]
+  - list:
+    - link "Commercial Landscaping":
+      - /url: /services/commercial-landscaping
+    - link "Commercial Snow & Ice":
+      - /url: /services/commercial-snow-ice-management
+    - link "Industrial & Agricultural":
+      - /url: /services/industrial-agricultural
+    - link "Land Clearing":
+      - /url: /services/land-clearing
+    - link "Grading & Site Prep":
+      - /url: /services/grading-site-preparation
+    - link "Drainage Solutions":
+      - /url: /services/drainage
+    - link "Turf & Seeding":
+      - /url: /services/turf-installation-seeding
+    - link "Tree Services":
+      - /url: /services/tree-services
+    - link "Pond & Waterway":
+      - /url: /services/pond-waterway-management
+    - link "Property Reconstruction":
+      - /url: /services/property-reconstruction
+    - link "All Services →":
+      - /url: /services
+  - heading "Service Areas" [level=4]
+  - list:
+    - listitem: Upstate South Carolina
+    - link "Greenville":
+      - /url: /service-areas/greenville-sc
+    - link "Spartanburg":
+      - /url: /service-areas/spartanburg-sc
+    - link "Anderson":
+      - /url: /service-areas/anderson-sc
+    - link "Lancaster County":
+      - /url: /service-areas/lancaster-county-sc
+    - link "York County":
+      - /url: /service-areas/york-county-sc
+    - listitem: Greater Charlotte NC
+    - link "Charlotte, NC":
+      - /url: /service-areas/charlotte-north-carolina
+    - link "Concord":
+      - /url: /service-areas/concord-nc
+    - link "Mooresville & Lake Norman":
+      - /url: /service-areas/mooresville-lake-norman-nc
+    - link "Gastonia":
+      - /url: /service-areas/gastonia-nc
+    - link "Union County":
+      - /url: /service-areas/union-county-nc
+    - link "All Areas →":
+      - /url: /service-areas
+  - heading "Company" [level=4]
+  - list:
+    - link "About Us":
+      - /url: /about
+    - link "Service Gallery":
+      - /url: /gallery
+    - link "Blog & Resources":
+      - /url: /blog
+    - link "Contact / Site Assessment":
+      - /url: /contact
+  - heading "Hours" [level=4]
+  - list:
+    - listitem: "Mon – Fri: 7 AM – 6 PM"
+    - listitem: "Saturday: By Appointment"
+    - listitem: "Sunday: Closed"
+    - link "Request a Site Visit":
+      - /url: /contact
+  - generic: © 2026 P1 Land & Property Management. Serving Upstate South Carolina & the Charlotte, NC region. All rights reserved.

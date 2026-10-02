@@ -1,0 +1,60 @@
+[
+  {
+    "key": "home",
+    "width": 1440,
+    "scroll": 1440,
+    "h1": 1,
+    "missing": [],
+    "images": []
+  },
+  {
+    "key": "services",
+    "width": 1440,
+    "scroll": 1440,
+    "h1": 1,
+    "missing": [],
+    "images": []
+  },
+  {
+    "key": "drainage",
+    "width": 1440,
+    "scroll": 1440,
+    "h1": 1,
+    "missing": [],
+    "images": []
+  },
+  {
+    "key": "grading",
+    "width": 1440,
+    "scroll": 1440,
+    "h1": 1,
+    "missing": [],
+    "images": []
+  },
+  {
+    "key": "commercial",
+    "width": 1440,
+    "scroll": 1440,
+    "h1": 1,
+    "missing": [],
+    "images": []
+  },
+  {
+    "key": "about",
+    "width": 1440,
+    "scroll": 1440,
+    "h1": 1,
+    "missing": [],
+    "images": []
+  },
+  {
+    "key": "contact",
+    "width": 1440,
+    "scroll": 1440,
+    "h1": 1,
+    "missing": [
+      "Leave this empty"
+    ],
+    "images": []
+  }
+]
